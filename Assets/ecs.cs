@@ -1,0 +1,83 @@
+﻿using System.Collections;
+using UnityEngine;
+using Unity.Entities;
+using Unity.Jobs;
+using Unity.Collections;
+
+public class ecs : MonoBehaviour
+{
+    World myWorld;
+    EntityManager myEntityManager;
+
+    private void Awake()
+    {
+        // WorldとWorld用EntityManagerを作成
+        // 初期世界以外は最初から全てのシステムが登録されていない
+        myWorld = new World("my world");
+		//myEntityManager = myWorld.GetOrCreateManager<EntityManager>();
+		myEntityManager = myWorld.GetExistingSystem<EntityManager>();
+	}
+
+    private void OnDestroy()
+    {
+        // worldの停止は非常に高い負荷になる
+        myWorld.Dispose();
+    }
+
+    IEnumerator Start ()
+    {
+        // 事前にEntityを一つ作っておく。コレがないとワールド移行時にすごい負荷になる模様
+        myEntityManager.CreateEntity(typeof(DummyData));
+        World.Active.GetExistingSystem<EntityManager>().MoveEntitiesFrom(myEntityManager);
+
+        // マウスクリックでロードを開始
+        yield return new WaitUntil(() => Input.GetMouseButtonDown(0));  
+
+        // Entityを事前に作成しておく。
+        // 排他モードになるとEntityManagerが使えなくなるので、作るものは事前に作成
+        var entity = myEntityManager.CreateEntity(typeof(DummyData));
+
+        // 排他モードを開始してジョブを実行する
+        var commands = myEntityManager.BeginExclusiveEntityTransaction();
+        myEntityManager.ExclusiveEntityTransactionDependency = new CreateEntityJob()
+        {
+            commands = commands,
+            entity = entity,
+            count = 38000
+        }.Schedule(myEntityManager.ExclusiveEntityTransactionDependency);
+        JobHandle.ScheduleBatchedJobs();
+
+        // 処理が完了するまで待つ
+        yield return new WaitUntil(() => myEntityManager.ExclusiveEntityTransactionDependency.IsCompleted);
+
+        // 処理が完了したら排他モードを停止。
+        // 現在アクティブなワールドへ、作ったEntityを全て移動する（個別に移動する機能や、コピーする機能はまだない）
+        myEntityManager.EndExclusiveEntityTransaction();
+        World.Active.GetOrCreateSystem<EntityManager>().MoveEntitiesFrom(myEntityManager);
+    }
+}
+
+/// <summary>
+/// 任意のEntityをCount個作成するジョブ
+/// </summary>
+struct CreateEntityJob : IJob
+{
+    public ExclusiveEntityTransaction commands; // コマンドを実行するEntityManagerのExclusiveEntityTransaction
+    public Entity entity;                       // 生成するEntity。複数種類作りたいならジョブを繋げる
+    public int count;
+
+    public void Execute()
+    {
+        for (int i = 0; i < count; i++)
+        {
+            var e = commands.Instantiate(entity);
+            var c = new DummyData() { value = i };
+            commands.SetComponentData(e, c);
+        }
+    }
+}
+
+struct DummyData : IComponentData
+{
+    public int value;
+}
