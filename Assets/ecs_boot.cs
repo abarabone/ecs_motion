@@ -9,7 +9,7 @@ public class ecs_boot : MonoBehaviour
     void Start()
     {
 		var w = World.Active;
-		w.CreateSystem<Abss.m.MotionSystem>().Enabled = true;
+		ScriptBehaviourUpdateOrder.UpdatePlayerLoop( w );
 
 		var a = w.EntityManager.CreateArchetype( typeof(Abss.Motion.BonePostureData) );
 		var e = w.EntityManager.CreateEntity( a );

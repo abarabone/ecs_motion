@@ -11,7 +11,7 @@ namespace Abss.m
 	{
 		
 		protected override JobHandle OnUpdate( JobHandle inputDeps )
-		{Debug.Log("a");
+		{
 			inputDeps = new MotionJob
 			{
 
@@ -25,7 +25,7 @@ namespace Abss.m
 		{
 			public void Execute( ref Motion.BonePostureData c0 )
 			{
-
+				c0.position.x += 0.01f;
 			}
 		}
 	}
