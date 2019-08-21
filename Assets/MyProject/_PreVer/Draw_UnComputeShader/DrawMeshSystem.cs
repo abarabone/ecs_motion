@@ -28,20 +28,20 @@ namespace Abss.Draw.WithEntity
 	{
 
 		[WriteOnly]
-		internal NativeArray<Matrix4x4>	maxRootMatrices;
+		internal NativeArray<Matrix4x4> maxRootMatrices;
 		[WriteOnly]
-		internal NativeArray<Vector4>	maxPositions;
+		internal NativeArray<Vector4> maxPositions;
 		[WriteOnly]
-		internal NativeArray<Vector4>	maxRotations;
+		internal NativeArray<Vector4> maxRotations;
 
 
-		
-		[Inject] [ReadOnly]
-		ComponentDataFromEntity<BoneEntityLinkData> boneEntityLinks;
-		[Inject] [ReadOnly]
-		ComponentDataFromEntity<BonePostureData>	bonePostures;
-		
-		
+
+		//[Inject] [ReadOnly]
+		//ComponentDataFromEntity<BoneEntityLinkData> boneEntityLinks;
+		//[Inject] [ReadOnly]
+		//ComponentDataFromEntity<BonePostureData>	bonePostures;
+
+
 		internal int	*pDrawCounter;
 
 		internal JobHandle	copyJob;
@@ -87,8 +87,8 @@ namespace Abss.Draw.WithEntity
 			var drawJob = new ObjectDrawSwitchJob
 			{
 				pCouter = pDrawCounter,
-				boneLinkes  = boneEntityLinks,
-				postures    = bonePostures,
+				//boneLinkes  = boneEntityLinks,
+				//postures    = bonePostures,
 				boneLength  = BoneLength,
 				positions   = maxPositions,
 				rotations   = maxRotations,
@@ -156,17 +156,17 @@ namespace Abss.Draw.WithEntity
 	public class DrawInstancedSkinMeshSystem : ComponentSystem
 	{
 		
-		struct Renderers
-		{
-			[ReadOnly]
-			public SharedComponentDataArray<MeshInstanceRenderer>	renderers;
-		}
+		//struct Renderers
+		//{
+		//	[ReadOnly]
+		//	public SharedComponentDataArray<MeshInstanceRenderer>	renderers;
+		//}
 
-		[Inject] Renderers		renderers;
+		//[Inject] Renderers		renderers;
 
 		
-		[Inject] [ReadOnly]
-		CopyPosturesForDrawInstancedSkinMeshSystem	postures;
+		//[Inject] [ReadOnly]
+		//CopyPosturesForDrawInstancedSkinMeshSystem	postures;
 
 
 		//public int	DrawModelLength;
@@ -194,88 +194,88 @@ namespace Abss.Draw.WithEntity
 			Debug.Log( "create" );
 		}
 
-		protected override void OnDestroyManager()
-		{
-			if( postures != null )
-			{
-				postures.copyJob.Complete();
-			}
+		//protected override void OnDestroyManager()
+		//{
+		//	if( postures != null )
+		//	{
+		//		postures.copyJob.Complete();
+		//	}
 
-			base.OnDestroyManager();
+		//	base.OnDestroyManager();
 			
-			Debug.Log( "destroy" );
-		}
+		//	Debug.Log( "destroy" );
+		//}
 
 		protected override unsafe void OnUpdate()
 		{
-			//return;
-			if ( postures == null ) return;
-			if( *postures.pDrawCounter == 0 ) return;
-			postures.copyJob.Complete();
+		//	//return;
+		//	if ( postures == null ) return;
+		//	if( *postures.pDrawCounter == 0 ) return;
+		//	postures.copyJob.Complete();
 
-			var BoneLength	= 16;//
+		//	var BoneLength	= 16;//
 			
 			
-			var r = renderers.renderers[0];
+		//	var r = renderers.renderers[0];
 			
-			if( bindposes == null ) bindposes = r.mesh.bindposes;
-			r.material.SetMatrixArray( bindPoses_ShaderId, bindposes );
+		//	if( bindposes == null ) bindposes = r.mesh.bindposes;
+		//	r.material.SetMatrixArray( bindPoses_ShaderId, bindposes );
 			
-			var boneLength	= bindposes.Length;
-			r.material.SetFloat( boneLength_ShaderId, bindposes.Length );
+		//	var boneLength	= bindposes.Length;
+		//	r.material.SetFloat( boneLength_ShaderId, bindposes.Length );
 
 
-			var totalDrawModelLength	= *postures.pDrawCounter;
+		//	var totalDrawModelLength	= *postures.pDrawCounter;
 
-			var maxModelLengthPerDraw	= 1023 / BoneLength;
-			var maxBoneLengthPerDraw	= maxModelLengthPerDraw * BoneLength;
-			var totalDrawBoneLength		= totalDrawModelLength * BoneLength;
+		//	var maxModelLengthPerDraw	= 1023 / BoneLength;
+		//	var maxBoneLengthPerDraw	= maxModelLengthPerDraw * BoneLength;
+		//	var totalDrawBoneLength		= totalDrawModelLength * BoneLength;
 
-			var freq	= totalDrawModelLength / maxModelLengthPerDraw;
-			if( totalDrawModelLength % maxModelLengthPerDraw != 0 ) freq++;
-			for( var i = 0 ; i < freq ; i++ )
-			{
+		//	var freq	= totalDrawModelLength / maxModelLengthPerDraw;
+		//	if( totalDrawModelLength % maxModelLengthPerDraw != 0 ) freq++;
+		//	for( var i = 0 ; i < freq ; i++ )
+		//	{
 				
-				// ボーンセット
+		//		// ボーンセット
 
-				var finishedBoneCount	= i * maxBoneLengthPerDraw;
-				var remainedBoneCount	= totalDrawBoneLength - finishedBoneCount;
-				var boneLengthPerDraw	= math.min( remainedBoneCount, maxBoneLengthPerDraw );
+		//		var finishedBoneCount	= i * maxBoneLengthPerDraw;
+		//		var remainedBoneCount	= totalDrawBoneLength - finishedBoneCount;
+		//		var boneLengthPerDraw	= math.min( remainedBoneCount, maxBoneLengthPerDraw );
 
-				postures.maxPositions.Slice( finishedBoneCount, boneLengthPerDraw ).CopyToArray( perDrawPositions );
-				postures.maxRotations.Slice( finishedBoneCount, boneLengthPerDraw ).CopyToArray( perDrawRotations );
-
-
-				// モデルセット
-
-				var finishedModelCount	= i * maxModelLengthPerDraw;
-				var remainedModelCount	= totalDrawModelLength - finishedModelCount;
-				var modelLengthPerDraw	= math.min( remainedModelCount, maxModelLengthPerDraw );
-
-				postures.maxRootMatrices.Slice( finishedModelCount, modelLengthPerDraw ).CopyToArray( perDrawRootMatrices );
+		//		postures.maxPositions.Slice( finishedBoneCount, boneLengthPerDraw ).CopyToArray( perDrawPositions );
+		//		postures.maxRotations.Slice( finishedBoneCount, boneLengthPerDraw ).CopyToArray( perDrawRotations );
 
 
-				//Debug.Log( $"{finishedBoneCount}, {finishedModelCount}, {remainedModelCount}, {remainedBoneCount}, {perDrawRootMatrices.Length}" );
+		//		// モデルセット
+
+		//		var finishedModelCount	= i * maxModelLengthPerDraw;
+		//		var remainedModelCount	= totalDrawModelLength - finishedModelCount;
+		//		var modelLengthPerDraw	= math.min( remainedModelCount, maxModelLengthPerDraw );
+
+		//		postures.maxRootMatrices.Slice( finishedModelCount, modelLengthPerDraw ).CopyToArray( perDrawRootMatrices );
 
 
-				// 描画
+		//		//Debug.Log( $"{finishedBoneCount}, {finishedModelCount}, {remainedModelCount}, {remainedBoneCount}, {perDrawRootMatrices.Length}" );
 
-				draw(r, modelLengthPerDraw);
-			}
+
+		//		// 描画
+
+		//		draw(r, modelLengthPerDraw);
+		//	}
 			
 		}
 		
 
-		void draw( MeshInstanceRenderer r, int i )
-		{
-			if ( i == 0 ) return;
-			//Debug.Log($"{i} {perDrawRootMatrices.Length}");
+		//void draw( MeshInstanceRenderer r, int i )
+		//{
+		//	if ( i == 0 ) return;
+		//	//Debug.Log($"{i} {perDrawRootMatrices.Length}");
 			
-			r.material.SetVectorArray( positions_ShaderId, perDrawPositions );
-			r.material.SetVectorArray( rotations_ShaderId, perDrawRotations );
+		//	r.material.SetVectorArray( positions_ShaderId, perDrawPositions );
+		//	r.material.SetVectorArray( rotations_ShaderId, perDrawRotations );
 
-			Graphics.DrawMeshInstanced( r.mesh, 0, r.material, perDrawRootMatrices, i );
-		}
+		//	Graphics.DrawMeshInstanced( r.mesh, 0, r.material, perDrawRootMatrices, i );
+		//}
 		
 
 	}

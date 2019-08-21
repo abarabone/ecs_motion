@@ -29,43 +29,43 @@ namespace Abss.Motion.WithComponent
 	public class MotionProgressSystem : JobComponentSystem
 	{
 		
-		[Inject]
-		EndFrameBarrier streamInitialBarrier;
+		//[Inject]
+		//EndFrameBarrier streamInitialBarrier;
 
-		[Inject] [ReadOnly]
-		ComponentDataFromEntity<MotionInfoData> motions;
+		//[Inject] [ReadOnly]
+		//ComponentDataFromEntity<MotionInfoData> motions;
 
-		[Inject] [ReadOnly]
-		ComponentDataFromEntity<BoneEntityLinkData> boneEntityLinks;
-		[Inject]
-		ComponentDataFromEntity<BonePostureData>	bonePostures;
+		//[Inject] [ReadOnly]
+		//ComponentDataFromEntity<BoneEntityLinkData> boneEntityLinks;
+		//[Inject]
+		//ComponentDataFromEntity<BonePostureData>	bonePostures;
 		
-		[Inject] [ReadOnly]
-		public ComponentDataFromEntity<StreamInterpolatedData>	interpolateds;
+		//[Inject] [ReadOnly]
+		//public ComponentDataFromEntity<StreamInterpolatedData>	interpolateds;
 
 		
 
 
-		struct MotionGroup
-		{
-			[ReadOnly]
-			public ComponentDataArray<MotionInfoData>	motions;
-		}
+		//struct MotionGroup
+		//{
+		//	[ReadOnly]
+		//	public ComponentDataArray<MotionInfoData>	motions;
+		//}
 
-		[Inject]
-		MotionGroup	motionGroup;
+		//[Inject]
+		//MotionGroup	motionGroup;
 
 
-		struct StreamInitialGroup
-		{
-			[ReadOnly]
-			public ComponentDataArray<StreamInitialLabel>	Inits;
-			[ReadOnly]
-			public EntityArray	Entities;
-		}
+		//struct StreamInitialGroup
+		//{
+		//	[ReadOnly]
+		//	public ComponentDataArray<StreamInitialLabel>	Inits;
+		//	[ReadOnly]
+		//	public EntityArray	Entities;
+		//}
 
-		[Inject]
-		StreamInitialGroup	streamInitialGroup;
+		//[Inject]
+		//StreamInitialGroup	streamInitialGroup;
 
 
 
@@ -78,24 +78,24 @@ namespace Abss.Motion.WithComponent
 
 			var deltaTime = Time.deltaTime;
 
-			var streamStartJob = new StreamStartJob();
-			inputDeps = streamStartJob.Schedule( this, inputDeps );//( this, 64, inputDeps );
+			//var streamStartJob = new StreamStartJob();
+			//inputDeps = streamStartJob.Schedule( this, inputDeps );//( this, 64, inputDeps );
 
-			var streamInitRemoveJob	= new StreamRemoveInitialJob
-			{
-				Commands	= streamInitialBarrier.CreateCommandBuffer().ToConcurrent(),
-				entities	= streamInitialGroup.Entities,
-			};
-			inputDeps = streamInitRemoveJob.Schedule( streamInitialGroup.Entities.Length, 16, inputDeps );
-			//Debug.Log( $"{streamInitRemoveJob.entities.Length} {streamInitRemoveJob.Length}" );
-
-			//var streamStartJob2 = new StreamStartFor1posJob();
-			//inputDeps = streamStartJob2.Schedule( this, 64, inputDeps );
-			//var streamStartJob3 = new StreamStartFor1posJob2
+			//var streamInitRemoveJob	= new StreamRemoveInitialJob
 			//{
-			//	Commands	= streamInitialBarrier.CreateCommandBuffer()
+			//	Commands	= streamInitialBarrier.CreateCommandBuffer().ToConcurrent(),
+			//	entities	= streamInitialGroup.Entities,
 			//};
-			//inputDeps = streamStartJob3.Schedule( this, 64, inputDeps );
+			//inputDeps = streamInitRemoveJob.Schedule( streamInitialGroup.Entities.Length, 16, inputDeps );
+			////Debug.Log( $"{streamInitRemoveJob.entities.Length} {streamInitRemoveJob.Length}" );
+
+			////var streamStartJob2 = new StreamStartFor1posJob();
+			////inputDeps = streamStartJob2.Schedule( this, 64, inputDeps );
+			////var streamStartJob3 = new StreamStartFor1posJob2
+			////{
+			////	Commands	= streamInitialBarrier.CreateCommandBuffer()
+			////};
+			////inputDeps = streamStartJob3.Schedule( this, 64, inputDeps );
 
 
 			var interpolateJob = new StreamInterpolateJob
@@ -105,21 +105,21 @@ namespace Abss.Motion.WithComponent
 			inputDeps = interpolateJob.Schedule( this, inputDeps );//( this, 64, inputDeps );
 
 
-			var aggregateToBoneJob = new BoneAggregationJob
-			{
-				Interpolateds   = interpolateds
-			};
-			inputDeps = aggregateToBoneJob.Schedule( this, inputDeps );//( this, 32, inputDeps );
+			//var aggregateToBoneJob = new BoneAggregationJob
+			//{
+			//	Interpolateds   = interpolateds
+			//};
+			//inputDeps = aggregateToBoneJob.Schedule( this, inputDeps );//( this, 32, inputDeps );
 
 
-			//return inputDeps;
+			////return inputDeps;
 
-			var boneTransformJob = new BoneTransformJob
-			{
-				boneEntityLinks = boneEntityLinks,
-				bonePostures    = bonePostures,
-			};
-			inputDeps = boneTransformJob.Schedule( this, inputDeps );//( this, 4, inputDeps );
+			//var boneTransformJob = new BoneTransformJob
+			//{
+			//	boneEntityLinks = boneEntityLinks,
+			//	bonePostures    = bonePostures,
+			//};
+			//inputDeps = boneTransformJob.Schedule( this, inputDeps );//( this, 4, inputDeps );
 
 			//var bones = new NativeArray<BonePostureData>( 1023 * 100, Allocator.TempJob, NativeArrayOptions.UninitializedMemory );
 			//var boneCopyAndTransformJob = new BoneTransformWithTempBufferJob
@@ -146,56 +146,56 @@ namespace Abss.Motion.WithComponent
 
 
 
-		/// <summary>
-		/// ストリームの初期化
-		/// </summary>
+		///// <summary>
+		///// ストリームの初期化
+		///// </summary>
+		////[BurstCompile]
+		//struct StreamRemoveInitialJob : IJobParallelFor
+		//{
+		//	public EntityCommandBuffer.Concurrent Commands;
+
+		//	[ReadOnly]
+		//	public EntityArray entities;
+
+		//	public void Execute( int i )
+		//	{
+		//		Commands.RemoveComponent<StreamInitialLabel>( 0, entities[ i ] );
+		//	}
+		//}
 		//[BurstCompile]
-		struct StreamRemoveInitialJob : IJobParallelFor
-		{
-			public EntityCommandBuffer.Concurrent	Commands;
-
-			[ReadOnly]
-			public EntityArray	entities;
-			
-			public void Execute( int i )
-			{
-				Commands.RemoveComponent<StreamInitialLabel>( 0, entities[ i ] );
-			}
-		}
-		[BurstCompile]
-		struct StreamStartJob : IJobProcessComponentData<StreamInitialLabel, StreamKeyShiftData, StreamNearKeysCacheData>
-		{
-			public void Execute( [ReadOnly] ref StreamInitialLabel init, ref StreamKeyShiftData shiftInfo, [WriteOnly] ref StreamNearKeysCacheData nearKeys )
-			{
-				StreamExtentions.InitializeKeys( ref nearKeys, ref shiftInfo );
-			}
-		}
-		[BurstCompile]
-		struct StreamStartFor1posJob : IJobProcessComponentData<StreamInitialLabelFor1pos, StreamKeyShiftData, StreamInterpolatedData>
-		{
-			public void Execute( [ReadOnly] ref StreamInitialLabelFor1pos inits, [ReadOnly] ref StreamKeyShiftData shifter, [WriteOnly] ref StreamInterpolatedData dst )
-			{
-				dst.Value = shifter.Keys[0].Value;
-			}
-		}
+		//struct StreamStartJob : IJobProcessComponentData<StreamInitialLabel, StreamKeyShiftData, StreamNearKeysCacheData>
+		//{
+		//	public void Execute( [ReadOnly] ref StreamInitialLabel init, ref StreamKeyShiftData shiftInfo, [WriteOnly] ref StreamNearKeysCacheData nearKeys )
+		//	{
+		//		StreamExtentions.InitializeKeys( ref nearKeys, ref shiftInfo );
+		//	}
+		//}
 		//[BurstCompile]
-		struct StreamStartFor1posJob2 : IJobParallelFor
-		{
-			public EntityCommandBuffer.Concurrent	Commands;
+		//struct StreamStartFor1posJob : IJobProcessComponentData<StreamInitialLabelFor1pos, StreamKeyShiftData, StreamInterpolatedData>
+		//{
+		//	public void Execute( [ReadOnly] ref StreamInitialLabelFor1pos inits, [ReadOnly] ref StreamKeyShiftData shifter, [WriteOnly] ref StreamInterpolatedData dst )
+		//	{
+		//		dst.Value = shifter.Keys[ 0 ].Value;
+		//	}
+		//}
+		////[BurstCompile]
+		//struct StreamStartFor1posJob2 : IJobParallelFor
+		//{
+		//	public EntityCommandBuffer.Concurrent Commands;
 
-			[ReadOnly]
-			public EntityArray	entities;
-			
-			public void Execute( int i )
-			{
-				Commands.RemoveComponent<StreamInitialLabelFor1pos>( 0, entities[ i ] );
-				Commands.RemoveComponent<StreamKeyShiftData>( 0, entities[ i ] );
-				Commands.RemoveComponent<StreamNearKeysCacheData>( 0, entities[ i ] );
-			}
-		}
+		//	[ReadOnly]
+		//	public EntityArray entities;
+
+		//	public void Execute( int i )
+		//	{
+		//		Commands.RemoveComponent<StreamInitialLabelFor1pos>( 0, entities[ i ] );
+		//		Commands.RemoveComponent<StreamKeyShiftData>( 0, entities[ i ] );
+		//		Commands.RemoveComponent<StreamNearKeysCacheData>( 0, entities[ i ] );
+		//	}
+		//}
 
 
-		
+
 
 		/// <summary>
 		/// ストリーム回転　→補間→　ボーン

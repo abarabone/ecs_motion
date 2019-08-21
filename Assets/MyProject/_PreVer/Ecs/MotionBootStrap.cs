@@ -32,6 +32,12 @@ namespace Abss.Motion
 		
 		MotionDataInNative	motionData;
 
+		struct MeshInstanceRenderer
+		{
+			public Mesh	mesh;
+			public Material material;
+		}
+
 		[SerializeField]
 		MeshInstanceRenderer	meshSetting;
 
@@ -96,12 +102,12 @@ namespace Abss.Motion
 
 			// レンダラ
 			
-			var rendererArch= em.CreateArchetype(
-				typeof(MeshInstanceRenderer)
-			);
+			//var rendererArch= em.CreateArchetype(
+			//	typeof(MeshInstanceRenderer)
+			//);
 
-			var rent = em.CreateEntity( rendererArch );
-			em.SetSharedComponentData( rent, meshSetting );
+			//var rent = em.CreateEntity( rendererArch );
+			//em.SetSharedComponentData( rent, meshSetting );
 
 
 			// アーキタイプ

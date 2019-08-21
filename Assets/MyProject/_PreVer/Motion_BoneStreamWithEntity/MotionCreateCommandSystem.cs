@@ -22,7 +22,7 @@ namespace Abss.Motion.WithComponent
 {
 
 
-	[UpdateBefore( typeof(EndFrameBarrier) )]
+	//[UpdateBefore( typeof(EndFrameBarrier) )]
 	public class MotionCreateCommandSystem : ComponentSystem
 	{
 
