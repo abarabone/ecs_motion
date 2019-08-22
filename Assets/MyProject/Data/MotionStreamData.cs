@@ -85,7 +85,7 @@ namespace Abss.Motion
 
 	
 
-
+	// ストリーム拡張 -----------------------------------------------------------------------------------------------
 	
 	static public class StreamUtility
 	{
@@ -151,15 +151,15 @@ namespace Abss.Motion
 		static public void ShiftKeysIfOverKeyTimeForLooping(
 			ref this StreamNearKeysCacheData	nearKeys,
 			ref StreamKeyShiftData				shift,
-			ref StreamTimeProgressData			progress
+			ref StreamTimeProgressData			timer
 		)
 		{
-			if( progress.TimeProgress < nearKeys.Time_To ) return;
+			if( timer.TimeProgress < nearKeys.Time_To ) return;
 
 
-			var isEndOfStream	= progress.TimeProgress >= progress.TimeLength;
+			var isEndOfStream	= timer.TimeProgress >= timer.TimeLength;
 			
-			var timeOffset	= getTimeOffsetOverLength( in progress, isEndOfStream );
+			var timeOffset	= getTimeOffsetOverLength( in timer, isEndOfStream );
 
 			var nextIndex	= getNextKeyIndex( in shift, isEndOfStream );
 			var nextKey		= shift.Keys[ nextIndex ];
@@ -179,7 +179,7 @@ namespace Abss.Motion
 
 			shift.KeyIndex_Next	= nextIndex;
 			
-			progress.TimeProgress	-= timeOffset;
+			timer.TimeProgress	-= timeOffset;
 
 			return;
 
@@ -203,9 +203,12 @@ namespace Abss.Motion
 			}
 		}
 		
-		static public void Progress( ref this StreamTimeProgressData progress, float deltaTime )
+		/// <summary>
+		/// 時間を進める。
+		/// </summary>
+		static public void Progress( ref this StreamTimeProgressData timer, float deltaTime )
 		{
-			progress.TimeProgress += deltaTime * progress.TimeScale;
+			timer.TimeProgress += deltaTime * timer.TimeScale;
 		}
 
 		static public float CaluclateTimeNormalized
@@ -219,6 +222,9 @@ namespace Abss.Motion
 			return math.select( progress_div_length, 1.0f, length == 0.0f );// select( 偽, 真, 条件 );
 		}
 
+		/// <summary>
+		/// 補完する。
+		/// </summary>
 		static public float4 Interpolate
 			( ref this StreamNearKeysCacheData nearKeys, float normalizedTimeProgress )
 		{
@@ -234,5 +240,7 @@ namespace Abss.Motion
 			);
 		}
 	}
+
+	// --------------------------------------------------------------------------------------------------------------
 
 }
