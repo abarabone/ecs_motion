@@ -37,9 +37,10 @@ namespace Abss.Motion
 
 	public static class MotionCreator
 	{
-		static public void Create( EntityManager em )
+		static public void Create( EntityCommandBuffer ecb )
 		{
 
+			ecb.CreateEntity( archetype, new NativeArray<int>() )
 				var em	= world.GetOrCreateManager<EntityManager>();
 
 				var ent = em.CreateEntity( this.motionArchetype );
@@ -56,23 +57,23 @@ namespace Abss.Motion
 						DataAccessor	= ma
 					}
 				);
-				em.SetComponentData<DrawTargetSphere>
-				(
-					ent,
-					new DrawTargetSphere
-					{
-						center	= 0,
-						radius	= 1
-					}
-				);
-				em.SetComponentData<DrawModelInfo>
-				(
-					ent,
-					new DrawModelInfo
-					{
-						modelIndex	= 0
-					}
-				);
+				//em.SetComponentData<DrawTargetSphere>
+				//(
+				//	ent,
+				//	new DrawTargetSphere
+				//	{
+				//		center	= 0,
+				//		radius	= 1
+				//	}
+				//);
+				//em.SetComponentData<DrawModelInfo>
+				//(
+				//	ent,
+				//	new DrawModelInfo
+				//	{
+				//		modelIndex	= 0
+				//	}
+				//);
 				var buf = em.GetBuffer<MotionStreamElement>( ent );
 				for( var i = 0; i < ma.boneLength * 2 ; ++i )
 				{
@@ -92,14 +93,14 @@ namespace Abss.Motion
 		}
 
 	
-		static EntityArchetype CreateArchetypes( EntityManager em ) =>
-			em.CreateArchetype
-			(
-				ComponentType..Create<MotionInfoData>(),
-				ComponentType.Create<MotionStreamElement>(),
-				ComponentType.Create<DrawTargetSphere>(),
-				ComponentType.Create<DrawModelInfo>()
-			);
+		//static EntityArchetype CreateArchetypes( EntityManager em ) =>
+		//	em.CreateArchetype
+		//	(
+		//		ComponentType..Create<MotionInfoData>(),
+		//		ComponentType.Create<MotionStreamElement>(),
+		//		ComponentType.Create<DrawTargetSphere>(),
+		//		ComponentType.Create<DrawModelInfo>()
+		//	);
 	}
 
 
