@@ -15,20 +15,20 @@ public class ecs : MonoBehaviour
         // 初期世界以外は最初から全てのシステムが登録されていない
         myWorld = new World("my world");
 		//myEntityManager = myWorld.GetOrCreateManager<EntityManager>();
-		myEntityManager = myWorld.GetExistingSystem<EntityManager>();
+		myEntityManager = myWorld.EntityManager;
 	}
 
     private void OnDestroy()
     {
-        // worldの停止は非常に高い負荷になる
-        myWorld.Dispose();
+        //// worldの停止は非常に高い負荷になる
+        //myWorld.Dispose();
     }
 
     IEnumerator Start ()
     {
         // 事前にEntityを一つ作っておく。コレがないとワールド移行時にすごい負荷になる模様
         myEntityManager.CreateEntity(typeof(DummyData));
-        World.Active.GetExistingSystem<EntityManager>().MoveEntitiesFrom(myEntityManager);
+        World.Active.EntityManager.MoveEntitiesFrom(myEntityManager);
 
         // マウスクリックでロードを開始
         yield return new WaitUntil(() => Input.GetMouseButtonDown(0));  
@@ -41,10 +41,11 @@ public class ecs : MonoBehaviour
         var commands = myEntityManager.BeginExclusiveEntityTransaction();
         myEntityManager.ExclusiveEntityTransactionDependency = new CreateEntityJob()
         {
-            commands = commands,
+            commands = commands.Schedule(,
             entity = entity,
             count = 38000
-        }.Schedule(myEntityManager.ExclusiveEntityTransactionDependency);
+        //}.Schedule( myEntityManager.ExclusiveEntityTransactionDependency );
+        }.Schedule( 38000, 100, myEntityManager.ExclusiveEntityTransactionDependency );
         JobHandle.ScheduleBatchedJobs();
 
         // 処理が完了するまで待つ
@@ -53,14 +54,14 @@ public class ecs : MonoBehaviour
         // 処理が完了したら排他モードを停止。
         // 現在アクティブなワールドへ、作ったEntityを全て移動する（個別に移動する機能や、コピーする機能はまだない）
         myEntityManager.EndExclusiveEntityTransaction();
-        World.Active.GetOrCreateSystem<EntityManager>().MoveEntitiesFrom(myEntityManager);
+        World.Active.EntityManager.MoveEntitiesFrom(myEntityManager);
     }
 }
 
 /// <summary>
 /// 任意のEntityをCount個作成するジョブ
 /// </summary>
-struct CreateEntityJob : IJob
+struct CreateEntityJob : IJobParallelFor
 {
     public ExclusiveEntityTransaction commands; // コマンドを実行するEntityManagerのExclusiveEntityTransaction
     public Entity entity;                       // 生成するEntity。複数種類作りたいならジョブを繋げる
@@ -74,6 +75,13 @@ struct CreateEntityJob : IJob
             var c = new DummyData() { value = i };
             commands.SetComponentData(e, c);
         }
+    }
+
+    public void Execute( int i )
+    {
+        var e = commands.Instantiate(entity);
+        var c = new DummyData() { value = i };
+        commands.SetComponentData(e, c);
     }
 }
 
