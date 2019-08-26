@@ -19,6 +19,28 @@ using System.Runtime.InteropServices;
 namespace Abss.Motion
 {
 
+    
+    [UpdateInGroup( typeof( MotionGroup ) )]
+    [UpdateAfter( typeof(MotionProgressSystem) )]
+    public class MotionInitSystem : JobComponentSystem
+    {
+        protected override void OnCreate()
+        {
+
+        }
+
+        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        {
+            var isLeftClick = Input.GetMouseButtonDown(0);
+
+            return inputDeps;
+        }
+    }
+
+
+
+
+
 	public static class MotionUtility
 	{
 

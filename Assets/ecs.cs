@@ -41,11 +41,11 @@ public class ecs : MonoBehaviour
         var commands = myEntityManager.BeginExclusiveEntityTransaction();
         myEntityManager.ExclusiveEntityTransactionDependency = new CreateEntityJob()
         {
-            commands = commands.Schedule(,
+            commands = commands,//.Schedule(,
             entity = entity,
-            count = 38000
-        //}.Schedule( myEntityManager.ExclusiveEntityTransactionDependency );
-        }.Schedule( 38000, 100, myEntityManager.ExclusiveEntityTransactionDependency );
+            count = 38000 / 4
+        }.Schedule( myEntityManager.ExclusiveEntityTransactionDependency );
+        //}.Schedule( 38000, 100, myEntityManager.ExclusiveEntityTransactionDependency );
         JobHandle.ScheduleBatchedJobs();
 
         // 処理が完了するまで待つ
@@ -61,7 +61,7 @@ public class ecs : MonoBehaviour
 /// <summary>
 /// 任意のEntityをCount個作成するジョブ
 /// </summary>
-struct CreateEntityJob : IJobParallelFor
+struct CreateEntityJob : IJob//ParallelFor
 {
     public ExclusiveEntityTransaction commands; // コマンドを実行するEntityManagerのExclusiveEntityTransaction
     public Entity entity;                       // 生成するEntity。複数種類作りたいならジョブを繋げる
