@@ -27,23 +27,28 @@ public class ecs : MonoBehaviour
     IEnumerator Start ()
     {
         // 事前にEntityを一つ作っておく。コレがないとワールド移行時にすごい負荷になる模様
-        myEntityManager.CreateEntity(typeof(DummyData));
-        World.Active.EntityManager.MoveEntitiesFrom(myEntityManager);
+        myEntityManager.CreateEntity( typeof( DummyData ) );
+        World.Active.EntityManager.MoveEntitiesFrom( myEntityManager );
+        // 2019/8/26でもなるみたい
+
 
         // マウスクリックでロードを開始
         yield return new WaitUntil(() => Input.GetMouseButtonDown(0));  
 
         // Entityを事前に作成しておく。
         // 排他モードになるとEntityManagerが使えなくなるので、作るものは事前に作成
-        var entity = myEntityManager.CreateEntity(typeof(DummyData));
+        var arch    = myEntityManager.CreateArchetype( typeof(DummyData) );
+        //var entity = myEntityManager.CreateEntity( arch );
+        //myEntityManager.DestroyEntity( entity );
 
         // 排他モードを開始してジョブを実行する
         var commands = myEntityManager.BeginExclusiveEntityTransaction();
         myEntityManager.ExclusiveEntityTransactionDependency = new CreateEntityJob()
         {
             commands = commands,//.Schedule(,
-            entity = entity,
-            count = 38000 / 4
+            //entity = entity,
+            arch = arch,
+            count = 38000
         }.Schedule( myEntityManager.ExclusiveEntityTransactionDependency );
         //}.Schedule( 38000, 100, myEntityManager.ExclusiveEntityTransactionDependency );
         JobHandle.ScheduleBatchedJobs();
@@ -66,12 +71,14 @@ struct CreateEntityJob : IJob//ParallelFor
     public ExclusiveEntityTransaction commands; // コマンドを実行するEntityManagerのExclusiveEntityTransaction
     public Entity entity;                       // 生成するEntity。複数種類作りたいならジョブを繋げる
     public int count;
+    public EntityArchetype arch;
 
     public void Execute()
     {
         for (int i = 0; i < count; i++)
         {
-            var e = commands.Instantiate(entity);
+            //var e = commands.Instantiate( entity );
+            var e = commands.CreateEntity( arch );
             var c = new DummyData() { value = i };
             commands.SetComponentData(e, c);
         }
