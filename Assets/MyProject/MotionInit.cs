@@ -22,18 +22,46 @@ namespace Abss.Motion
     
     [UpdateInGroup( typeof( MotionGroup ) )]
     [UpdateAfter( typeof(MotionProgressSystem) )]
-    public class MotionInitSystem : JobComponentSystem
+    public class MotionInitSystem : ComponentSystem//JobComponentSystem
     {
+
+        World entityCreationWorld;
+        MotionDataInNative md;
+
+        EntityArchetype motionArchetype;
+        EntityArchetype streamArchetype;
+
         protected override void OnCreate()
         {
+            this.entityCreationWorld = new World("entity creation world");
+            
+            var em = this.EntityManager;
+            this.motionArchetype = em.CreateArchetype
+            (
+                typeof(MotionInfoData)
+            );
+            this.streamArchetype = em.CreateArchetype
+            (
+                typeof(StreamKeyShiftData), typeof(StreamTimeProgressData), typeof(StreamNearKeysCacheData)
+            );
 
+            //em.CreateEntity()
         }
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        //protected override JobHandle OnUpdate( JobHandle inputDeps )
+        protected override void OnUpdate()
         {
             var isLeftClick = Input.GetMouseButtonDown(0);
+            if( !isLeftClick ) return;
 
-            return inputDeps;
+            var motionIndex = 0;
+            var ma = md.CreateAccessor( motionIndex );
+
+            var em = this.entityCreationWorld.EntityManager;
+
+            var ents = MotionUtility.CreateMotionEntities( em, motionArchetype, streamArchetype, ma );
+            MotionUtility.InitMotion( em, ents.motionEntity, motionIndex, ma );
+            MotionUtility.InitMotionStream( em, ents.steamEntities, motionIndex, ma );
         }
     }
 
@@ -44,24 +72,29 @@ namespace Abss.Motion
 	public static class MotionUtility
 	{
 
-        static public void MotionInit
-            (
-                //EntityCommandBuffer ecb,
-                EntityManager em,
-                EntityArchetype motionArchetype, EntityArchetype streamArche,
-                int motionIndex, MotionDataInNative md
-            )
+        static public (Entity motionEntity, NativeArray<Entity> steamEntities)
+            CreateMotionEntities
+            ( EntityManager em, EntityArchetype motionArchetype, EntityArchetype streamArche, MotionDataAccessor ma )
         {
+            var motionEntity = em.CreateEntity( motionArchetype );
 
-            var ent = em.CreateEntity( motionArchetype );
-            var ma = md.CreateAccessor( motionIndex );
+            var streamEntities = new NativeArray<Entity>
+                ( ma.boneLength * 2, Allocator.Temp, NativeArrayOptions.UninitializedMemory );
+            em.CreateEntity( streamArche, streamEntities );
 
+            return (motionEntity, streamEntities);
+        }
+
+        static public void InitMotion
+            ( EntityManager em, Entity motionEntity, int motionIndex, MotionDataAccessor ma )
+        {
+            
             em.SetComponentData<MotionInfoData>
             (
-                ent,
+                motionEntity,
                 new MotionInfoData
                 {
-                    MotionIndex = 0,
+                    MotionIndex = motionIndex,
                     DataAccessor = ma
                 }
             );
@@ -82,8 +115,11 @@ namespace Abss.Motion
             //		//		modelIndex	= 0
             //		//	}
             //		//);
-            var streamEntities = new NativeArray<Entity>( ma.boneLength * 2, Allocator.Temp, NativeArrayOptions.UninitializedMemory );
-            em.CreateEntity( streamArche, streamEntities );
+        }
+
+        static public void InitMotionStream
+            ( EntityManager em, NativeArray<Entity> streamEntities, int motionIndex, MotionDataAccessor ma )
+        {
             for( var i = 0; i < ma.boneLength * 2; ++i )
             {
                 var timer = new StreamTimeProgressData
@@ -91,10 +127,12 @@ namespace Abss.Motion
                     TimeScale = 1.0f,
                     TimeLength = ma.TimeLength
                 };
+
                 var shifter = new StreamKeyShiftData
                 {
                     Keys = ma.GetStreamSlice( i >> 2, KeyStreamSection.positions + ( i & 1 ) ).Keys
                 };
+
                 var cache = new StreamNearKeysCacheData();
                 cache.InitializeKeys( ref shifter, ref timer );
 
@@ -102,8 +140,7 @@ namespace Abss.Motion
                 em.SetComponentData( streamEntities[i], shifter );
                 em.SetComponentData( streamEntities[i], cache );
             }
-    }
-
+        }
 
     }
 }
