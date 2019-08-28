@@ -11,6 +11,7 @@ public class ecs : MonoBehaviour
 
     private void Awake()
     {
+        World.Active = new World("def");
         // WorldとWorld用EntityManagerを作成
         // 初期世界以外は最初から全てのシステムが登録されていない
         myWorld = new World("my world");
@@ -21,7 +22,8 @@ public class ecs : MonoBehaviour
     private void OnDestroy()
     {
         //// worldの停止は非常に高い負荷になる
-        //myWorld.Dispose();
+        World.Active.Dispose();
+        myWorld.Dispose();
     }
 
     IEnumerator Start ()
@@ -31,7 +33,7 @@ public class ecs : MonoBehaviour
         World.Active.EntityManager.MoveEntitiesFrom( out var ee, myEntityManager );
         //var ee = World.Active.EntityManager.CreateEntity( typeof( DummyData ) );
         // 2019/8/26でもなるみたい
-        //myEntityManager.DestroyEntity( e );
+        myEntityManager.DestroyEntity( e );
         World.Active.EntityManager.DestroyEntity( ee );
 
 
