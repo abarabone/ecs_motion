@@ -67,7 +67,10 @@ namespace Abss.Motion
 
 
 
-
+    public static class a
+    {
+        static public EntityManager EntityManager { get; set; }
+    }
 
 	public static class MotionUtility
 	{

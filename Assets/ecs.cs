@@ -28,11 +28,11 @@ public class ecs : MonoBehaviour
     {
         // 事前にEntityを一つ作っておく。コレがないとワールド移行時にすごい負荷になる模様
         var e = myEntityManager.CreateEntity( typeof( DummyData ) );
-        World.Active.EntityManager.MoveEntitiesFrom( myEntityManager );
+        World.Active.EntityManager.MoveEntitiesFrom( out var ee, myEntityManager );
         //var ee = World.Active.EntityManager.CreateEntity( typeof( DummyData ) );
         // 2019/8/26でもなるみたい
         //myEntityManager.DestroyEntity( e );
-        //World.Active.EntityManager.DestroyEntity( ee );
+        World.Active.EntityManager.DestroyEntity( ee );
 
 
         // マウスクリックでロードを開始
