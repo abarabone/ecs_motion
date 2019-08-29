@@ -21,11 +21,10 @@ namespace Abss.Motion
 
     
     [UpdateInGroup( typeof( MotionGroup ) )]
-    [UpdateAfter( typeof(MotionProgressSystem) )]
-    public class MotionInitSystem : ComponentSystem//JobComponentSystem
+    //[UpdateAfter( typeof(MotionProgressSystem) )]
+    public class ChCreationSystem : ComponentSystem//JobComponentSystem
     {
 
-        World entityCreationWorld;
         MotionDataInNative md;
 
         EntityArchetype motionArchetype;
@@ -33,19 +32,39 @@ namespace Abss.Motion
 
         protected override void OnCreate()
         {
-            this.entityCreationWorld = new World("entity creation world");
-            
-            var em = this.EntityManager;
-            this.motionArchetype = em.CreateArchetype
-            (
-                typeof(MotionInfoData)
-            );
-            this.streamArchetype = em.CreateArchetype
-            (
-                typeof(StreamKeyShiftData), typeof(StreamTimeProgressData), typeof(StreamNearKeysCacheData)
-            );
 
-            //em.CreateEntity()
+            EntityCreation.CreateNewWorld();
+            createArchetypes( this.EntityManager );
+            dummyEntityCreationAndDestory( this.EntityManager, EntityCreation.World.EntityManager );
+            return;
+
+
+            void createArchetypes( EntityManager em )
+            {
+                this.motionArchetype = em.CreateArchetype
+                (
+                    typeof(MotionInfoData)
+                );
+                this.streamArchetype = em.CreateArchetype
+                (
+                    typeof(StreamKeyShiftData), typeof(StreamTimeProgressData), typeof(StreamNearKeysCacheData)
+                );
+            }
+
+            void dummyEntityCreationAndDestory( EntityManager em_main, EntityManager em_creation )
+            {
+                em_main.CreateEntity( this.motionArchetype );
+                em_main.CreateEntity( this.streamArchetype );
+
+                em_creation.MoveEntitiesFrom( out var ents, em_main );
+                em_creation.DestroyEntity( ents );
+                ents.Dispose();
+            }
+        }
+
+        protected override void OnDestroy()
+        {
+            EntityCreation.World.Dispose();
         }
 
         //protected override JobHandle OnUpdate( JobHandle inputDeps )
@@ -57,7 +76,7 @@ namespace Abss.Motion
             var motionIndex = 0;
             var ma = md.CreateAccessor( motionIndex );
 
-            var em = this.entityCreationWorld.EntityManager;
+            var em = EntityCreation.World.EntityManager;
 
             var ents = MotionUtility.CreateMotionEntities( em, motionArchetype, streamArchetype, ma );
             MotionUtility.InitMotion( em, ents.motionEntity, motionIndex, ma );
@@ -67,9 +86,10 @@ namespace Abss.Motion
 
 
 
-    public static class a
+    public static class EntityCreation
     {
-        static public EntityManager EntityManager { get; set; }
+        static public World World { get; private set; }
+        static public void CreateNewWorld() => EntityCreation.World = new World("entity creation world");
     }
 
 	public static class MotionUtility
