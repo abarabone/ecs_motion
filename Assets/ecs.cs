@@ -17,6 +17,7 @@ public class ecs : MonoBehaviour
         myWorld = new World("my world");
 		//myEntityManager = myWorld.GetOrCreateManager<EntityManager>();
 		myEntityManager = myWorld.EntityManager;
+        Debug.Log("a");
 	}
 
     private void OnDestroy()
@@ -24,6 +25,7 @@ public class ecs : MonoBehaviour
         //// worldの停止は非常に高い負荷になる
         World.Active.Dispose();
         myWorld.Dispose();
+        Debug.Log("a");
     }
 
     IEnumerator Start ()
@@ -35,6 +37,7 @@ public class ecs : MonoBehaviour
         // 2019/8/26でもなるみたい
         myEntityManager.DestroyEntity( e );
         World.Active.EntityManager.DestroyEntity( ee );
+        ee.Dispose();
 
 
         // マウスクリックでロードを開始

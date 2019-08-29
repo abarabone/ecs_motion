@@ -16,6 +16,8 @@ using Abss.Misc;
 
 namespace Abss.Motion
 {
+    using Utilities;
+
 
 	public enum KeyStreamSection
 	{
