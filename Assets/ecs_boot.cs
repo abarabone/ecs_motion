@@ -7,18 +7,36 @@ using Abss.Motion;
 
 public class ecs_boot : MonoBehaviour
 {
-    
-    
-    void Start()
-    {
-        World.Active = new World("main world");
-        ScriptBehaviourUpdateOrder.UpdatePlayerLoop( World.Active );
-        World.Active.CreateSystem<ChCreationSystem>();
 
+    [SerializeField]
+    MotionClip MotionClip;
+
+    void Awake()
+    {
+        World.Active = new World( "main world" );
+
+        var psg = World.Active.GetOrCreateSystem<PresentationSystemGroup>();
+
+        var mg = World.Active.CreateSystem<MotionGroup>();
+        psg.AddSystemToUpdateList( mg );
+
+        var ccs = World.Active.CreateSystem<ChCreationSystem>();
+        mg.AddSystemToUpdateList( ccs );
+
+        psg.SortSystemUpdateList();
+
+        ScriptBehaviourUpdateOrder.UpdatePlayerLoop( World.Active );
+
+
+        ChCreationSystem.md	= new MotionDataInNative();
+		ChCreationSystem.md.ConvertFrom( this.MotionClip );
     }
 
     void OnDestroy()
     {
-        World.Active.Dispose();
+        World.DisposeAllWorlds();
+        WordStorage.Instance.Dispose();
+        WordStorage.Instance = null;
+        ScriptBehaviourUpdateOrder.UpdatePlayerLoop( null );
     }
 }

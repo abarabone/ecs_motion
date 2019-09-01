@@ -19,23 +19,30 @@ using System.Runtime.InteropServices;
 namespace Abss.Motion
 {
 
-    
+
     [UpdateInGroup( typeof( MotionGroup ) )]
     //[UpdateAfter( typeof(MotionProgressSystem) )]
-    public class ChCreationSystem : ComponentSystem//JobComponentSystem
+    [AlwaysUpdateSystem]
+    public class ChCreationSystem : JobComponentSystem
     {
 
-        MotionDataInNative md;
+        //MotionDataInNative md;
 
         EntityArchetype motionArchetype;
         EntityArchetype streamArchetype;
+
+        static public MotionDataInNative md;
+
 
         protected override void OnCreate()
         {
 
             EntityCreation.CreateNewWorld();
+
             createArchetypes( this.EntityManager );
+
             dummyEntityCreationAndDestory( this.EntityManager, EntityCreation.World.EntityManager );
+
             return;
 
 
@@ -64,23 +71,54 @@ namespace Abss.Motion
 
         protected override void OnDestroy()
         {
-            EntityCreation.World.Dispose();
+            //EntityCreation.World.Dispose();
+            ChCreationSystem.md.Dispose();
         }
 
-        //protected override JobHandle OnUpdate( JobHandle inputDeps )
-        protected override void OnUpdate()
+        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        //protected override void OnUpdate()
         {
-            var isLeftClick = Input.GetMouseButtonDown(0);
-            if( !isLeftClick ) return;
+            var isLeftClick = Input.GetMouseButtonDown(1);
+            if( !isLeftClick ) return inputDeps;
 
+            Debug.Log("click");
             var motionIndex = 0;
-            var ma = md.CreateAccessor( motionIndex );
-
+            var ma = ChCreationSystem.md.CreateAccessor( motionIndex );
+            
             var em = EntityCreation.World.EntityManager;
+            var eet = em.BeginExclusiveEntityTransaction();
+            eet.
 
-            var ents = MotionUtility.CreateMotionEntities( em, motionArchetype, streamArchetype, ma );
-            MotionUtility.InitMotion( em, ents.motionEntity, motionIndex, ma );
-            MotionUtility.InitMotionStream( em, ents.steamEntities, motionIndex, ma );
+            inputDeps = new ChCreateJob
+            {
+
+            }
+            .Schedule( inputDeps );
+            //var ents = MotionUtility.CreateMotionEntities( eet, motionArchetype, streamArchetype, ma );
+            //MotionUtility.InitMotion( eet, ents.motionEntity, motionIndex, ma );
+            //MotionUtility.InitMotionStream( eet, ents.steamEntities, motionIndex, ma );
+
+            em.EndExclusiveEntityTransaction();
+
+            this.EntityManager.MoveEntitiesFrom( em );
+            ents.steamEntities.Dispose();
+        }
+    }
+
+    public struct ChCreateJob : IJob
+    {
+        public ExclusiveEntityTransaction eet;
+        public EntityArchetype motionArchetype;
+        public EntityArchetype streamArchetype;
+        public int motionIndex;
+        public MotionDataAccessor ma;
+
+        public void Execute()
+        {
+            var ents = MotionUtility.CreateMotionEntities( eet, motionArchetype, streamArchetype, ma );
+            MotionUtility.InitMotion( eet, ents.motionEntity, motionIndex, ma );
+            MotionUtility.InitMotionStream( eet, ents.steamEntities, motionIndex, ma );
+            
         }
     }
 
@@ -97,7 +135,7 @@ namespace Abss.Motion
 
         static public (Entity motionEntity, NativeArray<Entity> steamEntities)
             CreateMotionEntities
-            ( EntityManager em, EntityArchetype motionArchetype, EntityArchetype streamArche, MotionDataAccessor ma )
+            ( ExclusiveEntityTransaction em, EntityArchetype motionArchetype, EntityArchetype streamArche, MotionDataAccessor ma )
         {
             var motionEntity = em.CreateEntity( motionArchetype );
 
@@ -109,7 +147,7 @@ namespace Abss.Motion
         }
 
         static public void InitMotion
-            ( EntityManager em, Entity motionEntity, int motionIndex, MotionDataAccessor ma )
+            ( ExclusiveEntityTransaction em, Entity motionEntity, int motionIndex, MotionDataAccessor ma )
         {
             
             em.SetComponentData<MotionInfoData>
@@ -141,7 +179,7 @@ namespace Abss.Motion
         }
 
         static public void InitMotionStream
-            ( EntityManager em, NativeArray<Entity> streamEntities, int motionIndex, MotionDataAccessor ma )
+            ( ExclusiveEntityTransaction em, NativeArray<Entity> streamEntities, int motionIndex, MotionDataAccessor ma )
         {
             for( var i = 0; i < ma.boneLength * 2; ++i )
             {
