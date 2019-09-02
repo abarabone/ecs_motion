@@ -1,0 +1,9 @@
+﻿#pragma kernel CSMain
+RWStructuredBuffer<float> Result;
+float positionX;
+
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	Result[0] = positionX + 0.01f;
+}

@@ -21,7 +21,7 @@ namespace Abss.Motion
 
     public struct ChCreateMessage
     {
-
+        public int MotionIndex;
     }
 
 

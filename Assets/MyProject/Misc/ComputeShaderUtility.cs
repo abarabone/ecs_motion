@@ -13,10 +13,10 @@ namespace Abss.Cs
 		public readonly ComputeShader	shader;
 		public readonly int				kernelIndex;
 		
-		public SimpleComputeShaderUnit( string name, ComputeShader shader )
+		public SimpleComputeShaderUnit( ComputeShader shader, string kernelName )
 		{
 			this.shader			= shader;
-			this.kernelIndex	= shader.FindKernel( name );
+			this.kernelIndex	= shader.FindKernel( kernelName );
 		}
 
 		public void SetBuffer<TBuffer>( TBuffer simpleComputeBuffer )
