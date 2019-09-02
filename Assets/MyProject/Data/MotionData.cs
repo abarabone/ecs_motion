@@ -27,9 +27,9 @@ namespace Abss.Motion
 
 	public struct MotionInfoData : IComponentData
 	{
-		public MotionDataAccessor	DataAccessor;
-		
-		public int		MotionIndex;
+        public MotionDataAccessor DataAccessor;
+
+        public int		MotionIndex;
 	}
 
 	public struct MotionProgressData : IComponentData

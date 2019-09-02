@@ -19,6 +19,12 @@ using System.Runtime.InteropServices;
 namespace Abss.Motion
 {
 
+    public struct ChCreateMessage
+    {
+
+    }
+
+
 
     [UpdateInGroup( typeof( MotionGroup ) )]
     //[UpdateAfter( typeof(MotionProgressSystem) )]
@@ -28,51 +34,28 @@ namespace Abss.Motion
 
         //MotionDataInNative md;
 
-        EntityArchetype motionArchetype;
-        EntityArchetype streamArchetype;
+        //EntityArchetype motionArchetype;
+        //EntityArchetype streamArchetype;
 
         static public MotionDataInNative md;
+
+        public NativeQueue<ChCreateMessage> CreateMessageQueue;
 
 
         protected override void OnCreate()
         {
-
             EntityCreation.CreateNewWorld();
+            EntityCreation.CreateArchetypes();
+            EntityCreation.dummyEntityCreationAndDestory( this.EntityManager );
 
-            createArchetypes( this.EntityManager );
-
-            dummyEntityCreationAndDestory( this.EntityManager, EntityCreation.World.EntityManager );
-
-            return;
-
-
-            void createArchetypes( EntityManager em )
-            {
-                this.motionArchetype = em.CreateArchetype
-                (
-                    typeof(MotionInfoData)
-                );
-                this.streamArchetype = em.CreateArchetype
-                (
-                    typeof(StreamKeyShiftData), typeof(StreamTimeProgressData), typeof(StreamNearKeysCacheData)
-                );
-            }
-
-            void dummyEntityCreationAndDestory( EntityManager em_main, EntityManager em_creation )
-            {
-                em_main.CreateEntity( this.motionArchetype );
-                em_main.CreateEntity( this.streamArchetype );
-
-                em_creation.MoveEntitiesFrom( out var ents, em_main );
-                em_creation.DestroyEntity( ents );
-                ents.Dispose();
-            }
+            this.CreateMessageQueue = new NativeQueue<ChCreateMessage>( Allocator.Persistent );
         }
 
         protected override void OnDestroy()
         {
             //EntityCreation.World.Dispose();
             ChCreationSystem.md.Dispose();
+            this.CreateMessageQueue.Dispose();
         }
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
@@ -81,30 +64,33 @@ namespace Abss.Motion
             var isLeftClick = Input.GetMouseButtonDown(1);
             if( !isLeftClick ) return inputDeps;
 
-            Debug.Log("click");
+            //Debug.Log("click");
             var motionIndex = 0;
             var ma = ChCreationSystem.md.CreateAccessor( motionIndex );
             
-            var em = EntityCreation.World.EntityManager;
-            var eet = em.BeginExclusiveEntityTransaction();
-            eet.
 
-            inputDeps = new ChCreateJob
+            var cem = EntityCreation.World.EntityManager;
+            var eet = cem.BeginExclusiveEntityTransaction();
+
+            cem.ExclusiveEntityTransactionDependency = new ChCreateJob
             {
-
+                eet = eet,
+                motionArchetype = EntityCreation.motionArchetype,
+                streamArchetype = EntityCreation.streamArchetype,
+                motionIndex = motionIndex,
+                ma = ma
             }
-            .Schedule( inputDeps );
-            //var ents = MotionUtility.CreateMotionEntities( eet, motionArchetype, streamArchetype, ma );
-            //MotionUtility.InitMotion( eet, ents.motionEntity, motionIndex, ma );
-            //MotionUtility.InitMotionStream( eet, ents.steamEntities, motionIndex, ma );
+            .Schedule( cem.ExclusiveEntityTransactionDependency );
 
-            em.EndExclusiveEntityTransaction();
+            cem.EndExclusiveEntityTransaction();
+            this.EntityManager.MoveEntitiesFrom( cem );
 
-            this.EntityManager.MoveEntitiesFrom( em );
-            ents.steamEntities.Dispose();
+
+            return JobHandle.CombineDependencies(inputDeps,cem.ExclusiveEntityTransactionDependency);
         }
     }
 
+    //[BurstCompile]
     public struct ChCreateJob : IJob
     {
         public ExclusiveEntityTransaction eet;
@@ -115,10 +101,13 @@ namespace Abss.Motion
 
         public void Execute()
         {
-            var ents = MotionUtility.CreateMotionEntities( eet, motionArchetype, streamArchetype, ma );
-            MotionUtility.InitMotion( eet, ents.motionEntity, motionIndex, ma );
-            MotionUtility.InitMotionStream( eet, ents.steamEntities, motionIndex, ma );
-            
+            MotionUtility.CreateMotionEntities
+                ( eet, motionArchetype, streamArchetype, streamLength:ma.boneLength * 2, out var ment, out var sents );
+
+            MotionUtility.InitMotion( eet, ment, motionIndex, ma );
+            MotionUtility.InitMotionStream( eet, sents, motionIndex, ma );
+
+            sents.Dispose();
         }
     }
 
@@ -127,29 +116,59 @@ namespace Abss.Motion
     public static class EntityCreation
     {
         static public World World { get; private set; }
-        static public void CreateNewWorld() => EntityCreation.World = new World("entity creation world");
+        static public World CreateNewWorld() => EntityCreation.World = new World("entity creation world");
+
+        static public EntityArchetype motionArchetype { get; private set; }
+        static public EntityArchetype streamArchetype { get; private set; }
+        static public void CreateArchetypes()
+        {
+            EntityCreation.motionArchetype = EntityCreation.World.EntityManager.CreateArchetype
+            (
+                typeof(MotionInfoData)
+            );
+            EntityCreation.streamArchetype = EntityCreation.World.EntityManager.CreateArchetype
+            (
+                //typeof(StreamKeyShiftData), 
+                typeof(StreamTimeProgressData)
+                //typeof(StreamNearKeysCacheData)
+            );
+        }
+        
+        static public void dummyEntityCreationAndDestory( EntityManager em_main )
+        {
+            var em_creation = EntityCreation.World.EntityManager;
+
+            em_creation.CreateEntity( EntityCreation.motionArchetype );
+            em_creation.CreateEntity( EntityCreation.streamArchetype );
+
+            em_main.MoveEntitiesFrom( out var ents, em_creation );
+            em_main.DestroyEntity( ents );
+            ents.Dispose();
+        }
     }
 
 	public static class MotionUtility
 	{
 
-        static public (Entity motionEntity, NativeArray<Entity> steamEntities)
-            CreateMotionEntities
-            ( ExclusiveEntityTransaction em, EntityArchetype motionArchetype, EntityArchetype streamArche, MotionDataAccessor ma )
+        static public void CreateMotionEntities
+            (
+                ExclusiveEntityTransaction em, EntityArchetype motionArchetype, EntityArchetype streamArche,
+                int streamLength,
+                out Entity motionEntity, out NativeArray<Entity> streamEntities
+            )
         {
-            var motionEntity = em.CreateEntity( motionArchetype );
+            motionEntity = em.CreateEntity( motionArchetype );
 
-            var streamEntities = new NativeArray<Entity>
-                ( ma.boneLength * 2, Allocator.Temp, NativeArrayOptions.UninitializedMemory );
+            streamEntities = new NativeArray<Entity>
+                ( streamLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory );
+
             em.CreateEntity( streamArche, streamEntities );
-
-            return (motionEntity, streamEntities);
         }
 
         static public void InitMotion
             ( ExclusiveEntityTransaction em, Entity motionEntity, int motionIndex, MotionDataAccessor ma )
         {
-            
+
             em.SetComponentData<MotionInfoData>
             (
                 motionEntity,
@@ -197,9 +216,9 @@ namespace Abss.Motion
                 var cache = new StreamNearKeysCacheData();
                 cache.InitializeKeys( ref shifter, ref timer );
 
-                em.SetComponentData( streamEntities[i], timer );
-                em.SetComponentData( streamEntities[i], shifter );
-                em.SetComponentData( streamEntities[i], cache );
+                em.SetComponentData( streamEntities[ i ], timer );
+                //em.SetComponentData( streamEntities[ i ], shifter );
+                //em.SetComponentData( streamEntities[ i ], cache );
             }
         }
 

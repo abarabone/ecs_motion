@@ -35,8 +35,8 @@ public class ecs : MonoBehaviour
         World.Active.EntityManager.MoveEntitiesFrom( out var ee, myEntityManager );
         //var ee = World.Active.EntityManager.CreateEntity( typeof( DummyData ) );
         // 2019/8/26でもなるみたい
-        myEntityManager.DestroyEntity( e );
-        World.Active.EntityManager.DestroyEntity( ee );
+        //myEntityManager.DestroyEntity( e );             // 消しても問題ないみたい
+        World.Active.EntityManager.DestroyEntity( ee ); // 消しても問題ないみたい
         ee.Dispose();
 
 
@@ -74,6 +74,7 @@ public class ecs : MonoBehaviour
 /// <summary>
 /// 任意のEntityをCount個作成するジョブ
 /// </summary>
+//[Unity.Burst.BurstCompile] できないみたい
 struct CreateEntityJob : IJob//ParallelFor
 {
     public ExclusiveEntityTransaction commands; // コマンドを実行するEntityManagerのExclusiveEntityTransaction

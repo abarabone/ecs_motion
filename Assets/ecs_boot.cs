@@ -28,8 +28,9 @@ public class ecs_boot : MonoBehaviour
         ScriptBehaviourUpdateOrder.UpdatePlayerLoop( World.Active );
 
 
-        ChCreationSystem.md	= new MotionDataInNative();
-		ChCreationSystem.md.ConvertFrom( this.MotionClip );
+        ChCreationSystem.md = new MotionDataInNative();
+        ChCreationSystem.md.ConvertFrom( this.MotionClip );
+        
     }
 
     void OnDestroy()
