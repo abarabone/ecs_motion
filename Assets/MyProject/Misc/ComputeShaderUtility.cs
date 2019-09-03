@@ -7,7 +7,10 @@ using Unity.Collections;
 namespace Abss.Cs
 {
 	
-
+    /// <summary>
+    /// コンピュートシェーダ
+    /// ISimpleComputeBuffer を継承したバッファをセット可能。
+    /// </summary>
 	public struct SimpleComputeShaderUnit
 	{
 		public readonly ComputeShader	shader;
@@ -22,7 +25,7 @@ namespace Abss.Cs
 		public void SetBuffer<TBuffer>( TBuffer simpleComputeBuffer )
 			where TBuffer:ISimpleComputeBuffer
 		{
-			shader.SetBuffer( kernelIndex, simpleComputeBuffer.id, simpleComputeBuffer.buffer );
+			shader.SetBuffer( kernelIndex, simpleComputeBuffer.Id, simpleComputeBuffer.Buffer );
 		}
 		
 		public void Dispatch( int freqx, int freqy = 1, int freqz = 1 )
@@ -32,107 +35,123 @@ namespace Abss.Cs
 	}
 	
 
+    // コンピュートバッファ ----------------------------------------------------------------
+
 	public interface ISimpleComputeBuffer
 	{
-		int				id		{ get; }
-		ComputeBuffer	buffer	{ get; }
+		int				Id		{ get; }
+		ComputeBuffer	Buffer	{ get; }
 	}
 
 	public struct SimpleComputeBuffer<T> : System.IDisposable, ISimpleComputeBuffer
 		where T:struct
 	{
-		public int				id		{ get; }
-		public ComputeBuffer	buffer	{ get; }
+		public int				Id		{ get; }
+		public ComputeBuffer	Buffer	{ get; }
 
-		public void Dispose() => this.buffer.Release();
+		public void Dispose() => this.Buffer.Release();
 		
 		public SimpleComputeBuffer( string name, int bufferLength )
 		{
-			this.id		= UnityEngine.Shader.PropertyToID( name );
-			this.buffer	= new ComputeBuffer( bufferLength, Marshal.SizeOf<T>() );
+			this.Id		= UnityEngine.Shader.PropertyToID( name );
+			this.Buffer	= new ComputeBuffer( bufferLength, Marshal.SizeOf<T>() );
 		}
 		public SimpleComputeBuffer( string name, NativeArray<T> data )
 			:this( name, data.Length )
 		{
-			this.buffer.SetData( data );
+			this.Buffer.SetData( data );
 		}
+        
+        /// <summary>
+        /// SetBuffer( ComputeBuffer ) に直接渡せるように暗黙変換
+        /// </summary>
+        public static implicit operator ComputeBuffer( SimpleComputeBuffer<T> scb ) => scb.Buffer;
 	}
 	
 	public struct SimpleAppendBuffer<T> : System.IDisposable, ISimpleComputeBuffer
 		where T:struct
 	{
-		public int				id		{ get; }
-		public ComputeBuffer	buffer	{ get; }
+		public int				Id		{ get; }
+		public ComputeBuffer	Buffer	{ get; }
 		
-		public void Dispose() => this.buffer.Release();
+		public void Dispose() => this.Buffer.Release();
 		
 		public SimpleAppendBuffer( string name, NativeArray<T> data ) : this( name, data.Length )
 		{
-			this.buffer.SetData( data );
+			this.Buffer.SetData( data );
 		}
 		public SimpleAppendBuffer( string name, int bufferLength )
 		{
-			this.id		= UnityEngine.Shader.PropertyToID( name );
-			this.buffer	= new ComputeBuffer( bufferLength, Marshal.SizeOf<T>(), ComputeBufferType.Append );
+			this.Id		= UnityEngine.Shader.PropertyToID( name );
+			this.Buffer	= new ComputeBuffer( bufferLength, Marshal.SizeOf<T>(), ComputeBufferType.Append );
 		}
 	}
+    
+    // ----------------------------------------------------------------
 
-	public struct SimpleIndirectArgsBuffer : System.IDisposable//, ISimpleComputeBuffer
+    
+    // 引数バッファ ----------------------------------------------------------------
+
+	public struct SimpleIndirectArgsBuffer : System.IDisposable
 	{
-	//	public int				id		{ get; }
-		public ComputeBuffer	buffer	{ get; }
+		public readonly ComputeBuffer	buffer;
 		
 		public void Dispose() => this.buffer.Release();
 		
-		//public SimpleIndirectArgsBuffer( string name, Mesh mesh = null )
-		public SimpleIndirectArgsBuffer( Mesh meshSample = null )
-		{
-			var buf = new SimpleIndirectArgsManualyBuffer( meshSample );
-		//	this.id		= buf.id;
-			this.buffer	= buf.buffer;
-		}
 
-		public void CopyCount<TBuffer>( TBuffer appendBuffer )
-			where TBuffer:ISimpleComputeBuffer
-		{
-			ComputeBuffer.CopyCount( appendBuffer.buffer, this.buffer, 0 );//これちがうんじゃないか？
-		}
-	}
-	
-	public unsafe struct SimpleIndirectArgsManualyBuffer : System.IDisposable//, ISimpleComputeBuffer
-	{
-	//	public int				id		{ get; }
-		public ComputeBuffer	buffer	{ get; }
-		internal uint[]			args	{ get; }
-		
-		public uint	InstanceCount { set { args[1] = value; buffer.SetData( this.args ); } }
-
-		public void Dispose() => this.buffer.Release();
-		
-		//public SimpleIndirectArgsManualyBuffer( string name, Mesh mesh = null )
-		public SimpleIndirectArgsManualyBuffer( Mesh meshSample = null )
-		{
-		//	this.id		= UnityEngine.Shader.PropertyToID( name );
+		public SimpleIndirectArgsBuffer( Mesh mesh )
+		    : this( new IndirectArgumentsInstanced(mesh) )
+        {}
+        public SimpleIndirectArgsBuffer( IndirectArgumentsInstanced arguments )
+        {
 			this.buffer	= new ComputeBuffer( 1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments );
-			this.args	= createArgsArray();
-			this.buffer.SetData( this.args );
-			return;
-
-			uint[] createArgsArray()
-			{
-				if( meshSample == null ) return new uint [] { 0, 0, 0, 0, 0 };
-
-				return new uint []
-				{
-					meshSample.GetIndexCount( 0 ),
-					0,	// インスタンスカウント
-					meshSample.GetIndexStart( 0 ),
-					meshSample.GetBaseVertex( 0 ),
-					0	// 開始インスタンス位置
-				};
-			}
-		}
+            
+            this.buffer.SetData<uint>( arguments );
+        }
+        
+        /// <summary>
+        /// Draw/Dispatch...Indirect() に直接渡せるように暗黙変換
+        /// </summary>
+        public static implicit operator ComputeBuffer( SimpleIndirectArgsBuffer siab ) => siab.buffer;
 	}
+
+
+    public struct IndirectArgumentsInstanced : System.IDisposable
+    {
+        NativeArray<uint> indirectArguments;
+        public NativeArray<uint> Arguments { get => this.indirectArguments; }
+
+        public uint MeshIndexCount { get => this.indirectArguments[0]; set => this.indirectArguments[0] = value; }
+        public uint InstanceCount { get => this.indirectArguments[1]; set => this.indirectArguments[1] = value; }
+        public uint MeshBaseIndex { get => this.indirectArguments[2]; set => this.indirectArguments[2] = value; }
+        public uint MeshBaseVertex { get => this.indirectArguments[3]; set => this.indirectArguments[3] = value; }
+        public uint BaseInstance { get => this.indirectArguments[4]; set => this.indirectArguments[4] = value; }
+
+		public void Dispose() => this.indirectArguments.Dispose();
+
+        public IndirectArgumentsInstanced( Mesh mesh, int submeshId = 0, Allocator allocator = Allocator.Temp )
+        {
+            this.indirectArguments = new NativeArray<uint>( 5, allocator, NativeArrayOptions.ClearMemory );
+
+            if( mesh == null ) return;
+
+            this.MeshIndexCount = mesh.GetIndexCount( submeshId );
+            this.MeshBaseIndex = mesh.GetIndexStart( submeshId );
+            this.MeshBaseVertex = mesh.GetBaseVertex( submeshId );
+        }
+        
+        /// <summary>
+        /// SetData( NativeArray ) に直接渡せるように暗黙変換
+        /// </summary>
+        public static implicit operator NativeArray<uint>( IndirectArgumentsInstanced iai ) => iai.Arguments;
+    }
+
+    public struct IdFromName
+    {
+        public readonly int Id;
+
+        public IdFromName( string propName ) => this.Id = Shader.PropertyToID( propName );
+    }
 
 
 	public static class ComputeShaderExtension
@@ -140,8 +159,9 @@ namespace Abss.Cs
 		public static void SetBuffer<TBuffer>( this Material mat, TBuffer simpleComputeBuffer )
 			where TBuffer:ISimpleComputeBuffer
 		{
-			mat.SetBuffer( simpleComputeBuffer.id, simpleComputeBuffer.buffer );
+			mat.SetBuffer( simpleComputeBuffer.Id, simpleComputeBuffer.Buffer );
 		}
+        
 	}
 
 }

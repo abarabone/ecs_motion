@@ -55,8 +55,9 @@ public class csprac : MonoBehaviour {
             float distance = Random.Range(20.0f, 100.0f);
             float height = Random.Range(-2.0f, 2.0f);
             float size = Random.Range(0.05f, 0.25f);
-            positions[i] = new Vector4(1,0,0) * i;//new Vector4(Mathf.Sin(angle) * distance, height, Mathf.Cos(angle) * distance, size);
-            positions[i].w = 1;
+            positions[i] = new Vector4(Mathf.Sin(angle) * distance, height, Mathf.Cos(angle) * distance, size);
+            //positions[i] = new Vector4(1,0,0) * i;
+            //positions[i].w = 1;
         }
         positionBuffer.SetData(positions);
         instanceMaterial.SetBuffer("positionBuffer", positionBuffer);
@@ -66,9 +67,9 @@ public class csprac : MonoBehaviour {
         if (instanceMesh != null) {
             for( var ii=0; ii<freq; ii++ )
             {
-                args[ii*5+0] = (uint)instanceMesh.GetIndexCount(subMeshIndex) / 4;
+                args[ii*5+0] = (uint)instanceMesh.GetIndexCount(subMeshIndex);// / 4;
                 args[ii*5+1] = (uint)instanceCount;
-                args[ii*5+2] = (uint)instanceMesh.GetIndexStart(subMeshIndex) / 4 + (uint)ii * instanceMesh.GetIndexCount(subMeshIndex) / 4;
+                args[ii*5+2] = (uint)instanceMesh.GetIndexStart(subMeshIndex);// / 4 + (uint)ii * instanceMesh.GetIndexCount(subMeshIndex) / 4;
                 args[ii*5+3] = (uint)instanceMesh.GetBaseVertex(subMeshIndex);
             }
         }
