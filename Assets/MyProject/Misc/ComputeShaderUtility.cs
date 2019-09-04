@@ -99,9 +99,13 @@ namespace Abss.Cs
 		public void Dispose() => this.buffer.Release();
 		
 
-		public SimpleIndirectArgsBuffer( Mesh mesh )
-		    : this( new IndirectArgumentsInstanced(mesh) )
-        {}
+		public SimpleIndirectArgsBuffer( Mesh mesh, uint instanceCount = 0, int submeshId = 0 )
+        {
+            using( var args = new IndirectArgumentsInstanced( mesh, instanceCount, submeshId ) )
+            { 
+                this = new SimpleIndirectArgsBuffer( args );
+            }
+        }
         public SimpleIndirectArgsBuffer( IndirectArgumentsInstanced arguments )
         {
 			this.buffer	= new ComputeBuffer( 1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments );
@@ -129,13 +133,14 @@ namespace Abss.Cs
 
 		public void Dispose() => this.indirectArguments.Dispose();
 
-        public IndirectArgumentsInstanced( Mesh mesh, int submeshId = 0, Allocator allocator = Allocator.Temp )
+        public IndirectArgumentsInstanced( Mesh mesh, uint instanceCount = 0, int submeshId = 0, Allocator allocator = Allocator.Temp )
         {
             this.indirectArguments = new NativeArray<uint>( 5, allocator, NativeArrayOptions.ClearMemory );
 
             if( mesh == null ) return;
 
             this.MeshIndexCount = mesh.GetIndexCount( submeshId );
+            this.InstanceCount = InstanceCount;
             this.MeshBaseIndex = mesh.GetIndexStart( submeshId );
             this.MeshBaseVertex = mesh.GetBaseVertex( submeshId );
         }

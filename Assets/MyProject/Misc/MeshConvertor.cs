@@ -56,10 +56,10 @@ namespace Abss.Geometry
 		}
 		
 		/// <summary>
-		/// メッシュに、MotionClip から得たボーン情報を挿入する。
-		/// インデックス／バインドポーズは変換後のメッシュ用に再解釈／整列され、Colors と useUvChannel の uv に出力される。
+		/// メッシュに MotionClip から得たボーン情報を挿入する。
+		/// インデックス／バインドポーズは変換後のメッシュ用に再解釈／整列され、Colors と uvChannelForWeight の uv に出力される。
 		/// </summary>
-		static public Mesh AddBoneInfoFrom( this Mesh mesh, int useUvChannel, MotionClip motionClip )
+		static public Mesh AddBoneInfoFrom( this Mesh mesh, int uvChannelForWeight, MotionClip motionClip )
 		{
 			var weights		= mesh.boneWeights;
 			var bindPoses	= mesh.bindposes;
@@ -79,7 +79,7 @@ namespace Abss.Geometry
 				;
 
 			mesh.colors	= qIndices.ToArray();
-			mesh.SetUVs( useUvChannel, qWeights.ToList() );
+			mesh.SetUVs( uvChannelForWeight, qWeights.ToList() );
 			mesh.bindposes = qBindPoses.ToArray();
 
 			return mesh;
