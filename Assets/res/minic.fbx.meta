@@ -1,76 +1,212 @@
 fileFormatVersion: 2
 guid: c01e6e7ce9b1d474fb02d35c4c424387
 ModelImporter:
-  serializedVersion: 22
-  fileIDToRecycleName:
-    100000: _foot_L_
-    100002: _foot_R_
-    100004: arm1_L_
-    100006: arm1_R_
-    100008: arm2_L_
-    100010: arm2_R_
-    100012: body
-    100014: chest_
-    100016: hair_L_
-    100018: hair_R_
-    100020: head_
-    100022: hip_
-    100024: leg1_L_
-    100026: leg1_R_
-    100028: leg2_L_
-    100030: leg2_R_
-    100032: Mesh
-    100034: //RootNode
-    100036: nintou+
-    100038: sholder_L_
-    100040: sholder_R_
-    100042: wapon
-    400000: _foot_L_
-    400002: _foot_R_
-    400004: arm1_L_
-    400006: arm1_R_
-    400008: arm2_L_
-    400010: arm2_R_
-    400012: body
-    400014: chest_
-    400016: hair_L_
-    400018: hair_R_
-    400020: head_
-    400022: hip_
-    400024: leg1_L_
-    400026: leg1_R_
-    400028: leg2_L_
-    400030: leg2_R_
-    400032: Mesh
-    400034: //RootNode
-    400036: nintou+
-    400038: sholder_L_
-    400040: sholder_R_
-    400042: wapon
-    2100000: mat1
-    2100002: wapon
-    4300000: body
-    4300002: nintou+
-    7400000: jumpdown
-    7400002: run01
-    7400004: runjump01
-    7400006: sit01
-    7400008: slash01HL
-    7400010: slash01HR
-    7400012: slash01VD
-    7400014: slash01VU
-    7400016: slashVU(L)
-    7400018: stanceHL
-    7400020: stanceHR
-    7400022: stanceVD
-    7400024: stanceVU
-    7400026: stand01
-    7400028: stand02
-    7400030: walk01
-    7400032: walk02
-    9500000: //RootNode
-    13700000: body
-    13700002: nintou+
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: _foot_L_
+  - first:
+      1: 100002
+    second: _foot_R_
+  - first:
+      1: 100004
+    second: arm1_L_
+  - first:
+      1: 100006
+    second: arm1_R_
+  - first:
+      1: 100008
+    second: arm2_L_
+  - first:
+      1: 100010
+    second: arm2_R_
+  - first:
+      1: 100012
+    second: body
+  - first:
+      1: 100014
+    second: chest_
+  - first:
+      1: 100016
+    second: hair_L_
+  - first:
+      1: 100018
+    second: hair_R_
+  - first:
+      1: 100020
+    second: head_
+  - first:
+      1: 100022
+    second: hip_
+  - first:
+      1: 100024
+    second: leg1_L_
+  - first:
+      1: 100026
+    second: leg1_R_
+  - first:
+      1: 100028
+    second: leg2_L_
+  - first:
+      1: 100030
+    second: leg2_R_
+  - first:
+      1: 100032
+    second: Mesh
+  - first:
+      1: 100034
+    second: //RootNode
+  - first:
+      1: 100036
+    second: nintou+
+  - first:
+      1: 100038
+    second: sholder_L_
+  - first:
+      1: 100040
+    second: sholder_R_
+  - first:
+      1: 100042
+    second: wapon
+  - first:
+      4: 400000
+    second: _foot_L_
+  - first:
+      4: 400002
+    second: _foot_R_
+  - first:
+      4: 400004
+    second: arm1_L_
+  - first:
+      4: 400006
+    second: arm1_R_
+  - first:
+      4: 400008
+    second: arm2_L_
+  - first:
+      4: 400010
+    second: arm2_R_
+  - first:
+      4: 400012
+    second: body
+  - first:
+      4: 400014
+    second: chest_
+  - first:
+      4: 400016
+    second: hair_L_
+  - first:
+      4: 400018
+    second: hair_R_
+  - first:
+      4: 400020
+    second: head_
+  - first:
+      4: 400022
+    second: hip_
+  - first:
+      4: 400024
+    second: leg1_L_
+  - first:
+      4: 400026
+    second: leg1_R_
+  - first:
+      4: 400028
+    second: leg2_L_
+  - first:
+      4: 400030
+    second: leg2_R_
+  - first:
+      4: 400032
+    second: Mesh
+  - first:
+      4: 400034
+    second: //RootNode
+  - first:
+      4: 400036
+    second: nintou+
+  - first:
+      4: 400038
+    second: sholder_L_
+  - first:
+      4: 400040
+    second: sholder_R_
+  - first:
+      4: 400042
+    second: wapon
+  - first:
+      21: 2100000
+    second: mat1
+  - first:
+      21: 2100002
+    second: wapon
+  - first:
+      43: 4300000
+    second: body
+  - first:
+      43: 4300002
+    second: nintou+
+  - first:
+      74: 7400000
+    second: jumpdown
+  - first:
+      74: 7400002
+    second: run01
+  - first:
+      74: 7400004
+    second: runjump01
+  - first:
+      74: 7400006
+    second: sit01
+  - first:
+      74: 7400008
+    second: slash01HL
+  - first:
+      74: 7400010
+    second: slash01HR
+  - first:
+      74: 7400012
+    second: slash01VD
+  - first:
+      74: 7400014
+    second: slash01VU
+  - first:
+      74: 7400016
+    second: slashVU(L)
+  - first:
+      74: 7400018
+    second: stanceHL
+  - first:
+      74: 7400020
+    second: stanceHR
+  - first:
+      74: 7400022
+    second: stanceVD
+  - first:
+      74: 7400024
+    second: stanceVU
+  - first:
+      74: 7400026
+    second: stand01
+  - first:
+      74: 7400028
+    second: stand02
+  - first:
+      74: 7400030
+    second: walk01
+  - first:
+      74: 7400032
+    second: walk02
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: body
+  - first:
+      137: 13700002
+    second: nintou+
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -112,6 +248,7 @@ ModelImporter:
     - serializedVersion: 16
       name: jumpdown
       takeName: jumpdown
+      internalID: 7400000
       firstFrame: 0
       lastFrame: 20
       wrapMode: 0
@@ -140,6 +277,7 @@ ModelImporter:
     - serializedVersion: 16
       name: run01
       takeName: run01
+      internalID: 7400002
       firstFrame: 0
       lastFrame: 20
       wrapMode: 0
@@ -168,6 +306,7 @@ ModelImporter:
     - serializedVersion: 16
       name: runjump01
       takeName: runjump01
+      internalID: 7400004
       firstFrame: 0
       lastFrame: 20
       wrapMode: 0
@@ -196,6 +335,7 @@ ModelImporter:
     - serializedVersion: 16
       name: sit01
       takeName: sit01
+      internalID: 7400006
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -224,6 +364,7 @@ ModelImporter:
     - serializedVersion: 16
       name: slash01HL
       takeName: slash01HL
+      internalID: 7400008
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -252,6 +393,7 @@ ModelImporter:
     - serializedVersion: 16
       name: slash01HR
       takeName: slash01HR
+      internalID: 7400010
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -280,6 +422,7 @@ ModelImporter:
     - serializedVersion: 16
       name: slash01VD
       takeName: slash01VD
+      internalID: 7400012
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -308,6 +451,7 @@ ModelImporter:
     - serializedVersion: 16
       name: slash01VU
       takeName: slash01VU
+      internalID: 7400014
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -336,6 +480,7 @@ ModelImporter:
     - serializedVersion: 16
       name: slashVU(L)
       takeName: slashVU(L)
+      internalID: 7400016
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -364,6 +509,7 @@ ModelImporter:
     - serializedVersion: 16
       name: stanceHL
       takeName: stanceHL
+      internalID: 7400018
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -392,6 +538,7 @@ ModelImporter:
     - serializedVersion: 16
       name: stanceHR
       takeName: stanceHR
+      internalID: 7400020
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -420,6 +567,7 @@ ModelImporter:
     - serializedVersion: 16
       name: stanceVD
       takeName: stanceVD
+      internalID: 7400022
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -448,6 +596,7 @@ ModelImporter:
     - serializedVersion: 16
       name: stanceVU
       takeName: stanceVU
+      internalID: 7400024
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -476,6 +625,7 @@ ModelImporter:
     - serializedVersion: 16
       name: stand01
       takeName: stand01
+      internalID: 7400026
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -504,6 +654,7 @@ ModelImporter:
     - serializedVersion: 16
       name: stand02
       takeName: stand02
+      internalID: 7400028
       firstFrame: 0
       lastFrame: 45
       wrapMode: 0
@@ -532,6 +683,7 @@ ModelImporter:
     - serializedVersion: 16
       name: walk01
       takeName: walk01
+      internalID: 7400030
       firstFrame: 0
       lastFrame: 45
       wrapMode: 0
@@ -560,6 +712,7 @@ ModelImporter:
     - serializedVersion: 16
       name: walk02
       takeName: walk02
+      internalID: 7400032
       firstFrame: 0
       lastFrame: 45
       wrapMode: 0
@@ -591,17 +744,22 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 0
     importVisibility: 1
     importBlendShapes: 1
-    importCameras: 1
-    importLights: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
@@ -613,10 +771,14 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -626,8 +788,8 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1

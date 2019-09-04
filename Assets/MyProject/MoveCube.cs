@@ -25,55 +25,47 @@ public class MoveCube: MonoBehaviour
         public quaternion rot;
     }
     
-		private void Awake()
+		Mesh conv()
 		{
-			
-			var srcmr	= GetComponentInChildren<SkinnedMeshRenderer>();
-			var srcmesh	= srcmr.sharedMesh;
-			
-			var dstmesh = new Mesh();
-
-			dstmesh.vertices	= MeshUtility.ConvertVertices( srcmesh.vertices, srcmesh.boneWeights, srcmesh.bindposes );
-			dstmesh.triangles	= srcmesh.triangles;
-			dstmesh.normals		= srcmesh.normals;
-			dstmesh.uv			= srcmesh.uv;
-			dstmesh.bounds		= srcmesh.bounds;
-
-			var dstmr	= srcmr.gameObject.AddComponent<MeshRenderer>();
-			var dstmf	= srcmr.gameObject.AddComponent<MeshFilter>();
-
-			dstmr.material	= srcmr.material;
-			dstmf.mesh		= dstmesh;
-			
-			Component.Destroy( srcmr );
+			var newmesh = new Mesh();
+			newmesh.vertices	= MeshUtility.ConvertVertices(this.mesh.vertices,this.mesh.boneWeights,this.mesh.bindposes);//this.mesh.vertices;
+			newmesh.boneWeights	= this.mesh.boneWeights;
+			newmesh.bindposes	= this.mesh.bindposes;
+			newmesh.normals		= this.mesh.normals;
+			newmesh.uv			= this.mesh.uv;
+			newmesh.triangles	= this.mesh.triangles;
+			newmesh.AddBoneInfoFrom( uvChannelForWeight:1, this.clip );
+            return newmesh;
 		}
 
     void Start ()
     {
-        this.cnvMesh = this.mesh.AddBoneInfoFrom( 1, this.clip );
+        this.cnvMesh = conv();
 
         this.boneBuffer = new SimpleComputeBuffer<bone_unit>( "bones", this.boneLength * this.instanceCount );
         this.argsBuffer = new SimpleIndirectArgsBuffer( this.cnvMesh, instanceCount:(uint)this.instanceCount );
         
         this.mat.SetBuffer( this.boneBuffer );
+        this.mat.SetInt( "boneLength", this.boneLength );
     }
 
     void Update ()
     {
         var bones = new NativeArray<bone_unit>( this.boneLength * this.instanceCount, Allocator.Temp );
-        for( var i=0; i<this.instanceCount; i++ )
+        for( var i=0; i<this.instanceCount*this.boneLength; i++ )
         {
-            bones[i*this.boneLength] = new bone_unit
+            bones[i] = new bone_unit
             {
-                pos = new float4(i,0,0,0),
+                pos = new float4(i/this.boneLength,0,0,1),
                 rot = quaternion.identity
             };
         }
-
-        Graphics.DrawMesh( this.cnvMesh, Matrix4x4.identity, this.mat, 0 );
-        //Graphics.DrawMeshInstancedIndirect( this.cnvMesh, 0, mat, new Bounds(Vector3.zero,Vector3.one*100), this.argsBuffer );
-        
+        this.boneBuffer.Buffer.SetData( bones );
         bones.Dispose();
+
+        //Graphics.DrawMesh( this.cnvMesh, Matrix4x4.identity, this.mat, 0 );
+        Graphics.DrawMeshInstancedIndirect( this.cnvMesh, 0, this.mat, new Bounds( Vector3.zero, Vector3.one * 100 ), this.argsBuffer );
+        //Graphics.DrawMeshInstanced(this.cnvMesh,0,this.mat,new Matrix4x4[ 1 ] { Matrix4x4.identity} );
     }
 
     private void OnDestroy()

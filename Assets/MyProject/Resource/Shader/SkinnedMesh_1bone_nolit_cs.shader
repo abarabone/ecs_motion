@@ -53,7 +53,7 @@ Shader "Custom/SkinnedMesh_1bone_nolit_cs"
 				fixed4	boneIndex	: COLOR;
 				float4	weights		: TEXCOORD1;
 
-				UNITY_VERTEX_INPUT_INSTANCE_ID
+				//UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 			
 			struct v2f
@@ -87,26 +87,27 @@ Shader "Custom/SkinnedMesh_1bone_nolit_cs"
 				return float4( rv, 0.0f );
 			}
 			
-			#ifdef UNITY_INSTANCING_ENABLED
-				#define getInstanceId	unity_InstanceID
-			#else
-				#define getInstanceId	0
-			#endif
+			//#ifdef UNITY_INSTANCING_ENABLED
+			//	#define getInstanceId	unity_InstanceID
+			//#else
+			//	#define getInstanceId	0
+			//#endif
 
 
-			v2f vert(appdata v)//, uint i : SV_InstanceID )
+			v2f vert(appdata v , uint i : SV_InstanceID )
 			{
 				v2f o;
 
-				UNITY_SETUP_INSTANCE_ID(v);
+				//UNITY_SETUP_INSTANCE_ID(v);
 
-				int i = 0;// getInstanceId;
-				int ibone = i * (int)boneLength + v.boneIndex.x;
+				//int i = getInstanceId;
+				int ibone = i *(int)boneLength + v.boneIndex.x;
 				
 				float4	prepos = v.vertex;
 				float4	rpos = rot( prepos, bones[ibone].rotation );
 				float4	tpos = rpos + bones[ibone].position;
-				float4	pos = UnityObjectToClipPos(tpos);
+				float4	pos = mul(UNITY_MATRIX_VP, float4(tpos.xyz, 1.0f));//tpos);
+				//float4	pos = UnityObjectToClipPos(tpos);
 
 				o.vertex = pos;
 				o.uv = v.uv;

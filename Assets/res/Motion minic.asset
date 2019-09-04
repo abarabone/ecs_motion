@@ -32,22 +32,22 @@ MonoBehaviour:
   - walk02
   StreamPaths:
   - hip_
+  - hip_/leg1_R_
+  - hip_/leg1_R_/leg2_R_
+  - hip_/leg1_L_
+  - hip_/leg1_L_/leg2_L_
   - hip_/chest_
-  - hip_/chest_/head_
-  - hip_/chest_/head_/hair_L_
-  - hip_/chest_/head_/hair_R_
-  - hip_/chest_/sholder_L_
-  - hip_/chest_/sholder_L_/arm1_L_
-  - hip_/chest_/sholder_L_/arm1_L_/arm2_L_
   - hip_/chest_/sholder_R_
   - hip_/chest_/sholder_R_/arm1_R_
   - hip_/chest_/sholder_R_/arm1_R_/arm2_R_
   - hip_/chest_/sholder_R_/arm1_R_/arm2_R_/wapon
-  - hip_/leg1_L_
-  - hip_/leg1_L_/leg2_L_
-  - hip_/leg1_R_
-  - hip_/leg1_R_/leg2_R_
-  IndexMapFbxToMotion: 000000000e0000000f0000000c0000000d0000000100000008000000090000000a0000000b000000050000000600000007000000020000000400000003000000ffffffffffffffff
+  - hip_/chest_/sholder_L_
+  - hip_/chest_/sholder_L_/arm1_L_
+  - hip_/chest_/sholder_L_/arm1_L_/arm2_L_
+  - hip_/chest_/head_
+  - hip_/chest_/head_/hair_R_
+  - hip_/chest_/head_/hair_L_
+  IndexMapFbxToMotion: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000
   MotionData:
     Motions:
     - MotionName: jumpdown

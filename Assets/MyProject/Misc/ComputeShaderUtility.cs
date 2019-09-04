@@ -140,7 +140,7 @@ namespace Abss.Cs
             if( mesh == null ) return;
 
             this.MeshIndexCount = mesh.GetIndexCount( submeshId );
-            this.InstanceCount = InstanceCount;
+            this.InstanceCount = instanceCount;
             this.MeshBaseIndex = mesh.GetIndexStart( submeshId );
             this.MeshBaseVertex = mesh.GetBaseVertex( submeshId );
         }
