@@ -511,7 +511,7 @@ ModelImporter:
       takeName: stanceHL
       internalID: 7400018
       firstFrame: 0
-      lastFrame: 30
+      lastFrame: 20
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -598,7 +598,7 @@ ModelImporter:
       takeName: stanceVU
       internalID: 7400024
       firstFrame: 0
-      lastFrame: 30
+      lastFrame: 20
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -685,7 +685,7 @@ ModelImporter:
       takeName: walk01
       internalID: 7400030
       firstFrame: 0
-      lastFrame: 45
+      lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -714,7 +714,7 @@ ModelImporter:
       takeName: walk02
       internalID: 7400032
       firstFrame: 0
-      lastFrame: 45
+      lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
