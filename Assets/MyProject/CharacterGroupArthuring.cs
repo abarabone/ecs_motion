@@ -8,30 +8,40 @@ using Unity.Entities;
 namespace Abss.Motion
 {
     
-    public class CharacterGroupArthuring : MonoBehaviour, IConvertGameObjectToEntity
+    public class CharacterGroupArthuring : MonoBehaviour
     {
         
         public CharactorResourceUnit[] Resources;
 
 
-        public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
+        void Awake()
         {
+            passResourcesToDrawSystem();
+        }
+
+        void passResourcesToDrawSystem()
+        {
+
             foreach( var x in this.Resources.Select((res,id)=>(id,res)) )
             {
                 var md = new MotionDataInNative();
                 md.ConvertFrom( x.res.MotionClip );
-
-                makeChEntities( x.id, md, entity, dstManager, conversionSystem );
+                
             }
         }
 
-        void addMotionComponentData
-            (
-                int renderingId, MotionDataAccessor ma,
-                Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem
-            )
+        void createEntities( EntityManager em )
         {
-            
+            foreach( var x in this.Resources.Select((res,id)=>(id,res)) )
+            {
+                addMotionComponentData( x.id,  );
+            }
+        }
+
+        void addMotionComponentData( EntityManager em, int renderingId )
+        {
+            var ent = em.CreateEntity( )
+            dstManager.AddComponentData( ent, new MotionInfoData() );
 
         }
         
@@ -41,7 +51,7 @@ namespace Abss.Motion
                 EntityManager dstManager, GameObjectConversionSystem conversionSystem
             )
         {
-            conversionSystem.
+            //conversionSystem.
         }
     }
 
@@ -64,13 +74,14 @@ namespace Abss.Motion
         {
             var meshId = this.Units.Count + 1;
 
-            var unit = new MeshRenderingUnit
-            {
-                MeshId = meshId,
-                Mesh = mesh,
-                Material = material,
-            };
-            this.Units.Add( unit );
+            this.Units.Add(
+                new MeshRenderingUnit
+                {
+                    MeshId = meshId,
+                    Mesh = mesh,
+                    Material = material,
+                }
+            );
 
             return meshId;
         }
