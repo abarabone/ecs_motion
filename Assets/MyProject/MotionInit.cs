@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
-using UniRx.Triggers;
+//using UniRx;
+//using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.Jobs;
 using Unity.Mathematics;
@@ -25,7 +25,7 @@ namespace Abss.Motion
     }
 
 
-
+    [DisableAutoCreation]
     [UpdateInGroup( typeof( MotionGroup ) )]
     //[UpdateAfter( typeof(MotionProgressSystem) )]
     [AlwaysUpdateSystem]

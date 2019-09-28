@@ -3,18 +3,18 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+//using UniRx;
 using Unity.Linq;
 using Unity.Mathematics;
 using Unity.Collections;
 using System;
 using System.IO;
 
+using Abss.Utilities;
 
 
 namespace Abss.Motion
 {
-    using Abss.Utilities;
 
 	//[CustomEditor( typeof( UnityEngine.Object ) )]
 	//public class MotionClipConverter : Editor
@@ -38,7 +38,7 @@ namespace Abss.Motion
 
 		public MotionDataInAsset	MotionData;
 		
-		public BoolReactiveProperty IsWorld = new BoolReactiveProperty( false );
+		//public BoolReactiveProperty IsWorld = new BoolReactiveProperty( false );
 	}
 
 

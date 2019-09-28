@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
-using UniRx.Triggers;
+//using UniRx;
+//using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.Jobs;
 using Unity.Mathematics;
@@ -29,7 +29,7 @@ namespace Abss.Motion
 	{
         public MotionDataAccessor DataAccessor;
 
-        public int		MotionIndex;
+        public int	MotionIndex;
 	}
 
 	public struct MotionProgressData : IComponentData

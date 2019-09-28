@@ -27,3 +27,12 @@ The following packages were 更新済:
   com.unity.test-framework をバージョン 1.0.17 から 1.0.13 へ
 The following packages were 削除済:
   com.unity.entities@0.1.1-preview
+
+=== Fri Sep 27 23:48:21 2019
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were 更新済:
+  com.unity.ide.rider をバージョン 1.0.8 から 1.1.0 へ
+  com.unity.ide.vscode をバージョン 1.0.7 から 1.1.0 へ
