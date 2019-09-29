@@ -21,7 +21,8 @@ namespace Abss.Motion
 
 
 	[UpdateInGroup(typeof(PresentationSystemGroup))]
-	public class MotionGroup : ComponentSystemGroup { }
+	public class MotionSystemGroup : ComponentSystemGroup
+    { }
 
 
 }

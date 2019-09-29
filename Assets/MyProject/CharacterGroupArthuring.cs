@@ -38,7 +38,9 @@ namespace Abss.Motion
             createPrefabs( em );
             var dat = this.motionPrefabDatas[0];
             var ent = em.Instantiate( dat.Prefab );
-            em.SetComponentData( ent, new MotionInfoData { DataAccessor = dat.MotionData.CreateAccessor( 0 ) } );
+
+            var ma = dat.MotionData.CreateAccessor( 0 );
+            em.SetComponentData( ent, new MotionInfoData { DataAccessor =  } );
             this.ents.Add( ent );
         }
         private void Update()
@@ -70,19 +72,24 @@ namespace Abss.Motion
         }
         static Entity createMotionPrefab( EntityManager em, MotionClip motionClip, PrefabArchetypes prefabArchetypes )
         {
+            // モーションエンティティ生成
             var motionEntity = em.CreateEntity( prefabArchetypes.Motion );
 
+            // ストリームエンティティ生成
             var streamEntities = new NativeArray<Entity>( motionClip.StreamPaths.Length * 2, Allocator.Temp );
             em.CreateEntity( prefabArchetypes.MotionStream, streamEntities );
 
+            // リンク生成
             var linkedEntityGroup = streamEntities
                 .Select( streamEntity => new LinkedEntityGroup { Value = streamEntity } )
                 .Prepend( new LinkedEntityGroup { Value = motionEntity } )
                 .ToNativeArray( Allocator.Temp );
 
+            // バッファに追加
             var mbuf = em.AddBuffer<LinkedEntityGroup>( motionEntity );
             mbuf.AddRange( linkedEntityGroup );
 
+            // 一時領域破棄
             streamEntities.Dispose();
             linkedEntityGroup.Dispose();
 
@@ -118,7 +125,7 @@ namespace Abss.Motion
                 (
                     //typeof(MotionDataData),
                     typeof(MotionInfoData),
-                    typeof( MotionInitializeData ),
+                    typeof(MotionInitializeData),
                     typeof(LinkedEntityGroup),
                     typeof(Prefab)
                 );
@@ -127,6 +134,7 @@ namespace Abss.Motion
                     typeof(StreamKeyShiftData),
                     typeof(StreamNearKeysCacheData),
                     typeof(StreamTimeProgressData),
+                    typeof(StreamInitialTag),
                     typeof(Prefab)
                 );
             }

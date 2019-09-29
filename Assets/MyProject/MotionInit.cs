@@ -26,7 +26,7 @@ namespace Abss.Motion
 
 
     [DisableAutoCreation]
-    [UpdateInGroup( typeof( MotionGroup ) )]
+    [UpdateInGroup( typeof( MotionSystemGroup ) )]
     //[UpdateAfter( typeof(MotionProgressSystem) )]
     [AlwaysUpdateSystem]
     public class ChCreationSystem : JobComponentSystem

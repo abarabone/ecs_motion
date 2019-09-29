@@ -22,7 +22,13 @@ namespace Abss.Motion
 
 	
 	public struct StreamInitialTag : IComponentData
-	{}
+	{
+        public Entity MotionEntity;
+    //}
+    //public struct StreamBoneIndexData : IComponentData
+    //{
+        public int BoneIndex;
+    }
 
 	public struct StreamInitialLabelFor1pos : IComponentData
 	{}

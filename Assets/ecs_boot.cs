@@ -17,7 +17,7 @@ public class ecs_boot : MonoBehaviour
 
         var psg = World.Active.GetOrCreateSystem<PresentationSystemGroup>();
 
-        var mg = World.Active.CreateSystem<MotionGroup>();
+        var mg = World.Active.CreateSystem<MotionSystemGroup>();
         psg.AddSystemToUpdateList( mg );
 
         var ccs = World.Active.CreateSystem<ChCreationSystem>();

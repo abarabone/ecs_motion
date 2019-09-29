@@ -10,6 +10,7 @@ using Unity.Mathematics;
 namespace Abss.Motion
 {
 
+    [UpdateInGroup(typeof(MotionSystemGroup))]
     public class MotionInitializeSystem : JobComponentSystem
     {
 
@@ -45,29 +46,50 @@ namespace Abss.Motion
         }
 
 
-        
-        //struct MotionInitializeJob : IJobForEach<MotionInitializeData>
+
+        //struct MotionInitializeJob : IJobForEachWithEntity<MotionInitializeData, MotionInfoData>
         //{
 
+        //    public ComponentDataFromEntity<StreamKeyShiftData>      Shifters;
+        //    public ComponentDataFromEntity<StreamTimeProgressData>  Timers;
+
+        //    public void Execute(
+        //        Entity entity, int index,
+        //        [ReadOnly] ref MotionInitializeData tag,
+        //        [ReadOnly] ref MotionInfoData info 
+        //    )
+        //    {
+
+        //    }
         //}
 
-		//[BurstCompile]
-		struct StreamInitializeJob : IJobForEachWithEntity<StreamInitialTag, StreamKeyShiftData, StreamNearKeysCacheData>
+        //[BurstCompile]
+        struct StreamInitializeJob : IJobForEachWithEntity
+            <StreamInitialTag, StreamKeyShiftData, StreamNearKeysCacheData, StreamTimeProgressData>
 		{
 
-			public EntityCommandBuffer.Concurrent	Commands;
+			public EntityCommandBuffer.Concurrent Commands;
+
+            public ComponentDataFromEntity<MotionInfoData> MotionInfos;
             
 
             public void Execute(
                 Entity entity, int index,
                 [ReadOnly] ref StreamInitialTag tag,
                 ref StreamKeyShiftData shifter,
-                ref StreamNearKeysCacheData cache
+                ref StreamNearKeysCacheData cache,
+                ref StreamTimeProgressData timer
             )
             {
+                var ma = this.MotionInfos[tag.MotionEntity].DataAccessor;
 
-                StreamExtentions.InitializeKeys( ref nearKeys, ref shiftInfo );
+                timer.TimeProgress  = 0.0f;
+                timer.TimeScale     = 1.0f;
+                timer.TimeLength    = ma.TimeLength;
 
+                shifter.Keys = ma.GetStreamSlice( i >> 2, KeyStreamSection.positions + ( i & 1 ) ).Keys;
+
+                cache.InitializeKeys( ref shifter, ref timer );
 
 				Commands.RemoveComponent<StreamInitialTag>( index, entity );
             }

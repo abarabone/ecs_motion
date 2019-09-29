@@ -20,7 +20,7 @@ namespace Abss.Motion
 {
 
 
-    [UpdateInGroup( typeof( MotionGroup ) )]
+    [UpdateInGroup( typeof( MotionSystemGroup ) )]
     public class MotionProgressSystem : JobComponentSystem
     {
         protected override void OnCreate()
