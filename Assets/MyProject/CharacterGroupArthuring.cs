@@ -4,6 +4,12 @@ using System;
 using System.Linq;
 using UnityEngine;
 using Unity.Entities;
+using Unity.Collections;
+using Unity.Transforms;
+
+using Abss.Geometry;
+using Abss.Utilities;
+using Abss.Misc;
 
 namespace Abss.Motion
 {
@@ -14,46 +20,132 @@ namespace Abss.Motion
         public CharactorResourceUnit[] Resources;
 
 
+        PrefabArchetypes prefabArchetypes;
+
+        MotionPrefabUnit[] motionPrefabDatas;
+
+
+        List<Entity> ents = new List<Entity>();
+
         void Awake()
         {
-            passResourcesToDrawSystem();
+            //passResourcesToDrawSystem();
+            var w = World.Active;
+            var em = w.EntityManager;
+            
+            this.prefabArchetypes = new PrefabArchetypes(em);
+
+            createPrefabs( em );
+            var dat = this.motionPrefabDatas[0];
+            var ent = em.Instantiate( dat.Prefab );
+            em.SetComponentData( ent, new MotionInfoData { DataAccessor = dat.MotionData.CreateAccessor( 0 ) } );
+            this.ents.Add( ent );
         }
+        private void Update()
+        {
+            if( !Input.GetMouseButtonDown(0) ) return;
+            
+            foreach( var x in this.ents ) World.Active.EntityManager.DestroyEntity(x);
+        }
+
+        private void OnDisable()
+        {
+            //this.motionPrefabDatas.Do( x => x.Dispose() );// .Do() が機能してない？？
+            foreach( var x in this.motionPrefabDatas )
+                x.Dispose();
+        }
+
+
+        void createPrefabs( EntityManager em )
+        {
+            var qPrefabs =
+                from x in this.Resources.Select((res,id)=>(id,res))
+                select new MotionPrefabUnit
+                {
+                    Prefab = createMotionPrefab( em, x.res.MotionClip, this.prefabArchetypes ),
+                    MotionData = x.res.MotionClip.ConvertToNativeData(),
+                }
+                ;
+            this.motionPrefabDatas = qPrefabs.ToArray();
+        }
+        static Entity createMotionPrefab( EntityManager em, MotionClip motionClip, PrefabArchetypes prefabArchetypes )
+        {
+            var motionEntity = em.CreateEntity( prefabArchetypes.Motion );
+
+            var streamEntities = new NativeArray<Entity>( motionClip.StreamPaths.Length * 2, Allocator.Temp );
+            em.CreateEntity( prefabArchetypes.MotionStream, streamEntities );
+
+            var linkedEntityGroup = streamEntities
+                .Select( streamEntity => new LinkedEntityGroup { Value = streamEntity } )
+                .Prepend( new LinkedEntityGroup { Value = motionEntity } )
+                .ToNativeArray( Allocator.Temp );
+
+            var mbuf = em.AddBuffer<LinkedEntityGroup>( motionEntity );
+            mbuf.AddRange( linkedEntityGroup );
+
+            streamEntities.Dispose();
+            linkedEntityGroup.Dispose();
+
+            return motionEntity;
+        }
+
 
         void passResourcesToDrawSystem()
         {
 
             foreach( var x in this.Resources.Select((res,id)=>(id,res)) )
             {
-                var md = new MotionDataInNative();
-                md.ConvertFrom( x.res.MotionClip );
                 
             }
         }
-
-        void createEntities( EntityManager em )
+        static MeshRenderingUnit createRenderingUnit( MotionClip motionClip )
         {
-            foreach( var x in this.Resources.Select((res,id)=>(id,res)) )
+            return new MeshRenderingUnit();
+        }
+
+        
+
+        class PrefabArchetypes
+        {
+
+            public readonly EntityArchetype Motion;
+            public readonly EntityArchetype MotionStream;
+
+
+            public PrefabArchetypes( EntityManager em )
             {
-                addMotionComponentData( x.id,  );
+                this.Motion = em.CreateArchetype
+                (
+                    //typeof(MotionDataData),
+                    typeof(MotionInfoData),
+                    typeof( MotionInitializeData ),
+                    typeof(LinkedEntityGroup),
+                    typeof(Prefab)
+                );
+                this.MotionStream = em.CreateArchetype
+                (
+                    typeof(StreamKeyShiftData),
+                    typeof(StreamNearKeysCacheData),
+                    typeof(StreamTimeProgressData),
+                    typeof(Prefab)
+                );
             }
         }
 
-        void addMotionComponentData( EntityManager em, int renderingId )
-        {
-            var ent = em.CreateEntity( )
-            dstManager.AddComponentData( ent, new MotionInfoData() );
-
-        }
-        
-        void addStreamComponentData
-            (
-                int renderingId, MotionDataAccessor ma,
-                EntityManager dstManager, GameObjectConversionSystem conversionSystem
-            )
-        {
-            //conversionSystem.
-        }
     }
+
+
+
+    public struct MotionPrefabUnit : IDisposable
+    {
+        public Entity Prefab;
+        public MotionDataInNative MotionData;
+
+        public void Dispose() => this.MotionData.Dispose();
+    }
+
+
+
 
     [Serializable]
     public struct CharactorResourceUnit
@@ -67,27 +159,46 @@ namespace Abss.Motion
     public class MeshRenderingHolder
     {
 
-        public List<MeshRenderingUnit> Units { get; } = new List<MeshRenderingUnit>();
+        public MeshRenderingUnit[] Units { get; private set; }
+        
 
-
-        public int Add( Mesh mesh, Material material )
+        public MeshRenderingHolder( IEnumerable<CharactorResourceUnit> resources )
         {
-            var meshId = this.Units.Count + 1;
+            
+            this.Units = resources
+                .Select( (res,i) =>
+                    new MeshRenderingUnit
+                    {
+                        MeshId = i,
+                        Mesh = combineAndConvertMesh( res.SkinnedMesh, res.MotionClip ),
+                        Material = res.Material,
+                    }
+                )
+                .ToArray();
+            
+            return;
 
-            this.Units.Add(
-                new MeshRenderingUnit
-                {
-                    MeshId = meshId,
-                    Mesh = mesh,
-                    Material = material,
-                }
-            );
+            
+            Mesh combineAndConvertMesh( Mesh[] meshes, MotionClip motionClip )
+            {
+                var qCis =
+                    from mesh in meshes
+                    select new CombineInstance
+                    {
+                        mesh = mesh
+                    }
+                    ;
 
-            return meshId;
+                var dstmesh = new Mesh();
+
+                dstmesh.CombineMeshes( qCis.ToArray(), mergeSubMeshes:true, useMatrices:false );
+
+                return ChMeshConverter.ConvertToChMesh( dstmesh, motionClip );
+            }
         }
     }
 
-    public class MeshRenderingUnit
+    public struct MeshRenderingUnit
     {
         public int MeshId;
         public Mesh Mesh;

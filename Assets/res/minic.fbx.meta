@@ -219,7 +219,7 @@ ModelImporter:
       name: wapon
     second: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1

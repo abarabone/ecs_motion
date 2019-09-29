@@ -22,30 +22,37 @@ namespace Abss.Motion
 	
 
 	public struct MotionInitializeData : IComponentData
-	{}
-	
+	{
+        //public int MotionIndex;
+        //public MotionDataInNative MotionData;
+    }
 
+    //public struct MotionDataData : IComponentData
+    //{
+    //    public MotionDataInNative MotionData;
+    //}
+	
 	public struct MotionInfoData : IComponentData
 	{
         public MotionDataAccessor DataAccessor;
 
-        public int	MotionIndex;
+        //public int	MotionIndex;
 	}
 
-	public struct MotionProgressData : IComponentData
-	{
-		public float4x4	Matrix;
-	}
+	//public struct MotionProgressData : IComponentData
+	//{
+	//	public float4x4	Matrix;
+	//}
 
 
 
-	[InternalBufferCapacity(16*2)]
-	public struct MotionStreamElement : IBufferElementData
-	{
-		public StreamKeyShiftData		Shift;
-		public StreamTimeProgressData	Progress;
-		public StreamNearKeysCacheData	Cache;
-	}
+	//[InternalBufferCapacity(16*2)]
+	//public struct MotionStreamElement : IBufferElementData
+	//{
+	//	public StreamKeyShiftData		Shift;
+	//	public StreamTimeProgressData	Progress;
+	//	public StreamNearKeysCacheData	Cache;
+	//}
 	
 	
 }

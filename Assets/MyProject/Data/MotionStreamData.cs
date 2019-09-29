@@ -21,19 +21,19 @@ namespace Abss.Motion
 	
 
 	
-	public struct StreamInitialLabel : IComponentData
+	public struct StreamInitialTag : IComponentData
 	{}
 
 	public struct StreamInitialLabelFor1pos : IComponentData
 	{}
 
 
-	public struct StreamCacheUnit
-	{
-		public float	TimeProgress;
+	//public struct StreamCacheUnit
+	//{
+	//	public float	TimeProgress;
 
-		public StreamNearKeysCacheData	cache;
-	}
+	//	public StreamNearKeysCacheData	cache;
+	//}
 
 
 	

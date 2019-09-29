@@ -174,7 +174,7 @@ namespace Abss.Motion
                 motionEntity,
                 new MotionInfoData
                 {
-                    MotionIndex = motionIndex,
+                    //MotionIndex = motionIndex,
                     DataAccessor = ma
                 }
             );

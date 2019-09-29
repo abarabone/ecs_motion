@@ -20,8 +20,8 @@ MonoBehaviour:
         z: 1944431490
         w: 1497161434
     SubSectionIndex: 0
-    FileSize: 48656
-    SharedComponentCount: 2
+    FileSize: 64864
+    SharedComponentCount: 3
     BoundingVolume:
       Min:
         x: 0.1402471

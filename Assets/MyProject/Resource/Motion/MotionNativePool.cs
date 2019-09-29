@@ -70,7 +70,7 @@ namespace Abss.Motion
 	
 		internal int	boneLength;
 
-	
+	    
 		/// <summary>
 		/// ストリーム格納プールを取得する。
 		/// </summary>
@@ -148,9 +148,15 @@ namespace Abss.Motion
 
 	public static partial class MotionClipUtility
 	{
-	
-		static public void ConvertFrom( this MotionDataInNative dst, MotionClip src )
-		{
+
+        static public MotionDataInNative ConvertToNativeData( this MotionClip src )
+        {
+            return new MotionDataInNative().ConvertFrom( src );
+        }
+
+        static public MotionDataInNative ConvertFrom( this MotionDataInNative dst, MotionClip src )
+        //static public void ConvertFrom( this MotionDataInNative dst, MotionClip src )
+        {
 
 			// ボーン
 			var qParentBones =
@@ -238,7 +244,9 @@ namespace Abss.Motion
 			dst.pool.StreamSlices	= qStreamSlices.ToNativeArray( Allocator.Persistent );
 			dst.pool.BoneParents	= qParentBones.ToNativeArray( Allocator.Persistent );
 			dst.boneLength			= src.StreamPaths.Length;
-		}
+
+            return dst;
+        }
 
 		
 		static public void TransformKeyDataToWorld_( this MotionDataInNative motionData )
