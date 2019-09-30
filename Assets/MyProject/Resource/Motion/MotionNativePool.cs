@@ -12,11 +12,10 @@ using System.IO;
 
 using Abss.Geometry;
 using Abss.Misc;
-
+using Abss.Utilities;
 
 namespace Abss.Motion
 {
-    using Utilities;
 
 
 	public enum KeyStreamSection

@@ -87,7 +87,7 @@ namespace Abss.Motion
                 timer.TimeScale     = 1.0f;
                 timer.TimeLength    = ma.TimeLength;
 
-                shifter.Keys = ma.GetStreamSlice( i >> 2, KeyStreamSection.positions + ( i & 1 ) ).Keys;
+                //shifter.Keys = ma.GetStreamSlice( i >> 2, KeyStreamSection.positions + ( i & 1 ) ).Keys;
 
                 cache.InitializeKeys( ref shifter, ref timer );
 
