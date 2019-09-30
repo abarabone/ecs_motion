@@ -111,7 +111,7 @@ namespace Abss.Motion
 			var index2	= math.min( 2, shift.Keys.Length - 1 );
 			
 			nearKeys.Time_From = shift.Keys[ index0 ].Time.x;
-			nearKeys.Time_To   = shift.Keys[ index1 ].Time.x;;
+			nearKeys.Time_To   = shift.Keys[ index1 ].Time.x;
 			nearKeys.Time_Next = shift.Keys[ index2 ].Time.x;
 
 			nearKeys.Value_Prev = shift.Keys[ index0 ].Value;

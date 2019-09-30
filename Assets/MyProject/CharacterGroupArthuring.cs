@@ -33,14 +33,18 @@ namespace Abss.Motion
             var w = World.Active;
             var em = w.EntityManager;
             
+            var blob = this.Resources[0].MotionClip.ConvertToBlobData();
+            blob.Dispose();
+
             this.prefabArchetypes = new PrefabArchetypes(em);
 
             createPrefabs( em );
+            return;
             var dat = this.motionPrefabDatas[0];
             var ent = em.Instantiate( dat.Prefab );
 
             var ma = dat.MotionData.CreateAccessor( 0 );
-            em.SetComponentData( ent, new MotionInfoData { DataAccessor =  } );
+            //em.SetComponentData( ent, new MotionInfoData { DataAccessor =  } );
             this.ents.Add( ent );
         }
         private void Update()

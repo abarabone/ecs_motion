@@ -30,16 +30,16 @@ namespace Abss.Motion
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            var commandBuffer = this.ecb.CreateCommandBuffer();
+            //var commandBuffer = this.ecb.CreateCommandBuffer();
 
 
-            inputDeps = new StreamInitializeJob
-            {
-                Commands = commandBuffer.ToConcurrent()
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new StreamInitializeJob
+            //{
+            //    Commands = commandBuffer.ToConcurrent()
+            //}
+            //.Schedule( this, inputDeps );
 
-            this.ecb.AddJobHandleForProducer( inputDeps );
+            //this.ecb.AddJobHandleForProducer( inputDeps );
 
 
             return inputDeps;
