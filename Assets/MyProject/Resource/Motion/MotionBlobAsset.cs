@@ -25,7 +25,7 @@ namespace Abss.Motion
 
 	public struct MotionBlobData
 	{
-        public BlobArray<int>   BoneParents;
+        public BlobArray<int> BoneParents;
 
 		public BlobArray<MotionBlobUnit> Motions;
 	}
@@ -68,10 +68,22 @@ namespace Abss.Motion
             
                 ref var dstRoot = ref builder.ConstructRoot<MotionBlobData>();
                 copyMotionToBlob( ref motionClip.MotionData, ref dstRoot, builder );
-
-                dstRoot.TimeLength = motionClip.t
-
+                
                 return builder.CreateBlobAssetReference<MotionBlobData>( Allocator.Persistent );
+            }
+
+            void aaa()
+            {
+			    var qParentBones =
+				    from parentPath in src.StreamPaths.Select( path => getParent(path) )	// ペアレントパス列挙
+				    join pathIndex in src.StreamPaths.Select( (path,i) => (path,i) )		// 順序数を保持する索引と外部結合する
+					    on parentPath equals pathIndex.path
+					    into pathIndexes
+				    from pathIndex in pathIndexes.DefaultIfEmpty( (path:"",i:-1) )			// 結合できないパスは -1
+				    select pathIndex.i
+				    ;
+
+			    string getParent( string path ) => Path.GetDirectoryName(path).Replace("\\","/");
             }
             
             void copyMotionToBlob
