@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Burst;
@@ -72,18 +73,20 @@ namespace Abss.Motion
                 return builder.CreateBlobAssetReference<MotionBlobData>( Allocator.Persistent );
             }
 
-            void aaa()
+            void aaa( string[] streamPaths )
             {
 			    var qParentBones =
-				    from parentPath in src.StreamPaths.Select( path => getParent(path) )	// ペアレントパス列挙
-				    join pathIndex in src.StreamPaths.Select( (path,i) => (path,i) )		// 順序数を保持する索引と外部結合する
+				    from parentPath in streamPaths.Select( path => getParent(path) )// ペアレントパス列挙
+				    join pathIndex in streamPaths.Select( (path,i) => (path,i) )    // 順序数を保持する索引と外部結合する
 					    on parentPath equals pathIndex.path
 					    into pathIndexes
-				    from pathIndex in pathIndexes.DefaultIfEmpty( (path:"",i:-1) )			// 結合できないパスは -1
+				    from pathIndex in pathIndexes.DefaultIfEmpty( (path:"",i:-1) )  // 結合できないパスは -1
 				    select pathIndex.i
 				    ;
 
 			    string getParent( string path ) => Path.GetDirectoryName(path).Replace("\\","/");
+
+                return qParentBones.
             }
             
             void copyMotionToBlob
