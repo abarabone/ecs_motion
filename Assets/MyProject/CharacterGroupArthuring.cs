@@ -33,19 +33,13 @@ namespace Abss.Motion
             var w = World.Active;
             var em = w.EntityManager;
             
-            var blob = this.Resources[0].MotionClip.ConvertToBlobData();
-            Debug.Log(blob.Value.BoneParents.Length);
-            blob.Dispose();
-
             this.prefabArchetypes = new PrefabArchetypes(em);
 
             createPrefabs( em );
-            return;
+            
             var dat = this.motionPrefabDatas[0];
             var ent = em.Instantiate( dat.Prefab );
 
-            var ma = dat.MotionData.CreateAccessor( 0 );
-            //em.SetComponentData( ent, new MotionInfoData { DataAccessor =  } );
             this.ents.Add( ent );
         }
         private void Update()
@@ -67,21 +61,29 @@ namespace Abss.Motion
         {
             var qPrefabs =
                 from x in this.Resources.Select((res,id)=>(id,res))
+                let motionClipData = x.res.MotionClip.ConvertToBlobData()
                 select new MotionPrefabUnit
                 {
-                    Prefab = createMotionPrefab( em, x.res.MotionClip, this.prefabArchetypes ),
-                    MotionData = x.res.MotionClip.ConvertToNativeData(),
+                    Prefab = createMotionPrefab( em, motionClipData, this.prefabArchetypes ),
+                    MotionClipData = motionClipData,
                 }
                 ;
             this.motionPrefabDatas = qPrefabs.ToArray();
         }
-        static Entity createMotionPrefab( EntityManager em, MotionClip motionClip, PrefabArchetypes prefabArchetypes )
+        static Entity createMotionPrefab
+            ( EntityManager em, BlobAssetReference<MotionBlobData> motionClipData, PrefabArchetypes prefabArchetypes )
         {
             // モーションエンティティ生成
             var motionEntity = em.CreateEntity( prefabArchetypes.Motion );
+            em.SetComponentData( motionEntity, 
+                new MotionDataData
+                { 
+                    ClipData    = motionClipData
+                }
+            );
 
             // ストリームエンティティ生成
-            var streamEntities = new NativeArray<Entity>( motionClip.StreamPaths.Length * 2, Allocator.Temp );
+            var streamEntities = new NativeArray<Entity>( motionClipData.Value.BoneParents.Length * 2, Allocator.Temp );
             em.CreateEntity( prefabArchetypes.MotionStream, streamEntities );
 
             // リンク生成
@@ -130,6 +132,7 @@ namespace Abss.Motion
                 (
                     //typeof(MotionDataData),
                     typeof(MotionInfoData),
+                    typeof(MotionDataData),
                     typeof(MotionInitializeData),
                     typeof(LinkedEntityGroup),
                     typeof(Prefab)
@@ -152,9 +155,9 @@ namespace Abss.Motion
     public struct MotionPrefabUnit : IDisposable
     {
         public Entity Prefab;
-        public MotionDataInNative MotionData;
+        public BlobAssetReference<MotionBlobData> MotionClipData;
 
-        public void Dispose() => this.MotionData.Dispose();
+        public void Dispose() => this.MotionClipData.Dispose();
     }
 
 

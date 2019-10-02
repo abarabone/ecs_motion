@@ -48,7 +48,7 @@ namespace Abss.Motion
 	/// </summary>
 	public struct StreamKeyShiftData : IComponentData
 	{
-		public NativeSlice<KeyUnitInNative> Keys;
+		public BlobArray<KeyBlobUnit> Keys;
 		
 		public int      KeyIndex_Next;
 	}

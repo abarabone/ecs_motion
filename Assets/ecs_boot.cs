@@ -7,7 +7,7 @@ using Abss.Motion;
 
 public class ecs_boot : MonoBehaviour
 {
-
+    /*
     [SerializeField]
     MotionClip MotionClip;
 
@@ -39,5 +39,5 @@ public class ecs_boot : MonoBehaviour
         WordStorage.Instance.Dispose();
         WordStorage.Instance = null;
         ScriptBehaviourUpdateOrder.UpdatePlayerLoop( null );
-    }
+    }*/
 }

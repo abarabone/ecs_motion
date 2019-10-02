@@ -247,7 +247,7 @@ namespace Abss.Motion
             return dst;
         }
 
-		
+		/*
 		static public void TransformKeyDataToWorld_( this MotionDataInNative motionData )
 		{
 			var qKeysPerMotions = 
@@ -374,7 +374,7 @@ namespace Abss.Motion
 			}
 			
 		}
-
+        */
 	}
 
 	// ----------------------------------------------------------

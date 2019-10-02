@@ -27,17 +27,15 @@ namespace Abss.Motion
         //public MotionDataInNative MotionData;
     }
 
-    //public struct MotionDataData : IComponentData
-    //{
-    //    public MotionDataInNative MotionData;
-    //}
-	
-	public struct MotionInfoData : IComponentData
-	{
-        public MotionDataAccessor DataAccessor;
+    public struct MotionDataData : IComponentData
+    {
+        public BlobAssetReference<MotionBlobData> ClipData;
+    }
 
-        //public int	MotionIndex;
-	}
+    public struct MotionInfoData : IComponentData
+	{
+        public int MotionIndex;
+    }
 
 	//public struct MotionProgressData : IComponentData
 	//{

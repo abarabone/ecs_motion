@@ -30,16 +30,19 @@ namespace Abss.Motion
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            //var commandBuffer = this.ecb.CreateCommandBuffer();
+            var commandBuffer = this.ecb.CreateCommandBuffer();
 
 
-            //inputDeps = new StreamInitializeJob
-            //{
-            //    Commands = commandBuffer.ToConcurrent()
-            //}
-            //.Schedule( this, inputDeps );
+            inputDeps = new MotionInitializeJob
+            {
+                Commands = commandBuffer.ToConcurrent(),
+                Shifters = this.GetComponentDataFromEntity<StreamKeyShiftData>(),
+                Timers   = this.GetComponentDataFromEntity<StreamTimeProgressData>(),
+                Caches   = this.GetComponentDataFromEntity<StreamNearKeysCacheData>(),
 
-            //this.ecb.AddJobHandleForProducer( inputDeps );
+            }
+            .Schedule( this, inputDeps );
+            this.ecb.AddJobHandleForProducer( inputDeps );
 
 
             return inputDeps;
@@ -47,53 +50,97 @@ namespace Abss.Motion
 
 
 
-        //struct MotionInitializeJob : IJobForEachWithEntity<MotionInitializeData, MotionInfoData>
-        //{
+        struct MotionInitializeJob :
+            IJobForEachWithEntity_EBCCC<LinkedEntityGroup, MotionInitializeData, MotionDataData, MotionInfoData>
+        {
 
-        //    public ComponentDataFromEntity<StreamKeyShiftData>      Shifters;
-        //    public ComponentDataFromEntity<StreamTimeProgressData>  Timers;
+            [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
 
-        //    public void Execute(
-        //        Entity entity, int index,
-        //        [ReadOnly] ref MotionInitializeData tag,
-        //        [ReadOnly] ref MotionInfoData info 
-        //    )
-        //    {
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<StreamKeyShiftData>      Shifters;
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<StreamNearKeysCacheData> Caches;
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<StreamTimeProgressData>  Timers;
 
-        //    }
-        //}
-
-        //[BurstCompile]
-        struct StreamInitializeJob : IJobForEachWithEntity
-            <StreamInitialTag, StreamKeyShiftData, StreamNearKeysCacheData, StreamTimeProgressData>
-		{
-
-			public EntityCommandBuffer.Concurrent Commands;
-
-            public ComponentDataFromEntity<MotionInfoData> MotionInfos;
-            
 
             public void Execute(
                 Entity entity, int index,
-                [ReadOnly] ref StreamInitialTag tag,
-                ref StreamKeyShiftData shifter,
-                ref StreamNearKeysCacheData cache,
-                ref StreamTimeProgressData timer
+                [ReadOnly] DynamicBuffer<LinkedEntityGroup> links,
+                [ReadOnly] ref MotionInitializeData tag,
+                [ReadOnly] ref MotionDataData data,
+                [ReadOnly] ref MotionInfoData info
             )
             {
-                var ma = this.MotionInfos[tag.MotionEntity].DataAccessor;
+                ref var clip = ref data.ClipData.Value;
+                var motion = clip.Motions[info.MotionIndex];
 
-                timer.TimeProgress  = 0.0f;
-                timer.TimeScale     = 1.0f;
-                timer.TimeLength    = ma.TimeLength;
+                initSection( ref motion, ref links, KeyStreamSection.positions );
+                initSection( ref motion, ref links, KeyStreamSection.rotations );
 
-                //shifter.Keys = ma.GetStreamSlice( i >> 2, KeyStreamSection.positions + ( i & 1 ) ).Keys;
-
-                cache.InitializeKeys( ref shifter, ref timer );
-
-				Commands.RemoveComponent<StreamInitialTag>( index, entity );
+                this.Commands.RemoveComponent<MotionInitializeData>( index, entity );
             }
+
+            void initSection
+                ( ref MotionBlobUnit motion, ref DynamicBuffer<LinkedEntityGroup> links, KeyStreamSection streamSection )
+            {
+                ref var section = ref motion.Sections[(int)streamSection];
+
+                for( var i = 1 + (int)streamSection * section.Streams.Length; i < section.Streams.Length; i++ )
+                {
+                    var streamEntity = links[ i ].Value;
+
+                    var shifter = this.Shifters[streamEntity];
+                    shifter.Keys = section.Streams[ i ].Keys;
+                    this.Shifters[streamEntity] = shifter;
+
+                    var timer = this.Timers[streamEntity];
+                    timer.TimeLength    = motion.TimeLength;
+                    timer.TimeScale     = 1.0f;
+                    timer.TimeProgress  = 0.0f;
+                    this.Timers[streamEntity] = timer;
+
+                    var cache = this.Caches[streamEntity];
+                    cache.InitializeKeys( ref shifter, ref timer );
+                    //timer.Progress( 0.1f );
+                    //cache.ShiftKeysIfOverKeyTimeForLooping( ref shifter, ref timer );
+                    this.Caches[streamEntity] = cache;
+                }
+            }
+
         }
+
+  //      //[BurstCompile]
+  //      struct StreamInitializeJob : IJobForEachWithEntity
+  //          <StreamInitialTag, StreamKeyShiftData, StreamNearKeysCacheData, StreamTimeProgressData>
+		//{
+
+		//	public EntityCommandBuffer.Concurrent Commands;
+
+  //          public ComponentDataFromEntity<MotionInfoData> MotionInfos;
+            
+
+  //          public void Execute(
+  //              Entity entity, int index,
+  //              [ReadOnly] ref StreamInitialTag tag,
+  //              ref StreamKeyShiftData shifter,
+  //              ref StreamNearKeysCacheData cache,
+  //              ref StreamTimeProgressData timer
+  //          )
+  //          {
+  //              var ma = this.MotionInfos[tag.MotionEntity].DataAccessor;
+
+  //              timer.TimeProgress  = 0.0f;
+  //              timer.TimeScale     = 1.0f;
+  //              timer.TimeLength    = ma.TimeLength;
+
+  //              //shifter.Keys = ma.GetStreamSlice( i >> 2, KeyStreamSection.positions + ( i & 1 ) ).Keys;
+
+  //              cache.InitializeKeys( ref shifter, ref timer );
+
+		//		Commands.RemoveComponent<StreamInitialTag>( index, entity );
+  //          }
+  //      }
 
     }
 

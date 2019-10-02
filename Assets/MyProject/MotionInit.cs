@@ -18,7 +18,7 @@ using System.Runtime.InteropServices;
 
 namespace Abss.Motion
 {
-
+    /*
     public struct ChCreateMessage
     {
         public int MotionIndex;
@@ -222,5 +222,5 @@ namespace Abss.Motion
             }
         }
 
-    }
+    }*/
 }

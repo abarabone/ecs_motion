@@ -42,7 +42,7 @@ namespace Abss.Motion
 
 	public struct KeyBlobUnit
 	{
-		public float	Time;
+		public float4	Time;
 		public float4	Value;
 	}
 
