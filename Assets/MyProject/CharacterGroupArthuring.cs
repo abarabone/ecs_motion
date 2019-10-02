@@ -34,6 +34,7 @@ namespace Abss.Motion
             var em = w.EntityManager;
             
             var blob = this.Resources[0].MotionClip.ConvertToBlobData();
+            Debug.Log(blob.Value.BoneParents.Length);
             blob.Dispose();
 
             this.prefabArchetypes = new PrefabArchetypes(em);
