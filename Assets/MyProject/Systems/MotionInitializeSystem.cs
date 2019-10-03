@@ -73,7 +73,7 @@ namespace Abss.Motion
             )
             {
                 ref var clip = ref data.ClipData.Value;
-                var motion = clip.Motions[info.MotionIndex];
+                ref var motion = ref clip.Motions[info.MotionIndex];
 
                 initSection( ref motion, ref links, KeyStreamSection.positions );
                 initSection( ref motion, ref links, KeyStreamSection.rotations );
@@ -84,14 +84,16 @@ namespace Abss.Motion
             void initSection
                 ( ref MotionBlobUnit motion, ref DynamicBuffer<LinkedEntityGroup> links, KeyStreamSection streamSection )
             {
-                ref var section = ref motion.Sections[(int)streamSection];
+                ref var streams = ref motion.Sections[(int)streamSection].Streams;
 
-                for( var i = 1 + (int)streamSection * section.Streams.Length; i < section.Streams.Length; i++ )
+                var ioffset = 1 + (int)streamSection * streams.Length;
+
+                for( var i = 0; i < streams.Length; i++ )
                 {
-                    var streamEntity = links[ i ].Value;
+                    var streamEntity = links[ i + ioffset ].Value;
 
                     var shifter = this.Shifters[streamEntity];
-                    shifter.Keys = section.Streams[ i ].Keys;
+                    shifter.Keys = streams[ i ].Keys;
                     this.Shifters[streamEntity] = shifter;
 
                     var timer = this.Timers[streamEntity];
@@ -102,8 +104,8 @@ namespace Abss.Motion
 
                     var cache = this.Caches[streamEntity];
                     cache.InitializeKeys( ref shifter, ref timer );
-                    //timer.Progress( 0.1f );
-                    //cache.ShiftKeysIfOverKeyTimeForLooping( ref shifter, ref timer );
+                    timer.Progress( 0.1f );
+                    cache.ShiftKeysIfOverKeyTimeForLooping( ref shifter, ref timer );
                     this.Caches[streamEntity] = cache;
                 }
             }
