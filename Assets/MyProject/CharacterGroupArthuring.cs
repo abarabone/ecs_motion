@@ -16,13 +16,22 @@ using Abss.Draw;
 namespace Abss.Arthuring
 {
     
+    [Serializable]
+    public struct CharactorResourceUnit
+    {
+        public Mesh[] SkinnedMesh;
+        public Material Material;
+        public MotionClip MotionClip;
+    }
+
+
     public class CharacterGroupArthuring : MonoBehaviour
     {
         
         public CharactorResourceUnit[] Resources;
 
 
-        MotionPrefabHolder prefabs;
+        MotionPrefabHolder prefabHolder;
 
         List<Entity> ents = new List<Entity>();
 
@@ -34,12 +43,12 @@ namespace Abss.Arthuring
             var w = World.Active;
             var em = w.EntityManager;
 
-            this.prefabs = new MotionPrefabHolder( em, this.Resources );
+            this.prefabHolder = new MotionPrefabHolder( em, this.Resources );
             
-            var dat = this.motionPrefabDatas[0];
-            var ent = em.Instantiate( dat.Prefab );
+            //var dat = this.motionPrefabDatas[0];
+            //var ent = em.Instantiate( dat.Prefab );
 
-            this.ents.Add( ent );
+            //this.ents.Add( ent );
         }
 
 
@@ -53,17 +62,9 @@ namespace Abss.Arthuring
 
         private void OnDisable()
         {
-            this.prefabs.Dispose();
+            this.prefabHolder.Dispose();
         }
 
-
-        [Serializable]
-        public struct CharactorResourceUnit
-        {
-            public Mesh[] SkinnedMesh;
-            public Material Material;
-            public MotionClip MotionClip;
-        }
 
 
 

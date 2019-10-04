@@ -6,12 +6,14 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
+using Unity.Mathematics;
 
 using Abss.Geometry;
 using Abss.Utilities;
 using Abss.Misc;
 using Abss.Arthuring;
 using Abss.Motion;
+using Abss.Cs;
 
 namespace Abss.Draw
 {
@@ -21,6 +23,8 @@ namespace Abss.Draw
         public int MeshId;
         public Mesh Mesh;
         public Material Material;
+        public SimpleComputeBuffer<float4> TransformBuffer;
+        public InstancingIndirectArguments Arguments;
     }
 
     public class DrawMeshResourceHolder
@@ -39,6 +43,7 @@ namespace Abss.Draw
                         MeshId = i,
                         Mesh = combineAndConvertMesh( res.SkinnedMesh, res.MotionClip ),
                         Material = res.Material,
+                        TransformBuffer = new SimpleComputeBuffer<float4>("bones",1024*4)
                     }
                 )
                 .ToArray();

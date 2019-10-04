@@ -62,9 +62,7 @@ namespace Abss.Cs
 			this.Buffer.SetData( data );
 		}
         
-        /// <summary>
-        /// SetBuffer( ComputeBuffer ) に直接渡せるように暗黙変換
-        /// </summary>
+        /// <summary>SetBuffer( ComputeBuffer ) に直接渡せるように暗黙変換</summary>
         public static implicit operator ComputeBuffer( SimpleComputeBuffer<T> scb ) => scb.Buffer;
 	}
 	
@@ -101,26 +99,25 @@ namespace Abss.Cs
 
 		public SimpleIndirectArgsBuffer( Mesh mesh, uint instanceCount = 0, int submeshId = 0 )
         {
-            using( var args = new IndirectArgumentsInstanced( mesh, instanceCount, submeshId ) )
+            using( var args = new InstancingIndirectArguments( mesh, instanceCount, submeshId ) )
             { 
                 this = new SimpleIndirectArgsBuffer( args );
             }
         }
-        public SimpleIndirectArgsBuffer( IndirectArgumentsInstanced arguments )
+        public SimpleIndirectArgsBuffer( InstancingIndirectArguments arguments )
         {
 			this.buffer	= new ComputeBuffer( 1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments );
             
             this.buffer.SetData<uint>( arguments );
         }
+
         
-        /// <summary>
-        /// Draw/Dispatch...Indirect() に直接渡せるように暗黙変換
-        /// </summary>
+        /// <summary>Draw/Dispatch...Indirect() に直接渡せるように暗黙変換</summary>
         public static implicit operator ComputeBuffer( SimpleIndirectArgsBuffer siab ) => siab.buffer;
 	}
 
-
-    public struct IndirectArgumentsInstanced : System.IDisposable
+    // 引数バッファに渡すパラメータ - - - - - - - - - - - - - - - - - - -
+    public struct InstancingIndirectArguments : System.IDisposable
     {
         NativeArray<uint> indirectArguments;
         public NativeArray<uint> Arguments { get => this.indirectArguments; }
@@ -133,7 +130,7 @@ namespace Abss.Cs
 
 		public void Dispose() => this.indirectArguments.Dispose();
 
-        public IndirectArgumentsInstanced( Mesh mesh, uint instanceCount = 0, int submeshId = 0, Allocator allocator = Allocator.Temp )
+        public InstancingIndirectArguments( Mesh mesh, uint instanceCount = 0, int submeshId = 0, Allocator allocator = Allocator.Temp )
         {
             this.indirectArguments = new NativeArray<uint>( 5, allocator, NativeArrayOptions.ClearMemory );
 
@@ -145,12 +142,14 @@ namespace Abss.Cs
             this.MeshBaseVertex = mesh.GetBaseVertex( submeshId );
         }
         
-        /// <summary>
-        /// SetData( NativeArray ) に直接渡せるように暗黙変換
-        /// </summary>
-        public static implicit operator NativeArray<uint>( IndirectArgumentsInstanced iai ) => iai.Arguments;
+        /// <summary>SetData( NativeArray ) に直接渡せるように暗黙変換</summary>
+        public static implicit operator NativeArray<uint>( InstancingIndirectArguments iai ) => iai.Arguments;
     }
+    // - - - - - - - - - - - - - - - - - - - - - - -
+    
+    // ----------------------------------------------------------------
 
+    
     public struct IdFromName
     {
         public readonly int Id;
