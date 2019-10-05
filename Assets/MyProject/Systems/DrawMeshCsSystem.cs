@@ -13,28 +13,32 @@ using Abss.Arthuring;
 
 namespace Abss.Draw
 {
+    /// <summary>
+    /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
+    /// </summary>
     public class DrawMeshCsSystem : JobComponentSystem
     {
 
-        SimpleComputeBuffer<float4> instanceTransformBuffer;
-        SimpleIndirectArgsBuffer instanceArgumentsBuffer;
-        InstancingIndirectArguments arguments;
+        // 描画用バッファ
+        SimpleComputeBuffer<float4>     instanceTransformBuffer;
+        SimpleIndirectArgsBuffer        instanceArgumentsBuffer;
+        InstancingIndirectArguments     arguments;
 
-        public DrawMeshResourceHolder resourceHolder { private get; set; }
+
+        public DrawMeshResourceHolder resourceHolder;
+        
 
 
         protected override void OnCreate()
         {
-            this.resourceHolder.Units
-                .Select( x => )
-            this.instanceArgumentsBuffer = new SimpleIndirectArgsBuffer()
+
         }
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
-            this.arguments.
-
+            //this.arguments.
+            return inputDeps;
         }
         
     }

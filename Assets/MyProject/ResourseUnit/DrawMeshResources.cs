@@ -18,6 +18,7 @@ using Abss.Cs;
 namespace Abss.Draw
 {
 
+
     public struct DrawMeshResourceUnit
     {
         public int MeshId;
@@ -27,16 +28,23 @@ namespace Abss.Draw
         public InstancingIndirectArguments Arguments;
     }
 
+
+
     public class DrawMeshResourceHolder
     {
 
-        public DrawMeshResourceUnit[] Units { get; private set; }
+
+        public List<DrawMeshResourceUnit> Units { get; private set; } = new List<DrawMeshResourceUnit>();
 
 
+
+        /// <summary>
+        /// 描画用メッシュを登録する
+        /// </summary>
         public void AddDrawMeshResources( IEnumerable<CharactorResourceUnit> resources )
         {
 
-            this.Units = resources
+            this.Units.AddRange( resources
                 .Select( ( res, i ) =>
                     new DrawMeshResourceUnit
                     {
@@ -46,11 +54,12 @@ namespace Abss.Draw
                         TransformBuffer = new SimpleComputeBuffer<float4>("bones",1024*4)
                     }
                 )
-                .ToArray();
+            );
 
             return;
 
 
+            // メッシュを結合する
             Mesh combineAndConvertMesh( Mesh[] meshes, MotionClip motionClip )
             {
                 var qCis =
