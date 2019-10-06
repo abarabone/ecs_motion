@@ -16,16 +16,16 @@ using Abss.Charactor;
 
 namespace Abss.Arthuring
 {
-    class DrawSkinnedMeshArthuering : MonoBehaviour, IConvertGameObjectToEntity
+    class PrefabSettingsArthuering : MonoBehaviour, IDeclareReferencedPrefabs
     {
 
+        public GameObject[] MeshPrefabs;
 
 
-        public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
+
+        public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
         {
-
-
-
+            referencedPrefabs.AddRange( this.MeshPrefabs );
         }
     }
 }

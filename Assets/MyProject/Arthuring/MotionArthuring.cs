@@ -16,9 +16,10 @@ using Abss.Charactor;
 
 namespace Abss.Arthuring
 {
-    class MotionArthuering : MonoBehaviour, IConvertGameObjectToEntity
+    class MotionArthuring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
+        public MotionClip MotionClip;
 
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
