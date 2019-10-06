@@ -16,16 +16,57 @@ using Abss.Charactor;
 
 namespace Abss.Arthuring
 {
-    class PrefabSettingsArthuering : MonoBehaviour, IDeclareReferencedPrefabs
+
+    public struct PrefabUnit : IDisposable
+    {
+        public Entity Prefab;
+
+        public MotionPrefabUnit Motion;
+
+
+        public void Dispose()
+        {
+            this.Motion.Dispose();
+        }
+    }
+
+
+    public class PrefabSettingsAuthoring : MonoBehaviour
     {
 
-        public GameObject[] MeshPrefabs;
+        public GameObject[] Prefabs;
 
 
+        [HideInInspector]
+        public PrefabUnit[] PrefabEntities;
 
-        public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
+
+        MotionPrefabCreator motionPrefabCreator;
+
+
+        void Awake()
         {
-            referencedPrefabs.AddRange( this.MeshPrefabs );
+            var em = World.Active.EntityManager;
+
+            this.motionPrefabCreator = new MotionPrefabCreator( em );
+
+
+            foreach( var prefab in this.Prefabs )
+            {
+                prefab.
+            }
+        }
+
+        void OnDestroy()
+        {
+            foreach( var unit in this.PrefabEntities )
+                unit.Dispose();
+        }
+
+
+        public interface IConvertToPrefab
+        {
+            Entity Convert( PrefabSettingsAuthoring arthur );
         }
     }
 }
