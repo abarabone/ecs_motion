@@ -19,66 +19,6 @@ namespace Abss.Motion
 {
     
     
-    public struct MotionPrefabUnit : IDisposable
-    {
-        public Entity Prefab;
-        public BlobAssetReference<MotionBlobData> MotionBlobData;
-
-        public void Dispose() => this.MotionBlobData.Dispose();
-    }
-    
-
-
-    public class MotionPrefabCreator
-    {
-        
-
-        EntityManager em;
-        
-        EntityArchetype _motionPrefabArchetype;
-        EntityArchetype _streamPrefabArchetype;
-
-
-
-        public MotionPrefabCreator( EntityManager entityManager )
-        {
-            this.em = entityManager;
-        }
-
-        
-        
-
-        EntityArchetype getOrCreateMotionArchetype()
-        {
-            if( this._motionPrefabArchetype.Valid ) return this._motionPrefabArchetype;
-            
-            return this._motionPrefabArchetype = this.em.CreateArchetype
-            (
-                typeof( MotionInfoData ),
-                typeof( MotionDataData ),
-                typeof( MotionInitializeData ),
-                typeof( LinkedEntityGroup ),
-                typeof( Prefab )
-            );
-        }
-
-        EntityArchetype getOrCreateStreamArchetype()
-        {
-            if( this._streamPrefabArchetype.Valid ) return this._streamPrefabArchetype;
-
-            return this._streamPrefabArchetype = this.em.CreateArchetype
-            (
-                typeof( StreamKeyShiftData ),
-                typeof( StreamNearKeysCacheData ),
-                typeof( StreamTimeProgressData ),
-                typeof( Prefab )
-            );
-        }
-        
-    }
-
-
-
     class MotionPrefabHolder : IDisposable
     {
 

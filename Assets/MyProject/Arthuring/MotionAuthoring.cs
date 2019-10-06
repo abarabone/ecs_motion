@@ -16,26 +16,79 @@ using Abss.Charactor;
 
 namespace Abss.Arthuring
 {
-    class MotionArthuring : MonoBehaviour, PrefabSettingsAuthoring.IConvertToPrefab
+
+    class MotionAuthoring : PrefabSettingsAuthoring.IConvertToPrefab
     {
 
         public MotionClip MotionClip;
 
 
-        public Entity Convert( PrefabSettingsAuthoring author )
+        public override PrefabSettingsAuthoring.IPrefabResourceUnit Convert
+            ( PrefabSettingsAuthoring charactorAuthor )
         {
-            var MotionPrefabCreator()
+
+            var motionClip = this.MotionClip;
+
+
+            return charactorAuthor.MotionPrefabCreator.CreatePrefabResourceUnit( motionClip );
+
+        }
+    }
+
+
+
+    public class MotionPrefabUnit : PrefabSettingsAuthoring.IPrefabResourceUnit
+    {
+        public Entity Prefab;
+        public BlobAssetReference<MotionBlobData> MotionBlobData;
+
+        public void Dispose() => this.MotionBlobData.Dispose();
+    }
+    
+
+    public class MotionPrefabCreator
+    {
+
+
+        EntityManager em;
+
+        EntityArchetype _motionPrefabArchetype;
+        EntityArchetype _streamPrefabArchetype;
+
+
+
+        public MotionPrefabCreator( EntityManager entityManager )
+        {
+
+            this.em = entityManager;
+
+
+            this._motionPrefabArchetype = this.em.CreateArchetype
+                (
+                    typeof( MotionInfoData ),
+                    typeof( MotionDataData ),
+                    typeof( MotionInitializeData ),
+                    typeof( LinkedEntityGroup ),
+                    typeof( Prefab )
+                );
+
+            this._streamPrefabArchetype = this.em.CreateArchetype
+            (
+                typeof( StreamKeyShiftData ),
+                typeof( StreamNearKeysCacheData ),
+                typeof( StreamTimeProgressData ),
+                typeof( Prefab )
+            );
         }
 
 
-        
         public MotionPrefabUnit CreatePrefabResourceUnit( MotionClip motionClip )
         {
 
-            var motionArchetype = getOrCreateMotionArchetype();
-            var streamArchetype = getOrCreateStreamArchetype();
+            var motionArchetype = this._motionPrefabArchetype;
+            var streamArchetype = this._streamPrefabArchetype;
             var motionBlobData = motionClip.ConvertToBlobData();
-            
+
             var prefab = createMotionPrefab( this.em, motionBlobData, motionArchetype, streamArchetype );
 
             return new MotionPrefabUnit
@@ -82,7 +135,9 @@ namespace Abss.Arthuring
                 return motionEntity;
             }
         }
-        
+
     }
+
+
 }
 

@@ -16,7 +16,7 @@ using Abss.Charactor;
 
 namespace Abss.Arthuring
 {
-    class DrawSkinnedMeshArthuering : MonoBehaviour, IConvertGameObjectToEntity
+    class DrawSkinnedMeshAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
 
