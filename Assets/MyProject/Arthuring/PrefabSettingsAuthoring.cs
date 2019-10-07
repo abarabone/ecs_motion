@@ -6,6 +6,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
+using Unity.Linq;
 
 using Abss.Geometry;
 using Abss.Utilities;
@@ -20,62 +21,48 @@ namespace Abss.Arthuring
     public class PrefabSettingsAuthoring : MonoBehaviour
     {
 
-        public IConvertToPrefab[] Prefabs;
+        public ConvertToMainCustomPrefabEntityBehaviour[] PrefabGameObjects;
+
+        public Entity[] PrefabEntities { get; private set; }
 
 
-        [HideInInspector]
-        public PrefabUnit[] PrefabEntitieResources;
-
-
-        public MotionPrefabCreator MotionPrefabCreator { get; private set; }
+        public class PrefabCreators
+        {
+            public CharactorPrefabCreator   Character;
+            public MotionPrefabCreator      Motion;
+        }
 
 
         void Awake()
         {
             var em = World.Active.EntityManager;
 
-            this.MotionPrefabCreator = new MotionPrefabCreator( em );
+            var prefabCreators = new PrefabCreators
+            {
+                Character = new CharactorPrefabCreator( em ),
+                Motion = new MotionPrefabCreator( em ),
+            };
 
-
-            var qEntities =
-                from prefab in this.Prefabs
-                select new PrefabUnit
-                {
-                    //Prefab = null,
-                    Motion = prefab.Convert( this ),
-                }
-                ;
-            this.PrefabEntitieResources = qEntities.ToArray();
+            this.PrefabEntities = this.PrefabGameObjects
+                .Select( prefab => prefab.Convert( em, prefabCreators ) )
+                .ToArray();
         }
 
         void OnDestroy()
         {
-            foreach( var unit in this.PrefabEntitieResources )
-                unit.Dispose();
+
         }
 
 
-        public abstract class IConvertToPrefab : MonoBehaviour
+        public abstract class ConvertToMainCustomPrefabEntityBehaviour : ConvertToCustomPrefabEntityBehaviour
+        { }
+
+        public abstract class ConvertToCustomPrefabEntityBehaviour : MonoBehaviour
         {
-            abstract public IPrefabResourceUnit Convert( PrefabSettingsAuthoring arthur );
+            abstract public Entity Convert( EntityManager em, PrefabCreators creators );
         }
-        public interface IPrefabResourceUnit : IDisposable
-        {}
     }
 
-
-    public class PrefabUnit : PrefabSettingsAuthoring.IPrefabResourceUnit
-    {
-        public Entity Prefab;
-
-        public PrefabSettingsAuthoring.IPrefabResourceUnit Motion;
-
-
-        public void Dispose()
-        {
-            this.Motion.Dispose();
-        }
-    }
 
 }
 

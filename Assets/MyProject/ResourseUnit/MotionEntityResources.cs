@@ -17,8 +17,17 @@ using Abss.Cs;
 
 namespace Abss.Motion
 {
-    
-    
+
+
+    public class MotionPrefabUnit : IDisposable
+    {
+        public Entity Prefab;
+        public BlobAssetReference<MotionBlobData> MotionBlobData;
+
+        public void Dispose() => this.MotionBlobData.Dispose();
+    }
+
+
     class MotionPrefabHolder : IDisposable
     {
 
