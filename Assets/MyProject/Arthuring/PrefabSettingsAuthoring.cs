@@ -30,7 +30,7 @@ namespace Abss.Arthuring
         {
             public CharactorPrefabCreator   Character;
             public MotionPrefabCreator      Motion;
-            public 
+            public DrawMeshPrefabCreator    Draw;
         }
 
 
@@ -42,10 +42,14 @@ namespace Abss.Arthuring
             {
                 Character = new CharactorPrefabCreator( em ),
                 Motion = new MotionPrefabCreator( em ),
+                Draw = new DrawMeshPrefabCreator( em ),
             };
 
+            var drawMeshCsSystem = em.World.GetExistingSystem<DrawMeshCsSystem>();
+            var drawMeshCsResourceHolder = drawMeshCsSystem.GetResourceHolder();
+
             this.PrefabEntities = this.PrefabGameObjects
-                .Select( prefab => prefab.Convert( em, prefabCreators ) )
+                .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, prefabCreators ) )
                 .ToArray();
         }
 
@@ -60,7 +64,7 @@ namespace Abss.Arthuring
 
         public abstract class ConvertToCustomPrefabEntityBehaviour : MonoBehaviour
         {
-            abstract public Entity Convert( EntityManager em, PrefabCreators creators );
+            abstract public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, PrefabCreators creators );
         }
     }
 

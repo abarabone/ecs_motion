@@ -24,11 +24,14 @@ namespace Abss.Arthuring
 
 
 
-        public override Entity Convert( EntityManager em, PrefabSettingsAuthoring.PrefabCreators creators )
+        public override Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, PrefabSettingsAuthoring.PrefabCreators creators )
         {
 
             var motionAuthor = this.GetComponent<MotionAuthoring>();
-            var motionPrefab = motionAuthor.Convert( em, creators );
+            var motionPrefab = motionAuthor.Convert( em, drawres, creators );
+
+            var drawAuthor = this.GetComponent<DrawSkinnedMeshAuthoring>();
+            var drawPrefab = drawAuthor.Convert( em, drawres, creators );
 
             return creators.Character.CreatePrefab( em, motionPrefab );
         }

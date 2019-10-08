@@ -19,12 +19,12 @@ namespace Abss.Draw
 {
 
 
-    public struct DrawMeshResourceUnit
+    public struct DrawMeshCsResourceUnit
     {
         public int MeshId;
         public Mesh Mesh;
         public Material Material;
-        public SimpleComputeBuffer<float4> TransformBuffer;
+        public SimpleComputeBuffer<float4> TransformBuffer;// 使いまわしできれば、個別には不要
         public InstancingIndirectArguments Arguments;
     }
 
@@ -34,7 +34,24 @@ namespace Abss.Draw
     {
 
 
-        public List<DrawMeshResourceUnit> Units { get; private set; } = new List<DrawMeshResourceUnit>();
+        public List<DrawMeshCsResourceUnit> Units { get; private set; } = new List<DrawMeshCsResourceUnit>();
+
+
+
+        public void AddDrawMeshResource( Mesh mesh, Material mat )
+        {
+            var resource = new DrawMeshCsResourceUnit
+            {
+                MeshId = this.Units.Count,
+                Mesh = mesh,
+                Material = mat,
+                TransformBuffer = new SimpleComputeBuffer<float4>( "bones", 1024 * 4 ),
+                //Arguments = new InstancingIndirectArguments( mesh, allocator:Allocator.Persistent ),
+            };
+
+            this.Units.Add( resource );
+        }
+
 
 
 
@@ -46,7 +63,7 @@ namespace Abss.Draw
 
             this.Units.AddRange( resources
                 .Select( ( res, i ) =>
-                    new DrawMeshResourceUnit
+                    new DrawMeshCsResourceUnit
                     {
                         MeshId = i,
                         Mesh = combineAndConvertMesh( res.SkinnedMesh, res.MotionClip ),

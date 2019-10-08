@@ -23,7 +23,7 @@ namespace Abss.Arthuring
         public MotionClip MotionClip;
 
 
-        public override Entity Convert( EntityManager em, PrefabSettingsAuthoring.PrefabCreators creators )
+        public override Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, PrefabSettingsAuthoring.PrefabCreators creators )
         {
             var motionClip = this.MotionClip;
             

@@ -25,8 +25,10 @@ namespace Abss.Draw
         InstancingIndirectArguments     arguments;
 
 
-        public DrawMeshResourceHolder resourceHolder;
-        
+        DrawMeshResourceHolder resourceHolder = new DrawMeshResourceHolder();
+
+        public DrawMeshResourceHolder GetResourceHolder() => this.resourceHolder;
+
 
 
         protected override void OnCreate()
