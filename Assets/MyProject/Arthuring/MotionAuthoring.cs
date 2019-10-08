@@ -27,7 +27,7 @@ namespace Abss.Arthuring
         {
             var motionClip = this.MotionClip;
             
-            return creators.Motion.CreatePrefab( motionClip );
+            return creators.Motion.CreatePrefab( em, motionClip );
         }
     }
 
@@ -36,21 +36,16 @@ namespace Abss.Arthuring
     public class MotionPrefabCreator
     {
 
-
-        EntityManager em;
-
+        
         EntityArchetype motionPrefabArchetype;
         EntityArchetype streamPrefabArchetype;
 
 
 
-        public MotionPrefabCreator( EntityManager entityManager )
+        public MotionPrefabCreator( EntityManager em )
         {
-
-            this.em = entityManager;
-
-
-            this.motionPrefabArchetype = this.em.CreateArchetype
+            
+            this.motionPrefabArchetype = em.CreateArchetype
                 (
                     typeof( MotionInfoData ),
                     typeof( MotionDataData ),
@@ -59,7 +54,7 @@ namespace Abss.Arthuring
                     typeof( Prefab )
                 );
 
-            this.streamPrefabArchetype = this.em.CreateArchetype
+            this.streamPrefabArchetype = em.CreateArchetype
             (
                 typeof( StreamKeyShiftData ),
                 typeof( StreamNearKeysCacheData ),
@@ -69,14 +64,14 @@ namespace Abss.Arthuring
         }
 
 
-        public Entity CreatePrefab( MotionClip motionClip )
+        public Entity CreatePrefab( EntityManager em, MotionClip motionClip )
         {
 
             var motionArchetype = this.motionPrefabArchetype;
             var streamArchetype = this.streamPrefabArchetype;
             var motionBlobData = motionClip.ConvertToBlobData();
 
-            var prefab = createMotionPrefab( this.em, motionBlobData, motionArchetype, streamArchetype );
+            var prefab = createMotionPrefab( em, motionBlobData, motionArchetype, streamArchetype );
 
             return prefab;
 

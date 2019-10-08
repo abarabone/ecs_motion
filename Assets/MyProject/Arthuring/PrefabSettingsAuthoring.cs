@@ -30,6 +30,7 @@ namespace Abss.Arthuring
         {
             public CharactorPrefabCreator   Character;
             public MotionPrefabCreator      Motion;
+            public 
         }
 
 

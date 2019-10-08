@@ -30,7 +30,7 @@ namespace Abss.Arthuring
             var motionAuthor = this.GetComponent<MotionAuthoring>();
             var motionPrefab = motionAuthor.Convert( em, creators );
 
-            return creators.Character.CreatePrefab( motionPrefab );
+            return creators.Character.CreatePrefab( em, motionPrefab );
         }
 
     }
@@ -38,21 +38,15 @@ namespace Abss.Arthuring
 
     public class CharactorPrefabCreator
     {
-
-
-        EntityManager em;
-
+        
         EntityArchetype charactorPrefabArchetype;
 
 
 
-        public CharactorPrefabCreator( EntityManager entityManager )
+        public CharactorPrefabCreator( EntityManager em )
         {
 
-            this.em = entityManager;
-
-
-            this.charactorPrefabArchetype = this.em.CreateArchetype
+            this.charactorPrefabArchetype = em.CreateArchetype
             (
                 typeof( LinkedEntityGroup ),
                 typeof( Prefab )
@@ -61,12 +55,12 @@ namespace Abss.Arthuring
         }
 
 
-        public Entity CreatePrefab( Entity motionPrefab )
+        public Entity CreatePrefab( EntityManager em, Entity motionPrefab )
         {
 
             var chArchetype = this.charactorPrefabArchetype;
 
-            var prefab = this.em.CreateEntity( chArchetype );
+            var prefab = em.CreateEntity( chArchetype );
             var links = em.GetBuffer<LinkedEntityGroup>( prefab );
             
             links.Add( new LinkedEntityGroup { Value = prefab } );
