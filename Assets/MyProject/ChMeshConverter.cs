@@ -14,23 +14,32 @@ namespace Abss.Geometry
         
 		static public Mesh ConvertToChMesh( Mesh srcmesh, MotionClip motionClip )
 		{
-			var dstmesh = new Mesh();
+            var dstmesh = new Mesh();
 
             var vtxs        = srcmesh.vertices;
             var boneWeights = srcmesh.boneWeights;
             var bindposes   = srcmesh.bindposes;
 
-			dstmesh.vertices	= ChMeshConverter.ConvertVertices( vtxs, boneWeights, bindposes );
-			dstmesh.triangles	= srcmesh.triangles;
-			dstmesh.normals		= srcmesh.normals;
-			dstmesh.uv			= srcmesh.uv;
-			dstmesh.SetUVs( channel:2, ChMeshConverter.CreateBoneWeightUvs( boneWeights, motionClip ) );
-			dstmesh.bounds		= srcmesh.bounds;
-            dstmesh.colors32    = ChMeshConverter.CreateBoneIndexColors( boneWeights, motionClip );
-            dstmesh.bindposes   = ChMeshConverter.CreateReBindPoses( bindposes, motionClip );
-
+            dstmesh.vertices = ConvertVertices( vtxs, boneWeights, bindposes );
+            dstmesh.normals = srcmesh.normals;
+            dstmesh.uv = srcmesh.uv;
+            dstmesh.triangles = srcmesh.triangles;
+            dstmesh.SetUVs( channel: 1, CreateBoneWeightUvs( boneWeights, motionClip ) );
+            dstmesh.bounds = srcmesh.bounds;
+            dstmesh.colors = CreateBoneIndexColors( boneWeights, motionClip );
+            dstmesh.bindposes = CreateReBindPoses( bindposes, motionClip );
             return dstmesh;
-		}
+
+            //var newmesh = new Mesh();
+            //newmesh.vertices = MeshUtility.ConvertVertices( vtxs, boneWeights, bindposes );
+            //newmesh.boneWeights = boneWeights;
+            //newmesh.bindposes = bindposes;
+            //newmesh.normals = srcmesh.normals;
+            //newmesh.uv = srcmesh.uv;
+            //newmesh.triangles = srcmesh.triangles;
+            //newmesh.AddBoneInfoFrom( uvChannelForWeight: 1, motionClip );
+            //return newmesh;
+        }
 
 
 		/// <summary>
@@ -76,22 +85,14 @@ namespace Abss.Geometry
 		//	return mesh;
 		//}
 
-		static public Color32[] CreateBoneIndexColors( BoneWeight[] boneWeights, MotionClip motionClip )
+		static public Color[] CreateBoneIndexColors( BoneWeight[] boneWeights, MotionClip motionClip )
 		{
 			var im = motionClip.IndexMapFbxToMotion;
 
-			var qIndices = boneWeights
-				.Select( x =>
-					new Color32()
-					{
-						r	= (byte)im[x.boneIndex0],
-						g	= (byte)im[x.boneIndex1],
-						b	= (byte)im[x.boneIndex2],
-						a	= (byte)im[x.boneIndex3]
-					}
-				);
+            var qIndices = boneWeights
+                .Select( x => new Color(im[x.boneIndex0], im[x.boneIndex1], im[x.boneIndex2], im[x.boneIndex3]) );
 
-			return qIndices.ToArray();
+            return qIndices.ToArray();
 		}
 
 		static public List<Vector4> CreateBoneWeightUvs( BoneWeight[] boneWeights, MotionClip motionClip )
@@ -99,7 +100,7 @@ namespace Abss.Geometry
 			var qWeights	= boneWeights
 				.Select( x => new Vector4(x.weight0, x.weight1, x.weight2, x.weight3) );
 
-			return qWeights.ToList<Vector4>();
+			return qWeights.ToList();
 		}
 
 		static public Matrix4x4[] CreateReBindPoses( Matrix4x4[] bindPoses, MotionClip motionClip )

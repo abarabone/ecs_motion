@@ -35,6 +35,7 @@ namespace Abss.Arthuring
 
             var mat = new Material( mrs[0].sharedMaterial );
             mat.shader = this.Shader;
+            mat.enableInstancing = true;
 
             var drawIndex = drawres.Units.Count;
             drawres.AddDrawMeshResource( mesh, mat );

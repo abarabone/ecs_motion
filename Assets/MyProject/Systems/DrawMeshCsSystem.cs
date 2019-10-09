@@ -22,7 +22,7 @@ namespace Abss.Draw
     {
 
         // 描画用バッファ
-        SimpleComputeBuffer<float4>     instanceTransformBuffer;
+        SimpleComputeBuffer<bone_unit>     instanceTransformBuffer;
         SimpleIndirectArgsBuffer        instanceArgumentsBuffer;
         InstancingIndirectArguments     arguments;
 
@@ -33,13 +33,13 @@ namespace Abss.Draw
 
 
 
-        protected override void OnCreate()
+        protected override void OnStartRunning()
         {
             this.instanceArgumentsBuffer.CreateBuffer();
-            this.instanceTransformBuffer = new SimpleComputeBuffer<float4>( "bones", 1024 * 4 );
+            this.instanceTransformBuffer = new SimpleComputeBuffer<bone_unit>( "bones", 1024 * 4 );
             Debug.Log( this.resourceHolder.Units.Count );
         }
-        protected override void OnDestroy()
+        protected override void OnStopRunning()
         {
             this.instanceArgumentsBuffer.Dispose();
             this.instanceTransformBuffer.Dispose();
@@ -66,8 +66,8 @@ namespace Abss.Draw
             {
                 buf[i] = new bone_unit
                 {
-                    pos = new float4(i,i,0,0),//float4.zero,
-                    rot = quaternion.identity,//.EulerXYZ(0,i*90,0),
+                    pos = float4.zero,
+                    rot = quaternion.identity,
                 };
             }
             this.instanceTransformBuffer.Buffer.SetData( buf );
