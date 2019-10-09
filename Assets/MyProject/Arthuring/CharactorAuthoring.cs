@@ -32,6 +32,8 @@ namespace Abss.Arthuring
 
             var drawAuthor = this.GetComponent<DrawSkinnedMeshAuthoring>();
             var drawPrefab = drawAuthor.Convert( em, drawres, creators );
+            
+            this.gameObject.SetActive( false );
 
             return creators.Character.CreatePrefab( em, motionPrefab );
         }

@@ -49,8 +49,11 @@ namespace Abss.Cs
 		public int				Id		{ get; }
 		public ComputeBuffer	Buffer	{ get; }
 
-		public void Dispose() => this.Buffer.Release();
-		
+		public void Dispose()
+        {
+            if( this.Buffer != null ) this.Buffer.Release();
+        }
+
 		public SimpleComputeBuffer( string name, int bufferLength )
 		{
 			this.Id		= UnityEngine.Shader.PropertyToID( name );
@@ -72,8 +75,11 @@ namespace Abss.Cs
 		public int				Id		{ get; }
 		public ComputeBuffer	Buffer	{ get; }
 		
-		public void Dispose() => this.Buffer.Release();
-		
+		public void Dispose()
+        {
+            if( this.Buffer != null ) this.Buffer.Release();
+        }
+
 		public SimpleAppendBuffer( string name, NativeArray<T> data ) : this( name, data.Length )
 		{
 			this.Buffer.SetData( data );
@@ -92,10 +98,13 @@ namespace Abss.Cs
 
 	public struct SimpleIndirectArgsBuffer : System.IDisposable
 	{
-		public readonly ComputeBuffer	buffer;
+		public ComputeBuffer	Buffer { get; private set; }
 		
-		public void Dispose() => this.buffer.Release();
-		
+		public void Dispose()
+        {
+            if( this.Buffer != null ) this.Buffer.Release();
+        }
+
 
 		public SimpleIndirectArgsBuffer( Mesh mesh, uint instanceCount = 0, int submeshId = 0 )
         {
@@ -106,14 +115,17 @@ namespace Abss.Cs
         }
         public SimpleIndirectArgsBuffer( InstancingIndirectArguments arguments )
         {
-			this.buffer	= new ComputeBuffer( 1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments );
+			this.Buffer	= new ComputeBuffer( 1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments );
             
-            this.buffer.SetData<uint>( arguments );
+            this.Buffer.SetData<uint>( arguments );
         }
+
+        public void CreateBuffer() =>
+            this.Buffer	= new ComputeBuffer( 1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments );
 
         
         /// <summary>Draw/Dispatch...Indirect() に直接渡せるように暗黙変換</summary>
-        public static implicit operator ComputeBuffer( SimpleIndirectArgsBuffer siab ) => siab.buffer;
+        public static implicit operator ComputeBuffer( SimpleIndirectArgsBuffer siab ) => siab.Buffer;
 	}
 
     // 引数バッファに渡すパラメータ - - - - - - - - - - - - - - - - - - -
@@ -128,7 +140,10 @@ namespace Abss.Cs
         public uint MeshBaseVertex { get => this.indirectArguments[3]; set => this.indirectArguments[3] = value; }
         public uint BaseInstance { get => this.indirectArguments[4]; set => this.indirectArguments[4] = value; }
 
-		public void Dispose() => this.indirectArguments.Dispose();
+		public void Dispose()
+        {
+            if( this.indirectArguments.IsCreated ) this.indirectArguments.Dispose();
+        }
 
         public InstancingIndirectArguments( Mesh mesh, uint instanceCount = 0, int submeshId = 0, Allocator allocator = Allocator.Temp )
         {
