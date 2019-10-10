@@ -14,6 +14,7 @@ using Abss.Arthuring;
 namespace Abss.Motion
 {
 
+    [DisableAutoCreation]
     public class BoneTransformSystem : JobComponentSystem
     {
         protected override void OnCreate()

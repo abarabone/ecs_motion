@@ -1,18 +1,40 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Unity.Entities;
+using Unity.Jobs;
+using Unity.Collections;
+using Unity.Burst;
+using Unity.Mathematics;
 
-public class MotionProgressSystem : MonoBehaviour
+using Abss.Cs;
+using Abss.Arthuring;
+
+namespace Abss.Draw
 {
-    // Start is called before the first frame update
-    void Start()
+    
+    public class MotionProgressSystem : JobComponentSystem
     {
+
         
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+        }
+
+        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        {
+            throw new System.NotImplementedException();
+        }
+
+
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
