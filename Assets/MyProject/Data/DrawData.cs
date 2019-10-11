@@ -41,9 +41,10 @@ namespace Abss.Draw
 	/// <summary>
 	/// 描画モデルの種類情報
 	/// </summary>
-	public struct DrawModelInfoData : IComponentData
+	public struct DrawModelIndexData : IComponentData
 	{
 		public int	modelIndex;
+        public int instanceIndex;
 	}
 
 	

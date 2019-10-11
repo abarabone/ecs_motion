@@ -25,7 +25,7 @@ namespace Abss.m
 		{
 			public void Execute( ref Motion.BonePostureData c0 )
 			{
-				c0.position.x += 0.01f;
+				c0.Position.x += 0.01f;
 			}
 		}
 	}

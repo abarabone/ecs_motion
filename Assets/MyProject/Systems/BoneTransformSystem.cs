@@ -33,27 +33,27 @@ namespace Abss.Motion
         }
 
 
-        struct BoneTransformJobLv0 : IJobForEach<BoneLevel0Data, BoneStreamLinkData, BonePostureData>
-        {
+        //struct BoneTransformJobLv0 : IJobForEach<BoneLevel0Data, BoneStreamLinkData, BonePostureData>
+        //{
 
-            [ReadOnly]
-            public ComponentDataFromEntity<BonePostureData> ParentBones;
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<BonePostureData> ParentBones;
 
-            [ReadOnly]
-            public ComponentDataFromEntity<StreamInterpolatedData> Streams;
-
-
-            public void Execute(
-                [ReadOnly] ref BoneLevel0Data parentLinker, 
-                [ReadOnly] ref BoneStreamLinkData streamLinker,
-                [WriteOnly] ref BonePostureData posture
-            )
-            {
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<StreamInterpolatedData> Streams;
 
 
+        //    public void Execute(
+        //        [ReadOnly] ref BoneLevel0Data parentLinker, 
+        //        [ReadOnly] ref BoneStreamLinkData streamLinker,
+        //        [WriteOnly] ref BonePostureData posture
+        //    )
+        //    {
 
-            }
-        }
+
+
+        //    }
+        //}
     }
 
 }

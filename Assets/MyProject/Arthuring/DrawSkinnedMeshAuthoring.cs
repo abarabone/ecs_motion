@@ -94,7 +94,7 @@ namespace Abss.Arthuring
         {
             this.prefabArchetype = em.CreateArchetype
                 (
-                    typeof( DrawModelInfoData ),
+                    typeof( DrawModelIndexData ),
                     typeof( Prefab )
                 );
         }
@@ -105,7 +105,7 @@ namespace Abss.Arthuring
             var ent = em.CreateEntity( this.prefabArchetype );
 
             em.SetComponentData( ent,
-              new DrawModelInfoData
+              new DrawModelIndexData
               {
                   modelIndex = index,
               }
