@@ -45,60 +45,14 @@ namespace Abss.Draw
                 MeshId = this.Units.Count,
                 Mesh = mesh,
                 Material = mat,
-                TransformBuffer = new SimpleComputeBuffer<float4>( "bones", 1024 * 4 ),
+                //TransformBuffer = new SimpleComputeBuffer<float4>( "bones", 1024 * 4 ),
                 //Arguments = new InstancingIndirectArguments( mesh, allocator:Allocator.Persistent ),
             };
 
             this.Units.Add( resource );
         }
 
-
-
-
-        /// <summary>
-        /// 描画用メッシュを登録する
-        /// </summary>
-        public void AddDrawMeshResources( IEnumerable<CharactorResourceUnit> resources )
-        {
-
-            this.Units.AddRange( resources
-                .Select( ( res, i ) =>
-                    new DrawMeshCsResourceUnit
-                    {
-                        MeshId = i,
-                        Mesh = combineAndConvertMesh( res.SkinnedMesh, res.MotionClip ),
-                        Material = res.Material,
-                        TransformBuffer = new SimpleComputeBuffer<float4>("bones",1024*4)
-                    }
-                )
-            );
-
-            return;
-
-
-            // メッシュを結合する
-            Mesh combineAndConvertMesh( Mesh[] meshes, MotionClip motionClip )
-            {
-                var qCis =
-                    from mesh in meshes
-                    select new CombineInstance
-                    {
-                        mesh = mesh
-                    }
-                    ;
-
-                var dstmesh = new Mesh();
-
-                dstmesh.CombineMeshes( qCis.ToArray(), mergeSubMeshes: true, useMatrices: false );
-
-                return ChMeshConverter.ConvertToChMesh( dstmesh, motionClip );
-            }
-        }
-
-        //public void AddDrawMeshResources( IEnumerable<> resources )
-        //{
-
-        //}
     }
+        
 
 }

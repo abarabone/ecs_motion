@@ -56,26 +56,28 @@ namespace Abss.Arthuring
                     }
                     ;
 
-                //var dstmesh = new Mesh();
+                //return ChMeshConverter.ConvertToChMesh( mrs_.ElementAt( 0 ).sharedMesh, motionClip_ );
 
-                //dstmesh.CombineMeshes( qCis.ToArray(), mergeSubMeshes: true, useMatrices: false );
-                //dstmesh.boneWeights = (
-                //    from w in dstmesh.boneWeights
-                //    select new BoneWeight
-                //    {
-                //        boneIndex0 = w.boneIndex0 % motionClip_.StreamPaths.Length,
-                //        boneIndex1 = w.boneIndex1 % motionClip_.StreamPaths.Length,
-                //        boneIndex2 = w.boneIndex2 % motionClip_.StreamPaths.Length,
-                //        boneIndex3 = w.boneIndex3 % motionClip_.StreamPaths.Length,
-                //        weight0 = w.weight0,
-                //        weight1 = w.weight1,
-                //        weight2 = w.weight2,
-                //        weight3 = w.weight3,
-                //    }
-                //)
-                //.ToArray();
+                var dstmesh = new Mesh();
 
-                return ChMeshConverter.ConvertToChMesh( mrs_.ElementAt(0).sharedMesh, motionClip_ );
+                dstmesh.CombineMeshes( qCis.ToArray(), mergeSubMeshes: true, useMatrices: false );
+                dstmesh.boneWeights = (
+                    from w in dstmesh.boneWeights
+                    select new BoneWeight
+                    {
+                        boneIndex0 = w.boneIndex0 % motionClip_.StreamPaths.Length,
+                        boneIndex1 = w.boneIndex1 % motionClip_.StreamPaths.Length,
+                        boneIndex2 = w.boneIndex2 % motionClip_.StreamPaths.Length,
+                        boneIndex3 = w.boneIndex3 % motionClip_.StreamPaths.Length,
+                        weight0 = w.weight0,
+                        weight1 = w.weight1,
+                        weight2 = w.weight2,
+                        weight3 = w.weight3,
+                    }
+                )
+                .ToArray();
+
+                return ChMeshConverter.ConvertToChMesh( dstmesh, motionClip_ );
             }
         }
 
@@ -108,6 +110,7 @@ namespace Abss.Arthuring
               new DrawModelIndexData
               {
                   modelIndex = index,
+                  instanceIndex = 0,
               }
             );
 

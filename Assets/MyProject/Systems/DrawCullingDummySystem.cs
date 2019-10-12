@@ -10,6 +10,7 @@ using Unity.Mathematics;
 
 using Abss.Cs;
 using Abss.Arthuring;
+using Abss.Misc;
 
 namespace Abss.Draw
 {
@@ -17,18 +18,41 @@ namespace Abss.Draw
     public class DrawCullingDummySystem : JobComponentSystem
     {
 
+        ThreadSafeCounter<Persistent> instanceIndexSeed;
+
+
+        protected override void OnCreate()
+        {
+            this.instanceIndexSeed = new Misc.ThreadSafeCounter<Misc.Persistent>( 0 );
+        }
+        protected override void OnDestroy()
+        {
+            this.instanceIndexSeed.Dispose();
+        }
+
+
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            throw new System.NotImplementedException();
+            //this.instanceIndexSeed.Reset();
+
+            inputDeps = new DrawCullingDummyJob
+            {
+                InstanceIndexSeed = this.instanceIndexSeed,
+            }
+            .Schedule( this, inputDeps );
+
+            return inputDeps;
         }
 
 
         struct DrawCullingDummyJob : IJobForEach<DrawModelIndexData>
         {
+            public ThreadSafeCounter<Persistent> InstanceIndexSeed;
+
             public void Execute( ref DrawModelIndexData model )
             {
 
-                model.instanceIndex 
+                model.instanceIndex = this.InstanceIndexSeed.GetSerial();
 
             }
         }

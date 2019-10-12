@@ -22,9 +22,9 @@ namespace Abss.Draw
     {
 
         // 描画用バッファ
-        SimpleComputeBuffer<bone_unit>     instanceTransformBuffer;
-        SimpleIndirectArgsBuffer        instanceArgumentsBuffer;
-        InstancingIndirectArguments     arguments;
+        SimpleComputeBuffer<bone_unit> instanceTransformBuffer;
+        SimpleIndirectArgsBuffer instanceArgumentsBuffer;
+        InstancingIndirectArguments arguments;
 
 
         DrawMeshResourceHolder resourceHolder = new DrawMeshResourceHolder();
@@ -41,8 +41,8 @@ namespace Abss.Draw
         }
         protected override void OnStopRunning()
         {
-            this.instanceArgumentsBuffer.Dispose();
             this.instanceTransformBuffer.Dispose();
+            this.instanceArgumentsBuffer.Dispose();
         }
 
         public struct bone_unit
@@ -52,21 +52,22 @@ namespace Abss.Draw
         }
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
+            //return inputDeps;
 
-            var unit = this.resourceHolder.Units[0];
+            var unit = this.resourceHolder.Units[ 0 ];
             var mesh = unit.Mesh;
             var mat = unit.Material;
             var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
-            using( var a = new InstancingIndirectArguments(mesh,1) )
+            using( var a = new InstancingIndirectArguments( mesh, 1 ) )
                 this.instanceArgumentsBuffer.Buffer.SetData( a.Arguments );
             var args = this.instanceArgumentsBuffer;
 
             var buf = new NativeArray<bone_unit>( mesh.bindposes.Length, Allocator.Temp );
-            for( var i=0; i < mesh.bindposes.Length; i++ )
+            for( var i = 0; i < mesh.bindposes.Length; i++ )
             {
-                buf[i] = new bone_unit
+                buf[ i ] = new bone_unit
                 {
-                    pos = float4.zero,
+                    pos = float4.zero + new float4( i * 0.1f, i*0.1f,0,1),
                     rot = quaternion.identity,
                 };
             }
@@ -80,6 +81,6 @@ namespace Abss.Draw
             //this.arguments.
             return inputDeps;
         }
-        
+
     }
 }

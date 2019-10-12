@@ -6,27 +6,27 @@ using Unity.Jobs;
 
 namespace Abss.m
 {
-	[AlwaysUpdateSystem]
-	public class MotionSystem : JobComponentSystem
-	{
+	//[AlwaysUpdateSystem]
+	//public class MotionSystem : JobComponentSystem
+	//{
 		
-		protected override JobHandle OnUpdate( JobHandle inputDeps )
-		{
-			inputDeps = new MotionJob
-			{
+	//	protected override JobHandle OnUpdate( JobHandle inputDeps )
+	//	{
+	//		inputDeps = new MotionJob
+	//		{
 
-			}
-			.Schedule( this, inputDeps );
+	//		}
+	//		.Schedule( this, inputDeps );
 
-			return inputDeps;
-		}
+	//		return inputDeps;
+	//	}
 
-		struct MotionJob : IJobForEach<Motion.BonePostureData>
-		{
-			public void Execute( ref Motion.BonePostureData c0 )
-			{
-				c0.Position.x += 0.01f;
-			}
-		}
-	}
+	//	struct MotionJob : IJobForEach<Motion.BonePostureData>
+	//	{
+	//		public void Execute( ref Motion.BonePostureData c0 )
+	//		{
+	//			c0.Position.x += 0.01f;
+	//		}
+	//	}
+	//}
 }

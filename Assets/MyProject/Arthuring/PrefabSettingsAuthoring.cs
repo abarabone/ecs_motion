@@ -51,6 +51,12 @@ namespace Abss.Arthuring
             this.PrefabEntities = this.PrefabGameObjects
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, prefabCreators ) )
                 .ToArray();
+
+            em.Instantiate( this.PrefabEntities[ 0 ] );
+            em.Instantiate( this.PrefabEntities[ 0 ] );
+            em.Instantiate( this.PrefabEntities[ 0 ] );
+            em.Instantiate( this.PrefabEntities[ 0 ] );
+            em.Instantiate( this.PrefabEntities[ 0 ] );
         }
 
         void OnDestroy()

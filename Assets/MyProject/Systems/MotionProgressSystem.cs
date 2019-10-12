@@ -30,7 +30,9 @@ namespace Abss.Draw
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
+
+            return inputDeps;
         }
 
 

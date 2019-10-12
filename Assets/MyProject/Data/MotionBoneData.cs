@@ -19,14 +19,21 @@ using Abss.Obj.Entities;
 
 namespace Abss.Motion
 {
-    
-    public struct BoneEntityLinkData : IComponentData
+
+    public struct BoneLinkData : IComponentData
     {
         public Entity NextEntity;
         public Entity ParentBoneEntity;
+    }
 
+    public struct BoneStreamLinkData : IComponentData
+    {
         public Entity PositionStreamEntity;
         public Entity RotationStreamEntity;
     }
     
+    public struct BoneDrawLinkData : IComponentData
+    {
+        public Entity DrawEntity;
+    }
 }

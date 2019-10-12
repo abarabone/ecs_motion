@@ -35,7 +35,7 @@ namespace Abss.Arthuring
             
             this.gameObject.SetActive( false );
 
-            return creators.Character.CreatePrefab( em, motionPrefab );
+            return creators.Character.CreatePrefab( em, motionPrefab, drawPrefab );
         }
 
     }
@@ -60,7 +60,7 @@ namespace Abss.Arthuring
         }
 
 
-        public Entity CreatePrefab( EntityManager em, Entity motionPrefab )
+        public Entity CreatePrefab( EntityManager em, Entity motionPrefab, Entity drawPrefab )
         {
 
             var chArchetype = this.charactorPrefabArchetype;
@@ -69,6 +69,7 @@ namespace Abss.Arthuring
             var links = em.GetBuffer<LinkedEntityGroup>( prefab );
             
             links.Add( new LinkedEntityGroup { Value = prefab } );
+            links.Add( new LinkedEntityGroup { Value = drawPrefab } );
             links.Add( new LinkedEntityGroup { Value = motionPrefab } );
 
             return prefab;
