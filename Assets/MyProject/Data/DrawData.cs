@@ -45,7 +45,7 @@ namespace Abss.Draw
 	{
 		public int	modelIndex;
         public int instanceIndex;
+        public int BoneLength;
 	}
 
-	
 }
