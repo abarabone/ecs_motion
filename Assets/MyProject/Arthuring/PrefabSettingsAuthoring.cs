@@ -52,11 +52,16 @@ namespace Abss.Arthuring
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, prefabCreators ) )
                 .ToArray();
 
-            em.Instantiate( this.PrefabEntities[ 0 ] );
-            em.Instantiate( this.PrefabEntities[ 0 ] );
-            em.Instantiate( this.PrefabEntities[ 0 ] );
-            em.Instantiate( this.PrefabEntities[ 0 ] );
-            em.Instantiate( this.PrefabEntities[ 0 ] );
+            var ent0 = em.Instantiate( this.PrefabEntities[ 0 ] );
+            //var ent1 = em.Instantiate( this.PrefabEntities[ 0 ] );
+            //var ent2 = em.Instantiate( this.PrefabEntities[ 0 ] );
+            //var ent3 = em.Instantiate( this.PrefabEntities[ 0 ] );
+            //var ent4 = em.Instantiate( this.PrefabEntities[ 0 ] );
+            //em.DestroyEntity( ent0 );
+            //em.DestroyEntity( ent1 );
+            //em.DestroyEntity( ent2 );
+            //em.DestroyEntity( ent3 );
+            //em.DestroyEntity( ent4 );
         }
 
         void OnDestroy()

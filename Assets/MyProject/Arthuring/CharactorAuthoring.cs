@@ -21,10 +21,11 @@ namespace Abss.Arthuring
     public class CharactorAuthoring : PrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
     {
 
+        void Convert( NativeList<Entity> dstPrefabs, )
 
 
-
-        public override Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, PrefabSettingsAuthoring.PrefabCreators creators )
+        public override Entity Convert
+            ( EntityManager em, DrawMeshResourceHolder drawres, PrefabSettingsAuthoring.PrefabCreators creators )
         {
 
             var motionAuthor = this.GetComponent<MotionAuthoring>();
