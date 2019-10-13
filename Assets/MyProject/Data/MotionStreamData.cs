@@ -24,29 +24,34 @@ namespace Abss.Motion
 	public struct StreamInitialTag : IComponentData
 	{
         public Entity MotionEntity;
-    //}
-    //public struct StreamBoneIndexData : IComponentData
-    //{
-        public int BoneIndex;
+        //public int BoneIndex;
+        public BlobArray<KeyBlobUnit> Keys;
     }
 
-	public struct StreamInitialLabelFor1pos : IComponentData
+	public struct StreamInitialFor1posTag : IComponentData
 	{}
 
 
-	//public struct StreamCacheUnit
-	//{
-	//	public float	TimeProgress;
+    public struct StreamDrawTargetData : IComponentData
+    {
+        public bool IsDrawTarget;
+    }
 
-	//	public StreamNearKeysCacheData	cache;
-	//}
+    public struct StreamDirectDrawTargetIndexData : IComponentData
+    {
+        public int DrawInstanceVectorIndex;
+    }
+
+    public struct StreamDrawLinkData : IComponentData
+    {
+        public Entity DrawEntity;
+    }
 
 
-	
-	/// <summary>
-	/// 現在キーの位置と、ストリームデータへの参照を保持する。
-	/// </summary>
-	public struct StreamKeyShiftData : IComponentData
+    /// <summary>
+    /// 現在キーの位置と、ストリームデータへの参照を保持する。
+    /// </summary>
+    public struct StreamKeyShiftData : IComponentData
 	{
 		public BlobArray<KeyBlobUnit> Keys;
 		
@@ -56,6 +61,7 @@ namespace Abss.Motion
 	/// <summary>
 	/// 時間は deltaTime を加算して進める。
 	/// （スタート時刻と現在時刻を比較する方法だと、速度変化や休止ができないため）
+    /// ※ただし現在時刻法だと、不要な更新をなくせるので、こちらのほうがいい面も多い
 	/// </summary>
 	public struct StreamTimeProgressData : IComponentData
 	{
@@ -237,7 +243,7 @@ namespace Abss.Motion
 			
 			//var s = 1;//math.sign( math.dot( nearKeys.Value_From, nearKeys.Value_To ) );
 
-			return Utility.Interpolate(
+			return VectorUtility.Interpolate(
 				nearKeys.Value_Prev,
 				nearKeys.Value_From,
 				nearKeys.Value_To,// * s,

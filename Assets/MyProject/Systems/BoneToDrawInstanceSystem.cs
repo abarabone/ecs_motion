@@ -12,31 +12,40 @@ using Unity.Transforms;
 using Abss.Cs;
 using Abss.Arthuring;
 using Abss.Motion;
+using Abss.SystemGroup;
 
 namespace Abss.Draw
 {
 
+    [UpdateInGroup(typeof(DrawSystemGroup))]
     public class BoneToDrawInstanceSystem : JobComponentSystem
     {
 
+        DrawMeshCsSystem drawSystem;
+        BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
+        
 
-        //EntityQuery query;
-
-
-        protected override void OnCreate()
+        protected override void OnStartRunning()
         {
-            var query = this.GetEntityQuery(
-                new EntityQueryDesc
-                {
-                    All = new con
-                }
-            );
+            this.drawSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
+            this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
         }
+
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            //throw new System.NotImplementedException();
+            var instanceBoneVectorEveryModels = this.drawSystem.GetInstanceBoneVectorEveryModels();
+            if( !instanceBoneVectorEveryModels.IsCreated ) return inputDeps;
 
+
+            inputDeps = new BoneToDrawInstanceJob
+            {
+                DstInstanceBoneVectorEveryModels = instanceBoneVectorEveryModels,
+            }
+            .Schedule( this, inputDeps );
+
+
+            this.presentationBarier.AddJobHandleForProducer( inputDeps );
             return inputDeps;
         }
 
@@ -44,14 +53,22 @@ namespace Abss.Draw
         struct BoneToDrawInstanceJob : IJobForEach<BoneDrawTargetIndexData, Translation, Rotation>
         {
 
-            [WriteOnly]
-            public NativeArray<NativeArray<(float4 pos, float4 rot)>> DstInstances;
+            [NativeDisableParallelForRestriction]
+            public NativeArray<NativeSlice<float4>> DstInstanceBoneVectorEveryModels;
 
-            public void Execute
-                ([ReadOnly] ref BoneDrawTargetIndexData indexer, [ReadOnly] ref Translation pos, [ReadOnly] ref Rotation rot )
+            public void Execute(
+                [ReadOnly] ref BoneDrawTargetIndexData indexer,
+                [ReadOnly] ref Translation pos,
+                [ReadOnly] ref Rotation rot
+            )
             {
-                var instances = this.DstInstances[ indexer.ModelIndex ];
-                instances[ indexer.InstanceBoneIndex ] = (new float4( pos.Value, 1.0f ), rot.Value.value);
+
+                var i = ( indexer.InstanceBoneOffset + indexer.BoneId ) * 2;
+
+                var dstInstances = this.DstInstanceBoneVectorEveryModels[ indexer.ModelIndex ];
+                dstInstances[ i + 0 ] = new float4( pos.Value, 1.0f );
+                dstInstances[ i + 1 ] = rot.Value.value;
+
             }
         }
 
@@ -63,18 +80,23 @@ namespace Abss.Draw
             public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
 
             [WriteOnly]
-            public NativeArray<NativeArray<(float4 pos, float4 rot)>> DstInstances;
+            public NativeArray<NativeArray<float4>> DstInstances;
 
 
-            public void Execute
-                ( [ReadOnly] ref BoneDrawLinkData drawLinker, [ReadOnly] ref BoneDrawTargetIndexData boneIndexer, [ReadOnly] ref Translation pos, [ReadOnly] ref Rotation rot )
+            public void Execute(
+                [ReadOnly] ref BoneDrawLinkData drawLinker,
+                [ReadOnly] ref BoneDrawTargetIndexData boneIndexer,
+                [ReadOnly] ref Translation pos,
+                [ReadOnly] ref Rotation rot
+            )
             {
                 var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
 
-                var i = drawIndexer.instanceIndex * drawIndexer.BoneLength + boneIndexer.BoneId;
+                var i = ( drawIndexer.instanceIndex * drawIndexer.BoneLength + boneIndexer.BoneId ) * 2;
 
-                var instances = this.DstInstances[ drawIndexer.modelIndex ];
-                instances[i] = (new float4( pos.Value, 1.0f ), rot.Value.value);
+                var dstInstances = this.DstInstances[ drawIndexer.modelIndex ];
+                dstInstances[ i + 0 ] = new float4( pos.Value, 1.0f );
+                dstInstances[ i + 1 ] = rot.Value.value;
             }
         }
 

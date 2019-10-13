@@ -11,48 +11,55 @@ using Unity.Mathematics;
 using Abss.Cs;
 using Abss.Arthuring;
 using Abss.Misc;
+using Abss.SystemGroup;
 
 namespace Abss.Draw
 {
 
+    [UpdateInGroup(typeof(DrawPrevSystemGroup))]
     public class DrawCullingDummySystem : JobComponentSystem
     {
 
-        ThreadSafeCounter<Persistent> instanceIndexSeed;
+        DrawMeshCsSystem drawSystem;
+        BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
 
-        protected override void OnCreate()
+        protected override void OnStartRunning()
         {
-            this.instanceIndexSeed = new Misc.ThreadSafeCounter<Misc.Persistent>( 0 );
-        }
-        protected override void OnDestroy()
-        {
-            this.instanceIndexSeed.Dispose();
+            this.drawSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
+            this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
         }
 
-
+        
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            //this.instanceIndexSeed.Reset();
+            var instanceCounters = this.drawSystem.GetInstanceCounters();
+            if( !instanceCounters.IsCreated ) return inputDeps;
+
 
             inputDeps = new DrawCullingDummyJob
             {
-                InstanceIndexSeed = this.instanceIndexSeed,
+                InstanceCounters = instanceCounters,
             }
             .Schedule( this, inputDeps );
 
+
+            this.presentationBarier.AddJobHandleForProducer( inputDeps );
             return inputDeps;
         }
 
 
+        [BurstCompile]
         struct DrawCullingDummyJob : IJobForEach<DrawModelIndexData>
         {
-            public ThreadSafeCounter<Persistent> InstanceIndexSeed;
+
+            public NativeArray<ThreadSafeCounter<Persistent>> InstanceCounters;
+
 
             public void Execute( ref DrawModelIndexData model )
             {
 
-                model.instanceIndex = this.InstanceIndexSeed.GetSerial();
+                model.instanceIndex = this.InstanceCounters[model.modelIndex].GetSerial();
 
             }
         }

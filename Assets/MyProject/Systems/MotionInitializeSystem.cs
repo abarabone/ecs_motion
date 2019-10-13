@@ -7,6 +7,8 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 
+using Abss.SystemGroup;
+
 namespace Abss.Motion
 {
 
@@ -51,7 +53,7 @@ namespace Abss.Motion
 
 
         struct MotionInitializeJob :
-            IJobForEachWithEntity_EBCCC<LinkedEntityGroup, MotionInitializeData, MotionDataData, MotionInfoData>
+            IJobForEachWithEntity_EBCCC<LinkedEntityGroup, MotionInitializeData, MotionClipData, MotionInfoData>
         {
 
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
@@ -68,7 +70,7 @@ namespace Abss.Motion
                 Entity entity, int index,
                 [ReadOnly] DynamicBuffer<LinkedEntityGroup> links,
                 [ReadOnly] ref MotionInitializeData tag,
-                [ReadOnly] ref MotionDataData data,
+                [ReadOnly] ref MotionClipData data,
                 [ReadOnly] ref MotionInfoData info
             )
             {
@@ -104,8 +106,8 @@ namespace Abss.Motion
 
                     var cache = this.Caches[streamEntity];
                     cache.InitializeKeys( ref shifter, ref timer );
-                    timer.Progress( 0.1f );
-                    cache.ShiftKeysIfOverKeyTimeForLooping( ref shifter, ref timer );
+                    //timer.Progress( 0.1f );
+                    //cache.ShiftKeysIfOverKeyTimeForLooping( ref shifter, ref timer );
                     this.Caches[streamEntity] = cache;
                 }
             }

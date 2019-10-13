@@ -17,7 +17,7 @@ using Abss.Charactor;
 
 namespace Abss.Arthuring
 {
-    
+    /*
     [Serializable]
     public struct CharactorResourceUnit
     {
@@ -84,7 +84,7 @@ namespace Abss.Arthuring
         
     }
 
-
+    */
 
 
 }

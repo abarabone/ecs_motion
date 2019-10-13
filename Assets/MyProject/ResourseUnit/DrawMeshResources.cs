@@ -19,18 +19,22 @@ namespace Abss.Draw
 {
 
 
-    public struct DrawMeshCsResourceUnit
+    public struct DrawMeshCsResourceUnit : IDisposable
     {
         public int MeshId;
         public Mesh Mesh;
         public Material Material;
         public SimpleComputeBuffer<float4> TransformBuffer;// 使いまわしできれば、個別には不要
         public InstancingIndirectArguments Arguments;
+
+        public void Dispose()
+        {
+        }
     }
 
 
 
-    public class DrawMeshResourceHolder
+    public class DrawMeshResourceHolder : IDisposable
     {
 
 
@@ -52,6 +56,9 @@ namespace Abss.Draw
             this.Units.Add( resource );
         }
 
+        public void Dispose()
+        {
+        }
     }
         
 

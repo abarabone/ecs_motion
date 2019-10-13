@@ -18,7 +18,7 @@ using Abss.Cs;
 namespace Abss.Motion
 {
 
-
+    /*
     public class MotionPrefabUnit : IDisposable
     {
         public Entity Prefab;
@@ -122,7 +122,7 @@ namespace Abss.Motion
         }
             
     }
-
+    */
     
 
 

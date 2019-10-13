@@ -128,7 +128,7 @@ namespace Abss.Geometry
 		}
 	}
 
-	static class Utility
+	static class VectorUtility
 	{
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

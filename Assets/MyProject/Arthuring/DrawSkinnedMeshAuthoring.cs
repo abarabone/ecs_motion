@@ -43,8 +43,6 @@ namespace Abss.Arthuring
             return creators.Draw.CreatePrefab( em, drawIndex );
 
 
-
-
             // メッシュを結合する
             Mesh combineAndConvertMesh( IEnumerable<SkinnedMeshRenderer> mrs_, MotionClip motionClip_ )
             {

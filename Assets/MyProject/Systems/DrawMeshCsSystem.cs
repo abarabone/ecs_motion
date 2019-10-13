@@ -10,14 +10,25 @@ using Unity.Mathematics;
 
 using Abss.Cs;
 using Abss.Arthuring;
+using Abss.Misc;
+using Abss.SystemGroup;
 
 namespace Abss.Draw
 {
+
+    [UpdateAfter(typeof( BoneToDrawInstanceSystem ) )]
+    [UpdateInGroup(typeof(DrawSystemGroup))]
+    public class BeginDrawCsBarier : EntityCommandBufferSystem
+    { }
+
+
     /// <summary>
     /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
     /// </summary>
-    [AlwaysUpdateSystem]
+    //[AlwaysUpdateSystem]
     //[DisableAutoCreation]
+    [UpdateAfter(typeof( BeginDrawCsBarier ) )]
+    [UpdateInGroup(typeof(DrawSystemGroup))]
     public class DrawMeshCsSystem : JobComponentSystem
     {
 
@@ -32,17 +43,85 @@ namespace Abss.Draw
         public DrawMeshResourceHolder GetResourceHolder() => this.resourceHolder;
 
 
+        NativeArray<float4> instanceBoneVectors;
+        NativeArray<NativeSlice<float4>> instanceBoneVectorEveryModels;
+
+        public NativeArray<NativeSlice<float4>> GetInstanceBoneVectorEveryModels() =>
+            this.instanceBoneVectorEveryModels;
+
+
+        NativeArray<ThreadSafeCounter<Persistent>> instanceCounters;
+
+        public NativeArray<ThreadSafeCounter<Persistent>> GetInstanceCounters() =>
+            this.instanceCounters;
+
 
         protected override void OnStartRunning()
         {
-            this.instanceArgumentsBuffer.CreateBuffer();
-            this.instanceTransformBuffer = new SimpleComputeBuffer<bone_unit>( "bones", 1024 * 4 );
-            Debug.Log( this.resourceHolder.Units.Count );
+            createBuffers();
+            allocVectors();
+            allocInstanceCounters();
+
+            return;
+
+
+            void createBuffers()
+            {
+                this.instanceArgumentsBuffer.CreateBuffer();
+                this.instanceTransformBuffer = new SimpleComputeBuffer<bone_unit>( "bones", 4 * 16 * 1024 );
+            }
+
+            void allocVectors()
+            {
+                var vectorLength = 4;
+                var instanceMax = 1024;
+                var arrayLengths = this.resourceHolder.Units
+                    .Select( x => vectorLength * x.Mesh.bindposes.Length * instanceMax )
+                    .ToArray();
+
+                this.instanceBoneVectorEveryModels =
+                    new NativeArray<NativeSlice<float4>>( arrayLengths.Length, Allocator.Persistent );
+                
+                this.instanceBoneVectors =
+                    new NativeArray<float4>( arrayLengths.Sum(), Allocator.Persistent );
+                
+                var start = 0;
+                for( var i = 0; i < arrayLengths.Length; i++ )
+                {
+                    this.instanceBoneVectorEveryModels[ i ] = this.instanceBoneVectors.Slice( start, arrayLengths[ i ] );
+                    start += arrayLengths[ i ];
+                }
+            }
+
+            void allocInstanceCounters()
+            {
+                this.instanceCounters =
+                    new NativeArray<ThreadSafeCounter<Persistent>>( this.resourceHolder.Units.Count, Allocator.Persistent );
+
+                for( var i = 0; i < this.instanceCounters.Length; i++ )
+                {
+                    this.instanceCounters[ i ] = new ThreadSafeCounter<Persistent>( 0 );
+                }
+            }
         }
         protected override void OnStopRunning()
         {
+            if( this.instanceCounters.IsCreated )
+            {
+                for( var i = 0; i < this.instanceCounters.Length; i++ )
+                {
+                    this.instanceCounters[ i ].Dispose();
+                }
+                this.instanceCounters.Dispose();
+            }
+
+            if( this.instanceBoneVectors.IsCreated ) this.instanceBoneVectors.Dispose();
+            if( this.instanceBoneVectorEveryModels.IsCreated ) this.instanceBoneVectorEveryModels.Dispose();
+
             this.instanceTransformBuffer.Dispose();
             this.instanceArgumentsBuffer.Dispose();
+
+            this.resourceHolder.Dispose();
         }
 
         public struct bone_unit
@@ -52,7 +131,7 @@ namespace Abss.Draw
         }
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            //return inputDeps;
+            
 
             var unit = this.resourceHolder.Units[ 0 ];
             var mesh = unit.Mesh;
@@ -77,6 +156,11 @@ namespace Abss.Draw
             buf.Dispose();
 
             Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
+
+
+            for( var i = 0; i < this.instanceCounters.Length; i++ )
+                this.instanceCounters[ i ].Reset();
+
 
             //this.arguments.
             return inputDeps;

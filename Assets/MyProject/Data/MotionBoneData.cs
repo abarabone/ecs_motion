@@ -20,7 +20,7 @@ using Abss.Obj.Entities;
 namespace Abss.Motion
 {
 
-    public struct BoneLinkData : IComponentData
+    public struct BoneTransformLinkData : IComponentData
     {
         public Entity NextEntity;
         public Entity ParentBoneEntity;
@@ -43,6 +43,6 @@ namespace Abss.Motion
         //public int InstanceIndex;
         public int BoneId;
         //public int BoneLength;
-        public int InstanceBoneIndex;
+        public int InstanceBoneOffset;
     }
 }

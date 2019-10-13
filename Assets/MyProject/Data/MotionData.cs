@@ -27,7 +27,7 @@ namespace Abss.Motion
         //public MotionDataInNative MotionData;
     }
 
-    public struct MotionDataData : IComponentData
+    public struct MotionClipData : IComponentData
     {
         public BlobAssetReference<MotionBlobData> ClipData;
     }

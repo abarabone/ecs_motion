@@ -11,11 +11,79 @@ using Unity.Mathematics;
 using Abss.Cs;
 using Abss.Arthuring;
 using Abss.Motion;
+using Abss.SystemGroup;
 
 namespace Abss.Draw
 {
 
-    public class MarkDrawTargetBoneAndStreamSystem : JobComponentSystem
+    [UpdateInGroup(typeof(DrawSystemGroup))]
+    public class MarkDrawTargetBoneSystem : JobComponentSystem
+    {
+
+
+        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        {
+            return inputDeps;
+        }
+
+
+        struct MarkBoneJob : IJobForEach<BoneDrawLinkData, BoneDrawTargetIndexData>
+        {
+
+            [ReadOnly]
+            public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
+
+
+            public void Execute(
+                [ReadOnly] ref BoneDrawLinkData drawLinker,
+                ref BoneDrawTargetIndexData indexer
+            )
+            {
+
+                var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
+
+                indexer.InstanceBoneOffset = drawIndexer.BoneLength * drawIndexer.instanceIndex;
+
+            }
+        }
+        
+    }
+
+    [UpdateInGroup( typeof( DrawSystemGroup ) )]
+    public class MarkDrawTargetStreamSystem : JobComponentSystem
+    {
+
+
+        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        {
+            return inputDeps;
+        }
+
+
+        struct MarkStreamJob : IJobForEach<StreamDrawLinkData, StreamDrawTargetData>
+        {
+
+            [ReadOnly]
+            public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
+
+
+            public void Execute(
+                [ReadOnly] ref StreamDrawLinkData drawLinker,
+                ref StreamDrawTargetData targetFlag
+            )
+            {
+
+                var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
+
+                targetFlag.IsDrawTarget = drawIndexer.instanceIndex > -1;
+
+            }
+        }
+
+    }
+
+    [DisableAutoCreation]
+    public class MarkDrawTargetStreamDirectSystem : JobComponentSystem
     {
 
 
@@ -25,18 +93,26 @@ namespace Abss.Draw
         }
 
 
-        struct MarkBoneJob : IJobForEach<BoneDrawLinkData, >
+        struct MarkStreamJob : IJobForEach<StreamDrawLinkData, StreamDirectDrawTargetIndexData>
         {
-            [ReadOnly]
-            public ComponentDataFromEntity<DrawModelIndexData> DrawIndices;
 
-            public void Execute( ref BoneDrawLinkData bone )
+            [ReadOnly]
+            public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
+
+
+            public void Execute(
+                [ReadOnly] ref StreamDrawLinkData drawLinker,
+                ref StreamDirectDrawTargetIndexData indexer
+            )
             {
 
-                bone
+                var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
+
+                indexer.DrawInstanceVectorIndex = 0;//
 
             }
         }
+
     }
 
 }

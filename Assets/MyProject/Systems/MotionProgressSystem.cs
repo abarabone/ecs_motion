@@ -10,32 +10,61 @@ using Unity.Mathematics;
 
 using Abss.Cs;
 using Abss.Arthuring;
+using Abss.SystemGroup;
 
-namespace Abss.Draw
+namespace Abss.Motion
 {
     
+    [UpdateAfter(typeof(MotionInitializeSystem))]
+    [UpdateInGroup(typeof(MotionSystemGroup))]
     public class MotionProgressSystem : JobComponentSystem
     {
 
         
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
-
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            //throw new System.NotImplementedException();
+
+
+            inputDeps = new StreamInterpolationJob
+            {
+                DeltaTime = Time.deltaTime,
+            }
+            .Schedule( this, inputDeps );
+
 
             return inputDeps;
         }
 
 
+
+        /// <summary>
+        /// ストリーム回転　→補間→　ボーン
+        /// </summary>
+        [BurstCompile]
+        struct StreamInterpolationJob : IJobForEach
+            <StreamTimeProgressData, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
+        {
+
+            public float DeltaTime;
+
+
+            public void Execute(
+                ref StreamTimeProgressData timer,
+                ref StreamKeyShiftData shiftInfo,
+                ref StreamNearKeysCacheData nearKeys,
+                [WriteOnly] ref StreamInterpolatedData dst
+            )
+            {
+                timer.Progress( DeltaTime );
+
+                nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref timer );
+
+                var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( timer.TimeProgress );
+
+                dst.Value = nearKeys.Interpolate( timeProgressNormalized );
+            }
+
+        }
 
     }
 

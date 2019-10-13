@@ -10,26 +10,29 @@ using Unity.Mathematics;
 
 using Abss.Cs;
 using Abss.Arthuring;
+using Abss.SystemGroup;
 
 namespace Abss.Motion
 {
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
+    [UpdateAfter(typeof(MotionProgressSystem))]
+    [UpdateInGroup(typeof(MotionSystemGroup))]
     public class BoneTransformSystem : JobComponentSystem
     {
         protected override void OnCreate()
         {
-            base.OnCreate();
+
         }
 
         protected override void OnDestroy()
         {
-            base.OnDestroy();
+
         }
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            throw new System.NotImplementedException();
+            return inputDeps;
         }
 
 

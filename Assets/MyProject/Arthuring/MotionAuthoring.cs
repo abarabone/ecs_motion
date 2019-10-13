@@ -13,11 +13,12 @@ using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
 using Abss.Charactor;
+using Abss.Common.Extension;
 
 namespace Abss.Arthuring
 {
 
-    class MotionAuthoring : PrefabSettingsAuthoring.ConvertToCustomPrefabEntityBehaviour
+    public class MotionAuthoring : PrefabSettingsAuthoring.ConvertToCustomPrefabEntityBehaviour
     {
 
         public MotionClip MotionClip;
@@ -48,7 +49,7 @@ namespace Abss.Arthuring
             this.motionPrefabArchetype = em.CreateArchetype
                 (
                     typeof( MotionInfoData ),
-                    typeof( MotionDataData ),
+                    typeof( MotionClipData ),
                     typeof( MotionInitializeData ),
                     typeof( LinkedEntityGroup ),
                     typeof( Prefab )
@@ -84,30 +85,18 @@ namespace Abss.Arthuring
             {
                 // モーションエンティティ生成
                 var motionEntity = em_.CreateEntity( motionArchetype_ );
-                em_.SetComponentData( motionEntity,
-                    new MotionDataData
-                    {
-                        ClipData = motionBlobData_
-                    }
-                );
+                em_.SetComponentData( motionEntity, new MotionClipData { ClipData = motionBlobData_ } );
 
                 // ストリームエンティティ生成
-                var streamEntities = new NativeArray<Entity>( motionBlobData_.Value.BoneParents.Length * 2, Allocator.Temp );
+                var streamLength = motionBlobData_.Value.BoneParents.Length * 2;
+                var streamEntities = new NativeArray<Entity>( streamLength, Allocator.Temp );
                 em_.CreateEntity( streamArchetype_, streamEntities );
 
-                // リンク生成
-                var linkedEntityGroup = streamEntities
-                    .Select( streamEntity => new LinkedEntityGroup { Value = streamEntity } )
-                    .Prepend( new LinkedEntityGroup { Value = motionEntity } )
-                    .ToNativeArray( Allocator.Temp );
-
                 // バッファに追加
-                var mbuf = em_.AddBuffer<LinkedEntityGroup>( motionEntity );
-                mbuf.AddRange( linkedEntityGroup );
+                em_.SetLinkedEntityGroup( motionEntity, streamEntities );
 
                 // 一時領域破棄
                 streamEntities.Dispose();
-                linkedEntityGroup.Dispose();
 
                 return motionEntity;
             }

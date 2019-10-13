@@ -18,7 +18,7 @@ using Abss.Cs;
 namespace Abss.Charactor
 {
     
-    
+    /*
     public struct CharactorPrefabUnit
     {
         public Entity Prefab;
@@ -72,5 +72,5 @@ namespace Abss.Charactor
         }
             
     }
-            
+           */
 }

@@ -16,13 +16,21 @@ using Unity.Burst;
 using Abss.Geometry;
 using System.Runtime.InteropServices;
 
-namespace Abss.Motion
+namespace Abss.SystemGroup
 {
 
+    [UpdateInGroup(typeof(PresentationSystemGroup))]
+    public class DrawPrevSystemGroup : ComponentSystemGroup
+    { }
 
+    [UpdateAfter(typeof(DrawPrevSystemGroup))]
 	[UpdateInGroup(typeof(PresentationSystemGroup))]
 	public class MotionSystemGroup : ComponentSystemGroup
     { }
 
+    [UpdateAfter(typeof(MotionSystemGroup))]
+    [UpdateInGroup(typeof(PresentationSystemGroup))]
+    public class DrawSystemGroup : ComponentSystemGroup
+    { }
 
 }
