@@ -30,9 +30,11 @@ namespace Abss.Arthuring
         {
             public CharactorPrefabCreator   Character;
             public MotionPrefabCreator      Motion;
+            public BonePrefabCreator        Bones;
             public DrawMeshPrefabCreator    Draw;
         }
 
+        List<Entity> ents = new List<Entity>();
 
         void Awake()
         {
@@ -42,6 +44,7 @@ namespace Abss.Arthuring
             {
                 Character = new CharactorPrefabCreator( em ),
                 Motion = new MotionPrefabCreator( em ),
+                Bones = new BonePrefabCreator( em ),
                 Draw = new DrawMeshPrefabCreator( em ),
             };
 
@@ -52,21 +55,25 @@ namespace Abss.Arthuring
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, prefabCreators ) )
                 .ToArray();
 
-            var ent0 = em.Instantiate( this.PrefabEntities[ 0 ] );
-            //var ent1 = em.Instantiate( this.PrefabEntities[ 0 ] );
-            //var ent2 = em.Instantiate( this.PrefabEntities[ 0 ] );
-            //var ent3 = em.Instantiate( this.PrefabEntities[ 0 ] );
-            //var ent4 = em.Instantiate( this.PrefabEntities[ 0 ] );
-            //em.DestroyEntity( ent0 );
-            //em.DestroyEntity( ent1 );
-            //em.DestroyEntity( ent2 );
-            //em.DestroyEntity( ent3 );
-            //em.DestroyEntity( ent4 );
+            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
+            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
+            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
+            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
+            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
+            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
+            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
         }
 
-        void OnDestroy()
+        void Update()
         {
+            if( !Input.GetMouseButtonDown( 0 ) ) return;
+            if( this.ents.Count == 0 ) return;
 
+            var em = World.Active.EntityManager;
+
+            var ent = this.ents.Last();
+            em.DestroyEntity( ent );
+            this.ents.Remove( ent );
         }
 
 

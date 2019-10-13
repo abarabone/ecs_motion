@@ -16,7 +16,7 @@ using Abss.Charactor;
 
 namespace Abss.Arthuring
 {
-    class DrawSkinnedMeshAuthoring : PrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
+    class DrawSkinnedMeshAuthoring : MonoBehaviour
     {
 
         // 構築前にメッシュ結合墨
@@ -26,21 +26,24 @@ namespace Abss.Arthuring
 
         public Shader Shader;
 
-        public override Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, PrefabSettingsAuthoring.PrefabCreators creators )
+
+        public Entity Convert(
+            EntityManager em,
+            DrawMeshPrefabCreator drawCreator, DrawMeshResourceHolder drawres
+        )
         {
             
             var mrs = this.GetComponentsInChildren<SkinnedMeshRenderer>();
-            var motionClip = this.GetComponentInChildren<MotionAuthoring>().MotionClip;//
+            var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
             var mesh = combineAndConvertMesh( mrs, motionClip );//
 
             var mat = new Material( mrs[0].sharedMaterial );
-            mat.shader = this.Shader;
+            mat.shader = this.Shader;// ちゃんとした材質生成が必要
             mat.enableInstancing = true;
 
-            var drawIndex = drawres.Units.Count;
-            drawres.AddDrawMeshResource( mesh, mat );
+            var drawIndex = drawres.AddDrawMeshResource( mesh, mat );
 
-            return creators.Draw.CreatePrefab( em, drawIndex );
+            return drawCreator.CreatePrefab( em, drawIndex );
 
 
             // メッシュを結合する
@@ -58,6 +61,7 @@ namespace Abss.Arthuring
 
                 var dstmesh = new Mesh();
 
+                // 後でちゃんとした結合に差し替えよう
                 dstmesh.CombineMeshes( qCis.ToArray(), mergeSubMeshes: true, useMatrices: false );
                 dstmesh.boneWeights = (
                     from w in dstmesh.boneWeights
@@ -93,10 +97,10 @@ namespace Abss.Arthuring
         public DrawMeshPrefabCreator( EntityManager em )
         {
             this.prefabArchetype = em.CreateArchetype
-                (
-                    typeof( DrawModelIndexData ),
-                    typeof( Prefab )
-                );
+            (
+                typeof( DrawModelIndexData ),
+                typeof( Prefab )
+            );
         }
 
 
@@ -105,11 +109,11 @@ namespace Abss.Arthuring
             var ent = em.CreateEntity( this.prefabArchetype );
 
             em.SetComponentData( ent,
-              new DrawModelIndexData
-              {
-                  modelIndex = index,
-                  instanceIndex = 0,
-              }
+                new DrawModelIndexData
+                {
+                    modelIndex = index,
+                    instanceIndex = -1,
+                }
             );
 
             return ent;

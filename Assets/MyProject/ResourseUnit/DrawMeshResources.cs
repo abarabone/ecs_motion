@@ -42,18 +42,21 @@ namespace Abss.Draw
 
 
 
-        public void AddDrawMeshResource( Mesh mesh, Material mat )
+        public int AddDrawMeshResource( Mesh mesh, Material mat )
         {
+            var meshId = this.Units.Count;
+
             var resource = new DrawMeshCsResourceUnit
             {
-                MeshId = this.Units.Count,
+                MeshId = meshId,
                 Mesh = mesh,
                 Material = mat,
                 //TransformBuffer = new SimpleComputeBuffer<float4>( "bones", 1024 * 4 ),
                 //Arguments = new InstancingIndirectArguments( mesh, allocator:Allocator.Persistent ),
             };
-
             this.Units.Add( resource );
+
+            return meshId;
         }
 
         public void Dispose()

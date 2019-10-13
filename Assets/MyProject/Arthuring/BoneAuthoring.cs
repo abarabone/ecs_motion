@@ -19,6 +19,7 @@ using Abss.Common.Extension;
 namespace Abss.Arthuring
 {
 
+    [Serializable]
     public struct MotionTargetUnit
     {
         public MotionAuthoring Motion;
@@ -33,11 +34,13 @@ namespace Abss.Arthuring
         public bool UsePhysics;
 
 
-        public NativeArray<Entity> Convert
-            ( EntityManager em, BonePrefabCreator boneCreator )
+        public NativeArray<Entity> Convert(
+            EntityManager em, BonePrefabCreator boneCreator,
+            Entity motionPrefab, NativeArray<Entity> streamPrefabs, Entity drawPrefab
+        )
         {
 
-            return boneCreator.CreatePrefabs( em, );
+            return boneCreator.CreatePrefabs( em, motionPrefab, streamPrefabs, drawPrefab );
 
         }
     }
@@ -45,13 +48,13 @@ namespace Abss.Arthuring
 
     public class BonePrefabCreator
     {
-        
+
         EntityArchetype BonePrefabArchetype;
 
 
         public BonePrefabCreator( EntityManager em )
         {
-            
+
             this.BonePrefabArchetype = em.CreateArchetype
             (
                 typeof( BoneDrawTargetIndexData ),
@@ -66,14 +69,15 @@ namespace Abss.Arthuring
         }
 
 
-        public NativeArray<Entity> CreatePrefabs( EntityManager em, Entity motionPrefab, NativeArray<Entity> streamPrefabs_ )
+        public NativeArray<Entity> CreatePrefabs
+            ( EntityManager em, Entity motionPrefab, NativeArray<Entity> streamPrefabs, Entity drawPrefab )
         {
 
             ref var motionBlobData = ref getMotionBlobData( em, motionPrefab );
-            
+
             var bonePrefabs = createBonePrefabs( em, motionPrefab, ref motionBlobData );
-            setStreamLinks( em, bonePrefabs, streamPrefabs_, ref motionBlobData );
-            setDrawLinks( em, bonePrefabs, ref motionBlobData );
+            setStreamLinks( em, bonePrefabs, streamPrefabs, ref motionBlobData );
+            setDrawLinks( em, bonePrefabs, drawPrefab, ref motionBlobData );
             setBoneRelationLinks( em, bonePrefabs, ref motionBlobData );
 
             return bonePrefabs;
@@ -96,8 +100,10 @@ namespace Abss.Arthuring
                 return bonePrefabs_;
             }
 
-            void setStreamLinks
-                ( EntityManager em_, NativeArray<Entity> bonePrefabs_, NativeArray<Entity> streamPrefabs_, ref MotionBlobData motionBlobData_ )
+            void setStreamLinks(
+                EntityManager em_, NativeArray<Entity> bonePrefabs_, NativeArray<Entity> streamPrefabs_,
+                ref MotionBlobData motionBlobData_
+            )
             {
                 var boneLength = motionBlobData_.BoneParents.Length;
 
@@ -117,33 +123,52 @@ namespace Abss.Arthuring
                 em_.SetComponentData( bonePrefabs_, qStreamlinkers );
             }
 
-            void setDrawLinks( EntityManager em_, NativeArray<Entity> bonePrefabs_, ref MotionBlobData motionBlobData_ )
+            void setDrawLinks
+                ( EntityManager em_, NativeArray<Entity> bonePrefabs_, Entity drawPrefab_, ref MotionBlobData motionBlobData_ )
             {
                 var boneLength = motionBlobData_.BoneParents.Length;
 
                 var qDrawLinker = Enumerable
-                    .Repeat( new BoneDrawLinkData { DrawEntity = drawPrefab }, boneLength );
+                    .Repeat( new BoneDrawLinkData { DrawEntity = drawPrefab_ }, boneLength );
 
                 em_.SetComponentData( bonePrefabs_, qDrawLinker );
             }
 
-            void setBoneRelationLinks( EntityManager em_, NativeArray<Entity> bonePrefabs_, ref MotionBlobData motionBlobData_ )
+            unsafe void setBoneRelationLinks
+                ( EntityManager em_, NativeArray<Entity> bonePrefabs_, ref MotionBlobData motionBlobData_ )
             {
-                var boneParents = motionBlobData_.BoneParents;// ref はＬＩＮＱ中では使用できない、コピーしてもいいだろうか？
+                var pBoneParents = (int*)motionBlobData_.BoneParents.GetUnsafePtr();
+                var boneLength = motionBlobData_.BoneParents.Length;
+
+                ref var boneParents = ref motionBlobData_.BoneParents;
                 
+
                 var qBoneLinker =
                     from x in bonePrefabs_.Select( ( ent, i ) => (ent, i) )
-                    let parentId = boneParents[ x.i ]
+                    let parentId = pBoneParents[ x.i ]
                     select new BoneTransformLinkData
                     {
                         ParentBoneEntity = bonePrefabs_[ parentId ],
-                        NextEntity = bonePrefabs_[ x.i + 1 ],
+                        NextEntity = x.i == boneLength - 1 ? Entity.Null : bonePrefabs_[ x.i + 1 ],
                     };
 
                 em_.SetComponentData( bonePrefabs_, qBoneLinker );
             }
 
         }
+        
     }
 
+    static public class aaa
+    {
+        static public unsafe T[] ToArray<T>( ref this BlobArray<T> blobArray )
+            where T : struct
+        {
+            var dstArr = new T[ blobArray.Length ];
+
+            
+
+            return dstArr;
+        }
+    }
 }

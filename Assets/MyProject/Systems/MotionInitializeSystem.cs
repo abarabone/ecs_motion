@@ -12,6 +12,8 @@ using Abss.SystemGroup;
 namespace Abss.Motion
 {
 
+    [DisableAutoCreation]
+    [UpdateBefore(typeof(MotionProgressSystem))]
     [UpdateInGroup(typeof(MotionSystemGroup))]
     public class MotionInitializeSystem : JobComponentSystem
     {
@@ -32,6 +34,7 @@ namespace Abss.Motion
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
+            return inputDeps;
             var commandBuffer = this.ecb.CreateCommandBuffer();
 
 

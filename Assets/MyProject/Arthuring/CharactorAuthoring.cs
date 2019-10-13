@@ -14,6 +14,7 @@ using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
 using Abss.Charactor;
+using Abss.Common.Extension;
 
 namespace Abss.Arthuring
 {
@@ -21,22 +22,39 @@ namespace Abss.Arthuring
     public class CharactorAuthoring : PrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
     {
 
-        void Convert( NativeList<Entity> dstPrefabs, )
+
 
 
         public override Entity Convert
-            ( EntityManager em, DrawMeshResourceHolder drawres, PrefabSettingsAuthoring.PrefabCreators creators )
+            ( EntityManager em, DrawMeshResourceHolder drawResources, PrefabSettingsAuthoring.PrefabCreators creators )
         {
 
             var motionAuthor = this.GetComponent<MotionAuthoring>();
-            var motionPrefab = motionAuthor.Convert( em, drawres, creators );
+            var (motionPrefab, streamPrefabs) = motionAuthor.Convert( em, creators.Motion );
 
             var drawAuthor = this.GetComponent<DrawSkinnedMeshAuthoring>();
-            var drawPrefab = drawAuthor.Convert( em, drawres, creators );
-            
+            var drawPrefab = drawAuthor.Convert( em, creators.Draw, drawResources );
+
+            var boneAuthor = this.GetComponent<BoneAuthoring>();
+            var bonePrefabs = boneAuthor.Convert( em, creators.Bones, motionPrefab, streamPrefabs, drawPrefab );
+
             this.gameObject.SetActive( false );
 
-            return creators.Character.CreatePrefab( em, motionPrefab, drawPrefab );
+
+            var qChildren = Enumerable
+                .Empty<Entity>()
+                .Append( motionPrefab )
+                .Concat( streamPrefabs )
+                .Concat( bonePrefabs )
+                .Append( drawPrefab )
+                ;
+
+            var prefab = creators.Character.CreatePrefab( em, qChildren );
+
+            streamPrefabs.Dispose();
+            bonePrefabs.Dispose();
+
+            return prefab;
         }
 
     }
@@ -61,17 +79,11 @@ namespace Abss.Arthuring
         }
 
 
-        public Entity CreatePrefab( EntityManager em, Entity motionPrefab, Entity drawPrefab )
+        public Entity CreatePrefab( EntityManager em, IEnumerable<Entity> children )
         {
+            var prefab = em.CreateEntity( this.charactorPrefabArchetype );
 
-            var chArchetype = this.charactorPrefabArchetype;
-
-            var prefab = em.CreateEntity( chArchetype );
-            var links = em.GetBuffer<LinkedEntityGroup>( prefab );
-            
-            links.Add( new LinkedEntityGroup { Value = prefab } );
-            links.Add( new LinkedEntityGroup { Value = drawPrefab } );
-            links.Add( new LinkedEntityGroup { Value = motionPrefab } );
+            em.SetLinkedEntityGroup( prefab, children );
 
             return prefab;
         }

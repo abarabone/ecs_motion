@@ -16,6 +16,8 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
+    [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
+    [UpdateBefore( typeof( MarkDrawTargetStreamSystem ) )]
     [UpdateInGroup(typeof(DrawPrevSystemGroup))]
     public class DrawCullingDummySystem : JobComponentSystem
     {
@@ -49,7 +51,7 @@ namespace Abss.Draw
         }
 
 
-        [BurstCompile]
+        //[BurstCompile]
         struct DrawCullingDummyJob : IJobForEach<DrawModelIndexData>
         {
 

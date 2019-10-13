@@ -28,7 +28,7 @@ namespace Abss.Misc
 	
 	
 
-	public static class NativeArrayExtention
+	public static class NativeArrayExtension
 	{
 		
 		static public NativeArray<T> ToNativeArray<T>( this T[] array, Allocator allocator ) where T : struct

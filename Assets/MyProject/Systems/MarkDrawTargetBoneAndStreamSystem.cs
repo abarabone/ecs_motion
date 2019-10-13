@@ -15,8 +15,8 @@ using Abss.SystemGroup;
 
 namespace Abss.Draw
 {
-
-    [UpdateInGroup(typeof(DrawSystemGroup))]
+    
+    [UpdateInGroup(typeof( DrawPrevSystemGroup ) )]
     public class MarkDrawTargetBoneSystem : JobComponentSystem
     {
 
@@ -49,7 +49,7 @@ namespace Abss.Draw
         
     }
 
-    [UpdateInGroup( typeof( DrawSystemGroup ) )]
+    [UpdateInGroup( typeof( DrawPrevSystemGroup ) )]
     public class MarkDrawTargetStreamSystem : JobComponentSystem
     {
 

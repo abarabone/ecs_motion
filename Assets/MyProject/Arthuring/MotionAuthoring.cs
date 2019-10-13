@@ -18,17 +18,18 @@ using Abss.Common.Extension;
 namespace Abss.Arthuring
 {
 
-    public class MotionAuthoring : PrefabSettingsAuthoring.ConvertToCustomPrefabEntityBehaviour
+    public class MotionAuthoring : MonoBehaviour
     {
 
         public MotionClip MotionClip;
 
 
-        public override Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, PrefabSettingsAuthoring.PrefabCreators creators )
+        public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) Convert
+            ( EntityManager em, MotionPrefabCreator motionCreator )
         {
             var motionClip = this.MotionClip;
             
-            return creators.Motion.CreatePrefab( em, motionClip );
+            return motionCreator.CreatePrefab( em, motionClip );
         }
     }
 
@@ -47,13 +48,12 @@ namespace Abss.Arthuring
         {
             
             this.motionPrefabArchetype = em.CreateArchetype
-                (
-                    typeof( MotionInfoData ),
-                    typeof( MotionClipData ),
-                    typeof( MotionInitializeData ),
-                    typeof( LinkedEntityGroup ),
-                    typeof( Prefab )
-                );
+            (
+                typeof( MotionInfoData ),
+                typeof( MotionClipData ),
+                typeof( MotionInitializeData ),
+                typeof( Prefab )
+            );
 
             this.streamPrefabArchetype = em.CreateArchetype
             (
@@ -65,40 +65,37 @@ namespace Abss.Arthuring
         }
 
 
-        public Entity CreatePrefab( EntityManager em, MotionClip motionClip )
+        public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) CreatePrefab
+            ( EntityManager em, MotionClip motionClip )
         {
 
-            var motionArchetype = this.motionPrefabArchetype;
-            var streamArchetype = this.streamPrefabArchetype;
             var motionBlobData = motionClip.ConvertToBlobData();
 
-            var prefab = createMotionPrefab( em, motionBlobData, motionArchetype, streamArchetype );
+            var motionPrefab = createMotionPrefab( em, motionBlobData, this.motionPrefabArchetype );
+            var streamPrefabs = createStreamPrefabs( em, motionBlobData, this.streamPrefabArchetype );
 
-            return prefab;
+            return (motionPrefab, streamPrefabs);
 
 
+            // モーションエンティティ生成
             Entity createMotionPrefab
-            (
-                EntityManager em_, BlobAssetReference<MotionBlobData> motionBlobData_,
-                EntityArchetype motionArchetype_, EntityArchetype streamArchetype_
-            )
+                ( EntityManager em_, BlobAssetReference<MotionBlobData> motionBlobData_, EntityArchetype motionArchetype_ )
             {
-                // モーションエンティティ生成
                 var motionEntity = em_.CreateEntity( motionArchetype_ );
                 em_.SetComponentData( motionEntity, new MotionClipData { ClipData = motionBlobData_ } );
 
-                // ストリームエンティティ生成
+                return motionEntity;
+            }
+
+            // ストリームエンティティ生成
+            NativeArray<Entity> createStreamPrefabs
+                ( EntityManager em_, BlobAssetReference<MotionBlobData> motionBlobData_, EntityArchetype streamArchetype_ )
+            {
                 var streamLength = motionBlobData_.Value.BoneParents.Length * 2;
                 var streamEntities = new NativeArray<Entity>( streamLength, Allocator.Temp );
                 em_.CreateEntity( streamArchetype_, streamEntities );
 
-                // バッファに追加
-                em_.SetLinkedEntityGroup( motionEntity, streamEntities );
-
-                // 一時領域破棄
-                streamEntities.Dispose();
-
-                return motionEntity;
+                return streamEntities;
             }
         }
 
