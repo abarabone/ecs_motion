@@ -39,20 +39,13 @@ namespace Abss.Arthuring
         void Awake()
         {
             var em = World.Active.EntityManager;
-
-            var prefabCreators = new PrefabCreators
-            {
-                Character = new CharactorPrefabCreator( em ),
-                Motion = new MotionPrefabCreator( em ),
-                Bones = new BonePrefabCreator( em ),
-                Draw = new DrawMeshPrefabCreator( em ),
-            };
+            
 
             var drawMeshCsSystem = em.World.GetExistingSystem<DrawMeshCsSystem>();
             var drawMeshCsResourceHolder = drawMeshCsSystem.GetResourceHolder();
 
             this.PrefabEntities = this.PrefabGameObjects
-                .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, prefabCreators ) )
+                .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder ) )
                 .ToArray();
 
             this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
@@ -82,10 +75,39 @@ namespace Abss.Arthuring
 
         public abstract class ConvertToCustomPrefabEntityBehaviour : MonoBehaviour
         {
-            abstract public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, PrefabCreators creators );
+            abstract public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres );
         }
     }
 
 
+    /// <summary>
+    /// アーキタイプを EntityManager ごとにキャッシュする。
+    /// もしかすると、CreateArchetype() 自体にそういった仕組みがあるかもしれない、その場合は不要となる。
+    /// </summary>
+    public class EntityArchetypeCache
+    {
+
+        Dictionary<EntityManager, EntityArchetype> archetypeCache;
+
+        Func<EntityManager, EntityArchetype> createFunc;
+
+
+        public EntityArchetypeCache( Func<EntityManager, EntityArchetype> createFunc )
+        {
+            this.archetypeCache = new Dictionary<EntityManager, EntityArchetype>();
+            this.createFunc = createFunc;
+        }
+
+        public EntityArchetype GetOrCreateArchetype( EntityManager em )
+        {
+            if( this.archetypeCache.TryGetValue( em, out var archetype ) ) return archetype;
+
+            archetype = this.createFunc( em );
+
+            archetypeCache.Add( em, archetype );
+
+            return archetype;
+        }
+    }
 }
 

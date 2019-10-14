@@ -34,42 +34,35 @@ namespace Abss.Arthuring
         public bool UsePhysics;
 
 
-        public NativeArray<Entity> Convert(
-            EntityManager em, BonePrefabCreator boneCreator,
-            Entity motionPrefab, NativeArray<Entity> streamPrefabs, Entity drawPrefab
-        )
+        public NativeArray<Entity> Convert
+            ( EntityManager em, Entity motionPrefab, NativeArray<Entity> streamPrefabs, Entity drawPrefab )
         {
 
-            return boneCreator.CreatePrefabs( em, motionPrefab, streamPrefabs, drawPrefab );
+            return BonePrefabCreator.CreatePrefabs( em, motionPrefab, streamPrefabs, drawPrefab );
 
         }
     }
 
 
-    public class BonePrefabCreator
+    static public class BonePrefabCreator
     {
-
-        EntityArchetype BonePrefabArchetype;
-
-
-        public BonePrefabCreator( EntityManager em )
-        {
-
-            this.BonePrefabArchetype = em.CreateArchetype
+        
+        static EntityArchetypeCache archetypeCache = new EntityArchetypeCache
+        (
+            em => em.CreateArchetype
             (
                 typeof( BoneDrawTargetIndexData ),
                 typeof( BoneDrawLinkData ),
-                typeof( BoneTransformLinkData ),
+                typeof( BoneRelationLinkData ),
                 typeof( BoneStreamLinkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Prefab )
-            );
+            )
+        );
 
-        }
 
-
-        public NativeArray<Entity> CreatePrefabs
+        static public NativeArray<Entity> CreatePrefabs
             ( EntityManager em, Entity motionPrefab, NativeArray<Entity> streamPrefabs, Entity drawPrefab )
         {
 
@@ -93,9 +86,10 @@ namespace Abss.Arthuring
                 ( EntityManager em_, Entity motionPrefab_, ref MotionBlobData motionBlobData_ )
             {
                 var boneLength = motionBlobData_.BoneParents.Length;
-
                 var bonePrefabs_ = new NativeArray<Entity>( boneLength, Allocator.Temp );
-                em_.CreateEntity( this.BonePrefabArchetype, bonePrefabs_ );
+
+                var archetype = archetypeCache.GetOrCreateArchetype( em );
+                em_.CreateEntity( archetype, bonePrefabs_ );
 
                 return bonePrefabs_;
             }
@@ -137,19 +131,21 @@ namespace Abss.Arthuring
             unsafe void setBoneRelationLinks
                 ( EntityManager em_, NativeArray<Entity> bonePrefabs_, ref MotionBlobData motionBlobData_ )
             {
-                var pBoneParents = (int*)motionBlobData_.BoneParents.GetUnsafePtr();
                 var boneLength = motionBlobData_.BoneParents.Length;
-
-                ref var boneParents = ref motionBlobData_.BoneParents;
+                var pBoneParents = (int*)motionBlobData_.BoneParents.GetUnsafePtr();
+                var bones = bonePrefabs_
+                    .Prepend( Entity.Null )
+                    .Append( Entity.Null )
+                    .ToArray();
                 
-
                 var qBoneLinker =
-                    from x in bonePrefabs_.Select( ( ent, i ) => (ent, i) )
-                    let parentId = pBoneParents[ x.i ]
-                    select new BoneTransformLinkData
+                    from i in Enumerable.Range(0, boneLength)
+                    let parentId = pBoneParents[ i ]
+                    let nextId = i + 1
+                    select new BoneRelationLinkData
                     {
-                        ParentBoneEntity = bonePrefabs_[ parentId ],
-                        NextEntity = x.i == boneLength - 1 ? Entity.Null : bonePrefabs_[ x.i + 1 ],
+                        ParentBoneEntity = bones[ parentId + 1 ],
+                        NextEntity = bones[ nextId + 1 ],
                     };
 
                 em_.SetComponentData( bonePrefabs_, qBoneLinker );
@@ -159,16 +155,6 @@ namespace Abss.Arthuring
         
     }
 
-    static public class aaa
-    {
-        static public unsafe T[] ToArray<T>( ref this BlobArray<T> blobArray )
-            where T : struct
-        {
-            var dstArr = new T[ blobArray.Length ];
 
-            
 
-            return dstArr;
-        }
-    }
 }

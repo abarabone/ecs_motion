@@ -24,55 +24,53 @@ namespace Abss.Arthuring
         public MotionClip MotionClip;
 
 
-        public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) Convert
-            ( EntityManager em, MotionPrefabCreator motionCreator )
+        public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) Convert( EntityManager em )
         {
             var motionClip = this.MotionClip;
             
-            return motionCreator.CreatePrefab( em, motionClip );
+            return MotionPrefabCreator.CreatePrefab( em, motionClip );
         }
     }
 
 
 
-    public class MotionPrefabCreator
+    static public class MotionPrefabCreator
     {
 
         
-        EntityArchetype motionPrefabArchetype;
-        EntityArchetype streamPrefabArchetype;
-
-
-
-        public MotionPrefabCreator( EntityManager em )
-        {
-            
-            this.motionPrefabArchetype = em.CreateArchetype
+        static EntityArchetypeCache motionArchetypeCache = new EntityArchetypeCache
+        (
+            em => em.CreateArchetype
             (
                 typeof( MotionInfoData ),
                 typeof( MotionClipData ),
                 typeof( MotionInitializeData ),
                 typeof( Prefab )
-            );
-
-            this.streamPrefabArchetype = em.CreateArchetype
+            )
+        );
+        
+        static EntityArchetypeCache streamArchetypeCache = new EntityArchetypeCache
+        (
+            em => em.CreateArchetype
             (
                 typeof( StreamKeyShiftData ),
                 typeof( StreamNearKeysCacheData ),
                 typeof( StreamTimeProgressData ),
                 typeof( Prefab )
-            );
-        }
+            )
+        );
 
 
-        public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) CreatePrefab
+        static public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) CreatePrefab
             ( EntityManager em, MotionClip motionClip )
         {
 
+            var motionArchetype = motionArchetypeCache.GetOrCreateArchetype( em );
+            var streamArchetype = streamArchetypeCache.GetOrCreateArchetype( em );
             var motionBlobData = motionClip.ConvertToBlobData();
 
-            var motionPrefab = createMotionPrefab( em, motionBlobData, this.motionPrefabArchetype );
-            var streamPrefabs = createStreamPrefabs( em, motionBlobData, this.streamPrefabArchetype );
+            var motionPrefab = createMotionPrefab( em, motionBlobData, motionArchetype );
+            var streamPrefabs = createStreamPrefabs( em, motionBlobData, streamArchetype );
 
             return (motionPrefab, streamPrefabs);
 

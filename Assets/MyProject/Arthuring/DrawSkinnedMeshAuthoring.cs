@@ -94,14 +94,14 @@ namespace Abss.Arthuring
 
 
 
-        public DrawMeshPrefabCreator( EntityManager em )
-        {
-            this.prefabArchetype = em.CreateArchetype
+        static EntityArchetypeCache archetypeCache = new EntityArchetypeCache
+        (
+            em => em.CreateArchetype
             (
                 typeof( DrawModelIndexData ),
                 typeof( Prefab )
-            );
-        }
+            )
+        );
 
 
         public Entity CreatePrefab( EntityManager em, int index )
