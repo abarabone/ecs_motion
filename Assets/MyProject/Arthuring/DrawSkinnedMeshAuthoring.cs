@@ -23,14 +23,11 @@ namespace Abss.Arthuring
         // 同じカテゴリのテクスチャを結合（最初は全部結合でいい）
         // 描画システムにメッシュ、マテリアル、バッファを追加する
         
-
+        
         public Shader Shader;
 
 
-        public Entity Convert(
-            EntityManager em,
-            DrawMeshPrefabCreator drawCreator, DrawMeshResourceHolder drawres
-        )
+        public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres )
         {
             
             var mrs = this.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -43,7 +40,7 @@ namespace Abss.Arthuring
 
             var drawIndex = drawres.AddDrawMeshResource( mesh, mat );
 
-            return drawCreator.CreatePrefab( em, drawIndex );
+            return DrawMeshPrefabCreator.CreatePrefab( em, drawIndex );
 
 
             // メッシュを結合する
@@ -87,12 +84,9 @@ namespace Abss.Arthuring
 
     
 
-    public class DrawMeshPrefabCreator
+    static public class DrawMeshPrefabCreator
     {
         
-        EntityArchetype prefabArchetype;
-
-
 
         static EntityArchetypeCache archetypeCache = new EntityArchetypeCache
         (
@@ -104,9 +98,11 @@ namespace Abss.Arthuring
         );
 
 
-        public Entity CreatePrefab( EntityManager em, int index )
+        static public Entity CreatePrefab( EntityManager em, int index )
         {
-            var ent = em.CreateEntity( this.prefabArchetype );
+            var archetype = archetypeCache.GetOrCreateArchetype( em );
+
+            var ent = em.CreateEntity( archetype );
 
             em.SetComponentData( ent,
                 new DrawModelIndexData

@@ -48,4 +48,8 @@ namespace Abss.Draw
         public int BoneLength;
 	}
 
+    public struct DrawBoneRelationLinkData : IComponentData
+    {
+        public Entity BoneEntityTop;
+    }
 }

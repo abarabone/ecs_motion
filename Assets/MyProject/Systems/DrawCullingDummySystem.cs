@@ -51,7 +51,7 @@ namespace Abss.Draw
         }
 
 
-        //[BurstCompile]
+        [BurstCompile]
         struct DrawCullingDummyJob : IJobForEach<DrawModelIndexData>
         {
 
@@ -61,7 +61,7 @@ namespace Abss.Draw
             public void Execute( ref DrawModelIndexData model )
             {
 
-                model.instanceIndex = this.InstanceCounters[model.modelIndex].GetSerial();
+                //model.instanceIndex = this.InstanceCounters[model.modelIndex].GetSerial();
 
             }
         }

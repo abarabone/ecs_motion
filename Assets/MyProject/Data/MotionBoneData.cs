@@ -15,7 +15,6 @@ using Unity.Properties;
 using Unity.Burst;
 
 using Abss.Geometry;
-using Abss.Obj.Entities;
 
 namespace Abss.Motion
 {

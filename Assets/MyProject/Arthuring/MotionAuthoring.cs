@@ -44,7 +44,8 @@ namespace Abss.Arthuring
             (
                 typeof( MotionInfoData ),
                 typeof( MotionClipData ),
-                typeof( MotionInitializeData ),
+                typeof( MotionStreamLinkData ),
+                typeof( MotionInitializeTag ),
                 typeof( Prefab )
             )
         );
@@ -53,9 +54,11 @@ namespace Abss.Arthuring
         (
             em => em.CreateArchetype
             (
+                typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
                 typeof( StreamNearKeysCacheData ),
                 typeof( StreamTimeProgressData ),
+                typeof( StreamInterpolatedData ),
                 typeof( Prefab )
             )
         );
@@ -70,9 +73,21 @@ namespace Abss.Arthuring
             var motionBlobData = motionClip.ConvertToBlobData();
 
             var motionPrefab = createMotionPrefab( em, motionBlobData, motionArchetype );
-            var streamPrefabs = createStreamPrefabs( em, motionBlobData, streamArchetype );
+            using( var posStreamPrefabs = createStreamOfSectionPrefabs( em, motionBlobData, streamArchetype ) )
+            using( var rotStreamPrefabs = createStreamOfSectionPrefabs( em, motionBlobData, streamArchetype ) )
+            {
 
-            return (motionPrefab, streamPrefabs);
+                em.SetComponentData( motionPrefab,
+                    new MotionStreamLinkData
+                    {
+                        PositionStreamTop = posStreamPrefabs[0],
+                        RotationStreamTop = rotStreamPrefabs[0],
+                    }
+                );
+
+                var streamPrefabs = (posStreamPrefabs, rotStreamPrefabs).Concat( Allocator.Temp );
+                return (motionPrefab, streamPrefabs);
+            }
 
 
             // モーションエンティティ生成
@@ -86,12 +101,21 @@ namespace Abss.Arthuring
             }
 
             // ストリームエンティティ生成
-            NativeArray<Entity> createStreamPrefabs
+            NativeArray<Entity> createStreamOfSectionPrefabs
                 ( EntityManager em_, BlobAssetReference<MotionBlobData> motionBlobData_, EntityArchetype streamArchetype_ )
             {
-                var streamLength = motionBlobData_.Value.BoneParents.Length * 2;
+                var streamLength = motionBlobData_.Value.BoneParents.Length;
+                
                 var streamEntities = new NativeArray<Entity>( streamLength, Allocator.Temp );
                 em_.CreateEntity( streamArchetype_, streamEntities );
+
+                var qNextLinker = 
+                    from ent in streamEntities.Skip( 1 ).Append( Entity.Null )
+                    select new StreamRelationData
+                    {
+                        NextStreamEntity = ent,
+                    };
+                em_.SetComponentData( streamEntities, qNextLinker );
 
                 return streamEntities;
             }

@@ -21,7 +21,7 @@ namespace Abss.Motion
 {
 	
 
-	public struct MotionInitializeData : IComponentData
+	public struct MotionInitializeTag : IComponentData
 	{
         //public int MotionIndex;
         //public MotionDataInNative MotionData;
@@ -37,20 +37,10 @@ namespace Abss.Motion
         public int MotionIndex;
     }
 
-	//public struct MotionProgressData : IComponentData
-	//{
-	//	public float4x4	Matrix;
-	//}
-
-
-
-	//[InternalBufferCapacity(16*2)]
-	//public struct MotionStreamElement : IBufferElementData
-	//{
-	//	public StreamKeyShiftData		Shift;
-	//	public StreamTimeProgressData	Progress;
-	//	public StreamNearKeysCacheData	Cache;
-	//}
-	
+    public struct MotionStreamLinkData : IComponentData
+    {
+        public Entity PositionStreamTop;
+        public Entity RotationStreamTop;
+    }
 	
 }

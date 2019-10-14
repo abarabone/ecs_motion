@@ -26,14 +26,6 @@ namespace Abss.Arthuring
         public Entity[] PrefabEntities { get; private set; }
 
 
-        public class PrefabCreators
-        {
-            public CharactorPrefabCreator   Character;
-            public MotionPrefabCreator      Motion;
-            public BonePrefabCreator        Bones;
-            public DrawMeshPrefabCreator    Draw;
-        }
-
         List<Entity> ents = new List<Entity>();
 
         void Awake()
@@ -48,13 +40,8 @@ namespace Abss.Arthuring
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder ) )
                 .ToArray();
 
-            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
-            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
-            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
-            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
-            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
-            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
-            this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
+            foreach( var x in Enumerable.Range(0,10000) )
+                this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
         }
 
         void Update()

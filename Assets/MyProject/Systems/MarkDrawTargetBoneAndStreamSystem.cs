@@ -27,6 +27,7 @@ namespace Abss.Draw
         }
 
 
+        [BurstCompile]
         struct MarkBoneJob : IJobForEach<BoneDrawLinkData, BoneDrawTargetIndexData>
         {
 
@@ -60,6 +61,7 @@ namespace Abss.Draw
         }
 
 
+        [BurstCompile]
         struct MarkStreamJob : IJobForEach<StreamDrawLinkData, StreamDrawTargetData>
         {
 
@@ -93,6 +95,7 @@ namespace Abss.Draw
         }
 
 
+        [BurstCompile]
         struct MarkStreamJob : IJobForEach<StreamDrawLinkData, StreamDirectDrawTargetIndexData>
         {
 

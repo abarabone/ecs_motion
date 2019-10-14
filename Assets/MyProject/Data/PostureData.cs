@@ -15,31 +15,16 @@ using Unity.Properties;
 using Unity.Burst;
 using Abss.Geometry;
 
-namespace Abss.Obj.Entities
+namespace Abss.Object
 {
 	
-	public struct ObjectInitializeLabel : IComponentData
-	{
-		public Entity	ObjectEntity;
-	}
+    public struct PostureLinkData : IComponentData
+    {
+        public Entity BoneRelationTop;
+    }
 
-	public struct ObjectPostureData : IComponentData
-	{
-		public float3		position;
-		public quaternion	rotation;
-		public float3		scale;
-	}
-	
-	public struct ObjectDrawTargetLabel : IComponentData
-	{
-		public Entity	ObjectEntity;
-		public Entity	BoneEntityTop;
-		public int		BoneLength;
-	}
+    public struct PostureNeedTransformTag : IComponentData
+    { }
 
-	public struct ObjectDrawingInFrameLabel : IComponentData
-	{
-		public int  orderId;
-	}
 	
 }

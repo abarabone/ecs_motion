@@ -15,6 +15,7 @@ using Abss.SystemGroup;
 namespace Abss.Motion
 {
     
+    //[UpdateAfter(typeof())]
     [UpdateInGroup(typeof(MotionSystemGroup))]
     public class MotionProgressSystem : JobComponentSystem
     {

@@ -41,7 +41,27 @@ namespace Abss.Misc
 			return new NativeArray<T>( e.ToArray(), allocator );
 		}
 
-	}
+        static public NativeArray<T> Concat<T>( this (NativeArray<T>, NativeArray<T>) src, Allocator allocator )
+            where T:struct
+        {
+            var dst = new NativeArray<T>( src.Item1.Length + src.Item2.Length, allocator );
+            NativeArray<T>.Copy( src.Item1, 0, dst, 0, src.Item1.Length );
+            NativeArray<T>.Copy( src.Item2, 0, dst, src.Item1.Length, src.Item2.Length );
+            return dst;
+        }
+        static public NativeArray<T> Concat<T>( this (NativeArray<T>, NativeArray<T>, NativeArray<T>) src, Allocator allocator )
+            where T : struct
+        {
+            var dst = new NativeArray<T>( src.Item1.Length + src.Item2.Length + src.Item3.Length, allocator );
+            var i = 0;
+            NativeArray<T>.Copy( src.Item1, 0, dst, i, src.Item1.Length );
+            i += src.Item1.Length;
+            NativeArray<T>.Copy( src.Item2, 0, dst, i, src.Item2.Length );
+            i += src.Item2.Length;
+            NativeArray<T>.Copy( src.Item3, 0, dst, i, src.Item3.Length );
+            return dst;
+        }
+    }
 	
 	public static class NativeListExtension
 	{

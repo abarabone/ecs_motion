@@ -21,15 +21,15 @@ namespace Abss.Motion
 	
 
 	
-	public struct StreamInitialTag : IComponentData
-	{
-        public Entity MotionEntity;
-        //public int BoneIndex;
-        public BlobArray<KeyBlobUnit> Keys;
-    }
+	//public struct StreamInitializeTag : IComponentData
+	//{
+ //       public Entity MotionEntity;
+ //       //public int BoneIndex;
+ //       public BlobArray<KeyBlobUnit> Keys;
+ //   }
 
-	public struct StreamInitialFor1posTag : IComponentData
-	{}
+	//public struct StreamInitialFor1posTag : IComponentData
+	//{}
 
 
     public struct StreamDrawTargetData : IComponentData
@@ -37,14 +37,22 @@ namespace Abss.Motion
         public bool IsDrawTarget;
     }
 
-    public struct StreamDirectDrawTargetIndexData : IComponentData
+    public struct StreamRelationData : IComponentData
     {
-        public int DrawInstanceVectorIndex;
+        public Entity NextStreamEntity;
     }
 
     public struct StreamDrawLinkData : IComponentData
     {
         public Entity DrawEntity;
+    }
+
+    /// <summary>
+    /// 最適化用
+    /// </summary>
+    public struct StreamDirectDrawTargetIndexData : IComponentData
+    {
+        public int DrawInstanceVectorIndex;
     }
 
 

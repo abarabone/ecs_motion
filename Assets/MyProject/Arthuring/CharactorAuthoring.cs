@@ -26,19 +26,17 @@ namespace Abss.Arthuring
 
 
         public override Entity Convert
-            ( EntityManager em, DrawMeshResourceHolder drawResources, PrefabSettingsAuthoring.PrefabCreators creators )
+            ( EntityManager em, DrawMeshResourceHolder drawResources )
         {
 
             var motionAuthor = this.GetComponent<MotionAuthoring>();
-            var (motionPrefab, streamPrefabs) = motionAuthor.Convert( em, creators.Motion );
+            var (motionPrefab, streamPrefabs) = motionAuthor.Convert( em );
 
             var drawAuthor = this.GetComponent<DrawSkinnedMeshAuthoring>();
-            var drawPrefab = drawAuthor.Convert( em, creators.Draw, drawResources );
+            var drawPrefab = drawAuthor.Convert( em, drawResources );
 
             var boneAuthor = this.GetComponent<BoneAuthoring>();
-            var bonePrefabs = boneAuthor.Convert( em, creators.Bones, motionPrefab, streamPrefabs, drawPrefab );
-
-            this.gameObject.SetActive( false );
+            var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, motionPrefab, streamPrefabs, drawPrefab );
 
 
             var qChildren = Enumerable
@@ -46,13 +44,17 @@ namespace Abss.Arthuring
                 .Append( motionPrefab )
                 .Concat( streamPrefabs )
                 .Concat( bonePrefabs )
+                .Append( posturePrefab )
                 .Append( drawPrefab )
                 ;
 
-            var prefab = creators.Character.CreatePrefab( em, qChildren );
+            var prefab = CharactorPrefabCreator.CreatePrefab( em, qChildren );
 
             streamPrefabs.Dispose();
             bonePrefabs.Dispose();
+
+
+            this.gameObject.SetActive( false );
 
             return prefab;
         }
@@ -60,28 +62,24 @@ namespace Abss.Arthuring
     }
 
 
-    public class CharactorPrefabCreator
+    static public class CharactorPrefabCreator
     {
         
-        EntityArchetype charactorPrefabArchetype;
-
-
-
-        public CharactorPrefabCreator( EntityManager em )
-        {
-
-            this.charactorPrefabArchetype = em.CreateArchetype
+        static EntityArchetypeCache archetypeCache = new EntityArchetypeCache
+        (
+            em => em.CreateArchetype
             (
                 typeof( LinkedEntityGroup ),
                 typeof( Prefab )
-            );
+            )
+        );
 
-        }
 
-
-        public Entity CreatePrefab( EntityManager em, IEnumerable<Entity> children )
+        static public Entity CreatePrefab( EntityManager em, IEnumerable<Entity> children )
         {
-            var prefab = em.CreateEntity( this.charactorPrefabArchetype );
+            var archetype = archetypeCache.GetOrCreateArchetype( em );
+
+            var prefab = em.CreateEntity( archetype );
 
             em.SetLinkedEntityGroup( prefab, children );
 

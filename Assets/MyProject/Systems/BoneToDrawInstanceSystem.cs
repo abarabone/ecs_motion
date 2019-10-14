@@ -50,6 +50,7 @@ namespace Abss.Draw
         }
 
 
+        [BurstCompile]
         struct BoneToDrawInstanceJob : IJobForEach<BoneDrawTargetIndexData, Translation, Rotation>
         {
 
