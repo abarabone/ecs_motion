@@ -25,7 +25,7 @@ namespace Abss.Arthuring
         
         
         public Shader Shader;
-
+        
 
         public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres )
         {

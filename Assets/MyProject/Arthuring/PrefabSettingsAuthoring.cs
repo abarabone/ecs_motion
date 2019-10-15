@@ -40,7 +40,7 @@ namespace Abss.Arthuring
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder ) )
                 .ToArray();
 
-            foreach( var x in Enumerable.Range(0,10000) )
+            foreach( var x in Enumerable.Range(0,5000) )
                 this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
         }
 

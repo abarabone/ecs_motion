@@ -54,7 +54,7 @@ namespace Abss.Motion
 
 
 
-        [BurstCompile]
+        //[BurstCompile]
         struct MotionInitializeJob : IJobForEachWithEntity
             <MotionStreamLinkData, MotionInitializeTag, MotionClipData, MotionInfoData>
         {

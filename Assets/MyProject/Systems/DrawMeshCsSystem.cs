@@ -32,6 +32,10 @@ namespace Abss.Draw
     public class DrawMeshCsSystem : JobComponentSystem
     {
 
+        public int MaxInstance = 1024 * 10;
+
+
+
         // 描画用バッファ
         SimpleComputeBuffer<bone_unit> instanceTransformBuffer;
         SimpleIndirectArgsBuffer instanceArgumentsBuffer;
@@ -68,13 +72,13 @@ namespace Abss.Draw
             void createBuffers()
             {
                 this.instanceArgumentsBuffer.CreateBuffer();
-                this.instanceTransformBuffer = new SimpleComputeBuffer<bone_unit>( "bones", 4 * 16 * 1024 );
+                this.instanceTransformBuffer = new SimpleComputeBuffer<bone_unit>( "bones", 4 * 16 * this.MaxInstance );
             }
 
             void allocVectors()
             {
                 var vectorLength = 4;
-                var instanceMax = 1024;
+                var instanceMax = this.MaxInstance;
                 var arrayLengths = this.resourceHolder.Units
                     .Select( x => vectorLength * x.Mesh.bindposes.Length * instanceMax )
                     .ToArray();

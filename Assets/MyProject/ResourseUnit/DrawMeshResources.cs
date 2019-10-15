@@ -40,7 +40,9 @@ namespace Abss.Draw
 
         public List<DrawMeshCsResourceUnit> Units { get; private set; } = new List<DrawMeshCsResourceUnit>();
 
+        //public int MaxInstance;
 
+        
 
         public int AddDrawMeshResource( Mesh mesh, Material mat )
         {
