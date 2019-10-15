@@ -88,7 +88,7 @@ namespace Abss.Motion
                 this.Commands.RemoveComponent<MotionInitializeTag>( index, entity );
             }
 
-            void initSection
+            unsafe void initSection
                 ( ref MotionBlobUnit motion, Entity entTop, KeyStreamSection streamSection )
             {
                 ref var streams = ref motion.Sections[(int)streamSection].Streams;
@@ -97,7 +97,8 @@ namespace Abss.Motion
                 for( var ent = entTop; ent != Entity.Null; ent = Linkers[ent].NextStreamEntity )
                 {
                     var shifter = this.Shifters[ ent ];
-                    shifter.Keys = streams[ i ].Keys;
+                    shifter.Keys = (KeyBlobUnit*)streams[ i ].Keys.GetUnsafePtr();
+                    shifter.KeyLength = streams[ i ].Keys.Length;
                     this.Shifters[ ent ] = shifter;
 
                     var timer = this.Timers[ ent ];
@@ -108,8 +109,6 @@ namespace Abss.Motion
 
                     var cache = this.Caches[ ent ];
                     cache.InitializeKeys( ref shifter, ref timer );
-                    //timer.Progress( 0.1f );
-                    //cache.ShiftKeysIfOverKeyTimeForLooping( ref shifter, ref timer );
                     this.Caches[ ent ] = cache;
 
                     i++;

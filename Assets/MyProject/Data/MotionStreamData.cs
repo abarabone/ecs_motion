@@ -59,9 +59,10 @@ namespace Abss.Motion
     /// <summary>
     /// 現在キーの位置と、ストリームデータへの参照を保持する。
     /// </summary>
-    public struct StreamKeyShiftData : IComponentData
+    unsafe public struct StreamKeyShiftData : IComponentData
 	{
-		public BlobArray<KeyBlobUnit> Keys;
+		public KeyBlobUnit* Keys;
+        public int KeyLength;
 		
 		public int      KeyIndex_Next;
 	}
@@ -113,7 +114,7 @@ namespace Abss.Motion
 		/// <summary>
 		/// キーバッファをストリーム先頭に初期化する。
 		/// </summary>
-		static public void InitializeKeys(
+		unsafe static public void InitializeKeys(
 			ref this StreamNearKeysCacheData	nearKeys,
 			ref StreamKeyShiftData				shift,
 			ref StreamTimeProgressData			progress,
@@ -121,8 +122,8 @@ namespace Abss.Motion
 		)
 		{
 			var index0	= 0;
-			var index1	= math.min( 1, shift.Keys.Length - 1 );
-			var index2	= math.min( 2, shift.Keys.Length - 1 );
+			var index1	= math.min( 1, shift.KeyLength - 1 );
+			var index2	= math.min( 2, shift.KeyLength - 1 );
 			
 			nearKeys.Time_From = shift.Keys[ index0 ].Time.x;
 			nearKeys.Time_To   = shift.Keys[ index1 ].Time.x;
@@ -141,7 +142,7 @@ namespace Abss.Motion
 		/// <summary>
 		/// キーバッファを次のキーに移行する。終端まで来たら、最後のキーのままでいる。
 		/// </summary>
-		static public void ShiftKeysIfOverKeyTime(
+		unsafe static public void ShiftKeysIfOverKeyTime(
 			ref this StreamNearKeysCacheData	nearKeys,
 			ref StreamKeyShiftData				shift,
 			in  StreamTimeProgressData			progress
@@ -150,7 +151,7 @@ namespace Abss.Motion
 			if( progress.TimeProgress < nearKeys.Time_To ) return;
 
 
-			var nextIndex	= math.min( shift.KeyIndex_Next + 1, shift.Keys.Length - 1 );
+			var nextIndex	= math.min( shift.KeyIndex_Next + 1, shift.KeyLength - 1 );
 			var nextKey		= shift.Keys[ nextIndex ];
 			
 			nearKeys.Time_From	= nearKeys.Time_To;
@@ -168,7 +169,7 @@ namespace Abss.Motion
 		/// <summary>
 		/// キーバッファを次のキーに移行する。ループアニメーション対応版。
 		/// </summary>
-		static public void ShiftKeysIfOverKeyTimeForLooping(
+		unsafe static public void ShiftKeysIfOverKeyTimeForLooping(
 			ref this StreamNearKeysCacheData	nearKeys,
 			ref StreamKeyShiftData				shift,
 			ref StreamTimeProgressData			timer
@@ -210,7 +211,7 @@ namespace Abss.Motion
 
 			int getNextKeyIndex( in StreamKeyShiftData shift_, bool isEndOfStream_ )
 			{
-				var iKeyLast		= shift_.Keys.Length - 1;
+				var iKeyLast		= shift_.KeyLength - 1;
 				var iKeyNextNext	= shift_.KeyIndex_Next + 1;
 
 				var isEndOfKey		= iKeyNextNext > iKeyLast;

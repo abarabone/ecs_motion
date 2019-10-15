@@ -12,7 +12,6 @@ using Abss.Utilities;
 using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
-using Abss.Charactor;
 
 namespace Abss.Arthuring
 {
@@ -24,7 +23,7 @@ namespace Abss.Arthuring
         // 描画システムにメッシュ、マテリアル、バッファを追加する
         
         
-        public Shader Shader;
+        public Shader Shader = null;
         
 
         public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres )
@@ -40,7 +39,7 @@ namespace Abss.Arthuring
 
             var drawIndex = drawres.AddDrawMeshResource( mesh, mat );
 
-            return DrawMeshPrefabCreator.CreatePrefab( em, drawIndex );
+            return DrawMeshPrefabCreator.CreatePrefab( em, drawIndex, mesh.bindposes.Length );
 
 
             // メッシュを結合する
@@ -54,7 +53,7 @@ namespace Abss.Arthuring
                     }
                     ;
 
-                //return ChMeshConverter.ConvertToChMesh( mrs_.ElementAt( 0 ).sharedMesh, motionClip_ );
+                return ChMeshConverter.ConvertToChMesh( mrs_.ElementAt( 0 ).sharedMesh, motionClip_ );
 
                 var dstmesh = new Mesh();
 
@@ -93,12 +92,13 @@ namespace Abss.Arthuring
             em => em.CreateArchetype
             (
                 typeof( DrawModelIndexData ),
+                typeof( DrawInstanceTargetWorkData ),
                 typeof( Prefab )
             )
         );
 
 
-        static public Entity CreatePrefab( EntityManager em, int index )
+        static public Entity CreatePrefab( EntityManager em, int modelIndex, int boneLength )
         {
             var archetype = archetypeCache.GetOrCreateArchetype( em );
 
@@ -107,8 +107,15 @@ namespace Abss.Arthuring
             em.SetComponentData( ent,
                 new DrawModelIndexData
                 {
-                    modelIndex = index,
-                    instanceIndex = -1,
+                    ModelIndex = modelIndex,
+                    BoneLength = boneLength,
+                }
+            );
+
+            em.SetComponentData( ent,
+                new DrawInstanceTargetWorkData
+                {
+                    InstanceIndex = -1,
                 }
             );
 

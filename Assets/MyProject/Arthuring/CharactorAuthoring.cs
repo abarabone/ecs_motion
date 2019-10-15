@@ -7,13 +7,13 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 using Unity.Linq;
+using Unity.Mathematics;
 
 using Abss.Geometry;
 using Abss.Utilities;
 using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
-using Abss.Charactor;
 using Abss.Common.Extension;
 
 namespace Abss.Arthuring
@@ -21,9 +21,7 @@ namespace Abss.Arthuring
 
     public class CharactorAuthoring : PrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
     {
-
-
-
+        
 
         public override Entity Convert
             ( EntityManager em, DrawMeshResourceHolder drawResources )
@@ -37,15 +35,14 @@ namespace Abss.Arthuring
 
             var boneAuthor = this.GetComponent<BoneAuthoring>();
             var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, motionPrefab, streamPrefabs, drawPrefab );
-
-
+            
             var qChildren = Enumerable
                 .Empty<Entity>()
+                .Append( posturePrefab )
+                .Append( drawPrefab )
                 .Append( motionPrefab )
                 .Concat( streamPrefabs )
                 .Concat( bonePrefabs )
-                .Append( posturePrefab )
-                .Append( drawPrefab )
                 ;
 
             var prefab = CharactorPrefabCreator.CreatePrefab( em, qChildren );

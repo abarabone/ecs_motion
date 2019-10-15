@@ -14,7 +14,6 @@ using Abss.Utilities;
 using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
-using Abss.Charactor;
 using Abss.Common.Extension;
 
 namespace Abss.Arthuring
@@ -51,10 +50,11 @@ namespace Abss.Arthuring
         (
             em => em.CreateArchetype
             (
-                typeof( BoneDrawTargetIndexData ),
                 typeof( BoneDrawLinkData ),
                 typeof( BoneRelationLinkData ),
                 typeof( BoneStreamLinkData ),
+                typeof( BoneIdData ),
+                typeof( BoneDrawTargetIndexWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Prefab )
@@ -86,6 +86,7 @@ namespace Abss.Arthuring
             ref var motionBlobData = ref getMotionBlobData( em, motionPrefab );
 
             var bonePrefabs = createBonePrefabs( em, motionPrefab, ref motionBlobData, boneArchetype );
+            setBoneId( em, bonePrefabs );
             setStreamLinks( em, bonePrefabs, streamPrefabs, ref motionBlobData );
             setDrawLinks( em, bonePrefabs, drawPrefab, ref motionBlobData );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, ref motionBlobData );
@@ -111,6 +112,14 @@ namespace Abss.Arthuring
                 em_.CreateEntity( archetype, bonePrefabs_ );
 
                 return bonePrefabs_;
+            }
+
+            void setBoneId( EntityManager em_, NativeArray<Entity> bonePreafabs_ )
+            {
+                em_.SetComponentData( bonePreafabs_,
+                    from x in Enumerable.Range( 0, bonePreafabs_.Length )
+                    select new BoneIdData { BoneId = x }
+                );
             }
 
             void setStreamLinks(

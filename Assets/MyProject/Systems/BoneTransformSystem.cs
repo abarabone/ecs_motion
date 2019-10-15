@@ -32,8 +32,8 @@ namespace Abss.Motion
             {
                 BoneRelationLinkers = this.GetComponentDataFromEntity<BoneRelationLinkData>( isReadOnly: true ),
                 BoneStreamLinkers = this.GetComponentDataFromEntity<BoneStreamLinkData>( isReadOnly: true ),
-                BonePoss = this.GetComponentDataFromEntity<Translation>(),
-                BoneRots = this.GetComponentDataFromEntity<Rotation>(),
+                BonePositions = this.GetComponentDataFromEntity<Translation>(),
+                BoneRotations = this.GetComponentDataFromEntity<Rotation>(),
             }
             .Schedule( this, inputDeps );
 
@@ -52,9 +52,9 @@ namespace Abss.Motion
             public ComponentDataFromEntity<BoneStreamLinkData>      BoneStreamLinkers;
 
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Translation>             BonePoss;
+            public ComponentDataFromEntity<Translation>             BonePositions;
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Rotation>                BoneRots;
+            public ComponentDataFromEntity<Rotation>                BoneRotations;
 
             public void Execute(
                 [ReadOnly] ref PostureNeedTransformTag tag,
@@ -65,64 +65,20 @@ namespace Abss.Motion
                 {
                     var parent = this.BoneRelationLinkers[ ent ].ParentBoneEntity;
 
-                    var ppos = this.BonePoss[ parent ].Value;
-                    var prot = this.BoneRots[ parent ].Value;
+                    var ppos = this.BonePositions[ parent ].Value;
+                    var prot = this.BoneRotations[ parent ].Value;
 
-                    var lpos = this.BonePoss[ ent ].Value;
-                    var lrot = this.BonePoss[ ent ].Value;
+                    var lpos = this.BonePositions[ ent ].Value;
+                    var lrot = this.BoneRotations[ ent ].Value;
 
                     var mpos = math.mul( prot, lpos ) + ppos;
                     var mrot = math.mul( prot, lrot );
 
-                    this.BonePoss[ ent ] = new Translation { Value = mpos };
-                    this.BoneRots[ ent ] = new Rotation { Value = mrot.As_float4() };
+                    this.BonePositions[ ent ] = new Translation { Value = mpos };
+                    this.BoneRotations[ ent ] = new Rotation { Value = mrot };
                 }
             }
         }
     }
-
-
-    [UpdateAfter( typeof( MotionProgressSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
-    public class StreamToBoneSystem : JobComponentSystem
-    {
-
-
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
-        {
-
-            inputDeps = new StreamToBoneJob
-            {
-                StreamValues = this.GetComponentDataFromEntity<StreamInterpolatedData>( isReadOnly: true ),
-            }
-            .Schedule( this, inputDeps );
-
-            return inputDeps;
-        }
-
-
-
-        [BurstCompile]
-        public struct StreamToBoneJob : IJobForEach<BoneStreamLinkData, Translation, Rotation>
-        {
-
-            [ReadOnly]
-            public ComponentDataFromEntity<StreamInterpolatedData> StreamValues;
-
-
-            public void Execute(
-                [ReadOnly]  ref BoneStreamLinkData streamLinker,
-                [WriteOnly] ref Translation pos,
-                [WriteOnly] ref Rotation rot
-            )
-            {
-
-                pos.Value = this.StreamValues[ streamLinker.PositionStreamEntity ].Value.As_float3();
-                rot.Value = this.StreamValues[ streamLinker.RotationStreamEntity ].Value;
-
-            }
-        }
-
-    }
-
+    
 }

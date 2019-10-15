@@ -17,7 +17,7 @@ namespace Abss.Draw
 {
 
     [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
-    [UpdateBefore( typeof( MarkDrawTargetStreamSystem ) )]
+    [UpdateBefore( typeof( MarkDrawTargetMotionStreamSystem ) )]
     [UpdateInGroup(typeof(DrawPrevSystemGroup))]
     public class DrawCullingDummySystem : JobComponentSystem
     {
@@ -39,6 +39,9 @@ namespace Abss.Draw
             if( !instanceCounters.IsCreated ) return inputDeps;
 
 
+            foreach( var x in instanceCounters )
+                x.Reset();
+
             inputDeps = new DrawCullingDummyJob
             {
                 InstanceCounters = instanceCounters,
@@ -52,16 +55,17 @@ namespace Abss.Draw
 
 
         [BurstCompile]
-        struct DrawCullingDummyJob : IJobForEach<DrawModelIndexData>
+        struct DrawCullingDummyJob : IJobForEach<DrawModelIndexData, DrawInstanceTargetWorkData>
         {
 
             public NativeArray<ThreadSafeCounter<Persistent>> InstanceCounters;
 
 
-            public void Execute( ref DrawModelIndexData model )
+            public void Execute
+                ( [ReadOnly] ref DrawModelIndexData model, [WriteOnly] ref DrawInstanceTargetWorkData target )
             {
-
-                //model.instanceIndex = this.InstanceCounters[model.modelIndex].GetSerial();
+                
+                target.InstanceIndex = this.InstanceCounters[ model.ModelIndex ].GetSerial();
 
             }
         }

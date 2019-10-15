@@ -38,7 +38,7 @@ namespace Abss.Motion
 
 
         /// <summary>
-        /// ストリーム回転　→補間→　ボーン
+        /// ストリーム回転 → 補間
         /// </summary>
         [BurstCompile]
         struct StreamInterpolationJob : IJobForEach

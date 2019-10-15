@@ -6,6 +6,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
+using Unity.Mathematics;
 using Unity.Linq;
 
 using Abss.Geometry;
@@ -13,7 +14,6 @@ using Abss.Utilities;
 using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
-using Abss.Charactor;
 
 namespace Abss.Arthuring
 {
@@ -40,8 +40,12 @@ namespace Abss.Arthuring
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder ) )
                 .ToArray();
 
-            foreach( var x in Enumerable.Range(0,5000) )
+            foreach( var x in Enumerable.Range(0,2))//8000) )
                 this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
+
+            var pent = em.GetBuffer<LinkedEntityGroup>( this.ents[ 0 ] )[ 1 ].Value;
+            em.SetComponentData( pent, new Translation { Value = new float3( 1, 0, 0 ) } );//
+
         }
 
         void Update()

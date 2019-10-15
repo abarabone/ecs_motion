@@ -145,7 +145,7 @@ namespace Abss.Misc
 		public NativeListDeferDiscardableReadOnly( in NativeList<T> origin )
 		{
 			this.origin		= origin;
-			this.Elements	= origin.ToDeferredJobArray();
+			this.Elements	= origin.AsDeferredJobArray();
 		}
 	}
 

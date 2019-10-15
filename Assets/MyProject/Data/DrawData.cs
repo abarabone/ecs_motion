@@ -38,18 +38,21 @@ namespace Abss.Draw
 		public float	radius;
 	}
 
-	/// <summary>
-	/// 描画モデルの種類情報
-	/// </summary>
-	public struct DrawModelIndexData : IComponentData
-	{
-		public int	modelIndex;
-        public int instanceIndex;
+    /// <summary>
+    /// 描画モデルの種類情報
+    /// </summary>
+    public struct DrawModelIndexData : IComponentData
+    {
+        public int ModelIndex;
         public int BoneLength;
+    }
+    public struct DrawInstanceTargetWorkData : IComponentData
+    {
+        public int InstanceIndex;   // -1 なら描画しない
 	}
 
-    public struct DrawBoneRelationLinkData : IComponentData
-    {
-        public Entity BoneEntityTop;
-    }
+    //public struct DrawBoneRelationLinkData : IComponentData
+    //{
+    //    public Entity BoneEntityTop;
+    //}
 }

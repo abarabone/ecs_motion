@@ -12,7 +12,6 @@ using Abss.Utilities;
 using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
-using Abss.Charactor;
 using Abss.Common.Extension;
 
 namespace Abss.Arthuring
@@ -96,6 +95,7 @@ namespace Abss.Arthuring
             {
                 var motionEntity = em_.CreateEntity( motionArchetype_ );
                 em_.SetComponentData( motionEntity, new MotionClipData { ClipData = motionBlobData_ } );
+                em_.SetComponentData( motionEntity, new MotionInfoData { MotionIndex = 0 } );
 
                 return motionEntity;
             }
