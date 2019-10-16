@@ -120,7 +120,7 @@ namespace Abss.Motion
 			var streamPaths		= extractStreamPaths( Selection.objects );
 			var indexMapping	= makeBoneIndexMapping( Selection.objects, streamPaths );
 			var motionData		= buildMotionData( animationClips );
-		
+		    
 			var motionClip = ScriptableObject.CreateInstance<MotionClip>();
 			motionClip.StreamPaths			= streamPaths;
 			motionClip.IndexMapFbxToMotion	= indexMapping;
@@ -181,6 +181,7 @@ namespace Abss.Motion
 		{
 			var pathDicts = streamPaths
 				.Select( (path,i) => (path,i) )
+                //.Do( x => Debug.Log($"{x.i} {x.path}") )
 				.ToDictionary( x => x.path, x => x.i )
 				;
 
@@ -194,6 +195,7 @@ namespace Abss.Motion
 				.First().bones
 					.Select( bone => bone.gameObject )
 					.MakePath()
+                    //.Do( x => Debug.Log(x) )
 					.Select( path => pathDicts.GetOrDefault(path, defaultValue:-1) )	// ストリームにない場合は -1
 				;
 

@@ -94,7 +94,7 @@ namespace Abss.Motion
                 ref var streams = ref motion.Sections[(int)streamSection].Streams;
 
                 var i = 0;
-                for( var ent = entTop; ent != Entity.Null; ent = Linkers[ent].NextStreamEntity )
+                for( var ent = entTop; ent != Entity.Null; ent = this.Linkers[ent].NextStreamEntity )
                 {
                     var shifter = this.Shifters[ ent ];
                     shifter.Keys = (KeyBlobUnit*)streams[ i ].Keys.GetUnsafePtr();

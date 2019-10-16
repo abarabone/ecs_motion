@@ -6,6 +6,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
+using Unity.Mathematics;
 using Unity.Linq;
 
 using Abss.Object;
@@ -93,6 +94,7 @@ namespace Abss.Arthuring
 
 
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
+            em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
 
             return (bonePrefabs, posturePrefab);
 

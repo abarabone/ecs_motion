@@ -17,6 +17,7 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(DrawSystemGroup))]
     public class BoneToDrawInstanceSystem : JobComponentSystem
     {
@@ -54,8 +55,11 @@ namespace Abss.Draw
         struct BoneToDrawInstanceJob : IJobForEach<BoneDrawTargetIndexWorkData, Translation, Rotation>
         {
 
+
             [NativeDisableParallelForRestriction]
             public NativeArray<NativeSlice<float4>> DstInstanceBoneVectorEveryModels;
+
+
 
             public void Execute(
                 [ReadOnly] ref BoneDrawTargetIndexWorkData target,

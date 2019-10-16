@@ -40,11 +40,11 @@ namespace Abss.Arthuring
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder ) )
                 .ToArray();
 
-            foreach( var x in Enumerable.Range(0,2))//8000) )
+            foreach( var x in Enumerable.Range(0,1))//8000) )
                 this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
 
-            var pent = em.GetBuffer<LinkedEntityGroup>( this.ents[ 0 ] )[ 1 ].Value;
-            em.SetComponentData( pent, new Translation { Value = new float3( 1, 0, 0 ) } );//
+            //var pent = em.GetBuffer<LinkedEntityGroup>( this.ents[ 0 ] )[ 1 ].Value;
+            //em.SetComponentData( pent, new Translation { Value = new float3( 1, 0, 0 ) } );//
 
         }
 

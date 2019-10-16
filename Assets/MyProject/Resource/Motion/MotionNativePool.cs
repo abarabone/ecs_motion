@@ -118,7 +118,7 @@ namespace Abss.Motion
 
 		internal NativeSlice<int>	boneParents;
 		internal int				boneLength;
-	
+	    
 
 		public float	TimeLength		{ get; internal set; }
 

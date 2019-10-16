@@ -95,7 +95,7 @@ namespace Abss.Arthuring
             {
                 var motionEntity = em_.CreateEntity( motionArchetype_ );
                 em_.SetComponentData( motionEntity, new MotionClipData { ClipData = motionBlobData_ } );
-                em_.SetComponentData( motionEntity, new MotionInfoData { MotionIndex = 0 } );
+                em_.SetComponentData( motionEntity, new MotionInfoData { MotionIndex = 16 } );
 
                 return motionEntity;
             }

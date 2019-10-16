@@ -174,6 +174,10 @@ namespace Abss.Draw
             mat.SetBuffer( this.instanceTransformBuffer );
             //Debug.Log( this.instanceCounters[ 0 ].Count );
             mat.SetInt( "boneLength", mesh.bindposes.Length );
+            //Debug.Log( mesh.bindposes.Length );
+
+            //for( var i=0; i<32; i++ )
+            //Debug.Log( $"{i} {this.instanceBoneVectors[i]}" );
             
             Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
             

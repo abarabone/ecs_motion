@@ -31,7 +31,7 @@ namespace Abss.Motion
             inputDeps = new BoneTransformJob
             {
                 BoneRelationLinkers = this.GetComponentDataFromEntity<BoneRelationLinkData>( isReadOnly: true ),
-                BoneStreamLinkers = this.GetComponentDataFromEntity<BoneStreamLinkData>( isReadOnly: true ),
+                //BoneStreamLinkers = this.GetComponentDataFromEntity<BoneStreamLinkData>( isReadOnly: true ),
                 BonePositions = this.GetComponentDataFromEntity<Translation>(),
                 BoneRotations = this.GetComponentDataFromEntity<Rotation>(),
             }
@@ -48,8 +48,8 @@ namespace Abss.Motion
 
             [ReadOnly]
             public ComponentDataFromEntity<BoneRelationLinkData>    BoneRelationLinkers;
-            [ReadOnly]
-            public ComponentDataFromEntity<BoneStreamLinkData>      BoneStreamLinkers;
+            //[ReadOnly]
+            //public ComponentDataFromEntity<BoneStreamLinkData>      BoneStreamLinkers;
 
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Translation>             BonePositions;
@@ -71,11 +71,11 @@ namespace Abss.Motion
                     var lpos = this.BonePositions[ ent ].Value;
                     var lrot = this.BoneRotations[ ent ].Value;
 
-                    var mpos = math.mul( prot, lpos ) + ppos;
-                    var mrot = math.mul( prot, lrot );
+                    var pos = math.mul( prot, lpos ) + ppos;
+                    var rot = math.mul( prot, lrot );
 
-                    this.BonePositions[ ent ] = new Translation { Value = mpos };
-                    this.BoneRotations[ ent ] = new Rotation { Value = mrot };
+                    this.BonePositions[ ent ] = new Translation { Value = pos };
+                    this.BoneRotations[ ent ] = new Rotation { Value = rot };
                 }
             }
         }

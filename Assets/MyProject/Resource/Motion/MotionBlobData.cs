@@ -108,7 +108,7 @@ namespace Abss.Motion
                 var srcSections = srcMotion.Sections;
 
                 var dstSections = builder.Allocate( ref dstMotion.Sections, srcMotion.Sections.Length );
-                
+
                 for( var i = 0; i < srcSections.Length; i++ )
                 {
                     copyStreamToBlob( ref srcSections[i], ref dstSections[i], builder );
@@ -121,10 +121,17 @@ namespace Abss.Motion
                 var srcStreams = srcSection.Streams;
 
                 var dstStreams = builder.Allocate( ref dstSection.Streams, srcSection.Streams.Length );
-                
+
+
+                var pathToIndexDicts = motionClip.StreamPaths
+                    .Select( ( path, i ) => (path, i) )
+                    .ToDictionary( x => x.path, x => x.i );
+
                 for( var i = 0; i < srcStreams.Length; i++ )
                 {
-                    copyKeyToBlob( ref srcStreams[i], ref dstStreams[i], builder );
+                    var idst = pathToIndexDicts[ srcStreams[ i ].StreamPath ];
+                    
+                    copyKeyToBlob( ref srcStreams[i], ref dstStreams[idst], builder );
                 }
             }
             
