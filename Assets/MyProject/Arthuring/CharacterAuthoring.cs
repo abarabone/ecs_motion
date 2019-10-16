@@ -14,12 +14,13 @@ using Abss.Utilities;
 using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
+using Abss.Object;
 using Abss.Common.Extension;
 
 namespace Abss.Arthuring
 {
 
-    public class CharactorAuthoring : PrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
+    public class CharacterAuthoring : PrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
     {
         
 
@@ -47,6 +48,15 @@ namespace Abss.Arthuring
 
             var prefab = CharactorPrefabCreator.CreatePrefab( em, qChildren );
 
+            em.SetComponentData( prefab,
+                new CharacterLinkData
+                {
+                    PostureEntity = posturePrefab,
+                    DrawEntity = drawPrefab,
+                    MotionEntity = motionPrefab,
+                }
+            );
+
             streamPrefabs.Dispose();
             bonePrefabs.Dispose();
 
@@ -67,6 +77,7 @@ namespace Abss.Arthuring
             em => em.CreateArchetype
             (
                 typeof( LinkedEntityGroup ),
+                typeof( CharacterLinkData ),
                 typeof( Prefab )
             )
         );

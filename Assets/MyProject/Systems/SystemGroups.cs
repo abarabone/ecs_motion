@@ -19,6 +19,13 @@ using System.Runtime.InteropServices;
 namespace Abss.SystemGroup
 {
 
+
+    [UpdateInGroup(typeof(PresentationSystemGroup))]
+    public class ObjectLogicSystemGroup : ComponentSystemGroup
+    { }
+
+
+    [UpdateAfter(typeof(ObjectLogicSystemGroup))]
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public class DrawPrevSystemGroup : ComponentSystemGroup
     { }
