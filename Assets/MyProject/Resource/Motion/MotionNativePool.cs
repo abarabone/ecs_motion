@@ -157,19 +157,6 @@ namespace Abss.Motion
         //static public void ConvertFrom( this MotionDataInNative dst, MotionClip src )
         {
 
-			// ボーン
-			var qParentBones =
-				from parentPath in src.StreamPaths.Select( path => getParent(path) )	// ペアレントパス列挙
-				join pathIndex in src.StreamPaths.Select( (path,i) => (path,i) )		// 順序数を保持する索引と外部結合する
-					on parentPath equals pathIndex.path
-					into pathIndexes
-				from pathIndex in pathIndexes.DefaultIfEmpty( (path:"",i:-1) )			// 結合できないパスは -1
-				select pathIndex.i
-				;
-
-			string getParent( string path ) => Path.GetDirectoryName(path).Replace("\\","/");
-
-
 			// モーション
 			var qMotions =
 				from motion in src.MotionData.Motions
@@ -241,13 +228,31 @@ namespace Abss.Motion
 			dst.pool.Motions		= qMotions.ToNativeArray( Allocator.Persistent );
 			dst.pool.Keys			= qKeys.ToNativeArray( Allocator.Persistent );
 			dst.pool.StreamSlices	= qStreamSlices.ToNativeArray( Allocator.Persistent );
-			dst.pool.BoneParents	= qParentBones.ToNativeArray( Allocator.Persistent );
+
+            // ボーン関連
+			dst.pool.BoneParents	= src.StreamPaths.QueryParentIdList().ToNativeArray( Allocator.Persistent );
 			dst.boneLength			= src.StreamPaths.Length;
+
 
             return dst;
         }
 
-		/*
+
+        static public IEnumerable<int> QueryParentIdList( this IEnumerable<string> streamPaths )
+        {
+            return
+                from parentPath in streamPaths.Select( path => getParent( path ) )  // ペアレントパス列挙
+                join pathIndex in streamPaths.Select( ( path, i ) => (path, i) )    // 順序数を保持する索引と外部結合する
+                    on parentPath equals pathIndex.path
+                    into pathIndexes
+                from pathIndex in pathIndexes.DefaultIfEmpty( (path: "", i: -1) )   // 結合できないパスは -1
+                select pathIndex.i
+                ;
+
+            string getParent( string path ) => Path.GetDirectoryName( path ).Replace( "\\", "/" );
+        }
+
+        /*
 		static public void TransformKeyDataToWorld_( this MotionDataInNative motionData )
 		{
 			var qKeysPerMotions = 
@@ -375,7 +380,7 @@ namespace Abss.Motion
 			
 		}
         */
-	}
+    }
 
 	// ----------------------------------------------------------
 

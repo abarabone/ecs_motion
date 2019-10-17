@@ -27,7 +27,7 @@ namespace Abss.Arthuring
         public float Weight;
     }
 
-    public class BoneAuthoring : MonoBehaviour
+    public class BoneAuthoring : MonoBehaviour, CharacterAuthoring.IBoneConverter
     {
 
         public MotionTargetUnit[] Motions;
@@ -36,12 +36,12 @@ namespace Abss.Arthuring
 
 
         public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
-            ( EntityManager em, Entity motionPrefab, NativeArray<Entity> streamPrefabs, Entity drawPrefab )
+            ( EntityManager em, NativeArray<Entity> streamPrefabs, Entity drawPrefab )
         {
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
-            return BonePrefabCreator.CreatePrefabs( em, motionPrefab, streamPrefabs, drawPrefab, motionClip );
+            return BonePrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip );
         }
     }
 
@@ -78,21 +78,19 @@ namespace Abss.Arthuring
 
 
         static public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) CreatePrefabs
-            ( EntityManager em, Entity motionPrefab, NativeArray<Entity> streamPrefabs, Entity drawPrefab, MotionClip motionClip )
+            ( EntityManager em, NativeArray<Entity> streamPrefabs, Entity drawPrefab, MotionClip motionClip )
         {
             var postArchetype = postureArchetypeCache.GetOrCreateArchetype( em );
             var boneArchetype = boneArchetypeCache.GetOrCreateArchetype( em );
 
             var posturePrefab = em.CreateEntity( postArchetype );
 
-
-            ref var motionBlobData = ref getMotionBlobData( em, motionPrefab );
-
-            var bonePrefabs = createBonePrefabs( em, motionPrefab, motionClip, boneArchetype );
+            
+            var bonePrefabs = createBonePrefabs( em, motionClip, boneArchetype );
             setBoneId( em, bonePrefabs );
-            setStreamLinks( em, bonePrefabs, streamPrefabs, ref motionBlobData );
-            setDrawLinks( em, bonePrefabs, drawPrefab, ref motionBlobData );
-            setBoneRelationLinks( em, bonePrefabs, posturePrefab, ref motionBlobData );
+            setStreamLinks( em, bonePrefabs, streamPrefabs, motionClip );
+            setDrawLinks( em, bonePrefabs, drawPrefab, motionClip );
+            setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip );
 
 
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
@@ -100,18 +98,11 @@ namespace Abss.Arthuring
 
             return (bonePrefabs, posturePrefab);
 
-
-            ref MotionBlobData getMotionBlobData( EntityManager em_, Entity motionPrefab_ )
-            {
-                var motionClipData = em_.GetComponentData<MotionClipData>( motionPrefab_ );
-                return ref motionClipData.ClipData.Value;
-            }
-
+            
             NativeArray<Entity> createBonePrefabs
-                //( EntityManager em_, Entity motionPrefab_, ref MotionBlobData motionBlobData_, EntityArchetype archetype )
-                ( EntityManager em_, Entity motionPrefab_, MotionClip motionClip_, EntityArchetype archetype )
+                ( EntityManager em_, MotionClip motionClip_, EntityArchetype archetype )
             {
-                var boneLength = motionClip.StreamPaths.Length;
+                var boneLength = motionClip_.StreamPaths.Length;
                 var bonePrefabs_ = new NativeArray<Entity>( boneLength, Allocator.Temp );
 
                 em_.CreateEntity( archetype, bonePrefabs_ );
@@ -129,7 +120,6 @@ namespace Abss.Arthuring
 
             void setStreamLinks(
                 EntityManager em_, NativeArray<Entity> bonePrefabs_, NativeArray<Entity> streamPrefabs_,
-                //ref MotionBlobData motionBlobData_
                 MotionClip motionClip_
             )
             {
@@ -153,7 +143,6 @@ namespace Abss.Arthuring
 
             void setDrawLinks(
                 EntityManager em_,
-                //NativeArray<Entity> bonePrefabs_, Entity drawPrefab_, ref MotionBlobData motionBlobData_
                 NativeArray<Entity> bonePrefabs_, Entity drawPrefab_, MotionClip motionClip_
             )
             {
@@ -166,40 +155,34 @@ namespace Abss.Arthuring
             }
 
             unsafe void setBoneRelationLinks
-                //( EntityManager em_, NativeArray<Entity> bonePrefabs_, Entity posturePrefab_, ref MotionBlobData motionBlobData_ )
                 ( EntityManager em_, NativeArray<Entity> bonePrefabs_, Entity posturePrefab_, MotionClip motionClip_ )
             {
-                var parentIds = motionClip_.StreamPaths
-                    .
+                var qParentIds = motionClip_.StreamPaths
+                    .QueryParentIdList();
 
-                var boneLength = motionClip_.StreamPaths.Length;
-                var pBoneParents = (int*)motionBlobData_.BoneParents.GetUnsafePtr();
-                var bones = bonePrefabs_
+                var qEnts = bonePrefabs_
                     .Prepend( posturePrefab_ )
-                    .Append( Entity.Null )
-                    .ToArray();
-                
-                var qBoneLinker =
-                    from i in Enumerable.Range(0, boneLength)
-                    let parentId = pBoneParents[ i ]
-                    let nextId = i + 1
-                    select new BoneRelationLinkData
-                    {
-                        ParentBoneEntity = bones[ parentId + 1 ],// +1 は、ルートの親が -1 なので 0 に正すため
-                        NextBoneEntity = bones[ nextId + 1 ],
-                    };
+                    .Append( Entity.Null );
 
-                em_.SetComponentData( bonePrefabs_, qBoneLinker );
+                using( var parentIds = qParentIds.ToNativeArray(Allocator.Temp) )
+                using( var boneEnts = qEnts.ToNativeArray(Allocator.Temp) )
+                {
+                    var boneLength = motionClip_.StreamPaths.Length;
+                    
+                    var qBoneLinker =
+                        from i in Enumerable.Range( 0, boneLength )
+                        let parentId = parentIds[ i ]
+                        let nextId = i + 1
+                        select new BoneRelationLinkData
+                        {
+                            ParentBoneEntity = boneEnts[ parentId + 1 ],// +1 は、ルートの親が -1 なので 0 に正すため
+                            NextBoneEntity = boneEnts[ nextId + 1 ],
+                        };
+
+                    em_.SetComponentData( bonePrefabs_, qBoneLinker );
+                }
             }
 
-
-            //Entity createPosture( EntityManager em_, NativeArray<Entity> bonePrefabs_, EntityArchetype archetype )
-            //{
-            //    var prefab = em_.CreateEntity( archetype );
-            //    em_.SetComponentData( prefab, new PostureLinkData { BoneRelationTop = bonePrefabs_[ 0 ] } );
-
-            //    return prefab;
-            //}
         }
         
     }

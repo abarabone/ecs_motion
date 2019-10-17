@@ -20,9 +20,15 @@ using Abss.Common.Extension;
 namespace Abss.Arthuring
 {
 
+
     public class CharacterAuthoring : PrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
     {
-        
+
+        public interface IBoneConverter
+        {
+            (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert( EntityManager em, NativeArray<Entity> streamPrefab, Entity drawPrefab );
+        }
+
 
         public override Entity Convert
             ( EntityManager em, DrawMeshResourceHolder drawResources )
@@ -34,9 +40,9 @@ namespace Abss.Arthuring
             var drawAuthor = this.GetComponent<DrawSkinnedMeshAuthoring>();
             var drawPrefab = drawAuthor.Convert( em, drawResources );
 
-            var boneAuthor = this.GetComponent<BoneAuthoring>();
-            var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, motionPrefab, streamPrefabs, drawPrefab );
-            
+            var boneAuthor = this.GetComponent<IBoneConverter>();
+            var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, streamPrefabs, drawPrefab );
+
             var qChildren = Enumerable
                 .Empty<Entity>()
                 .Append( posturePrefab )
@@ -67,6 +73,7 @@ namespace Abss.Arthuring
         }
 
     }
+    
 
 
     static public class CharactorPrefabCreator

@@ -47,11 +47,7 @@ namespace Abss.Motion
         public int InstanceBoneOffset;
     }
 
-
-    public struct BoneLv00Data : IComponentData
-    {
-        
-    }
+    
     public struct BoneLv01Data : IComponentData
     {
         public Entity ParentBoneEntity;
