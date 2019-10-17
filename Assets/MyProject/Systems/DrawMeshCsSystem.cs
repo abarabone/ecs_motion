@@ -25,14 +25,14 @@ namespace Abss.Draw
     /// <summary>
     /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
     /// </summary>
-    //[AlwaysUpdateSystem]
+    [AlwaysUpdateSystem]
     //[DisableAutoCreation]
     [UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof(DrawSystemGroup))]
     public class DrawMeshCsSystem : JobComponentSystem
     {
 
-        public int MaxInstance = 1024 * 100;
+        public int MaxInstance = 3;//1024 * 100;
 
 
 
