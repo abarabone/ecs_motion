@@ -61,7 +61,7 @@ namespace Abss.Motion
                 [ReadOnly] ref PostureLinkData linker
             )
             {
-                for( var ent = linker.BoneRelationTop; ent != Entity.Null; ent = this.BoneRelationLinkers[ent].NextEntity )
+                for( var ent = linker.BoneRelationTop; ent != Entity.Null; ent = this.BoneRelationLinkers[ent].NextBoneEntity )
                 {
                     var parent = this.BoneRelationLinkers[ ent ].ParentBoneEntity;
 

@@ -16,9 +16,9 @@ namespace Abss.Motion
     
 	public struct MotionBlobData
 	{
-        public BlobArray<int> BoneParents;
+        //public BlobArray<int> BoneParents;
 
-		public BlobArray<MotionBlobUnit> Motions;
+        public BlobArray<MotionBlobUnit> Motions;
 	}
 
 	public struct MotionBlobUnit
@@ -60,31 +60,31 @@ namespace Abss.Motion
                 ref var dstRoot = ref builder.ConstructRoot<MotionBlobData>();
                 copyMotionToBlob( ref motionClip.MotionData, ref dstRoot, builder );
                 
-                makeBoneIds( motionClip.StreamPaths, ref dstRoot, builder );
+                //makeBoneIds( motionClip.StreamPaths, ref dstRoot, builder );
 
                 return builder.CreateBlobAssetReference<MotionBlobData>( Allocator.Persistent );
             }
 
-            void makeBoneIds( string[] streamPaths, ref MotionBlobData dstRoot, BlobBuilder builder )
-            {
-			    var qParentBones =
-				    from parentPath in streamPaths.Select( path => getParent(path) )// ペアレントパス列挙
-				    join pathIndex in streamPaths.Select( (path,i) => (path,i) )    // 順序数を保持する索引と外部結合する
-					    on parentPath equals pathIndex.path
-					    into pathIndexes
-				    from pathIndex in pathIndexes.DefaultIfEmpty( (path:"",i:-1) )  // 結合できないパスは -1
-				    select pathIndex.i
-				    ;
-                var parentBones = qParentBones.ToArray();
+       //     void makeBoneIds( string[] streamPaths, ref MotionBlobData dstRoot, BlobBuilder builder )
+       //     {
+			    //var qParentBones =
+				   // from parentPath in streamPaths.Select( path => getParent(path) )// ペアレントパス列挙
+				   // join pathIndex in streamPaths.Select( (path,i) => (path,i) )    // 順序数を保持する索引と外部結合する
+					  //  on parentPath equals pathIndex.path
+					  //  into pathIndexes
+				   // from pathIndex in pathIndexes.DefaultIfEmpty( (path:"",i:-1) )  // 結合できないパスは -1
+				   // select pathIndex.i
+				   // ;
+       //         var parentBones = qParentBones.ToArray();
                 
-			    string getParent( string path ) => Path.GetDirectoryName(path).Replace("\\","/");
+			    //string getParent( string path ) => Path.GetDirectoryName(path).Replace("\\","/");
 
-                var dstBondIds = builder.Allocate( ref dstRoot.BoneParents, parentBones.Length );
-                foreach( var x in qParentBones.Select((boneId,index)=>(boneId,index)) )
-                {
-                    dstBondIds[x.index] = x.boneId;
-                }
-            }
+       //         var dstBondIds = builder.Allocate( ref dstRoot.BoneParents, parentBones.Length );
+       //         foreach( var x in qParentBones.Select((boneId,index)=>(boneId,index)) )
+       //         {
+       //             dstBondIds[x.index] = x.boneId;
+       //         }
+       //     }
             
             void copyMotionToBlob
                 ( ref MotionDataInAsset srcRoot, ref MotionBlobData dstRoot, BlobBuilder builder )

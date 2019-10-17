@@ -31,7 +31,7 @@ namespace Abss.Object
         {
 
             var gp = Gamepad.current;
-            var input = getPadInput( gp );//gp != null ? getPadInput( gp ) : getKeyInput( Keyboard.current );
+            var input = gp != null ? getPadInput( gp ) : getKeyInput( Keyboard.current );
 
             var camRotWorld = (quaternion)this.TfCamera.rotation;
 
@@ -45,7 +45,7 @@ namespace Abss.Object
             }
             .Schedule( this, inputDeps );
 
-            var rs = gp.rightStick.ReadValue();
+            var rs = gp != null ? gp.rightStick.ReadValue() : Mouse.current.delta.ReadValue();
 
             TfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.deltaTime );
             //TfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
