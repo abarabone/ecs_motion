@@ -20,9 +20,45 @@ namespace Abss.Motion
 {
 
     //[DisableAutoCreation]
-    [UpdateAfter( typeof( StreamToBoneSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
-    public class BoneLvTransformSystem : JobComponentSystem
+    //[UpdateAfter( typeof( StreamToBoneSystem ) )]
+    //[UpdateInGroup( typeof( MotionSystemGroup ) )]
+    //public class BoneLv01TransformSystem : _BoneLvTransformSystem<BoneLv01LinkData>
+    //{ }
+    //[UpdateAfter( typeof( StreamToBoneSystem ) )]
+    //[UpdateInGroup( typeof( MotionSystemGroup ) )]
+    //public class BoneLv02TransformSystem : _BoneLvTransformSystem<BoneLv02LinkData>
+    //{ }
+    //[UpdateAfter( typeof( StreamToBoneSystem ) )]
+    //[UpdateInGroup( typeof( MotionSystemGroup ) )]
+    //public class BoneLv03TransformSystem : _BoneLvTransformSystem<BoneLv03LinkData>
+    //{ }
+    //[UpdateAfter( typeof( StreamToBoneSystem ) )]
+    //[UpdateInGroup( typeof( MotionSystemGroup ) )]
+    //public class BoneLv04TransformSystem : _BoneLvTransformSystem<BoneLv04LinkData>
+    //{ }
+    //[UpdateAfter( typeof( StreamToBoneSystem ) )]
+    //[UpdateInGroup( typeof( MotionSystemGroup ) )]
+    //public class BoneLv05TransformSystem : _BoneLvTransformSystem<BoneLv05LinkData>
+    //{ }
+    //[UpdateAfter( typeof( StreamToBoneSystem ) )]
+    //[UpdateInGroup( typeof( MotionSystemGroup ) )]
+    //public class BoneLv06TransformSystem : _BoneLvTransformSystem<BoneLv06LinkData>
+    //{ }
+    //[UpdateAfter( typeof( StreamToBoneSystem ) )]
+    //[UpdateInGroup( typeof( MotionSystemGroup ) )]
+    //public class BoneLv07TransformSystem : _BoneLvTransformSystem<BoneLv07LinkData>
+    //{ }
+    //[UpdateAfter( typeof( StreamToBoneSystem ) )]
+    //[UpdateInGroup( typeof( MotionSystemGroup ) )]
+    //public class BoneLv08TransformSystem : _BoneLvTransformSystem<BoneLv08LinkData>
+    //{ }
+    //[UpdateAfter( typeof( StreamToBoneSystem ) )]
+    //[UpdateInGroup( typeof( MotionSystemGroup ) )]
+    //public class BoneLv09TransformSystem : _BoneLvTransformSystem<BoneLv09LinkData>
+    //{ }
+
+    public class _BoneLvTransformSystem<T> : JobComponentSystem
+        where T:struct,IComponentData,IBoneLvLinkData
     {
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
@@ -31,75 +67,82 @@ namespace Abss.Motion
             var bonePositions = this.GetComponentDataFromEntity<Translation>();// isReadOnly: true );
             var boneRotations = this.GetComponentDataFromEntity<Rotation>();// isReadOnly: true );
 
-            inputDeps = new BoneLv01TransformJob<BoneLv01LinkData>
+            inputDeps = new BoneLvTransformJob<T>
             {
                 BonePositions = bonePositions,
                 BoneRotations = boneRotations,
             }
             .Schedule( this, inputDeps );
 
-            inputDeps = new BoneLv01TransformJob<BoneLv02LinkData>
-            {
-                BonePositions = bonePositions,
-                BoneRotations = boneRotations,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new BoneLvTransformJob<BoneLv01LinkData>
+            //{
+            //    BonePositions = bonePositions,
+            //    BoneRotations = boneRotations,
+            //}
+            //.Schedule( this, inputDeps );
 
-            inputDeps = new BoneLv01TransformJob<BoneLv03LinkData>
-            {
-                BonePositions = bonePositions,
-                BoneRotations = boneRotations,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new BoneLvTransformJob<BoneLv02LinkData>
+            //{
+            //    BonePositions = bonePositions,
+            //    BoneRotations = boneRotations,
+            //}
+            //.Schedule( this, inputDeps );
 
-            inputDeps = new BoneLv01TransformJob<BoneLv04LinkData>
-            {
-                BonePositions = bonePositions,
-                BoneRotations = boneRotations,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new BoneLvTransformJob<BoneLv03LinkData>
+            //{
+            //    BonePositions = bonePositions,
+            //    BoneRotations = boneRotations,
+            //}
+            //.Schedule( this, inputDeps );
 
-            inputDeps = new BoneLv01TransformJob<BoneLv05LinkData>
-            {
-                BonePositions = bonePositions,
-                BoneRotations = boneRotations,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new BoneLvTransformJob<BoneLv04LinkData>
+            //{
+            //    BonePositions = bonePositions,
+            //    BoneRotations = boneRotations,
+            //}
+            //.Schedule( this, inputDeps );
 
-            inputDeps = new BoneLv01TransformJob<BoneLv06LinkData>
-            {
-                BonePositions = bonePositions,
-                BoneRotations = boneRotations,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new BoneLvTransformJob<BoneLv05LinkData>
+            //{
+            //    BonePositions = bonePositions,
+            //    BoneRotations = boneRotations,
+            //}
+            //.Schedule( this, inputDeps );
 
-            inputDeps = new BoneLv01TransformJob<BoneLv07LinkData>
-            {
-                BonePositions = bonePositions,
-                BoneRotations = boneRotations,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new BoneLvTransformJob<BoneLv06LinkData>
+            //{
+            //    BonePositions = bonePositions,
+            //    BoneRotations = boneRotations,
+            //}
+            //.Schedule( this, inputDeps );
 
-            inputDeps = new BoneLv01TransformJob<BoneLv08LinkData>
-            {
-                BonePositions = bonePositions,
-                BoneRotations = boneRotations,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new BoneLvTransformJob<BoneLv07LinkData>
+            //{
+            //    BonePositions = bonePositions,
+            //    BoneRotations = boneRotations,
+            //}
+            //.Schedule( this, inputDeps );
 
-            inputDeps = new BoneLv01TransformJob<BoneLv09LinkData>
-            {
-                BonePositions = bonePositions,
-                BoneRotations = boneRotations,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new BoneLvTransformJob<BoneLv08LinkData>
+            //{
+            //    BonePositions = bonePositions,
+            //    BoneRotations = boneRotations,
+            //}
+            //.Schedule( this, inputDeps );
+
+            //inputDeps = new BoneLvTransformJob<BoneLv09LinkData>
+            //{
+            //    BonePositions = bonePositions,
+            //    BoneRotations = boneRotations,
+            //}
+            //.Schedule( this, inputDeps );
 
             return inputDeps;
         }
 
 
         [BurstCompile]
-        struct BoneLv01TransformJob<T> : IJobForEachWithEntity<T>//, Translation, Rotation>
+        struct BoneLvTransformJob<T> : IJobForEachWithEntity<T>//, Translation, Rotation>
             where T:struct,IComponentData,IBoneLvLinkData
         {
 
@@ -140,5 +183,7 @@ namespace Abss.Motion
             }
         }
     }
+
+    public class _BoneLvTransformSystem<BoneLv09LinkData>;
 
 }

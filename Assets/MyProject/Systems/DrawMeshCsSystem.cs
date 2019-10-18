@@ -32,7 +32,7 @@ namespace Abss.Draw
     public class DrawMeshCsSystem : JobComponentSystem
     {
 
-        public int MaxInstance = 3;//1024 * 100;
+        public int MaxInstance = 1024 * 100;
 
 
 
@@ -135,7 +135,6 @@ namespace Abss.Draw
         }
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-
             //var unit = this.resourceHolder.Units[ 0 ];
             //var mesh = unit.Mesh;
             //var mat = unit.Material;
