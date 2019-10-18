@@ -178,15 +178,15 @@ namespace Abss.Arthuring
                 {
                     switch( lv )
                     {
-                        case 1: em_.AddComponentData( ent, new BoneLv01Data { ParentBoneEntity = parent } ); break;
-                        case 2: em_.AddComponentData( ent, new BoneLv02Data { ParentBoneEntity = parent } ); break;
-                        case 3: em_.AddComponentData( ent, new BoneLv03Data { ParentBoneEntity = parent } ); break;
-                        case 4: em_.AddComponentData( ent, new BoneLv04Data { ParentBoneEntity = parent } ); break;
-                        case 5: em_.AddComponentData( ent, new BoneLv05Data { ParentBoneEntity = parent } ); break;
-                        case 6: em_.AddComponentData( ent, new BoneLv06Data { ParentBoneEntity = parent } ); break;
-                        case 7: em_.AddComponentData( ent, new BoneLv07Data { ParentBoneEntity = parent } ); break;
-                        case 8: em_.AddComponentData( ent, new BoneLv08Data { ParentBoneEntity = parent } ); break;
-                        case 9: em_.AddComponentData( ent, new BoneLv09Data { ParentBoneEntity = parent } ); break;
+                        case 1: em_.AddComponentData( ent, new BoneLv01LinkData { ParentBoneEntity = parent } ); break;
+                        case 2: em_.AddComponentData( ent, new BoneLv02LinkData { ParentBoneEntity = parent } ); break;
+                        case 3: em_.AddComponentData( ent, new BoneLv03LinkData { ParentBoneEntity = parent } ); break;
+                        case 4: em_.AddComponentData( ent, new BoneLv04LinkData { ParentBoneEntity = parent } ); break;
+                        case 5: em_.AddComponentData( ent, new BoneLv05LinkData { ParentBoneEntity = parent } ); break;
+                        case 6: em_.AddComponentData( ent, new BoneLv06LinkData { ParentBoneEntity = parent } ); break;
+                        case 7: em_.AddComponentData( ent, new BoneLv07LinkData { ParentBoneEntity = parent } ); break;
+                        case 8: em_.AddComponentData( ent, new BoneLv08LinkData { ParentBoneEntity = parent } ); break;
+                        case 9: em_.AddComponentData( ent, new BoneLv09LinkData { ParentBoneEntity = parent } ); break;
                     }
                 }
             }

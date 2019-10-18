@@ -29,7 +29,7 @@ namespace Abss.Object
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-
+            
             var gp = Gamepad.current;
             var input = gp != null ? getPadInput( gp ) : getKeyInput( Keyboard.current );
 
@@ -45,7 +45,7 @@ namespace Abss.Object
             }
             .Schedule( this, inputDeps );
 
-            var rs = gp != null ? gp.rightStick.ReadValue() : Mouse.current.delta.ReadValue();
+            var rs = gp != null ? gp.rightStick.ReadValue() : Mouse.current.delta.ReadValue() * 0.5f;
 
             TfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.deltaTime );
             //TfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );

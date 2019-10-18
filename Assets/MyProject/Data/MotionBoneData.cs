@@ -48,40 +48,53 @@ namespace Abss.Motion
     }
 
     
-    public struct BoneLv01Data : IComponentData
+    public interface IBoneLvLinkData
     {
-        public Entity ParentBoneEntity;
+        Entity GetParentBoneEntity { get; }
     }
-    public struct BoneLv02Data : IComponentData
+    public struct BoneLv01LinkData : IComponentData, IBoneLvLinkData
     {
         public Entity ParentBoneEntity;
+        public Entity GetParentBoneEntity { get => this.ParentBoneEntity; }
     }
-    public struct BoneLv03Data : IComponentData
+    public struct BoneLv02LinkData : IComponentData, IBoneLvLinkData
     {
         public Entity ParentBoneEntity;
+        public Entity GetParentBoneEntity { get => this.ParentBoneEntity; }
     }
-    public struct BoneLv04Data : IComponentData
+    public struct BoneLv03LinkData : IComponentData, IBoneLvLinkData
     {
         public Entity ParentBoneEntity;
+        public Entity GetParentBoneEntity { get => this.ParentBoneEntity; }
     }
-    public struct BoneLv05Data : IComponentData
+    public struct BoneLv04LinkData : IComponentData, IBoneLvLinkData
     {
         public Entity ParentBoneEntity;
+        public Entity GetParentBoneEntity { get => this.ParentBoneEntity; }
     }
-    public struct BoneLv06Data : IComponentData
+    public struct BoneLv05LinkData : IComponentData, IBoneLvLinkData
     {
         public Entity ParentBoneEntity;
+        public Entity GetParentBoneEntity { get => this.ParentBoneEntity; }
     }
-    public struct BoneLv07Data : IComponentData
+    public struct BoneLv06LinkData : IComponentData, IBoneLvLinkData
     {
         public Entity ParentBoneEntity;
+        public Entity GetParentBoneEntity { get => this.ParentBoneEntity; }
     }
-    public struct BoneLv08Data : IComponentData
+    public struct BoneLv07LinkData : IComponentData, IBoneLvLinkData
     {
         public Entity ParentBoneEntity;
+        public Entity GetParentBoneEntity { get => this.ParentBoneEntity; }
     }
-    public struct BoneLv09Data : IComponentData
+    public struct BoneLv08LinkData : IComponentData, IBoneLvLinkData
     {
         public Entity ParentBoneEntity;
+        public Entity GetParentBoneEntity { get => this.ParentBoneEntity; }
+    }
+    public struct BoneLv09LinkData : IComponentData, IBoneLvLinkData
+    {
+        public Entity ParentBoneEntity;
+        public Entity GetParentBoneEntity { get => this.ParentBoneEntity; }
     }
 }
