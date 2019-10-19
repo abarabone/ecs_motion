@@ -33,7 +33,7 @@ namespace Abss.Draw
     public class DrawMeshCsSystem : JobComponentSystem
     {
 
-        public int MaxInstance = 5000;
+        public int MaxInstance = 10000;
 
 
 
@@ -63,7 +63,6 @@ namespace Abss.Draw
 
         protected override void OnStartRunning()
         {
-            return;
             createBuffers();
             allocVectors();
             allocInstanceCounters();
@@ -137,54 +136,33 @@ namespace Abss.Draw
         }
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            return inputDeps;
-            //var unit = this.resourceHolder.Units[ 0 ];
-            //var mesh = unit.Mesh;
-            //var mat = unit.Material;
-            //var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
-            //using( var a = new InstancingIndirectArguments( mesh, 1 ) )
-            //    this.instanceArgumentsBuffer.Buffer.SetData( a.Arguments );
-            //var args = this.instanceArgumentsBuffer;
 
-            //var buf = new NativeArray<bone_unit>( mesh.bindposes.Length, Allocator.Temp );
-            //for( var i = 0; i < mesh.bindposes.Length; i++ )
-            //{
-            //    buf[ i ] = new bone_unit
-            //    {
-            //        pos = float4.zero + new float4( i * 0.1f, i*0.1f,0,1),
-            //        rot = quaternion.identity,
-            //    };
-            //}
-            //this.instanceTransformBuffer.Buffer.SetData( buf );
-            //mat.SetBuffer( this.instanceTransformBuffer );
-            //mat.SetInt( "boneLength", mesh.bindposes.Length );
-            //buf.Dispose();
+            var i = 0;
+            var vcOffset = 0;
+            foreach( var resource in this.resourceHolder.Units.Take(1) )
+            {
+                var mesh = resource.Mesh;
+                var mat = resource.Material;
+                var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
+                var args = this.instanceArgumentsBuffer;
 
-            //Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
+                var instanceCount = this.instanceCounters[ i ].Count;
+                //using( var a = new InstancingIndirectArguments( mesh, (uint)instanceCount ) )
+                //    args.Buffer.SetData( a.Arguments );
+                var abuf = new SimpleIndirectArgsBuffer( mesh, (uint)instanceCount );
 
+                var cbuf = new SimpleComputeBuffer<bone_unit>( "bones", 4 * 16 * this.MaxInstance );
+                var srcBuffer = this.instanceBoneVectors.Reinterpret<float4, bone_unit>();
+                var vectorLength = instanceCount * 16;
+                this.instanceTransformBuffer.Buffer.SetData( srcBuffer, vcOffset/2, 0, vectorLength );
+                mat.SetBuffer( this.instanceTransformBuffer );
+                mat.SetInt( "boneLength", mesh.bindposes.Length );
+                
+                Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
+                i++;
+                vcOffset += this.MaxInstance * 4 * 16;
+            }
 
-            var unit = this.resourceHolder.Units[ 0 ];
-            var mesh = unit.Mesh;
-            var mat = unit.Material;
-            var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
-            var args = this.instanceArgumentsBuffer;
-
-            using( var a = new InstancingIndirectArguments( mesh, (uint)this.instanceCounters[ 0 ].Count ) )
-                args.Buffer.SetData( a.Arguments );
-            
-            this.instanceTransformBuffer.Buffer.SetData( this.instanceBoneVectors, 0, 0, this.instanceCounters[0].Count * 16 * 2 );
-            mat.SetBuffer( this.instanceTransformBuffer );
-            //Debug.Log( this.instanceCounters[ 0 ].Count );
-            mat.SetInt( "boneLength", mesh.bindposes.Length );
-            //Debug.Log( mesh.bindposes.Length );
-            //Debug.Log( this.instanceCounters[ 0 ].Count );
-
-            //for( var i=0; i<32; i++ )
-            //Debug.Log( $"{i} {this.instanceBoneVectors[i]}" );
-            
-            Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
-            
-            
             return inputDeps;
         }
 

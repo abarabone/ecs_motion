@@ -52,7 +52,7 @@ namespace Abss.Draw
 
 
         [BurstCompile]
-        struct BoneToDrawInstanceJob : IJobForEach<BoneDrawTargetIndexWorkData, Translation, Rotation>
+        struct BoneToDrawInstanceJob : IJobForEach<BoneIndexData, BoneDrawTargetIndexWorkData, Translation, Rotation>
         {
 
 
@@ -62,6 +62,7 @@ namespace Abss.Draw
 
 
             public void Execute(
+                [ReadOnly] ref BoneIndexData indexer,
                 [ReadOnly] ref BoneDrawTargetIndexWorkData target,
                 [ReadOnly] ref Translation pos,
                 [ReadOnly] ref Rotation rot
@@ -70,7 +71,7 @@ namespace Abss.Draw
 
                 var i = target.InstanceBoneOffset * 2;
 
-                var dstInstances = this.DstInstanceBoneVectorEveryModels[ target.ModelIndex ];
+                var dstInstances = this.DstInstanceBoneVectorEveryModels[ indexer.ModelIndex ];
                 dstInstances[ i + 0 ] = new float4( pos.Value, 1.0f );
                 dstInstances[ i + 1 ] = rot.Value.value;
 

@@ -37,7 +37,7 @@ namespace Abss.Draw
 
 
         [BurstCompile]
-        struct MarkBoneJob : IJobForEach<BoneDrawLinkData, BoneIdData, BoneDrawTargetIndexWorkData>
+        struct MarkBoneJob : IJobForEach<BoneDrawLinkData, BoneIndexData, BoneDrawTargetIndexWorkData>
         {
 
             [ReadOnly]
@@ -47,7 +47,7 @@ namespace Abss.Draw
 
             public void Execute(
                 [ReadOnly] ref BoneDrawLinkData drawLinker,
-                [ReadOnly] ref BoneIdData boneId,
+                [ReadOnly] ref BoneIndexData boneId,
                 ref BoneDrawTargetIndexWorkData boneIndexer
             )
             {

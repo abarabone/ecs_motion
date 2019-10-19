@@ -30,7 +30,7 @@ namespace Abss.Object
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            return inputDeps;
+            //return inputDeps;
             
             var gp = Gamepad.current;
             var input = gp != null ? getPadInput( gp ) : getKeyInput( Keyboard.current );

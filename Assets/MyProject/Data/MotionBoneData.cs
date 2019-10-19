@@ -36,14 +36,14 @@ namespace Abss.Motion
         public Entity DrawEntity;
     }
 
-    public struct BoneIdData : IComponentData
+    public struct BoneIndexData : IComponentData
     {
+        public int ModelIndex;
         public int BoneId;
     }
 
     public struct BoneDrawTargetIndexWorkData : IComponentData
     {
-        public int ModelIndex;
         public int InstanceBoneOffset;
     }
 

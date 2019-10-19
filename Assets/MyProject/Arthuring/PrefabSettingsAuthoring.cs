@@ -41,12 +41,21 @@ namespace Abss.Arthuring
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder ) )
                 .ToArray();
 
-            foreach( var x in Enumerable.Range(0,1) )
-                this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
 
-            //var pent = em.GetComponentData<CharacterLinkData>( this.ents[ 0 ] ).PostureEntity;
-            //em.SetComponentData( pent, new Translation { Value = new float3( 1, 0, 0 ) } );//
+            foreach( var model in Enumerable.Range( 0, this.PrefabEntities.Length ) )
+            {
+                var mlinker = em.GetComponentData<CharacterLinkData>( this.PrefabEntities[model] );
+                ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MotionEntity ).ClipData.Value;
 
+                foreach( var i in Enumerable.Range( 0, 100 ) )
+                {
+                    this.ents.Add( em.Instantiate( this.PrefabEntities[ model ] ) );
+
+                    var chlinker = em.GetComponentData<CharacterLinkData>( this.ents[ i ] );
+                    em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i, 0, model ) } );
+                    em.SetComponentData( chlinker.MotionEntity, new MotionInfoData { MotionIndex = i % mclip.Motions.Length } );
+                }
+            }
         }
 
         void Update()

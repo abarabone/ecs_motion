@@ -53,7 +53,7 @@ namespace Abss.Arthuring
                     }
                     ;
 
-                return ChMeshConverter.ConvertToChMesh( mrs_.ElementAt( 0 ).sharedMesh, motionClip_ );
+                //return ChMeshConverter.ConvertToChMesh( mrs_.ElementAt( 0 ).sharedMesh, motionClip_ );
 
                 var dstmesh = new Mesh();
 

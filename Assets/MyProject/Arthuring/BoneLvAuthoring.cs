@@ -61,7 +61,7 @@ namespace Abss.Arthuring
                 //typeof( BoneRelationLinkData ),
                 typeof( BoneDrawLinkData ),
                 typeof( BoneStreamLinkData ),
-                typeof( BoneIdData ),
+                typeof( BoneIndexData ),
                 typeof( BoneDrawTargetIndexWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
@@ -80,7 +80,7 @@ namespace Abss.Arthuring
 
             
             var bonePrefabs = createBonePrefabs( em, motionClip, boneArchetype );
-            setBoneId( em, bonePrefabs );
+            setBoneId( em, bonePrefabs, drawPrefab );
             setStreamLinks( em, bonePrefabs, streamPrefabs, motionClip );
             setDrawLinks( em, bonePrefabs, drawPrefab, motionClip );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip );
@@ -102,11 +102,13 @@ namespace Abss.Arthuring
                 return bonePrefabs_;
             }
 
-            void setBoneId( EntityManager em_, NativeArray<Entity> bonePreafabs_ )
+            void setBoneId( EntityManager em_, NativeArray<Entity> bonePreafabs_, Entity drawPrefab_ )
             {
+                var draw = em_.GetComponentData<DrawModelIndexData>( drawPrefab_ );
+
                 em_.SetComponentData( bonePreafabs_,
                     from x in Enumerable.Range( 0, bonePreafabs_.Length )
-                    select new BoneIdData { BoneId = x }
+                    select new BoneIndexData { ModelIndex = draw.ModelIndex, BoneId = x }
                 );
             }
 
