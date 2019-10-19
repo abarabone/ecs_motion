@@ -19,22 +19,25 @@ using System.Runtime.InteropServices;
 namespace Abss.SystemGroup
 {
 
-
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public class ObjectLogicSystemGroup : ComponentSystemGroup
     { }
 
 
+    //[DisableAutoCreation]
     [UpdateAfter(typeof(ObjectLogicSystemGroup))]
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public class DrawPrevSystemGroup : ComponentSystemGroup
     { }
 
+    //[DisableAutoCreation]
     [UpdateAfter(typeof(DrawPrevSystemGroup))]
 	[UpdateInGroup(typeof(PresentationSystemGroup))]
 	public class MotionSystemGroup : ComponentSystemGroup
     { }
 
+    //[DisableAutoCreation]
     [UpdateAfter(typeof(MotionSystemGroup))]
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public class DrawSystemGroup : ComponentSystemGroup

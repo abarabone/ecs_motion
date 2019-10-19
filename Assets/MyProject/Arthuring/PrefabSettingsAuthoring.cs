@@ -41,7 +41,7 @@ namespace Abss.Arthuring
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder ) )
                 .ToArray();
 
-            foreach( var x in Enumerable.Range(0,1000) )
+            foreach( var x in Enumerable.Range(0,1) )
                 this.ents.Add( em.Instantiate( this.PrefabEntities[ 0 ] ) );
 
             //var pent = em.GetComponentData<CharacterLinkData>( this.ents[ 0 ] ).PostureEntity;

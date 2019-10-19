@@ -58,14 +58,16 @@ namespace Abss.Draw
         struct DrawCullingDummyJob : IJobForEach<DrawModelIndexData, DrawInstanceTargetWorkData>
         {
 
+            [ReadOnly]
             public NativeArray<ThreadSafeCounter<Persistent>> InstanceCounters;
 
 
             public void Execute
                 ( [ReadOnly] ref DrawModelIndexData model, [WriteOnly] ref DrawInstanceTargetWorkData target )
             {
-                
+
                 target.InstanceIndex = this.InstanceCounters[ model.ModelIndex ].GetSerial();
+                //target.InstanceIndex = this.InstanceCounters[ 0 ].GetSerial();
 
             }
         }

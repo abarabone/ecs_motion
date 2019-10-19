@@ -16,6 +16,7 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
+    //[DisableAutoCreation]
     [UpdateAfter(typeof( BoneToDrawInstanceSystem ) )]
     [UpdateInGroup(typeof(DrawSystemGroup))]
     public class BeginDrawCsBarier : EntityCommandBufferSystem
@@ -25,14 +26,14 @@ namespace Abss.Draw
     /// <summary>
     /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
     /// </summary>
-    [AlwaysUpdateSystem]
+    //[AlwaysUpdateSystem]
     //[DisableAutoCreation]
     [UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof(DrawSystemGroup))]
     public class DrawMeshCsSystem : JobComponentSystem
     {
 
-        public int MaxInstance = 1024 * 100;
+        public int MaxInstance = 5000;
 
 
 
@@ -62,6 +63,7 @@ namespace Abss.Draw
 
         protected override void OnStartRunning()
         {
+            return;
             createBuffers();
             allocVectors();
             allocInstanceCounters();
@@ -135,6 +137,7 @@ namespace Abss.Draw
         }
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
+            return inputDeps;
             //var unit = this.resourceHolder.Units[ 0 ];
             //var mesh = unit.Mesh;
             //var mat = unit.Material;
@@ -174,6 +177,7 @@ namespace Abss.Draw
             //Debug.Log( this.instanceCounters[ 0 ].Count );
             mat.SetInt( "boneLength", mesh.bindposes.Length );
             //Debug.Log( mesh.bindposes.Length );
+            //Debug.Log( this.instanceCounters[ 0 ].Count );
 
             //for( var i=0; i<32; i++ )
             //Debug.Log( $"{i} {this.instanceBoneVectors[i]}" );
