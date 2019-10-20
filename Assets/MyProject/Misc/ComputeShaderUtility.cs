@@ -120,8 +120,12 @@ namespace Abss.Cs
             this.Buffer.SetData<uint>( arguments );
         }
 
-        public void CreateBuffer() =>
+        public SimpleIndirectArgsBuffer CreateBuffer()
+        {
             this.Buffer	= new ComputeBuffer( 1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments );
+
+            return this;
+        }
 
         
         /// <summary>Draw/Dispatch...Indirect() に直接渡せるように暗黙変換</summary>

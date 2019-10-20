@@ -139,28 +139,30 @@ namespace Abss.Draw
 
             var i = 0;
             var vcOffset = 0;
-            foreach( var resource in this.resourceHolder.Units.Take(1) )
+            foreach( var resource in this.resourceHolder.Units )
             {
                 var mesh = resource.Mesh;
                 var mat = resource.Material;
                 var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
-                var args = this.instanceArgumentsBuffer;
+                var args = resource.InstanceArgumentsBuffer;
+
+                var boneLength = mesh.bindposes.Length;
 
                 var instanceCount = this.instanceCounters[ i ].Count;
-                //using( var a = new InstancingIndirectArguments( mesh, (uint)instanceCount ) )
-                //    args.Buffer.SetData( a.Arguments );
-                var abuf = new SimpleIndirectArgsBuffer( mesh, (uint)instanceCount );
+                using( var a = new InstancingIndirectArguments( mesh, (uint)instanceCount ) )
+                    args.Buffer.SetData( a.Arguments );
 
-                var cbuf = new SimpleComputeBuffer<bone_unit>( "bones", 4 * 16 * this.MaxInstance );
-                var srcBuffer = this.instanceBoneVectors.Reinterpret<float4, bone_unit>();
                 var vectorLength = instanceCount * 16;
-                this.instanceTransformBuffer.Buffer.SetData( srcBuffer, vcOffset/2, 0, vectorLength );
-                mat.SetBuffer( this.instanceTransformBuffer );
-                mat.SetInt( "boneLength", mesh.bindposes.Length );
+                var srcBuffer = this.instanceBoneVectors.Reinterpret<float4, bone_unit>();
+                var dstBuffer = resource.TransformBuffer;
+                dstBuffer.Buffer.SetData( srcBuffer, vcOffset*2, 0, vectorLength );
                 
+                mat.SetBuffer( dstBuffer );
+                mat.SetInt( "boneLength", mesh.bindposes.Length );
                 Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
+
                 i++;
-                vcOffset += this.MaxInstance * 4 * 16;
+                vcOffset += this.MaxInstance * 16;
             }
 
             return inputDeps;

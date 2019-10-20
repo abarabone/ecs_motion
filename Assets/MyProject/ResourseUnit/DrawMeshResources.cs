@@ -19,17 +19,13 @@ namespace Abss.Draw
 {
 
 
-    public struct DrawMeshCsResourceUnit : IDisposable
+    public struct DrawMeshCsResourceUnit
     {
         public int MeshId;
         public Mesh Mesh;
         public Material Material;
         public SimpleComputeBuffer<float4> TransformBuffer;// 使いまわしできれば、個別には不要
-        public InstancingIndirectArguments Arguments;
-
-        public void Dispose()
-        {
-        }
+        public SimpleIndirectArgsBuffer InstanceArgumentsBuffer;
     }
 
 
@@ -53,8 +49,8 @@ namespace Abss.Draw
                 MeshId = meshId,
                 Mesh = mesh,
                 Material = mat,
-                //TransformBuffer = new SimpleComputeBuffer<float4>( "bones", 1024 * 4 ),
-                //Arguments = new InstancingIndirectArguments( mesh, allocator:Allocator.Persistent ),
+                TransformBuffer = new SimpleComputeBuffer<float4>( "bones", 10000 * 4 * 16 ),
+                InstanceArgumentsBuffer = new SimpleIndirectArgsBuffer().CreateBuffer(),
             };
             this.Units.Add( resource );
 
@@ -63,6 +59,11 @@ namespace Abss.Draw
 
         public void Dispose()
         {
+            foreach( var x in this.Units )
+            {
+                x.TransformBuffer.Dispose();
+                x.InstanceArgumentsBuffer.Dispose();
+            }
         }
     }
         
