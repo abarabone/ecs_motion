@@ -53,6 +53,7 @@ namespace Abss.Draw
                 Mesh = mesh,
                 Material = mat,
             };
+
             this.Units.Add( resource );
 
             return meshId;

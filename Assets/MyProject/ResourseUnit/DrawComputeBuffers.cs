@@ -13,10 +13,10 @@ using Abss.Cs;
 using Abss.Arthuring;
 using Abss.Misc;
 using Abss.SystemGroup;
+using Abss.Common.Extension;
 
 namespace Abss.Draw
 {
-    
 
     public class DrawCsInstanceComputeBufferUnit
     {
@@ -24,36 +24,32 @@ namespace Abss.Draw
         public SimpleIndirectArgsBuffer InstanceArgumentsBuffer;
     }
 
-    public struct DrawCsInstanceNativeBufferUnit
-    {
-        public ThreadSafeCounter<Persistent> InstanceCounter;
-        public NativeSlice<float4> InstanceBoneVectors;
-        //public int BoneLength;
-        public int VectorLengthOfBone;
-        public int OffsetInBuffer;
-    }
 
-
-    public class DrawCsInstanceBufferHolder : IDisposable
+    public class DrawComputeInstanceBufferHolder : IDisposable
     {
 
 
-        public List<DrawCsInstanceComputeBufferUnit> CsBufferEveryModels { get; }
+        public List<DrawCsInstanceComputeBufferUnit> ComputeBufferEveryModels { get; }
             = new List<DrawCsInstanceComputeBufferUnit>();
-
-        public NativeArray<DrawCsInstanceNativeBufferUnit> NativeBufferEveryModels { get; private set; }
-
-
         
 
 
         public void Initialize( DrawMeshResourceHolder resources )
         {
 
+            foreach( var x in (resources.Units, this.ComputeBufferEveryModels).Zip() )
+            {
+                allocateComputeBuffers_( x.x, x.y );
+
+            }
+
+            return;
+
 
             void allocateComputeBuffers_
                 ( DrawMeshCsResourceUnit resouceUnit, DrawCsInstanceComputeBufferUnit bufferUnit )
             {
+
                 var mesh = resouceUnit.Mesh;
                 var mat = resouceUnit.Material;
                 var boneLength = mesh.bindposes.Length;
@@ -68,29 +64,24 @@ namespace Abss.Draw
                 bufferUnit.TransformBuffer = transformBuffer;
                 bufferUnit.InstanceArgumentsBuffer = instanceArgumentsBuffer;
             }
-            void allocateNativeBuffers_()
-            {
 
-            }
+        }
+
+
+        public void Reset()
+        {
+
         }
 
         
 
         public void Dispose()
         {
-            foreach( var x in this.CsBufferEveryModels )
+            foreach( var x in this.ComputeBufferEveryModels )
             {
                 x.TransformBuffer.Dispose();
                 x.InstanceArgumentsBuffer.Dispose();
             }
-            
-            foreach( var x in this.NativeBufferEveryModels )
-            {
-                x.InstanceCounter.Dispose();
-            }
-
-            this.NativeBufferEveryModels.Dispose();
-            //this.instanceBoneVectors.Dispose();
         }
     }
 }

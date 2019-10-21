@@ -47,7 +47,7 @@ namespace Abss.Draw
         //InstancingIndirectArguments arguments;
 
 
-        public DrawCsInstanceBufferHolder InstanceBuffers = new DrawCsInstanceBufferHolder();
+        public DrawComputeInstanceBufferHolder InstanceBuffers = new DrawComputeInstanceBufferHolder();
 
 
         // 描画モデルリソース
@@ -150,7 +150,7 @@ namespace Abss.Draw
             {
                 var resource = this.resourceHolder.Units[ i ];
                 var nativebuf = this.InstanceBuffers.NativeBufferEveryModels[ i ];
-                var csbuf = this.InstanceBuffers.CsBufferEveryModels[ i ];
+                var csbuf = this.InstanceBuffers.ComputeBufferEveryModels[ i ];
 
                 var mesh = resource.Mesh;
                 var mat = resource.Material;

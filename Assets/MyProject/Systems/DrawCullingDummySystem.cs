@@ -35,16 +35,16 @@ namespace Abss.Draw
         
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            var instanceCounters = this.drawSystem.GetInstanceCounters();
-            if( !instanceCounters.IsCreated ) return inputDeps;
+            var nativeInstanceBuffers = this.drawSystem.InstanceBuffers.NativeBufferEveryModels;
+            if( !nativeInstanceBuffers.IsCreated ) return inputDeps;
 
 
-            foreach( var x in instanceCounters )
+            foreach( var x in nativeInstanceBuffers )
                 x.Reset();
 
             inputDeps = new DrawCullingDummyJob
             {
-                InstanceCounters = instanceCounters,
+                InstanceCounters = nativeInstanceBuffers,
             }
             .Schedule( this, inputDeps );
 
