@@ -19,15 +19,18 @@ namespace Abss.Draw
 {
 
 
-    public struct DrawMeshCsResourceUnit
+    public class DrawMeshCsResourceUnit
     {
         public int MeshId;
         public Mesh Mesh;
         public Material Material;
-        public SimpleComputeBuffer<float4> TransformBuffer;// 使いまわしできれば、個別には不要
-        public SimpleIndirectArgsBuffer InstanceArgumentsBuffer;
     }
 
+    public struct bone_unit
+    {
+        public float4 pos;
+        public quaternion rot;
+    }
 
 
     public class DrawMeshResourceHolder : IDisposable
@@ -49,8 +52,6 @@ namespace Abss.Draw
                 MeshId = meshId,
                 Mesh = mesh,
                 Material = mat,
-                TransformBuffer = new SimpleComputeBuffer<float4>( "bones", 10000 * 4 * 16 ),
-                InstanceArgumentsBuffer = new SimpleIndirectArgsBuffer().CreateBuffer(),
             };
             this.Units.Add( resource );
 
@@ -61,8 +62,6 @@ namespace Abss.Draw
         {
             foreach( var x in this.Units )
             {
-                x.TransformBuffer.Dispose();
-                x.InstanceArgumentsBuffer.Dispose();
             }
         }
     }

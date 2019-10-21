@@ -16,6 +16,8 @@ using Abss.SystemGroup;
 
 namespace Abss.Draw
 {
+
+    //[UpdateAfter( typeof( DrawInstanceTempBufferAllocationSystem ) )]
     static class A
     {
 

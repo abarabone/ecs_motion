@@ -18,6 +18,7 @@ namespace Abss.Draw
 {
 
     //[DisableAutoCreation]
+    [UpdateAfter( typeof( DrawInstanceTempBufferAllocationSystem ) )]
     [UpdateInGroup(typeof(DrawSystemGroup))]
     public class BoneToDrawInstanceSystem : JobComponentSystem
     {
