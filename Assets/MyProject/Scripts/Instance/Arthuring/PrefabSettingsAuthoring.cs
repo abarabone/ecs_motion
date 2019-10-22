@@ -26,6 +26,8 @@ namespace Abss.Arthuring
 
         public Entity[] PrefabEntities { get; private set; }
 
+        public int InstanceCountPerModel = 100;
+
 
         List<Entity> ents = new List<Entity>();
 
@@ -47,7 +49,7 @@ namespace Abss.Arthuring
                 var mlinker = em.GetComponentData<CharacterLinkData>( this.PrefabEntities[model] );
                 ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MotionEntity ).ClipData.Value;
 
-                foreach( var i in Enumerable.Range( 0, 5000 ) )
+                foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
                 {
                     this.ents.Add( em.Instantiate( this.PrefabEntities[ model ] ) );
 
