@@ -18,7 +18,7 @@ namespace Abss.Draw
 {
 
     //[DisableAutoCreation]
-    [UpdateAfter( typeof( DrawInstanceTempBufferAllocationSystem ) )]
+    //[UpdateAfter( typeof( DrawInstanceTempBufferAllocationSystem ) )]
     [UpdateInGroup(typeof(DrawSystemGroup))]
     public class BoneToDrawInstanceSystem : JobComponentSystem
     {
@@ -36,13 +36,13 @@ namespace Abss.Draw
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            var instanceBoneVectorEveryModels = this.drawSystem.GetInstanceBoneVectorEveryModels();
-            if( !instanceBoneVectorEveryModels.IsCreated ) return inputDeps;
+            var nativeInstanceBuffers = this.drawSystem.NativeBuffers;
+            if( !nativeInstanceBuffers.Units.IsCreated ) return inputDeps;
 
 
             inputDeps = new BoneToDrawInstanceJob
             {
-                DstInstanceBoneVectorEveryModels = instanceBoneVectorEveryModels,
+                NativeBuffers = nativeInstanceBuffers.Units,
             }
             .Schedule( this, inputDeps );
 
@@ -58,7 +58,7 @@ namespace Abss.Draw
 
 
             [NativeDisableParallelForRestriction]
-            public NativeArray<NativeSlice<float4>> DstInstanceBoneVectorEveryModels;
+            public NativeArray<DrawInstanceNativeBufferUnit> NativeBuffers;
 
 
 
@@ -72,7 +72,7 @@ namespace Abss.Draw
 
                 var i = target.InstanceBoneOffset * 2;
 
-                var dstInstances = this.DstInstanceBoneVectorEveryModels[ indexer.ModelIndex ];
+                var dstInstances = this.NativeBuffers[ indexer.ModelIndex ].InstanceBoneVectors;
                 dstInstances[ i + 0 ] = new float4( pos.Value, 1.0f );
                 dstInstances[ i + 1 ] = rot.Value.value;
 

@@ -12,6 +12,7 @@ using Abss.Cs;
 using Abss.Arthuring;
 using Abss.Misc;
 using Abss.SystemGroup;
+using Abss.Utilities;
 
 namespace Abss.Draw
 {
@@ -47,7 +48,9 @@ namespace Abss.Draw
         //InstancingIndirectArguments arguments;
 
 
-        public DrawComputeInstanceBufferHolder InstanceBuffers = new DrawComputeInstanceBufferHolder();
+        public DrawComputeInstanceBufferHolder ComputeBuffers { get; } = new DrawComputeInstanceBufferHolder();
+
+        public DrawNativeInstanceBufferHolder NativeBuffers { get; } = new DrawNativeInstanceBufferHolder();
 
 
         // 描画モデルリソース
@@ -79,6 +82,9 @@ namespace Abss.Draw
             //allocInstanceCounters();
 
             this.tempBufferSystem = this.World.GetExistingSystem<DrawInstanceTempBufferAllocationSystem>();
+
+            this.ComputeBuffers.Initialize( this.resourceHolder );
+            this.NativeBuffers.Initialize( this.resourceHolder );
 
             return;
 
@@ -140,7 +146,8 @@ namespace Abss.Draw
             //this.instanceArgumentsBuffer.Dispose();
 
             this.resourceHolder.Dispose();
-            this.InstanceBuffers.Dispose();
+            this.ComputeBuffers.Dispose();
+            this.NativeBuffers.Dispose();
         }
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
@@ -149,24 +156,24 @@ namespace Abss.Draw
             for( var i = 0; i < this.resourceHolder.Units.Count; i++ )
             {
                 var resource = this.resourceHolder.Units[ i ];
-                var nativebuf = this.InstanceBuffers.NativeBufferEveryModels[ i ];
-                var csbuf = this.InstanceBuffers.ComputeBufferEveryModels[ i ];
+                var nativebuf = this.NativeBuffers.Units[ i ];
+                var devicebuf = this.ComputeBuffers.Units[ i ];
 
                 var mesh = resource.Mesh;
                 var mat = resource.Material;
                 var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
-                var args = csbuf.InstanceArgumentsBuffer;
+                var args = devicebuf.InstanceArgumentsBuffer;
 
                 var instanceCount = nativebuf.InstanceCounter.Count;
-                using( var a = new InstancingIndirectArguments( mesh, (uint)instanceCount ) )
-                    args.Buffer.SetData( a.Arguments );
+                var argparams = new IndirectArgumentsForInstancing( mesh, instanceCount );
+                args.SetData( ref argparams );
 
                 var boneLength = mesh.bindposes.Length;
 
                 var outputVectorCount = instanceCount * boneLength * nativebuf.VectorLengthOfBone;
-                var srcBuffer = this.tempBufferSystem.TempInstanceBoneVectors;
-                var dstBuffer = csbuf.TransformBuffer;
-                dstBuffer.Buffer.SetData( srcBuffer, nativebuf.OffsetInBuffer, 0, outputVectorCount );
+                var srcBuffer = this.NativeBuffers.InstanceBoneVectors;//this.tempBufferSystem.TempInstanceBoneVectors;
+                var dstBuffer = devicebuf.TransformBuffer;
+                dstBuffer.SetData( srcBuffer, nativebuf.OffsetInBuffer, 0, outputVectorCount );
                 
                 Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
             }

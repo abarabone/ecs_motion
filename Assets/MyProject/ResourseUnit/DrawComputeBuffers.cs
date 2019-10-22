@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Linq;
 using UnityEngine;
 using Unity.Entities;
@@ -14,70 +15,71 @@ using Abss.Arthuring;
 using Abss.Misc;
 using Abss.SystemGroup;
 using Abss.Common.Extension;
+using Abss.Utilities;
 
 namespace Abss.Draw
 {
 
-    public class DrawCsInstanceComputeBufferUnit
+    public class DrawInstanceComputeBufferUnit
     {
-        public SimpleComputeBuffer<float4> TransformBuffer;// 使いまわしできれば、個別には不要
-        public SimpleIndirectArgsBuffer InstanceArgumentsBuffer;
+        public ComputeBuffer TransformBuffer;
+        public ComputeBuffer InstanceArgumentsBuffer;
     }
 
 
     public class DrawComputeInstanceBufferHolder : IDisposable
     {
 
+        const int MaxInstance = 10000;
 
-        public List<DrawCsInstanceComputeBufferUnit> ComputeBufferEveryModels { get; }
-            = new List<DrawCsInstanceComputeBufferUnit>();
+        public List<DrawInstanceComputeBufferUnit> Units { get; }
+            = new List<DrawInstanceComputeBufferUnit>();
         
 
 
         public void Initialize( DrawMeshResourceHolder resources )
         {
 
-            foreach( var x in (resources.Units, this.ComputeBufferEveryModels).Zip() )
+            foreach( var resource in resources.Units )
             {
-                allocateComputeBuffers_( x.x, x.y );
+                var buf = new DrawInstanceComputeBufferUnit();
 
+                allocateComputeBuffers_( resource, buf );
+
+                this.Units.Add( buf );
             }
 
             return;
 
 
             void allocateComputeBuffers_
-                ( DrawMeshCsResourceUnit resouceUnit, DrawCsInstanceComputeBufferUnit bufferUnit )
+                ( DrawMeshCsResourceUnit resouceUnit, DrawInstanceComputeBufferUnit bufferUnit )
             {
 
                 var mesh = resouceUnit.Mesh;
                 var mat = resouceUnit.Material;
+
                 var boneLength = mesh.bindposes.Length;
+                var stride = Marshal.SizeOf( typeof( float4 ) ) * resouceUnit.VectorLengthOfBone;
+                var bufferLength = MaxInstance * resouceUnit.VectorLengthOfBone * boneLength;
 
-                var transformBuffer = new SimpleComputeBuffer<float4>( "bones", 10000 * 2 * boneLength );
-                var instanceArgumentsBuffer = new SimpleIndirectArgsBuffer().CreateBuffer();
-                
-                mat.SetBuffer( transformBuffer );
+                bufferUnit.TransformBuffer =
+                    new ComputeBuffer( bufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable );
+                bufferUnit.InstanceArgumentsBuffer =
+                    ComputeShaderUtility.CreateIndirectArgumentsBuffer();
+
+                mat.SetBuffer( "bones", bufferUnit.TransformBuffer );
                 mat.SetInt( "boneLength", boneLength );
-
-
-                bufferUnit.TransformBuffer = transformBuffer;
-                bufferUnit.InstanceArgumentsBuffer = instanceArgumentsBuffer;
             }
 
         }
 
 
-        public void Reset()
-        {
-
-        }
-
         
 
         public void Dispose()
         {
-            foreach( var x in this.ComputeBufferEveryModels )
+            foreach( var x in this.Units )
             {
                 x.TransformBuffer.Dispose();
                 x.InstanceArgumentsBuffer.Dispose();

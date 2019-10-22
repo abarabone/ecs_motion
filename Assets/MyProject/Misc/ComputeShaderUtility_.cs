@@ -165,10 +165,10 @@ namespace Abss.Cs
         public static implicit operator NativeArray<uint>( InstancingIndirectArguments iai ) => iai.Arguments;
     }
     // - - - - - - - - - - - - - - - - - - - - - - -
-    
+
     // ----------------------------------------------------------------
 
-    
+
     public struct IdFromName
     {
         public readonly int Id;

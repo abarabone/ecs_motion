@@ -18,8 +18,11 @@ using Abss.Misc;
 namespace Abss.Draw
 {
 
+    [DisableAutoCreation]
     [AlwaysUpdateSystem]
-    [UpdateAfter(typeof(DrawCullingDummySystem))]
+    //[UpdateAfter(typeof( DrawCullingDummySystem ) )]
+    ////[UpdateAfter( typeof( DrawPrevSystemGroup ) )]
+    ////[UpdateBefore(typeof(DrawSystemGroup))]
     //[UpdateInGroup( typeof( DrawPrevSystemGroup ) )]
     public class DrawInstanceTempBufferAllocationSystem : JobComponentSystem
     {

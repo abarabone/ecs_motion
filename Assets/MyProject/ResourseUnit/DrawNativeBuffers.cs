@@ -8,6 +8,7 @@ using Unity.Jobs;
 using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
+using System.Runtime.InteropServices;
 
 using Abss.Cs;
 using Abss.Arthuring;
@@ -17,11 +18,10 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
-    public struct DrawComputeInstanceNativeBufferUnit
+    public struct DrawInstanceNativeBufferUnit
     {
         public ThreadSafeCounter<Persistent> InstanceCounter;
         public NativeSlice<float4> InstanceBoneVectors;
-        //public int BoneLength;
         public int VectorLengthOfBone;
         public int OffsetInBuffer;
     }
@@ -31,39 +31,56 @@ namespace Abss.Draw
     public class DrawNativeInstanceBufferHolder : IDisposable
     {
 
+        const int MaxInstance = 10000;
 
-        public List<DrawCsInstanceComputeBufferUnit> ComputeBufferEveryModels { get; }
-            = new List<DrawCsInstanceComputeBufferUnit>();
+        public NativeArray<DrawInstanceNativeBufferUnit> Units;
+
+        public NativeArray<float4> InstanceBoneVectors;
 
 
-        public NativeArray<DrawComputeInstanceNativeBufferUnit> NativeBufferEveryModels { get; private set; }
-
-
-        public Initialize( DrawMeshResourceHolder resources )
+        public void Initialize( DrawMeshResourceHolder resources )
         {
+            var arrayLengths = resources.Units
+                .Select( x => x.VectorLengthOfBone * x.Mesh.bindposes.Length * MaxInstance )
+                .ToArray();
 
-            void allocateComputeBuffers_
-                ( DrawMeshCsResourceUnit resouceUnit, DrawComputeInstanceNativeBufferUnit bufferUnit )
-            {
+            this.Units = 
+                new NativeArray<DrawInstanceNativeBufferUnit>( arrayLengths.Length, Allocator.Persistent );
 
-            }
-            void setValues_
-                ( DrawMeshCsResourceUnit resourceUnit, DrawComputeInstanceNativeBufferUnit bufferUnit )
+            this.InstanceBoneVectors =
+                new NativeArray<float4>( arrayLengths.Sum(), Allocator.Persistent );
+
+            var start = 0;
+            for( var i = 0; i < arrayLengths.Length; i++ )
             {
-                bufferUnit.VectorLengthOfBone = 
+                this.Units[ i ] = new DrawInstanceNativeBufferUnit
+                {
+                    InstanceBoneVectors = this.InstanceBoneVectors.Slice( start, arrayLengths[ i ] ),
+                    InstanceCounter = new ThreadSafeCounter<Persistent>( 0 ),
+                    OffsetInBuffer = start,
+                    VectorLengthOfBone = resources.Units[i].VectorLengthOfBone,
+                };
+
+                start += arrayLengths[ i ];
             }
         }
-        
+
+        public void Reset()
+        {
+            foreach( var x in this.Units )
+                x.InstanceCounter.Reset();
+        }
+
 
         public void Dispose()
         {
-            foreach( var x in this.NativeBufferEveryModels )
+            foreach( var x in this.Units )
             {
                 x.InstanceCounter.Dispose();
             }
 
-            this.NativeBufferEveryModels.Dispose();
-            //this.instanceBoneVectors.Dispose();
+            this.Units.Dispose();
+            this.InstanceBoneVectors.Dispose();
         }
 
     }

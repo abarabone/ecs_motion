@@ -37,7 +37,7 @@ namespace Abss.Arthuring
             mat.shader = this.Shader;// ちゃんとした材質生成が必要
             mat.enableInstancing = true;
 
-            var drawIndex = drawres.AddDrawMeshResource( mesh, mat );
+            var drawIndex = drawres.AddDrawMeshResource( mesh, mat, BoneType.TR );
 
             return DrawMeshPrefabCreator.CreatePrefab( em, drawIndex, mesh.bindposes.Length );
 

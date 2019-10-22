@@ -24,8 +24,16 @@ namespace Abss.Draw
         public int MeshId;
         public Mesh Mesh;
         public Material Material;
+        public int VectorLengthOfBone;
     }
 
+    public enum BoneType
+    {
+        T       = 1,
+        TR      = 2,
+        TRS     = 3,
+        Matrix  = 4,
+    }
     public struct bone_unit
     {
         public float4 pos;
@@ -36,14 +44,10 @@ namespace Abss.Draw
     public class DrawMeshResourceHolder : IDisposable
     {
 
-
         public List<DrawMeshCsResourceUnit> Units { get; private set; } = new List<DrawMeshCsResourceUnit>();
 
-        //public int MaxInstance;
 
-        
-
-        public int AddDrawMeshResource( Mesh mesh, Material mat )
+        public int AddDrawMeshResource( Mesh mesh, Material mat, BoneType boneType )
         {
             var meshId = this.Units.Count;
 
@@ -52,8 +56,8 @@ namespace Abss.Draw
                 MeshId = meshId,
                 Mesh = mesh,
                 Material = mat,
+                VectorLengthOfBone = (int)boneType,
             };
-
             this.Units.Add( resource );
 
             return meshId;

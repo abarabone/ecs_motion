@@ -35,16 +35,15 @@ namespace Abss.Draw
         
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            var nativeInstanceBuffers = this.drawSystem.InstanceBuffers.NativeBufferEveryModels;
-            if( !nativeInstanceBuffers.IsCreated ) return inputDeps;
+            var nativeInstanceBuffers = this.drawSystem.NativeBuffers;
+            if( !nativeInstanceBuffers.Units.IsCreated ) return inputDeps;
 
 
-            foreach( var x in nativeInstanceBuffers )
-                x.Reset();
+            nativeInstanceBuffers.Reset();
 
             inputDeps = new DrawCullingDummyJob
             {
-                InstanceCounters = nativeInstanceBuffers,
+                NativeBuffers = nativeInstanceBuffers.Units,
             }
             .Schedule( this, inputDeps );
 
@@ -59,14 +58,14 @@ namespace Abss.Draw
         {
 
             [ReadOnly]
-            public NativeArray<ThreadSafeCounter<Persistent>> InstanceCounters;
+            public NativeArray<DrawInstanceNativeBufferUnit> NativeBuffers;
 
 
             public void Execute
                 ( [ReadOnly] ref DrawModelIndexData model, [WriteOnly] ref DrawInstanceTargetWorkData target )
             {
 
-                target.InstanceIndex = this.InstanceCounters[ model.ModelIndex ].GetSerial();
+                target.InstanceIndex = this.NativeBuffers[ model.ModelIndex ].InstanceCounter.GetSerial();
                 //target.InstanceIndex = this.InstanceCounters[ 0 ].GetSerial();
 
             }

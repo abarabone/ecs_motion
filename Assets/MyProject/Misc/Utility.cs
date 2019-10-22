@@ -42,5 +42,56 @@ namespace Abss.Utilities
         //    return arr;
         //}
     }
+
+    
+
+    public struct IndirectArgumentsForInstancing
+    {
+        public uint MeshIndexCount;
+        public uint InstanceCount;
+        public uint MeshBaseIndex;
+        public uint MeshBaseVertex;
+        public uint BaseInstance;
+
+        public IndirectArgumentsForInstancing
+            ( Mesh mesh, int instanceCount = 0, int submeshId = 0, int baseInstance = 0 )
+        {
+            //if( mesh == null ) return;
+
+            this.MeshIndexCount = mesh.GetIndexCount( submeshId );
+            this.InstanceCount = (uint)instanceCount;
+            this.MeshBaseIndex = mesh.GetIndexStart( submeshId );
+            this.MeshBaseVertex = mesh.GetBaseVertex( submeshId );
+            this.BaseInstance = (uint)baseInstance;
+        }
+
+        public NativeArray<uint> ToNativeArray( Allocator allocator )
+        {
+            var arr = new NativeArray<uint>( 5, allocator );
+            arr[ 0 ] = this.MeshIndexCount;
+            arr[ 1 ] = this.InstanceCount;
+            arr[ 2 ] = this.MeshBaseIndex;
+            arr[ 3 ] = this.MeshBaseVertex;
+            arr[ 4 ] = this.BaseInstance;
+            return arr;
+        }
+    }
+
+    static public class IndirectArgumentsExtensions
+    {
+        static public ComputeBuffer SetData( this ComputeBuffer cbuf, ref IndirectArgumentsForInstancing args )
+        {
+            using( var nativebuf = args.ToNativeArray( Allocator.Temp ) )
+                cbuf.SetData( nativebuf );
+
+            return cbuf;
+        }
+    }
+    static public class ComputeShaderUtility
+    {
+        static public ComputeBuffer CreateIndirectArgumentsBuffer() =>
+            new ComputeBuffer( 1, sizeof( uint ) * 5, ComputeBufferType.IndirectArguments, ComputeBufferMode.Immutable );
+    }
+
 }
 
