@@ -17,12 +17,15 @@ using Abss.Misc;
 
 namespace Abss.Draw
 {
-
-    //[DisableAutoCreation]
+    /// <summary>
+    /// ジョブで依存関係をスケジュールしてバッファを確保したいが、うまくいかない
+    /// そもそもジョブで確保できるのか、外部に渡せるのかもわからない
+    /// </summary>
+    [DisableAutoCreation]
     [AlwaysUpdateSystem]
     [UpdateInGroup( typeof( DrawAllocationGroup ) )]
-    //[UpdateBefore(typeof(BoneToDrawInstanceSystem))]
-    //[UpdateInGroup(typeof(DrawSystemGroup))]
+    //[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
+    //[UpdateInGroup( typeof( DrawSystemGroup ) )]
     public class DrawInstanceTempBufferAllocationSystem : JobComponentSystem
     {
 
@@ -54,8 +57,7 @@ namespace Abss.Draw
                 NativeInstances = this.drawMeshCsSystem.NativeBuffers.Units,
             }
             .Schedule( inputDeps );
-            inputDeps.Complete();
-            JobHandle.ScheduleBatchedJobs.
+            
             return inputDeps;
         }
 
@@ -72,19 +74,20 @@ namespace Abss.Draw
         {
 
             [ReadOnly]
+            [NativeDisableParallelForRestriction]
             public NativeArray<DrawInstanceNativeBufferUnit> NativeInstances;
-            
+
             //public NativeArray<float4> InstanceVectorBuffer;
 
 
             public void Execute()
             {
 
-                var length = 0;
-                foreach( var x in this.NativeInstances )
-                {
-                    length += x.InstanceCounter.Count;
-                }
+                //var length = 0;
+                //foreach( var x in this.NativeInstances )
+                //{
+                //    length += x.InstanceCounter.Count;
+                //}
 
                 //Debug.Log( length );
             }

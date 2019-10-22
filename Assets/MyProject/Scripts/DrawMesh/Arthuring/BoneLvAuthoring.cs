@@ -9,7 +9,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-using Abss.Object;
+using Abss.Instance;
 using Abss.Geometry;
 using Abss.Utilities;
 using Abss.Misc;

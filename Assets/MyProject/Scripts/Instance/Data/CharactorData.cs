@@ -15,7 +15,7 @@ using Unity.Properties;
 using Unity.Burst;
 using Abss.Geometry;
 
-namespace Abss.Object
+namespace Abss.Instance
 {
 
     public struct CharacterLinkData : IComponentData

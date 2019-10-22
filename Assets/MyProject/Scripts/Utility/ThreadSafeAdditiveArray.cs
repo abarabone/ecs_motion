@@ -6,6 +6,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 
+// わかりにくい、統一感がない、そのせいか使いにくい
 namespace Abss.Misc
 {
 

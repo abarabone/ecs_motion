@@ -14,7 +14,7 @@ using Abss.Utilities;
 using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
-using Abss.Object;
+using Abss.Instance;
 
 namespace Abss.Arthuring
 {

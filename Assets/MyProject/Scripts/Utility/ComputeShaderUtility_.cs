@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using Unity.Collections;
 
+// いまいちかも
 namespace Abss.Cs
 {
 	

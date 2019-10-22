@@ -14,7 +14,7 @@ using Abss.Misc;
 using Abss.Utilities;
 using Abss.SystemGroup;
 
-namespace Abss.Object
+namespace Abss.Instance
 {
 
     //[DisableAutoCreation]

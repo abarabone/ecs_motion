@@ -14,7 +14,7 @@ using Abss.Arthuring;
 using Abss.SystemGroup;
 using Abss.Utilities;
 using Abss.Geometry;
-using Abss.Object;
+using Abss.Instance;
 
 namespace Abss.Motion
 {
