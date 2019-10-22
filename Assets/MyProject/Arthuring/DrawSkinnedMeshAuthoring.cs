@@ -24,6 +24,8 @@ namespace Abss.Arthuring
         
         
         public Shader Shader = null;
+        public int MaxInstance = 1000;
+        public BoneType BoneType = BoneType.TR;
         
 
         public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres )
@@ -37,7 +39,7 @@ namespace Abss.Arthuring
             mat.shader = this.Shader;// ちゃんとした材質生成が必要
             mat.enableInstancing = true;
 
-            var drawIndex = drawres.AddDrawMeshResource( mesh, mat, BoneType.TR );
+            var drawIndex = drawres.AddDrawMeshResource( mesh, mat, this.BoneType, this.MaxInstance );
 
             return DrawMeshPrefabCreator.CreatePrefab( em, drawIndex, mesh.bindposes.Length );
 

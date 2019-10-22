@@ -29,9 +29,7 @@ namespace Abss.Draw
 
     public class DrawComputeInstanceBufferHolder : IDisposable
     {
-
-        const int MaxInstance = 10000;
-
+        
         public List<DrawInstanceComputeBufferUnit> Units { get; }
             = new List<DrawInstanceComputeBufferUnit>();
         
@@ -53,15 +51,15 @@ namespace Abss.Draw
 
 
             void allocateComputeBuffers_
-                ( DrawMeshCsResourceUnit resouceUnit, DrawInstanceComputeBufferUnit bufferUnit )
+                ( DrawMeshCsResourceUnit resourceUnit, DrawInstanceComputeBufferUnit bufferUnit )
             {
 
-                var mesh = resouceUnit.Mesh;
-                var mat = resouceUnit.Material;
+                var mesh = resourceUnit.Mesh;
+                var mat = resourceUnit.Material;
 
                 var boneLength = mesh.bindposes.Length;
-                var stride = Marshal.SizeOf( typeof( float4 ) ) * resouceUnit.VectorLengthOfBone;
-                var bufferLength = MaxInstance * resouceUnit.VectorLengthOfBone * boneLength;
+                var stride = Marshal.SizeOf( typeof( float4 ) ) * resourceUnit.VectorLengthOfBone;
+                var bufferLength = resourceUnit.MaxInstance * resourceUnit.VectorLengthOfBone * boneLength;
 
                 bufferUnit.TransformBuffer =
                     new ComputeBuffer( bufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable );

@@ -30,9 +30,7 @@ namespace Abss.Draw
 
     public class DrawNativeInstanceBufferHolder : IDisposable
     {
-
-        const int MaxInstance = 10000;
-
+        
         public NativeArray<DrawInstanceNativeBufferUnit> Units;
 
         public NativeArray<float4> InstanceBoneVectors;
@@ -41,7 +39,7 @@ namespace Abss.Draw
         public void Initialize( DrawMeshResourceHolder resources )
         {
             var arrayLengths = resources.Units
-                .Select( x => x.VectorLengthOfBone * x.Mesh.bindposes.Length * MaxInstance )
+                .Select( x => x.VectorLengthOfBone * x.Mesh.bindposes.Length * x.MaxInstance )
                 .ToArray();
 
             this.Units = 

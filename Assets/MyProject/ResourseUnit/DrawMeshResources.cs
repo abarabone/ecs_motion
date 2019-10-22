@@ -25,6 +25,7 @@ namespace Abss.Draw
         public Mesh Mesh;
         public Material Material;
         public int VectorLengthOfBone;
+        public int MaxInstance;
     }
 
     public enum BoneType
@@ -47,7 +48,7 @@ namespace Abss.Draw
         public List<DrawMeshCsResourceUnit> Units { get; private set; } = new List<DrawMeshCsResourceUnit>();
 
 
-        public int AddDrawMeshResource( Mesh mesh, Material mat, BoneType boneType )
+        public int AddDrawMeshResource( Mesh mesh, Material mat, BoneType boneType, int maxInstance )
         {
             var meshId = this.Units.Count;
 
@@ -57,6 +58,7 @@ namespace Abss.Draw
                 Mesh = mesh,
                 Material = mat,
                 VectorLengthOfBone = (int)boneType,
+                MaxInstance = maxInstance,
             };
             this.Units.Add( resource );
 

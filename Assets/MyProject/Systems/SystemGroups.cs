@@ -37,6 +37,12 @@ namespace Abss.SystemGroup
 	public class MotionSystemGroup : ComponentSystemGroup
     { }
 
+    [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
+    [UpdateBefore( typeof( DrawSystemGroup ) )]
+    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+    public class DrawAllocationGroup : ComponentSystemGroup
+    { }
+
     //[DisableAutoCreation]
     [UpdateAfter(typeof(MotionSystemGroup))]
     [UpdateInGroup(typeof(PresentationSystemGroup))]

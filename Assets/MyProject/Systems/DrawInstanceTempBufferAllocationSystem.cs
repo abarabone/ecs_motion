@@ -18,12 +18,9 @@ using Abss.Misc;
 namespace Abss.Draw
 {
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [AlwaysUpdateSystem]
-    //[UpdateAfter(typeof( DrawCullingDummySystem ) )]
-    ////[UpdateAfter( typeof( DrawPrevSystemGroup ) )]
-    ////[UpdateBefore(typeof(DrawSystemGroup))]
-    //[UpdateInGroup( typeof( DrawPrevSystemGroup ) )]
+    [UpdateInGroup(typeof( DrawAllocationGroup ) )]
     public class DrawInstanceTempBufferAllocationSystem : JobComponentSystem
     {
 
@@ -32,15 +29,29 @@ namespace Abss.Draw
         // 一括ボーンフレームバッファ
         public NativeArray<float4> TempInstanceBoneVectors { get; private set; }
 
+        DrawMeshCsSystem drawMeshCsSystem;
 
+
+        protected override void OnStartRunning()
+        {
+            this.drawMeshCsSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
+        }
 
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
+            if( !this.drawMeshCsSystem.NativeBuffers.Units.IsCreated )
+                return inputDeps;
 
             if( this.TempInstanceBoneVectors.IsCreated )
                 this.TempInstanceBoneVectors.Dispose();
 
+
+            inputDeps = new DrawInstanceTempBufferAllocationJob
+            {
+                NativeInstances = this.drawMeshCsSystem.NativeBuffers.Units,
+            }
+            .Schedule( inputDeps );
 
 
             return inputDeps;
@@ -58,23 +69,22 @@ namespace Abss.Draw
         struct DrawInstanceTempBufferAllocationJob : IJob
         {
 
-            public NativeArray<ThreadSafeCounter<Persistent>> InstanceCounters;
-
-
-            public NativeArray<float4> InstanceVectorBuffer;
+            [ReadOnly]
+            public NativeArray<DrawInstanceNativeBufferUnit> NativeInstances;
+            
+            //public NativeArray<float4> InstanceVectorBuffer;
 
 
             public void Execute()
             {
 
                 var length = 0;
-                foreach( var x in this.InstanceCounters )
+                foreach( var x in this.NativeInstances )
                 {
-
-                    length += x.Count;
-
+                    length += x.InstanceCounter.Count;
                 }
 
+                //Debug.Log( length );
             }
         }
     }
