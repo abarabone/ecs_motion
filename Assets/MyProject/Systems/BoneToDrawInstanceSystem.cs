@@ -46,7 +46,7 @@ namespace Abss.Draw
             }
             .Schedule( this, inputDeps );
 
-
+            
             this.presentationBarier.AddJobHandleForProducer( inputDeps );
             return inputDeps;
         }

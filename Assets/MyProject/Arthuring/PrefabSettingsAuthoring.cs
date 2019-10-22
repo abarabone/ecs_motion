@@ -47,7 +47,7 @@ namespace Abss.Arthuring
                 var mlinker = em.GetComponentData<CharacterLinkData>( this.PrefabEntities[model] );
                 ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MotionEntity ).ClipData.Value;
 
-                foreach( var i in Enumerable.Range( 0, 2 ) )
+                foreach( var i in Enumerable.Range( 0, 5000 ) )
                 {
                     this.ents.Add( em.Instantiate( this.PrefabEntities[ model ] ) );
 

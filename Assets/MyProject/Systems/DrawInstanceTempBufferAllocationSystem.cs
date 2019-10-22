@@ -20,7 +20,9 @@ namespace Abss.Draw
 
     //[DisableAutoCreation]
     [AlwaysUpdateSystem]
-    [UpdateInGroup(typeof( DrawAllocationGroup ) )]
+    [UpdateInGroup( typeof( DrawAllocationGroup ) )]
+    //[UpdateBefore(typeof(BoneToDrawInstanceSystem))]
+    //[UpdateInGroup(typeof(DrawSystemGroup))]
     public class DrawInstanceTempBufferAllocationSystem : JobComponentSystem
     {
 
@@ -52,8 +54,8 @@ namespace Abss.Draw
                 NativeInstances = this.drawMeshCsSystem.NativeBuffers.Units,
             }
             .Schedule( inputDeps );
-
-
+            inputDeps.Complete();
+            JobHandle.ScheduleBatchedJobs.
             return inputDeps;
         }
 
