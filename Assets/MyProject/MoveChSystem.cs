@@ -18,7 +18,7 @@ using SphereCollider = Unity.Physics.SphereCollider;
 namespace MyProject
 {
 
-    
+    [DisableAutoCreation]
     [UpdateAfter(typeof(EndFramePhysicsSystem))]
     //[UpdateAfter(typeof(StepPhysicsWorld))]
     public class MoveChSystem : JobComponentSystem
