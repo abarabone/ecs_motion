@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Linq;
 using Unity.Mathematics;
+using Unity.Physics;
 
 using Abss.Geometry;
 using Abss.Utilities;
@@ -16,6 +17,11 @@ using Abss.Motion;
 using Abss.Draw;
 using Abss.Instance;
 using Abss.Common.Extension;
+using Collider = Unity.Physics.Collider;
+using SphereCollider = Unity.Physics.SphereCollider;
+using BoxCollider = Unity.Physics.BoxCollider;
+using CapsuleCollider = Unity.Physics.CapsuleCollider;
+using MeshCollider = Unity.Physics.MeshCollider;
 
 namespace Abss.Arthuring
 {
@@ -34,25 +40,57 @@ namespace Abss.Arthuring
                 .Where( x => x.i != -1 )
                 .Select( x => (x.name, i: bonePrefabs[ x.i ]) );
                 //.ToDictionary( x => x.name, x => x.i );
-
-            var cs = this.GetComponentsInChildren<Collider>();
-            var qColliders =
-                from collider in cs
-                let parent = collider.gameObject
+                
+            var qSrcs =
+                from collider in this.GetComponentsInChildren<UnityEngine.Collider>()
+                let tfParent = collider.gameObject
                     .AncestorsAndSelf()
                     .Where( anc => anc.GetComponent<Rigidbody>() != null )
                     .First()
-                select (collider, parent)
+                select (collider, tfParent)
                 ;
+            var srcs = qSrcs.ToArray();
+
+            var pcs =
+                from x in srcs
+                select new PhysicsCollider
+                {
+                    Value = 
+                };
+            var pvs =
+                from x in srcs
+                select new PhysicsVelocity
+                {
+
+                };
+            var pms =
+                from x in srcs
+                select new PhysicsMass
+                {
+
+                };
+            var pds =
+                from x in srcs
+                select new PhysicsGravityFactor
+                {
+
+                };
 
             var q =
-                from c in qColliders
+                from c in srcs
                 join b in qNameAndBone
                 on c.collider.name equals b.name
-                select new
+                select 1;
 
-                
+            BlobAssetReference<Unity.Physics.Collider> createCollider( UnityEngine.Collider srcCollider )
+            {
+                switch( srcCollider )
+                {
+                    case UnityEngine.SphereCollider srcSphere:
 
+                        break;
+                }
+            }
         }
     }
     // 剛体のないコライダは静的として変換する
