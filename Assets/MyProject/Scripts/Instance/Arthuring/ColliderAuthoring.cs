@@ -9,6 +9,7 @@ using Unity.Transforms;
 using Unity.Linq;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Physics.Authoring;
 
 using Abss.Geometry;
 using Abss.Utilities;
@@ -41,56 +42,89 @@ namespace Abss.Arthuring
                 .Select( x => (x.name, i: bonePrefabs[ x.i ]) );
                 //.ToDictionary( x => x.name, x => x.i );
                 
-            var qSrcs =
+            var qColliderwithParent =
                 from collider in this.GetComponentsInChildren<UnityEngine.Collider>()
                 let tfParent = collider.gameObject
                     .AncestorsAndSelf()
                     .Where( anc => anc.GetComponent<Rigidbody>() != null )
-                    .First()
+                    .First().transform
                 select (collider, tfParent)
                 ;
-            var srcs = qSrcs.ToArray();
+            var collidersWithParent = qColliderwithParent.ToArray();
 
-            var pcs =
-                from x in srcs
+            var blobRefs =
+                from x in collidersWithParent
                 select new PhysicsCollider
                 {
-                    Value = 
+                    Value = createBlob( x.collider )
                 };
-            var pvs =
-                from x in srcs
-                select new PhysicsVelocity
-                {
+            //var pvs =
+            //    from x in collidersWithParent
+            //    select new PhysicsVelocity
+            //    {
 
-                };
-            var pms =
-                from x in srcs
-                select new PhysicsMass
-                {
+            //    };
+            //var pms =
+            //    from x in collidersWithParent
+            //    select new PhysicsMass
+            //    {
 
-                };
-            var pds =
-                from x in srcs
-                select new PhysicsGravityFactor
-                {
+            //    };
+            //var pds =
+            //    from x in collidersWithParent
+            //    select new PhysicsGravityFactor
+            //    {
 
-                };
+            //    };
 
-            var q =
-                from c in srcs
-                join b in qNameAndBone
-                on c.collider.name equals b.name
-                select 1;
+            var qCompoundCollider =
+                from x in collidersWithParent
+                group x.collider by x.tfParent
+                ;
 
-            BlobAssetReference<Unity.Physics.Collider> createCollider( UnityEngine.Collider srcCollider )
+            foreach( var x in qCompoundCollider )
+            {
+
+                if( x.Count > 1 )
+
+            }
+                select
+                    from c in g
+                    let tfParent = g.Key
+                    let tfCollider = c.transform
+                    let tf = new RigidTransform
+                    {
+                        pos = tfCollider.position - tfParent.position,
+                        rot = tfCollider.rotation * Quaternion.Inverse( tfParent.rotation ),
+                    }
+                    let blob = x.y
+                    select new CompoundCollider.ColliderBlobInstance
+                    {
+                        Collider = c
+                    }
+
+            //var q =
+            //    from c in collidersWithParent
+            //    join b in qNameAndBone
+            //        on c.collider.name equals b.name
+            //    select 1;
+
+            BlobAssetReference<Collider> createBlob( UnityEngine.Collider srcCollider )
             {
                 switch( srcCollider )
                 {
                     case UnityEngine.SphereCollider srcSphere:
-
-                        break;
+                        var geom = new SphereGeometry
+                        {
+                            Center = srcSphere.center,
+                            Radius = srcSphere.radius,
+                        };
+                        return SphereCollider.Create( geom );
                 }
+                return BlobAssetReference<Collider>.Null;
             }
+
+            BlobAssetReference<Collider> c
         }
     }
     // 剛体のないコライダは静的として変換する
