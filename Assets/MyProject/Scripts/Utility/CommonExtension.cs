@@ -99,6 +99,7 @@ namespace Abss.Common.Extension
 		//{
 		//	return src.Concat( Enumerable.Repeat( element, 1 ) );
 		//}
+        
 	}
 
     // あとで統合しよう

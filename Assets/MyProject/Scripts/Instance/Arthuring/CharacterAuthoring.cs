@@ -43,6 +43,9 @@ namespace Abss.Arthuring
             var boneAuthor = this.GetComponent<IBoneConverter>();
             var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, streamPrefabs, drawPrefab );
 
+            var colliderAuthor = this.GetComponent<ColliderAuthoring>();
+            colliderAuthor.Convert( em, posturePrefab, bonePrefabs );
+
             var qChildren = Enumerable
                 .Empty<Entity>()
                 .Append( posturePrefab )

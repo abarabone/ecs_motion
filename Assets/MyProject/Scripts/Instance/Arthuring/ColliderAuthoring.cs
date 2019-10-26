@@ -30,17 +30,37 @@ namespace Abss.Arthuring
     {
         
         public void Convert
-            ( EntityManager em, NativeArray<Entity> bonePrefabs )
+            ( EntityManager em, Entity posturePrefab, NativeArray<Entity> bonePrefabs )
         {
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
+
+
+            var rb = this.GetComponentInChildren<Rigidbody>();
+
+            //em.AddComponentData( posturePrefab,
+            //    new PhysicsCollider
+            //    {
+            //        Value = createBlob_( x.collider )
+            //    }
+            //);
+            em.AddComponentData( posturePrefab, new PhysicsVelocity() );
+            //em.AddComponentData( posturePrefab,
+            //    new PhysicsMass
+            //    {
+            //        CenterOfMass = rb.centerOfMass,
+            //        InertiaOrientation = rb.inertiaTensor,
+            //    }
+            //);
+            em.AddComponentData( posturePrefab, new PhysicsGravityFactor { Value = 1.0f } );
+
+
 
             var qNameAndBone = motionClip.StreamPaths
                 .Select( x => System.IO.Path.GetFileName( x ) )
                 .Select( ( name, i ) => (name, i: motionClip.IndexMapFbxToMotion[ i ]) )
                 .Where( x => x.i != -1 )
-                .Select( x => (x.name, i: bonePrefabs[ x.i ]) );
-                //.ToDictionary( x => x.name, x => x.i );
+                .Select( x => (x.name, ent: bonePrefabs[ x.i ]) );
                 
             var qColliderwithParent =
                 from collider in this.GetComponentsInChildren<UnityEngine.Collider>()
@@ -52,12 +72,12 @@ namespace Abss.Arthuring
                 ;
             var collidersWithParent = qColliderwithParent.ToArray();
 
-            var blobRefs =
-                from x in collidersWithParent
-                select new PhysicsCollider
-                {
-                    Value = createBlob( x.collider )
-                };
+            //var blobRefs =
+            //    from x in collidersWithParent
+            //    select new PhysicsCollider
+            //    {
+            //        Value = createBlob_( x.collider )
+            //    };
             //var pvs =
             //    from x in collidersWithParent
             //    select new PhysicsVelocity
@@ -77,39 +97,54 @@ namespace Abss.Arthuring
 
             //    };
 
-            var qCompoundCollider =
+            var qColliderGroup =
                 from x in collidersWithParent
                 group x.collider by x.tfParent
                 ;
 
-            foreach( var x in qCompoundCollider )
-            {
-
-                if( x.Count > 1 )
-
-            }
-                select
-                    from c in g
+            var qCompounds =
+                from g in qColliderGroup
+                let qBlob =
+                    from x in g
                     let tfParent = g.Key
-                    let tfCollider = c.transform
-                    let tf = new RigidTransform
+                    let tfCollider = x.transform
+                    let rtf = new RigidTransform
                     {
                         pos = tfCollider.position - tfParent.position,
                         rot = tfCollider.rotation * Quaternion.Inverse( tfParent.rotation ),
                     }
-                    let blob = x.y
                     select new CompoundCollider.ColliderBlobInstance
                     {
-                        Collider = c
+                        Collider = createBlob_( x ),
+                        CompoundFromChild = rtf,
                     }
+                select new PhysicsCollider
+                {
+                    Value = createFromEnumerable_( qBlob )
+                };
 
-            //var q =
-            //    from c in collidersWithParent
-            //    join b in qNameAndBone
-            //        on c.collider.name equals b.name
-            //    select 1;
+            var qEntAndComponent =
+                from c in (qColliderGroup, qCompounds).Zip()
+                join b in qNameAndBone
+                    on c.x.Key.name equals b.name
+                select (b.ent, c:c.y)
+                ;
 
-            BlobAssetReference<Collider> createBlob( UnityEngine.Collider srcCollider )
+            foreach( var x in qEntAndComponent )
+            {
+                em.AddComponentData( x.ent, x.c );
+            }
+
+            return;
+
+
+            BlobAssetReference<Collider> createFromEnumerable_( IEnumerable<CompoundCollider.ColliderBlobInstance> src )
+            {
+                using( var arr = src.ToNativeArray( Allocator.Temp ) )
+                    return CompoundCollider.Create( arr );
+            }
+            
+            BlobAssetReference<Collider> createBlob_( UnityEngine.Collider srcCollider )
             {
                 switch( srcCollider )
                 {
@@ -123,11 +158,12 @@ namespace Abss.Arthuring
                 }
                 return BlobAssetReference<Collider>.Null;
             }
-
-            BlobAssetReference<Collider> c
+            
         }
     }
     // 剛体のないコライダは静的として変換する
     // モーションと同名のオブジェクトは、該当するボーンのエンティティにコンポーネントデータを付加する。
     // 剛体のついていないコライダは、一番近い先祖剛体に合成
+
+
 }
