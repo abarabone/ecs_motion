@@ -34,7 +34,7 @@ namespace Abss.Motion
 		public string[]	ClipNames;
 
 		public string[]	StreamPaths;
-		public int[]	IndexMapFbxToMotion;
+		public int[]	IndexMapFbxToMotion;// mesh.bones のインデックス → モーションストリームのインデックス
 
 		public MotionDataInAsset	MotionData;
 		

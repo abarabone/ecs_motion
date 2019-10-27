@@ -104,7 +104,7 @@ namespace Abss.Instance
 
 
                 var xyDir = math.rotate( this.CamRotWorld, this.StickDir ) * this.DeltaTime * 10;
-                pos.Value += -xyDir;
+                pos.Value += xyDir;
 
                 this.Positions[ linker.PostureEntity ] = pos;
                 this.Rotations[ linker.PostureEntity ] = rot;

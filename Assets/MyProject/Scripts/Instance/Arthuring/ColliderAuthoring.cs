@@ -35,7 +35,7 @@ namespace Abss.Arthuring
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
-            var rbTop = this.GetComponentInChildren<Rigidbody>( includeInactive: false );
+            var rbTop = this.GetComponentInChildren<Rigidbody>();//( includeInactive: false );
 
 
 
@@ -45,10 +45,11 @@ namespace Abss.Arthuring
                 .Where( x => x.i != -1 )
                 .Select( x => (x.name, ent: bonePrefabs[ x.i ]) )
                 .Append( (rbTop.name, ent:posturePrefab) );
+            var namesAndBones = qNameAndBone.ToArray();
                 
             var qColliderWithParent =
-                from collider in this.GetComponentsInChildren<UnityEngine.Collider>( includeInactive:false )
-                let tfParent = collider.gameObject
+                from collider in this.GetComponentsInChildren<UnityEngine.Collider>()//( includeInactive:false )
+            let tfParent = collider.gameObject
                     .AncestorsAndSelf()
                     .Where( anc => anc.GetComponent<Rigidbody>() != null )
                     .First().transform
@@ -84,34 +85,42 @@ namespace Abss.Arthuring
 
             var qEntAndComponent =
                 from c in (qColliderGroup, qCompounds).Zip()
-                join b in qNameAndBone
+                join b in namesAndBones
                     on c.x.Key.name equals b.name
                 select (b.ent, c:c.y, rb:c.x.Key.GetComponent<Rigidbody>())
                 ;
 
-            foreach( var x in qEntAndComponent )
+            foreach( var (ent, c, rb) in qEntAndComponent )
             {
-                em.AddComponentData( x.ent, x.c );
+                em.AddComponentData( ent, c );
 
-                if( !x.rb.isKinematic ) addDynamicComponentData_( x.ent, x.rb );
+                //if( !rb.isKinematic )
+                    addDynamicComponentData_( ent, rb );
             }
+            return;
 
-
-            var q =
-                from j in this.GetComponentsInChildren<UnityEngine.Joint>( includeInactive: false )
-                join a in qNameAndBone
+            var qJoint =
+                from j in this.GetComponentsInChildren<UnityEngine.Joint>()
+                //.Do( x=>Debug.Log(x.name))
+                join a in namesAndBones
                     on j.name equals a.name
-                join b in qNameAndBone
+                join b in namesAndBones
                     on j.connectedBody.name equals b.name
                 let jointData = createJointBlob_( j )
-                select addJointComponentData_( a.ent, jointData, b.ent, a.ent, j.enableCollision )
+                select (a, b, j, jointData)
+                //select addJointComponentData_( a.ent, jointData, b.ent, a.ent, j.enableCollision )
                 ;
+            foreach( var (a, b, j, jointData) in qJoint )
+            {
+                addJointComponentData_( a.ent, jointData, a.ent, b.ent, j.enableCollision );
+            }
 
 
             return;
 
 
-            BlobAssetReference<Collider> createFromEnumerable_( IEnumerable<CompoundCollider.ColliderBlobInstance> src )
+            BlobAssetReference<Collider> createFromEnumerable_
+                ( IEnumerable<CompoundCollider.ColliderBlobInstance> src )
             {
                 using( var arr = src.ToNativeArray( Allocator.Temp ) )
                     return CompoundCollider.Create( arr );
@@ -135,15 +144,17 @@ namespace Abss.Arthuring
             
             void addDynamicComponentData_( Entity ent, Rigidbody rb )
             {
+                em.AddComponentData( ent, new PhysicsVelocity() );
+
                 var massProp = em.HasComponent<PhysicsCollider>( ent )
                     ? em.GetComponentData<PhysicsCollider>( ent ).MassProperties
                     : MassProperties.UnitSphere;
-
                 em.AddComponentData( ent,
                     rb.isKinematic
                         ? PhysicsMass.CreateKinematic( massProp )
                         : PhysicsMass.CreateDynamic( massProp, rb.mass )
                 );
+
                 var freez_xy = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
                 if( !rb.isKinematic && rb.constraints == freez_xy )
                 {
@@ -151,8 +162,6 @@ namespace Abss.Arthuring
                     phymass.InverseInertia = new float3( 0, 1, 0 );
                     em.SetComponentData( ent, phymass );
                 }
-
-                em.AddComponentData( ent, new PhysicsVelocity() );
             }
 
 
@@ -165,7 +174,8 @@ namespace Abss.Arthuring
                         //(
 
                         //);
-                        return JointData.CreateBallAndSocket(srcChJoint.anchor, srcChJoint.connectedAnchor);
+                        return JointData.CreateBallAndSocket( srcChJoint.anchor, srcChJoint.connectedAnchor );
+                        //return JointData.CreateFixed( srcChJoint.anchor, srcChJoint.connectedAnchor, quaternion.identity, quaternion.identity );
                 }
                 return BlobAssetReference<JointData>.Null;
             }
@@ -174,8 +184,8 @@ namespace Abss.Arthuring
             unsafe void addJointComponentData_
                 ( Entity jointEntity, BlobAssetReference<JointData> jointData, Entity entityA, Entity entityB, bool isEnableCollision = false )
             {
-                //Entity jointEntity = em.CreateEntity( typeof( PhysicsJoint ) );
-                em.SetComponentData( jointEntity, 
+                //Entity jointEntity2 = em.CreateEntity();// typeof( PhysicsJoint ) );
+                em.AddComponentData( jointEntity, 
                     new PhysicsJoint
                     {
                         JointData = jointData,

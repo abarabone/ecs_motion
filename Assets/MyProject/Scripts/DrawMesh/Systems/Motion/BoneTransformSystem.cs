@@ -32,6 +32,7 @@ namespace Abss.Motion
             {
                 BoneRelationLinkers = this.GetComponentDataFromEntity<BoneRelationLinkData>( isReadOnly: true ),
                 //BoneStreamLinkers = this.GetComponentDataFromEntity<BoneStreamLinkData>( isReadOnly: true ),
+                BoneIndexers = this.GetComponentDataFromEntity<BoneIndexData>(),//
                 BonePositions = this.GetComponentDataFromEntity<Translation>(),
                 BoneRotations = this.GetComponentDataFromEntity<Rotation>(),
             }
@@ -51,10 +52,12 @@ namespace Abss.Motion
             //[ReadOnly]
             //public ComponentDataFromEntity<BoneStreamLinkData>      BoneStreamLinkers;
 
+            [ReadOnly]
+            public ComponentDataFromEntity<BoneIndexData>   BoneIndexers;//
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Translation>             BonePositions;
+            public ComponentDataFromEntity<Translation>     BonePositions;
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Rotation>                BoneRotations;
+            public ComponentDataFromEntity<Rotation>        BoneRotations;
 
             public void Execute(
                 [ReadOnly] ref PostureNeedTransformTag tag,
@@ -63,6 +66,9 @@ namespace Abss.Motion
             {
                 for( var ent = linker.BoneRelationTop; ent != Entity.Null; ent = this.BoneRelationLinkers[ent].NextBoneEntity )
                 {
+                    if( BoneIndexers[ ent ].BoneId == 14 ) continue;//
+                    if( BoneIndexers[ ent ].BoneId == 15 ) continue;//
+
                     var parent = this.BoneRelationLinkers[ ent ].ParentBoneEntity;
 
                     var ppos = this.BonePositions[ parent ].Value;

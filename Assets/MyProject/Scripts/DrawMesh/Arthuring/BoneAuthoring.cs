@@ -32,7 +32,9 @@ namespace Abss.Arthuring
 
         public MotionTargetUnit[] Motions;
 
-        public bool UsePhysics;
+        //public bool UsePhysics;
+
+        public GameObject[] BoneMasks;
 
 
         public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
@@ -40,6 +42,10 @@ namespace Abss.Arthuring
         {
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
+
+            //var maskBoneIds = this.BoneMasks
+            //    .Select( x => x.name )
+            //    .Select( x => motionClip.)
 
             return BonePrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip );
         }
@@ -91,6 +97,9 @@ namespace Abss.Arthuring
             setStreamLinks( em, bonePrefabs, streamPrefabs, motionClip );
             setDrawLinks( em, bonePrefabs, drawPrefab, motionClip );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip );
+
+            em.RemoveComponent<BoneStreamLinkData>( bonePrefabs[ 14 ] );//
+            em.RemoveComponent<BoneStreamLinkData>( bonePrefabs[ 15 ] );//
 
 
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
