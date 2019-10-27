@@ -35,24 +35,7 @@ namespace Abss.Arthuring
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
-
-            var rb = this.GetComponentInChildren<Rigidbody>();
-
-            //em.AddComponentData( posturePrefab,
-            //    new PhysicsCollider
-            //    {
-            //        Value = createBlob_( x.collider )
-            //    }
-            //);
-            em.AddComponentData( posturePrefab, new PhysicsVelocity() );
-            //em.AddComponentData( posturePrefab,
-            //    new PhysicsMass
-            //    {
-            //        CenterOfMass = rb.centerOfMass,
-            //        InertiaOrientation = rb.inertiaTensor,
-            //    }
-            //);
-            em.AddComponentData( posturePrefab, new PhysicsGravityFactor { Value = 1.0f } );
+            var rbTop = this.GetComponentInChildren<Rigidbody>();
 
 
 
@@ -60,9 +43,10 @@ namespace Abss.Arthuring
                 .Select( x => System.IO.Path.GetFileName( x ) )
                 .Select( ( name, i ) => (name, i: motionClip.IndexMapFbxToMotion[ i ]) )
                 .Where( x => x.i != -1 )
-                .Select( x => (x.name, ent: bonePrefabs[ x.i ]) );
+                .Select( x => (x.name, ent: bonePrefabs[ x.i ]) )
+                .Append( (rbTop.name, ent:posturePrefab) );
                 
-            var qColliderwithParent =
+            var qColliderWithParent =
                 from collider in this.GetComponentsInChildren<UnityEngine.Collider>()
                 let tfParent = collider.gameObject
                     .AncestorsAndSelf()
@@ -70,33 +54,8 @@ namespace Abss.Arthuring
                     .First().transform
                 select (collider, tfParent)
                 ;
-            var collidersWithParent = qColliderwithParent.ToArray();
-
-            //var blobRefs =
-            //    from x in collidersWithParent
-            //    select new PhysicsCollider
-            //    {
-            //        Value = createBlob_( x.collider )
-            //    };
-            //var pvs =
-            //    from x in collidersWithParent
-            //    select new PhysicsVelocity
-            //    {
-
-            //    };
-            //var pms =
-            //    from x in collidersWithParent
-            //    select new PhysicsMass
-            //    {
-
-            //    };
-            //var pds =
-            //    from x in collidersWithParent
-            //    select new PhysicsGravityFactor
-            //    {
-
-            //    };
-
+            var collidersWithParent = qColliderWithParent.ToArray();
+            
             var qColliderGroup =
                 from x in collidersWithParent
                 group x.collider by x.tfParent
@@ -127,13 +86,17 @@ namespace Abss.Arthuring
                 from c in (qColliderGroup, qCompounds).Zip()
                 join b in qNameAndBone
                     on c.x.Key.name equals b.name
-                select (b.ent, c:c.y)
+                select (b.ent, c:c.y, rb:c.x.Key.GetComponent<Rigidbody>())
                 ;
 
             foreach( var x in qEntAndComponent )
             {
                 em.AddComponentData( x.ent, x.c );
+
+                if( !x.rb.isKinematic ) addDynamic_( x.ent, x.rb );
             }
+
+
 
             return;
 
@@ -149,21 +112,118 @@ namespace Abss.Arthuring
                 switch( srcCollider )
                 {
                     case UnityEngine.SphereCollider srcSphere:
-                        var geom = new SphereGeometry
-                        {
-                            Center = srcSphere.center,
-                            Radius = srcSphere.radius,
-                        };
-                        return SphereCollider.Create( geom );
+                        return srcSphere.ProduceColliderBlob();
+
+                    case UnityEngine.CapsuleCollider srcCapsule:
+                        return srcCapsule.ProduceColliderBlob();
+
+                    case UnityEngine.BoxCollider srcBox:
+                        return srcBox.ProduceColliderBlob();
                 }
                 return BlobAssetReference<Collider>.Null;
             }
             
+            void addDynamic_( Entity ent, Rigidbody rb )
+            {
+                var massProp = em.HasComponent<PhysicsCollider>( ent )
+                    ? em.GetComponentData<PhysicsCollider>( ent ).MassProperties
+                    : MassProperties.UnitSphere;
+
+                em.AddComponentData( ent,
+                    rb.isKinematic
+                        ? PhysicsMass.CreateKinematic( massProp )
+                        : PhysicsMass.CreateDynamic( massProp, rb.mass )
+                );
+                var freez_xy = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+                if( !rb.isKinematic && rb.constraints == freez_xy )
+                {
+                    var phymass = em.GetComponentData<PhysicsMass>( ent );
+                    phymass.InverseInertia = new float3( 0, 1, 0 );
+                    em.SetComponentData( ent, phymass );
+                }
+
+                em.AddComponentData( ent, new PhysicsVelocity() );
+            }
         }
     }
     // 剛体のないコライダは静的として変換する
     // モーションと同名のオブジェクトは、該当するボーンのエンティティにコンポーネントデータを付加する。
     // 剛体のついていないコライダは、一番近い先祖剛体に合成
+
+
+
+
+
+
+    public static class LegacyColliderProducer
+    {
+        static public BlobAssetReference<Collider> ProduceColliderBlob( this UnityEngine.BoxCollider shape )
+        {
+            var worldCenter = math.mul( shape.transform.localToWorldMatrix, new float4( shape.center, 1f ) );
+            var shapeFromWorld = math.inverse(
+                new float4x4( new RigidTransform( shape.transform.rotation, shape.transform.position ) )
+            );
+
+            var geometry = new BoxGeometry
+            {
+                Center = math.mul( shapeFromWorld, worldCenter ).xyz,
+                Orientation = quaternion.identity
+            };
+
+            var linearScale = (float3)shape.transform.lossyScale;
+            geometry.Size = math.abs( shape.size * linearScale );
+
+            geometry.BevelRadius = math.min( ConvexHullGenerationParameters.Default.BevelRadius, math.cmin( geometry.Size ) * 0.5f );
+
+            return BoxCollider.Create(
+                geometry//,
+                //ProduceCollisionFilter( shape ),
+                //ProduceMaterial( shape )
+            );
+        }
+
+        static public BlobAssetReference<Collider> ProduceColliderBlob( this UnityEngine.CapsuleCollider shape )
+        {
+            var linearScale = (float3)shape.transform.lossyScale;
+
+            // radius is max of the two non-height axes
+            var radius = shape.radius * math.cmax( new float3( math.abs( linearScale ) ) { [ shape.direction ] = 0f } );
+
+            var ax = new float3 { [ shape.direction ] = 1f };
+            var vertex = ax * ( 0.5f * shape.height );
+            var rt = new RigidTransform( shape.transform.rotation, shape.transform.position );
+            var worldCenter = math.mul( shape.transform.localToWorldMatrix, new float4( shape.center, 0f ) );
+            var offset = math.mul( math.inverse( new float4x4( rt ) ), worldCenter ).xyz - shape.center * math.abs( linearScale );
+
+            var v0 = offset + ( (float3)shape.center + vertex ) * math.abs( linearScale ) - ax * radius;
+            var v1 = offset + ( (float3)shape.center - vertex ) * math.abs( linearScale ) + ax * radius;
+
+            return CapsuleCollider.Create(
+                new CapsuleGeometry { Vertex0 = v0, Vertex1 = v1, Radius = radius }//,
+                //ProduceCollisionFilter( shape ),
+                //ProduceMaterial( shape )
+            );
+        }
+
+        static public BlobAssetReference<Collider> ProduceColliderBlob( this UnityEngine.SphereCollider shape )
+        {
+            var worldCenter = math.mul( shape.transform.localToWorldMatrix, new float4( shape.center, 1f ) );
+            var shapeFromWorld = math.inverse(
+                new float4x4( new RigidTransform( shape.transform.rotation, shape.transform.position ) )
+            );
+            var center = math.mul( shapeFromWorld, worldCenter ).xyz;
+
+            var linearScale = (float3)shape.transform.lossyScale;
+            var radius = shape.radius * math.cmax( math.abs( linearScale ) );
+
+            return SphereCollider.Create(
+                new SphereGeometry { Center = center, Radius = radius }//,
+                //ProduceCollisionFilter( shape ),
+                //ProduceMaterial( shape )
+            );
+        }
+        
+    }
 
 
 }
