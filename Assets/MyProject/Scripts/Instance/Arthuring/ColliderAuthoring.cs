@@ -35,7 +35,7 @@ namespace Abss.Arthuring
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
-            var rbTop = this.GetComponentInChildren<Rigidbody>();
+            var rbTop = this.GetComponentInChildren<Rigidbody>( includeInactive: false );
 
 
 
@@ -47,7 +47,7 @@ namespace Abss.Arthuring
                 .Append( (rbTop.name, ent:posturePrefab) );
                 
             var qColliderWithParent =
-                from collider in this.GetComponentsInChildren<UnityEngine.Collider>()
+                from collider in this.GetComponentsInChildren<UnityEngine.Collider>( includeInactive:false )
                 let tfParent = collider.gameObject
                     .AncestorsAndSelf()
                     .Where( anc => anc.GetComponent<Rigidbody>() != null )
@@ -74,7 +74,7 @@ namespace Abss.Arthuring
                     }
                     select new CompoundCollider.ColliderBlobInstance
                     {
-                        Collider = createBlob_( x ),
+                        Collider = createColliderBlob_( x ),
                         CompoundFromChild = rtf,
                     }
                 select new PhysicsCollider
@@ -93,9 +93,19 @@ namespace Abss.Arthuring
             {
                 em.AddComponentData( x.ent, x.c );
 
-                if( !x.rb.isKinematic ) addDynamic_( x.ent, x.rb );
+                if( !x.rb.isKinematic ) addDynamicComponentData_( x.ent, x.rb );
             }
 
+
+            var q =
+                from j in this.GetComponentsInChildren<UnityEngine.Joint>( includeInactive: false )
+                join a in qNameAndBone
+                    on j.name equals a.name
+                join b in qNameAndBone
+                    on j.connectedBody.name equals b.name
+                let jointData = createJointBlob_( j )
+                select addJointComponentData_( a.ent, jointData, b.ent, a.ent, j.enableCollision )
+                ;
 
 
             return;
@@ -107,7 +117,7 @@ namespace Abss.Arthuring
                     return CompoundCollider.Create( arr );
             }
             
-            BlobAssetReference<Collider> createBlob_( UnityEngine.Collider srcCollider )
+            BlobAssetReference<Collider> createColliderBlob_( UnityEngine.Collider srcCollider )
             {
                 switch( srcCollider )
                 {
@@ -123,7 +133,7 @@ namespace Abss.Arthuring
                 return BlobAssetReference<Collider>.Null;
             }
             
-            void addDynamic_( Entity ent, Rigidbody rb )
+            void addDynamicComponentData_( Entity ent, Rigidbody rb )
             {
                 var massProp = em.HasComponent<PhysicsCollider>( ent )
                     ? em.GetComponentData<PhysicsCollider>( ent ).MassProperties
@@ -144,6 +154,39 @@ namespace Abss.Arthuring
 
                 em.AddComponentData( ent, new PhysicsVelocity() );
             }
+
+
+            BlobAssetReference<JointData> createJointBlob_( UnityEngine.Joint srcJoint )
+            {
+                switch( srcJoint )
+                {
+                    case UnityEngine.CharacterJoint srcChJoint:
+                        //return JointData.CreateRagdoll
+                        //(
+
+                        //);
+                        return JointData.CreateBallAndSocket(srcChJoint.anchor, srcChJoint.connectedAnchor);
+                }
+                return BlobAssetReference<JointData>.Null;
+            }
+
+            //unsafe Entity createJoint_
+            unsafe void addJointComponentData_
+                ( Entity jointEntity, BlobAssetReference<JointData> jointData, Entity entityA, Entity entityB, bool isEnableCollision = false )
+            {
+                //Entity jointEntity = em.CreateEntity( typeof( PhysicsJoint ) );
+                em.SetComponentData( jointEntity, 
+                    new PhysicsJoint
+                    {
+                        JointData = jointData,
+                        EntityA = entityA,
+                        EntityB = entityB,
+                        EnableCollision = ( isEnableCollision ? 1 : 0 )
+                    } 
+                );
+                //return jointEntity;
+            }
+            
         }
     }
     // 剛体のないコライダは静的として変換する
@@ -224,6 +267,7 @@ namespace Abss.Arthuring
         }
         
     }
+
 
 
 }
