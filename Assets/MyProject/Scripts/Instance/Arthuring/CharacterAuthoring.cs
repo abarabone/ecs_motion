@@ -44,7 +44,7 @@ namespace Abss.Arthuring
             var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, streamPrefabs, drawPrefab );
 
             var colliderAuthor = this.GetComponent<ColliderAuthoring>();
-            colliderAuthor.Convert( em, posturePrefab, bonePrefabs );
+            var jointPrefabs = colliderAuthor.Convert( em, posturePrefab, bonePrefabs );
 
             var qChildren = Enumerable
                 .Empty<Entity>()
@@ -53,6 +53,7 @@ namespace Abss.Arthuring
                 .Append( motionPrefab )
                 .Concat( streamPrefabs )
                 .Concat( bonePrefabs )
+                .Concat( jointPrefabs )
                 ;
 
             var prefab = CharactorPrefabCreator.CreatePrefab( em, qChildren );
@@ -68,6 +69,7 @@ namespace Abss.Arthuring
 
             streamPrefabs.Dispose();
             bonePrefabs.Dispose();
+            jointPrefabs.Dispose();
 
 
             this.gameObject.SetActive( false );

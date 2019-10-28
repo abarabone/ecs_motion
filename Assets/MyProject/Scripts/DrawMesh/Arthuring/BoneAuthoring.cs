@@ -104,6 +104,7 @@ namespace Abss.Arthuring
                 em.SetComponentData( x, new Translation { Value = float3.zero } );
             }
 
+            //em.RemoveComponent<BoneStreamLinkData>( bonePrefabs[ 13 ] );//
             em.RemoveComponent<BoneStreamLinkData>( bonePrefabs[ 14 ] );//
             em.RemoveComponent<BoneStreamLinkData>( bonePrefabs[ 15 ] );//
 
