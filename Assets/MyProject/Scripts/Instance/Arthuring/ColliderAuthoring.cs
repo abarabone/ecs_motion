@@ -89,15 +89,22 @@ namespace Abss.Arthuring
                     on c.x.Key.name equals b.name
                 select (b.ent, c:c.y, rb:c.x.Key.GetComponent<Rigidbody>())
                 ;
-
             foreach( var (ent, c, rb) in qEntAndComponent )
             {
                 em.AddComponentData( ent, c );
-
-                //if( !rb.isKinematic )
-                    addDynamicComponentData_( ent, rb );
             }
-            return;
+
+            var qRbAndBone =
+                from x in this.GetComponentsInChildren<Rigidbody>()
+                join b in namesAndBones
+                    on x.name equals b.name
+                select (rb: x, b.ent)
+                ;
+            foreach( var (rb, ent) in qRbAndBone )
+            {
+                addDynamicComponentData_( ent, rb );
+            }
+            
 
             var qJoint =
                 from j in this.GetComponentsInChildren<UnityEngine.Joint>()
@@ -144,24 +151,28 @@ namespace Abss.Arthuring
             
             void addDynamicComponentData_( Entity ent, Rigidbody rb )
             {
-                em.AddComponentData( ent, new PhysicsVelocity() );
-
                 var massProp = em.HasComponent<PhysicsCollider>( ent )
                     ? em.GetComponentData<PhysicsCollider>( ent ).MassProperties
                     : MassProperties.UnitSphere;
-                em.AddComponentData( ent,
-                    rb.isKinematic
-                        ? PhysicsMass.CreateKinematic( massProp )
-                        : PhysicsMass.CreateDynamic( massProp, rb.mass )
-                );
+
+                if( rb.isKinematic )
+                {
+                    em.AddComponentData( ent, PhysicsMass.CreateKinematic( massProp ) );
+                    return;
+                }
+
+                var phymass = PhysicsMass.CreateDynamic( massProp, rb.mass );
+                em.AddComponentData( ent,  );
 
                 var freez_xy = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-                if( !rb.isKinematic && rb.constraints == freez_xy )
+                if( rb.constraints == freez_xy )
                 {
                     var phymass = em.GetComponentData<PhysicsMass>( ent );
                     phymass.InverseInertia = new float3( 0, 1, 0 );
                     em.SetComponentData( ent, phymass );
                 }
+
+                em.AddComponentData( ent, new PhysicsVelocity() );
             }
 
 

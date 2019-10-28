@@ -98,12 +98,19 @@ namespace Abss.Arthuring
             setDrawLinks( em, bonePrefabs, drawPrefab, motionClip );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip );
 
+            foreach( var x in bonePrefabs )
+            {
+                em.SetComponentData( x, new Rotation { Value = quaternion.identity } );
+                em.SetComponentData( x, new Translation { Value = float3.zero } );
+            }
+
             em.RemoveComponent<BoneStreamLinkData>( bonePrefabs[ 14 ] );//
             em.RemoveComponent<BoneStreamLinkData>( bonePrefabs[ 15 ] );//
 
 
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
             em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
+            em.SetComponentData( posturePrefab, new Translation { Value = float3.zero } );
 
             return (bonePrefabs, posturePrefab);
 

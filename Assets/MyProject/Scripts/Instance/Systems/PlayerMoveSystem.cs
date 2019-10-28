@@ -23,7 +23,7 @@ namespace Abss.Instance
     {
         
 
-        public Transform TfCamera;
+        //public Transform TfCamera;
 
 
 
@@ -35,7 +35,8 @@ namespace Abss.Instance
             var gp = Gamepad.current;
             var input = gp != null ? getPadInput( gp ) : getKeyInput( Keyboard.current );
 
-            var camRotWorld = (quaternion)this.TfCamera.rotation;
+            var tfCamera = Camera.main.transform;
+            var camRotWorld = (quaternion)tfCamera.rotation;//this.TfCamera.rotation;
 
             inputDeps = new PlayerMoveJob
             {
@@ -49,8 +50,8 @@ namespace Abss.Instance
 
             var rs = gp != null ? gp.rightStick.ReadValue() : Mouse.current.delta.ReadValue() * 0.5f;
 
-            TfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.deltaTime );
-            //TfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
+            tfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.deltaTime );
+            //tfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
 
             return inputDeps;
 

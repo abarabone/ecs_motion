@@ -37,7 +37,7 @@ namespace Abss.Arthuring
 
             em.AddComponentData( prefab, new PlayerCharacterTag { } );
 
-            em.World.GetExistingSystem<PlayerMoveSystem>().TfCamera = this.Camera.transform;
+            //em.World.GetExistingSystem<PlayerMoveSystem>().TfCamera = this.Camera.transform;
             
 
             return prefab;
