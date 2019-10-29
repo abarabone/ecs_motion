@@ -114,7 +114,8 @@ namespace Abss.Arthuring
             {
                 addDynamicComponentData_ByRigidbody_( ent, rb );
             }
-            
+            //return new NativeArray<Entity>(0,Allocator.Temp);
+
 
             // ジョイントの生成。両端のオブジェクトに相当するエンティティを特定する。
             // ・ジョイントはエンティティとして生成する。
@@ -131,13 +132,7 @@ namespace Abss.Arthuring
                 //select (a, b, j, jointData)
                 select addJointComponentData_( a.ent, jointData, a.ent, b.ent, j.enableCollision )
                 ;
-            return qJoint.ToNativeArray( Allocator.Temp );
-            //foreach( var (a, b, j, jointData) in qJoint )
-            //{
-            //    addJointComponentData_( a.ent, jointData, a.ent, b.ent, j.enableCollision );
-            //}
-
-            //return;
+            return qJoint.SelectMany().ToNativeArray( Allocator.Temp );
 
 
             BlobAssetReference<Collider> compoundColliderBlobsFromEnumerable_
@@ -196,53 +191,67 @@ namespace Abss.Arthuring
             }
 
 
-            (BlobAssetReference<JointData> )
-                createJointBlob_( UnityEngine.Joint srcJoint )
+            BlobAssetReference<JointData>[] createJointBlob_( UnityEngine.Joint srcJoint )
             {
                 switch( srcJoint )
                 {
-                    case UnityEngine.CharacterJoint srcChJoint:
+                    case UnityEngine.CharacterJoint srcChJoint when srcChJoint.GetComponent<RagdollJointAuthoring>() != null:
+                    {
                         var srcRagdollJoint = srcChJoint.GetComponent<RagdollJointAuthoring>();
-                        if( srcRagdollJoint != null )
-                        {
-                            JointData.CreateRagdoll
-                            (
-                                srcRagdollJoint.positionAinA,
-                                srcRagdollJoint.positionBinB,
-                                srcRagdollJoint.twistAxisInA,
-                                srcRagdollJoint.twistAxisInB,
-                                srcRagdollJoint.perpendicularAxisInA,
-                                srcRagdollJoint.perpendicularAxisInB,
-                                srcRagdollJoint.maxConeAngle,
-                                srcRagdollJoint.minPerpendicularAngle,
-                                srcRagdollJoint.maxPerpendicularAngle,
-                                srcRagdollJoint.minTwistAngle,
-                                srcRagdollJoint.maxTwistAngle,
-                                out var jointData0,
-                                out var jointData1
-                            );
-                            return JointData.CreateBallAndSocket( srcChJoint.anchor, srcChJoint.connectedAnchor );
-                        }
-                        break;
+                        JointData.CreateRagdoll
+                        (
+                            srcRagdollJoint.positionAinA,
+                            srcRagdollJoint.positionBinB,
+                            srcRagdollJoint.twistAxisInA,
+                            srcRagdollJoint.twistAxisInB,
+                            srcRagdollJoint.perpendicularAxisInA,
+                            srcRagdollJoint.perpendicularAxisInB,
+                            math.radians( srcRagdollJoint.maxConeAngle ),
+                            math.radians( srcRagdollJoint.minPerpendicularAngle ),
+                            math.radians( srcRagdollJoint.maxPerpendicularAngle ),
+                            math.radians( srcRagdollJoint.minTwistAngle ),
+                            math.radians( srcRagdollJoint.maxTwistAngle ),
+                            out var jointData0,
+                            out var jointData1
+                        );
+                        return new[] { jointData0, jointData1 };
+                    }
+
+                    case UnityEngine.CharacterJoint srcChJoint2:
+                    {
+                        var blob = JointData.CreateBallAndSocket( srcChJoint2.anchor, srcChJoint2.connectedAnchor );
+                        return new[] { blob };
+                    }
                 }
-                return BlobAssetReference<JointData>.Null;
+                return new BlobAssetReference<JointData>[] {};
             }
 
             //unsafe Entity createJoint_
-            unsafe Entity addJointComponentData_
-                ( Entity jointEntity, BlobAssetReference<JointData> jointData, Entity entityA, Entity entityB, bool isEnableCollision = false )
+            unsafe Entity[] addJointComponentData_(
+                Entity jointEntity,
+                BlobAssetReference<JointData>[] jointDataArray,
+                Entity entityA, Entity entityB,
+                bool isEnableCollision = false
+            )
             {
-                Entity jointEntity2 = em.CreateEntity( typeof( Prefab ) );
-                em.AddComponentData( jointEntity2, 
-                    new PhysicsJoint
-                    {
-                        JointData = jointData,
-                        EntityA = entityA,
-                        EntityB = entityB,
-                        EnableCollision = ( isEnableCollision ? 1 : 0 )
-                    } 
-                );
-                return jointEntity2;
+
+                return ( from x in jointDataArray select createJointEntity_( x ) ).ToArray();
+                
+
+                Entity createJointEntity_( BlobAssetReference<JointData> jd )
+                {
+                    var ent = em.CreateEntity( typeof( Prefab ), typeof( PhysicsJoint ) );
+                    em.SetComponentData( ent,
+                        new PhysicsJoint
+                        {
+                            JointData = jd,
+                            EntityA = entityA,
+                            EntityB = entityB,
+                            EnableCollision = ( isEnableCollision ? 1 : 0 )
+                        }
+                    );
+                    return ent;
+                }
             }
             
         }
