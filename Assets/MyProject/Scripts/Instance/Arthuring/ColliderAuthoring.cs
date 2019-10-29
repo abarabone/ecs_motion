@@ -196,17 +196,34 @@ namespace Abss.Arthuring
             }
 
 
-            BlobAssetReference<JointData> createJointBlob_( UnityEngine.Joint srcJoint )
+            (BlobAssetReference<JointData> )
+                createJointBlob_( UnityEngine.Joint srcJoint )
             {
                 switch( srcJoint )
                 {
                     case UnityEngine.CharacterJoint srcChJoint:
-                        //return JointData.CreateRagdoll
-                        //(
-
-                        //);
-                        return JointData.CreateBallAndSocket( srcChJoint.anchor, srcChJoint.connectedAnchor );
-                        //return JointData.CreateFixed( srcChJoint.anchor, srcChJoint.connectedAnchor, quaternion.identity, quaternion.identity );
+                        var srcRagdollJoint = srcChJoint.GetComponent<RagdollJointAuthoring>();
+                        if( srcRagdollJoint != null )
+                        {
+                            JointData.CreateRagdoll
+                            (
+                                srcRagdollJoint.positionAinA,
+                                srcRagdollJoint.positionBinB,
+                                srcRagdollJoint.twistAxisInA,
+                                srcRagdollJoint.twistAxisInB,
+                                srcRagdollJoint.perpendicularAxisInA,
+                                srcRagdollJoint.perpendicularAxisInB,
+                                srcRagdollJoint.maxConeAngle,
+                                srcRagdollJoint.minPerpendicularAngle,
+                                srcRagdollJoint.maxPerpendicularAngle,
+                                srcRagdollJoint.minTwistAngle,
+                                srcRagdollJoint.maxTwistAngle,
+                                out var jointData0,
+                                out var jointData1
+                            );
+                            return JointData.CreateBallAndSocket( srcChJoint.anchor, srcChJoint.connectedAnchor );
+                        }
+                        break;
                 }
                 return BlobAssetReference<JointData>.Null;
             }
