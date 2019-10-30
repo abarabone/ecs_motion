@@ -14,7 +14,7 @@ public class RagdollJointAuthoring : MonoBehaviour
     public Rigidbody connectedBody;
 
     public float3 positionAinA;
-    public float3 positionBinB { get => calcPosBinB(this.positionAinA); }
+    public float3 positionBinB { get => calcPosBinB( this.positionAinA ); }
     public float3 twistAxisInA;
     public float3 twistAxisInB { get => calcAxisBinB( this.twistAxisInA ); }
     public float3 perpendicularAxisInA;
@@ -45,7 +45,7 @@ public class RagdollJointAuthoring : MonoBehaviour
     }
     float3 calcAxisBinB( float3 axisAinA )
     {
-        var worldFromA = this.transform.rotation;
+        var worldFromA = new quaternion( this.transform.rotation.As_float4() );
         var worldFromB = ( this.connectedBody == null )
             ? quaternion.identity
             : new quaternion(this.connectedBody.transform.rotation.As_float4());
