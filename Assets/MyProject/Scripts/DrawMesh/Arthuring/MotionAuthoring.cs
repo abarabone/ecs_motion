@@ -22,12 +22,23 @@ namespace Abss.Arthuring
 
         public MotionClip MotionClip;
 
+        public AvatarMask BoneMask;
 
-        public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) Convert( EntityManager em )
+        public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) Convert( EntityManager em, Entity drawPrefab )
         {
             var motionClip = this.MotionClip;
-            
-            return MotionPrefabCreator.CreatePrefab( em, motionClip );
+
+            //var boneMasks = (Enumerable.Range( 1, motionClip.StreamPaths.Length ), motionClip.IndexMapFbxToMotion).Zip()
+            //    .Where( x => x.y != -1 )
+            //    .OrderBy( x => x.y )
+            //    .Select( x => this.BoneMask.GetTransformActive( x.x ) )
+            //    .ToArray();
+            var boneMasks = new bool[] {
+                true, true, true, true, true,
+                true, true, true, true, true,
+                true, true, true, true, false, false };
+
+            return MotionPrefabCreator.CreatePrefab( em, drawPrefab, motionClip, boneMasks );
         }
     }
 
@@ -53,6 +64,7 @@ namespace Abss.Arthuring
         (
             em => em.CreateArchetype
             (
+                typeof( StreamDrawLinkData ),
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
                 typeof( StreamNearKeysCacheData ),
@@ -64,15 +76,15 @@ namespace Abss.Arthuring
 
 
         static public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) CreatePrefab
-            ( EntityManager em, MotionClip motionClip )
+            ( EntityManager em, Entity drawPrefab, MotionClip motionClip, bool[] boneMasks )
         {
 
             var motionArchetype = motionArchetypeCache.GetOrCreateArchetype( em );
             var streamArchetype = streamArchetypeCache.GetOrCreateArchetype( em );
 
             var motionPrefab = createMotionPrefab( em, motionClip, motionArchetype );
-            using( var posStreamPrefabs = createStreamOfSectionPrefabs( em, motionClip, streamArchetype ) )
-            using( var rotStreamPrefabs = createStreamOfSectionPrefabs( em, motionClip, streamArchetype ) )
+            using( var posStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionClip, boneMasks, streamArchetype ) )
+            using( var rotStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionClip, boneMasks, streamArchetype ) )
             {
 
                 em.SetComponentData( motionPrefab,
@@ -105,20 +117,29 @@ namespace Abss.Arthuring
             // ストリームエンティティ生成
             NativeArray<Entity> createStreamOfSectionPrefabs
             //( EntityManager em_, BlobAssetReference<MotionBlobData> motionBlobData_, EntityArchetype streamArchetype_ )
-            ( EntityManager em_, MotionClip motionClip_, EntityArchetype streamArchetype_ )
+            ( EntityManager em_, Entity drawPrefab_, MotionClip motionClip_, bool[] boneMasks_, EntityArchetype streamArchetype_ )
             {
                 var streamLength = motionClip.StreamPaths.Length;
-                
-                var streamEntities = new NativeArray<Entity>( streamLength, Allocator.Temp );
+                var enableLength = streamLength;//boneMasks_.Where( x => x ).Count();
+
+                var streamEntities = new NativeArray<Entity>( enableLength, Allocator.Temp );
                 em_.CreateEntity( streamArchetype_, streamEntities );
 
+                var qNext = streamEntities.Skip( 1 ).Append( Entity.Null );
+                var qEnable = Enumerable.Range(0,16);//boneMasks_.Select( (x, i) => (x, i) ).Where( x => x.x ).Select( x => x.i );
+
                 var qNextLinker = 
-                    from ent in streamEntities.Skip( 1 ).Append( Entity.Null )
+                    from x in (qNext, qEnable).Zip()
                     select new StreamRelationData
                     {
-                        NextStreamEntity = ent,
+                        BoneId = x.y,
+                        NextStreamEntity = x.x,
                     };
                 em_.SetComponentData( streamEntities, qNextLinker );
+
+                em_.SetComponentData( streamEntities,
+                    streamEntities.Select( _ => new StreamDrawLinkData { DrawEntity = drawPrefab_ } )
+                );
 
                 return streamEntities;
             }

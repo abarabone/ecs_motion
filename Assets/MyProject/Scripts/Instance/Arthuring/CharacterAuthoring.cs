@@ -34,11 +34,11 @@ namespace Abss.Arthuring
             ( EntityManager em, DrawMeshResourceHolder drawResources )
         {
 
-            var motionAuthor = this.GetComponent<MotionAuthoring>();
-            var (motionPrefab, streamPrefabs) = motionAuthor.Convert( em );
-
             var drawAuthor = this.GetComponent<DrawSkinnedMeshAuthoring>();
             var drawPrefab = drawAuthor.Convert( em, drawResources );
+
+            var motionAuthor = this.GetComponent<MotionAuthoring>();
+            var (motionPrefab, streamPrefabs) = motionAuthor.Convert( em, drawPrefab );
 
             var boneAuthor = this.GetComponent<IBoneConverter>();
             var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, streamPrefabs, drawPrefab );

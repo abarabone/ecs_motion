@@ -66,10 +66,6 @@ namespace Abss.Motion
             {
                 for( var ent = linker.BoneRelationTop; ent != Entity.Null; ent = this.BoneRelationLinkers[ent].NextBoneEntity )
                 {
-                    //if( BoneIndexers[ ent ].BoneId == 13 ) continue;//
-                    if( BoneIndexers[ ent ].BoneId == 14 ) continue;//
-                    if( BoneIndexers[ ent ].BoneId == 15 ) continue;//
-
                     var parent = this.BoneRelationLinkers[ ent ].ParentBoneEntity;
 
                     var ppos = this.BonePositions[ parent ].Value;

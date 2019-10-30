@@ -93,9 +93,10 @@ namespace Abss.Motion
             {
                 ref var streams = ref motion.Sections[(int)streamSection].Streams;
 
-                var i = 0;
                 for( var ent = entTop; ent != Entity.Null; ent = this.Linkers[ent].NextStreamEntity )
                 {
+                    var i = Linkers[ ent ].BoneId;
+                    
                     var shifter = this.Shifters[ ent ];
                     shifter.Keys = (KeyBlobUnit*)streams[ i ].Keys.GetUnsafePtr();
                     shifter.KeyLength = streams[ i ].Keys.Length;
@@ -110,8 +111,6 @@ namespace Abss.Motion
                     var cache = this.Caches[ ent ];
                     cache.InitializeKeys( ref shifter, ref timer );
                     this.Caches[ ent ] = cache;
-
-                    i++;
                 }
             }
 

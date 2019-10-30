@@ -16,38 +16,38 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
-    [DisableAutoCreation]
-    public class MarkDrawTargetMotionStreamDirectSystem : JobComponentSystem
-    {
+    //[DisableAutoCreation]
+    //public class MarkDrawTargetMotionStreamDirectSystem : JobComponentSystem
+    //{
 
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
-        {
-            throw new System.NotImplementedException();
-        }
+    //    protected override JobHandle OnUpdate( JobHandle inputDeps )
+    //    {
+    //        throw new System.NotImplementedException();
+    //    }
 
 
-        [BurstCompile]
-        struct MarkStreamJob : IJobForEach<StreamDrawLinkData, StreamDirectDrawTargetIndexData>
-        {
+    //    [BurstCompile]
+    //    struct MarkStreamJob : IJobForEach<StreamDrawLinkData, StreamDirectDrawTargetIndexData>
+    //    {
 
-            [ReadOnly]
-            public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
+    //        [ReadOnly]
+    //        public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
 
 
-            public void Execute(
-                [ReadOnly] ref StreamDrawLinkData drawLinker,
-                ref StreamDirectDrawTargetIndexData indexer
-            )
-            {
+    //        public void Execute(
+    //            [ReadOnly] ref StreamDrawLinkData drawLinker,
+    //            ref StreamDirectDrawTargetIndexData indexer
+    //        )
+    //        {
 
-                var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
+    //            var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
 
-                indexer.DrawInstanceVectorIndex = 0;//
+    //            indexer.DrawInstanceVectorIndex = 0;//
 
-            }
-        }
+    //        }
+    //    }
 
-    }
+    //}
 
 }

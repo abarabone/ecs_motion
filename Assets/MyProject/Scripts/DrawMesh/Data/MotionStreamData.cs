@@ -30,8 +30,7 @@ namespace Abss.Motion
 
 	//public struct StreamInitialFor1posTag : IComponentData
 	//{}
-
-
+    
     public struct StreamDrawTargetData : IComponentData
     {
         public bool IsDrawTarget;
@@ -39,6 +38,7 @@ namespace Abss.Motion
 
     public struct StreamRelationData : IComponentData
     {
+        public int BoneId;
         public Entity NextStreamEntity;
     }
 
@@ -50,11 +50,11 @@ namespace Abss.Motion
     /// <summary>
     /// 最適化用
     /// </summary>
-    public struct StreamDirectDrawTargetIndexData : IComponentData
-    {
-        public int DrawInstanceVectorIndex;
-    }
-
+    //public struct StreamDirectDrawTargetIndexData : IComponentData
+    //{
+    //    public int DrawInstanceVectorIndex;
+    //}
+    
 
     /// <summary>
     /// 現在キーの位置と、ストリームデータへの参照を保持する。
