@@ -217,11 +217,20 @@ namespace Abss.Arthuring
                             NextBoneEntity = boneEnts[ nextId + 1 ],
                         };
 
-                    em_.SetComponentData( bonePrefabs_, qBoneLinker );
+                    var q =
+                        from x in (qBoneLinker, boneMasks_).Zip()
+                        let linker = x.x
+                        let isEnable = x.y
+                        where isEnable
+                        select new BoneRelationLinkData
+                        {
+                            ParentBoneEntity = linker.ParentBoneEntity,
+                            NextBoneEntity = 
+                        };
 
                     // マスクのかかったボーンを、チェインから抜き取る
                     var prev = Entity.Null;
-                    foreach( var (ent, i) in bonePrefabs.Select( ( x, i ) => (x, i) ) )
+                    foreach( var (ent, i) in bonePrefabs.Select((x, i) => (x, i)) )
                     {
                         prev = ent;
                         if( boneMasks_[ i ] ) continue;
@@ -233,6 +242,8 @@ namespace Abss.Arthuring
                         linker.NextBoneEntity = next;
                         em_.SetComponentData( prev, linker );
                     }
+
+                    em_.SetComponentData( bonePrefabs_, qBoneLinker );
                 }
             }
 
