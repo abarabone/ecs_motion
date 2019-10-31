@@ -58,6 +58,10 @@ namespace Abss.Arthuring
                     em.SetComponentData( chlinker.MotionEntity, new MotionInfoData { MotionIndex = i % mclip.Motions.Length } );
                 }
             }
+
+            var post = em.GetComponentData<CharacterLinkData>( this.ents[ 0 ] ).PostureEntity;
+            em.AddComponentData( post, new PlayerCharacterTag { } );
+
         }
 
         void Update()

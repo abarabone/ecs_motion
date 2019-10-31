@@ -230,6 +230,16 @@ namespace Abss.Common.Extension
             }
         }
 
+        public static void AddComponentData<T>
+            ( this EntityManager em, IEnumerable<Entity> entities, IEnumerable<T> components )
+            where T : struct, IComponentData
+        {
+            foreach( var x in (entities, components).Zip() )
+            {
+                em.AddComponentData( x.x, x.y );
+            }
+        }
+
         public static void SetLinkedEntityGroup
             ( this EntityManager em, Entity entity, IEnumerable<Entity> children )
         {

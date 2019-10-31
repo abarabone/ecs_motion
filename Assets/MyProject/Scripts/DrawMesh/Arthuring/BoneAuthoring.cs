@@ -32,17 +32,15 @@ namespace Abss.Arthuring
 
         public MotionTargetUnit[] Motions;
 
-        //public bool UsePhysics;
-
         public AvatarMask BoneMask;
 
 
         public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
             ( EntityManager em, NativeArray<Entity> streamPrefabs, Entity drawPrefab )
         {
-            Debug.Log( this.BoneMask.transformCount );
-            foreach( var x in Enumerable.Range( 0, BoneMask.transformCount ) )
-                Debug.Log( $"{x} {this.BoneMask.GetTransformActive( x )} {this.BoneMask.GetTransformPath( x ) }" );
+            //Debug.Log( this.BoneMask.transformCount );
+            //foreach( var x in Enumerable.Range( 0, BoneMask.transformCount ) )
+            //    Debug.Log( $"{x} {this.BoneMask.GetTransformActive( x )} {this.BoneMask.GetTransformPath( x ) }" );
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
             var bindposes = this.GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh.bindposes;//
@@ -52,15 +50,11 @@ namespace Abss.Arthuring
                 .Select( x => new float4x4(x.x.GetRow(0), x.x.GetRow(1), x.x.GetRow(2), x.x.GetRow(3)) )
                 .Select( x => math.inverse(x) )
                 .ToArray();
-            //var boneMasks = (Enumerable.Range( 1, bindposes.Length ), motionClip.IndexMapFbxToMotion).Zip()
-            //    .Where( x => x.y != -1 )
-            //    .OrderBy( x => x.y )
-            //    .Select( x => this.BoneMask.GetTransformActive( x.x ) )
-            //    .ToArray();
-            var boneMasks = new bool[] {
-                true, true, true, true, true,
-                true, true, true, true, true,
-                true, true, true, true, false, false };
+            var boneMasks = (Enumerable.Range( 1, bindposes.Length ), motionClip.IndexMapFbxToMotion).Zip()
+                .Where( x => x.y != -1 )
+                .OrderBy( x => x.y )
+                .Select( x => this.BoneMask.GetTransformActive( x.x ) )
+                .ToArray();
 
             return BonePrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip, mtBones, boneMasks );
         }
@@ -76,7 +70,7 @@ namespace Abss.Arthuring
             (
                 typeof( BoneRelationLinkData ),
                 typeof( BoneDrawLinkData ),
-                typeof( BoneStreamLinkData ),
+                //typeof( BoneStreamLinkData ),
                 typeof( BoneIndexData ),
                 typeof( BoneDrawTargetIndexWorkData ),
                 typeof( Translation ),
@@ -112,7 +106,7 @@ namespace Abss.Arthuring
             
             var bonePrefabs = createBonePrefabs( em, mtBones.Length, boneArchetype );
             setBoneId( em, bonePrefabs, drawPrefab );
-            setStreamLinks( em, bonePrefabs, streamPrefabs, mtBones.Length );
+            setStreamLinks( em, bonePrefabs, streamPrefabs, boneMasks );
             setDrawLinks( em, bonePrefabs, drawPrefab, mtBones.Length );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip, boneMasks );
 
@@ -152,30 +146,35 @@ namespace Abss.Arthuring
 
             void setStreamLinks(
                 EntityManager em_, NativeArray<Entity> bonePrefabs_, NativeArray<Entity> streamPrefabs_,
-                int boneLength
+                bool[] boneMasks_
             )
             {
-                var qPosStreams = streamPrefabs_
-                    .Take( boneLength );
-                var qRotStreams = streamPrefabs_
-                    .Skip( boneLength )
-                    .Take( boneLength );
+                var enableLength = boneMasks_.Where( x => x ).Count();
+
+                var qPosStream = streamPrefabs_
+                    .Take( enableLength );
+                var qRotStream = streamPrefabs_
+                    .Skip( enableLength )
+                    .Take( enableLength );
                 var qStreamlinkers =
-                    from ent in (qPosStreams, qRotStreams).Zip()
+                    from x in (qPosStream, qRotStream).Zip()
+                    let posEnt = x.x
+                    let rotEnt = x.y
                     select new BoneStreamLinkData
                     {
-                        PositionStreamEntity = ent.x,
-                        RotationStreamEntity = ent.y,
+                        PositionStreamEntity = posEnt,
+                        RotationStreamEntity = rotEnt,
                     };
 
-                em_.SetComponentData( bonePrefabs_, qStreamlinkers );
+                var qBoneEnt =
+                    from x in (bonePrefabs_, boneMasks_).Zip()
+                    let ent = x.x
+                    let isEnable = x.y
+                    where isEnable
+                    select ent
+                    ;
 
-                foreach( var bonePrefab in bonePrefabs_ )
-                {
-                    var linker = em_.GetComponentData<BoneStreamLinkData>( bonePrefab );
-                    if( linker.PositionStreamEntity != Entity.Null && linker.RotationStreamEntity != Entity.Null ) continue;
-                    em_.RemoveComponent<BoneStreamLinkData>( bonePrefab );
-                }
+                em_.AddComponentData( qBoneEnt, qStreamlinkers );
             }
 
             void setDrawLinks(
@@ -195,56 +194,46 @@ namespace Abss.Arthuring
                 MotionClip motionClip_, bool[] boneMasks_
             )
             {
-                var qParentIds = motionClip_.StreamPaths
-                    .QueryParentIdList();
 
-                var qEnts = bonePrefabs_
+                var qCurrent =
+                    from x in (bonePrefabs_, boneMasks_).Zip()
+                    let ent = x.x
+                    let isEnable = x.y
+                    where isEnable
+                    select ent
+                    ;
+
+                var sourceEnts = bonePrefabs_
                     .Prepend( posturePrefab_ )
-                    .Append( Entity.Null );
+                    .ToArray();
+                var qParentEnt = motionClip_.StreamPaths
+                    .QueryParentIdList()
+                    .Select( i => sourceEnts[i+1] );
+                var qParent =
+                    from x in (qParentEnt, boneMasks_).Zip()
+                    let ent = x.x
+                    let isEnable = x.y
+                    where isEnable
+                    select ent
+                    ;
 
-                using( var parentIds = qParentIds.ToNativeArray(Allocator.Temp) )
-                using( var boneEnts = qEnts.ToNativeArray(Allocator.Temp) )
-                {
-                    var boneLength = motionClip_.StreamPaths.Length;
-                    
-                    var qBoneLinker =
-                        from i in Enumerable.Range( 0, boneLength )
-                        let parentId = parentIds[ i ]
-                        let nextId = i + 1
-                        select new BoneRelationLinkData
-                        {
-                            ParentBoneEntity = boneEnts[ parentId + 1 ],// +1 は、ルートの親が -1 なので 0 に正すため
-                            NextBoneEntity = boneEnts[ nextId + 1 ],
-                        };
+                var qNext = qCurrent
+                    .Append( Entity.Null )
+                    .Skip(1);
 
-                    var q =
-                        from x in (qBoneLinker, boneMasks_).Zip()
-                        let linker = x.x
-                        let isEnable = x.y
-                        where isEnable
-                        select new BoneRelationLinkData
-                        {
-                            ParentBoneEntity = linker.ParentBoneEntity,
-                            NextBoneEntity = 
-                        };
 
-                    // マスクのかかったボーンを、チェインから抜き取る
-                    var prev = Entity.Null;
-                    foreach( var (ent, i) in bonePrefabs.Select((x, i) => (x, i)) )
+                var qBoneLinker =
+                    from x in (qParent, qNext).Zip()
+                    let parent = x.x
+                    let next = x.y
+                    select new BoneRelationLinkData
                     {
-                        prev = ent;
-                        if( boneMasks_[ i ] ) continue;
+                        ParentBoneEntity = parent,
+                        NextBoneEntity = next,
+                    };
 
-                        var next = em_.GetComponentData<BoneRelationLinkData>( ent ).NextBoneEntity;
-                        em_.SetComponentData( ent, new BoneRelationLinkData { } );
+                em_.SetComponentData( qCurrent, qBoneLinker );
 
-                        var linker = em_.GetComponentData<BoneRelationLinkData>( prev );
-                        linker.NextBoneEntity = next;
-                        em_.SetComponentData( prev, linker );
-                    }
-
-                    em_.SetComponentData( bonePrefabs_, qBoneLinker );
-                }
             }
 
         }

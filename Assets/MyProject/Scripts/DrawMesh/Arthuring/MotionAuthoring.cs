@@ -28,15 +28,11 @@ namespace Abss.Arthuring
         {
             var motionClip = this.MotionClip;
 
-            //var boneMasks = (Enumerable.Range( 1, motionClip.StreamPaths.Length ), motionClip.IndexMapFbxToMotion).Zip()
-            //    .Where( x => x.y != -1 )
-            //    .OrderBy( x => x.y )
-            //    .Select( x => this.BoneMask.GetTransformActive( x.x ) )
-            //    .ToArray();
-            var boneMasks = new bool[] {
-                true, true, true, true, true,
-                true, true, true, true, true,
-                true, true, true, true, false, false };
+            var boneMasks = (Enumerable.Range( 1, motionClip.StreamPaths.Length ), motionClip.IndexMapFbxToMotion).Zip()
+                .Where( x => x.y != -1 )
+                .OrderBy( x => x.y )
+                .Select( x => this.BoneMask.GetTransformActive( x.x ) )
+                .ToArray();
 
             return MotionPrefabCreator.CreatePrefab( em, drawPrefab, motionClip, boneMasks );
         }
@@ -120,20 +116,22 @@ namespace Abss.Arthuring
             ( EntityManager em_, Entity drawPrefab_, MotionClip motionClip_, bool[] boneMasks_, EntityArchetype streamArchetype_ )
             {
                 var streamLength = motionClip.StreamPaths.Length;
-                var enableLength = streamLength;//boneMasks_.Where( x => x ).Count();
+                var enableLength = boneMasks_.Where( x => x ).Count();
 
                 var streamEntities = new NativeArray<Entity>( enableLength, Allocator.Temp );
                 em_.CreateEntity( streamArchetype_, streamEntities );
 
                 var qNext = streamEntities.Skip( 1 ).Append( Entity.Null );
-                var qEnable = Enumerable.Range(0,16);//boneMasks_.Select( (x, i) => (x, i) ).Where( x => x.x ).Select( x => x.i );
+                var qEnableId = boneMasks_.Select( (x, i) => (x, i) ).Where( x => x.x ).Select( x => x.i );
 
                 var qNextLinker = 
-                    from x in (qNext, qEnable).Zip()
+                    from x in (qNext, qEnableId).Zip()
+                    let next = x.x
+                    let id = x.y
                     select new StreamRelationData
                     {
-                        BoneId = x.y,
                         NextStreamEntity = x.x,
+                        BoneId = x.y,
                     };
                 em_.SetComponentData( streamEntities, qNextLinker );
 
