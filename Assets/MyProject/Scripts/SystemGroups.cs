@@ -49,4 +49,9 @@ namespace Abss.SystemGroup
     public class DrawSystemGroup : ComponentSystemGroup
     { }
 
+
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    public class BonePhysicsSystemGroup : ComponentSystemGroup
+    { }
 }

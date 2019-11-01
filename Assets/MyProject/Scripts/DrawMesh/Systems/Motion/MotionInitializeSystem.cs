@@ -24,11 +24,7 @@ namespace Abss.Motion
         {
             this.ecb = World.Active.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
         }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
+        
 
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )

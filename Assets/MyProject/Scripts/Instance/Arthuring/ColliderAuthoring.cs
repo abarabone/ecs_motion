@@ -112,7 +112,7 @@ namespace Abss.Arthuring
                 ;
             foreach( var (rb, ent) in qRbAndBone )
             {
-                addDynamicComponentData_ByRigidbody_( ent, rb );
+                addDynamicComponentData_ByRigidbody_( ent, rb, posturePrefab );
             }
             //return new NativeArray<Entity>(0,Allocator.Temp);
 
@@ -158,7 +158,7 @@ namespace Abss.Arthuring
                 return BlobAssetReference<Collider>.Null;
             }
             
-            void addDynamicComponentData_ByRigidbody_( Entity ent, Rigidbody rb )
+            void addDynamicComponentData_ByRigidbody_( Entity ent, Rigidbody rb, Entity postureEnt )
             {
                 var massProp = em.HasComponent<PhysicsCollider>( ent )
                     ? em.GetComponentData<PhysicsCollider>( ent ).MassProperties
@@ -188,6 +188,13 @@ namespace Abss.Arthuring
                 if( rb.isKinematic || !rb.useGravity )
                     em.AddComponentData( ent, new PhysicsGravityFactor { Value = 0.0f } );
                 // 質量ゼロにしても、なぜか重力の影響を受け続けるのでオフる
+
+                //if( !rb.isKinematic )
+                {
+                    em.AddComponentData( ent, new BoneInitializeData { PostureEntity = postureEnt } );
+                    em.SetComponentData( ent, new Translation { Value = rb.position } );
+                    em.SetComponentData( ent, new Rotation { Value = rb.rotation } );
+                }
             }
 
 
