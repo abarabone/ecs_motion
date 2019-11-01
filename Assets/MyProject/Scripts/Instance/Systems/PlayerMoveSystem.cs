@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Physics;
 using UnityEngine.InputSystem;
 
 using Abss.Misc;
@@ -38,13 +39,13 @@ namespace Abss.Instance
             var tfCamera = Camera.main.transform;
             var camRotWorld = (quaternion)tfCamera.rotation;//this.TfCamera.rotation;
 
+
             inputDeps = new PlayerMoveJob
             {
                 CamRotWorld = camRotWorld,
                 DeltaTime = Time.deltaTime,
                 StickDir = input.lStickDir,
-                Positions = this.GetComponentDataFromEntity<Translation>(),
-                Rotations = this.GetComponentDataFromEntity<Rotation>(),
+                JumpForce = input.jumpForce,
             }
             .Schedule( this, inputDeps );
 
@@ -80,36 +81,27 @@ namespace Abss.Instance
 
 
         [BurstCompile]
-        struct PlayerMoveJob : IJobForEachWithEntity<PlayerCharacterTag, CharacterLinkData>
+        struct PlayerMoveJob : IJobForEachWithEntity
+            <PlayerCharacterTag, PhysicsVelocity>
         {
-
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Translation> Positions;
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Rotation> Rotations;
 
             public float3 StickDir;
             public quaternion CamRotWorld;
             public float DeltaTime;
+            public float JumpForce;
 
 
             public void Execute(
                 Entity entity, int index,
                 [ReadOnly] ref PlayerCharacterTag tag,
-                [ReadOnly] ref CharacterLinkData linker
+                ref PhysicsVelocity v
             )
             {
 
-                var pos = this.Positions[ linker.PostureEntity ];
-                var rot = this.Rotations[ linker.PostureEntity ];
+                var xyDir = math.rotate( this.CamRotWorld, this.StickDir ) * this.DeltaTime * 20;
+                xyDir.y = this.JumpForce * 0.5f;
+                v.Linear = math.min( v.Linear + xyDir, new float3(10,10000,10) );
 
-
-                var xyDir = math.rotate( this.CamRotWorld, this.StickDir ) * this.DeltaTime * 10;
-                pos.Value += xyDir;
-
-                this.Positions[ linker.PostureEntity ] = pos;
-                this.Rotations[ linker.PostureEntity ] = rot;
-                
             }
         }
     }

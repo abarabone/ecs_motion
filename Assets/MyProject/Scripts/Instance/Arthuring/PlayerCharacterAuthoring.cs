@@ -24,9 +24,6 @@ namespace Abss.Arthuring
     {
 
 
-        public Camera Camera;
-
-
 
         public override Entity Convert
             ( EntityManager em, DrawMeshResourceHolder drawResources )
