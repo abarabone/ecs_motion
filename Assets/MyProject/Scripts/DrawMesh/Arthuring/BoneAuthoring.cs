@@ -55,6 +55,8 @@ namespace Abss.Arthuring
                 .OrderBy( x => x.y )
                 .Select( x => this.BoneMask.GetTransformActive( x.x ) )
                 .ToArray();
+            if( boneMasks.Length == 0 )
+                boneMasks = Enumerable.Repeat( true, bindposes.Length ).ToArray();
 
             return BonePrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip, mtBones, boneMasks );
         }
@@ -109,12 +111,13 @@ namespace Abss.Arthuring
             setStreamLinks( em, bonePrefabs, streamPrefabs, boneMasks );
             setDrawLinks( em, bonePrefabs, drawPrefab, mtBones.Length );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip, boneMasks );
+            removeBoneRelationLinks( em, bonePrefabs, boneMasks );
 
-            foreach( var (bonePrefab, mtBone) in (bonePrefabs, mtBones).Zip() )
-            {
-                em.SetComponentData( bonePrefab, new Rotation { Value = new quaternion(mtBone) } );
-                em.SetComponentData( bonePrefab, new Translation { Value = math.transpose(mtBone).c3.As_float3() } );
-            }
+            //foreach( var (bonePrefab, mtBone) in (bonePrefabs, mtBones).Zip() )
+            //{
+            //    em.SetComponentData( bonePrefab, new Rotation { Value = new quaternion(mtBone) } );
+            //    em.SetComponentData( bonePrefab, new Translation { Value = math.transpose(mtBone).c3.As_float3() } );
+            //}
 
 
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
@@ -188,7 +191,7 @@ namespace Abss.Arthuring
                 em_.SetComponentData( bonePrefabs_, qDrawLinker );
             }
 
-            unsafe void setBoneRelationLinks(
+            void setBoneRelationLinks(
                 EntityManager em_,
                 NativeArray<Entity> bonePrefabs_, Entity posturePrefab_,
                 MotionClip motionClip_, bool[] boneMasks_
@@ -236,6 +239,23 @@ namespace Abss.Arthuring
 
             }
 
+            void removeBoneRelationLinks
+                ( EntityManager em_, NativeArray<Entity> bonePrefabs_, bool[] boneMasks_ )
+            {
+                var qDisEnables =
+                    from x in (bonePrefabs_, boneMasks_).Zip()
+                    let boneEnt = x.x
+                    let isEnable = x.y
+                    where !isEnable
+                    select boneEnt
+                    ;
+                foreach( var x in qDisEnables )
+                {
+                    em_.RemoveComponent<BoneRelationLinkData>( x );
+                    em_.RemoveComponent<BoneStreamLinkData>( x );
+                }
+                    
+            }
         }
         
     }

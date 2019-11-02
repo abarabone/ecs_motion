@@ -47,6 +47,11 @@ namespace Abss.Motion
         public int InstanceBoneOffset;
     }
 
+    public struct BoneInitializeData : IComponentData
+    {
+        public Entity PostureEntity;
+    }
+
     
     public interface IBoneLvLinkData
     {
