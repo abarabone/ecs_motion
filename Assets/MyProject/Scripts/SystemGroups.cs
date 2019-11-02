@@ -50,7 +50,7 @@ namespace Abss.SystemGroup
     { }
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     public class BonePhysicsSystemGroup : ComponentSystemGroup
     { }

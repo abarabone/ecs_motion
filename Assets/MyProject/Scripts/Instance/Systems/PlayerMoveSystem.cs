@@ -9,7 +9,11 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Physics;
+using Unity.Physics.Systems;
 using UnityEngine.InputSystem;
+
+using Collider = Unity.Physics.Collider;
+using SphereCollider = Unity.Physics.SphereCollider;
 
 using Abss.Misc;
 using Abss.Utilities;
@@ -22,11 +26,20 @@ namespace Abss.Instance
     [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
     public class PlayerMoveSystem : JobComponentSystem
     {
-        
+
 
         //public Transform TfCamera;
 
+        BuildPhysicsWorld buildPhysicsWorldSystem;
+        StepPhysicsWorld stepPhysicsWorldSystem;
 
+
+
+        protected override void OnCreate()
+        {
+            this.buildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
+            this.stepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
+        }
 
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
@@ -46,6 +59,7 @@ namespace Abss.Instance
                 DeltaTime = Time.deltaTime,
                 StickDir = input.lStickDir,
                 JumpForce = input.jumpForce,
+                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
             }
             .Schedule( this, inputDeps );
 
@@ -85,10 +99,13 @@ namespace Abss.Instance
             <PlayerCharacterTag, PhysicsVelocity>
         {
 
-            public float3 StickDir;
-            public quaternion CamRotWorld;
-            public float DeltaTime;
-            public float JumpForce;
+            [ReadOnly] public float3 StickDir;
+            [ReadOnly] public quaternion CamRotWorld;
+            [ReadOnly] public float DeltaTime;
+            [ReadOnly] public float JumpForce;
+
+            [ReadOnly] public CollisionWorld CollisionWorld;
+            [ReadOnly] public BlobAssetReference<Collider> MovebodyCollider;
 
 
             public void Execute(
@@ -98,9 +115,30 @@ namespace Abss.Instance
             )
             {
 
-                var xyDir = math.rotate( this.CamRotWorld, this.StickDir ) * this.DeltaTime * 20;
-                xyDir.y = this.JumpForce * 0.5f;
-                v.Linear = math.min( v.Linear + xyDir, new float3(10,10000,10) );
+                var upf = 0.0f;
+
+                if( this.JumpForce > 0.0f )
+                {
+                    var hitInput = new ColliderCastInput
+                    {
+                        Collider = (Collider*)this.MovebodyCollider.GetUnsafePtr(),
+                        Orientation = quaternion.identity,
+                        Start = position.Value + math.up() * 0.15f,
+                        End = position.Value + math.up() * -0.05f,
+                    };
+                    var isHit = this.CollisionWorld.CastCollider( hitInput );
+                    if( isHit )
+                    {
+                        upf = this.JumpForce * 0.5f;
+                    }
+                }
+
+                var vlinear = v.Linear;
+                var xyDir = math.rotate( this.CamRotWorld, this.StickDir ) * this.DeltaTime * 170;
+                
+                xyDir.y = vlinear.y + this.JumpForce * 0.5f;
+
+                v.Linear = math.min( xyDir, new float3(10,1000,10) );
 
             }
         }

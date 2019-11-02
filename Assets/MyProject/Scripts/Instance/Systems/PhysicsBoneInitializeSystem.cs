@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Physics;
 
 using Abss.Cs;
 using Abss.Arthuring;
@@ -21,7 +22,9 @@ namespace Abss.Physics
 {
 
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( BonePhysicsSystemGroup ) )]
+    //[UpdateInGroup( typeof( BonePhysicsSystemGroup ) )]
+    [UpdateBefore( typeof( MotionProgressSystem ) )]
+    [UpdateInGroup( typeof( MotionSystemGroup ) )]
     public class PhysicsBoneInitializeSystem : JobComponentSystem
     {
 
@@ -42,8 +45,8 @@ namespace Abss.Physics
             inputDeps = new PhysicsBoneInitializeJob
             {
                 Commands = commandBuffer.ToConcurrent(),
-                Translations = this.GetComponentDataFromEntity<Translation>( isReadOnly: true ),
-                Rotations = this.GetComponentDataFromEntity<Rotation>( isReadOnly: true ),
+                Translations = this.GetComponentDataFromEntity<Translation>(),// isReadOnly: true ),
+                Rotations = this.GetComponentDataFromEntity<Rotation>(),// isReadOnly: true ),
 
             }
             .Schedule( this, inputDeps );
@@ -55,30 +58,40 @@ namespace Abss.Physics
 
 
         struct PhysicsBoneInitializeJob : IJobForEachWithEntity
-            <BoneInitializeData, Translation, Rotation>
+            <BoneInitializeData, /*Translation, Rotation,*/ PhysicsVelocity>
         {
 
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
 
-            [ReadOnly]
+            [NativeDisableParallelForRestriction]
+            //[ReadOnly]
             public ComponentDataFromEntity<Translation> Translations;
-            [ReadOnly]
+            [NativeDisableParallelForRestriction]
+            //[ReadOnly]
             public ComponentDataFromEntity<Rotation> Rotations;
 
 
             public void Execute(
                 Entity entity, int index,
                 [ReadOnly] ref BoneInitializeData init,
-                ref Translation pos,
-                ref Rotation rot
+                //ref Translation pos,
+                //ref Rotation rot,
+                ref PhysicsVelocity v
             )
             {
 
-                var basepos = this.Translations[ init.PostureEntity ].Value;
-                var baserot = this.Rotations[ init.PostureEntity ].Value;
+                var basepos = this.Translations[ init.PostureEntity ];
+                var baserot = this.Rotations[ init.PostureEntity ];
 
-                pos.Value = basepos + math.mul(baserot, pos.Value);
-                rot.Value = math.mul(rot.Value, baserot);
+                var pos = this.Translations[ entity ];//
+                var rot = this.Rotations[ entity ];//
+
+                pos.Value = basepos.Value + math.mul(baserot.Value, pos.Value);
+                rot.Value = math.mul(baserot.Value, rot.Value);
+                v = new PhysicsVelocity { Linear = float3.zero, Angular = float3.zero };
+
+                this.Translations[ entity ] = pos;//
+                this.Rotations[ entity ] = rot;//
 
                 Commands.RemoveComponent<BoneInitializeData>( index, entity );
             }

@@ -28,6 +28,10 @@ namespace Abss.Instance
     public struct PlayerCharacterTag : IComponentData
     { }
 
+    public struct GroundHitColliderData : IComponentData
+    {
+        public BlobAssetReference<Unity.Physics.Collider> Collider;
+    }
 
 
 }
