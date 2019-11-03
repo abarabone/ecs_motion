@@ -23,6 +23,7 @@ namespace Abss.Instance
 {
 
     //[DisableAutoCreation]
+    //[UpdateAfter( typeof( EndFramePhysicsSystem ) )]
     [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
     public class PlayerMoveSystem : JobComponentSystem
     {
@@ -31,14 +32,14 @@ namespace Abss.Instance
         //public Transform TfCamera;
 
         BuildPhysicsWorld buildPhysicsWorldSystem;
-        StepPhysicsWorld stepPhysicsWorldSystem;
+        //StepPhysicsWorld stepPhysicsWorldSystem;
 
 
 
         protected override void OnCreate()
         {
             this.buildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
-            this.stepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
+            //this.stepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
         }
 
 
@@ -96,7 +97,7 @@ namespace Abss.Instance
 
         [BurstCompile]
         struct PlayerMoveJob : IJobForEachWithEntity
-            <PlayerCharacterTag, PhysicsVelocity>
+            <PlayerCharacterTag, GroundHitColliderData, Translation, PhysicsVelocity>
         {
 
             [ReadOnly] public float3 StickDir;
@@ -105,12 +106,13 @@ namespace Abss.Instance
             [ReadOnly] public float JumpForce;
 
             [ReadOnly] public CollisionWorld CollisionWorld;
-            [ReadOnly] public BlobAssetReference<Collider> MovebodyCollider;
 
 
-            public void Execute(
+            public unsafe void Execute(
                 Entity entity, int index,
                 [ReadOnly] ref PlayerCharacterTag tag,
+                [ReadOnly] ref GroundHitColliderData hit,
+                [ReadOnly] ref Translation pos,
                 ref PhysicsVelocity v
             )
             {
@@ -121,10 +123,10 @@ namespace Abss.Instance
                 {
                     var hitInput = new ColliderCastInput
                     {
-                        Collider = (Collider*)this.MovebodyCollider.GetUnsafePtr(),
+                        Collider = (Collider*)hit.Collider.GetUnsafePtr(),
                         Orientation = quaternion.identity,
-                        Start = position.Value + math.up() * 0.15f,
-                        End = position.Value + math.up() * -0.05f,
+                        Start = pos.Value + math.up() * 0.15f,
+                        End = pos.Value + math.up() * -0.05f,
                     };
                     var isHit = this.CollisionWorld.CastCollider( hitInput );
                     if( isHit )
@@ -136,7 +138,7 @@ namespace Abss.Instance
                 var vlinear = v.Linear;
                 var xyDir = math.rotate( this.CamRotWorld, this.StickDir ) * this.DeltaTime * 170;
                 
-                xyDir.y = vlinear.y + this.JumpForce * 0.5f;
+                xyDir.y = vlinear.y + upf;
 
                 v.Linear = math.min( xyDir, new float3(10,1000,10) );
 

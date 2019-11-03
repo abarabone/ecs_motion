@@ -29,13 +29,16 @@ namespace Abss.Arthuring
     public class ColliderAuthoring : MonoBehaviour
     {
         
+        // 生成されたジョイントエンティティを返す。
         public NativeArray<Entity> Convert
             ( EntityManager em, Entity posturePrefab, NativeArray<Entity> bonePrefabs )
         {
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
-            var rbTop = this.GetComponentInChildren<Rigidbody>();//( includeInactive: false );
+            var rbTop = this.GetComponentInChildren<Rigidbody>();//
+
+            var srcColliders = this.GetComponentsInChildren<UnityEngine.Collider>();
 
 
             // 名前とボーンエンティティの組を配列化
@@ -46,46 +49,50 @@ namespace Abss.Arthuring
                 .Select( x => (x.name, ent: bonePrefabs[ x.i ]) )
                 .Append( (rbTop.name, ent:posturePrefab) );
             var namesAndBones = qNameAndBone.ToArray();
-            
+
+
+            // クエリ用コライダの生成
+            // ・マテリアルが "xxx overlap collider" という名前になっているものを抽出
+            // ・対応するボーンエンティティに専用のコンポーネントデータを付加
+            var qQueryableCollider =
+                from x in srcColliders
+                where x.sharedMaterial != null
+                where x.sharedMaterial.name.StartsWith("overlap ")
+                join bone in qNameAndBone
+                    on x.name equals bone.name
+                select (bone.ent, c:x)
+                ;
+            foreach( var (ent, c) in qQueryableCollider )
+            {
+                addQuearyableColliderBlobs_( ent, c );
+            }
+
+
             // コライダとそれが付くべき剛体の組を配列化（同じ剛体に複数のコライダもあり）
+            // ・有効でないコライダは除外する
             var qColliderWithParent =
-                from collider in this.GetComponentsInChildren<UnityEngine.Collider>()//( includeInactive:false )
-                let tfParent = collider.gameObject
+                from collider in srcColliders
+                where collider.enabled
+                let parent = collider.gameObject
                     .AncestorsAndSelf()
                     .Where( anc => anc.GetComponent<Rigidbody>() != null )
-                    .First().transform
-                select (collider, tfParent)
+                    .First()
+                select (collider, parent)
                 ;
             var collidersWithParent = qColliderWithParent.ToArray();
             
             // 同じ剛体を親とするコライダをグループ化するクエリ
             var qColliderGroup =
                 from x in collidersWithParent
-                group x.collider by x.tfParent
+                group x.collider by x.parent
                 ;
 
             // 剛体を持たない子コライダを合成して、コライダコンポーネントデータを生成するクエリ
             var qCompounds =
                 from g in qColliderGroup
-                let qBlob =
-                    from x in g
-                    let tfParent = g.Key
-                    let tfCollider = x.transform
-                    let rtf = new RigidTransform
-                    {
-                        pos = tfCollider.position - tfParent.position,
-                        rot = tfCollider.rotation * Quaternion.Inverse( tfParent.rotation ),
-                    }
-                    select new CompoundCollider.ColliderBlobInstance
-                    {
-                        Collider = createColliderBlob_( x ),
-                        CompoundFromChild = rtf,
-                    }
                 select new PhysicsCollider
                 {
-                    Value = ( g.Count() > 1 || g.First().gameObject != g.Key.gameObject )
-                        ? compoundColliderBlobsFromEnumerable_( qBlob )
-                        : createColliderBlob_( g.First() )
+                    Value = createBlobCollider_( srcColliders_: g, parent: g.Key ),
                 };
 
             // コライダがついているオブジェクトに相当するボーンのエンティティに、コライダコンポーネントデータを付加
@@ -135,13 +142,55 @@ namespace Abss.Arthuring
             return qJoint.SelectMany().ToNativeArray( Allocator.Temp );
 
 
+            void addQuearyableColliderBlobs_
+                ( Entity ent, UnityEngine.Collider srcCollider )
+            {
+                var blob = createBlobCollider_( new[] { srcCollider }, srcCollider.gameObject );
+
+                switch( srcCollider.sharedMaterial.name )
+                {
+                    case "overlap ground":
+                        em.AddComponentData( ent, new GroundHitColliderData { Collider = blob } );
+                        break;
+                }
+            }
+
             BlobAssetReference<Collider> compoundColliderBlobsFromEnumerable_
                 ( IEnumerable<CompoundCollider.ColliderBlobInstance> src )
             {
                 using( var arr = src.ToNativeArray( Allocator.Temp ) )
                     return CompoundCollider.Create( arr );
             }
-            
+
+            BlobAssetReference<Collider> createBlobCollider_
+                ( IEnumerable<UnityEngine.Collider> srcColliders_, GameObject parent )
+            {
+                return ( srcColliders.Count() > 1 || srcColliders_.First().gameObject != parent )
+                    ? queryBlobInstances_( srcColliders_, parent.transform )
+                        .To( compoundColliderBlobsFromEnumerable_ )
+                    : createColliderBlob_( srcColliders_.First() )
+                    ;
+
+                IEnumerable<CompoundCollider.ColliderBlobInstance> queryBlobInstances_
+                    ( IEnumerable<UnityEngine.Collider> srcColliders__, Transform tfParent )
+                {
+                    return
+                        from x in srcColliders__
+                        let tfCollider = x.transform
+                        let rtf = new RigidTransform
+                        {
+                            pos = tfCollider.position - tfParent.position,
+                            rot = tfCollider.rotation * Quaternion.Inverse( tfParent.rotation ),
+                        }
+                        select new CompoundCollider.ColliderBlobInstance
+                        {
+                            Collider = createColliderBlob_( x ),
+                            CompoundFromChild = rtf,
+                        };
+                }
+
+            }
+
             BlobAssetReference<Collider> createColliderBlob_( UnityEngine.Collider srcCollider )
             {
                 switch( srcCollider )
