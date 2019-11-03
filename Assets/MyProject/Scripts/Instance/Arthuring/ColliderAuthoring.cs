@@ -323,6 +323,20 @@ namespace Abss.Arthuring
 
     public static class LegacyColliderProducer
     {
+
+        static CollisionFilter getFilter( UnityEngine.Collider shape )
+        {
+            var filter = CollisionFilter.Default;
+
+            var cfa = shape.GetComponentInParent<ColliderFilterAuthoring>();
+            if( cfa == null ) return filter;
+            
+            filter.BelongsTo = cfa.BelongsTo.Value;
+            filter.CollidesWith = cfa.CollidesWith.Value;
+            return filter;
+        }
+
+
         static public BlobAssetReference<Collider> ProduceColliderBlob( this UnityEngine.BoxCollider shape )
         {
             var worldCenter = math.mul( shape.transform.localToWorldMatrix, new float4( shape.center, 1f ) );
@@ -342,7 +356,7 @@ namespace Abss.Arthuring
             geometry.BevelRadius = math.min( ConvexHullGenerationParameters.Default.BevelRadius, math.cmin( geometry.Size ) * 0.5f );
 
             return BoxCollider.Create(
-                geometry//,
+                geometry, getFilter(shape)
                 //ProduceCollisionFilter( shape ),
                 //ProduceMaterial( shape )
             );
@@ -365,9 +379,9 @@ namespace Abss.Arthuring
             var v1 = offset + ( (float3)shape.center - vertex ) * math.abs( linearScale ) + ax * radius;
 
             return CapsuleCollider.Create(
-                new CapsuleGeometry { Vertex0 = v0, Vertex1 = v1, Radius = radius }//,
-                //ProduceCollisionFilter( shape ),
-                //ProduceMaterial( shape )
+                new CapsuleGeometry { Vertex0 = v0, Vertex1 = v1, Radius = radius }, getFilter( shape )
+            //ProduceCollisionFilter( shape ),
+            //ProduceMaterial( shape )
             );
         }
 
@@ -383,7 +397,7 @@ namespace Abss.Arthuring
             var radius = shape.radius * math.cmax( math.abs( linearScale ) );
 
             return SphereCollider.Create(
-                new SphereGeometry { Center = center, Radius = radius }//,
+                new SphereGeometry { Center = center, Radius = radius }, getFilter(shape)
                 //ProduceCollisionFilter( shape ),
                 //ProduceMaterial( shape )
             );

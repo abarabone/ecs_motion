@@ -125,10 +125,10 @@ namespace Abss.Instance
                     {
                         Collider = (Collider*)hit.Collider.GetUnsafePtr(),
                         Orientation = quaternion.identity,
-                        Start = pos.Value + math.up() * 0.15f,
-                        End = pos.Value + math.up() * -0.05f,
+                        Start = pos.Value + math.up() * 0.05f,
+                        End = pos.Value + math.up() * -0.1f,
                     };
-                    var isHit = this.CollisionWorld.CastCollider( hitInput );
+                    var isHit = hit.Collider.Value.CastCollider( hitInput );//this.CollisionWorld.CastCollider( hitInput );
                     if( isHit )
                     {
                         upf = this.JumpForce * 0.5f;
