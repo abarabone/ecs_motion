@@ -26,5 +26,8 @@ namespace Abss.Instance
     public struct PostureNeedTransformTag : IComponentData
     { }
 
-	
+	public struct PostureUniqueIdData : IComponentData
+    {
+        public int UniqueId;
+    }
 }

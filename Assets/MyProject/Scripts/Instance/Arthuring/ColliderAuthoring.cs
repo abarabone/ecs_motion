@@ -64,7 +64,7 @@ namespace Abss.Arthuring
                 ;
             foreach( var (ent, c) in qQueryableCollider )
             {
-                addQuearyableColliderBlobs_( ent, c );
+                addQuearyableColliderBlobs_( ent, c,  );
             }
 
 
@@ -92,7 +92,7 @@ namespace Abss.Arthuring
                 from g in qColliderGroup
                 select new PhysicsCollider
                 {
-                    Value = createBlobCollider_( srcColliders_: g, parent: g.Key ),
+                    Value = createBlobCollider_( srcColliders_: g, parent: g.Key, groupIndex: 0 ),
                 };
 
             // コライダがついているオブジェクトに相当するボーンのエンティティに、コライダコンポーネントデータを付加
@@ -142,10 +142,11 @@ namespace Abss.Arthuring
             return qJoint.SelectMany().ToNativeArray( Allocator.Temp );
 
 
+
             void addQuearyableColliderBlobs_
-                ( Entity ent, UnityEngine.Collider srcCollider )
+                ( Entity ent, UnityEngine.Collider srcCollider, int groupIndex )
             {
-                var blob = createBlobCollider_( new[] { srcCollider }, srcCollider.gameObject );
+                var blob = createBlobCollider_( new[] { srcCollider }, srcCollider.gameObject, groupIndex );
 
                 switch( srcCollider.sharedMaterial.name )
                 {
@@ -163,16 +164,16 @@ namespace Abss.Arthuring
             }
 
             BlobAssetReference<Collider> createBlobCollider_
-                ( IEnumerable<UnityEngine.Collider> srcColliders_, GameObject parent )
+                ( IEnumerable<UnityEngine.Collider> srcColliders_, GameObject parent, int groupIndex )
             {
-                return ( srcColliders.Count() > 1 || srcColliders_.First().gameObject != parent )
-                    ? queryBlobInstances_( srcColliders_, parent.transform )
+                return ( srcColliders_.Count() > 1 || srcColliders_.First().gameObject != parent )
+                    ? queryBlobInstances_( srcColliders_, parent.transform, groupIndex )
                         .To( compoundColliderBlobsFromEnumerable_ )
-                    : createColliderBlob_( srcColliders_.First() )
+                    : createColliderBlob_( srcColliders_.First(), groupIndex )
                     ;
 
                 IEnumerable<CompoundCollider.ColliderBlobInstance> queryBlobInstances_
-                    ( IEnumerable<UnityEngine.Collider> srcColliders__, Transform tfParent )
+                    ( IEnumerable<UnityEngine.Collider> srcColliders__, Transform tfParent, int groupIndex_ )
                 {
                     return
                         from x in srcColliders__
@@ -184,25 +185,25 @@ namespace Abss.Arthuring
                         }
                         select new CompoundCollider.ColliderBlobInstance
                         {
-                            Collider = createColliderBlob_( x ),
+                            Collider = createColliderBlob_( x, groupIndex_ ),
                             CompoundFromChild = rtf,
                         };
                 }
 
             }
 
-            BlobAssetReference<Collider> createColliderBlob_( UnityEngine.Collider srcCollider )
+            BlobAssetReference<Collider> createColliderBlob_( UnityEngine.Collider srcCollider, int groupIndex )
             {
                 switch( srcCollider )
                 {
                     case UnityEngine.SphereCollider srcSphere:
-                        return srcSphere.ProduceColliderBlob();
+                        return srcSphere.ProduceColliderBlob( groupIndex );
 
                     case UnityEngine.CapsuleCollider srcCapsule:
-                        return srcCapsule.ProduceColliderBlob();
+                        return srcCapsule.ProduceColliderBlob( groupIndex );
 
                     case UnityEngine.BoxCollider srcBox:
-                        return srcBox.ProduceColliderBlob();
+                        return srcBox.ProduceColliderBlob( groupIndex );
                 }
                 return BlobAssetReference<Collider>.Null;
             }
@@ -324,9 +325,10 @@ namespace Abss.Arthuring
     public static class LegacyColliderProducer
     {
 
-        static CollisionFilter getFilter( UnityEngine.Collider shape )
+        static CollisionFilter getFilter( UnityEngine.Collider shape, int groupIndex )
         {
             var filter = CollisionFilter.Default;
+            filter.GroupIndex = groupIndex;
 
             var cfa = shape.GetComponentInParent<ColliderFilterAuthoring>();
             if( cfa == null ) return filter;
@@ -337,7 +339,8 @@ namespace Abss.Arthuring
         }
 
 
-        static public BlobAssetReference<Collider> ProduceColliderBlob( this UnityEngine.BoxCollider shape )
+        static public BlobAssetReference<Collider> ProduceColliderBlob
+            ( this UnityEngine.BoxCollider shape, int groupIndex )
         {
             var worldCenter = math.mul( shape.transform.localToWorldMatrix, new float4( shape.center, 1f ) );
             var shapeFromWorld = math.inverse(
@@ -356,13 +359,14 @@ namespace Abss.Arthuring
             geometry.BevelRadius = math.min( ConvexHullGenerationParameters.Default.BevelRadius, math.cmin( geometry.Size ) * 0.5f );
 
             return BoxCollider.Create(
-                geometry, getFilter(shape)
+                geometry, getFilter(shape, groupIndex )
                 //ProduceCollisionFilter( shape ),
                 //ProduceMaterial( shape )
             );
         }
 
-        static public BlobAssetReference<Collider> ProduceColliderBlob( this UnityEngine.CapsuleCollider shape )
+        static public BlobAssetReference<Collider> ProduceColliderBlob
+            ( this UnityEngine.CapsuleCollider shape, int groupIndex )
         {
             var linearScale = (float3)shape.transform.lossyScale;
 
@@ -379,13 +383,14 @@ namespace Abss.Arthuring
             var v1 = offset + ( (float3)shape.center - vertex ) * math.abs( linearScale ) + ax * radius;
 
             return CapsuleCollider.Create(
-                new CapsuleGeometry { Vertex0 = v0, Vertex1 = v1, Radius = radius }, getFilter( shape )
+                new CapsuleGeometry { Vertex0 = v0, Vertex1 = v1, Radius = radius }, getFilter( shape, groupIndex )
             //ProduceCollisionFilter( shape ),
             //ProduceMaterial( shape )
             );
         }
 
-        static public BlobAssetReference<Collider> ProduceColliderBlob( this UnityEngine.SphereCollider shape )
+        static public BlobAssetReference<Collider> ProduceColliderBlob
+            ( this UnityEngine.SphereCollider shape, int groupIndex )
         {
             var worldCenter = math.mul( shape.transform.localToWorldMatrix, new float4( shape.center, 1f ) );
             var shapeFromWorld = math.inverse(
@@ -397,7 +402,7 @@ namespace Abss.Arthuring
             var radius = shape.radius * math.cmax( math.abs( linearScale ) );
 
             return SphereCollider.Create(
-                new SphereGeometry { Center = center, Radius = radius }, getFilter(shape)
+                new SphereGeometry { Center = center, Radius = radius }, getFilter(shape, groupIndex )
                 //ProduceCollisionFilter( shape ),
                 //ProduceMaterial( shape )
             );
