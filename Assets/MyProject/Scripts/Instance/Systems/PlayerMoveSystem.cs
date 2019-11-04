@@ -34,12 +34,26 @@ namespace Abss.Instance
         BuildPhysicsWorld buildPhysicsWorldSystem;
         //StepPhysicsWorld stepPhysicsWorldSystem;
 
+        BlobAssetReference<Collider> movebodySphereCollider;
 
 
         protected override void OnCreate()
         {
-            this.buildPhysicsWorldSystem = World.GetOrCreateSystem<BuildPhysicsWorld>();
+            this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
             //this.stepPhysicsWorldSystem = World.GetOrCreateSystem<StepPhysicsWorld>();
+
+            var geom = new SphereGeometry()
+            {
+                Center = float3.zero,
+                Radius = 0.15f,
+            };
+            var filter = new CollisionFilter
+            {
+                BelongsTo = 1u << 23,
+                CollidesWith = 1u << 20 | 1u << 22,// | 1u<<23,
+                GroupIndex = 0,
+            };
+            this.movebodySphereCollider = SphereCollider.Create( geom, filter );
         }
 
 
@@ -61,6 +75,7 @@ namespace Abss.Instance
                 StickDir = input.lStickDir,
                 JumpForce = input.jumpForce,
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
+                movebodySphereCollider = movebodySphereCollider,
             }
             .Schedule( this, inputDeps );
 
@@ -106,7 +121,7 @@ namespace Abss.Instance
             [ReadOnly] public float JumpForce;
 
             [ReadOnly] public CollisionWorld CollisionWorld;
-
+            [ReadOnly] public BlobAssetReference<Collider> movebodySphereCollider;
 
             public unsafe void Execute(
                 Entity entity, int index,
@@ -123,12 +138,12 @@ namespace Abss.Instance
                 {
                     var hitInput = new ColliderCastInput
                     {
-                        Collider = (Collider*)hit.Collider.GetUnsafePtr(),
+                        Collider = (Collider*)this.movebodySphereCollider.GetUnsafePtr(),//hit.Collider.GetUnsafePtr(),
                         Orientation = quaternion.identity,
                         Start = pos.Value + math.up() * 0.05f,
                         End = pos.Value + math.up() * -0.1f,
                     };
-                    var isHit = hit.Collider.Value.CastCollider( hitInput );//this.CollisionWorld.CastCollider( hitInput );
+                    var isHit = this.CollisionWorld.CastCollider( hitInput );
                     if( isHit )
                     {
                         upf = this.JumpForce * 0.5f;

@@ -68,9 +68,10 @@ namespace MyProject
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
             var gp = Gamepad.current;
-            var input = gp != null ? getPadInput(gp) : getKeyInput(Keyboard.current);
+            var input = gp != null ? getPadInput( gp ) : getKeyInput( Keyboard.current );
 
-            var camRotWorld = (quaternion)this.TfCamera.rotation;
+            var tfCamera = Camera.main.transform;
+            var camRotWorld = (quaternion)tfCamera.rotation;//this.TfCamera.rotation;
 
             inputDeps = new MoveChJob
             {
@@ -83,10 +84,10 @@ namespace MyProject
             }
             .Schedule( this, inputDeps );
 
-            var rs = gp.rightStick.ReadValue();
+            var rs = gp != null ? gp.rightStick.ReadValue() : Mouse.current.delta.ReadValue() * 0.5f;
 
-            TfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.deltaTime );
-            //TfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
+            tfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.deltaTime );
+            //tfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
 
 
             //inputDeps = new MoveChOnGroundJob

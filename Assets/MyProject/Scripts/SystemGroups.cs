@@ -22,13 +22,19 @@ namespace Abss.SystemGroup
 {
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(PresentationSystemGroup))]
+    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    [UpdateBefore( typeof( ObjectLogicSystemGroup ) )]
+    public class BonePhysicsSystemGroup : ComponentSystemGroup
+    { }
+
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof( SimulationSystemGroup ) )]
     public class ObjectLogicSystemGroup : ComponentSystemGroup
     { }
 
 
     //[DisableAutoCreation]
-    [UpdateAfter(typeof(ObjectLogicSystemGroup))]
+    //[UpdateAfter(typeof(ObjectLogicSystemGroup))]
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public class DrawPrevSystemGroup : ComponentSystemGroup
     { }
@@ -52,8 +58,4 @@ namespace Abss.SystemGroup
     { }
 
 
-    //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
-    public class BonePhysicsSystemGroup : ComponentSystemGroup
-    { }
 }
