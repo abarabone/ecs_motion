@@ -34,7 +34,7 @@ namespace Abss.Instance
         BuildPhysicsWorld buildPhysicsWorldSystem;
         //StepPhysicsWorld stepPhysicsWorldSystem;
 
-
+        
 
         protected override void OnCreate()
         {
@@ -54,7 +54,6 @@ namespace Abss.Instance
             var tfCamera = Camera.main.transform;
             var camRotWorld = (quaternion)tfCamera.rotation;//this.TfCamera.rotation;
 
-
             inputDeps = new PlayerMoveJob
             {
                 CamRotWorld = camRotWorld,
@@ -67,8 +66,8 @@ namespace Abss.Instance
 
             var rs = gp != null ? gp.rightStick.ReadValue() : Mouse.current.delta.ReadValue() * 0.5f;
 
+            tfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
             tfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.deltaTime );
-            //tfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
 
             return inputDeps;
 
@@ -98,7 +97,7 @@ namespace Abss.Instance
 
         [BurstCompile]
         struct PlayerMoveJob : IJobForEachWithEntity
-            <PlayerCharacterTag, GroundHitColliderData, Translation, PhysicsVelocity>
+            <PlayerCharacterTag, /*GroundHitColliderData,*/ Translation, PhysicsVelocity>
         {
 
             [ReadOnly] public float3 StickDir;
@@ -108,10 +107,11 @@ namespace Abss.Instance
 
             [ReadOnly] public CollisionWorld CollisionWorld;
 
+
             public unsafe void Execute(
                 Entity entity, int index,
                 [ReadOnly] ref PlayerCharacterTag tag,
-                [ReadOnly] ref GroundHitColliderData hit,
+                //[ReadOnly] ref GroundHitColliderData hit,
                 [ReadOnly] ref Translation pos,
                 ref PhysicsVelocity v
             )
@@ -121,18 +121,36 @@ namespace Abss.Instance
 
                 if( this.JumpForce > 0.0f )
                 {
-                    var hitInput = new ColliderCastInput
+                    //var hitInput = new ColliderCastInput
+                    //{
+                    //    Collider = (Collider*)hit.Collider.GetUnsafePtr(),
+                    //    Orientation = quaternion.identity,
+                    //    Start = pos.Value + math.up() * 0.05f,
+                    //    End = pos.Value + math.up() * -0.1f,
+                    //};
+                    var hitInput = new PointDistanceInput
                     {
-                        Collider = (Collider*)hit.Collider.GetUnsafePtr(),
-                        Orientation = quaternion.identity,
-                        Start = pos.Value + math.up() * 0.05f,
-                        End = pos.Value + math.up() * -0.1f,
+                        Position = pos.Value,
+                        MaxDistance = 0.1f,
+                        Filter = new CollisionFilter
+                        {
+                            BelongsTo = ( 1 << 20 ) | ( 1 << 22 ) | ( 1 << 23 ),
+                            CollidesWith = (1<<20) | (1<<22) | (1<<23),
+                            GroupIndex = 0,
+                        },
                     };
-                    var isHit = this.CollisionWorld.CastCollider( hitInput );
-                    if( isHit )
+                    //var collector = new ExcludeEntityCollector
+                    //{
+                    //    IgnoreEntity = entity,
+                    //    Rigidbodies = this.CollisionWorld.Bodies,
+                    //};
+                    var a = new NativeList<DistanceHit>( Allocator.Temp );
+                    var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );
+                    if( isHit && a.Length > 1 )
                     {
                         upf = this.JumpForce * 0.5f;
                     }
+                    a.Dispose();
                 }
 
                 var vlinear = v.Linear;
@@ -147,28 +165,38 @@ namespace Abss.Instance
 
         struct ExcludeEntityCollector : ICollector<Unity.Physics.RaycastHit>
         {
+
             public Entity IgnoreEntity;
+            public NativeSlice<Unity.Physics.RigidBody> Rigidbodies;
+
 
             public bool EarlyOutOnFirstHit => IgnoreEntity == Entity.Null;
 
-            public float MaxFraction => throw new System.NotImplementedException();
+            public float MaxFraction => 0.0f;
 
-            public int NumHits => throw new System.NotImplementedException();
+            public int NumHits => 0;
 
 
             public bool AddHit( Unity.Physics.RaycastHit hit )
             {
-                throw new System.NotImplementedException();
+                if( this.Rigidbodies[ hit.RigidBodyIndex ].Entity == this.IgnoreEntity )
+                {
+                    this.IgnoreEntity = Entity.Null;
+                    return true;
+                }
+                return false;
             }
 
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey )
+            public void TransformNewHits
+                ( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey )
             {
-                throw new System.NotImplementedException();
+
             }
 
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
+            public void TransformNewHits
+                ( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
             {
-                throw new System.NotImplementedException();
+
             }
         }
     }

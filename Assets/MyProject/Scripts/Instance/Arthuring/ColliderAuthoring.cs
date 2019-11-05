@@ -64,7 +64,7 @@ namespace Abss.Arthuring
                 ;
             foreach( var (ent, c) in qQueryableCollider )
             {
-                addQuearyableColliderBlobs_( ent, c,  );
+                addQuearyableColliderBlobs_( ent, c, 0 );
             }
 
 
