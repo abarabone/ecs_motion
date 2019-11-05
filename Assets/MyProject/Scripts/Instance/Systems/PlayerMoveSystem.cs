@@ -144,5 +144,32 @@ namespace Abss.Instance
 
             }
         }
+
+        struct ExcludeEntityCollector : ICollector<Unity.Physics.RaycastHit>
+        {
+            public Entity IgnoreEntity;
+
+            public bool EarlyOutOnFirstHit => IgnoreEntity == Entity.Null;
+
+            public float MaxFraction => throw new System.NotImplementedException();
+
+            public int NumHits => throw new System.NotImplementedException();
+
+
+            public bool AddHit( Unity.Physics.RaycastHit hit )
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey )
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
+            {
+                throw new System.NotImplementedException();
+            }
+        }
     }
 }
