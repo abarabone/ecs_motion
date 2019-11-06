@@ -95,19 +95,31 @@ namespace Abss.Motion
                     var i = Linkers[ ent ].BoneId;
                     
                     var shifter = this.Shifters[ ent ];
+                    var prevKeyPtr = shifter.Keys;// 仮
                     shifter.Keys = (KeyBlobUnit*)streams[ i ].Keys.GetUnsafePtr();
                     shifter.KeyLength = streams[ i ].Keys.Length;
-                    this.Shifters[ ent ] = shifter;
 
                     var timer = this.Timers[ ent ];
                     timer.TimeLength    = motion.TimeLength;
                     timer.TimeScale     = 1.0f;
-                    timer.TimeProgress  = 0.0f;
-                    this.Timers[ ent ] = timer;
+                    //timer.TimeProgress = 0.0f;
+
+                    if( prevKeyPtr != null )// 仮
+                    {
+                        var cache_ = this.Caches[ ent ];
+                        cache_.InitializeKeysContinuous( ref shifter, ref timer );
+                        this.Caches[ ent ] = cache_;
+                        this.Timers[ ent ] = timer;
+                        this.Shifters[ ent ] = shifter;
+                        continue;
+                    }
 
                     var cache = this.Caches[ ent ];
                     cache.InitializeKeys( ref shifter, ref timer );
+
                     this.Caches[ ent ] = cache;
+                    this.Timers[ ent ] = timer;
+                    this.Shifters[ ent ] = shifter;
                 }
             }
 

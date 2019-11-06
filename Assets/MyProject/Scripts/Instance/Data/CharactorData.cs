@@ -34,4 +34,9 @@ namespace Abss.Instance
     }
 
 
+    public struct MoveCommandData : IComponentData
+    {
+        public ControlActionUnit ControlAction;
+    }
+
 }

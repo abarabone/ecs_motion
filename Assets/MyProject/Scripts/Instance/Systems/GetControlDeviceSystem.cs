@@ -22,11 +22,11 @@ using Abss.SystemGroup;
 using Abss.Instance;
 using Abss.Motion;
 
-namespace Abss.Character
+namespace Abss.Instance
 {
 
 
-    struct ControlActionUnit
+    public struct ControlActionUnit
     {
         public float3 MoveDirection;
         public float3 LookDirection;
@@ -38,7 +38,7 @@ namespace Abss.Character
     }
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
     public class GetControlDeviceSystem : JobComponentSystem
     {
@@ -52,45 +52,58 @@ namespace Abss.Character
         protected override void OnCreate()
         {
 
-            this.ecb = World.Active.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+
+            setControlFunc_();
+
+            return;
 
 
-            if( Gamepad.current != null )
-                this.getControlUnitFunc = () =>
+            void setControlFunc_()
+            {
+                if( Gamepad.current != null )
                 {
-                    var gp = Gamepad.current;
-                    var ls = gp.leftStick.ReadValue();
-                    var lStickDir = new float3( ls.x, 0.0f, ls.y );
-                    var jumpForce = gp.leftShoulder.wasPressedThisFrame ? 10.0f : 0.0f;
-
-                    return new ControlActionUnit
+                    this.getControlUnitFunc = () =>
                     {
-                        MoveDirection = lStickDir,
-                        JumpForce = jumpForce,
-                        IsChangeMotion = gp.bButton.wasPressedThisFrame,
-                    };
-                };
+                        var gp = Gamepad.current;
+                        var ls = gp.leftStick.ReadValue();
+                        var lStickDir = new float3( ls.x, 0.0f, ls.y );
+                        var jumpForce = gp.leftShoulder.wasPressedThisFrame ? 10.0f : 0.0f;
 
-            if( Mouse.current != null && Keyboard.current != null )
-                this.getControlUnitFunc = () =>
+                        return new ControlActionUnit
+                        {
+                            MoveDirection = lStickDir,
+                            JumpForce = jumpForce,
+                            IsChangeMotion = gp.bButton.wasPressedThisFrame,
+                        };
+                    };
+                    return;
+                }
+                
+                if( Mouse.current != null && Keyboard.current != null )
                 {
-                    var kb = Keyboard.current;
-                    var l = kb.dKey.isPressed ? 1.0f : 0.0f;
-                    var r = kb.aKey.isPressed ? -1.0f : 0.0f;
-                    var u = kb.wKey.isPressed ? 1.0f : 0.0f;
-                    var d = kb.sKey.isPressed ? -1.0f : 0.0f;
-                    var lStickDir = new float3( l + r, 0.0f, u + d );
-                    var jumpForce = kb.spaceKey.wasPressedThisFrame ? 10.0f : 0.0f;
-
-                    var ms = Mouse.current;
-
-                    return new ControlActionUnit
+                    this.getControlUnitFunc = () =>
                     {
-                        MoveDirection = lStickDir,
-                        JumpForce = jumpForce,
-                        IsChangeMotion = ms.rightButton.wasPressedThisFrame,
+                        var kb = Keyboard.current;
+                        var l = kb.dKey.isPressed ? 1.0f : 0.0f;
+                        var r = kb.aKey.isPressed ? -1.0f : 0.0f;
+                        var u = kb.wKey.isPressed ? 1.0f : 0.0f;
+                        var d = kb.sKey.isPressed ? -1.0f : 0.0f;
+                        var lStickDir = new float3( l + r, 0.0f, u + d );
+                        var jumpForce = kb.spaceKey.wasPressedThisFrame ? 10.0f : 0.0f;
+
+                        var ms = Mouse.current;
+
+                        return new ControlActionUnit
+                        {
+                            MoveDirection = lStickDir,
+                            JumpForce = jumpForce,
+                            IsChangeMotion = ms.rightButton.wasPressedThisFrame,
+                        };
                     };
-                };
+                    return;
+                }
+            }
             
         }
 
@@ -132,6 +145,8 @@ namespace Abss.Character
                     var motionInfo = this.MotionInfos[ linker.MotionEntity ];
                     this.Commands.AddComponent( index, linker.MotionEntity, new MotionInitializeData { MotionIndex = (motionInfo.MotionIndex+1) % 10 } );
                 }
+
+                this.Commands.SetComponent( index, entity, new MoveCommandData { ControlAction = this.Acts } );
 
             }
         }

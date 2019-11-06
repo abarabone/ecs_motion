@@ -137,12 +137,34 @@ namespace Abss.Motion
 			shift.KeyIndex_Next		= index2;
 			
 			progress.TimeProgress	= timeOffset;
-		}
+        }
 
-		/// <summary>
-		/// キーバッファを次のキーに移行する。終端まで来たら、最後のキーのままでいる。
-		/// </summary>
-		unsafe static public void ShiftKeysIfOverKeyTime(
+        unsafe static public void InitializeKeysContinuous(
+            ref this StreamNearKeysCacheData nearKeys,
+            ref StreamKeyShiftData shift,
+            ref StreamTimeProgressData progress
+        )
+        {
+            var index0 = 0;
+            var index1 = math.min( 1, shift.KeyLength - 1 );
+
+            nearKeys.Time_From -= progress.TimeProgress;
+            nearKeys.Time_To = shift.Keys[ index0 ].Time.x;
+            nearKeys.Time_Next = shift.Keys[ index1 ].Time.x;
+
+            nearKeys.Value_To = shift.Keys[ index0 ].Value;
+            nearKeys.Value_Next = shift.Keys[ index1 ].Value;
+
+            shift.KeyIndex_Next = index1;
+
+            progress.TimeProgress = 0.0f;
+        }
+
+
+        /// <summary>
+        /// キーバッファを次のキーに移行する。終端まで来たら、最後のキーのままでいる。
+        /// </summary>
+        unsafe static public void ShiftKeysIfOverKeyTime(
 			ref this StreamNearKeysCacheData	nearKeys,
 			ref StreamKeyShiftData				shift,
 			in  StreamTimeProgressData			progress
@@ -204,6 +226,7 @@ namespace Abss.Motion
 
 			return;
 
+
 			float getTimeOffsetOverLength( in StreamTimeProgressData progress_, bool isEndOfStream_ )
 			{
 				return math.select( 0.0f, progress_.TimeLength, isEndOfStream_ );
@@ -250,7 +273,7 @@ namespace Abss.Motion
 			( ref this StreamNearKeysCacheData nearKeys, float normalizedTimeProgress )
 		{
 			
-			//var s = 1;//math.sign( math.dot( nearKeys.Value_From, nearKeys.Value_To ) );
+			//var s = math.sign( math.dot( nearKeys.Value_From, nearKeys.Value_To ) );
 
 			return VectorUtility.Interpolate(
 				nearKeys.Value_Prev,

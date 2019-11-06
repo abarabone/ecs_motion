@@ -25,14 +25,11 @@ namespace Abss.Instance
 
     //[DisableAutoCreation]
     //[UpdateAfter( typeof( EndFramePhysicsSystem ) )]
-    [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
+    [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class PlayerMoveSystem : JobComponentSystem
     {
-
-
-        //public Transform TfCamera;
-
-        BuildPhysicsWorld buildPhysicsWorldSystem;
+        
+        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないとエラーになるみたい
         //StepPhysicsWorld stepPhysicsWorldSystem;
 
 
