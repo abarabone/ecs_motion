@@ -18,6 +18,7 @@ using SphereCollider = Unity.Physics.SphereCollider;
 using Abss.Misc;
 using Abss.Utilities;
 using Abss.SystemGroup;
+using Abss.Motion;
 
 namespace Abss.Instance
 {
@@ -34,7 +35,6 @@ namespace Abss.Instance
         BuildPhysicsWorld buildPhysicsWorldSystem;
         //StepPhysicsWorld stepPhysicsWorldSystem;
 
-        
 
         protected override void OnCreate()
         {
@@ -66,7 +66,7 @@ namespace Abss.Instance
 
             var rs = gp != null ? gp.rightStick.ReadValue() : Mouse.current.delta.ReadValue() * 0.5f;
 
-            tfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
+            //tfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
             tfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.deltaTime );
 
             return inputDeps;
@@ -99,7 +99,7 @@ namespace Abss.Instance
         struct PlayerMoveJob : IJobForEachWithEntity
             <PlayerCharacterTag, /*GroundHitColliderData,*/ Translation, PhysicsVelocity>
         {
-
+            
             [ReadOnly] public float3 StickDir;
             [ReadOnly] public quaternion CamRotWorld;
             [ReadOnly] public float DeltaTime;
@@ -157,7 +157,7 @@ namespace Abss.Instance
                 var xyDir = math.rotate( this.CamRotWorld, this.StickDir ) * this.DeltaTime * 170;
                 
                 xyDir.y = vlinear.y + upf;
-
+                
                 v.Linear = math.min( xyDir, new float3(10,1000,10) );
 
             }

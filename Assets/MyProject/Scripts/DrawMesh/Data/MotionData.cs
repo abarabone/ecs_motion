@@ -21,9 +21,9 @@ namespace Abss.Motion
 {
 	
 
-	public struct MotionInitializeTag : IComponentData
+	public struct MotionInitializeData : IComponentData
 	{
-        //public int MotionIndex;
+        public int MotionIndex;
         //public MotionDataInNative MotionData;
     }
 

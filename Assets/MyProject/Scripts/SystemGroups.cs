@@ -23,12 +23,11 @@ namespace Abss.SystemGroup
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SimulationSystemGroup ) )]
-    [UpdateBefore( typeof( ObjectLogicSystemGroup ) )]
-    public class BonePhysicsSystemGroup : ComponentSystemGroup
+    public class ObjectMoveSystemGroup : ComponentSystemGroup
     { }
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof( SimulationSystemGroup ) )]
+    [UpdateInGroup(typeof( PresentationSystemGroup ) )]
     public class ObjectLogicSystemGroup : ComponentSystemGroup
     { }
 

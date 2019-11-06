@@ -51,7 +51,7 @@ namespace Abss.Arthuring
                 typeof( MotionInfoData ),
                 typeof( MotionClipData ),
                 typeof( MotionStreamLinkData ),
-                typeof( MotionInitializeTag ),
+                typeof( MotionInitializeData ),
                 typeof( Prefab )
             )
         );

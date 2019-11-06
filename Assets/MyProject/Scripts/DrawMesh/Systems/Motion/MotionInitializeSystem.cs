@@ -52,7 +52,7 @@ namespace Abss.Motion
 
         //[BurstCompile]
         struct MotionInitializeJob : IJobForEachWithEntity
-            <MotionStreamLinkData, MotionInitializeTag, MotionClipData, MotionInfoData>
+            <MotionInitializeData, MotionStreamLinkData, MotionClipData, MotionInfoData>
         {
 
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
@@ -69,19 +69,20 @@ namespace Abss.Motion
 
             public void Execute(
                 Entity entity, int index,
+                [ReadOnly] ref MotionInitializeData init,
                 [ReadOnly] ref MotionStreamLinkData linker,
-                [ReadOnly] ref MotionInitializeTag tag,
                 [ReadOnly] ref MotionClipData data,
-                [ReadOnly] ref MotionInfoData info
+                ref MotionInfoData info
             )
             {
                 ref var clip = ref data.ClipData.Value;
-                ref var motion = ref clip.Motions[info.MotionIndex];
+                ref var motion = ref clip.Motions[ init.MotionIndex];
 
+                info.MotionIndex = init.MotionIndex;
                 initSection( ref motion, linker.PositionStreamTop, KeyStreamSection.positions );
                 initSection( ref motion, linker.RotationStreamTop, KeyStreamSection.rotations );
 
-                this.Commands.RemoveComponent<MotionInitializeTag>( index, entity );
+                this.Commands.RemoveComponent<MotionInitializeData>( index, entity );
             }
 
             unsafe void initSection
