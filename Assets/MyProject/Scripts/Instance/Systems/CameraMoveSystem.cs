@@ -29,7 +29,7 @@ namespace Abss.Instance
         protected override void OnCreate()
         {
             this.eq = this.Entities
-                .WithAllReadOnly<Translation, Rotation, PlayerCharacterTag>()
+                .WithAllReadOnly<Translation, Rotation, PlayerTag, MoveHandlingData>()
                 .ToEntityQuery();
         }
 

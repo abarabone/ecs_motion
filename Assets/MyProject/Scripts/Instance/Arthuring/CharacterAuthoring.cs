@@ -90,7 +90,7 @@ namespace Abss.Arthuring
             (
                 typeof( LinkedEntityGroup ),
                 typeof( CharacterLinkData ),
-                typeof( MoveCommandData ),
+                typeof( MoveHandlingData ),
                 typeof( Prefab )
             )
         );

@@ -44,6 +44,7 @@ namespace Abss.Arthuring
                 .ToArray();
 
 
+            // モーション設定
             foreach( var model in Enumerable.Range( 0, this.PrefabEntities.Length ) )
             {
                 var mlinker = em.GetComponentData<CharacterLinkData>( this.PrefabEntities[model] );
@@ -59,8 +60,12 @@ namespace Abss.Arthuring
                 }
             }
 
+            // 先頭キャラのみ
+            em.AddComponentData( this.ents[ 0 ], new PlayerTag { } );
+            em.AddComponentData( this.ents[ 0 ], new WalkActionStateData { } );
             var post = em.GetComponentData<CharacterLinkData>( this.ents[ 0 ] ).PostureEntity;
-            em.AddComponentData( post, new PlayerCharacterTag { } );
+            em.AddComponentData( post, new PlayerTag { } );
+            em.AddComponentData( post, new MoveHandlingData { } );
 
         }
 

@@ -30,4 +30,11 @@ namespace Abss.Instance
     {
         public int UniqueId;
     }
+
+
+    public struct MoveHandlingData : IComponentData
+    {
+        public ControlActionUnit ControlAction;
+    }
+
 }

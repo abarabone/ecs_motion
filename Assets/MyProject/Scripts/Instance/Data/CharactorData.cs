@@ -25,7 +25,7 @@ namespace Abss.Instance
         public Entity MotionEntity;
     }
 
-    public struct PlayerCharacterTag : IComponentData
+    public struct PlayerTag : IComponentData
     { }
 
     public struct GroundHitColliderData : IComponentData
@@ -34,9 +34,10 @@ namespace Abss.Instance
     }
 
 
-    public struct MoveCommandData : IComponentData
+    public struct WalkActionStateData : IComponentData
     {
-        public ControlActionUnit ControlAction;
+        public int Phase;
     }
 
 }
+

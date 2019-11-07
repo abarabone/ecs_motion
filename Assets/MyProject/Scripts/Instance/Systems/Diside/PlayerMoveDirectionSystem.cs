@@ -31,7 +31,8 @@ namespace Abss.Instance
         public float3 MoveDirection;
         public float3 LookDirection;
 
-        public quaternion LookRotation;
+        public quaternion LookRotation =>
+            quaternion.LookRotation( this.LookDirection, math.up() );
 
         public float JumpForce;
         public bool IsChangeMotion;
@@ -46,13 +47,9 @@ namespace Abss.Instance
 
         Func<ControlActionUnit> getControlUnitFunc;
         
-        EntityCommandBufferSystem ecb;
-        
 
         protected override void OnCreate()
         {
-
-            this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
 
             setControlFunc_();
 
@@ -67,12 +64,16 @@ namespace Abss.Instance
                     {
                         var gp = Gamepad.current;
                         var ls = gp.leftStick.ReadValue();
-                        var lStickDir = new float3( ls.x, 0.0f, ls.y );
+                        var ldir = new float3( ls.x, 0.0f, ls.y );
                         var jumpForce = gp.leftShoulder.wasPressedThisFrame ? 10.0f : 0.0f;
+
+                        var rs = gp.rightStick.ReadValue();
+                        var rdir = new float3( rs.x, 0.0f, rs.y );
 
                         return new ControlActionUnit
                         {
-                            MoveDirection = lStickDir,
+                            MoveDirection = ldir,
+                            LookDirection = rdir,
                             JumpForce = jumpForce,
                             IsChangeMotion = gp.bButton.wasPressedThisFrame,
                         };
@@ -89,14 +90,17 @@ namespace Abss.Instance
                         var r = kb.aKey.isPressed ? -1.0f : 0.0f;
                         var u = kb.wKey.isPressed ? 1.0f : 0.0f;
                         var d = kb.sKey.isPressed ? -1.0f : 0.0f;
-                        var lStickDir = new float3( l + r, 0.0f, u + d );
+                        var ldir = new float3( l + r, 0.0f, u + d );
                         var jumpForce = kb.spaceKey.wasPressedThisFrame ? 10.0f : 0.0f;
 
                         var ms = Mouse.current;
+                        var rm = ms.delta.ReadValue() * 0.5f;
+                        var rdir = new float3( rm.x, 0.0f, rm.y );
 
                         return new ControlActionUnit
                         {
-                            MoveDirection = lStickDir,
+                            MoveDirection = ldir,
+                            LookDirection = rdir,
                             JumpForce = jumpForce,
                             IsChangeMotion = ms.rightButton.wasPressedThisFrame,
                         };
@@ -110,44 +114,51 @@ namespace Abss.Instance
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            
+
+            var acts = this.getControlUnitFunc();
+
             inputDeps = new ContDevJob
             {
-                Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
-                Acts = this.getControlUnitFunc(),
-                MotionInfos = this.GetComponentDataFromEntity<MotionInfoData>( isReadOnly: true ),
+                Acts = acts,
             }
             .Schedule( this, inputDeps );
-            this.ecb.AddJobHandleForProducer( inputDeps );
 
+            var tfCamera = Camera.main.transform;
+            var camRotWorld = (quaternion)tfCamera.rotation;
+
+            //tfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
+            tfCamera.Rotate( Vector3.up, acts.LookDirection.x * 90.0f * Time.deltaTime );
 
             return inputDeps;
         }
 
 
 
-        struct ContDevJob : IJobForEachWithEntity<CharacterLinkData, PlayerCharacterTag>
+        [BurstCompile]
+        struct ContDevJob : IJobForEachWithEntity
+            <PlayerTag, MoveHandlingData>
         {
 
-            [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
+            //[ReadOnly] public EntityCommandBuffer.Concurrent Commands;
             [ReadOnly] public ControlActionUnit Acts;
 
-            [ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
+            //[ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
 
 
             public void Execute(
                 Entity entity, int index,
-                [ReadOnly] ref CharacterLinkData linker,
-                [ReadOnly] ref PlayerCharacterTag tag
+                [ReadOnly] ref PlayerTag tag,
+                ref MoveHandlingData handler
             )
             {
-                if( this.Acts.IsChangeMotion )
-                {
-                    var motionInfo = this.MotionInfos[ linker.MotionEntity ];
-                    this.Commands.AddComponent( index, linker.MotionEntity, new MotionInitializeData { MotionIndex = (motionInfo.MotionIndex+1) % 10 } );
-                }
+                //if( this.Acts.IsChangeMotion )
+                //{
+                //    var motionInfo = this.MotionInfos[ linker.MotionEntity ];
+                //    this.Commands.AddComponent( index, linker.MotionEntity, new MotionInitializeData { MotionIndex = (motionInfo.MotionIndex+1) % 10 } );
+                //}
 
-                this.Commands.SetComponent( index, entity, new MoveCommandData { ControlAction = this.Acts } );
+
+                handler.ControlAction = this.Acts;
 
             }
         }

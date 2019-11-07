@@ -23,7 +23,7 @@ using Abss.Motion;
 namespace Abss.Instance
 {
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateAfter( typeof( EndFramePhysicsSystem ) )]
     [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class PlayerMoveSystem : JobComponentSystem
@@ -94,7 +94,7 @@ namespace Abss.Instance
 
         [BurstCompile]
         struct PlayerMoveJob : IJobForEachWithEntity
-            <PlayerCharacterTag, /*GroundHitColliderData,*/ Translation, PhysicsVelocity>
+            <PlayerTag, /*GroundHitColliderData,*/ Translation, PhysicsVelocity>
         {
             
             [ReadOnly] public float3 StickDir;
@@ -107,7 +107,7 @@ namespace Abss.Instance
 
             public unsafe void Execute(
                 Entity entity, int index,
-                [ReadOnly] ref PlayerCharacterTag tag,
+                [ReadOnly] ref PlayerTag tag,
                 //[ReadOnly] ref GroundHitColliderData hit,
                 [ReadOnly] ref Translation pos,
                 ref PhysicsVelocity v
