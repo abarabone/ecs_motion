@@ -148,7 +148,7 @@ namespace Abss.Motion
             var index0 = 0;
             var index1 = math.min( 1, shift.KeyLength - 1 );
 
-            nearKeys.Time_From -= progress.TimeProgress;
+            nearKeys.Time_From = 0.0f;
             nearKeys.Time_To = shift.Keys[ index0 ].Time.x;
             nearKeys.Time_Next = shift.Keys[ index1 ].Time.x;
 

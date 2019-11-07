@@ -21,13 +21,9 @@ using Abss.SystemGroup;
 namespace Abss.Character
 {
 
-    /// <summary>
-    /// 与えられた方向を向き、与えられた水平移動をする。
-    /// ジャンプが必要なら、地面と接触していればジャンプする。
-    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
-    public class SoldierWalkSystem : JobComponentSystem
+    public class SoldierWalkActionSystem : JobComponentSystem
     {
 
 
