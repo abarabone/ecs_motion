@@ -29,10 +29,9 @@ namespace Abss.Instance
     public struct ControlActionUnit
     {
         public float3 MoveDirection;
-        public float3 LookDirection;
+        public quaternion LookRotation;
 
-        public quaternion LookRotation =>
-            quaternion.LookRotation( this.LookDirection, math.up() );
+        public float3 LookDirection => math.forward( this.LookRotation );
 
         public float JumpForce;
         public bool IsChangeMotion;
@@ -62,18 +61,22 @@ namespace Abss.Instance
                 {
                     this.getControlUnitFunc = () =>
                     {
+                        var tfCamera = Camera.main.transform;
                         var gp = Gamepad.current;
-                        var ls = gp.leftStick.ReadValue();
-                        var ldir = new float3( ls.x, 0.0f, ls.y );
-                        var jumpForce = gp.leftShoulder.wasPressedThisFrame ? 10.0f : 0.0f;
 
-                        var rs = gp.rightStick.ReadValue();
-                        var rdir = new float3( rs.x, 0.0f, rs.y );
+                        var rs = gp.rightStick.ReadValue() * 100.0f;
+                        var rdir = new float3( rs.x, rs.y, 0.0f );
+                        var rRot = math.mul( quaternion.RotateX(rdir.x), quaternion.RotateY(rdir.y) );
+
+                        var ls = gp.leftStick.ReadValue();
+                        var ldir = math.mul( rRot, new float3( ls.x, 0.0f, ls.y ) );
+
+                        var jumpForce = gp.leftShoulder.wasPressedThisFrame ? 10.0f : 0.0f;
 
                         return new ControlActionUnit
                         {
                             MoveDirection = ldir,
-                            LookDirection = rdir,
+                            LookRotation = rRot,
                             JumpForce = jumpForce,
                             IsChangeMotion = gp.bButton.wasPressedThisFrame,
                         };
@@ -85,22 +88,30 @@ namespace Abss.Instance
                 {
                     this.getControlUnitFunc = () =>
                     {
+                        var rotCam = Camera.main.transform.rotation;
+                        var euler = rotCam.eulerAngles;
+
+                        var ms = Mouse.current;
+                        var rdir = ms.delta.ReadValue() * 0.005f;
+                        //var rdir = new float3( rm.x, 0.0f, rm.y );
+
+                        var rRot = quaternion.RotateX( euler.y + -rdir.y );//math.mul( quaternion.RotateX( euler.y + -rdir.y ), quaternion.RotateY( euler.x+ -rdir.x ) );//math.mul( quaternion.RotateY( rdir.y ), quaternion.RotateX( rdir.x ) );
+                        //var rRot = rRot_ * rotCam;
+
+                        var hRot = quaternion.RotateY( euler.x + -rdir.x );
                         var kb = Keyboard.current;
                         var l = kb.dKey.isPressed ? 1.0f : 0.0f;
                         var r = kb.aKey.isPressed ? -1.0f : 0.0f;
                         var u = kb.wKey.isPressed ? 1.0f : 0.0f;
                         var d = kb.sKey.isPressed ? -1.0f : 0.0f;
-                        var ldir = new float3( l + r, 0.0f, u + d );
-                        var jumpForce = kb.spaceKey.wasPressedThisFrame ? 10.0f : 0.0f;
+                        var ldir = math.mul( hRot, new float3( l + r, 0.0f, u + d ) );
 
-                        var ms = Mouse.current;
-                        var rm = ms.delta.ReadValue() * 0.5f;
-                        var rdir = new float3( rm.x, 0.0f, rm.y );
+                        var jumpForce = kb.spaceKey.wasPressedThisFrame ? 10.0f : 0.0f;
 
                         return new ControlActionUnit
                         {
                             MoveDirection = ldir,
-                            LookDirection = rdir,
+                            LookRotation = rRot,
                             JumpForce = jumpForce,
                             IsChangeMotion = ms.rightButton.wasPressedThisFrame,
                         };
@@ -116,18 +127,13 @@ namespace Abss.Instance
         {
 
             var acts = this.getControlUnitFunc();
-
+            Camera.main.transform.rotation = acts.LookRotation;
+            
             inputDeps = new ContDevJob
             {
                 Acts = acts,
             }
             .Schedule( this, inputDeps );
-
-            var tfCamera = Camera.main.transform;
-            var camRotWorld = (quaternion)tfCamera.rotation;
-
-            //tfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
-            tfCamera.Rotate( Vector3.up, acts.LookDirection.x * 90.0f * Time.deltaTime );
 
             return inputDeps;
         }
