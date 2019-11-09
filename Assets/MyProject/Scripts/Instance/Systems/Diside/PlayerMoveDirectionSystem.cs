@@ -45,7 +45,10 @@ namespace Abss.Instance
 
 
         Func<ControlActionUnit> getControlUnitFunc;
-        
+
+        //quaternion vrot = quaternion.identity;
+        quaternion hrot = quaternion.identity;
+        float vangle = 0.0f;
 
         protected override void OnCreate()
         {
@@ -61,15 +64,21 @@ namespace Abss.Instance
                 {
                     this.getControlUnitFunc = () =>
                     {
-                        var tfCamera = Camera.main.transform;
                         var gp = Gamepad.current;
 
-                        var rs = gp.rightStick.ReadValue() * 100.0f;
-                        var rdir = new float3( rs.x, rs.y, 0.0f );
-                        var rRot = math.mul( quaternion.RotateX(rdir.x), quaternion.RotateY(rdir.y) );
+                        var rs = gp.rightStick.ReadValue();
+                        var rdir = new float3( rs.x, rs.y, 0.0f ) * 5.0f * Time.deltaTime;
+
+                        this.vangle -= rdir.y;
+                        this.vangle = math.min( this.vangle, math.radians( 90.0f ) );
+                        this.vangle = math.max( this.vangle, math.radians( -90.0f ) );
+
+                        this.hrot = math.mul( quaternion.RotateY( rdir.x ), this.hrot );
+
+                        var rRot = math.mul( this.hrot, quaternion.RotateX(this.vangle) );
 
                         var ls = gp.leftStick.ReadValue();
-                        var ldir = math.mul( rRot, new float3( ls.x, 0.0f, ls.y ) );
+                        var ldir = math.mul( this.hrot, new float3( ls.x, 0.0f, ls.y ) );
 
                         var jumpForce = gp.leftShoulder.wasPressedThisFrame ? 10.0f : 0.0f;
 
@@ -127,8 +136,7 @@ namespace Abss.Instance
         {
 
             var acts = this.getControlUnitFunc();
-            Camera.main.transform.rotation = acts.LookRotation;
-            
+
             inputDeps = new ContDevJob
             {
                 Acts = acts,

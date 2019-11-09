@@ -96,7 +96,7 @@ namespace Abss.Character
 
                     var a = new NativeList<DistanceHit>( Allocator.Temp );
                     var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );
-                    if( isHit && a.Length > 1 )
+                    if( isHit && a.Length > 1 )// 自身のコライダを除外できればシンプルになるんだが…
                     {
                         upf = acts.JumpForce * 0.5f;
                     }
@@ -104,11 +104,11 @@ namespace Abss.Character
                 }
 
                 var vlinear = v.Linear;
-                var xyDir = math.mul( acts.LookRotation, acts.MoveDirection ) * this.DeltaTime * 170;
+                var xyDir = acts.MoveDirection * this.DeltaTime * 170;
 
                 xyDir.y = vlinear.y + upf;
 
-                v.Linear = math.min( xyDir, new float3( 10, 100000, 10 ) );
+                v.Linear = math.min( xyDir, new float3( 10, 1000, 10 ) );
 
             }
         }

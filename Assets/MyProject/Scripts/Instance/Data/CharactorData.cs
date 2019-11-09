@@ -13,9 +13,11 @@ using Unity.Transforms;
 using Unity.Rendering;
 using Unity.Properties;
 using Unity.Burst;
+using Unity.Physics;
+
 using Abss.Geometry;
 
-namespace Abss.Instance
+namespace Abss.Character
 {
 
     public struct CharacterLinkData : IComponentData
@@ -25,19 +27,39 @@ namespace Abss.Instance
         public Entity MotionEntity;
     }
 
-    public struct PlayerTag : IComponentData
-    { }
 
-    public struct GroundHitColliderData : IComponentData
+    public struct GroundHitResultData : IComponentData
     {
-        public BlobAssetReference<Unity.Physics.Collider> Collider;
+        public bool IsGround;
     }
+    public struct GroundHitSphereData : IComponentData
+    {
+        public float3 Center;
+        public float Distance;
+        public CollisionFilter filter;
+    }
+    public struct GroundHitRayData : IComponentData
+    {
+        public float3 Center;
+        public float Distance;
+        public CollisionFilter filter;
+    }
+    //public struct GroundHitColliderData : IComponentData
+    //{
+    //    public BlobAssetReference<Unity.Physics.Collider> Collider;
+    //}
 
-
-    public struct WalkActionStateData : IComponentData
+    public struct WalkActionState : IComponentData
     {
         public int Phase;
     }
+
+
+
+    // 多種コンポーネント兼用 -------------------------------------
+
+    public struct PlayerTag : IComponentData
+    { }
 
 }
 

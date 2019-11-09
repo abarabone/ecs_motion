@@ -16,7 +16,7 @@ using Abss.Utilities;
 using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
-using Abss.Instance;
+using Abss.Character;
 using Abss.Common.Extension;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
@@ -26,6 +26,9 @@ using MeshCollider = Unity.Physics.MeshCollider;
 
 namespace Abss.Arthuring
 {
+    /// <summary>
+    /// 未整理
+    /// </summary>
     public class ColliderAuthoring : MonoBehaviour
     {
         
@@ -143,16 +146,44 @@ namespace Abss.Arthuring
 
 
 
+            // 物理材質に着けられた名前から、特定のコライダを持つコンポーネントデータを生成する。
             void addQuearyableColliderBlobs_
                 ( Entity ent, UnityEngine.Collider srcCollider, int groupIndex )
             {
-                var blob = createBlobCollider_( new[] { srcCollider }, srcCollider.gameObject, groupIndex );
-
                 switch( srcCollider.sharedMaterial.name )
                 {
-                    case "overlap ground":
-                        em.AddComponentData( ent, new GroundHitColliderData { Collider = blob } );
+                    //case "overlap cast":汎用だと１つしかもてない、用途ごとにコンポーネントデータを定義しないといけない
+                    //{
+                    //    var blob = createBlobCollider_( new[] { srcCollider }, srcCollider.gameObject, groupIndex );
+                    //    em.AddComponentData( ent, new GroundHitColliderData { Collider = blob } );
+                    //    break;
+                    //}
+                    case "overlap ground ray":
+                    {
+                        if( srcCollider is UnityEngine.SphereCollider srcSphere )
+                        {
+                            em.AddComponentData( ent, new GroundHitRayData
+                            {
+                                Center = srcSphere.center,
+                                Distance = srcSphere.radius,
+                                filter = LegacyColliderProducer.GetFilter( srcSphere, groupIndex ),
+                            } );
+                        }
                         break;
+                    }
+                    case "overlap ground sphere":
+                    {
+                        if( srcCollider is UnityEngine.SphereCollider srcSphere )
+                        {
+                            em.AddComponentData( ent, new GroundHitSphereData
+                            {
+                                Center = srcSphere.center,
+                                Distance = srcSphere.radius,
+                                filter = LegacyColliderProducer.GetFilter( srcSphere, groupIndex ),
+                            } );
+                        }
+                        break;
+                    }
                 }
             }
 
@@ -325,7 +356,7 @@ namespace Abss.Arthuring
     public static class LegacyColliderProducer
     {
 
-        static CollisionFilter getFilter( UnityEngine.Collider shape, int groupIndex )
+        static public CollisionFilter GetFilter( UnityEngine.Collider shape, int groupIndex )
         {
             var filter = CollisionFilter.Default;
             filter.GroupIndex = groupIndex;
@@ -359,7 +390,7 @@ namespace Abss.Arthuring
             geometry.BevelRadius = math.min( ConvexHullGenerationParameters.Default.BevelRadius, math.cmin( geometry.Size ) * 0.5f );
 
             return BoxCollider.Create(
-                geometry, getFilter(shape, groupIndex )
+                geometry, GetFilter(shape, groupIndex )
                 //ProduceCollisionFilter( shape ),
                 //ProduceMaterial( shape )
             );
@@ -383,7 +414,7 @@ namespace Abss.Arthuring
             var v1 = offset + ( (float3)shape.center - vertex ) * math.abs( linearScale ) + ax * radius;
 
             return CapsuleCollider.Create(
-                new CapsuleGeometry { Vertex0 = v0, Vertex1 = v1, Radius = radius }, getFilter( shape, groupIndex )
+                new CapsuleGeometry { Vertex0 = v0, Vertex1 = v1, Radius = radius }, GetFilter( shape, groupIndex )
             //ProduceCollisionFilter( shape ),
             //ProduceMaterial( shape )
             );
@@ -402,7 +433,7 @@ namespace Abss.Arthuring
             var radius = shape.radius * math.cmax( math.abs( linearScale ) );
 
             return SphereCollider.Create(
-                new SphereGeometry { Center = center, Radius = radius }, getFilter(shape, groupIndex )
+                new SphereGeometry { Center = center, Radius = radius }, GetFilter(shape, groupIndex )
                 //ProduceCollisionFilter( shape ),
                 //ProduceMaterial( shape )
             );

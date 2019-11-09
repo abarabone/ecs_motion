@@ -18,7 +18,8 @@ using Abss.SystemGroup;
 namespace Abss.Instance
 {
 
-
+    [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
+    [UpdateInGroup(typeof(ObjectLogicSystemGroup))]
     public class CameraMoveSystem : ComponentSystem
     {
 
@@ -40,11 +41,15 @@ namespace Abss.Instance
 
             this.Entities.With( this.eq )
                 .ForEach(
-                    ( ref Translation pos, ref Rotation rot ) =>
+                    ( ref Translation pos, ref Rotation rot, ref MoveHandlingData handler ) =>
                     {
 
+                        ref var acts = ref handler.ControlAction;
+
+                        tfCam.rotation = acts.LookRotation;
+
                         tfCam.position =
-                            pos.Value + (float3)(tfCam.rotation * new float3(0.0f ,1.0f, -1.5f));
+                            pos.Value + math.mul( acts.LookRotation, new float3(0.0f ,1.0f, -1.5f) );
 
                     }
                 );

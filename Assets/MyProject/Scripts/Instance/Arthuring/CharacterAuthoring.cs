@@ -67,6 +67,11 @@ namespace Abss.Arthuring
                 }
             );
 
+            // 暫定
+            {
+                em.AddComponentData( prefab, new GroundData { } );
+            }
+
             streamPrefabs.Dispose();
             bonePrefabs.Dispose();
             jointPrefabs.Dispose();

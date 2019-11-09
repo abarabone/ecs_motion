@@ -23,6 +23,10 @@ using Abss.Motion;
 namespace Abss.Character
 {
 
+    /// <summary>
+    /// 歩き時のアクションステート
+    /// 
+    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
     public class SoldierWalkActionSystem : JobComponentSystem
@@ -55,7 +59,7 @@ namespace Abss.Character
 
 
         struct SolderWalkActionJob : IJobForEachWithEntity
-            <WalkActionStateData, CharacterLinkData>
+            <WalkActionState, CharacterLinkData>
         {
 
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
@@ -65,7 +69,7 @@ namespace Abss.Character
 
             public void Execute(
                 Entity entity, int index,
-                ref WalkActionStateData state,
+                ref WalkActionState state,
                 [ReadOnly] ref CharacterLinkData linker
             )
             {
