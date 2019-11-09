@@ -14,7 +14,7 @@ using Abss.Utilities;
 using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
-using Abss.Instance;
+using Abss.Character;
 using Abss.Common.Extension;
 
 namespace Abss.Arthuring
@@ -69,7 +69,7 @@ namespace Abss.Arthuring
 
             // 暫定
             {
-                em.AddComponentData( prefab, new GroundData { } );
+                em.AddComponentData( posturePrefab, new GroundHitResultData { } );
             }
 
             streamPrefabs.Dispose();

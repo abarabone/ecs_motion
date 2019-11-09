@@ -20,7 +20,7 @@ using Abss.Utilities;
 using Abss.SystemGroup;
 using Abss.Motion;
 
-namespace Abss.Instance
+namespace Abss.Character
 {
 
     [DisableAutoCreation]

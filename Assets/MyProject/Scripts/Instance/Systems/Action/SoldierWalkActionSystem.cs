@@ -17,7 +17,7 @@ using SphereCollider = Unity.Physics.SphereCollider;
 using Abss.Misc;
 using Abss.Utilities;
 using Abss.SystemGroup;
-using Abss.Instance;
+using Abss.Character;
 using Abss.Motion;
 
 namespace Abss.Character
@@ -28,6 +28,7 @@ namespace Abss.Character
     /// 
     /// </summary>
     //[DisableAutoCreation]
+    [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
     [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
     public class SoldierWalkActionSystem : JobComponentSystem
     {
@@ -50,6 +51,8 @@ namespace Abss.Character
             {
                 Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
                 MotionInfos = this.GetComponentDataFromEntity<MotionInfoData>( isReadOnly: true ),
+                GroundResults = this.GetComponentDataFromEntity<GroundHitResultData>( isReadOnly: true ),
+                Rotations = this.GetComponentDataFromEntity<Rotation>(),
             }
             .Schedule( this, inputDeps );
             this.ecb.AddJobHandleForProducer( inputDeps );
@@ -59,25 +62,61 @@ namespace Abss.Character
 
 
         struct SolderWalkActionJob : IJobForEachWithEntity
-            <WalkActionState, CharacterLinkData>
+            <WalkActionState, MoveHandlingData, CharacterLinkData>
         {
 
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
 
             [ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
+            [ReadOnly] public ComponentDataFromEntity<GroundHitResultData> GroundResults;
+            [NativeDisableParallelForRestriction]
+            [WriteOnly] public ComponentDataFromEntity<Rotation> Rotations;
 
 
             public void Execute(
                 Entity entity, int index,
                 ref WalkActionState state,
+                [ReadOnly] ref MoveHandlingData hander,
                 [ReadOnly] ref CharacterLinkData linker
             )
             {
-                //if( this.Acts.IsChangeMotion )
-                //{
-                //    var motionInfo = this.MotionInfos[ linker.MotionEntity ];
-                //    this.Commands.AddComponent( index, linker.MotionEntity, new MotionInitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10 } );
-                //}
+                ref var acts = ref hander.ControlAction;
+
+                var motionInfo = this.MotionInfos[ linker.MotionEntity ];
+
+                if( acts.IsChangeMotion )
+                {
+                    this.Commands.AddComponent( index, linker.MotionEntity,
+                        new MotionInitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10 } );
+                }
+
+                if( !GroundResults[linker.PostureEntity].IsGround )
+                {
+                    if( motionInfo.MotionIndex != 0 )
+                        this.Commands.AddComponent( index, linker.MotionEntity,
+                            new MotionInitializeData { MotionIndex = 0 } );
+                    return;
+                }
+
+                if( math.lengthsq(acts.MoveDirection) > 0.0f )
+                {
+                    if( motionInfo.MotionIndex != 1 )
+                        this.Commands.AddComponent( index, linker.MotionEntity,
+                            new MotionInitializeData { MotionIndex = 1 } );
+
+                    this.Rotations[ linker.PostureEntity ] =
+                        new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
+                }
+                else
+                {
+                    if( motionInfo.MotionIndex != 9 )
+                        this.Commands.AddComponent( index, linker.MotionEntity,
+                            new MotionInitializeData { MotionIndex = 9 } );
+
+                    this.Rotations[ linker.PostureEntity ] =
+                        new Rotation { Value = acts.HorizontalRotation };
+                }
+                
             }
         }
 

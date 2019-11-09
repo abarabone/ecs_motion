@@ -15,7 +15,7 @@ using Unity.Properties;
 using Unity.Burst;
 using Abss.Geometry;
 
-namespace Abss.Instance
+namespace Abss.Character
 {
 	
     public struct PostureLinkData : IComponentData

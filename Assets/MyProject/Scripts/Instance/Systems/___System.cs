@@ -23,17 +23,20 @@ namespace Abss.Character
 {
 
     [DisableAutoCreation]
-    [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
+    //[UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
+    [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class ___System : JobComponentSystem
     {
         
 
+        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
 
 
         protected override void OnCreate()
         {
-
+            this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
         }
+        
 
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )

@@ -15,7 +15,7 @@ using Abss.Arthuring;
 using Abss.SystemGroup;
 using Abss.Utilities;
 using Abss.Geometry;
-using Abss.Instance;
+using Abss.Character;
 using Abss.Motion;//
 
 namespace Abss.Physics

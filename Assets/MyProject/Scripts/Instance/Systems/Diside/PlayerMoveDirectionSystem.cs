@@ -19,10 +19,10 @@ using SphereCollider = Unity.Physics.SphereCollider;
 using Abss.Misc;
 using Abss.Utilities;
 using Abss.SystemGroup;
-using Abss.Instance;
+using Abss.Character;
 using Abss.Motion;
 
-namespace Abss.Instance
+namespace Abss.Character
 {
 
 
@@ -30,6 +30,7 @@ namespace Abss.Instance
     {
         public float3 MoveDirection;
         public quaternion LookRotation;
+        public quaternion HorizontalRotation;
 
         public float3 LookDirection => math.forward( this.LookRotation );
 
@@ -66,8 +67,8 @@ namespace Abss.Instance
                     {
                         var gp = Gamepad.current;
 
-                        var rs = gp.rightStick.ReadValue();
-                        var rdir = new float3( rs.x, rs.y, 0.0f ) * 5.0f * Time.deltaTime;
+                        var rdir = gp.rightStick.ReadValue() * 5.0f * Time.deltaTime;
+                        //var rdir = new float3( rs.x, rs.y, 0.0f );
 
                         this.vangle -= rdir.y;
                         this.vangle = math.min( this.vangle, math.radians( 90.0f ) );
@@ -80,12 +81,13 @@ namespace Abss.Instance
                         var ls = gp.leftStick.ReadValue();
                         var ldir = math.mul( this.hrot, new float3( ls.x, 0.0f, ls.y ) );
 
-                        var jumpForce = gp.leftShoulder.wasPressedThisFrame ? 10.0f : 0.0f;
+                        var jumpForce = gp.leftShoulder.wasPressedThisFrame ? 5.0f : 0.0f;
 
                         return new ControlActionUnit
                         {
                             MoveDirection = ldir,
                             LookRotation = rRot,
+                            HorizontalRotation = this.hrot,
                             JumpForce = jumpForce,
                             IsChangeMotion = gp.bButton.wasPressedThisFrame,
                         };
@@ -97,30 +99,32 @@ namespace Abss.Instance
                 {
                     this.getControlUnitFunc = () =>
                     {
-                        var rotCam = Camera.main.transform.rotation;
-                        var euler = rotCam.eulerAngles;
-
+                        
                         var ms = Mouse.current;
-                        var rdir = ms.delta.ReadValue() * 0.005f;
-                        //var rdir = new float3( rm.x, 0.0f, rm.y );
+                        var rdir = ms.delta.ReadValue() * Time.deltaTime;
 
-                        var rRot = quaternion.RotateX( euler.y + -rdir.y );//math.mul( quaternion.RotateX( euler.y + -rdir.y ), quaternion.RotateY( euler.x+ -rdir.x ) );//math.mul( quaternion.RotateY( rdir.y ), quaternion.RotateX( rdir.x ) );
-                        //var rRot = rRot_ * rotCam;
+                        this.vangle -= rdir.y;
+                        this.vangle = math.min( this.vangle, math.radians( 90.0f ) );
+                        this.vangle = math.max( this.vangle, math.radians( -90.0f ) );
 
-                        var hRot = quaternion.RotateY( euler.x + -rdir.x );
+                        this.hrot = math.mul( quaternion.RotateY( rdir.x ), this.hrot );
+
+                        var rRot = math.mul( this.hrot, quaternion.RotateX( this.vangle ) );
+
                         var kb = Keyboard.current;
                         var l = kb.dKey.isPressed ? 1.0f : 0.0f;
                         var r = kb.aKey.isPressed ? -1.0f : 0.0f;
                         var u = kb.wKey.isPressed ? 1.0f : 0.0f;
                         var d = kb.sKey.isPressed ? -1.0f : 0.0f;
-                        var ldir = math.mul( hRot, new float3( l + r, 0.0f, u + d ) );
-
-                        var jumpForce = kb.spaceKey.wasPressedThisFrame ? 10.0f : 0.0f;
+                        var ldir = math.mul( this.hrot, new float3( l + r, 0.0f, u + d ) );
+                        
+                        var jumpForce = kb.spaceKey.wasPressedThisFrame ? 5.0f : 0.0f;
 
                         return new ControlActionUnit
                         {
                             MoveDirection = ldir,
                             LookRotation = rRot,
+                            HorizontalRotation = this.hrot,
                             JumpForce = jumpForce,
                             IsChangeMotion = ms.rightButton.wasPressedThisFrame,
                         };
@@ -162,7 +166,7 @@ namespace Abss.Instance
             public void Execute(
                 Entity entity, int index,
                 [ReadOnly] ref PlayerTag tag,
-                ref MoveHandlingData handler
+                [WriteOnly] ref MoveHandlingData handler
             )
             {
                 //if( this.Acts.IsChangeMotion )

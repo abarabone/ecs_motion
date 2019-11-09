@@ -18,7 +18,7 @@ using SphereCollider = Unity.Physics.SphereCollider;
 using Abss.Misc;
 using Abss.Utilities;
 using Abss.SystemGroup;
-using Abss.Instance;
+using Abss.Character;
 
 namespace Abss.Character
 {
@@ -59,7 +59,7 @@ namespace Abss.Character
 
         [BurstCompile]
         struct HorizontalMoveJob : IJobForEachWithEntity
-            <MoveHandlingData, Translation, PhysicsVelocity>
+            <MoveHandlingData, GroundHitResultData, Translation, PhysicsVelocity>
         {
 
             [ReadOnly] public float DeltaTime;
@@ -70,6 +70,8 @@ namespace Abss.Character
             public unsafe void Execute(
                 Entity entity, int index,
                 [ReadOnly] ref MoveHandlingData handler,
+                [ReadOnly] ref GroundHitResultData ground,
+                //ref GroundHitResultData ground,
                 [ReadOnly] ref Translation pos,
                 ref PhysicsVelocity v
             )
@@ -80,27 +82,10 @@ namespace Abss.Character
 
                 var upf = 0.0f;
 
-                if( acts.JumpForce > 0.0f )
+                if( acts.JumpForce > 0.0f && ground.IsGround )
                 {
-                    var hitInput = new PointDistanceInput
-                    {
-                        Position = pos.Value,
-                        MaxDistance = 0.1f,
-                        Filter = new CollisionFilter
-                        {
-                            BelongsTo = ( 1 << 20 ) | ( 1 << 22 ) | ( 1 << 23 ),
-                            CollidesWith = ( 1 << 20 ) | ( 1 << 22 ) | ( 1 << 23 ),
-                            GroupIndex = 0,
-                        },
-                    };
-
-                    var a = new NativeList<DistanceHit>( Allocator.Temp );
-                    var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );
-                    if( isHit && a.Length > 1 )// 自身のコライダを除外できればシンプルになるんだが…
-                    {
-                        upf = acts.JumpForce * 0.5f;
-                    }
-                    a.Dispose();
+                    upf = acts.JumpForce;
+                    //acts.JumpForce = 0.0f;//
                 }
 
                 var vlinear = v.Linear;

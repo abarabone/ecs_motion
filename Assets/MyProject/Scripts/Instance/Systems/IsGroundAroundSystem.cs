@@ -17,28 +17,34 @@ using SphereCollider = Unity.Physics.SphereCollider;
 
 using Abss.Misc;
 using Abss.Utilities;
-using Abss.Instance;
+using Abss.Character;
 using Abss.SystemGroup;
 
 namespace Abss.Character
 {
 
-    [DisableAutoCreation]
-    [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
+    //[DisableAutoCreation]
+    [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class IsGroundAroundSystem : JobComponentSystem
     {
         
-
+        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
 
 
         protected override void OnCreate()
         {
-
+            this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
         }
-
+        
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
+
+            inputDeps = new IsGroundAroundJob
+            {
+                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
+            }
+            .Schedule( this, inputDeps );
 
 
             return inputDeps;
@@ -48,7 +54,7 @@ namespace Abss.Character
 
 
         [BurstCompile]
-        struct IsGroundJob : IJobForEachWithEntity
+        struct IsGroundAroundJob : IJobForEachWithEntity
             <GroundHitResultData, GroundHitSphereData, Translation>
         {
 
@@ -70,11 +76,9 @@ namespace Abss.Character
                 };
                 
                 var a = new NativeList<DistanceHit>( Allocator.Temp );
-                var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );
-                if( isHit && a.Length > 1 )// 自身のコライダを除外できればシンプルになるんだが…
-                {
-                    ground = new GroundHitResultData { IsGround = true };
-                }
+                var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
+                //ground = new GroundHitResultData { IsGround = ( isHit && a.Length > 1 ) };
+                ground.IsGround = ( isHit && a.Length > 1 );
                 a.Dispose();
             }
         }

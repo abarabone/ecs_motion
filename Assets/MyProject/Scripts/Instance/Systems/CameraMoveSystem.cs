@@ -15,7 +15,7 @@ using Abss.Misc;
 using Abss.Utilities;
 using Abss.SystemGroup;
 
-namespace Abss.Instance
+namespace Abss.Character
 {
 
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
