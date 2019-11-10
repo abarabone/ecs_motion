@@ -142,13 +142,14 @@ namespace Abss.Motion
         unsafe static public void InitializeKeysContinuous(
             ref this StreamNearKeysCacheData nearKeys,
             ref StreamKeyShiftData shift,
-            ref StreamTimeProgressData progress
+            ref StreamTimeProgressData progress,
+            float delayTimer = 0.0f// 再検討の余地あり（変な挙動あり）
         )
         {
             var index0 = 0;
             var index1 = math.min( 1, shift.KeyLength - 1 );
 
-            nearKeys.Time_From = 0.0f;
+            nearKeys.Time_From = -delayTimer;
             nearKeys.Time_To = shift.Keys[ index0 ].Time.x;
             nearKeys.Time_Next = shift.Keys[ index1 ].Time.x;
 
@@ -157,7 +158,7 @@ namespace Abss.Motion
 
             shift.KeyIndex_Next = index1;
 
-            progress.TimeProgress = 0.0f;
+            progress.TimeProgress = -delayTimer;
         }
 
 
@@ -280,8 +281,9 @@ namespace Abss.Motion
 				nearKeys.Value_From,
 				nearKeys.Value_To,// * s,
 				nearKeys.Value_Next,// * s,
-				math.saturate( normalizedTimeProgress )
-			);
+                //normalizedTimeProgress
+                math.saturate( normalizedTimeProgress )
+            );
 		}
 	}
 

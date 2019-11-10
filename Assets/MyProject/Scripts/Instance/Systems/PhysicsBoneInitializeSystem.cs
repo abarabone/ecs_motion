@@ -23,7 +23,7 @@ namespace Abss.Physics
 
     //[DisableAutoCreation]
     //[UpdateInGroup( typeof( BonePhysicsSystemGroup ) )]
-    [UpdateBefore( typeof( MotionProgressSystem ) )]
+    [UpdateBefore( typeof( MotionStreamProgressAndInterporationSystem ) )]
     [UpdateInGroup( typeof( MotionSystemGroup ) )]
     public class PhysicsBoneInitializeSystem : JobComponentSystem
     {

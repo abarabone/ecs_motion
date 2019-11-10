@@ -19,7 +19,7 @@ using Abss.Character;
 namespace Abss.Motion
 {
 
-    [UpdateAfter( typeof( MotionProgressSystem ) )]
+    [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
     [UpdateInGroup( typeof( MotionSystemGroup ) )]
     public class StreamToBoneSystem : JobComponentSystem
     {

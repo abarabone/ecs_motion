@@ -69,6 +69,7 @@ namespace Abss.Character
 
             [ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
             [ReadOnly] public ComponentDataFromEntity<GroundHitResultData> GroundResults;
+
             [NativeDisableParallelForRestriction]
             [WriteOnly] public ComponentDataFromEntity<Rotation> Rotations;
 
@@ -94,7 +95,7 @@ namespace Abss.Character
                 {
                     if( motionInfo.MotionIndex != 0 )
                         this.Commands.AddComponent( index, linker.MotionEntity,
-                            new MotionInitializeData { MotionIndex = 0 } );
+                            new MotionInitializeData { MotionIndex = 0, DelayTime = 0.1f } );
                     return;
                 }
 
@@ -102,7 +103,7 @@ namespace Abss.Character
                 {
                     if( motionInfo.MotionIndex != 1 )
                         this.Commands.AddComponent( index, linker.MotionEntity,
-                            new MotionInitializeData { MotionIndex = 1 } );
+                            new MotionInitializeData { MotionIndex = 1, DelayTime = 0.1f } );
 
                     this.Rotations[ linker.PostureEntity ] =
                         new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
@@ -111,10 +112,10 @@ namespace Abss.Character
                 {
                     if( motionInfo.MotionIndex != 9 )
                         this.Commands.AddComponent( index, linker.MotionEntity,
-                            new MotionInitializeData { MotionIndex = 9 } );
+                            new MotionInitializeData { MotionIndex = 9, DelayTime = 0.2f } );
 
-                    this.Rotations[ linker.PostureEntity ] =
-                        new Rotation { Value = acts.HorizontalRotation };
+                    //this.Rotations[ linker.PostureEntity ] =
+                    //    new Rotation { Value = acts.HorizontalRotation };
                 }
                 
             }

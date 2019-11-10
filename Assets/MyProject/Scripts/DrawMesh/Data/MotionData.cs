@@ -24,7 +24,7 @@ namespace Abss.Motion
 	public struct MotionInitializeData : IComponentData
 	{
         public int MotionIndex;
-        //public MotionDataInNative MotionData;
+        public float DelayTime;
     }
 
     public struct MotionClipData : IComponentData
@@ -42,5 +42,15 @@ namespace Abss.Motion
         public Entity PositionStreamTop;
         public Entity RotationStreamTop;
     }
+
+    public struct MotionCursorData : IComponentData
+    {
+        //public float CurrentPosition;
+        //public float TotalLength;
+        //public float Scale;
+        public StreamTimeProgressData Timer;
+    }
+    public struct MotionProgressTimerTag : IComponentData
+    { }
 	
 }

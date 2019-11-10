@@ -12,7 +12,7 @@ using Abss.SystemGroup;
 namespace Abss.Motion
 {
     
-    [UpdateBefore(typeof(MotionProgressSystem))]
+    [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
     [UpdateInGroup(typeof(MotionSystemGroup))]
     public class MotionInitializeSystem : JobComponentSystem
     {
@@ -76,17 +76,17 @@ namespace Abss.Motion
             )
             {
                 ref var clip = ref data.ClipData.Value;
-                ref var motion = ref clip.Motions[ init.MotionIndex];
+                ref var motion = ref clip.Motions[ init.MotionIndex ];
 
                 info.MotionIndex = init.MotionIndex;
-                initSection( ref motion, linker.PositionStreamTop, KeyStreamSection.positions );
-                initSection( ref motion, linker.RotationStreamTop, KeyStreamSection.rotations );
+                initSection( ref motion, linker.PositionStreamTop, KeyStreamSection.positions, ref init );
+                initSection( ref motion, linker.RotationStreamTop, KeyStreamSection.rotations, ref init );
 
                 this.Commands.RemoveComponent<MotionInitializeData>( index, entity );
             }
 
             unsafe void initSection
-                ( ref MotionBlobUnit motion, Entity entTop, KeyStreamSection streamSection )
+                ( ref MotionBlobUnit motion, Entity entTop, KeyStreamSection streamSection, ref MotionInitializeData init )
             {
                 ref var streams = ref motion.Sections[(int)streamSection].Streams;
 
@@ -107,7 +107,7 @@ namespace Abss.Motion
                     if( prevKeyPtr != null )// 仮
                     {
                         var cache_ = this.Caches[ ent ];
-                        cache_.InitializeKeysContinuous( ref shifter, ref timer );
+                        cache_.InitializeKeysContinuous( ref shifter, ref timer, init.DelayTime );
                         this.Caches[ ent ] = cache_;
                         this.Timers[ ent ] = timer;
                         this.Shifters[ ent ] = shifter;
