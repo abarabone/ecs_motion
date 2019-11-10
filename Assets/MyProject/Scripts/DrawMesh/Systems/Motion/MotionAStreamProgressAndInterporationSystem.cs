@@ -25,7 +25,7 @@ namespace Abss.Motion
         {
 
 
-            inputDeps = new StreamInterpolationJob
+            inputDeps = new StreamProgressAndInterporationJob
             {
                 DeltaTime = Time.deltaTime,
             }
@@ -41,7 +41,7 @@ namespace Abss.Motion
         /// ストリーム回転 → 補間
         /// </summary>
         [BurstCompile]
-        struct StreamInterpolationJob : IJobForEach
+        struct StreamProgressAndInterporationJob : IJobForEach
             <StreamTimeProgressData, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
         {
 

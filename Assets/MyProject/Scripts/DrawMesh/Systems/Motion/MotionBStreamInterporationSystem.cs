@@ -17,7 +17,7 @@ namespace Abss.Motion
     
     //[UpdateAfter(typeof())]
     [UpdateInGroup(typeof(MotionSystemGroup))]
-    public class MotionStreamProgressAndInterporationSystem : JobComponentSystem
+    public class MotionStreamInterporationSystem : JobComponentSystem
     {
 
         
@@ -25,9 +25,9 @@ namespace Abss.Motion
         {
 
 
-            inputDeps = new StreamInterpolationJob
+            inputDeps = new StreamInterporationJob
             {
-                DeltaTime = Time.deltaTime,
+                MotionCursors = this.GetComponentDataFromEntity<MotionCursorData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
 
@@ -41,21 +41,22 @@ namespace Abss.Motion
         /// ストリーム回転 → 補間
         /// </summary>
         [BurstCompile]
-        struct StreamInterpolationJob : IJobForEach
-            <StreamTimeProgressData, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
+        struct StreamInterporationJob : IJobForEach
+            <StreamMotionLinkData, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
         {
 
-            public float DeltaTime;
+            [ReadOnly]
+            public ComponentDataFromEntity<MotionCursorData> MotionCursors;
 
 
             public void Execute(
-                ref StreamTimeProgressData timer,
+                ref StreamMotionLinkData linker,
                 ref StreamKeyShiftData shiftInfo,
                 ref StreamNearKeysCacheData nearKeys,
                 [WriteOnly] ref StreamInterpolatedData dst
             )
             {
-                timer.Progress( DeltaTime );
+                var timer = this.MotionCursors[ linker.MotionEntity ].Timer;
 
                 nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref timer );
 

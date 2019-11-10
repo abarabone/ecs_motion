@@ -46,6 +46,10 @@ namespace Abss.Motion
     {
         public Entity DrawEntity;
     }
+    public struct StreamMotionLinkData : IComponentData// MotionB 用
+    {
+        public Entity MotionEntity;
+    }
 
     /// <summary>
     /// 最適化用

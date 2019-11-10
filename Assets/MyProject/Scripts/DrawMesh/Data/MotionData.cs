@@ -43,14 +43,16 @@ namespace Abss.Motion
         public Entity RotationStreamTop;
     }
 
-    public struct MotionCursorData : IComponentData
+    public struct MotionATag : IComponentData// MotionB と区別するため暫定
+    { }
+    public struct MotionCursorData : IComponentData// MotionB 用
     {
         //public float CurrentPosition;
         //public float TotalLength;
         //public float Scale;
         public StreamTimeProgressData Timer;
     }
-    public struct MotionProgressTimerTag : IComponentData
+    public struct MotionProgressTimerTag : IComponentData// MotionB 用
     { }
 	
 }

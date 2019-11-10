@@ -14,7 +14,7 @@ namespace Abss.Motion
     
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
     [UpdateInGroup(typeof(MotionSystemGroup))]
-    public class MotionInitializeSystem : JobComponentSystem
+    public class MotionBInitializeSystem : JobComponentSystem
     {
 
         EntityCommandBufferSystem ecb;
@@ -37,7 +37,6 @@ namespace Abss.Motion
                 Commands = commandBuffer.ToConcurrent(),
                 Linkers  = this.GetComponentDataFromEntity<StreamRelationData>(),
                 Shifters = this.GetComponentDataFromEntity<StreamKeyShiftData>(),
-                Timers   = this.GetComponentDataFromEntity<StreamTimeProgressData>(),
                 Caches   = this.GetComponentDataFromEntity<StreamNearKeysCacheData>(),
 
             }
@@ -52,7 +51,7 @@ namespace Abss.Motion
 
         //[BurstCompile]
         struct MotionInitializeJob : IJobForEachWithEntity
-            <MotionInitializeData, MotionStreamLinkData, MotionClipData, MotionInfoData>
+            <MotionInitializeData, MotionStreamLinkData, MotionClipData, MotionInfoData, MotionCursorData>
         {
 
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
@@ -63,8 +62,6 @@ namespace Abss.Motion
             public ComponentDataFromEntity<StreamKeyShiftData>      Shifters;
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<StreamNearKeysCacheData> Caches;
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<StreamTimeProgressData>  Timers;
 
 
             public void Execute(
@@ -72,7 +69,8 @@ namespace Abss.Motion
                 [ReadOnly] ref MotionInitializeData init,
                 [ReadOnly] ref MotionStreamLinkData linker,
                 [ReadOnly] ref MotionClipData data,
-                ref MotionInfoData info
+                ref MotionInfoData info,
+                ref MotionCursorData cursor
             )
             {
                 ref var clip = ref data.ClipData.Value;
@@ -81,6 +79,10 @@ namespace Abss.Motion
                 info.MotionIndex = init.MotionIndex;
                 initSection( ref motion, linker.PositionStreamTop, KeyStreamSection.positions, ref init );
                 initSection( ref motion, linker.RotationStreamTop, KeyStreamSection.rotations, ref init );
+
+                cursor.Timer.TimeLength = motion.TimeLength;
+                cursor.Timer.TimeProgress = -init.DelayTime;
+                cursor.Timer.TimeScale = 1.0f;
 
                 this.Commands.RemoveComponent<MotionInitializeData>( index, entity );
             }
@@ -98,29 +100,69 @@ namespace Abss.Motion
                     var prevKeyPtr = shifter.Keys;// 仮
                     shifter.Keys = (KeyBlobUnit*)streams[ i ].Keys.GetUnsafePtr();
                     shifter.KeyLength = streams[ i ].Keys.Length;
-
-                    var timer = this.Timers[ ent ];
-                    timer.TimeLength    = motion.TimeLength;
-                    timer.TimeScale     = 1.0f;
-                    //timer.TimeProgress = 0.0f;
-
+                    
                     if( prevKeyPtr != null )// 仮
                     {
                         var cache_ = this.Caches[ ent ];
-                        cache_.InitializeKeysContinuous( ref shifter, ref timer, init.DelayTime );
+                        InitializeKeysContinuous_( ref cache_, ref shifter, init.DelayTime );
                         this.Caches[ ent ] = cache_;
-                        this.Timers[ ent ] = timer;
                         this.Shifters[ ent ] = shifter;
                         continue;
                     }
 
                     var cache = this.Caches[ ent ];
-                    cache.InitializeKeys( ref shifter, ref timer );
+                    InitializeKeys_( ref cache, ref shifter );
 
                     this.Caches[ ent ] = cache;
-                    this.Timers[ ent ] = timer;
                     this.Shifters[ ent ] = shifter;
                 }
+
+
+
+                /// <summary>
+                /// キーバッファをストリーム先頭に初期化する。
+                /// </summary>
+                unsafe void InitializeKeys_(
+                    ref StreamNearKeysCacheData nearKeys,
+                    ref StreamKeyShiftData shift,
+                    float timeOffset = 0.0f
+                )
+                {
+                    var index0 = 0;
+                    var index1 = math.min( 1, shift.KeyLength - 1 );
+                    var index2 = math.min( 2, shift.KeyLength - 1 );
+
+                    nearKeys.Time_From = shift.Keys[ index0 ].Time.x;
+                    nearKeys.Time_To = shift.Keys[ index1 ].Time.x;
+                    nearKeys.Time_Next = shift.Keys[ index2 ].Time.x;
+
+                    nearKeys.Value_Prev = shift.Keys[ index0 ].Value;
+                    nearKeys.Value_From = shift.Keys[ index0 ].Value;
+                    nearKeys.Value_To = shift.Keys[ index1 ].Value;
+                    nearKeys.Value_Next = shift.Keys[ index2 ].Value;
+
+                    shift.KeyIndex_Next = index2;
+                }
+
+                unsafe void InitializeKeysContinuous_(
+                    ref StreamNearKeysCacheData nearKeys,
+                    ref StreamKeyShiftData shift,
+                    float delayTimer = 0.0f// 再検討の余地あり（変な挙動あり）
+                )
+                {
+                    var index0 = 0;
+                    var index1 = math.min( 1, shift.KeyLength - 1 );
+
+                    nearKeys.Time_From = -delayTimer;
+                    nearKeys.Time_To = shift.Keys[ index0 ].Time.x;
+                    nearKeys.Time_Next = shift.Keys[ index1 ].Time.x;
+
+                    nearKeys.Value_To = shift.Keys[ index0 ].Value;
+                    nearKeys.Value_Next = shift.Keys[ index1 ].Value;
+
+                    shift.KeyIndex_Next = index1;
+                }
+
             }
 
         }

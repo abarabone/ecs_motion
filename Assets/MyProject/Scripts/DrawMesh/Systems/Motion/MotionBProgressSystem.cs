@@ -17,7 +17,7 @@ namespace Abss.Motion
     
     //[UpdateAfter(typeof())]
     [UpdateInGroup(typeof(MotionSystemGroup))]
-    public class MotionStreamProgressAndInterporationSystem : JobComponentSystem
+    public class MotionProgressSystem : JobComponentSystem
     {
 
         
@@ -25,7 +25,7 @@ namespace Abss.Motion
         {
 
 
-            inputDeps = new StreamInterpolationJob
+            inputDeps = new MotionProgressJob
             {
                 DeltaTime = Time.deltaTime,
             }
@@ -41,27 +41,23 @@ namespace Abss.Motion
         /// ストリーム回転 → 補間
         /// </summary>
         [BurstCompile]
-        struct StreamInterpolationJob : IJobForEach
-            <StreamTimeProgressData, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
+        struct MotionProgressJob : IJobForEach
+            <MotionProgressTimerTag, MotionCursorData>
         {
 
             public float DeltaTime;
 
 
             public void Execute(
-                ref StreamTimeProgressData timer,
-                ref StreamKeyShiftData shiftInfo,
-                ref StreamNearKeysCacheData nearKeys,
-                [WriteOnly] ref StreamInterpolatedData dst
+                //[ReadOnly] ref MotionInfoData info,
+                //[ReadOnly] ref MotionClipData clip,
+                [ReadOnly] ref MotionProgressTimerTag tag,
+                ref MotionCursorData cursor
             )
             {
-                timer.Progress( DeltaTime );
 
-                nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref timer );
-
-                var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( timer.TimeProgress );
-
-                dst.Value = nearKeys.Interpolate( timeProgressNormalized );
+                cursor.Timer.Progress( DeltaTime );
+                
             }
 
         }

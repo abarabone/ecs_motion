@@ -68,17 +68,19 @@ namespace Abss.Character
                 [ReadOnly] ref Translation pos
             )
             {
+                var a = new NativeList<DistanceHit>( Allocator.Temp );
+
                 var hitInput = new PointDistanceInput
                 {
                     Position = pos.Value + sphere.Center,
                     MaxDistance = sphere.Distance,
                     Filter = sphere.filter,
                 };
-                
-                var a = new NativeList<DistanceHit>( Allocator.Temp );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
+                
                 //ground = new GroundHitResultData { IsGround = ( isHit && a.Length > 1 ) };
                 ground.IsGround = ( isHit && a.Length > 1 );
+
                 a.Dispose();
             }
         }
