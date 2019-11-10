@@ -72,9 +72,9 @@ namespace Abss.Arthuring
                 em.AddComponentData( posturePrefab, new GroundHitResultData { } );
             }
 
-            streamPrefabs.Dispose();
-            bonePrefabs.Dispose();
-            jointPrefabs.Dispose();
+            if( streamPrefabs.IsCreated ) streamPrefabs.Dispose();
+            if( bonePrefabs.IsCreated ) bonePrefabs.Dispose();
+            if( jointPrefabs.IsCreated ) jointPrefabs.Dispose();
 
 
             this.gameObject.SetActive( false );

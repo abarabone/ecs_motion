@@ -31,6 +31,7 @@ namespace Abss.Character
         public float3 MoveDirection;
         public quaternion LookRotation;
         public quaternion HorizontalRotation;
+        public float VerticalAngle;
 
         public float3 LookDirection => math.forward( this.LookRotation );
 
@@ -88,6 +89,7 @@ namespace Abss.Character
                             MoveDirection = ldir,
                             LookRotation = rRot,
                             HorizontalRotation = this.hrot,
+                            VerticalAngle = this.vangle,
                             JumpForce = jumpForce,
                             IsChangeMotion = gp.bButton.wasPressedThisFrame,
                         };
@@ -125,6 +127,7 @@ namespace Abss.Character
                             MoveDirection = ldir,
                             LookRotation = rRot,
                             HorizontalRotation = this.hrot,
+                            VerticalAngle = this.vangle,
                             JumpForce = jumpForce,
                             IsChangeMotion = ms.rightButton.wasPressedThisFrame,
                         };

@@ -46,10 +46,15 @@ namespace Abss.Character
 
                         ref var acts = ref handler.ControlAction;
 
+
                         tfCam.rotation = acts.LookRotation;
 
+                        var camz = 2.5f - math.abs( acts.VerticalAngle ) / math.radians(90.0f) * 1.5f;
+                        //var camz = 2.5f + math.min( 0.0f, acts.VerticalAngle ) / math.radians( 90.0f ) * 1.5f;
+                        var camOffset = new float3( 0.0f, 0.4f, -camz );
+
                         tfCam.position =
-                            pos.Value + math.mul( acts.LookRotation, new float3(0.0f ,1.0f, -1.5f) );
+                            pos.Value + new float3(0.0f,0.8f,0.0f) + math.mul( acts.LookRotation, camOffset );
 
                     }
                 );

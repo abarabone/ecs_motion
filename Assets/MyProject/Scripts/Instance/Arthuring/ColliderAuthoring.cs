@@ -40,8 +40,10 @@ namespace Abss.Arthuring
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
             var rbTop = this.GetComponentInChildren<Rigidbody>();//
+            if( rbTop == null ) return new NativeArray<Entity>();//
 
             var srcColliders = this.GetComponentsInChildren<UnityEngine.Collider>();
+
 
 
             // 名前とボーンエンティティの組を配列化

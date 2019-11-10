@@ -16,6 +16,8 @@ namespace Abss.Motion
 {
     
     //[UpdateAfter(typeof())]
+    [UpdateAfter(typeof(MotionProgressSystem))]//MotionB
+    [UpdateBefore(typeof(StreamToBoneSystem))]
     [UpdateInGroup(typeof(MotionSystemGroup))]
     public class MotionStreamInterporationSystem : JobComponentSystem
     {
@@ -47,7 +49,8 @@ namespace Abss.Motion
 
             [ReadOnly]
             public ComponentDataFromEntity<MotionCursorData> MotionCursors;
-
+            [ReadOnly]
+            public ComponentDataFromEntity<MotionClipData> MotionClips;//
 
             public void Execute(
                 ref StreamMotionLinkData linker,
@@ -66,6 +69,33 @@ namespace Abss.Motion
             }
 
         }
+
+        //[BurstCompile]
+        //struct StreamInterporationJob : IJobForEach
+        //    <StreamMotionLinkData, StreamInterpolatedData>
+        //{
+
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<MotionCursorData> MotionCursors;
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<MotionClipData> MotionClips;//
+
+        //    public void Execute(
+        //        ref StreamMotionLinkData linker,
+        //        [WriteOnly] ref StreamInterpolatedData dst
+        //    )
+        //    {
+        //        var timer = this.MotionCursors[ linker.MotionEntity ].Timer;
+        //        ref var clip = ref this.MotionClips[ linker.MotionEntity ].ClipData.Value;
+
+        //        nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref timer );
+
+        //        var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( timer.TimeProgress );
+
+        //        dst.Value = nearKeys.Interpolate( timeProgressNormalized );
+        //    }
+
+        //}
 
     }
 

@@ -12,7 +12,7 @@ using Abss.SystemGroup;
 namespace Abss.Motion
 {
     
-    [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
+    [UpdateBefore( typeof( MotionProgressSystem ) )]// MotionB
     [UpdateInGroup(typeof(MotionSystemGroup))]
     public class MotionBInitializeSystem : JobComponentSystem
     {
