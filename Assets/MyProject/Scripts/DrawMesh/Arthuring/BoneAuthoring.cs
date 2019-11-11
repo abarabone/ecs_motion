@@ -35,8 +35,17 @@ namespace Abss.Arthuring
         public AvatarMask BoneMask;
 
 
+        public EnBoneType Mode;
+        public enum EnBoneType
+        {
+            reel_a_chain,
+            in_deep_order,
+        }
+
+
+
         public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
-            ( EntityManager em, NativeArray<Entity> streamPrefabs, Entity drawPrefab )
+            ( EntityManager em, IEnumerable<(string name,Entity ent)> streamPrefabs, Entity drawPrefab )
         {
             //Debug.Log( this.BoneMask.transformCount );
             //foreach( var x in Enumerable.Range( 0, BoneMask.transformCount ) )
@@ -94,9 +103,10 @@ namespace Abss.Arthuring
         );
 
 
-        static public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) CreatePrefabs(
+        static public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) CreatePrefabs
+        (
             EntityManager em,
-            NativeArray<Entity> streamPrefabs, Entity drawPrefab,
+            IEnumerable<(string name, Entity ent)> streamPrefabs, Entity drawPrefab,
             MotionClip motionClip, float4x4[] mtBones, bool[] boneMasks
         )
         {
@@ -108,7 +118,7 @@ namespace Abss.Arthuring
             
             var bonePrefabs = createBonePrefabs( em, mtBones.Length, boneArchetype );
             setBoneId( em, bonePrefabs, drawPrefab );
-            setStreamLinks( em, bonePrefabs, streamPrefabs, boneMasks );
+            setStreamLinks( em, bonePrefabs, streamPrefabs.Select(x=>x.ent), boneMasks );
             setDrawLinks( em, bonePrefabs, drawPrefab, mtBones.Length );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip, boneMasks );
             removeBoneRelationLinks( em, bonePrefabs, boneMasks );
@@ -148,7 +158,7 @@ namespace Abss.Arthuring
             }
 
             void setStreamLinks(
-                EntityManager em_, NativeArray<Entity> bonePrefabs_, NativeArray<Entity> streamPrefabs_,
+                EntityManager em_, NativeArray<Entity> bonePrefabs_, IEnumerable<Entity> streamPrefabs_,
                 bool[] boneMasks_
             )
             {

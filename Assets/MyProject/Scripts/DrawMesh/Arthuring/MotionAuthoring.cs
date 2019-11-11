@@ -24,10 +24,17 @@ namespace Abss.Arthuring
 
         public AvatarMask BoneMask;
 
-        public bool IsMotionB;
+        public EnMotionType Mode;
+        public enum EnMotionType
+        {
+            typeA_progress_per_stream,
+            typeB_progress_motion,
+            typeB_direct,
+        }
 
 
-        public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) Convert( EntityManager em, Entity drawPrefab )
+        public (Entity motionPrefab, (string name, Entity ent)[] streamPrefabs) Convert
+            ( EntityManager em, Entity drawPrefab )
         {
             var motionClip = this.MotionClip;
 
@@ -37,58 +44,35 @@ namespace Abss.Arthuring
                 .Select( x => this.BoneMask.GetTransformActive( x.x ) )
                 .ToArray();
 
-            if( this.IsMotionB )
-                return (motionBArchetype, streamBArchetype).CreatePrefab( em, drawPrefab, motionClip, boneMasks );
+            switch(this.Mode)
+            {
+                case EnMotionType.typeA_progress_per_stream:
+                    return (Arche.MotionA, Arche.StreamA).CreatePrefab( em, drawPrefab, motionClip, boneMasks );
+                case EnMotionType.typeB_progress_motion:
+                    return (Arche.MotionB, Arche.StreamB).CreatePrefab( em, drawPrefab, motionClip, boneMasks );
+                case EnMotionType.typeB_direct:
+                    return (Arche.MotionBd, Arche.StreamBd).CreatePrefab( em, drawPrefab, motionClip, boneMasks );
+            }
 
-            //return MotionPrefabCreator.CreatePrefab( em, drawPrefab, motionClip, boneMasks );
+            return (Entity.Null, null);
         }
 
 
-        static ComponentType[] motionBArchetype = new ComponentType[]
+
+        static class Arche
         {
-            typeof( MotionInfoData ),
-            typeof( MotionClipData ),
-            typeof( MotionStreamLinkData ),
-            typeof( MotionInitializeData ),
-            typeof( MotionCursorData ),//
-            typeof( MotionProgressTimerTag ),//
-            typeof( Prefab ),
-        };
-        static ComponentType[] streamBArchetype = new ComponentType[]
-        {
-            typeof( StreamDrawLinkData ),
-            typeof( StreamRelationData ),
-            typeof( StreamKeyShiftData ),
-            typeof( StreamNearKeysCacheData ),
-            typeof( StreamInterpolatedData ),
-            typeof( StreamMotionLinkData ),//
-            typeof( Prefab ),
-        };
-    }
 
-
-
-    static public class MotionPrefabCreatora
-    {
-
-        
-        static EntityArchetypeCache motionArchetypeCache = new EntityArchetypeCache
-        (
-            em => em.CreateArchetype
-            (
+            static public ComponentType[] MotionA = new ComponentType[]
+            {
                 typeof( MotionATag ),// 暫定、MotionB 特別するため
                 typeof( MotionInfoData ),
                 typeof( MotionClipData ),
                 typeof( MotionStreamLinkData ),
                 typeof( MotionInitializeData ),
                 typeof( Prefab )
-            )
-        );
-        
-        static EntityArchetypeCache streamArchetypeCache = new EntityArchetypeCache
-        (
-            em => em.CreateArchetype
-            (
+            };
+            static public ComponentType[] StreamA = new ComponentType[]
+            {
                 typeof( StreamDrawLinkData ),
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
@@ -96,20 +80,10 @@ namespace Abss.Arthuring
                 typeof( StreamTimeProgressData ),
                 typeof( StreamInterpolatedData ),
                 typeof( Prefab )
-            )
-        );
-        
-    }
+            };
 
 
-    public interface IEntityArchetype
-    {
-        EntityArchetype GetOrCreate( EntityManager em );
-    }
-    public struct MotionB_Archetypes : IEntityArchetype
-    {
-        public EntityArchetype GetOrCreate( EntityManager em ) =>
-            new ComponentType[]
+            static public ComponentType[] MotionB = new ComponentType[]
             {
                 typeof( MotionInfoData ),
                 typeof( MotionClipData ),
@@ -118,13 +92,8 @@ namespace Abss.Arthuring
                 typeof( MotionCursorData ),//
                 typeof( MotionProgressTimerTag ),//
                 typeof( Prefab ),
-            }
-            .GetOrCreate( em );
-    }
-    public struct StreamB_Archetypes : IEntityArchetype
-    {
-        public EntityArchetype GetOrCreate( EntityManager em ) =>
-            new ComponentType[]
+            };
+            static public ComponentType[] StreamB = new ComponentType[]
             {
                 typeof( StreamDrawLinkData ),
                 typeof( StreamRelationData ),
@@ -133,9 +102,32 @@ namespace Abss.Arthuring
                 typeof( StreamInterpolatedData ),
                 typeof( StreamMotionLinkData ),//
                 typeof( Prefab ),
-            }
-            .GetOrCreate( em );
+            };
+
+            static public ComponentType[] MotionBd = new ComponentType[]
+            {
+                typeof( MotionInfoData ),
+                typeof( MotionClipData ),
+                typeof( MotionStreamLinkData ),
+                typeof( MotionInitializeData ),
+                typeof( MotionCursorData ),//
+                typeof( Prefab ),
+            };
+            static public ComponentType[] StreamBd = new ComponentType[]
+            {
+                typeof( StreamDrawLinkData ),
+                typeof( StreamRelationData ),
+                typeof( StreamKeyShiftData ),
+                typeof( StreamNearKeysCacheData ),
+                typeof( StreamInterpolatedData ),
+                typeof( StreamMotionLinkData ),//
+                typeof( Prefab ),
+            };
+
+        }
     }
+
+
 
 
 
@@ -143,7 +135,7 @@ namespace Abss.Arthuring
     static public class MotionPrefabCreator
     {
 
-        static public (Entity motionPrefab, NativeArray<Entity> streamPrefabs) CreatePrefab
+        static public (Entity motionPrefab, (string,Entity)[] streamPrefabs) CreatePrefab
         (
             this (ComponentType[] motion, ComponentType[] stream) archetypes,
             EntityManager em, Entity drawPrefab, MotionClip motionClip, bool[] boneMasks
@@ -154,24 +146,22 @@ namespace Abss.Arthuring
             var streamArchetype = archetypes.stream.GetOrCreate( em );
 
             var motionPrefab = createMotionPrefab( em, motionClip, motionArchetype );
-            using( var posStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionClip, boneMasks, streamArchetype ) )
-            using( var rotStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionClip, boneMasks, streamArchetype ) )
-            {
+            var posStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionClip, boneMasks, streamArchetype );
+            var rotStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionClip, boneMasks, streamArchetype );
+            
+            em.SetComponentData( motionPrefab,
+                new MotionStreamLinkData
+                {
+                    PositionStreamTop = posStreamPrefabs[ 0 ].ent,
+                    RotationStreamTop = rotStreamPrefabs[ 0 ].ent,
+                }
+            );
 
-                em.SetComponentData( motionPrefab,
-                    new MotionStreamLinkData
-                    {
-                        PositionStreamTop = posStreamPrefabs[ 0 ],
-                        RotationStreamTop = rotStreamPrefabs[ 0 ],
-                    }
-                );
-
-                var streamPrefabs = (posStreamPrefabs, rotStreamPrefabs).Concat( Allocator.Temp );
-                em.SetComponentData( streamPrefabs,
-                    Enumerable.Repeat(new StreamMotionLinkData { MotionEntity = motionPrefab }, streamPrefabs.Length) );
+            var streamPrefabs = (posStreamPrefabs, rotStreamPrefabs).Concat().ToArray();
+            em.SetComponentData( streamPrefabs.Select( x => x.ent ),
+                Enumerable.Repeat(new StreamMotionLinkData { MotionEntity = motionPrefab }, streamPrefabs.Length) );
                 
-                return (motionPrefab, streamPrefabs);
-            }
+            return (motionPrefab, streamPrefabs);
 
 
             // モーションエンティティ生成
@@ -189,7 +179,7 @@ namespace Abss.Arthuring
             }
 
             // ストリームエンティティ生成
-            NativeArray<Entity> createStreamOfSectionPrefabs
+            (string name, Entity ent)[] createStreamOfSectionPrefabs
             //( EntityManager em_, BlobAssetReference<MotionBlobData> motionBlobData_, EntityArchetype streamArchetype_ )
             ( EntityManager em_, Entity drawPrefab_, MotionClip motionClip_, bool[] boneMasks_, EntityArchetype streamArchetype_ )
             {
@@ -208,16 +198,22 @@ namespace Abss.Arthuring
                     let id = x.y
                     select new StreamRelationData
                     {
-                        NextStreamEntity = x.x,
-                        BoneId = x.y,
+                        NextStreamEntity = next,
+                        BoneId = id,
                     };
                 em_.SetComponentData( streamEntities, qNextLinker );
 
-                em_.SetComponentData( streamEntities,
-                    streamEntities.Select( _ => new StreamDrawLinkData { DrawEntity = drawPrefab_ } )
-                );
+                var qDrawLinker =
+                    from x in streamEntities
+                    select new StreamDrawLinkData
+                    {
+                        DrawEntity = drawPrefab_,
+                    };
+                em_.SetComponentData( streamEntities, qDrawLinker );
 
-                return streamEntities;
+                var qNames =
+                    from i in qEnableId select System.IO.Path.GetFileName(motionClip.StreamPaths[i]);
+                return (qNames, streamEntities).Zip().ToArray();
             }
         }
 

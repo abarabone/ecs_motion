@@ -29,12 +29,13 @@ namespace Abss.Arthuring
 
 
         public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
-            ( EntityManager em, NativeArray<Entity> streamPrefabs, Entity drawPrefab )
+            ( EntityManager em, IEnumerable<(string name,Entity ent)> streamPrefabs, Entity drawPrefab )
         {
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
-            return BoneLvPrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip );
+            //return BoneLvPrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip );
+            return (new NativeArray<Entity>(), Entity.Null);
         }
     }
 

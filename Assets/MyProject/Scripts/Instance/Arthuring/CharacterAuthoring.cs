@@ -26,7 +26,8 @@ namespace Abss.Arthuring
 
         public interface IBoneConverter
         {
-            (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert( EntityManager em, NativeArray<Entity> streamPrefab, Entity drawPrefab );
+            (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
+                ( EntityManager em, IEnumerable<(string name,Entity ent)> streamPrefab, Entity drawPrefab );
         }
 
 
@@ -51,7 +52,7 @@ namespace Abss.Arthuring
                 .Append( posturePrefab )
                 .Append( drawPrefab )
                 .Append( motionPrefab )
-                .Concat( streamPrefabs )
+                .Concat( streamPrefabs.Select(x=>x.ent) )
                 .Concat( bonePrefabs )
                 .Concat( jointPrefabs )
                 ;
@@ -72,7 +73,7 @@ namespace Abss.Arthuring
                 em.AddComponentData( posturePrefab, new GroundHitResultData { } );
             }
 
-            if( streamPrefabs.IsCreated ) streamPrefabs.Dispose();
+            //if( streamPrefabs.IsCreated ) streamPrefabs.Dispose();
             if( bonePrefabs.IsCreated ) bonePrefabs.Dispose();
             if( jointPrefabs.IsCreated ) jointPrefabs.Dispose();
 

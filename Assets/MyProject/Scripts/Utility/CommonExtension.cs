@@ -66,8 +66,16 @@ namespace Abss.Common.Extension
 			return src.Zip( (x,y,z,w)=>(x,y,z,w) );
 		}
 
-		
-		public static T[][][] ToArrayRecursive3<T>
+
+        public static IEnumerable<T>
+            Concat<T>( in this (IEnumerable<T> e1, IEnumerable<T> e2) src )
+        {
+            return Enumerable.Concat( src.e1, src.e2 );
+        }
+
+
+
+        public static T[][][] ToArrayRecursive3<T>
 			( this IEnumerable<IEnumerable<IEnumerable<T>>> src )
 		{
 			return src.Select( x => x.ToArrayRecursive2() ).ToArray();
