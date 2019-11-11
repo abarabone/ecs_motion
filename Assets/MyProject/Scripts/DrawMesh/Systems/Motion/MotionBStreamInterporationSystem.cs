@@ -49,8 +49,6 @@ namespace Abss.Motion
 
             [ReadOnly]
             public ComponentDataFromEntity<MotionCursorData> MotionCursors;
-            [ReadOnly]
-            public ComponentDataFromEntity<MotionClipData> MotionClips;//
 
             public void Execute(
                 ref StreamMotionLinkData linker,

@@ -266,9 +266,10 @@ namespace Abss.Motion
 			var progress	= timeProgress - nearKeys.Time_From;
 			var length		= nearKeys.Time_To - nearKeys.Time_From;
 
-			var progress_div_length	= progress * math.rcp( length );
+			var progress_div_length	= math.saturate( progress * math.rcp( length ) );
+            //var progress_div_length = progress * math.rcp( length );
 
-			return math.select( progress_div_length, 1.0f, length == 0.0f );// select( 偽, 真, 条件 );
+            return math.select( progress_div_length, 1.0f, length == 0.0f );// select( 偽, 真, 条件 );
 		}
 
 		/// <summary>
@@ -280,14 +281,15 @@ namespace Abss.Motion
 			
 			//var s = math.sign( math.dot( nearKeys.Value_From, nearKeys.Value_To ) );
 
-			return VectorUtility.Interpolate(
+			var v = VectorUtility.Interpolate(
 				nearKeys.Value_Prev,
 				nearKeys.Value_From,
 				nearKeys.Value_To,// * s,
 				nearKeys.Value_Next,// * s,
-                //normalizedTimeProgress
-                math.saturate( normalizedTimeProgress )
+                normalizedTimeProgress
             );
+
+            return v;// math.normalize( v );
 		}
 	}
 

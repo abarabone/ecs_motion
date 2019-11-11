@@ -121,5 +121,34 @@ namespace Abss.Arthuring
             return archetype;
         }
     }
+    
+    /// <summary>
+    /// アーキタイプを EntityManager ごとキャッシュする。
+    /// もしかすると、CreateArchetype() 自体にそういった仕組みがあるかもしれない、その場合は不要となる。
+    /// </summary>
+    static public class EntityArchetypeCache2
+    {
+
+        static Dictionary<(EntityManager,ComponentType[]), EntityArchetype> archetypeCache;
+        static EntityArchetypeCache2() =>
+            EntityArchetypeCache2.archetypeCache = new Dictionary<(EntityManager, ComponentType[]), EntityArchetype>();
+
+
+        static public EntityArchetype GetOrCreate( this ComponentType[] componentDataTypes, EntityManager em )
+            => EntityArchetypeCache2.GetOrCreateArchetype( em, componentDataTypes );
+
+
+        static EntityArchetype GetOrCreateArchetype( EntityManager em, ComponentType[] componentDataTypes )
+        {
+            if( EntityArchetypeCache2.archetypeCache.TryGetValue( (em,componentDataTypes), out var archetype ) )
+                return archetype;
+
+            archetype = em.CreateArchetype( componentDataTypes );
+            archetypeCache.Add( (em, componentDataTypes), archetype );
+
+            return archetype;
+        }
+    }
+    
 }
 
