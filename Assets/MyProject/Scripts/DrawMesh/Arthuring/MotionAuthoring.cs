@@ -33,7 +33,7 @@ namespace Abss.Arthuring
         }
 
 
-        public (Entity motionPrefab, (string name, Entity ent)[] streamPrefabs) Convert
+        public (Entity motionPrefab, NameAndEntity[] streamPrefabs) Convert
             ( EntityManager em, Entity drawPrefab )
         {
             var motionClip = this.MotionClip;
@@ -135,7 +135,7 @@ namespace Abss.Arthuring
     static public class MotionPrefabCreator
     {
 
-        static public (Entity motionPrefab, (string,Entity)[] streamPrefabs) CreatePrefab
+        static public (Entity motionPrefab, NameAndEntity[] streamPrefabs) CreatePrefab
         (
             this (ComponentType[] motion, ComponentType[] stream) archetypes,
             EntityManager em, Entity drawPrefab, MotionClip motionClip, bool[] boneMasks
@@ -152,21 +152,22 @@ namespace Abss.Arthuring
             em.SetComponentData( motionPrefab,
                 new MotionStreamLinkData
                 {
-                    PositionStreamTop = posStreamPrefabs[ 0 ].ent,
-                    RotationStreamTop = rotStreamPrefabs[ 0 ].ent,
+                    PositionStreamTop = posStreamPrefabs[ 0 ].Entity,
+                    RotationStreamTop = rotStreamPrefabs[ 0 ].Entity,
                 }
             );
 
             var streamPrefabs = (posStreamPrefabs, rotStreamPrefabs).Concat().ToArray();
-            em.SetComponentData( streamPrefabs.Select( x => x.ent ),
-                Enumerable.Repeat(new StreamMotionLinkData { MotionEntity = motionPrefab }, streamPrefabs.Length) );
+            em.SetComponentData(
+                streamPrefabs.Select( x => x.Entity ),
+                Enumerable.Repeat(new StreamMotionLinkData { MotionEntity = motionPrefab }, streamPrefabs.Length)
+            );
                 
             return (motionPrefab, streamPrefabs);
 
 
             // モーションエンティティ生成
             Entity createMotionPrefab
-                //( EntityManager em_, BlobAssetReference<MotionBlobData> motionBlobData_, EntityArchetype motionArchetype_ )
                 ( EntityManager em_, MotionClip motionClip_, EntityArchetype motionArchetype_ )
             {
                 var motionBlobData = motionClip.ConvertToBlobData();
@@ -179,8 +180,7 @@ namespace Abss.Arthuring
             }
 
             // ストリームエンティティ生成
-            (string name, Entity ent)[] createStreamOfSectionPrefabs
-            //( EntityManager em_, BlobAssetReference<MotionBlobData> motionBlobData_, EntityArchetype streamArchetype_ )
+            NameAndEntity[] createStreamOfSectionPrefabs
             ( EntityManager em_, Entity drawPrefab_, MotionClip motionClip_, bool[] boneMasks_, EntityArchetype streamArchetype_ )
             {
                 var streamLength = motionClip.StreamPaths.Length;
@@ -213,7 +213,7 @@ namespace Abss.Arthuring
 
                 var qNames =
                     from i in qEnableId select System.IO.Path.GetFileName(motionClip.StreamPaths[i]);
-                return (qNames, streamEntities).Zip().ToArray();
+                return (qNames, streamEntities).Zip( (name,ent) => new NameAndEntity(name,ent) ).ToArray();
             }
         }
 

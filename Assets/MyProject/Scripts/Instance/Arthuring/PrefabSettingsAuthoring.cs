@@ -19,6 +19,17 @@ using Abss.Character;
 namespace Abss.Arthuring
 {
 
+    public struct NameAndEntity
+    {
+        public string Name;
+        public Entity Entity;
+        public NameAndEntity( string name, Entity entity )
+        {
+            this.Name = name;
+            this.Entity = entity;
+        }
+    }
+
     public class PrefabSettingsAuthoring : MonoBehaviour
     {
 

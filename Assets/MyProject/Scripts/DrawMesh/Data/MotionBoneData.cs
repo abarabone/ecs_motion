@@ -52,6 +52,12 @@ namespace Abss.Motion
         public Entity PostureEntity;
     }
 
+    public struct BoneLocalValueData : IComponentData
+    {
+        public float3 Position;
+        public quaternion Rotation;
+    }
+
     
     public interface IBoneLvLinkData
     {

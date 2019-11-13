@@ -49,8 +49,6 @@ namespace Abss.Motion
 
 
             public void Execute(
-                //[ReadOnly] ref MotionInfoData info,
-                //[ReadOnly] ref MotionClipData clip,
                 [ReadOnly] ref MotionProgressTimerTag tag,
                 ref MotionCursorData cursor
             )

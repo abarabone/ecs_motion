@@ -124,8 +124,7 @@ namespace Abss.Motion
                 /// </summary>
                 unsafe void InitializeKeys_(
                     ref StreamNearKeysCacheData nearKeys,
-                    ref StreamKeyShiftData shift,
-                    float timeOffset = 0.0f
+                    ref StreamKeyShiftData shift
                 )
                 {
                     var index0 = 0;

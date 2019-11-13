@@ -45,7 +45,7 @@ namespace Abss.Arthuring
 
 
         public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
-            ( EntityManager em, IEnumerable<(string name,Entity ent)> streamPrefabs, Entity drawPrefab )
+            ( EntityManager em, IEnumerable<NameAndEntity> streamPrefabs, Entity drawPrefab )
         {
             //Debug.Log( this.BoneMask.transformCount );
             //foreach( var x in Enumerable.Range( 0, BoneMask.transformCount ) )
@@ -74,21 +74,6 @@ namespace Abss.Arthuring
     
     static public class BonePrefabCreator
     {
-        
-        static EntityArchetypeCache boneArchetypeCache = new EntityArchetypeCache
-        (
-            em => em.CreateArchetype
-            (
-                typeof( BoneRelationLinkData ),
-                typeof( BoneDrawLinkData ),
-                //typeof( BoneStreamLinkData ),
-                typeof( BoneIndexData ),
-                typeof( BoneDrawTargetIndexWorkData ),
-                typeof( Translation ),
-                typeof( Rotation ),
-                typeof( Prefab )
-            )
-        );
 
         static EntityArchetypeCache postureArchetypeCache = new EntityArchetypeCache
         (
@@ -102,11 +87,27 @@ namespace Abss.Arthuring
             )
         );
 
+        static EntityArchetypeCache boneArchetypeCache = new EntityArchetypeCache
+        (
+            em => em.CreateArchetype
+            (
+                typeof( BoneRelationLinkData ),
+                typeof( BoneDrawLinkData ),
+                //typeof( BoneStreamLinkData ),
+                typeof( BoneIndexData ),
+                typeof( BoneDrawTargetIndexWorkData ),
+                typeof( Translation ),
+                typeof( Rotation ),
+                typeof( BoneLocalValueData ),// どうしようか
+                typeof( Prefab )
+            )
+        );
 
+        
         static public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) CreatePrefabs
         (
             EntityManager em,
-            IEnumerable<(string name, Entity ent)> streamPrefabs, Entity drawPrefab,
+            IEnumerable<NameAndEntity> streamPrefabs, Entity drawPrefab,
             MotionClip motionClip, float4x4[] mtBones, bool[] boneMasks
         )
         {
@@ -118,7 +119,7 @@ namespace Abss.Arthuring
             
             var bonePrefabs = createBonePrefabs( em, mtBones.Length, boneArchetype );
             setBoneId( em, bonePrefabs, drawPrefab );
-            setStreamLinks( em, bonePrefabs, streamPrefabs.Select(x=>x.ent), boneMasks );
+            setStreamLinks( em, bonePrefabs, streamPrefabs.Select(x=>x.Entity), boneMasks );
             setDrawLinks( em, bonePrefabs, drawPrefab, mtBones.Length );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip, boneMasks );
             removeBoneRelationLinks( em, bonePrefabs, boneMasks );

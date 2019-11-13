@@ -40,7 +40,9 @@ namespace Abss.Motion
 
 
         [BurstCompile]
-        public struct StreamToBoneJob : IJobForEach<BoneStreamLinkData, Translation, Rotation>
+        public struct StreamToBoneJob : IJobForEach
+            //<BoneStreamLinkData, Translation, Rotation>
+            <BoneStreamLinkData, BoneLocalValueData>
         {
 
             [ReadOnly]
@@ -49,13 +51,17 @@ namespace Abss.Motion
 
             public void Execute(
                 [ReadOnly]  ref BoneStreamLinkData streamLinker,
-                [WriteOnly] ref Translation pos,
-                [WriteOnly] ref Rotation rot
+                //[WriteOnly] ref Translation pos,
+                //[WriteOnly] ref Rotation rot
+                [WriteOnly] ref BoneLocalValueData local
             )
             {
 
-                pos.Value = this.StreamValues[ streamLinker.PositionStreamEntity ].Value.As_float3();
-                rot.Value = this.StreamValues[ streamLinker.RotationStreamEntity ].Value;
+                //pos.Value = this.StreamValues[ streamLinker.PositionStreamEntity ].Value.As_float3();
+                //rot.Value = this.StreamValues[ streamLinker.RotationStreamEntity ].Value;
+
+                local.Position = this.StreamValues[ streamLinker.PositionStreamEntity ].Value.As_float3();
+                local.Rotation = this.StreamValues[ streamLinker.RotationStreamEntity ].Value;
 
             }
         }
