@@ -64,7 +64,7 @@ namespace Abss.Arthuring
 
             static public ComponentType[] MotionA = new ComponentType[]
             {
-                typeof( MotionATag ),// 暫定、MotionB 特別するため
+                //typeof( MotionATag ),// 暫定、MotionB 特別するため
                 typeof( MotionInfoData ),
                 typeof( MotionClipData ),
                 typeof( MotionStreamLinkData ),

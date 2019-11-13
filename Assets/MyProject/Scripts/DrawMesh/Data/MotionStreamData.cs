@@ -78,7 +78,7 @@ namespace Abss.Motion
 	/// </summary>
 	public struct StreamTimeProgressData : IComponentData
 	{
-		public float	TimeProgress;	// スタート時は 0
+		public float	TimeProgress;	// スタート時は 0（繊維時はマイナスからもあり）
 		public float	TimeLength;
 		public float	TimeScale;
 	}

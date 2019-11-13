@@ -91,7 +91,7 @@ namespace Abss.Motion
                     var pos = math.mul( prot, lpos ) + ppos;
                     var rot = math.mul( prot, lrot );
 
-                    if( this.BoneVelocities.Exists( ent ) )
+                    if( false && this.BoneVelocities.Exists( ent ) )
                         this.setVelocity( ent, pos, rot );
                     else
                         this.setPosAndRot( ent, pos, rot );
@@ -123,7 +123,7 @@ namespace Abss.Motion
 
                 this.BoneVelocities[ ent ] = v;
 
-                this.setVelocity( ent, pos, rot );
+                this.setPosAndRot( ent, pos, rot );//
             }
         }
     }

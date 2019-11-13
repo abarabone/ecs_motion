@@ -40,9 +40,16 @@ namespace Abss.Arthuring
 
             var motionAuthor = this.GetComponent<MotionAuthoring>();
             var (motionPrefab, streamPrefabs) = motionAuthor.Convert( em, drawPrefab );
+            var motionAuthor1 = this.GetComponent<MotionAuthoring>();//
+            var (motionPrefab1, streamPrefabs1) = motionAuthor.Convert( em, drawPrefab );//
 
             var boneAuthor = this.GetComponent<IBoneConverter>();
             var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, streamPrefabs, drawPrefab );
+            foreach( var bone in from x in bonePrefabs join y in streamPrefabs1 on x equals y.Name )
+            {
+                var linker = em.GetComponentData<BoneStreamLinkBlend2Data>( bone );
+
+            }
 
             var colliderAuthor = this.GetComponent<ColliderAuthoring>();
             var jointPrefabs = colliderAuthor.Convert( em, posturePrefab, bonePrefabs );
@@ -53,6 +60,8 @@ namespace Abss.Arthuring
                 .Append( drawPrefab )
                 .Append( motionPrefab )
                 .Concat( streamPrefabs.Select(x=>x.Entity) )
+                .Append( motionPrefab1 )//
+                .Concat( streamPrefabs1.Select( x => x.Entity ) )//
                 .Concat( bonePrefabs )
                 .Concat( jointPrefabs )
                 ;

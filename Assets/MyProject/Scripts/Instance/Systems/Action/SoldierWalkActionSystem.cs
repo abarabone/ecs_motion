@@ -53,6 +53,7 @@ namespace Abss.Character
                 MotionInfos = this.GetComponentDataFromEntity<MotionInfoData>( isReadOnly: true ),
                 GroundResults = this.GetComponentDataFromEntity<GroundHitResultData>( isReadOnly: true ),
                 Rotations = this.GetComponentDataFromEntity<Rotation>(),
+                MotionCursors = this.GetComponentDataFromEntity<MotionCursorData>(),
             }
             .Schedule( this, inputDeps );
             this.ecb.AddJobHandleForProducer( inputDeps );
@@ -72,6 +73,9 @@ namespace Abss.Character
 
             [NativeDisableParallelForRestriction]
             [WriteOnly] public ComponentDataFromEntity<Rotation> Rotations;
+
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<MotionCursorData> MotionCursors;
 
 
             public void Execute(
@@ -99,7 +103,7 @@ namespace Abss.Character
                     return;
                 }
 
-                if( math.lengthsq(acts.MoveDirection) > 0.0f )
+                if( math.lengthsq(acts.MoveDirection) >= 0.01f )
                 {
                     if( motionInfo.MotionIndex != 1 )
                         this.Commands.AddComponent( index, linker.MotionEntity,
@@ -117,7 +121,16 @@ namespace Abss.Character
                     //this.Rotations[ linker.PostureEntity ] =
                     //    new Rotation { Value = acts.HorizontalRotation };
                 }
+
+
                 
+                //var motionCursor = this.MotionCursors[ linker.MotionEntity ];
+
+                //motionCursor.Timer.TimeProgress = motionCursor.Timer.TimeLength * 0.5f;
+                ////motionCursor.Timer.TimeScale = 0.5f;
+
+                //this.MotionCursors[ linker.MotionEntity ] = motionCursor;
+
             }
         }
 

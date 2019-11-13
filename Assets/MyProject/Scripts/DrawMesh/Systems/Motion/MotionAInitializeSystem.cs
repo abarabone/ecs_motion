@@ -51,8 +51,9 @@ namespace Abss.Motion
 
 
         //[BurstCompile]
+        [ExcludeComponent(typeof(MotionCursorData))]
         struct MotionInitializeJob : IJobForEachWithEntity
-            <MotionInitializeData, MotionStreamLinkData, MotionClipData, MotionInfoData, MotionATag>
+            <MotionInitializeData, MotionStreamLinkData, MotionClipData, MotionInfoData>
         {
 
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
@@ -72,7 +73,7 @@ namespace Abss.Motion
                 [ReadOnly] ref MotionInitializeData init,
                 [ReadOnly] ref MotionStreamLinkData linker,
                 [ReadOnly] ref MotionClipData data,
-                ref MotionInfoData info, [ReadOnly] ref MotionATag tag
+                ref MotionInfoData info
             )
             {
                 ref var clip = ref data.ClipData.Value;

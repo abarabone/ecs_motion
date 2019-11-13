@@ -44,7 +44,7 @@ namespace Abss.Arthuring
 
 
 
-        public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
+        public ((string name, Entity ent) bonePrefabs, Entity posturePrefab) Convert
             ( EntityManager em, IEnumerable<NameAndEntity> streamPrefabs, Entity drawPrefab )
         {
             //Debug.Log( this.BoneMask.transformCount );
@@ -93,7 +93,7 @@ namespace Abss.Arthuring
             (
                 typeof( BoneRelationLinkData ),
                 typeof( BoneDrawLinkData ),
-                //typeof( BoneStreamLinkData ),
+                //typeof( BoneStreamLinkData ),// 剛体には必要ないので必要な場合に add するようにした
                 typeof( BoneIndexData ),
                 typeof( BoneDrawTargetIndexWorkData ),
                 typeof( Translation ),
@@ -104,7 +104,7 @@ namespace Abss.Arthuring
         );
 
         
-        static public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) CreatePrefabs
+        static public ((string name, Entity ent)[] bonePrefabs, Entity posturePrefab) CreatePrefabs
         (
             EntityManager em,
             IEnumerable<NameAndEntity> streamPrefabs, Entity drawPrefab,
@@ -134,8 +134,10 @@ namespace Abss.Arthuring
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
             em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
             em.SetComponentData( posturePrefab, new Translation { Value = float3.zero } );
-
-            return (bonePrefabs, posturePrefab);
+            
+            var bones = (motionClip.StreamPaths, bonePrefabs).Zip( ( name, ent ) => (name, ent) ).ToArray();
+            bonePrefabs.Dispose();
+            return (bones, posturePrefab);
 
             
             NativeArray<Entity> createBonePrefabs
@@ -174,10 +176,15 @@ namespace Abss.Arthuring
                     from x in (qPosStream, qRotStream).Zip()
                     let posEnt = x.x
                     let rotEnt = x.y
-                    select new BoneStreamLinkData
+                    //select new BoneStreamLinkData
+                    //{
+                    //    PositionStreamEntity = posEnt,
+                    //    RotationStreamEntity = rotEnt,
+                    //};
+                    select new BoneStreamLinkBlend2Data
                     {
-                        PositionStreamEntity = posEnt,
-                        RotationStreamEntity = rotEnt,
+                        PositionStream0Entity = posEnt,
+                        RotationStream0Entity = rotEnt,
                     };
 
                 var qBoneEnt =

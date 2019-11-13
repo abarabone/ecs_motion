@@ -40,16 +40,15 @@ namespace Abss.Motion
         /// <summary>
         /// ストリーム回転 → 補間
         /// </summary>
-        [BurstCompile]
+        [BurstCompile, RequireComponentTag(typeof(MotionProgressTimerTag))]
         struct MotionProgressJob : IJobForEach
-            <MotionProgressTimerTag, MotionCursorData>
+            <MotionCursorData>
         {
 
             public float DeltaTime;
 
 
             public void Execute(
-                [ReadOnly] ref MotionProgressTimerTag tag,
                 ref MotionCursorData cursor
             )
             {

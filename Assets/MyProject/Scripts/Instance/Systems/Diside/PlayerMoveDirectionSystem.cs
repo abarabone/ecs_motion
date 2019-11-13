@@ -147,7 +147,6 @@ namespace Abss.Character
             inputDeps = new ContDevJob
             {
                 Acts = acts,
-                MotionInfos = this.GetComponentDataFromEntity<MotionCursorData>(),
             }
             .Schedule( this, inputDeps );
 
@@ -156,22 +155,18 @@ namespace Abss.Character
 
 
 
-        [BurstCompile]
+        [BurstCompile, RequireComponentTag(typeof(PlayerTag))]
         struct ContDevJob : IJobForEachWithEntity
-            <PlayerTag, MoveHandlingData>
+            <MoveHandlingData>
         {
 
             //[ReadOnly] public EntityCommandBuffer.Concurrent Commands;
 
             [ReadOnly] public ControlActionUnit Acts;
 
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<MotionCursorData> MotionInfos;
-
 
             public void Execute(
                 Entity entity, int index,
-                [ReadOnly] ref PlayerTag tag,
                 [WriteOnly] ref MoveHandlingData handler
             )
             {
@@ -182,9 +177,6 @@ namespace Abss.Character
                 //}
 
                 handler.ControlAction = this.Acts;
-
-                var motion = this.MotionInfos[ entity ];
-                motion.Timer.TimeProgress = math.lengthsq(this.Acts.MoveDirection);
 
             }
         }
