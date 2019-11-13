@@ -25,6 +25,7 @@ namespace Abss.Character
         public Entity PostureEntity;
         public Entity DrawEntity;
         public Entity MotionEntity;
+        public Entity Motion2Entity;
     }
 
 

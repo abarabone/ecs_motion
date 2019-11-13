@@ -123,13 +123,13 @@ namespace Abss.Character
                 }
 
 
-                
-                //var motionCursor = this.MotionCursors[ linker.MotionEntity ];
 
-                //motionCursor.Timer.TimeProgress = motionCursor.Timer.TimeLength * 0.5f;
-                ////motionCursor.Timer.TimeScale = 0.5f;
+                var motionCursor = this.MotionCursors[ linker.MotionEntity ];
 
-                //this.MotionCursors[ linker.MotionEntity ] = motionCursor;
+                motionCursor.Timer.TimeProgress = motionCursor.Timer.TimeLength * 0.5f;
+                motionCursor.Timer.TimeScale = 0.5f;
+
+                this.MotionCursors[ linker.MotionEntity ] = motionCursor;
 
             }
         }

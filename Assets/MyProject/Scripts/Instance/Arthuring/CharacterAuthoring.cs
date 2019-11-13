@@ -26,7 +26,7 @@ namespace Abss.Arthuring
 
         public interface IBoneConverter
         {
-            (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
+            (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
                 ( EntityManager em, IEnumerable<NameAndEntity> streamPrefab, Entity drawPrefab );
         }
 
@@ -45,10 +45,18 @@ namespace Abss.Arthuring
 
             var boneAuthor = this.GetComponent<IBoneConverter>();
             var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, streamPrefabs, drawPrefab );
-            foreach( var bone in from x in bonePrefabs join y in streamPrefabs1 on x equals y.Name )
+            foreach( var z in
+                from x in bonePrefabs
+                join y in streamPrefabs1
+                    on x.Name equals y.Name
+                group y.Entity by x.Entity
+            )
             {
-                var linker = em.GetComponentData<BoneStreamLinkBlend2Data>( bone );
-
+                var linker = em.GetComponentData<BoneStreamLinkBlend2Data>( z.Key );
+                linker.PositionStream1Entity = z.ElementAt( 0 );
+                linker.RotationStream1Entity = z.ElementAt( 1 );
+                linker.weight0 = 0.5f;
+                em.SetComponentData( z.Key, linker );
             }
 
             var colliderAuthor = this.GetComponent<ColliderAuthoring>();
@@ -62,7 +70,7 @@ namespace Abss.Arthuring
                 .Concat( streamPrefabs.Select(x=>x.Entity) )
                 .Append( motionPrefab1 )//
                 .Concat( streamPrefabs1.Select( x => x.Entity ) )//
-                .Concat( bonePrefabs )
+                .Concat( bonePrefabs.Select(x=>x.Entity) )
                 .Concat( jointPrefabs )
                 ;
 
@@ -74,6 +82,7 @@ namespace Abss.Arthuring
                     PostureEntity = posturePrefab,
                     DrawEntity = drawPrefab,
                     MotionEntity = motionPrefab,
+                    Motion2Entity = motionPrefab1,//
                 }
             );
 
@@ -83,7 +92,6 @@ namespace Abss.Arthuring
             }
 
 
-            if( bonePrefabs.IsCreated ) bonePrefabs.Dispose();
             if( jointPrefabs.IsCreated ) jointPrefabs.Dispose();
 
 

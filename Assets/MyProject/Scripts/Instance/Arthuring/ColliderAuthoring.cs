@@ -34,10 +34,10 @@ namespace Abss.Arthuring
         
         // 生成されたジョイントエンティティを返す。
         public NativeArray<Entity> Convert
-            ( EntityManager em, Entity posturePrefab, NativeArray<Entity> bonePrefabs )
+            ( EntityManager em, Entity posturePrefab, NameAndEntity[] bonePrefabs )
         {
 
-            var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
+            //var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
             var rbTop = this.GetComponentInChildren<Rigidbody>();//
             if( rbTop == null ) return new NativeArray<Entity>();//
@@ -47,14 +47,15 @@ namespace Abss.Arthuring
 
 
             // 名前とボーンエンティティの組を配列化
-            var qNameAndBone = motionClip.StreamPaths
-                .Select( x => System.IO.Path.GetFileName( x ) )
-                .Select( ( name, i ) => (name, i: motionClip.IndexMapFbxToMotion[ i ]) )
-                .Where( x => x.i != -1 )
-                .Select( x => (x.name, ent: bonePrefabs[ x.i ]) )
-                .Append( (rbTop.name, ent:posturePrefab) );
-            var namesAndBones = qNameAndBone.ToArray();
-
+            //var qNameAndBone = motionClip.StreamPaths
+            //    .Select( x => System.IO.Path.GetFileName( x ) )
+            //    .Select( ( name, i ) => (name, i: motionClip.IndexMapFbxToMotion[ i ]) )
+            //    .Where( x => x.i != -1 )
+            //    .Select( x => (Name:x.name, Entity:bonePrefabs[ x.i ].Entity) )
+            //    .Append( (Name:rbTop.name, Entity:posturePrefab) );
+            //var namesAndBones = qNameAndBone.ToArray();
+            var namesAndBones = bonePrefabs
+                .Append( new NameAndEntity( rbTop.name, posturePrefab ) );
 
             // クエリ用コライダの生成
             // ・マテリアルが "xxx overlap collider" という名前になっているものを抽出
@@ -63,9 +64,9 @@ namespace Abss.Arthuring
                 from x in srcColliders
                 where x.sharedMaterial != null
                 where x.sharedMaterial.name.StartsWith("overlap ")
-                join bone in qNameAndBone
-                    on x.name equals bone.name
-                select (bone.ent, c:x)
+                join bone in namesAndBones
+                    on x.name equals bone.Name
+                select (bone.Entity, c:x)
                 ;
             foreach( var (ent, c) in qQueryableCollider )
             {
@@ -105,8 +106,8 @@ namespace Abss.Arthuring
             var qEntAndComponent =
                 from c in (qColliderGroup, qCompounds).Zip()
                 join b in namesAndBones
-                    on c.x.Key.name equals b.name
-                select (b.ent, c:c.y)
+                    on c.x.Key.name equals b.Name
+                select (b.Entity, c:c.y)
                 ;
             foreach( var (ent, c) in qEntAndComponent )
             {
@@ -119,8 +120,8 @@ namespace Abss.Arthuring
             var qRbAndBone =
                 from x in this.GetComponentsInChildren<Rigidbody>()
                 join b in namesAndBones
-                    on x.name equals b.name
-                select (rb: x, b.ent)
+                    on x.name equals b.Name
+                select (rb: x, b.Entity)
                 ;
             foreach( var (rb, ent) in qRbAndBone )
             {
@@ -137,12 +138,12 @@ namespace Abss.Arthuring
                 from j in this.GetComponentsInChildren<UnityEngine.Joint>()
                 //.Do( x=>Debug.Log(x.name))
                 join a in namesAndBones
-                    on j.name equals a.name
+                    on j.name equals a.Name
                 join b in namesAndBones
-                    on j.connectedBody.name equals b.name
+                    on j.connectedBody.name equals b.Name
                 let jointData = createJointBlob_( j )
                 //select (a, b, j, jointData)
-                select addJointComponentData_( a.ent, jointData, a.ent, b.ent, j.enableCollision )
+                select addJointComponentData_( a.Entity, jointData, a.Entity, b.Entity, j.enableCollision )
                 ;
             return qJoint.SelectMany().ToNativeArray( Allocator.Temp );
 

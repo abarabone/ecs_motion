@@ -55,12 +55,12 @@ namespace Abss.Character
         protected override void OnCreate()
         {
 
-            setControlFunc_();
+            setControllerFunc_();
 
             return;
 
 
-            void setControlFunc_()
+            void setControllerFunc_()
             {
                 if( Gamepad.current != null )
                 {

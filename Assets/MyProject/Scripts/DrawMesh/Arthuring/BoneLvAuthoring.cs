@@ -28,14 +28,14 @@ namespace Abss.Arthuring
         public bool UsePhysics;
 
 
-        public (NativeArray<Entity> bonePrefabs, Entity posturePrefab) Convert
+        public (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
             ( EntityManager em, IEnumerable<NameAndEntity> streamPrefabs, Entity drawPrefab )
         {
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
             //return BoneLvPrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip );
-            return (new NativeArray<Entity>(), Entity.Null);
+            return (new NameAndEntity[] { }, Entity.Null);
         }
     }
 
