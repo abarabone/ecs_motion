@@ -147,6 +147,7 @@ namespace Abss.Character
             inputDeps = new ContDevJob
             {
                 Acts = acts,
+                MotionInfos = this.GetComponentDataFromEntity<MotionCursorData>(),
             }
             .Schedule( this, inputDeps );
 
@@ -161,9 +162,11 @@ namespace Abss.Character
         {
 
             //[ReadOnly] public EntityCommandBuffer.Concurrent Commands;
+
             [ReadOnly] public ControlActionUnit Acts;
 
-            //[ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<MotionCursorData> MotionInfos;
 
 
             public void Execute(
@@ -178,8 +181,10 @@ namespace Abss.Character
                 //    this.Commands.AddComponent( index, linker.MotionEntity, new MotionInitializeData { MotionIndex = (motionInfo.MotionIndex+1) % 10 } );
                 //}
 
-
                 handler.ControlAction = this.Acts;
+
+                var motion = this.MotionInfos[ entity ];
+                motion.Timer.TimeProgress = math.lengthsq(this.Acts.MoveDirection);
 
             }
         }

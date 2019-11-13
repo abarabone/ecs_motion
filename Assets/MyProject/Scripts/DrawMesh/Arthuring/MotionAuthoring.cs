@@ -27,9 +27,9 @@ namespace Abss.Arthuring
         public EnMotionType Mode;
         public enum EnMotionType
         {
-            typeA_progress_per_stream,
-            typeB_progress_motion,
-            typeB_direct,
+            typeAProgressPerStream,
+            typeBProgressMotion,
+            typeBDirect,
         }
 
 
@@ -46,11 +46,11 @@ namespace Abss.Arthuring
 
             switch(this.Mode)
             {
-                case EnMotionType.typeA_progress_per_stream:
+                case EnMotionType.typeAProgressPerStream:
                     return (Arche.MotionA, Arche.StreamA).CreatePrefab( em, drawPrefab, motionClip, boneMasks );
-                case EnMotionType.typeB_progress_motion:
+                case EnMotionType.typeBProgressMotion:
                     return (Arche.MotionB, Arche.StreamB).CreatePrefab( em, drawPrefab, motionClip, boneMasks );
-                case EnMotionType.typeB_direct:
+                case EnMotionType.typeBDirect:
                     return (Arche.MotionBd, Arche.StreamBd).CreatePrefab( em, drawPrefab, motionClip, boneMasks );
             }
 

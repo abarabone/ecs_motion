@@ -112,7 +112,7 @@ namespace Abss.Motion
 
                 var v = this.BoneVelocities[ ent ];
 
-                v.Linear = (pos - this.BonePositions[ ent ].Value) * rcdt;
+                v.Linear = ( pos - this.BonePositions[ ent ].Value ) * rcdt;
 
                 var invprev = math.inverse( this.BoneRotations[ ent ].Value );
                 var drot = math.mul( invprev, rot );
@@ -122,6 +122,8 @@ namespace Abss.Motion
                 v.Angular = axis * (angle * rcdt);
 
                 this.BoneVelocities[ ent ] = v;
+
+                this.setVelocity( ent, pos, rot );
             }
         }
     }
