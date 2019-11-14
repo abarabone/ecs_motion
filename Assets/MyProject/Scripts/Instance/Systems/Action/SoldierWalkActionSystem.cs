@@ -124,12 +124,12 @@ namespace Abss.Character
 
 
 
-                var motionCursor = this.MotionCursors[ linker.MotionEntity ];
+                //var motionCursor = this.MotionCursors[ linker.MotionEntity ];
 
-                motionCursor.Timer.TimeProgress = motionCursor.Timer.TimeLength * 0.5f;
-                motionCursor.Timer.TimeScale = 0.5f;
+                //motionCursor.Timer.TimeProgress = motionCursor.Timer.TimeLength * 0.5f;
+                //motionCursor.Timer.TimeScale = 0.5f;
 
-                this.MotionCursors[ linker.MotionEntity ] = motionCursor;
+                //this.MotionCursors[ linker.MotionEntity ] = motionCursor;
 
             }
         }

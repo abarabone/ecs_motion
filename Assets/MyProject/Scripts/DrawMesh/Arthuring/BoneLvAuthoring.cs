@@ -29,7 +29,7 @@ namespace Abss.Arthuring
 
 
         public (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
-            ( EntityManager em, IEnumerable<NameAndEntity> streamPrefabs, Entity drawPrefab )
+            ( EntityManager em, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs, Entity drawPrefab )
         {
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
