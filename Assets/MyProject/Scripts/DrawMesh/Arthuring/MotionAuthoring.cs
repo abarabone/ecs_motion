@@ -33,8 +33,8 @@ namespace Abss.Arthuring
         }
 
 
-        public (Entity motionPrefab, NameAndEntity[] streamPrefabs) Convert
-            ( EntityManager em, Entity drawPrefab )
+        public (Entity motionPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefab)
+            Convert( EntityManager em, Entity drawPrefab )
         {
             var motionClip = this.MotionClip;
 
@@ -54,7 +54,7 @@ namespace Abss.Arthuring
                     return (Arche.MotionBd, Arche.StreamBd).CreatePrefab( em, drawPrefab, motionClip, boneMasks );
             }
 
-            return (Entity.Null, null);
+            return (Entity.Null, null, null);
         }
 
 
@@ -135,19 +135,19 @@ namespace Abss.Arthuring
     static public class MotionPrefabCreator
     {
 
-        static public (Entity motionPrefab, NameAndEntity[] streamPrefabs) CreatePrefab
-        (
-            this (ComponentType[] motion, ComponentType[] stream) archetypes,
-            EntityManager em, Entity drawPrefab, MotionClip motionClip, bool[] boneMasks
-        )
+        static public (Entity motionPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs)
+            CreatePrefab
+            (
+                this (ComponentType[] motion, ComponentType[] stream) archetypes,
+                EntityManager em, Entity drawPrefab, MotionClip motionClip, bool[] boneMasks
+            )
         {
-
             var motionArchetype = archetypes.motion.GetOrCreate( em );
             var streamArchetype = archetypes.stream.GetOrCreate( em );
 
             var motionPrefab = createMotionPrefab( em, motionClip, motionArchetype );
-            var posStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionClip, boneMasks, streamArchetype );
-            var rotStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionClip, boneMasks, streamArchetype );
+            var posStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionPrefab, motionClip, boneMasks, streamArchetype );
+            var rotStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionPrefab, motionClip, boneMasks, streamArchetype );
             
             em.SetComponentData( motionPrefab,
                 new MotionStreamLinkData
@@ -156,44 +156,63 @@ namespace Abss.Arthuring
                     RotationStreamTop = rotStreamPrefabs[ 0 ].Entity,
                 }
             );
-
-            var streamPrefabs = (posStreamPrefabs, rotStreamPrefabs).Concat().ToArray();
-            em.SetComponentData(
-                streamPrefabs.Select( x => x.Entity ),
-                Enumerable.Repeat(new StreamMotionLinkData { MotionEntity = motionPrefab }, streamPrefabs.Length)
-            );
-                
-            return (motionPrefab, streamPrefabs);
+            
+            return (motionPrefab, posStreamPrefabs, rotStreamPrefabs);
+        }
 
 
-            // モーションエンティティ生成
-            Entity createMotionPrefab
-                ( EntityManager em_, MotionClip motionClip_, EntityArchetype motionArchetype_ )
+        // モーションエンティティ生成
+        static Entity createMotionPrefab
+            ( EntityManager em, MotionClip motionClip, EntityArchetype motionArchetype )
+        {
+            var motionBlobData = motionClip.ConvertToBlobData();
+
+            var motionEntity = em.CreateEntity( motionArchetype );
+            em.SetComponentData( motionEntity, new MotionClipData { ClipData = motionBlobData } );
+            em.SetComponentData( motionEntity, new MotionInfoData { MotionIndex = 0 } );
+
+            return motionEntity;
+        }
+        
+
+        // ストリームエンティティ生成
+        static NameAndEntity[] createStreamOfSectionPrefabs
+        ( EntityManager em, Entity drawPrefab, Entity motionPrefab, MotionClip motionClip, bool[] boneMasks, EntityArchetype streamArchetype )
+        {
+
+            var enabledIds = extractEnableIds_( boneMasks );
+
+            using( var streamEntities = new NativeArray<Entity>( enabledIds.Length, Allocator.Temp ) )
             {
-                var motionBlobData = motionClip.ConvertToBlobData();
+                em.CreateEntity( streamArchetype, streamEntities );
 
-                var motionEntity = em_.CreateEntity( motionArchetype_ );
-                em_.SetComponentData( motionEntity, new MotionClipData { ClipData = motionBlobData } );
-                em_.SetComponentData( motionEntity, new MotionInfoData { MotionIndex = 0 } );
+                setStreamRelation_( streamEntities, enabledIds );
+                setDrawLink_( streamEntities, drawPrefab );
+                setMotionLink_( streamEntities, motionPrefab );
 
-                return motionEntity;
+                return createNamesAndStreamPrefabs_( streamEntities, motionClip.StreamPaths, enabledIds );
             }
 
-            // ストリームエンティティ生成
-            NameAndEntity[] createStreamOfSectionPrefabs
-            ( EntityManager em_, Entity drawPrefab_, MotionClip motionClip_, bool[] boneMasks_, EntityArchetype streamArchetype_ )
+
+            int[] extractEnableIds_( bool[] boneMasks_ )
             {
-                var streamLength = motionClip.StreamPaths.Length;
-                var enableLength = boneMasks_.Where( x => x ).Count();
+                var qEnableId =
+                    from x in boneMasks.Select( ( mask, i ) => (mask, i) )
+                    where x.mask
+                    select x.i
+                    ;
+                return qEnableId.ToArray();
+            }
 
-                var streamEntities = new NativeArray<Entity>( enableLength, Allocator.Temp );
-                em_.CreateEntity( streamArchetype_, streamEntities );
+            void setStreamRelation_( NativeArray<Entity> streamEntities_, int[] enabledIds_ )
+            {
 
-                var qNext = streamEntities.Skip( 1 ).Append( Entity.Null );
-                var qEnableId = boneMasks_.Select( ( x, i ) => (x, i) ).Where( x => x.x ).Select( x => x.i );
+                var qNext = streamEntities_
+                    .Skip( 1 )
+                    .Append( Entity.Null );
 
                 var qNextLinker =
-                    from x in (qNext, qEnableId).Zip()
+                    from x in (qNext, enabledIds_).Zip()
                     let next = x.x
                     let id = x.y
                     select new StreamRelationData
@@ -201,19 +220,42 @@ namespace Abss.Arthuring
                         NextStreamEntity = next,
                         BoneId = id,
                     };
-                em_.SetComponentData( streamEntities, qNextLinker );
+                em.SetComponentData( streamEntities_, qNextLinker );
+            }
 
+            void setDrawLink_( NativeArray<Entity> streamEntities_, Entity drawPrefab_ )
+            {
                 var qDrawLinker =
-                    from x in streamEntities
+                    from x in streamEntities_
                     select new StreamDrawLinkData
                     {
                         DrawEntity = drawPrefab_,
                     };
-                em_.SetComponentData( streamEntities, qDrawLinker );
+                em.SetComponentData( streamEntities_, qDrawLinker );
+            }
 
+            void setMotionLink_( NativeArray<Entity> streamEntities_, Entity motionPrefab_ )
+            {
+                var qMotionLinker =
+                    from x in streamEntities_
+                    select new StreamMotionLinkData
+                    {
+                        MotionEntity = motionPrefab_,
+                    };
+                em.SetComponentData( streamEntities_, qMotionLinker );
+            }
+
+            NameAndEntity[] createNamesAndStreamPrefabs_
+                ( NativeArray<Entity> streamEntities_, string[] streamPaths_, int[] enabledIds_ )
+            {
                 var qNames =
-                    from i in qEnableId select System.IO.Path.GetFileName(motionClip.StreamPaths[i]);
-                return (qNames, streamEntities).Zip( (name,ent) => new NameAndEntity(name,ent) ).ToArray();
+                    from i in enabledIds_
+                    select System.IO.Path.GetFileName( streamPaths_[i] )
+                    ;
+                    
+                return (qNames, streamEntities_)
+                    .Zip( ( name, ent ) => new NameAndEntity( name, ent ) )
+                    .ToArray();
             }
         }
 

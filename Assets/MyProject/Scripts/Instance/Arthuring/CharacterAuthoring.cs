@@ -27,7 +27,7 @@ namespace Abss.Arthuring
         public interface IBoneConverter
         {
             (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
-                ( EntityManager em, IEnumerable<NameAndEntity> streamPrefab, Entity drawPrefab );
+                ( EntityManager em, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs, Entity drawPrefab );
         }
 
 
@@ -39,9 +39,9 @@ namespace Abss.Arthuring
             var drawPrefab = drawAuthor.Convert( em, drawResources );
 
             var motionAuthor = this.GetComponent<MotionAuthoring>();
-            var (motionPrefab, streamPrefabs) = motionAuthor.Convert( em, drawPrefab );
+            var (motionPrefab, posStreamPrefabs, rotStreamPrefabs) = motionAuthor.Convert( em, drawPrefab );
             var motionAuthor1 = this.GetComponent<MotionAuthoring>();//
-            var (motionPrefab1, streamPrefabs1) = motionAuthor.Convert( em, drawPrefab );//
+            var (motionPrefab1, posStreamPrefabs1, rotStreamPrefabs1) = motionAuthor.Convert( em, drawPrefab );//
 
             var boneAuthor = this.GetComponent<IBoneConverter>();
             var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, streamPrefabs, drawPrefab );

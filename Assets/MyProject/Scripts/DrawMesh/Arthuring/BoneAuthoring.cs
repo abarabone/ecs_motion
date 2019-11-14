@@ -45,7 +45,7 @@ namespace Abss.Arthuring
 
 
         public (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
-            ( EntityManager em, IEnumerable<NameAndEntity> streamPrefabs, Entity drawPrefab )
+            ( EntityManager em, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs, Entity drawPrefab )
         {
             //Debug.Log( this.BoneMask.transformCount );
             //foreach( var x in Enumerable.Range( 0, BoneMask.transformCount ) )
@@ -67,7 +67,7 @@ namespace Abss.Arthuring
             if( boneMasks.Length == 0 )
                 boneMasks = Enumerable.Repeat( true, bindposes.Length ).ToArray();
 
-            return BonePrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip, mtBones, boneMasks );
+            return BonePrefabCreator.CreatePrefabs( em, posStreamPrefabs, rotStreamPrefabs, drawPrefab, motionClip, mtBones, boneMasks );
         }
     }
 
@@ -107,7 +107,7 @@ namespace Abss.Arthuring
         static public (NameAndEntity[] bonePrefabs, Entity posturePrefab) CreatePrefabs
         (
             EntityManager em,
-            IEnumerable<NameAndEntity> streamPrefabs, Entity drawPrefab,
+            Entity drawPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs,
             MotionClip motionClip, float4x4[] mtBones, bool[] boneMasks
         )
         {
