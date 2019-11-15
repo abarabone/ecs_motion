@@ -180,7 +180,7 @@ namespace Abss.Motion
             .Children()
             .Select( go => go.GetComponent<SkinnedMeshRenderer>() )
             .Where( smr => smr != null )
-                .Do( x => Debug.Log( x.bones.Length ) )
+            .Do( x => Debug.Log( x.bones.Length ) )
             .First().bones
                 .Select( tfBone => tfBone.gameObject )
                 .Where( go => !go.name.StartsWith( "_" ) )// _ から始まるものはマニピュレータなので除外（マイルール）
@@ -216,7 +216,7 @@ namespace Abss.Motion
         }
 
 
-        static MotionDataInAsset buildMotionData( AnimationClip[] animationClips )
+        static MotionDataInAsset buildMotionData( AnimationClip[] animationClips, string[] streamPaths )
         {
 
             return new MotionDataInAsset
@@ -245,7 +245,7 @@ namespace Abss.Motion
 
                 // 全プロパティストリームを列挙（ .x .y などの要素レベルの binding ）
                 from binding in AnimationUtility.GetCurveBindings( clip )
-                where !binding.path.StartsWith( "_" )
+                where !binding.path.StartsWith( "_" )// _ から始まるものはマニピュレータなので除外（マイルール）
 
                 // セクションでグループ化（ m_LocalPosition など）＆ソート
                 group binding by Path.GetFileNameWithoutExtension( binding.propertyName ) into section_group
@@ -258,22 +258,31 @@ namespace Abss.Motion
                 };
 
 
-            IEnumerable<StreamDataUnit> queryKeyStreams( AnimationClip clip, IGrouping<string, EditorCurveBinding> section_group ) =>
+            IEnumerable<StreamDataUnit> queryKeyStreams
+                ( AnimationClip clip, IGrouping<string, EditorCurveBinding> section_group ) =>
 
-                // ストリームでグループ化＆ソート
-                from binding in section_group
-                group binding by binding.path into stream_group
-                let path = stream_group.Key
+                //// ストリームでグループ化＆ソート
+                //from binding in section_group
+                //group binding by binding.path into stream_group
+                //let path = stream_group.Key
                 //orderby path
-
+                from stream_path in streamPaths
+                join stream_group in
+                    from binding in section_group
+                    group binding by binding.path
+                        on stream_path equals stream_group.Key
+                into x
+                from stream_group in x.DefaultIfEmpty() // 空の場合どうなる？？
+                
                 select new StreamDataUnit
                 {
-                    StreamPath = path,
+                    StreamPath = stream_path,
                     keys = queryKeys( clip, stream_group ).ToArray()
                 };
 
 
-            IEnumerable<KeyDataUnit> queryKeys( AnimationClip clip, IGrouping<string, EditorCurveBinding> stream_group ) =>
+            IEnumerable<KeyDataUnit> queryKeys
+                ( AnimationClip clip, IGrouping<string, EditorCurveBinding> stream_group ) =>
 
                 // キーを列挙
                 from stream in stream_group
