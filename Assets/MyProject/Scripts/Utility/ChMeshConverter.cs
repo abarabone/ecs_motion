@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+using Abss.Common.Extension;
 using Abss.Motion;
 
 namespace Abss.Geometry
@@ -12,7 +13,7 @@ namespace Abss.Geometry
 	{
 
         
-		static public Mesh ConvertToChMesh( Mesh srcmesh, MotionClip motionClip )
+		static public Mesh ConvertToChMesh( Mesh srcmesh, Transform[] tfBones )
 		{
             var dstmesh = new Mesh();
 
@@ -20,14 +21,14 @@ namespace Abss.Geometry
             var boneWeights = srcmesh.boneWeights;
             var bindposes   = srcmesh.bindposes;
 
-            dstmesh.vertices = ConvertVertices( vtxs, boneWeights, bindposes );
+            dstmesh.vertices = QueryVertices( vtxs, boneWeights, bindposes ).ToArray();
             dstmesh.normals = srcmesh.normals;
             dstmesh.uv = srcmesh.uv;
             dstmesh.triangles = srcmesh.triangles;
-            dstmesh.SetUVs( channel: 1, CreateBoneWeightUvs( boneWeights, motionClip ) );
+            dstmesh.SetUVs( channel: 1, QueryBoneWeightUvs( boneWeights ).ToList() );
             dstmesh.bounds = srcmesh.bounds;
-            dstmesh.colors = CreateBoneIndexColors( boneWeights, motionClip );
-            dstmesh.bindposes = CreateReBindPoses( bindposes, motionClip );
+            dstmesh.colors = QueryBoneIndexColors( boneWeights, tfBones ).ToArray();
+            dstmesh.bindposes = QueryEnabledBindPoses( bindposes, tfBones ).ToArray();
             return dstmesh;
 
             //var newmesh = new Mesh();
@@ -45,49 +46,20 @@ namespace Abss.Geometry
 		/// <summary>
 		/// 頂点をトランスフォームし、新しい配列として返す。
 		/// </summary>
-		static public Vector3[] ConvertVertices( Vector3[] vertices, BoneWeight[] weights, Matrix4x4[] matrices )
+		static public IEnumerable<Vector3> QueryVertices( Vector3[] vertices, BoneWeight[] weights, Matrix4x4[] matrices )
 		{
-			var q =
+            return
 				from x in Enumerable.Zip( vertices, weights, (v, w) => (v, w) )
 				select matrices[ x.w.boneIndex0 ].MultiplyPoint( x.v )
 				;
-
-			return q.ToArray();
 		}
 		
-		///// <summary>
-		///// メッシュに MotionClip から得たボーン情報を挿入する。
-		///// インデックス／バインドポーズは変換後のメッシュ用に再解釈／整列され、Colors と uvChannelForWeight の uv に出力される。
-		///// </summary>
-		//static public Mesh AddBoneInfoFrom( this Mesh mesh, int uvChannelForWeight, MotionClip motionClip )
-		//{
-		//	var weights		= mesh.boneWeights;
-		//	var bindPoses	= mesh.bindposes;
-		//	var im			= motionClip.IndexMapFbxToMotion;
-
-		//	var qIndices	= weights
-		//		.Select( x => new Color(im[x.boneIndex0], im[x.boneIndex1], im[x.boneIndex2], im[x.boneIndex3]) );
-
-		//	var qWeights	= weights
-		//		.Select( x => new Vector4(x.weight0, x.weight1, x.weight2, x.weight3) );
-
-		//	var qBindPoses	=
-		//		from imotion in Enumerable.Range( 0, motionClip.StreamPaths.Length )
-		//		join mapper in im.Select( (imotion, ifbx) => (imotion, ifbx) )
-		//			on imotion equals mapper.imotion
-		//		select bindPoses[ mapper.ifbx ]
-		//		;
-
-		//	mesh.colors	= qIndices.ToArray();
-		//	mesh.SetUVs( uvChannelForWeight, qWeights.ToList() );
-		//	mesh.bindposes = qBindPoses.ToArray();
-
-		//	return mesh;
-		//}
-
-		static public Color[] CreateBoneIndexColors( BoneWeight[] boneWeights, MotionClip motionClip )
+		static public IEnumerable<Color> QueryBoneIndexColors( BoneWeight[] boneWeights, Transform[] tfBones )
 		{
-			var im = motionClip.IndexMapFbxToMotion;
+            var im = tfBones
+                .Where( tfBone => !tfBone.name.StartsWith( "_" ) )
+                .Select( ( tfBone, i ) => i )
+                .ToArray();
 
             var qIndices = boneWeights
                 .Select( x => new Color(im[x.boneIndex0], im[x.boneIndex1], im[x.boneIndex2], im[x.boneIndex3]) );
@@ -95,26 +67,22 @@ namespace Abss.Geometry
             return qIndices.ToArray();
 		}
 
-		static public List<Vector4> CreateBoneWeightUvs( BoneWeight[] boneWeights, MotionClip motionClip )
+		static public IEnumerable<Vector4> QueryBoneWeightUvs( BoneWeight[] boneWeights )
 		{
-			var qWeights	= boneWeights
-				.Select( x => new Vector4(x.weight0, x.weight1, x.weight2, x.weight3) );
-
-			return qWeights.ToList();
+            return
+                from w in boneWeights
+				select new Vector4( w.weight0, w.weight1, w.weight2, w.weight3 );
 		}
 
-		static public Matrix4x4[] CreateReBindPoses( Matrix4x4[] bindPoses, MotionClip motionClip )
-		{
-			var im = motionClip.IndexMapFbxToMotion;
-
-			var qBindPoses	=
-				from imotion in Enumerable.Range( 0, motionClip.StreamPaths.Length )
-				join mapper in im.Select( (imotion, ifbx) => (imotion, ifbx) )
-					on imotion equals mapper.imotion
-				select bindPoses[ mapper.ifbx ]
-				;
-
-			return qBindPoses.ToArray();
+		static public IEnumerable<Matrix4x4> QueryEnabledBindPoses( Matrix4x4[] bindPoses, Transform[] tfBones )
+        {
+            return
+                from x in (tfBones, bindPoses).Zip()
+                let tfBone = x.x
+                let bindPose = x.y
+                where !tfBone.name.StartsWith( "_" )
+                select bindPose
+                ;
 		}
 	}
 }

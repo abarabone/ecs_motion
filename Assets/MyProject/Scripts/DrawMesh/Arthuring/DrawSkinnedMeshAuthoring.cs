@@ -45,17 +45,16 @@ namespace Abss.Arthuring
 
 
             // メッシュを結合する
-            Mesh combineAndConvertMesh( IEnumerable<SkinnedMeshRenderer> mrs_, MotionClip motionClip_ )
+            Mesh combineAndConvertMesh( IEnumerable<SkinnedMeshRenderer> smrs_, MotionClip motionClip_ )
             {
                 var qCis =
-                    from mr in mrs_
+                    from mr in smrs_
                     select new CombineInstance
                     {
                         mesh = mr.sharedMesh
-                    }
-                    ;
+                    };
 
-                return ChMeshConverter.ConvertToChMesh( mrs_.ElementAt( 0 ).sharedMesh, motionClip_ );
+                return ChMeshConverter.ConvertToChMesh( smrs_.ElementAt( 0 ).sharedMesh, smrs_.ElementAt(0).bones );
 
                 var dstmesh = new Mesh();
 
@@ -77,7 +76,7 @@ namespace Abss.Arthuring
                 )
                 .ToArray();
 
-                return ChMeshConverter.ConvertToChMesh( dstmesh, motionClip_ );
+                return ChMeshConverter.ConvertToChMesh( dstmesh, smrs_.ElementAt( 0 ).bones );
             }
         }
 

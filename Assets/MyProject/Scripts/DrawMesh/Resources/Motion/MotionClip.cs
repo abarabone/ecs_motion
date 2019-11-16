@@ -116,36 +116,53 @@ namespace Abss.Motion
         {
             if( Selection.objects == null ) return;
 
-            var animationClips = extractAnimationClips( Selection.objects );
-            var streamPaths = extractStreamPaths( Selection.objects );
-            var indexMapping = makeBoneIndexMapping( Selection.objects, streamPaths );
-            var motionData = buildMotionData( animationClips );
+            var smr = getFirstSkinnedMeshRenderer( Selection.objects );
+            var animationClips = getAllAnimationClips( Selection.objects );
+
+            var streamPaths = makeStreamPaths( smr.bones );
+            var motionData = buildMotionData( animationClips, streamPaths );
 
             var motionClip = ScriptableObject.CreateInstance<MotionClip>();
             motionClip.StreamPaths = streamPaths;
-            motionClip.IndexMapFbxToMotion = indexMapping;
+            //motionClip.IndexMapFbxToMotion = indexMapping;
             motionClip.ClipNames = animationClips.Select( x => x.name ).ToArray();
             motionClip.MotionData = motionData;
 
             save( Selection.objects, motionClip );
-            /*	using( var a = new MotionDataInNative() )
-                using( var f = new StreamWriter( "C:/Users/abara/Desktop/output.txt" ) )
-                {
-                    a.ConvertFrom( motionClip );
-                    var q =
-                        from stream in a.pool.StreamSlices
-                        //from key in stream.Stream
-                        //select key
-                        select stream
-                        ;
-                    foreach( var i in q )
-                    {
-                        //f.WriteLine( $"{i.Time} {i.Value}" );
-                        f.WriteLine( $"{i.Stream.Length} {i.Stream.Stride}" );
-                    }
-                }*/
         }
 
+        static SkinnedMeshRenderer getFirstSkinnedMeshRenderer( UnityEngine.Object[] selectedObjects )
+        {
+            return selectedObjects
+                .OfType<GameObject>()
+                .Children()
+                .Where( go => go.name == "Mesh" )
+                .Children()
+                .Select( go => go.GetComponent<SkinnedMeshRenderer>() )
+                .Where( smr => smr != null )
+                .First();
+        }
+        static AnimationClip[] getAllAnimationClips( UnityEngine.Object[] selectedObjects )
+        {
+            return selectedObjects
+                .OfType<GameObject>()
+                .Select( go => AssetDatabase.GetAssetPath( go ) )
+                .Where( path => Path.GetExtension( path ) == ".fbx" )
+                .SelectMany( path => AssetDatabase.LoadAllAssetsAtPath( path ) )
+                .OfType<AnimationClip>()
+                .Where( clip => !clip.name.StartsWith( "__preview__" ) )
+                .ToArray();
+        }
+        // _ から始まるボーン名は無視される。
+        static string[] makeStreamPaths( Transform[] tfBones )
+        {
+            return tfBones
+                .Select( tfBone => tfBone.gameObject )
+                .Where( go => !go.name.StartsWith( "_" ) )
+                .MakePath()
+                .ToArray();
+        }
+        /*
         static AnimationClip[] extractAnimationClips( UnityEngine.Object[] selectedObjects )
         {
             // 選択されたアセットから AnimationClip を取得
@@ -214,7 +231,7 @@ namespace Abss.Motion
 
             return q.ToArray();
         }
-
+        */
 
         static MotionDataInAsset buildMotionData( AnimationClip[] animationClips, string[] streamPaths )
         {
@@ -258,22 +275,17 @@ namespace Abss.Motion
                 };
 
 
+            // セクション内のストリームをクエリする。並び順は、メッシュのボーンと同じ順序となる。
             IEnumerable<StreamDataUnit> queryKeyStreams
                 ( AnimationClip clip, IGrouping<string, EditorCurveBinding> section_group ) =>
-
-                //// ストリームでグループ化＆ソート
-                //from binding in section_group
-                //group binding by binding.path into stream_group
-                //let path = stream_group.Key
-                //orderby path
+                
                 from stream_path in streamPaths
                 join stream_group in
                     from binding in section_group
                     group binding by binding.path
                         on stream_path equals stream_group.Key
                 into x
-                from stream_group in x.DefaultIfEmpty() // 空の場合どうなる？？
-                
+                from stream_group in x.DefaultIfEmpty() // 空の場合どうする？？とりあえず空の配列にするけど
                 select new StreamDataUnit
                 {
                     StreamPath = stream_path,
