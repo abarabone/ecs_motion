@@ -153,7 +153,8 @@ namespace Abss.Arthuring
                 ( EntityManager em_, NativeArray<Entity> bonePrefabs_, Entity posturePrefab_, MotionClip motionClip_ )
             {
                 var qParentIds = motionClip_.StreamPaths
-                    .QueryParentIdList();
+                    //.QueryParentIdList();
+                    .Select( x => 0 );// まにあわせ
 
                 var qEnts = bonePrefabs_
                     .Prepend( posturePrefab_ )
