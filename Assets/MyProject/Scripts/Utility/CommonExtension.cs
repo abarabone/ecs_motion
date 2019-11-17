@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using Unity.Entities;
 using Unity.Collections;
 
@@ -237,7 +238,6 @@ namespace Abss.Common.Extension
                 em.SetComponentData( x.x, x.y );
             }
         }
-
         public static void AddComponentData<T>
             ( this EntityManager em, IEnumerable<Entity> entities, IEnumerable<T> components )
             where T : struct, IComponentData
@@ -247,6 +247,35 @@ namespace Abss.Common.Extension
                 em.AddComponentData( x.x, x.y );
             }
         }
+
+        [MethodImpl( MethodImplOptions.AggressiveInlining )]
+        public static void SetComponentData<T>
+            ( this EntityManager em, IEnumerable<Entity> entities, T component )
+            where T:struct,IComponentData
+        {
+            var q = Enumerable.Repeat( component, entities.getLength() );
+            em.SetComponentData( entities, q );
+        }
+        [MethodImpl( MethodImplOptions.AggressiveInlining )]
+        public static void AddComponentData<T>
+            ( this EntityManager em, IEnumerable<Entity> entities, T component )
+            where T : struct, IComponentData
+        {
+            var q = Enumerable.Repeat( component, entities.getLength() );
+            em.AddComponentData( entities, q );
+        }
+
+        [MethodImpl( MethodImplOptions.AggressiveInlining )]
+        static int getLength<T>( this IEnumerable<T> src ) where T:struct
+        {
+            switch( src )
+            {
+                case NativeArray<T> na: return na.Length;
+                case NativeList<T> nl: return nl.Length;
+                default: return src.Count();
+            }
+        }
+
 
         public static void SetLinkedEntityGroup
             ( this EntityManager em, Entity entity, IEnumerable<Entity> children )

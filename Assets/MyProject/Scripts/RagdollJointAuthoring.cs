@@ -7,6 +7,10 @@ using Unity.Physics;
 
 using Abss.Geometry;
 
+/// <summary>
+/// そのうち公式のやつを利用するようにしたい、物理系全般
+/// 問題は余計なコンポーネントデータが付くこと
+/// </summary>
 [RequireComponent(typeof(CharacterJoint))]
 public class RagdollJointAuthoring : MonoBehaviour
 {

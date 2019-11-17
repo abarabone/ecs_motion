@@ -23,6 +23,14 @@ namespace Abss.Motion
 
     //}
 
+    
+    public enum KeyStreamSection
+    {
+        positions,
+        rotations,
+        scales,
+        length
+    }
 
 
     // モーションクリップ（エディタ保管用） --------------------------
@@ -34,7 +42,7 @@ namespace Abss.Motion
         public string[] ClipNames;
 
         public string[] StreamPaths;
-        public int[] IndexMapFbxToMotion;// mesh.bones のインデックス → モーションストリームのインデックス
+        //public int[] IndexMapFbxToMotion;// mesh.bones のインデックス → モーションストリームのインデックス
 
         public MotionDataInAsset MotionData;
 

@@ -43,6 +43,12 @@ namespace Abss.Arthuring
         }
 
 
+        // ボーン
+        // ・ボーンＩＤは、SkinnedMeshRenderer.bones の並び順
+        // ・ボーン名が _ で始まるものは除外済み
+        // ・除外したうえでＩＤを 0 から振りなおされている
+        // ・モーションストリームはボーンに対応するようにソートされている
+        // ・ボーンとマスクの並び順は同じだと思われる
 
         public (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
             ( EntityManager em, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs, Entity drawPrefab )
@@ -52,23 +58,30 @@ namespace Abss.Arthuring
             //    Debug.Log( $"{x} {this.BoneMask.GetTransformActive( x )} {this.BoneMask.GetTransformPath( x ) }" );
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
-            var bindposes = this.GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh.bindposes;//
-            var mtBones = (bindposes, motionClip.IndexMapFbxToMotion).Zip()
-                .Where( x => x.y != -1 )
-                .OrderBy( x => x.y )
-                .Select( x => new float4x4(x.x.GetRow(0), x.x.GetRow(1), x.x.GetRow(2), x.x.GetRow(3)) )
+            var smr = this.GetComponentInChildren<SkinnedMeshRenderer>();//
+            var bindposes = ChMeshConverter.QueryEnabledBindPoses( smr.sharedMesh.bindposes, smr.bones );//
+
+            var mtBones = bindposes
+                .Select( x => new float4x4(x.GetRow(0), x.GetRow(1), x.GetRow(2), x.GetRow(3)) )
                 .Select( x => math.inverse(x) )
                 .ToArray();
-            var boneMasks = (Enumerable.Range( 1, bindposes.Length ), motionClip.IndexMapFbxToMotion).Zip()
-                .Where( x => x.y != -1 )
-                .OrderBy( x => x.y )
-                .Select( x => this.BoneMask.GetTransformActive( x.x ) )
-                .ToArray();
-            if( boneMasks.Length == 0 )
-                boneMasks = Enumerable.Repeat( true, bindposes.Length ).ToArray();
+
+            var enabledsAndPaths = queryEnabledsAndPaths().ToArray();
 
             return BonePrefabCreator.CreatePrefabs
-                ( em, drawPrefab, posStreamPrefabs, rotStreamPrefabs, motionClip, mtBones, boneMasks );
+                ( em, drawPrefab, posStreamPrefabs, rotStreamPrefabs, motionClip, mtBones, enabledsAndPaths );
+
+
+            IEnumerable<(bool isEnabled, string path)> queryEnabledsAndPaths()
+            {
+                if( this.BoneMask == null )
+                    return smr.bones.Select( x => x.gameObject ).MakePath().Select( x => (isEnabled: true, x) );
+
+                return
+                    from id in Enumerable.Range( 0, this.BoneMask.transformCount )
+                    select (isEnabled: this.BoneMask.GetTransformActive(id), path: this.BoneMask.GetTransformPath(id))
+                    ;
+            }
         }
     }
 
@@ -109,7 +122,7 @@ namespace Abss.Arthuring
         (
             EntityManager em,
             Entity drawPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs,
-            MotionClip motionClip, float4x4[] mtBones, bool[] boneMasks
+            MotionClip motionClip, float4x4[] mtBones, (bool isEnabled, string path)[] enabledsAndPaths
         )
         {
             var postArchetype = postureArchetypeCache.GetOrCreateArchetype( em );
@@ -119,6 +132,14 @@ namespace Abss.Arthuring
 
             
             var bonePrefabs = createBonePrefabs( em, mtBones.Length, boneArchetype );
+            var qNameAndBone =
+                from x in (enabledsAndPaths, bonePrefabs).Zip()
+                where x.x.isEnabled
+                let name = System.IO.Path.GetFileName(x.x.path)
+                let ent = x.y
+                select new NameAndEntity( name, ent );
+            var namesAndBones = qNameAndBone.ToArray();
+
             setBoneId( em, bonePrefabs, drawPrefab );
             setDrawLinks( em, bonePrefabs, drawPrefab, mtBones.Length );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip, boneMasks );
@@ -130,14 +151,7 @@ namespace Abss.Arthuring
             //    em.SetComponentData( bonePrefab, new Translation { Value = math.transpose(mtBone).c3.As_float3() } );
             //}
 
-            var qNameAndBone = motionClip.StreamPaths
-                .Select( x => System.IO.Path.GetFileName( x ) )
-                .Select( ( name, i ) => (name, i: motionClip.IndexMapFbxToMotion[ i ]) )
-                .Where( x => x.i != -1 )// ボーン対象外を省く
-                .Select( x => new NameAndEntity( x.name, bonePrefabs[ x.i ] ) );
-            var namesAndBones = qNameAndBone.ToArray();
-
-            addStreamLinks( em, namesAndBones, posStreamPrefabs, rotStreamPrefabs, boneMasks );
+            addStreamLinks( em, namesAndBones, posStreamPrefabs, rotStreamPrefabs );
 
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
             em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
@@ -173,12 +187,9 @@ namespace Abss.Arthuring
 
         static void addStreamLinks(
             EntityManager em_, NameAndEntity[] bonePrefabs_,
-            NameAndEntity[] posStreamPrefabs_, NameAndEntity[] rotStreamPrefabs_,
-            bool[] boneMasks_
+            NameAndEntity[] posStreamPrefabs_, NameAndEntity[] rotStreamPrefabs_
         )
         {
-            var enableLength = boneMasks_.Where( x => x ).Count();
-
             var qBoneAndStream =
                 from bone in bonePrefabs_
                 join pos in posStreamPrefabs_
