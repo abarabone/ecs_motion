@@ -224,40 +224,42 @@ namespace Abss.Arthuring
 
         static void setBoneRelationLinks(
             EntityManager em_,
-            NativeArray<Entity> bonePrefabs_, Entity posturePrefab_,
-            MotionClip motionClip_, bool[] boneMasks_
+            NativeArray<Entity> bonePrefabs_, Entity posturePrefab_, (bool isEnabled, string path)[] enabledsAndPaths_
         )
         {
+            var 
 
-            var qCurrent =
-                from x in (bonePrefabs_, boneMasks_).Zip()
+            var qCurrentEnt =
+                from x in (bonePrefabs_, enabledsAndPaths_).Zip()
                 let ent = x.x
-                let isEnable = x.y
-                where isEnable
+                where x.y.isEnabled
                 select ent
                 ;
-
-            var sourceEnts = bonePrefabs_
-                .Prepend( posturePrefab_ )
-                .ToArray();
-            var qParentEnt = motionClip_.StreamPaths
-                .QueryParentIdList()
+            
+            var qParentEnt =
+                from parentPath in
+                    from src in enabledsAndPaths_
+                    where src.isEnabled
+                    select System.IO.Path.GetDirectoryName(src.path)
+                join src in enabledsAndPaths_
+                    on parentPath equals src.path
+                select src
                 .Select( i => sourceEnts[ i + 1 ] );
-            var qParent =
-                from x in (qParentEnt, boneMasks_).Zip()
+            var qParentEnt =
+                from x in (qParentAllEnt, boneMasks_).Zip()
                 let ent = x.x
                 let isEnable = x.y
                 where isEnable
                 select ent
                 ;
 
-            var qNext = qCurrent
+            var qNext = qCurrentEnt
                 .Append( Entity.Null )
                 .Skip( 1 );
 
 
             var qBoneLinker =
-                from x in (qParent, qNext).Zip()
+                from x in (qParentEnt, qNext).Zip()
                 let parent = x.x
                 let next = x.y
                 select new BoneRelationLinkData
@@ -266,7 +268,7 @@ namespace Abss.Arthuring
                     NextBoneEntity = next,
                 };
 
-            em_.SetComponentData( qCurrent, qBoneLinker );
+            em_.SetComponentData( qCurrentEnt, qBoneLinker );
 
         }
 
