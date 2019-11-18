@@ -276,6 +276,58 @@ namespace Abss.Arthuring
             }
 
         }
+
+        
+        static void aaaa(
+            this EntityManager em, NameAndEntity[] bonePrefabs,
+            (NameAndEntity[] pos, NameAndEntity[] rot)[] streamPrefabs
+        )
+        {
+
+            var q =
+                from x in streamPrefabs.Select((x,i)=>(x,i))
+                from pos in x.x.pos
+                group (pos.Entity, x.i) by pos.Name
+                ;
+
+            var qq =
+                from x in q
+                select (
+                    name: x.Key,
+                    stream: from y in x
+                            orderby y.i
+                            select (channel: y.i, ent: y.Entity)
+                );
+
+            var qqq =
+                from bone in bonePrefabs
+                join stream in qq
+                    on bone.Name equals stream.name
+                select (bone: bone.Entity, stream.stream)
+                ;
+            foreach( var i in qqq )
+            {
+                switch( i.stream.Count() )
+                {
+                    case 1:
+                        var linker = new BoneStreamLinkData
+                        {
+                            PositionStreamEntity = i.stream.First().ent,
+                        };
+                        em.AddComponentData( i.bone, linker );
+                        break;
+                    case 2:
+                        var blend2 = new BoneStreamLinkBlend2Data
+                        {
+
+                        }
+                    case 3:
+                }
+                
+
+            }
+            
+        }
     }
 
 
