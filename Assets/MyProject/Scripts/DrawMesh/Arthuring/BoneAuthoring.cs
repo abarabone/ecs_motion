@@ -27,7 +27,7 @@ namespace Abss.Arthuring
         public float Weight;
     }
 
-    public class BoneAuthoring : MonoBehaviour, CharacterAuthoring.IBoneConverter
+    public class BoneAuthoring : MonoBehaviour//, CharacterAuthoring.IBoneConverter
     {
 
         public MotionTargetUnit[] Motions;
@@ -51,7 +51,7 @@ namespace Abss.Arthuring
         // ・ボーンとマスクの並び順は同じだと思われる
 
         public (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
-            ( EntityManager em, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs, Entity drawPrefab )
+            ( EntityManager em, IEnumerable<StreamEntityUnit[]> streamPrefabss, Entity drawPrefab )
         {
 
             var smr = this.GetComponentInChildren<SkinnedMeshRenderer>();//
@@ -59,8 +59,7 @@ namespace Abss.Arthuring
             var enabledsAndPaths = queryEnabledsAndPaths_().ToArray();
             var mtBones = queryBoneMatrixes_().ToArray();
 
-            return BonePrefabCreator.CreatePrefabs
-                ( em, drawPrefab, posStreamPrefabs, rotStreamPrefabs, mtBones, enabledsAndPaths );
+            return BonePrefabCreator.CreatePrefabs( em, drawPrefab, streamPrefabss, mtBones, enabledsAndPaths );
 
 
             IEnumerable<float4x4> queryBoneMatrixes_()
@@ -134,7 +133,7 @@ namespace Abss.Arthuring
         static public (NameAndEntity[] bonePrefabs, Entity posturePrefab) CreatePrefabs
         (
             EntityManager em,
-            Entity drawPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs,
+            Entity drawPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss,
             float4x4[] mtBones, (bool isEnabled, string path)[] enabledsAndPaths
         )
         {
@@ -159,7 +158,7 @@ namespace Abss.Arthuring
             em.setBoneId( bonePrefabs, drawPrefab );
             em.setBoneRelationLinks( posturePrefab, boneNameAndPrefabs, enabledsAndPaths );
             em.removeBoneRelationLinks( bonePrefabs, qBoneMasks );
-            em.addStreamLinks( boneNameAndPrefabs, posStreamPrefabs, rotStreamPrefabs );
+            em.addBoneStreamLinkData( boneNameAndPrefabs, streamPrefabss );
 
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
             em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
@@ -196,30 +195,30 @@ namespace Abss.Arthuring
             );
         }
 
-        static void addStreamLinks(
-            this EntityManager em_, NameAndEntity[] bonePrefabs_,
-            NameAndEntity[] posStreamPrefabs_, NameAndEntity[] rotStreamPrefabs_
-        )
-        {
-            var qBoneAndStream =
-                from bone in bonePrefabs_
-                join pos in posStreamPrefabs_
-                    on bone.Name equals pos.Name
-                join rot in rotStreamPrefabs_
-                    on bone.Name equals rot.Name
-                select (bone, pos, rot)
-                ;
-            foreach( var (bone, pos, rot) in qBoneAndStream )
-            {
-                em_.AddComponentData( bone.Entity,
-                    new BoneStreamLinkData
-                    {
-                        PositionStreamEntity = pos.Entity,
-                        RotationStreamEntity = rot.Entity,
-                    }
-                );
-            }
-        }
+        //static void addStreamLinks(
+        //    this EntityManager em_, NameAndEntity[] bonePrefabs_,
+        //    NameAndEntity[] posStreamPrefabs_, NameAndEntity[] rotStreamPrefabs_
+        //)
+        //{
+        //    var qBoneAndStream =
+        //        from bone in bonePrefabs_
+        //        join pos in posStreamPrefabs_
+        //            on bone.Name equals pos.Name
+        //        join rot in rotStreamPrefabs_
+        //            on bone.Name equals rot.Name
+        //        select (bone, pos, rot)
+        //        ;
+        //    foreach( var (bone, pos, rot) in qBoneAndStream )
+        //    {
+        //        em_.AddComponentData( bone.Entity,
+        //            new BoneStream0LinkData
+        //            {
+        //                PositionStreamEntity = pos.Entity,
+        //                RotationStreamEntity = rot.Entity,
+        //            }
+        //        );
+        //    }
+        //}
 
         static void setBoneRelationLinks(
             this EntityManager em_,
@@ -272,61 +271,63 @@ namespace Abss.Arthuring
             foreach( var x in qDisEnables )
             {
                 em_.RemoveComponent<BoneRelationLinkData>( x );
-                em_.RemoveComponent<BoneStreamLinkData>( x );
+                em_.RemoveComponent<BoneStream0LinkData>( x );
             }
 
         }
 
-        
-        static void aaaa(
-            this EntityManager em, NameAndEntity[] bonePrefabs,
-            (NameAndEntity[] pos, NameAndEntity[] rot)[] streamPrefabs
+
+        static void addBoneStreamLinkData(
+            this EntityManager em, 
+            NameAndEntity[] bonePrefabs, IEnumerable<StreamEntityUnit[]> streamPrefabss
         )
         {
-
-            var q =
-                from x in streamPrefabs.Select((x,i)=>(x,i))
-                from pos in x.x.pos
-                group (pos.Entity, x.i) by pos.Name
+            var qNameAndChannel =
+                from motion in streamPrefabss.Select( ( x, i ) => (x, i) )
+                from st in motion.x
+                group (channel: motion.i, st.Position, st.Rotation, st.Scale) by st.Name
+                ;
+            var qBoneLinked =
+                from st in qNameAndChannel
+                join bn in bonePrefabs
+                    on st.Key equals bn.Name
+                select (bone:bn.Entity, stream:st)
                 ;
 
-            var qq =
-                from x in q
-                select (
-                    name: x.Key,
-                    stream: from y in x
-                            orderby y.i
-                            select (channel: y.i, ent: y.Entity)
-                );
-
-            var qqq =
-                from bone in bonePrefabs
-                join stream in qq
-                    on bone.Name equals stream.name
-                select (bone: bone.Entity, stream.stream)
-                ;
-            foreach( var i in qqq )
+            foreach( var x in qBoneLinked )
             {
-                switch( i.stream.Count() )
+                var ist = x.stream.GetEnumerator();
+
+                var st0 = ist.Current;
+                var linker0 = new BoneStream0LinkData
                 {
-                    case 1:
-                        var linker = new BoneStreamLinkData
-                        {
-                            PositionStreamEntity = i.stream.First().ent,
-                        };
-                        em.AddComponentData( i.bone, linker );
-                        break;
-                    case 2:
-                        var blend2 = new BoneStreamLinkBlend2Data
-                        {
+                    PositionStreamEntity = st0.Position,
+                    RotationStreamEntity = st0.Rotation,
+                };
+                em.AddComponentData( x.bone, linker0 );
 
-                        }
-                    case 3:
-                }
+                if( !ist.MoveNext() ) continue;
+
+                var st1 = ist.Current;
+                var linker1 = new BoneStream1LinkData
+                {
+                    PositionStreamEntity = st1.Position,
+                    RotationStreamEntity = st1.Rotation,
+                };
+                em.AddComponentData( x.bone, linker1 );
                 
+                if( !ist.MoveNext() ) continue;
 
+                var st2 = ist.Current;
+                var linker2 = new BoneStream2LinkData
+                {
+                    PositionStreamEntity = st2.Position,
+                    RotationStreamEntity = st2.Rotation,
+                };
+                em.AddComponentData( x.bone, linker2 );
+
+                ist.Dispose();
             }
-            
         }
     }
 

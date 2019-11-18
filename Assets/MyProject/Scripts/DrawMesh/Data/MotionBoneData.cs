@@ -25,21 +25,22 @@ namespace Abss.Motion
         public Entity ParentBoneEntity;
     }
 
-    public struct BoneStreamLinkData : IComponentData
+    public struct BoneStream0LinkData : IComponentData
+    {
+        public Entity PositionStreamEntity;
+        public Entity RotationStreamEntity;
+    }
+    public struct BoneStream1LinkData : IComponentData
+    {
+        public Entity PositionStreamEntity;
+        public Entity RotationStreamEntity;
+    }
+    public struct BoneStream2LinkData : IComponentData
     {
         public Entity PositionStreamEntity;
         public Entity RotationStreamEntity;
     }
 
-    public struct BoneStreamLinkBlend2Data : IComponentData
-    {
-        public Entity PositionStream0Entity;
-        public Entity RotationStream0Entity;
-        public Entity PositionStream1Entity;
-        public Entity RotationStream1Entity;
-
-        public float weight0;// 0.0 - 1.0
-    }
 
     public struct BoneDrawLinkData : IComponentData
     {

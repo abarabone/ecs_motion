@@ -33,8 +33,9 @@ namespace Abss.Arthuring
         }
 
 
-        public (Entity motionPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefab)
-            Convert( EntityManager em, Entity drawPrefab )
+        //public (Entity motionPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefab)
+        public (Entity motionPrefab, StreamEntityUnit[] streamPrefabs) Convert
+            ( EntityManager em, Entity drawPrefab )
         {
 
             var motionClip = this.MotionClip;
@@ -55,7 +56,7 @@ namespace Abss.Arthuring
                         .CreatePrefab( em, drawPrefab, motionClip, enabledBoneIds );
             }
 
-            return (Entity.Null, null, null);
+            return (Entity.Null, null);
 
 
             int[] makeEnabledBoneIds_()
@@ -159,12 +160,20 @@ namespace Abss.Arthuring
 
 
 
+    public struct StreamEntityUnit
+    {
+        public string Name;
+        public Entity Position;
+        public Entity Rotation;
+        public Entity Scale;
+    }
 
 
     static public class MotionPrefabCreator
     {
 
-        static public (Entity motionPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs)
+        //static public (Entity motionPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs)
+        static public (Entity motionPrefab, StreamEntityUnit[] streamPrefabs)
             CreatePrefab
             (
                 this (ComponentType[] motion, ComponentType[] stream) archetypes,
@@ -175,18 +184,19 @@ namespace Abss.Arthuring
             var streamArchetype = archetypes.stream.GetOrCreate( em );
 
             var motionPrefab = createMotionPrefab( em, motionClip, motionArchetype );
-            var posStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionPrefab, motionClip, enabledBoneIds, streamArchetype );
-            var rotStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionPrefab, motionClip, enabledBoneIds, streamArchetype );
+            var posStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionPrefab, enabledBoneIds, streamArchetype );
+            var rotStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionPrefab, enabledBoneIds, streamArchetype );
             
             em.SetComponentData( motionPrefab,
                 new MotionStreamLinkData
                 {
-                    PositionStreamTop = posStreamPrefabs.First().Entity,
-                    RotationStreamTop = rotStreamPrefabs.First().Entity,
+                    PositionStreamTop = posStreamPrefabs[0],
+                    RotationStreamTop = rotStreamPrefabs[0],
                 }
             );
-            
-            return (motionPrefab, posStreamPrefabs, rotStreamPrefabs);
+
+            var qStream = queryStreamEntityUnit( posStreamPrefabs, rotStreamPrefabs, motionClip, enabledBoneIds );
+            return (motionPrefab, qStream.ToArray());
         }
 
 
@@ -205,23 +215,23 @@ namespace Abss.Arthuring
         
 
         // ストリームエンティティ生成
-        static NameAndEntity[] createStreamOfSectionPrefabs(
+        static NativeArray<Entity> createStreamOfSectionPrefabs(
             EntityManager em, Entity drawPrefab, Entity motionPrefab,
-            MotionClip motionClip, int[] enabledBoneIds, EntityArchetype streamArchetype
+            int[] enabledBoneIds, EntityArchetype streamArchetype
         )
         {
 
-            using( var streamEntities = new NativeArray<Entity>( enabledBoneIds.Length, Allocator.Temp ) )
-            {
-                em.CreateEntity( streamArchetype, streamEntities );
+            var streamEntities = new NativeArray<Entity>( enabledBoneIds.Length, Allocator.Temp );
+            
+            em.CreateEntity( streamArchetype, streamEntities );
 
-                setStreamRelation_( streamEntities, enabledBoneIds );
-                em.SetComponentData( streamEntities, new StreamDrawLinkData { DrawEntity = drawPrefab } );
-                em.SetComponentData( streamEntities, new StreamMotionLinkData { MotionEntity = motionPrefab } );
+            setStreamRelation_( streamEntities, enabledBoneIds );
+            em.SetComponentData( streamEntities, new StreamDrawLinkData { DrawEntity = drawPrefab } );
+            em.SetComponentData( streamEntities, new StreamMotionLinkData { MotionEntity = motionPrefab } );
 
-                return createNamesAndStreamPrefabs_( streamEntities, motionClip.StreamPaths, enabledBoneIds );
-            }
-
+            //return createNamesAndStreamPrefabs_( streamEntities, motionClip.StreamPaths, enabledBoneIds );
+            return streamEntities;
+            
 
             void setStreamRelation_( NativeArray<Entity> streamEntities_, int[] enabledIds_ )
             {
@@ -242,18 +252,34 @@ namespace Abss.Arthuring
                 em.SetComponentData( streamEntities_, qNextLinker );
             }
 
-            NameAndEntity[] createNamesAndStreamPrefabs_
-                ( NativeArray<Entity> streamEntities_, string[] streamPaths_, int[] enabledIds_ )
-            {
-                var qNames =
-                    from i in enabledIds_
-                    select System.IO.Path.GetFileName( streamPaths_[i] )
-                    ;
+            //NameAndEntity[] createNamesAndStreamPrefabs_
+            //    ( NativeArray<Entity> streamEntities_, string[] streamPaths_, int[] enabledIds_ )
+            //{
+            //    var qNames =
+            //        from i in enabledIds_
+            //        select System.IO.Path.GetFileName( streamPaths_[i] )
+            //        ;
                     
-                return (qNames, streamEntities_)
-                    .Zip( ( name, ent ) => new NameAndEntity( name, ent ) )
-                    .ToArray();
-            }
+            //    return (qNames, streamEntities_)
+            //        .Zip( ( name, ent ) => new NameAndEntity( name, ent ) )
+            //        .ToArray();
+            //}
+        }
+
+        static IEnumerable<StreamEntityUnit> queryStreamEntityUnit(
+            IEnumerable<Entity> posStreamPrefabs, IEnumerable<Entity> rotStreamPrefabs,
+            MotionClip motionClip, int[] enabledBoneIds
+        )
+        {
+            return
+                from x in (enabledBoneIds, posStreamPrefabs, rotStreamPrefabs).Zip()
+                select new StreamEntityUnit
+                {
+                    Name = System.IO.Path.GetFileName( motionClip.StreamPaths[ x.x ] ),
+                    Position = x.y,
+                    Rotation = x.z,
+                    Scale = Entity.Null,
+                };
         }
 
     }

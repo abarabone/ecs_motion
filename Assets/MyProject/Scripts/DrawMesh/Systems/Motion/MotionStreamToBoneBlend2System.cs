@@ -42,7 +42,7 @@ namespace Abss.Motion
         [BurstCompile]
         public struct StreamToBoneJob : IJobForEach
             //<BoneStreamLinkData, Translation, Rotation>
-            <BoneStreamLinkBlend2Data, BoneLocalValueData>
+            <BoneStream0LinkData, BoneStream1LinkData, BoneLocalValueData>
         {
 
             [ReadOnly]
@@ -50,22 +50,23 @@ namespace Abss.Motion
 
 
             public void Execute(
-                [ReadOnly]  ref BoneStreamLinkBlend2Data streamLinker,
+                [ReadOnly]  ref BoneStream0LinkData stream0Linker,
+                [ReadOnly]  ref BoneStream1LinkData stream1Linker,
                 [WriteOnly] ref BoneLocalValueData local
             )
             {
 
-                var pos0 = this.StreamValues[ streamLinker.PositionStream0Entity ].Value.As_float3();
-                var rot0 = this.StreamValues[ streamLinker.RotationStream0Entity ].Value.As_quaternion();
+                //var pos0 = this.StreamValues[ streamLinker.PositionStream0Entity ].Value.As_float3();
+                //var rot0 = this.StreamValues[ streamLinker.RotationStream0Entity ].Value.As_quaternion();
 
-                var pos1 = this.StreamValues[ streamLinker.PositionStream1Entity ].Value.As_float3();
-                var rot1 = this.StreamValues[ streamLinker.RotationStream1Entity ].Value.As_quaternion();
+                //var pos1 = this.StreamValues[ streamLinker.PositionStream1Entity ].Value.As_float3();
+                //var rot1 = this.StreamValues[ streamLinker.RotationStream1Entity ].Value.As_quaternion();
 
-                var wei0 = streamLinker.weight0;
-                var wei1 = 1.0f - streamLinker.weight0;
+                //var wei0 = streamLinker.weight0;
+                //var wei1 = 1.0f - streamLinker.weight0;
 
-                local.Position = pos0 * wei0 + pos1 * wei1;
-                local.Rotation = math.slerp( rot0, rot1, wei0 );
+                //local.Position = pos0 * wei0 + pos1 * wei1;
+                //local.Rotation = math.slerp( rot0, rot1, wei0 );
                 
             }
         }

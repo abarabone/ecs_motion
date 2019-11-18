@@ -20,7 +20,7 @@ using Abss.Common.Extension;
 namespace Abss.Arthuring
 {
     
-    public class BoneLvAuthoring : MonoBehaviour, CharacterAuthoring.IBoneConverter
+    public class BoneLvAuthoring : MonoBehaviour//, CharacterAuthoring.IBoneConverter
     {
 
         public MotionTargetUnit[] Motions;
@@ -61,7 +61,7 @@ namespace Abss.Arthuring
             (
                 //typeof( BoneRelationLinkData ),
                 typeof( BoneDrawLinkData ),
-                typeof( BoneStreamLinkData ),
+                typeof( BoneStream0LinkData ),
                 typeof( BoneIndexData ),
                 typeof( BoneDrawTargetIndexWorkData ),
                 typeof( Translation ),
@@ -127,7 +127,7 @@ namespace Abss.Arthuring
                     .Take( boneLength );
                 var qStreamlinkers =
                     from ents in (qPosStreams, qRotStreams).Zip()
-                    select new BoneStreamLinkData
+                    select new BoneStream0LinkData
                     {
                         PositionStreamEntity = ents.x,
                         RotationStreamEntity = ents.y,
