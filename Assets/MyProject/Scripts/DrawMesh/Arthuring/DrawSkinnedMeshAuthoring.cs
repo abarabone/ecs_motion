@@ -15,6 +15,7 @@ using Abss.Draw;
 
 namespace Abss.Arthuring
 {
+    [DisallowMultipleComponent]
     class DrawSkinnedMeshAuthoring : MonoBehaviour
     {
 

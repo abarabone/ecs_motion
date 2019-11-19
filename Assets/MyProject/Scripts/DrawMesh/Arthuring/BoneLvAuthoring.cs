@@ -19,8 +19,8 @@ using Abss.Common.Extension;
 
 namespace Abss.Arthuring
 {
-    
-    public class BoneLvAuthoring : MonoBehaviour//, CharacterAuthoring.IBoneConverter
+    [DisallowMultipleComponent]
+    public class BoneLvAuthoring : MonoBehaviour
     {
 
         public MotionTargetUnit[] Motions;

@@ -27,7 +27,8 @@ namespace Abss.Arthuring
         public float Weight;
     }
 
-    public class BoneAuthoring : MonoBehaviour//, CharacterAuthoring.IBoneConverter
+    [DisallowMultipleComponent]
+    public class BoneAuthoring : MonoBehaviour
     {
 
         public MotionTargetUnit[] Motions;
@@ -51,7 +52,7 @@ namespace Abss.Arthuring
         // ・ボーンとマスクの並び順は同じだと思われる
 
         public (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
-            ( EntityManager em, IEnumerable<StreamEntityUnit[]> streamPrefabss, Entity drawPrefab )
+            ( EntityManager em, Entity MotionPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss, Entity drawPrefab )
         {
 
             var smr = this.GetComponentInChildren<SkinnedMeshRenderer>();//
@@ -59,7 +60,7 @@ namespace Abss.Arthuring
             var enabledsAndPaths = queryEnabledsAndPaths_().ToArray();
             var mtBones = queryBoneMatrixes_().ToArray();
 
-            return BonePrefabCreator.CreatePrefabs( em, drawPrefab, streamPrefabss, mtBones, enabledsAndPaths );
+            return BonePrefabCreator.CreatePrefabs( em, drawPrefab, MotionPrefab, streamPrefabss, mtBones, enabledsAndPaths );
 
 
             IEnumerable<float4x4> queryBoneMatrixes_()
@@ -119,7 +120,7 @@ namespace Abss.Arthuring
             (
                 typeof( BoneRelationLinkData ),
                 typeof( BoneDrawLinkData ),
-                //typeof( BoneStreamLinkData ),// 剛体には必要ないので必要な場合に add するようにした
+                //typeof( BoneStream0LinkData ),// 剛体には必要ないので必要な場合に add するようにした　ブレンドの場合には複数必要だし
                 typeof( BoneIndexData ),
                 typeof( BoneDrawTargetIndexWorkData ),
                 typeof( Translation ),
@@ -133,7 +134,7 @@ namespace Abss.Arthuring
         static public (NameAndEntity[] bonePrefabs, Entity posturePrefab) CreatePrefabs
         (
             EntityManager em,
-            Entity drawPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss,
+            Entity drawPrefab, Entity motionPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss,
             float4x4[] mtBones, (bool isEnabled, string path)[] enabledsAndPaths
         )
         {
@@ -158,7 +159,7 @@ namespace Abss.Arthuring
             em.setBoneId( bonePrefabs, drawPrefab );
             em.setBoneRelationLinks( posturePrefab, boneNameAndPrefabs, enabledsAndPaths );
             em.removeBoneRelationLinks( bonePrefabs, qBoneMasks );
-            em.addBoneStreamLinkData( boneNameAndPrefabs, streamPrefabss );
+            em.addBoneStreamLinkData( motionPrefab, boneNameAndPrefabs, streamPrefabss );
 
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
             em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
@@ -194,32 +195,7 @@ namespace Abss.Arthuring
                 select new BoneIndexData { ModelIndex = draw.ModelIndex, BoneId = x }
             );
         }
-
-        //static void addStreamLinks(
-        //    this EntityManager em_, NameAndEntity[] bonePrefabs_,
-        //    NameAndEntity[] posStreamPrefabs_, NameAndEntity[] rotStreamPrefabs_
-        //)
-        //{
-        //    var qBoneAndStream =
-        //        from bone in bonePrefabs_
-        //        join pos in posStreamPrefabs_
-        //            on bone.Name equals pos.Name
-        //        join rot in rotStreamPrefabs_
-        //            on bone.Name equals rot.Name
-        //        select (bone, pos, rot)
-        //        ;
-        //    foreach( var (bone, pos, rot) in qBoneAndStream )
-        //    {
-        //        em_.AddComponentData( bone.Entity,
-        //            new BoneStream0LinkData
-        //            {
-        //                PositionStreamEntity = pos.Entity,
-        //                RotationStreamEntity = rot.Entity,
-        //            }
-        //        );
-        //    }
-        //}
-
+        
         static void setBoneRelationLinks(
             this EntityManager em_,
             Entity posturePrefab_, NameAndEntity[] bonePrefabs_,
@@ -277,8 +253,19 @@ namespace Abss.Arthuring
         }
 
 
+        static void addMotionBendWeightData( this EntityManager em, Entity motionPrefab, int motionLength )
+        {
+            switch( motionLength )
+            {
+                case 2: em.SetComponentData( motionPrefab, new BoneBlend2WeightData { WeightNormalized0 = 0.5f, WeightNormalized1=0.5f } );
+                    break;
+                case 3: em.SetComponentData( motionPrefab, new BoneBlend3WeightData { } );
+                    break;
+            }
+        }
+
         static void addBoneStreamLinkData(
-            this EntityManager em, 
+            this EntityManager em, Entity MotionPrefab,
             NameAndEntity[] bonePrefabs, IEnumerable<StreamEntityUnit[]> streamPrefabss
         )
         {
@@ -298,6 +285,9 @@ namespace Abss.Arthuring
             {
                 var ist = x.stream.GetEnumerator();
 
+
+                if( !ist.MoveNext() ) continue;
+
                 var st0 = ist.Current;
                 var linker0 = new BoneStream0LinkData
                 {
@@ -307,6 +297,10 @@ namespace Abss.Arthuring
                 em.AddComponentData( x.bone, linker0 );
 
                 if( !ist.MoveNext() ) continue;
+
+
+                em.AddComponentData( x.bone, new BoneMotionLinkData { MotionEntity = MotionPrefab } );
+
 
                 var st1 = ist.Current;
                 var linker1 = new BoneStream1LinkData
@@ -325,8 +319,6 @@ namespace Abss.Arthuring
                     RotationStreamEntity = st2.Rotation,
                 };
                 em.AddComponentData( x.bone, linker2 );
-
-                ist.Dispose();
             }
         }
     }

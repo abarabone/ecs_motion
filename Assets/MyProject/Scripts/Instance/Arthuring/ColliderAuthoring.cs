@@ -29,6 +29,7 @@ namespace Abss.Arthuring
     /// <summary>
     /// 未整理
     /// </summary>
+    [DisallowMultipleComponent]
     public class ColliderAuthoring : MonoBehaviour
     {
         

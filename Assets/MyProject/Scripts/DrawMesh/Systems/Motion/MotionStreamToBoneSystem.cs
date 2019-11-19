@@ -39,7 +39,7 @@ namespace Abss.Motion
 
 
 
-        [BurstCompile]
+        [BurstCompile, ExcludeComponent( typeof( BoneStream1LinkData ), typeof( BoneStream2LinkData ) )]
         public struct StreamToBoneJob : IJobForEach
             //<BoneStreamLinkData, Translation, Rotation>
             <BoneStream0LinkData, BoneLocalValueData>

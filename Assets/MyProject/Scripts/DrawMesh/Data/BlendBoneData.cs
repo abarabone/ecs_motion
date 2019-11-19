@@ -18,32 +18,41 @@ using Abss.Geometry;
 namespace Abss.Motion
 {
 
+    
+	public struct BoneBlend2WeightData : IComponentData
+    {
+        public float WeightNormalized0;
+        public float WeightNormalized1;
+    }
+    public struct BoneBlend3WeightData : IComponentData
+    {
+        public float WeightNormalized0;
+        public float WeightNormalized1;
+        public float WeightNormalized2;
+    }
 
-	public struct BlendBoneSourceLinkData : IComponentData
-	{
-		public Entity	SrcBone0;
-		public Entity	SrcBone1;
-	}
-
-	public struct BlendBoneWeightData : IComponentData
-	{
-		public float	WeightNormalized;
-	}
-
-	public struct BlendBoneFadeData : IComponentData
+    public struct BlendBoneFadeData : IComponentData
 	{
 		public float	FadeTime;
 	}
 
-
+    
 
 
 	static public class BlendExtension
 	{
-		static public void SetWeight( ref this BlendBoneWeightData data, float weight0, float weight1 )
+		static public void SetWeight( ref this BoneBlend2WeightData data, float weight0, float weight1 )
 		{
-			data.WeightNormalized = weight0 / ( weight0 + weight1 );
-		}
-	}
+			data.WeightNormalized0 = weight0 / ( weight0 + weight1 );
+            data.WeightNormalized1 = 1.0f - data.WeightNormalized0;
+        }
+        static public void SetWeight( ref this BoneBlend3WeightData data, float weight0, float weight1, float weight2 )
+        {
+            var totalWeight = weight0 + weight1 + weight2;
+            data.WeightNormalized0 = weight0 / totalWeight;
+            data.WeightNormalized1 = weight1 / totalWeight;
+            data.WeightNormalized2 = 1.0f - (data.WeightNormalized0 + data.WeightNormalized1);
+        }
+    }
 
 }

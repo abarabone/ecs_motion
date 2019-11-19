@@ -30,6 +30,7 @@ namespace Abss.Motion
 
             inputDeps = new StreamToBoneJob
             {
+                Blends = this.GetComponentDataFromEntity<BoneBlend2WeightData>( isReadOnly: true ),
                 StreamValues = this.GetComponentDataFromEntity<StreamInterpolatedData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
@@ -39,35 +40,41 @@ namespace Abss.Motion
 
 
 
-        [BurstCompile]
+        [BurstCompile, ExcludeComponent(typeof(BoneStream2LinkData))]
         public struct StreamToBoneJob : IJobForEach
             //<BoneStreamLinkData, Translation, Rotation>
-            <BoneStream0LinkData, BoneStream1LinkData, BoneLocalValueData>
+            <BoneMotionLinkData, BoneStream0LinkData, BoneStream1LinkData, BoneLocalValueData>
         {
+
+            [ReadOnly]
+            public ComponentDataFromEntity<BoneBlend2WeightData> Blends;
 
             [ReadOnly]
             public ComponentDataFromEntity<StreamInterpolatedData> StreamValues;
 
 
             public void Execute(
+                [ReadOnly]  ref BoneMotionLinkData linker,
                 [ReadOnly]  ref BoneStream0LinkData stream0Linker,
                 [ReadOnly]  ref BoneStream1LinkData stream1Linker,
                 [WriteOnly] ref BoneLocalValueData local
             )
             {
 
-                //var pos0 = this.StreamValues[ streamLinker.PositionStream0Entity ].Value.As_float3();
-                //var rot0 = this.StreamValues[ streamLinker.RotationStream0Entity ].Value.As_quaternion();
+                var pos0 = this.StreamValues[ stream0Linker.PositionStreamEntity ].Value.As_float3();
+                var rot0 = this.StreamValues[ stream0Linker.RotationStreamEntity ].Value.As_quaternion();
 
-                //var pos1 = this.StreamValues[ streamLinker.PositionStream1Entity ].Value.As_float3();
-                //var rot1 = this.StreamValues[ streamLinker.RotationStream1Entity ].Value.As_quaternion();
+                var pos1 = this.StreamValues[ stream1Linker.PositionStreamEntity ].Value.As_float3();
+                var rot1 = this.StreamValues[ stream1Linker.RotationStreamEntity ].Value.As_quaternion();
 
-                //var wei0 = streamLinker.weight0;
-                //var wei1 = 1.0f - streamLinker.weight0;
+                var blendWeight = this.Blends[ linker.MotionEntity ];
 
-                //local.Position = pos0 * wei0 + pos1 * wei1;
-                //local.Rotation = math.slerp( rot0, rot1, wei0 );
-                
+                var wei0 = blendWeight.WeightNormalized0;
+                var wei1 = blendWeight.WeightNormalized1;
+
+                local.Position = pos0 * wei0 + pos1 * wei1;
+                local.Rotation = math.slerp( rot0, rot1, wei0 );
+
             }
         }
 

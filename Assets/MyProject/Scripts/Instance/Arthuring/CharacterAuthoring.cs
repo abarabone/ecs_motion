@@ -20,16 +20,10 @@ using Abss.Common.Extension;
 namespace Abss.Arthuring
 {
 
-
+    [DisallowMultipleComponent]
     public class CharacterAuthoring : PrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
     {
-
-        //public interface IBoneConverter
-        //{
-        //    (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
-        //        ( EntityManager em, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefabs, Entity drawPrefab );
-        //}
-
+        
 
         public override Entity Convert
             ( EntityManager em, DrawMeshResourceHolder drawResources )
@@ -47,14 +41,19 @@ namespace Abss.Arthuring
             var colliderAuthor = this.GetComponent<ColliderAuthoring>();
             var jointPrefabs = colliderAuthor.Convert( em, posturePrefab, bonePrefabs );
 
+            var qStream =
+                from x in motionAndStreamPrefabs
+                from y in x.streamPrefabs
+                select y
+                ;
             var qChildren = Enumerable
                 .Empty<Entity>()
                 .Append( posturePrefab )
                 .Append( drawPrefab )
-                .Append( motionAndStreamPrefabs.Select(x=>x.motionPrefab).First() )
-                //.Concat( motionAndStreamPrefabs.Select( x => x.streamPrefabs.Select( st => st.Position ) ) )
-                //.Concat( motionAndStreamPrefabs.Select( x => x.streamPrefabs.Select( st => st.Rotation ) ) )
-                .Concat( bonePrefabs.Select(x=>x.Entity) )
+                .Append( (from x in motionAndStreamPrefabs select x.motionPrefab).First() )
+                .Concat( from x in qStream select x.Position )
+                .Concat( from x in qStream select x.Rotation )
+                .Concat( bonePrefabs.Select( x => x.Entity ) )
                 .Concat( jointPrefabs )
                 ;
 

@@ -195,7 +195,7 @@ namespace Abss.Arthuring
                 }
             );
 
-            var qStream = queryStreamEntityUnit( posStreamPrefabs, rotStreamPrefabs, motionClip, enabledBoneIds );
+            var qStream = queryStreamEntityUnit( posStreamPrefabs, rotStreamPrefabs, motionClip.StreamPaths, enabledBoneIds );
             return (motionPrefab, qStream.ToArray());
         }
 
@@ -228,8 +228,7 @@ namespace Abss.Arthuring
             setStreamRelation_( streamEntities, enabledBoneIds );
             em.SetComponentData( streamEntities, new StreamDrawLinkData { DrawEntity = drawPrefab } );
             em.SetComponentData( streamEntities, new StreamMotionLinkData { MotionEntity = motionPrefab } );
-
-            //return createNamesAndStreamPrefabs_( streamEntities, motionClip.StreamPaths, enabledBoneIds );
+            
             return streamEntities;
             
 
@@ -251,31 +250,18 @@ namespace Abss.Arthuring
                     };
                 em.SetComponentData( streamEntities_, qNextLinker );
             }
-
-            //NameAndEntity[] createNamesAndStreamPrefabs_
-            //    ( NativeArray<Entity> streamEntities_, string[] streamPaths_, int[] enabledIds_ )
-            //{
-            //    var qNames =
-            //        from i in enabledIds_
-            //        select System.IO.Path.GetFileName( streamPaths_[i] )
-            //        ;
-                    
-            //    return (qNames, streamEntities_)
-            //        .Zip( ( name, ent ) => new NameAndEntity( name, ent ) )
-            //        .ToArray();
-            //}
         }
 
         static IEnumerable<StreamEntityUnit> queryStreamEntityUnit(
             IEnumerable<Entity> posStreamPrefabs, IEnumerable<Entity> rotStreamPrefabs,
-            MotionClip motionClip, int[] enabledBoneIds
+            string[] streamPaths, int[] enabledBoneIds
         )
         {
             return
                 from x in (enabledBoneIds, posStreamPrefabs, rotStreamPrefabs).Zip()
                 select new StreamEntityUnit
                 {
-                    Name = System.IO.Path.GetFileName( motionClip.StreamPaths[ x.x ] ),
+                    Name = System.IO.Path.GetFileName( streamPaths[ x.x ] ),
                     Position = x.y,
                     Rotation = x.z,
                     Scale = Entity.Null,

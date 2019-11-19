@@ -30,6 +30,7 @@ namespace Abss.Arthuring
         }
     }
 
+    [DisallowMultipleComponent]
     public class PrefabSettingsAuthoring : MonoBehaviour
     {
 
@@ -77,7 +78,7 @@ namespace Abss.Arthuring
             var post = em.GetComponentData<CharacterLinkData>( this.ents[ 0 ] ).PostureEntity;
             em.AddComponentData( post, new PlayerTag { } );
             em.AddComponentData( post, new MoveHandlingData { } );
-
+            
         }
 
         void Update()
