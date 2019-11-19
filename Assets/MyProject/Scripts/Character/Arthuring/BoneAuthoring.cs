@@ -31,8 +31,6 @@ namespace Abss.Arthuring
     public class BoneAuthoring : MonoBehaviour
     {
 
-        public MotionTargetUnit[] Motions;
-
         public AvatarMask BoneMask;
 
 
@@ -46,13 +44,15 @@ namespace Abss.Arthuring
 
         // ボーン
         // ・ボーンＩＤは、SkinnedMeshRenderer.bones の並び順
-        // ・ボーン名が _ で始まるものは除外済み
-        // ・除外したうえでＩＤを 0 から振りなおされている
+        // ・ボーン名が _ で始まるものは除外
+        // ・除外したうえでＩＤを 0 から振りなおし
         // ・モーションストリームはボーンに対応するようにソートされている
-        // ・ボーンとマスクの並び順は同じだと思われる
+        // ・ボーンとマスクの並び順は同じだと思われるが、念のためボーン名で取得する
 
-        public (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert
-            ( EntityManager em, Entity MotionPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss, Entity drawPrefab )
+        public (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert(
+            EntityManager em,
+            Entity mainMotionPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss, Entity drawPrefab
+        )
         {
 
             var smr = this.GetComponentInChildren<SkinnedMeshRenderer>();//
@@ -60,7 +60,8 @@ namespace Abss.Arthuring
             var enabledsAndPaths = queryEnabledsAndPaths_().ToArray();
             var mtBones = queryBoneMatrixes_().ToArray();
 
-            return BonePrefabCreator.CreatePrefabs( em, drawPrefab, MotionPrefab, streamPrefabss, mtBones, enabledsAndPaths );
+            return BonePrefabCreator.CreatePrefabs
+                ( em, drawPrefab, mainMotionPrefab, streamPrefabss, mtBones, enabledsAndPaths );
 
 
             IEnumerable<float4x4> queryBoneMatrixes_()
@@ -134,7 +135,7 @@ namespace Abss.Arthuring
         static public (NameAndEntity[] bonePrefabs, Entity posturePrefab) CreatePrefabs
         (
             EntityManager em,
-            Entity drawPrefab, Entity motionPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss,
+            Entity drawPrefab, Entity mainMotionPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss,
             float4x4[] mtBones, (bool isEnabled, string path)[] enabledsAndPaths
         )
         {
@@ -159,11 +160,13 @@ namespace Abss.Arthuring
             em.setBoneId( bonePrefabs, drawPrefab );
             em.setBoneRelationLinks( posturePrefab, boneNameAndPrefabs, enabledsAndPaths );
             em.removeBoneRelationLinks( bonePrefabs, qBoneMasks );
-            em.addBoneStreamLinkData( motionPrefab, boneNameAndPrefabs, streamPrefabss );
+            em.addBoneStreamLinkData( mainMotionPrefab, boneNameAndPrefabs, streamPrefabss );
 
             em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
             em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
             em.SetComponentData( posturePrefab, new Translation { Value = float3.zero } );
+
+            em.addMotionBendWeightData( mainMotionPrefab, streamPrefabss.Count() );
 
             return (boneNameAndPrefabs, posturePrefab);
         }
@@ -253,31 +256,31 @@ namespace Abss.Arthuring
         }
 
 
-        static void addMotionBendWeightData( this EntityManager em, Entity motionPrefab, int motionLength )
+        static void addMotionBendWeightData( this EntityManager em, Entity mainMotionPrefab, int motionLength )
         {
             switch( motionLength )
             {
-                case 2: em.SetComponentData( motionPrefab, new BoneBlend2WeightData { WeightNormalized0 = 0.5f, WeightNormalized1=0.5f } );
+                case 2: em.AddComponentData( mainMotionPrefab, new BoneBlend2WeightData { WeightNormalized0 = 0.2f, WeightNormalized1=0.8f } );
                     break;
-                case 3: em.SetComponentData( motionPrefab, new BoneBlend3WeightData { } );
+                case 3: em.AddComponentData( mainMotionPrefab, new BoneBlend3WeightData { } );
                     break;
             }
         }
 
         static void addBoneStreamLinkData(
-            this EntityManager em, Entity MotionPrefab,
+            this EntityManager em, Entity mainMotionPrefab,
             NameAndEntity[] bonePrefabs, IEnumerable<StreamEntityUnit[]> streamPrefabss
         )
         {
-            var qNameAndChannel =
+            var qStreamWithChannelByName =
                 from motion in streamPrefabss.Select( ( x, i ) => (x, i) )
                 from st in motion.x
                 group (channel: motion.i, st.Position, st.Rotation, st.Scale) by st.Name
                 ;
             var qBoneLinked =
-                from st in qNameAndChannel
-                join bn in bonePrefabs
-                    on st.Key equals bn.Name
+                from bn in bonePrefabs
+                join st in qStreamWithChannelByName
+                    on bn.Name equals st.Key
                 select (bone:bn.Entity, stream:st)
                 ;
 
@@ -296,11 +299,10 @@ namespace Abss.Arthuring
                 };
                 em.AddComponentData( x.bone, linker0 );
 
+
                 if( !ist.MoveNext() ) continue;
 
-
-                em.AddComponentData( x.bone, new BoneMotionLinkData { MotionEntity = MotionPrefab } );
-
+                em.AddComponentData( x.bone, new BoneMotionBlendLinkData { MotionBlendEntity = mainMotionPrefab } );
 
                 var st1 = ist.Current;
                 var linker1 = new BoneStream1LinkData

@@ -19,6 +19,7 @@ using Abss.Character;
 namespace Abss.Motion
 {
 
+    //[DisableAutoCreation]
     [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
     [UpdateInGroup( typeof( MotionSystemGroup ) )]
     public class StreamToBoneBlend2System : JobComponentSystem
@@ -42,8 +43,7 @@ namespace Abss.Motion
 
         [BurstCompile, ExcludeComponent(typeof(BoneStream2LinkData))]
         public struct StreamToBoneJob : IJobForEach
-            //<BoneStreamLinkData, Translation, Rotation>
-            <BoneMotionLinkData, BoneStream0LinkData, BoneStream1LinkData, BoneLocalValueData>
+            <BoneMotionBlendLinkData, BoneStream0LinkData, BoneStream1LinkData, BoneLocalValueData>
         {
 
             [ReadOnly]
@@ -54,7 +54,7 @@ namespace Abss.Motion
 
 
             public void Execute(
-                [ReadOnly]  ref BoneMotionLinkData linker,
+                [ReadOnly]  ref BoneMotionBlendLinkData linker,
                 [ReadOnly]  ref BoneStream0LinkData stream0Linker,
                 [ReadOnly]  ref BoneStream1LinkData stream1Linker,
                 [WriteOnly] ref BoneLocalValueData local
@@ -67,7 +67,7 @@ namespace Abss.Motion
                 var pos1 = this.StreamValues[ stream1Linker.PositionStreamEntity ].Value.As_float3();
                 var rot1 = this.StreamValues[ stream1Linker.RotationStreamEntity ].Value.As_quaternion();
 
-                var blendWeight = this.Blends[ linker.MotionEntity ];
+                var blendWeight = this.Blends[ linker.MotionBlendEntity ];
 
                 var wei0 = blendWeight.WeightNormalized0;
                 var wei1 = blendWeight.WeightNormalized1;

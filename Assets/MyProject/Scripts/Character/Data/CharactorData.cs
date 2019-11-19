@@ -24,8 +24,15 @@ namespace Abss.Character
     {
         public Entity PostureEntity;
         public Entity DrawEntity;
+        public Entity MainMotionEntity;// メインとかサブとかあるのはいまいちな気がするが、どうしようか
+    }
+    public struct CharacterSubMotion1LinkData : IComponentData
+    {
         public Entity MotionEntity;
-        public Entity Motion2Entity;
+    }
+    public struct CharacterSubMotion2LinkData : IComponentData
+    {
+        public Entity MotionEntity;
     }
 
 
@@ -49,6 +56,9 @@ namespace Abss.Character
     //{
     //    public BlobAssetReference<Unity.Physics.Collider> Collider;
     //}
+
+
+    // キャラクタアクションのステート -------------------------------------
 
     public struct WalkActionState : IComponentData
     {

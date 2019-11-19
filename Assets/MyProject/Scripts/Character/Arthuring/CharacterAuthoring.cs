@@ -33,10 +33,13 @@ namespace Abss.Arthuring
             var drawPrefab = drawAuthor.Convert( em, drawResources );
 
             var motionAuthors = this.GetComponents<MotionAuthoring>();
-            var motionAndStreamPrefabs = motionAuthors.Select( x => x.Convert( em, drawPrefab ) ).ToArray();
+            var motionAndStreamPrefabs = ( from x in motionAuthors select x.Convert( em, drawPrefab ) ).ToArray();
+
+            var mainMotionPrefab = motionAndStreamPrefabs.First().motionPrefab;
+            var qStreamPrefabs = from x in motionAndStreamPrefabs select x.streamPrefabs;
 
             var boneAuthor = this.GetComponent<BoneAuthoring>();
-            var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, motionAndStreamPrefabs.Select(x=>x.streamPrefabs), drawPrefab );
+            var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, mainMotionPrefab, qStreamPrefabs, drawPrefab );
             
             var colliderAuthor = this.GetComponent<ColliderAuthoring>();
             var jointPrefabs = colliderAuthor.Convert( em, posturePrefab, bonePrefabs );
@@ -50,10 +53,11 @@ namespace Abss.Arthuring
                 .Empty<Entity>()
                 .Append( posturePrefab )
                 .Append( drawPrefab )
-                .Append( (from x in motionAndStreamPrefabs select x.motionPrefab).First() )
+                .Concat( from x in motionAndStreamPrefabs select x.motionPrefab )
                 .Concat( from x in qStream select x.Position )
                 .Concat( from x in qStream select x.Rotation )
-                .Concat( bonePrefabs.Select( x => x.Entity ) )
+                //.Concat( from x in qStream select x.Scale )
+                .Concat( from x in bonePrefabs select x.Entity )
                 .Concat( jointPrefabs )
                 ;
 
@@ -64,7 +68,7 @@ namespace Abss.Arthuring
                 {
                     PostureEntity = posturePrefab,
                     DrawEntity = drawPrefab,
-                    MotionEntity = motionAndStreamPrefabs.Select( x => x.motionPrefab ).First(),
+                    MainMotionEntity = mainMotionPrefab,
                 }
             );
 

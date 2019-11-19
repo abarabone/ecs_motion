@@ -87,18 +87,18 @@ namespace Abss.Character
             {
                 ref var acts = ref hander.ControlAction;
 
-                var motionInfo = this.MotionInfos[ linker.MotionEntity ];
+                var motionInfo = this.MotionInfos[ linker.MainMotionEntity ];
 
                 if( acts.IsChangeMotion )
                 {
-                    this.Commands.AddComponent( index, linker.MotionEntity,
+                    this.Commands.AddComponent( index, linker.MainMotionEntity,
                         new MotionInitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10 } );
                 }
 
                 if( !GroundResults[linker.PostureEntity].IsGround )
                 {
                     if( motionInfo.MotionIndex != 0 )
-                        this.Commands.AddComponent( index, linker.MotionEntity,
+                        this.Commands.AddComponent( index, linker.MainMotionEntity,
                             new MotionInitializeData { MotionIndex = 0, DelayTime = 0.1f } );
                     return;
                 }
@@ -106,7 +106,7 @@ namespace Abss.Character
                 if( math.lengthsq(acts.MoveDirection) >= 0.01f )
                 {
                     if( motionInfo.MotionIndex != 1 )
-                        this.Commands.AddComponent( index, linker.MotionEntity,
+                        this.Commands.AddComponent( index, linker.MainMotionEntity,
                             new MotionInitializeData { MotionIndex = 1, DelayTime = 0.1f } );
 
                     this.Rotations[ linker.PostureEntity ] =
@@ -115,7 +115,7 @@ namespace Abss.Character
                 else
                 {
                     if( motionInfo.MotionIndex != 9 )
-                        this.Commands.AddComponent( index, linker.MotionEntity,
+                        this.Commands.AddComponent( index, linker.MainMotionEntity,
                             new MotionInitializeData { MotionIndex = 9, DelayTime = 0.2f } );
 
                     //this.Rotations[ linker.PostureEntity ] =

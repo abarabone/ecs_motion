@@ -60,7 +60,7 @@ namespace Abss.Arthuring
             foreach( var model in Enumerable.Range( 0, this.PrefabEntities.Length ) )
             {
                 var mlinker = em.GetComponentData<CharacterLinkData>( this.PrefabEntities[model] );
-                ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MotionEntity ).ClipData.Value;
+                ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MainMotionEntity ).ClipData.Value;
 
                 foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
                 {
@@ -68,7 +68,7 @@ namespace Abss.Arthuring
 
                     var chlinker = em.GetComponentData<CharacterLinkData>( this.ents[this.ents.Count-1] );
                     em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i, 0, model ) } );
-                    em.SetComponentData( chlinker.MotionEntity, new MotionInitializeData { MotionIndex = i % mclip.Motions.Length } );
+                    em.SetComponentData( chlinker.MainMotionEntity, new MotionInitializeData { MotionIndex = i % mclip.Motions.Length } );
                 }
             }
 

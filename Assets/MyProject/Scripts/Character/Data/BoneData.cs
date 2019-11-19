@@ -19,11 +19,6 @@ using Abss.Geometry;
 namespace Abss.Motion
 {
     
-    public struct BoneMotionLinkData : IComponentData
-    {
-        public Entity MotionEntity;
-    }
-
     public struct BoneDrawLinkData : IComponentData
     {
         public Entity DrawEntity;
@@ -33,6 +28,11 @@ namespace Abss.Motion
     {
         public Entity NextBoneEntity;
         public Entity ParentBoneEntity;
+    }
+
+    public struct BoneMotionBlendLinkData : IComponentData
+    {
+        public Entity MotionBlendEntity;
     }
 
     public struct BoneStream0LinkData : IComponentData
