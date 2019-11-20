@@ -62,7 +62,7 @@ namespace Abss.Motion
             public ComponentDataFromEntity<StreamKeyShiftData>      Shifters;
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<StreamNearKeysCacheData> Caches;
-
+            
 
             public void Execute(
                 Entity entity, int index,
@@ -83,6 +83,8 @@ namespace Abss.Motion
                 cursor.Timer.TimeLength = motion.TimeLength;
                 cursor.Timer.TimeProgress = -init.DelayTime;
                 cursor.Timer.TimeScale = 1.0f;
+
+                //if( )
 
                 this.Commands.RemoveComponent<MotionInitializeData>( index, entity );
             }
@@ -164,6 +166,11 @@ namespace Abss.Motion
 
             }
 
+
+            void makeEnableStreams( )
+            {
+
+            }
         }
 
     }

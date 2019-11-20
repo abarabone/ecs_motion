@@ -260,9 +260,9 @@ namespace Abss.Arthuring
         {
             switch( motionLength )
             {
-                case 2: em.AddComponentData( mainMotionPrefab, new BoneBlend2WeightData { WeightNormalized0 = 0.2f, WeightNormalized1=0.8f } );
+                case 2: em.AddComponentData( mainMotionPrefab, new MotionBlend2WeightData { WeightNormalized0 = 0.2f, WeightNormalized1=0.8f } );
                     break;
-                case 3: em.AddComponentData( mainMotionPrefab, new BoneBlend3WeightData { } );
+                case 3: em.AddComponentData( mainMotionPrefab, new MotionBlend3WeightData { } );
                     break;
             }
         }

@@ -25,6 +25,8 @@ namespace Abss.Motion
 	{
         public int MotionIndex;
         public float DelayTime;
+        public float TimeScale;
+        public bool IsLooping;
     }
 
     public struct MotionClipData : IComponentData
@@ -58,12 +60,12 @@ namespace Abss.Motion
 
 
 
-    public struct BoneBlend2WeightData : IComponentData
+    public struct MotionBlend2WeightData : IComponentData
     {
         public float WeightNormalized0;
         public float WeightNormalized1;
     }
-    public struct BoneBlend3WeightData : IComponentData
+    public struct MotionBlend3WeightData : IComponentData
     {
         public float WeightNormalized0;
         public float WeightNormalized1;
@@ -75,16 +77,40 @@ namespace Abss.Motion
         public float FadeTime;
     }
 
+    
 
-
-    static public class BlendExtension
+    static public class MotionExtension
     {
-        static public void SetWeight( ref this BoneBlend2WeightData data, float weight0, float weight1 )
+        /// <summary>
+        /// モーション初期化セット、disable があれば消す
+        /// </summary>
+        static public void Start
+            ( Entity MotionEntity, EntityCommandBuffer.Concurrent cmd, int motionIndex, float timeScale, float delayTime = 0.0f )
+        {
+
+        }
+        /// <summary>
+        /// モーションとストリームに disable
+        /// </summary>
+        static public void Stop( Entity MotionEntity, EntityCommandBuffer.Concurrent cmd )
+        {
+
+        }
+        /// <summary>
+        /// スケールを 0 にする
+        /// </summary>
+        static public void Pause( Entity MotionEntity, EntityCommandBuffer.Concurrent cmd )
+        {
+
+        }
+
+
+        static public void SetWeight( ref this MotionBlend2WeightData data, float weight0, float weight1 )
         {
             data.WeightNormalized0 = weight0 / ( weight0 + weight1 );
             data.WeightNormalized1 = 1.0f - data.WeightNormalized0;
         }
-        static public void SetWeight( ref this BoneBlend3WeightData data, float weight0, float weight1, float weight2 )
+        static public void SetWeight( ref this MotionBlend3WeightData data, float weight0, float weight1, float weight2 )
         {
             var totalWeight = weight0 + weight1 + weight2;
             data.WeightNormalized0 = weight0 / totalWeight;

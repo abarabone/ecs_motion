@@ -31,7 +31,7 @@ namespace Abss.Motion
 
             inputDeps = new StreamToBoneJob
             {
-                Blends = this.GetComponentDataFromEntity<BoneBlend2WeightData>( isReadOnly: true ),
+                Blends = this.GetComponentDataFromEntity<MotionBlend2WeightData>( isReadOnly: true ),
                 StreamValues = this.GetComponentDataFromEntity<StreamInterpolatedData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
@@ -47,7 +47,7 @@ namespace Abss.Motion
         {
 
             [ReadOnly]
-            public ComponentDataFromEntity<BoneBlend2WeightData> Blends;
+            public ComponentDataFromEntity<MotionBlend2WeightData> Blends;
 
             [ReadOnly]
             public ComponentDataFromEntity<StreamInterpolatedData> StreamValues;

@@ -81,7 +81,8 @@ namespace Abss.Motion
 		public float	TimeProgress;	// スタート時は 0（繊維時はマイナスからもあり）
 		public float	TimeLength;
 		public float	TimeScale;
-	}
+        public bool IsLooping;// まだ未実装
+    }
 
 	/// <summary>
 	/// 現在キー周辺のキーキャッシュデータ。
