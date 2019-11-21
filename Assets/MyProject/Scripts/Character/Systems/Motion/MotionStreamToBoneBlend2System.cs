@@ -73,7 +73,7 @@ namespace Abss.Motion
                 var wei1 = blendWeight.WeightNormalized1;
 
                 local.Position = pos0 * wei0 + pos1 * wei1;
-                local.Rotation = math.slerp( rot0, rot1, wei0 );
+                local.Rotation = math.slerp( rot1, rot0, wei0 );
 
             }
         }

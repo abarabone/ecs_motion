@@ -42,24 +42,24 @@ namespace Abss.Motion
         /// </summary>
         [BurstCompile]
         struct StreamProgressAndInterporationJob : IJobForEach
-            <StreamTimeProgressData, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
+            <motioncur, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
         {
 
             public float DeltaTime;
 
 
             public void Execute(
-                ref StreamTimeProgressData timer,
+                ref motioncur timer,
                 ref StreamKeyShiftData shiftInfo,
                 ref StreamNearKeysCacheData nearKeys,
                 [WriteOnly] ref StreamInterpolatedData dst
             )
             {
-                timer.Progress( DeltaTime );
+                timer.Cursor.Progress( DeltaTime );
 
-                nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref timer );
+                nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref timer.Cursor );
 
-                var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( timer.TimeProgress );
+                var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( timer.Cursor.CurrentPosition );
 
                 dst.Value = nearKeys.Interpolate( timeProgressNormalized );
             }

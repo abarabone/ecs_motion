@@ -18,19 +18,19 @@ using System.Runtime.InteropServices;
 
 namespace Abss.Motion
 {
-	
 
-	
-	//public struct StreamInitializeTag : IComponentData
-	//{
- //       public Entity MotionEntity;
- //       //public int BoneIndex;
- //       public BlobArray<KeyBlobUnit> Keys;
- //   }
 
-	//public struct StreamInitialFor1posTag : IComponentData
-	//{}
-    
+
+    //public struct StreamInitializeTag : IComponentData
+    //{
+    //       public Entity MotionEntity;
+    //       //public int BoneIndex;
+    //       public BlobArray<KeyBlobUnit> Keys;
+    //   }
+
+    //public struct StreamInitialFor1posTag : IComponentData
+    //{}
+
     public struct StreamDrawTargetData : IComponentData
     {
         public bool IsDrawTarget;
@@ -58,242 +58,243 @@ namespace Abss.Motion
     //{
     //    public int DrawInstanceVectorIndex;
     //}
-    
+
 
     /// <summary>
     /// 現在キーの位置と、ストリームデータへの参照を保持する。
     /// </summary>
     unsafe public struct StreamKeyShiftData : IComponentData
-	{
-		public KeyBlobUnit* Keys;
+    {
+        public KeyBlobUnit* Keys;
         public int KeyLength;
-		
-		public int      KeyIndex_Next;
-	}
 
-	/// <summary>
-	/// 時間は deltaTime を加算して進める。
-	/// （スタート時刻と現在時刻を比較する方法だと、速度変化や休止ができないため）
-    /// ※ただし現在時刻法だと、不要な更新をなくせるので、こちらのほうがいい面も多い
-	/// </summary>
-	public struct StreamTimeProgressData : IComponentData
-	{
-		public float	TimeProgress;	// スタート時は 0（繊維時はマイナスからもあり）
-		public float	TimeLength;
-		public float	TimeScale;
-        public bool IsLooping;// まだ未実装
+        public int KeyIndex_Next;
     }
 
-	/// <summary>
-	/// 現在キー周辺のキーキャッシュデータ。
-	/// キーがシフトしたときのみ、次のキーを読めば済むようにする。
-	/// </summary>
-	public struct StreamNearKeysCacheData : IComponentData
-	{
-		public float    Time_From;
-		public float    Time_To;
-		public float    Time_Next;
+    /// <summary>
+    /// 時間は deltaTime を加算して進める。
+    /// （スタート時刻と現在時刻を比較する方法だと、速度変化や休止ができないため）
+    /// ※ただし現在時刻法だと、不要な更新をなくせるので、こちらのほうがいい面も多い
+    /// </summary>
+    public struct motioncur : IComponentData
+    {
+        //public float	TimeProgress;	// スタート時は 0（繊維時はマイナスからもあり）
+        //public float	TimeLength;
+        //public float	TimeScale;
+        //      public bool IsLooping;// まだ未実装
+        public MotionCursorData Cursor;
+    }
 
-		// 補間にかけるための現在キー周辺４つのキー
-		public float4   Value_Prev;
-		public float4   Value_From;	// これが現在キー
-		public float4   Value_To;
-		public float4   Value_Next;
-	}
+    /// <summary>
+    /// 現在キー周辺のキーキャッシュデータ。
+    /// キーがシフトしたときのみ、次のキーを読めば済むようにする。
+    /// </summary>
+    public struct StreamNearKeysCacheData : IComponentData
+    {
+        public float Time_From;
+        public float Time_To;
+        public float Time_Next;
 
-	/// <summary>
-	/// 現在キー周辺のキーと現在時間から保管した計算結果。
-	/// </summary>
-	public struct StreamInterpolatedData : IComponentData
-	{
-		public float4	Value;
-	}
+        // 補間にかけるための現在キー周辺４つのキー
+        public float4 Value_Prev;
+        public float4 Value_From;   // これが現在キー
+        public float4 Value_To;
+        public float4 Value_Next;
+    }
 
-	
+    /// <summary>
+    /// 現在キー周辺のキーと現在時間から保管した計算結果。
+    /// </summary>
+    public struct StreamInterpolatedData : IComponentData
+    {
+        public float4 Value;
+    }
 
-	// ストリーム拡張 -----------------------------------------------------------------------------------------------
-	
-	static public class StreamUtility
-	{
-		
-		/// <summary>
-		/// キーバッファをストリーム先頭に初期化する。
-		/// </summary>
-		unsafe static public void InitializeKeys(
-			ref this StreamNearKeysCacheData	nearKeys,
-			ref StreamKeyShiftData				shift,
-			ref StreamTimeProgressData			progress,
-			float								timeOffset = 0.0f
-		)
-		{
-			var index0	= 0;
-			var index1	= math.min( 1, shift.KeyLength - 1 );
-			var index2	= math.min( 2, shift.KeyLength - 1 );
-			
-			nearKeys.Time_From = shift.Keys[ index0 ].Time.x;
-			nearKeys.Time_To   = shift.Keys[ index1 ].Time.x;
-			nearKeys.Time_Next = shift.Keys[ index2 ].Time.x;
 
-			nearKeys.Value_Prev = shift.Keys[ index0 ].Value;
-			nearKeys.Value_From = shift.Keys[ index0 ].Value;
-			nearKeys.Value_To	= shift.Keys[ index1 ].Value;
-			nearKeys.Value_Next = shift.Keys[ index2 ].Value;
 
-			shift.KeyIndex_Next		= index2;
-			
-			progress.TimeProgress	= timeOffset;
-        }
+    // ストリーム拡張 -----------------------------------------------------------------------------------------------
 
-        unsafe static public void InitializeKeysContinuous(
-            ref this StreamNearKeysCacheData nearKeys,
-            ref StreamKeyShiftData shift,
-            ref StreamTimeProgressData progress,
-            float delayTimer = 0.0f// 再検討の余地あり（変な挙動あり）
-        )
-        {
-            var index0 = 0;
-            var index1 = math.min( 1, shift.KeyLength - 1 );
+    static public class StreamUtility
+    {
 
-            nearKeys.Time_From = -delayTimer;
-            nearKeys.Time_To = shift.Keys[ index0 ].Time.x;
-            nearKeys.Time_Next = shift.Keys[ index1 ].Time.x;
+        ///// <summary>
+        ///// キーバッファをストリーム先頭に初期化する。
+        ///// </summary>
+        //unsafe static public void InitializeKeys(
+        //    ref this StreamNearKeysCacheData nearKeys,
+        //    ref StreamKeyShiftData shift,
+        //    ref StreamTimeProgressData progress,
+        //    float timeOffset = 0.0f
+        //)
+        //{
+        //    var index0 = 0;
+        //    var index1 = math.min( 1, shift.KeyLength - 1 );
+        //    var index2 = math.min( 2, shift.KeyLength - 1 );
 
-            nearKeys.Value_To = shift.Keys[ index0 ].Value;
-            nearKeys.Value_Next = shift.Keys[ index1 ].Value;
+        //    nearKeys.Time_From = shift.Keys[ index0 ].Time.x;
+        //    nearKeys.Time_To = shift.Keys[ index1 ].Time.x;
+        //    nearKeys.Time_Next = shift.Keys[ index2 ].Time.x;
 
-            shift.KeyIndex_Next = index1;
+        //    nearKeys.Value_Prev = shift.Keys[ index0 ].Value;
+        //    nearKeys.Value_From = shift.Keys[ index0 ].Value;
+        //    nearKeys.Value_To = shift.Keys[ index1 ].Value;
+        //    nearKeys.Value_Next = shift.Keys[ index2 ].Value;
 
-            progress.TimeProgress = -delayTimer;
-        }
+        //    shift.KeyIndex_Next = index2;
+
+        //    progress.TimeProgress = timeOffset;
+        //}
+
+        //unsafe static public void InitializeKeysContinuous(
+        //    ref this StreamNearKeysCacheData nearKeys,
+        //    ref StreamKeyShiftData shift,
+        //    ref StreamTimeProgressData progress,
+        //    float delayTimer = 0.0f// 再検討の余地あり（変な挙動あり）
+        //)
+        //{
+        //    var index0 = 0;
+        //    var index1 = math.min( 1, shift.KeyLength - 1 );
+
+        //    nearKeys.Time_From = -delayTimer;
+        //    nearKeys.Time_To = shift.Keys[ index0 ].Time.x;
+        //    nearKeys.Time_Next = shift.Keys[ index1 ].Time.x;
+
+        //    nearKeys.Value_To = shift.Keys[ index0 ].Value;
+        //    nearKeys.Value_Next = shift.Keys[ index1 ].Value;
+
+        //    shift.KeyIndex_Next = index1;
+
+        //    progress.TimeProgress = -delayTimer;
+        //}
 
 
         /// <summary>
         /// キーバッファを次のキーに移行する。終端まで来たら、最後のキーのままでいる。
         /// </summary>
         unsafe static public void ShiftKeysIfOverKeyTime(
-			ref this StreamNearKeysCacheData	nearKeys,
-			ref StreamKeyShiftData				shift,
-			in  StreamTimeProgressData			progress
-		)
-		{
-			if( progress.TimeProgress < nearKeys.Time_To ) return;
+            ref this StreamNearKeysCacheData nearKeys,
+            ref StreamKeyShiftData shift,
+            in MotionCursorData cursor
+        )
+        {
+            if( cursor.CurrentPosition < nearKeys.Time_To ) return;
 
 
-			var nextIndex	= math.min( shift.KeyIndex_Next + 1, shift.KeyLength - 1 );
-			var nextKey		= shift.Keys[ nextIndex ];
-			
-			nearKeys.Time_From	= nearKeys.Time_To;
-			nearKeys.Time_To	= nearKeys.Time_Next;
-			nearKeys.Time_Next	= nextKey.Time.x;
+            var nextIndex = math.min( shift.KeyIndex_Next + 1, shift.KeyLength - 1 );
+            var nextKey = shift.Keys[ nextIndex ];
 
-			nearKeys.Value_Prev	= nearKeys.Value_From;
-			nearKeys.Value_From	= nearKeys.Value_To;
-			nearKeys.Value_To	= nearKeys.Value_Next;
-			nearKeys.Value_Next	= nextKey.Value;
+            nearKeys.Time_From = nearKeys.Time_To;
+            nearKeys.Time_To = nearKeys.Time_Next;
+            nearKeys.Time_Next = nextKey.Time.x;
 
-			shift.KeyIndex_Next	= nextIndex;
-		}
-		
-		/// <summary>
-		/// キーバッファを次のキーに移行する。ループアニメーション対応版。
-		/// </summary>
-		unsafe static public void ShiftKeysIfOverKeyTimeForLooping(
-			ref this StreamNearKeysCacheData	nearKeys,
-			ref StreamKeyShiftData				shift,
-			ref StreamTimeProgressData			timer
-		)
-		{
-			if( timer.TimeProgress < nearKeys.Time_To ) return;
+            nearKeys.Value_Prev = nearKeys.Value_From;
+            nearKeys.Value_From = nearKeys.Value_To;
+            nearKeys.Value_To = nearKeys.Value_Next;
+            nearKeys.Value_Next = nextKey.Value;
 
+            shift.KeyIndex_Next = nextIndex;
+        }
 
-			var isEndOfStream	= timer.TimeProgress >= timer.TimeLength;
-			
-			var timeOffset	= getTimeOffsetOverLength( in timer, isEndOfStream );
-
-			var nextIndex	= getNextKeyIndex( in shift, isEndOfStream );
-			var nextKey		= shift.Keys[ nextIndex ];
-			
-			var time_from	= nearKeys.Time_To;
-			var time_to		= nearKeys.Time_Next;
-			var time_next	= nextKey.Time.x;
-
-			nearKeys.Time_From	= time_from	- timeOffset;
-			nearKeys.Time_To	= time_to - timeOffset;
-			nearKeys.Time_Next	= time_next;
-
-			nearKeys.Value_Prev	= nearKeys.Value_From;
-			nearKeys.Value_From	= nearKeys.Value_To;
-			nearKeys.Value_To	= nearKeys.Value_Next;
-			nearKeys.Value_Next	= nextKey.Value;
-
-			shift.KeyIndex_Next	= nextIndex;
-			
-			timer.TimeProgress	-= timeOffset;
-
-			return;
+        /// <summary>
+        /// キーバッファを次のキーに移行する。ループアニメーション対応版。
+        /// </summary>
+        unsafe static public void ShiftKeysIfOverKeyTimeForLooping(
+            ref this StreamNearKeysCacheData nearKeys,
+            ref StreamKeyShiftData shift,
+            ref MotionCursorData cursor
+        )
+        {
+            if( cursor.CurrentPosition < nearKeys.Time_To ) return;
 
 
-			float getTimeOffsetOverLength( in StreamTimeProgressData progress_, bool isEndOfStream_ )
-			{
-				return math.select( 0.0f, progress_.TimeLength, isEndOfStream_ );
-			}
+            var isEndOfStream = cursor.CurrentPosition >= cursor.TotalLength;
 
-			int getNextKeyIndex( in StreamKeyShiftData shift_, bool isEndOfStream_ )
-			{
-				var iKeyLast		= shift_.KeyLength - 1;
-				var iKeyNextNext	= shift_.KeyIndex_Next + 1;
+            var timeOffset = getTimeOffsetOverLength( in cursor, isEndOfStream );
 
-				var isEndOfKey		= iKeyNextNext > iKeyLast;
+            var nextIndex = getNextKeyIndex( in shift, isEndOfStream );
+            var nextKey = shift.Keys[ nextIndex ];
 
-				var iWhenStayInnerKey	= math.min( iKeyNextNext, iKeyLast );
-				var iWhenOverLastKey	= iKeyNextNext - math.select( 0, iKeyLast, isEndOfKey );
-				
-				return math.select( iWhenStayInnerKey, iWhenOverLastKey, isEndOfStream_ );
-				// こうなってくると、素直に分岐したほうがいいんだろうかｗ←いや、はやかった
-			}
-		}
-		
-		/// <summary>
-		/// 時間を進める。
-		/// </summary>
-		static public void Progress( ref this StreamTimeProgressData timer, float deltaTime )
-		{
-			timer.TimeProgress += deltaTime * timer.TimeScale;
-		}
+            var time_from = nearKeys.Time_To;
+            var time_to = nearKeys.Time_Next;
+            var time_next = nextKey.Time.x;
 
-		static public float CaluclateTimeNormalized
-			( ref this StreamNearKeysCacheData nearKeys, float timeProgress )
-		{
-			var progress	= timeProgress - nearKeys.Time_From;
-			var length		= nearKeys.Time_To - nearKeys.Time_From;
+            nearKeys.Time_From = time_from - timeOffset;
+            nearKeys.Time_To = time_to - timeOffset;
+            nearKeys.Time_Next = time_next;
 
-			var progress_div_length	= math.saturate( progress * math.rcp( length ) );
+            nearKeys.Value_Prev = nearKeys.Value_From;
+            nearKeys.Value_From = nearKeys.Value_To;
+            nearKeys.Value_To = nearKeys.Value_Next;
+            nearKeys.Value_Next = nextKey.Value;
+
+            shift.KeyIndex_Next = nextIndex;
+
+            cursor.CurrentPosition -= timeOffset;
+
+            return;
+
+
+            float getTimeOffsetOverLength( in MotionCursorData cursor_, bool isEndOfStream_ )
+            {
+                return math.select( 0.0f, cursor_.TotalLength, isEndOfStream_ );
+            }
+
+            int getNextKeyIndex( in StreamKeyShiftData shift_, bool isEndOfStream_ )
+            {
+                var iKeyLast = shift_.KeyLength - 1;
+                var iKeyNextNext = shift_.KeyIndex_Next + 1;
+
+                var isEndOfKey = iKeyNextNext > iKeyLast;
+
+                var iWhenStayInnerKey = math.min( iKeyNextNext, iKeyLast );
+                var iWhenOverLastKey = iKeyNextNext - math.select( 0, iKeyLast, isEndOfKey );
+
+                return math.select( iWhenStayInnerKey, iWhenOverLastKey, isEndOfStream_ );
+                // こうなってくると、素直に分岐したほうがいいんだろうかｗ←いや、はやかった
+            }
+        }
+
+        /// <summary>
+        /// 時間を進める。
+        /// </summary>
+        static public void Progress( ref this MotionCursorData cursor, float deltaTime )
+        {
+            cursor.CurrentPosition += deltaTime * cursor.Scale;
+        }
+
+        static public float CaluclateTimeNormalized
+            ( ref this StreamNearKeysCacheData nearKeys, float timeProgress )
+        {
+            var progress = timeProgress - nearKeys.Time_From;
+            var length = nearKeys.Time_To - nearKeys.Time_From;
+
+            var progress_div_length = math.saturate( progress * math.rcp( length ) );
             //var progress_div_length = progress * math.rcp( length );
 
             return math.select( progress_div_length, 1.0f, length == 0.0f );// select( 偽, 真, 条件 );
-		}
+        }
 
-		/// <summary>
-		/// 補完する。
-		/// </summary>
-		static public float4 Interpolate
-			( ref this StreamNearKeysCacheData nearKeys, float normalizedTimeProgress )
-		{
-			
-			//var s = math.sign( math.dot( nearKeys.Value_From, nearKeys.Value_To ) );
+        /// <summary>
+        /// 補完する。
+        /// </summary>
+        static public float4 Interpolate
+            ( ref this StreamNearKeysCacheData nearKeys, float normalizedTimeProgress )
+        {
 
-			var v = VectorUtility.Interpolate(
-				nearKeys.Value_Prev,
-				nearKeys.Value_From,
-				nearKeys.Value_To,// * s,
-				nearKeys.Value_Next,// * s,
+            //var s = math.sign( math.dot( nearKeys.Value_From, nearKeys.Value_To ) );
+
+            var v = VectorUtility.Interpolate(
+                nearKeys.Value_Prev,
+                nearKeys.Value_From,
+                nearKeys.Value_To,// * s,
+                nearKeys.Value_Next,// * s,
                 normalizedTimeProgress
             );
 
             return v;// math.normalize( v );
-		}
-	}
+        }
+    }
 
-	// --------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------------
 
 }

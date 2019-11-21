@@ -104,7 +104,7 @@ namespace Abss.Arthuring
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
                 typeof( StreamNearKeysCacheData ),
-                typeof( StreamTimeProgressData ),
+                typeof( motioncur ),
                 typeof( StreamInterpolatedData ),
                 typeof( Prefab )
             };

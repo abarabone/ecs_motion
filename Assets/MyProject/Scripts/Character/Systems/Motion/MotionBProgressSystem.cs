@@ -53,29 +53,29 @@ namespace Abss.Motion
             )
             {
 
-                progressTimeForLooping( ref cursor.Timer );
+                progressTimeForLooping( ref cursor );
 
-                cursor.Timer.Progress( this.DeltaTime );
+                cursor.Progress( this.DeltaTime );
 
             }
 
 
             void progressTimeForLooping(
-                ref StreamTimeProgressData timer
+                ref MotionCursorData cousor
             )
             {
-                var isEndOfStream = timer.TimeProgress >= timer.TimeLength;
+                var isEndOfStream = cousor.CurrentPosition >= cousor.TotalLength;
 
-                var timeOffset = getTimeOffsetOverLength( in timer, isEndOfStream );
+                var timeOffset = getTimeOffsetOverLength( in cousor, isEndOfStream );
 
-                timer.TimeProgress -= timeOffset;
+                cousor.CurrentPosition -= timeOffset;
 
                 return;
 
 
-                float getTimeOffsetOverLength( in StreamTimeProgressData progress_, bool isEndOfStream_ )
+                float getTimeOffsetOverLength( in MotionCursorData cursor_, bool isEndOfStream_ )
                 {
-                    return math.select( 0.0f, progress_.TimeLength, isEndOfStream_ );
+                    return math.select( 0.0f, cursor_.TotalLength, isEndOfStream_ );
                 }
             }
 

@@ -57,11 +57,11 @@ namespace Abss.Motion
                 [WriteOnly] ref StreamInterpolatedData dst
             )
             {
-                var timer = this.MotionCursors[ linker.MotionEntity ].Timer;
+                var cursor = this.MotionCursors[ linker.MotionEntity ];
 
-                nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref timer );
+                nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref cursor );
 
-                var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( timer.TimeProgress );
+                var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( cursor.CurrentPosition );
 
                 dst.Value = nearKeys.Interpolate( timeProgressNormalized );
             }

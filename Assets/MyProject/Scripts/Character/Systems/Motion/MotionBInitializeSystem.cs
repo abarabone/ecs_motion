@@ -73,16 +73,14 @@ namespace Abss.Motion
                 ref MotionCursorData cursor
             )
             {
-                ref var clip = ref data.ClipData.Value;
-                ref var motion = ref clip.Motions[ init.MotionIndex ];
+                ref var blob = ref data.ClipData.Value;
+                ref var motionClip = ref blob.Motions[ init.MotionIndex ];
 
                 info.MotionIndex = init.MotionIndex;
-                initSection( ref motion, linker.PositionStreamTop, KeyStreamSection.positions, ref init );
-                initSection( ref motion, linker.RotationStreamTop, KeyStreamSection.rotations, ref init );
+                initSection( ref motionClip, linker.PositionStreamTop, KeyStreamSection.positions, ref init );
+                initSection( ref motionClip, linker.RotationStreamTop, KeyStreamSection.rotations, ref init );
 
-                cursor.Timer.TimeLength = motion.TimeLength;
-                cursor.Timer.TimeProgress = -init.DelayTime;
-                cursor.Timer.TimeScale = 1.0f;
+                cursor.InitializeCursor( ref motionClip, init.DelayTime );
 
                 //if( )
 
@@ -99,71 +97,18 @@ namespace Abss.Motion
                     var i = Linkers[ ent ].BoneId;
                     
                     var shifter = this.Shifters[ ent ];
-                    var prevKeyPtr = shifter.Keys;// 仮
                     shifter.Keys = (KeyBlobUnit*)streams[ i ].Keys.GetUnsafePtr();
                     shifter.KeyLength = streams[ i ].Keys.Length;
                     
-                    if( prevKeyPtr != null )// 仮
-                    {
-                        var cache_ = this.Caches[ ent ];
-                        InitializeKeysContinuous_( ref cache_, ref shifter, init.DelayTime );
-                        this.Caches[ ent ] = cache_;
-                        this.Shifters[ ent ] = shifter;
-                        continue;
-                    }
-
                     var cache = this.Caches[ ent ];
-                    InitializeKeys_( ref cache, ref shifter );
+                    if( init.IsContinuous )
+                        cache.InitializeKeysContinuous( ref shifter, init.DelayTime );
+                    else
+                        cache.InitializeKeys( ref shifter );
 
                     this.Caches[ ent ] = cache;
                     this.Shifters[ ent ] = shifter;
                 }
-
-
-
-                /// <summary>
-                /// キーバッファをストリーム先頭に初期化する。
-                /// </summary>
-                unsafe void InitializeKeys_(
-                    ref StreamNearKeysCacheData nearKeys,
-                    ref StreamKeyShiftData shift
-                )
-                {
-                    var index0 = 0;
-                    var index1 = math.min( 1, shift.KeyLength - 1 );
-                    var index2 = math.min( 2, shift.KeyLength - 1 );
-
-                    nearKeys.Time_From = shift.Keys[ index0 ].Time.x;
-                    nearKeys.Time_To = shift.Keys[ index1 ].Time.x;
-                    nearKeys.Time_Next = shift.Keys[ index2 ].Time.x;
-
-                    nearKeys.Value_Prev = shift.Keys[ index0 ].Value;
-                    nearKeys.Value_From = shift.Keys[ index0 ].Value;
-                    nearKeys.Value_To = shift.Keys[ index1 ].Value;
-                    nearKeys.Value_Next = shift.Keys[ index2 ].Value;
-
-                    shift.KeyIndex_Next = index2;
-                }
-
-                unsafe void InitializeKeysContinuous_(
-                    ref StreamNearKeysCacheData nearKeys,
-                    ref StreamKeyShiftData shift,
-                    float delayTimer = 0.0f// 再検討の余地あり（変な挙動あり）
-                )
-                {
-                    var index0 = 0;
-                    var index1 = math.min( 1, shift.KeyLength - 1 );
-
-                    nearKeys.Time_From = -delayTimer;
-                    nearKeys.Time_To = shift.Keys[ index0 ].Time.x;
-                    nearKeys.Time_Next = shift.Keys[ index1 ].Time.x;
-
-                    nearKeys.Value_To = shift.Keys[ index0 ].Value;
-                    nearKeys.Value_Next = shift.Keys[ index1 ].Value;
-
-                    shift.KeyIndex_Next = index1;
-                }
-
             }
 
 

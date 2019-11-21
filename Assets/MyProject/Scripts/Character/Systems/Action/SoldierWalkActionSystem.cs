@@ -54,6 +54,7 @@ namespace Abss.Character
                 GroundResults = this.GetComponentDataFromEntity<GroundHitResultData>( isReadOnly: true ),
                 Rotations = this.GetComponentDataFromEntity<Rotation>(),
                 MotionCursors = this.GetComponentDataFromEntity<MotionCursorData>(),
+                MotionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>(),
             }
             .Schedule( this, inputDeps );
             this.ecb.AddJobHandleForProducer( inputDeps );
@@ -76,6 +77,8 @@ namespace Abss.Character
 
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<MotionCursorData> MotionCursors;
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<MotionBlend2WeightData> MotionWeights;
 
 
             public void Execute(
@@ -92,14 +95,14 @@ namespace Abss.Character
                 if( acts.IsChangeMotion )
                 {
                     this.Commands.AddComponent( index, linker.MainMotionEntity,
-                        new MotionInitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10 } );
+                        new MotionInitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10, IsContinuous = true } );
                 }
 
                 if( !GroundResults[linker.PostureEntity].IsGround )
                 {
                     if( motionInfo.MotionIndex != 0 )
                         this.Commands.AddComponent( index, linker.MainMotionEntity,
-                            new MotionInitializeData { MotionIndex = 0, DelayTime = 0.1f } );
+                            new MotionInitializeData { MotionIndex = 0, DelayTime = 0.1f, IsContinuous = true } );
                     return;
                 }
 
@@ -107,7 +110,7 @@ namespace Abss.Character
                 {
                     if( motionInfo.MotionIndex != 1 )
                         this.Commands.AddComponent( index, linker.MainMotionEntity,
-                            new MotionInitializeData { MotionIndex = 1, DelayTime = 0.1f } );
+                            new MotionInitializeData { MotionIndex = 1, DelayTime = 0.1f, IsContinuous = true } );
 
                     this.Rotations[ linker.PostureEntity ] =
                         new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
@@ -116,13 +119,16 @@ namespace Abss.Character
                 {
                     if( motionInfo.MotionIndex != 9 )
                         this.Commands.AddComponent( index, linker.MainMotionEntity,
-                            new MotionInitializeData { MotionIndex = 9, DelayTime = 0.2f } );
+                            new MotionInitializeData { MotionIndex = 9, DelayTime = 0.2f, IsContinuous = true } );
 
                     //this.Rotations[ linker.PostureEntity ] =
                     //    new Rotation { Value = acts.HorizontalRotation };
                 }
 
-
+                //var m = this.MotionWeights[ linker.MainMotionEntity ];
+                //var l = math.length( acts.MoveDirection );
+                //m.SetWeight( 1.0f - l, l );
+                //this.MotionWeights[ linker.MainMotionEntity ] = m;
 
                 //var motionCursor = this.MotionCursors[ linker.MotionEntity ];
 

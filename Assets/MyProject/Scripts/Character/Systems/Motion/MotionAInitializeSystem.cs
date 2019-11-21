@@ -37,7 +37,7 @@ namespace Abss.Motion
                 Commands = commandBuffer.ToConcurrent(),
                 Linkers  = this.GetComponentDataFromEntity<StreamRelationData>(),
                 Shifters = this.GetComponentDataFromEntity<StreamKeyShiftData>(),
-                Timers   = this.GetComponentDataFromEntity<StreamTimeProgressData>(),
+                Timers   = this.GetComponentDataFromEntity<motioncur>(),
                 Caches   = this.GetComponentDataFromEntity<StreamNearKeysCacheData>(),
 
             }
@@ -65,7 +65,7 @@ namespace Abss.Motion
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<StreamNearKeysCacheData> Caches;
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<StreamTimeProgressData>  Timers;
+            public ComponentDataFromEntity<motioncur>  Timers;
 
 
             public void Execute(
@@ -80,6 +80,7 @@ namespace Abss.Motion
                 ref var motion = ref clip.Motions[ init.MotionIndex ];
 
                 info.MotionIndex = init.MotionIndex;
+                if( init.IsContinuous )
                 initSection( ref motion, linker.PositionStreamTop, KeyStreamSection.positions, ref init );
                 initSection( ref motion, linker.RotationStreamTop, KeyStreamSection.rotations, ref init );
 
@@ -87,46 +88,35 @@ namespace Abss.Motion
             }
 
             unsafe void initSection
-                ( ref MotionBlobUnit motion, Entity entTop, KeyStreamSection streamSection, ref MotionInitializeData init )
+                ( ref MotionBlobUnit motionClip, Entity entTop, KeyStreamSection streamSection, ref MotionInitializeData init )
             {
-                ref var streams = ref motion.Sections[(int)streamSection].Streams;
+                ref var streams = ref motionClip.Sections[(int)streamSection].Streams;
 
                 for( var ent = entTop; ent != Entity.Null; ent = this.Linkers[ent].NextStreamEntity )
                 {
                     var i = Linkers[ ent ].BoneId;
                     
                     var shifter = this.Shifters[ ent ];
-                    var prevKeyPtr = shifter.Keys;// 仮
                     shifter.Keys = (KeyBlobUnit*)streams[ i ].Keys.GetUnsafePtr();
                     shifter.KeyLength = streams[ i ].Keys.Length;
 
                     var timer = this.Timers[ ent ];
-                    timer.TimeLength    = motion.TimeLength;
-                    timer.TimeScale     = 1.0f;
-                    //timer.TimeProgress = 0.0f;
-
-                    if( prevKeyPtr != null )// 仮
-                    {
-                        var cache_ = this.Caches[ ent ];
-                        cache_.InitializeKeysContinuous( ref shifter, ref timer, init.DelayTime );
-                        this.Caches[ ent ] = cache_;
-                        this.Timers[ ent ] = timer;
-                        this.Shifters[ ent ] = shifter;
-                        continue;
-                    }
-
+                    timer.Cursor.InitializeCursor( ref motionClip, init.DelayTime, init.TimeScale );
+                    
                     var cache = this.Caches[ ent ];
-                    cache.InitializeKeys( ref shifter, ref timer );
+                    if( init.IsContinuous )
+                        cache.InitializeKeysContinuous( ref shifter, init.DelayTime );
+                    else
+                        cache.InitializeKeys( ref shifter );
 
                     this.Caches[ ent ] = cache;
                     this.Timers[ ent ] = timer;
                     this.Shifters[ ent ] = shifter;
                 }
             }
-
         }
-
     }
 
 }
+
 
