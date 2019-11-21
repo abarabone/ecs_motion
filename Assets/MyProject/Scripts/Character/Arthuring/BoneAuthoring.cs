@@ -260,10 +260,10 @@ namespace Abss.Arthuring
         {
             switch( motionLength )
             {
-                case 2: em.AddComponentData( mainMotionPrefab, new MotionBlend2WeightData { WeightNormalized0 = 0.8f, WeightNormalized1=0.2f } );
+                case 2: em.AddComponentData( mainMotionPrefab, new MotionBlend2WeightData { WeightNormalized0 = 1.0f } );
                     break;
-                case 3: em.AddComponentData( mainMotionPrefab, new MotionBlend3WeightData { } );
-                    break;
+                //case 3: em.AddComponentData( mainMotionPrefab, new MotionBlend3WeightData { } );
+                //    break;
             }
         }
 
@@ -281,12 +281,50 @@ namespace Abss.Arthuring
                 from bn in bonePrefabs
                 join st in qStreamWithChannelByName
                     on bn.Name equals st.Key
-                select (bone:bn.Entity, stream:st)
+                select (bone:bn.Entity, streams:st)
                 ;
 
+            //var q =
+            //    from bn in qBoneLinked
+            //    from st in bn.streams
+            //    select (bn, st)
+            //    ;
+            //foreach( var (bn,st) in q )
+            //{
+            //    switch( st.channel )
+            //    {
+            //        case 0:
+            //        {
+            //            var linker = new BoneStream0LinkData
+            //            {
+            //                PositionStreamEntity = st.Position,
+            //                RotationStreamEntity = st.Rotation,
+            //            };
+            //            em.AddComponentData( bn.bone, linker );
+            //        } break;
+            //        case 1:
+            //        {
+            //            var linker = new BoneStream1LinkData
+            //            {
+            //                PositionStreamEntity = st.Position,
+            //                RotationStreamEntity = st.Rotation,
+            //            };
+            //            em.AddComponentData( bn.bone, linker );
+            //        } break;
+            //        case 2:
+            //        {
+            //            var linker = new BoneStream2LinkData
+            //            {
+            //                PositionStreamEntity = st.Position,
+            //                RotationStreamEntity = st.Rotation,
+            //            };
+            //            em.AddComponentData( bn.bone, linker );
+            //        } break;
+            //    }
+            //}
             foreach( var x in qBoneLinked )
             {
-                var ist = x.stream.GetEnumerator();
+                var ist = x.streams.GetEnumerator();
 
 
                 if( !ist.MoveNext() ) continue;
@@ -311,16 +349,16 @@ namespace Abss.Arthuring
                     RotationStreamEntity = st1.Rotation,
                 };
                 em.AddComponentData( x.bone, linker1 );
-                
-                if( !ist.MoveNext() ) continue;
 
-                var st2 = ist.Current;
-                var linker2 = new BoneStream2LinkData
-                {
-                    PositionStreamEntity = st2.Position,
-                    RotationStreamEntity = st2.Rotation,
-                };
-                em.AddComponentData( x.bone, linker2 );
+                //if( !ist.MoveNext() ) continue;
+
+                //var st2 = ist.Current;
+                //var linker2 = new BoneStream2LinkData
+                //{
+                //    PositionStreamEntity = st2.Position,
+                //    RotationStreamEntity = st2.Rotation,
+                //};
+                //em.AddComponentData( x.bone, linker2 );
             }
         }
     }

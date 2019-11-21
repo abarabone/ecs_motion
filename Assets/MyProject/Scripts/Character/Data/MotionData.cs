@@ -86,7 +86,7 @@ namespace Abss.Motion
         /// モーション初期化セット、disable があれば消す
         /// </summary>
         static public void Start
-            ( Entity MotionEntity, EntityCommandBuffer.Concurrent cmd, int motionIndex, float timeScale, float delayTime = 0.0f )
+            ( ref EntityCommandBuffer.Concurrent cmd, Entity MotionEntity, MotionInitializeData init )
         {
 
         }
@@ -94,13 +94,6 @@ namespace Abss.Motion
         /// モーションとストリームに disable
         /// </summary>
         static public void Stop( Entity MotionEntity, EntityCommandBuffer.Concurrent cmd )
-        {
-
-        }
-        /// <summary>
-        /// スケールを 0 にする
-        /// </summary>
-        static public void Pause( Entity MotionEntity, EntityCommandBuffer.Concurrent cmd )
         {
 
         }
