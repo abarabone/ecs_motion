@@ -47,7 +47,6 @@ MonoBehaviour:
   - hip_/chest_/head_
   - hip_/chest_/head_/hair_R_
   - hip_/chest_/head_/hair_L_
-  IndexMapFbxToMotion: 
   MotionData:
     Motions:
     - MotionName: jumpdown

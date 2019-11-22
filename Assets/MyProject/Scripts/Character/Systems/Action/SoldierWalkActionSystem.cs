@@ -100,7 +100,7 @@ namespace Abss.Character
 
                 if( !GroundResults[linker.PostureEntity].IsGround )
                 {
-                    if( motionInfo.MotionIndex != 0 )
+                    if( motionInfo.MotionIndex != (int)Motion_minic.jumpdown )
                         this.Commands.AddComponent( index, linker.MainMotionEntity,
                             new MotionInitializeData { MotionIndex = 0, DelayTime = 0.1f, IsContinuous = true } );
                     return;
@@ -108,18 +108,18 @@ namespace Abss.Character
 
                 if( math.lengthsq(acts.MoveDirection) >= 0.01f )
                 {
-                    if( motionInfo.MotionIndex != 1 )
+                    if( motionInfo.MotionIndex != (int)Motion_minic.walk02 )
                         this.Commands.AddComponent( index, linker.MainMotionEntity,
-                            new MotionInitializeData { MotionIndex = 1, DelayTime = 0.1f, IsContinuous = true } );
+                            new MotionInitializeData { MotionIndex = (int)Motion_minic.walk02, DelayTime = 0.1f, IsContinuous = true } );
 
                     this.Rotations[ linker.PostureEntity ] =
                         new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
                 }
                 else
                 {
-                    if( motionInfo.MotionIndex != 9 )
+                    if( motionInfo.MotionIndex != (int)Motion_minic.stand02 )
                         this.Commands.AddComponent( index, linker.MainMotionEntity,
-                            new MotionInitializeData { MotionIndex = 9, DelayTime = 0.2f, IsContinuous = true } );
+                            new MotionInitializeData { MotionIndex = (int)Motion_minic.stand02, DelayTime = 0.2f, IsContinuous = true } );
 
                     //this.Rotations[ linker.PostureEntity ] =
                     //    new Rotation { Value = acts.HorizontalRotation };

@@ -137,6 +137,7 @@ namespace Abss.Motion
             motionClip.MotionData = motionData;
 
             save( Selection.objects, motionClip );
+            makeMotionEnum( motionClip );
         }
 
         static SkinnedMeshRenderer getFirstSkinnedMeshRenderer( UnityEngine.Object[] selectedObjects )
@@ -170,76 +171,6 @@ namespace Abss.Motion
                 .MakePath()
                 .ToArray();
         }
-        /*
-        static AnimationClip[] extractAnimationClips( UnityEngine.Object[] selectedObjects )
-        {
-            // 選択されたアセットから AnimationClip を取得
-
-            var clips =
-                from go in selectedObjects.OfType<GameObject>()
-                select AssetDatabase.GetAssetPath( go ) into path
-                //	where Path.GetExtension(path) == ".fbx"
-
-                from clip in AssetDatabase.LoadAllAssetsAtPath( path ).OfType<AnimationClip>()
-                where !clip.name.StartsWith( "__preview__" )
-
-                select clip
-                ;
-
-            return clips.ToArray();
-        }
-
-        static string[] extractStreamPaths( UnityEngine.Object[] selectedObjects )
-        {
-            var q = selectedObjects
-            //.OfType<GameObject>()
-            //.Children()
-            //.Where( go => go.name != "Mesh" )
-            //.Where( go => !go.name.StartsWith( "_" ) )// _ から始まるものはマニピュレータなので除外（マイルール）
-            //.DescendantsAndSelf()
-            //.MakePath()
-            //;
-            .OfType<GameObject>()
-            .Children()
-            .Where( go => go.name == "Mesh" )
-            .Children()
-            .Select( go => go.GetComponent<SkinnedMeshRenderer>() )
-            .Where( smr => smr != null )
-            .Do( x => Debug.Log( x.bones.Length ) )
-            .First().bones
-                .Select( tfBone => tfBone.gameObject )
-                .Where( go => !go.name.StartsWith( "_" ) )// _ から始まるものはマニピュレータなので除外（マイルール）
-                .MakePath()
-                .Do( x => Debug.Log( x ) )
-                ;
-
-            return q.ToArray();
-        }
-        static int[] makeBoneIndexMapping( UnityEngine.Object[] selectedObjects, string[] streamPaths )
-        {
-            var pathDicts = streamPaths
-                .Select( ( path, i ) => (path, i) )
-                .Do( x => Debug.Log( $"{x.i} {x.path}" ) )
-                .ToDictionary( x => x.path, x => x.i )
-                ;
-
-            var q = selectedObjects
-                .OfType<GameObject>()
-                .Children()
-                .Where( go => go.name == "Mesh" )
-                .Children()
-                .Select( go => go.GetComponent<SkinnedMeshRenderer>() )
-                .Where( smr => smr != null )
-                .First().bones
-                    .Select( bone => bone.gameObject )
-                    .MakePath()
-                    .Do( x => Debug.Log( x ) )
-                    .Select( path => pathDicts.GetOrDefault( path, defaultValue: -1 ) ) // ストリームにない場合は -1
-                ;
-
-            return q.ToArray();
-        }
-        */
 
         static MotionDataInAsset buildMotionData( AnimationClip[] animationClips, string[] streamPaths )
         {
@@ -354,6 +285,18 @@ namespace Abss.Motion
 
         }
 
+        static void makeMotionEnum( MotionClip motionClip )
+        {
+            var qNameList =
+                from x in motionClip.ClipNames
+                select x.Replace( ' ', '_' ).Replace( '(', '_' ).Replace( ')', '_' ).Replace( '[', '_' ).Replace( ']', '_' )
+                ;
+
+            var name = motionClip.name
+                .Replace( ' ', '_' ).Replace( '(', '_' ).Replace( ')', '_' ).Replace( '[', '_' ).Replace( ']', '_' );
+
+            EnumCreator.Create( $"{name}", qNameList, $"Assets/Enum_{name}.cs" );
+        }
     }
 
 
