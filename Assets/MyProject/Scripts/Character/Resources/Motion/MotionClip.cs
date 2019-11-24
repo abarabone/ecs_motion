@@ -11,6 +11,7 @@ using System;
 using System.IO;
 
 using Abss.Utilities;
+using Abss.Common.Extension;
 
 
 namespace Abss.Motion
@@ -174,7 +175,7 @@ namespace Abss.Motion
 
         static MotionDataInAsset buildMotionData( AnimationClip[] animationClips, string[] streamPaths )
         {
-
+            
             return new MotionDataInAsset
             {
                 Motions = queryMotions( animationClips ).ToArray()
@@ -213,7 +214,7 @@ namespace Abss.Motion
                     Streams = queryKeyStreams( clip, section_group ).ToArray()
                 };
 
-
+            
             // セクション内のストリームをクエリする。並び順は、メッシュのボーンと同じ順序となる。
             IEnumerable<StreamDataUnit> queryKeyStreams
                 ( AnimationClip clip, IGrouping<string, EditorCurveBinding> section_group ) =>
@@ -224,7 +225,7 @@ namespace Abss.Motion
                     group binding by binding.path
                         on stream_path equals stream_group.Key
                 into x
-                from stream_group in x.DefaultIfEmpty() // 空の場合どうする？？とりあえず空の配列にするけど
+                from stream_group in x//.DefaultIfEmpty() // 空の場合どうする？？とりあえず空の配列にするけど
                 select new StreamDataUnit
                 {
                     StreamPath = stream_path,
@@ -287,13 +288,19 @@ namespace Abss.Motion
 
         static void makeMotionEnum( MotionClip motionClip )
         {
-            var qNameList =
-                from x in motionClip.ClipNames
-                select x.Replace( ' ', '_' ).Replace( '(', '_' ).Replace( ')', '_' ).Replace( '[', '_' ).Replace( ']', '_' )
+            string replace_( string src ) =>
+                src
+                .Replace( ' ', '_' )
+                .Replace( '(', '_' ).Replace( ')', '_' ).Replace( '[', '_' ).Replace( ']', '_' )
+                .Replace( "+", "Plus" ).Replace( "-", "Minus" )
                 ;
 
-            var name = motionClip.name
-                .Replace( ' ', '_' ).Replace( '(', '_' ).Replace( ')', '_' ).Replace( '[', '_' ).Replace( ']', '_' );
+            var qNameList =
+                from x in motionClip.ClipNames
+                select replace_(x)
+                ;
+
+            var name = replace_( motionClip.name );
 
             EnumCreator.Create( $"{name}", qNameList, $"Assets/Enum_{name}.cs" );
         }

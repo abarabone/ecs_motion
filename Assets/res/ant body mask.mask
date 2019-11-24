@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ant body mask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: _fpos_L_
+    m_Weight: 0
+  - m_Path: _fpos_R_
+    m_Weight: 0
+  - m_Path: _mpos_L_
+    m_Weight: 0
+  - m_Path: _mpos_R_
+    m_Weight: 0
+  - m_Path: _rpos_L_
+    m_Weight: 0
+  - m_Path: _rpos_R_
+    m_Weight: 0
+  - m_Path: chest
+    m_Weight: 1
+  - m_Path: chest/fleg1_L_
+    m_Weight: 1
+  - m_Path: chest/fleg1_L_/fleg2_L_
+    m_Weight: 1
+  - m_Path: chest/fleg1_R_
+    m_Weight: 1
+  - m_Path: chest/fleg1_R_/fleg2_R_
+    m_Weight: 1
+  - m_Path: chest/head 1
+    m_Weight: 1
+  - m_Path: chest/head 1/fang_L_
+    m_Weight: 1
+  - m_Path: chest/head 1/fang_R_
+    m_Weight: 1
+  - m_Path: chest/head 1/sence1_L_
+    m_Weight: 1
+  - m_Path: chest/head 1/sence1_L_/sence2_L_
+    m_Weight: 1
+  - m_Path: chest/head 1/sence1_R_
+    m_Weight: 1
+  - m_Path: chest/head 1/sence1_R_/sence2_R_
+    m_Weight: 1
+  - m_Path: chest/mleg1_L_
+    m_Weight: 1
+  - m_Path: chest/mleg1_L_/mleg2_L_
+    m_Weight: 1
+  - m_Path: chest/mleg1_R_
+    m_Weight: 1
+  - m_Path: chest/mleg1_R_/mleg2_R_
+    m_Weight: 1
+  - m_Path: chest/rleg1_L_
+    m_Weight: 1
+  - m_Path: chest/rleg1_L_/rleg2_L_
+    m_Weight: 1
+  - m_Path: chest/rleg1_R_
+    m_Weight: 1
+  - m_Path: chest/rleg1_R_/rleg2_R_
+    m_Weight: 1
+  - m_Path: chest/weist 1
+    m_Weight: 1
+  - m_Path: Mesh
+    m_Weight: 0
+  - m_Path: Mesh/chest 1
+    m_Weight: 1
+  - m_Path: Mesh/head
+    m_Weight: 1
+  - m_Path: Mesh/leg1
+    m_Weight: 1
+  - m_Path: Mesh/leg2
+    m_Weight: 1
+  - m_Path: Mesh/weist
+    m_Weight: 1

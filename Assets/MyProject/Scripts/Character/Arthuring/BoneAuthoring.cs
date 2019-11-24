@@ -51,9 +51,12 @@ namespace Abss.Arthuring
 
         public (NameAndEntity[] bonePrefabs, Entity posturePrefab) Convert(
             EntityManager em,
-            Entity mainMotionPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss, Entity drawPrefab
+            Entity mainMotionPrefab,
+            IEnumerable<(StreamEntityUnit[],EnMotionBlendingType)> streamPrefabss,
+            Entity drawPrefab
         )
         {
+
 
             var smr = this.GetComponentInChildren<SkinnedMeshRenderer>();//
             
@@ -62,6 +65,7 @@ namespace Abss.Arthuring
 
             return BonePrefabCreator.CreatePrefabs
                 ( em, drawPrefab, mainMotionPrefab, streamPrefabss, mtBones, enabledsAndPaths );
+
 
 
             IEnumerable<float4x4> queryBoneMatrixes_()
@@ -135,7 +139,8 @@ namespace Abss.Arthuring
         static public (NameAndEntity[] bonePrefabs, Entity posturePrefab) CreatePrefabs
         (
             EntityManager em,
-            Entity drawPrefab, Entity mainMotionPrefab, IEnumerable<StreamEntityUnit[]> streamPrefabss,
+            Entity drawPrefab, Entity mainMotionPrefab,
+            IEnumerable<(StreamEntityUnit[] streams,EnMotionBlendingType blendType)> streamPrefabss,
             float4x4[] mtBones, (bool isEnabled, string path)[] enabledsAndPaths
         )
         {
@@ -166,7 +171,7 @@ namespace Abss.Arthuring
             em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
             em.SetComponentData( posturePrefab, new Translation { Value = float3.zero } );
 
-            em.addMotionBendWeightData( mainMotionPrefab, streamPrefabss.Count() );
+            em.addMotionBendWeightData( mainMotionPrefab, streamPrefabss.Count( x => x.blendType != EnMotionBlendingType.overwrite ) );
 
             return (boneNameAndPrefabs, posturePrefab);
         }
@@ -269,13 +274,15 @@ namespace Abss.Arthuring
 
         static void addBoneStreamLinkData(
             this EntityManager em, Entity mainMotionPrefab,
-            NameAndEntity[] bonePrefabs, IEnumerable<StreamEntityUnit[]> streamPrefabss
+            NameAndEntity[] bonePrefabs,
+            IEnumerable<(StreamEntityUnit[] streams, EnMotionBlendingType blendType)> streamPrefabss
         )
         {
             var qStreamWithChannelByName =
-                from motion in streamPrefabss.Select( ( x, i ) => (x, i) )
-                from st in motion.x
-                group (channel: motion.i, st.Position, st.Rotation, st.Scale) by st.Name
+                from motion in streamPrefabss
+                where motion.blendType != EnMotionBlendingType.overwrite
+                from st in motion.streams
+                group (channel: motion.blendType, st.Position, st.Rotation, st.Scale) by st.Name
                 ;
             var qBoneLinked =
                 from bn in bonePrefabs
@@ -284,82 +291,85 @@ namespace Abss.Arthuring
                 select (bone:bn.Entity, streams:st)
                 ;
 
-            //var q =
-            //    from bn in qBoneLinked
-            //    from st in bn.streams
-            //    select (bn, st)
-            //    ;
-            //foreach( var (bn,st) in q )
-            //{
-            //    switch( st.channel )
-            //    {
-            //        case 0:
-            //        {
-            //            var linker = new BoneStream0LinkData
-            //            {
-            //                PositionStreamEntity = st.Position,
-            //                RotationStreamEntity = st.Rotation,
-            //            };
-            //            em.AddComponentData( bn.bone, linker );
-            //        } break;
-            //        case 1:
-            //        {
-            //            var linker = new BoneStream1LinkData
-            //            {
-            //                PositionStreamEntity = st.Position,
-            //                RotationStreamEntity = st.Rotation,
-            //            };
-            //            em.AddComponentData( bn.bone, linker );
-            //        } break;
-            //        case 2:
-            //        {
-            //            var linker = new BoneStream2LinkData
-            //            {
-            //                PositionStreamEntity = st.Position,
-            //                RotationStreamEntity = st.Rotation,
-            //            };
-            //            em.AddComponentData( bn.bone, linker );
-            //        } break;
-            //    }
-            //}
-            foreach( var x in qBoneLinked )
+            var q =
+                from bn in qBoneLinked
+                from st in bn.streams
+                select (bn, st)
+                ;
+            foreach( var (bn, st) in q )
             {
-                var ist = x.streams.GetEnumerator();
-
-
-                if( !ist.MoveNext() ) continue;
-
-                var st0 = ist.Current;
-                var linker0 = new BoneStream0LinkData
+                switch( st.channel )
                 {
-                    PositionStreamEntity = st0.Position,
-                    RotationStreamEntity = st0.Rotation,
-                };
-                em.AddComponentData( x.bone, linker0 );
-
-
-                if( !ist.MoveNext() ) continue;
-
-                em.AddComponentData( x.bone, new BoneMotionBlendLinkData { MotionBlendEntity = mainMotionPrefab } );
-
-                var st1 = ist.Current;
-                var linker1 = new BoneStream1LinkData
-                {
-                    PositionStreamEntity = st1.Position,
-                    RotationStreamEntity = st1.Rotation,
-                };
-                em.AddComponentData( x.bone, linker1 );
-
-                //if( !ist.MoveNext() ) continue;
-
-                //var st2 = ist.Current;
-                //var linker2 = new BoneStream2LinkData
-                //{
-                //    PositionStreamEntity = st2.Position,
-                //    RotationStreamEntity = st2.Rotation,
-                //};
-                //em.AddComponentData( x.bone, linker2 );
+                    case EnMotionBlendingType.blendChannel0:
+                    {
+                        var linker = new BoneStream0LinkData
+                        {
+                            PositionStreamEntity = st.Position,
+                            RotationStreamEntity = st.Rotation,
+                        };
+                        em.AddComponentData( bn.bone, linker );
+                    }
+                    break;
+                    case EnMotionBlendingType.blendChannel1:
+                    {
+                        var linker = new BoneStream1LinkData
+                        {
+                            PositionStreamEntity = st.Position,
+                            RotationStreamEntity = st.Rotation,
+                        };
+                        em.AddComponentData( bn.bone, linker );
+                    }
+                    break;
+                    //case 2:
+                    //{
+                    //    var linker = new BoneStream2LinkData
+                    //    {
+                    //        PositionStreamEntity = st.Position,
+                    //        RotationStreamEntity = st.Rotation,
+                    //    };
+                    //    em.AddComponentData( bn.bone, linker );
+                    //}
+                    //break;
+                }
             }
+            //foreach( var x in qBoneLinked )
+            //{
+            //    var ist = x.streams.GetEnumerator();
+
+
+            //    if( !ist.MoveNext() ) continue;
+
+            //    var st0 = ist.Current;
+            //    var linker0 = new BoneStream0LinkData
+            //    {
+            //        PositionStreamEntity = st0.Position,
+            //        RotationStreamEntity = st0.Rotation,
+            //    };
+            //    em.AddComponentData( x.bone, linker0 );
+
+
+            //    if( !ist.MoveNext() ) continue;
+
+            //    em.AddComponentData( x.bone, new BoneMotionBlendLinkData { MotionBlendEntity = mainMotionPrefab } );
+
+            //    var st1 = ist.Current;
+            //    var linker1 = new BoneStream1LinkData
+            //    {
+            //        PositionStreamEntity = st1.Position,
+            //        RotationStreamEntity = st1.Rotation,
+            //    };
+            //    em.AddComponentData( x.bone, linker1 );
+
+            //    if( !ist.MoveNext() ) continue;
+
+            //    var st2 = ist.Current;
+            //    var linker2 = new BoneStream2LinkData
+            //    {
+            //        PositionStreamEntity = st2.Position,
+            //        RotationStreamEntity = st2.Rotation,
+            //    };
+            //    em.AddComponentData( x.bone, linker2 );
+            //}
         }
     }
 

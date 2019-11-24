@@ -17,6 +17,19 @@ using Abss.Common.Extension;
 namespace Abss.Arthuring
 {
 
+    public enum EnMotionType
+    {
+        typeAProgressEveryStreams,
+        typeBProgressMotion,
+        typeBDirectPositioning,
+    }
+    public enum EnMotionBlendingType
+    {
+        blendChannel0,
+        blendChannel1,
+        overwrite = -1,
+    }
+
     public class MotionAuthoring : MonoBehaviour
     {
 
@@ -24,45 +37,27 @@ namespace Abss.Arthuring
 
         public AvatarMask BoneMask;
 
-        public EnMotionType Mode;
-        public enum EnMotionType
-        {
-            typeAProgressPerStream,
-            typeBProgressMotion,
-            typeBDirect,
-        }
+        public EnMotionType MotionType;
+
+        public EnMotionBlendingType BlendingType;
 
 
         //public (Entity motionPrefab, NameAndEntity[] posStreamPrefabs, NameAndEntity[] rotStreamPrefab)
-        public (Entity motionPrefab, StreamEntityUnit[] streamPrefabs) Convert
-            ( EntityManager em, Entity drawPrefab )
+        public (Entity motionPrefab, StreamEntityUnit[] streamPrefabs, EnMotionBlendingType blendingMode)
+            Convert( EntityManager em, Entity drawPrefab )
         {
 
-            var motionClip = this.MotionClip;
             var enabledBoneIds = makeEnabledBoneIds_();
 
-            switch(this.Mode)
-            {
-                case EnMotionType.typeAProgressPerStream:
-                    return (ArchetypeA.Motion, ArchetypeA.Stream)
-                        .CreatePrefab( em, drawPrefab, motionClip, enabledBoneIds );
+            var (motionPrefab, streamPrefabs) = convert( em, drawPrefab, this.MotionClip, enabledBoneIds );
 
-                case EnMotionType.typeBProgressMotion:
-                    return (ArchetypeB.Motion, ArchetypeB.Stream)
-                        .CreatePrefab( em, drawPrefab, motionClip, enabledBoneIds );
-
-                case EnMotionType.typeBDirect:
-                    return (ArchetypeBd.Motion, ArchetypeBd.Stream)
-                        .CreatePrefab( em, drawPrefab, motionClip, enabledBoneIds );
-            }
-
-            return (Entity.Null, null);
+            return (motionPrefab, streamPrefabs, this.BlendingType);
 
 
             int[] makeEnabledBoneIds_()
             {
                 if( this.BoneMask == null )
-                    return motionClip.StreamPaths.Select( ( x, i ) => i ).ToArray();
+                    return this.MotionClip.StreamPaths.Select( ( x, i ) => i ).ToArray();
 
 
                 var enabledsAndPaths =
@@ -72,7 +67,7 @@ namespace Abss.Arthuring
 
                 var qEnabledBoneId =
                     from s in
-                        motionClip.StreamPaths
+                        this.MotionClip.StreamPaths
                             .Select( ( x, i ) => (path: x, id: i) )
                     join m in
                         from m in enabledsAndPaths
@@ -82,6 +77,27 @@ namespace Abss.Arthuring
                     select s.id
                     ;
                 return qEnabledBoneId.ToArray();
+            }
+
+            (Entity motionPrefab, StreamEntityUnit[] streamPrefabs) convert
+                (EntityManager em_, Entity drawPrefab_, MotionClip motionClip_, int[] enabledBoneIds_)
+            {
+                switch( this.MotionType )
+                {
+                    case EnMotionType.typeAProgressEveryStreams:
+                        return (ArchetypeA.Motion, ArchetypeA.Stream)
+                            .CreatePrefab( em_, drawPrefab_, motionClip_, enabledBoneIds_ );
+
+                    case EnMotionType.typeBProgressMotion:
+                        return (ArchetypeB.Motion, ArchetypeB.Stream)
+                            .CreatePrefab( em_, drawPrefab_, motionClip_, enabledBoneIds_ );
+
+                    case EnMotionType.typeBDirectPositioning:
+                        return (ArchetypeBd.Motion, ArchetypeBd.Stream)
+                            .CreatePrefab( em_, drawPrefab_, motionClip_, enabledBoneIds_ );
+                }
+
+                return (Entity.Null, null);
             }
         }
 
@@ -253,7 +269,8 @@ namespace Abss.Arthuring
         }
 
         static IEnumerable<StreamEntityUnit> queryStreamEntityUnit(
-            IEnumerable<Entity> posStreamPrefabs, IEnumerable<Entity> rotStreamPrefabs,
+            IEnumerable<Entity> posStreamPrefabs,
+            IEnumerable<Entity> rotStreamPrefabs,
             string[] streamPaths, int[] enabledBoneIds
         )
         {

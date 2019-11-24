@@ -36,7 +36,7 @@ namespace Abss.Arthuring
             var motionAndStreamPrefabs = ( from x in motionAuthors select x.Convert( em, drawPrefab ) ).ToArray();
 
             var mainMotionPrefab = motionAndStreamPrefabs.First().motionPrefab;
-            var qStreamPrefabs = from x in motionAndStreamPrefabs select x.streamPrefabs;
+            var qStreamPrefabs = from x in motionAndStreamPrefabs select (x.streamPrefabs, x.blendingMode);
 
             var boneAuthor = this.GetComponent<BoneAuthoring>();
             var (bonePrefabs, posturePrefab) = boneAuthor.Convert( em, mainMotionPrefab, qStreamPrefabs, drawPrefab );

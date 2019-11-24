@@ -53,7 +53,8 @@ namespace Abss.Draw
 
 
         [BurstCompile]
-        struct BoneToDrawInstanceJob : IJobForEach<BoneIndexData, BoneDrawTargetIndexWorkData, Translation, Rotation>
+        struct BoneToDrawInstanceJob : IJobForEach
+            <BoneIndexData, BoneDrawTargetIndexWorkData, Translation, Rotation>
         {
 
 
