@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: riku body mask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: base
+    m_Weight: 1
+  - m_Path: base/chest
+    m_Weight: 1
+  - m_Path: base/chest/head
+    m_Weight: 1
+  - m_Path: base/chest/sholder_L_
+    m_Weight: 1
+  - m_Path: base/chest/sholder_L_/arm1_L_
+    m_Weight: 1
+  - m_Path: base/chest/sholder_L_/arm1_L_/arm2_L_
+    m_Weight: 1
+  - m_Path: base/chest/sholder_R_
+    m_Weight: 1
+  - m_Path: base/chest/sholder_R_/arm1_R_
+    m_Weight: 1
+  - m_Path: base/chest/sholder_R_/arm1_R_/arm2_R_
+    m_Weight: 1
+  - m_Path: base/chest/sholder_R_/arm1_R_/arm2_R_/wapon
+    m_Weight: 1
+  - m_Path: base/hip
+    m_Weight: 1
+  - m_Path: base/hip/leg1_L_
+    m_Weight: 1
+  - m_Path: base/hip/leg1_L_/leg2_L_
+    m_Weight: 1
+  - m_Path: base/hip/leg1_R_
+    m_Weight: 1
+  - m_Path: base/hip/leg1_R_/leg2_R_
+    m_Weight: 1
+  - m_Path: Mesh
+    m_Weight: 0
+  - m_Path: Mesh/as
+    m_Weight: 1
+  - m_Path: Mesh/floor
+    m_Weight: 1
+  - m_Path: Mesh/mbody
+    m_Weight: 1
+  - m_Path: Mesh/mhead
+    m_Weight: 1
+  - m_Path: Mesh/mopt
+    m_Weight: 1

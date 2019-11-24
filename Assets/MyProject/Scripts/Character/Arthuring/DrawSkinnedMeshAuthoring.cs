@@ -55,7 +55,7 @@ namespace Abss.Arthuring
                         mesh = mr.sharedMesh
                     };
 
-                return ChMeshConverter.ConvertToChMesh( smrs_.ElementAt( 0 ).sharedMesh, smrs_.ElementAt(0).bones );
+                //return ChMeshConverter.ConvertToChMesh( smrs_.ElementAt( 0 ).sharedMesh, smrs_.ElementAt(0).bones );
 
                 var dstmesh = new Mesh();
 

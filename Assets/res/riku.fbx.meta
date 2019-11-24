@@ -1,0 +1,173 @@
+fileFormatVersion: 2
+guid: 459e6ce303c8d874c8215c3c7b05565e
+ModelImporter:
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      74: 9005029418935001104
+    second: stand standard
+  - first:
+      74: -3419257869308726280
+    second: walk
+  - first:
+      74: 8730636673850683248
+    second: stand idle
+  - first:
+      74: -2632964249299233129
+    second: wapon stance
+  - first:
+      74: -7332522026633846041
+    second: crawl
+  - first:
+      74: 2294296283355409854
+    second: crawl move
+  - first:
+      74: -899776349465476633
+    second: walk side
+  - first:
+      74: -7771169816279091676
+    second: walk stance
+  - first:
+      74: -6002145638053438096
+    second: wapon crawl stance
+  - first:
+      74: -2993534804863918692
+    second: jump
+  - first:
+      74: -1504929105726005784
+    second: fall
+  - first:
+      74: -851199388697429409
+    second: dash
+  - first:
+      74: -2954811738441393448
+    second: rolling
+  - first:
+      74: -3465998416973785378
+    second: walk side step
+  - first:
+      74: -9075030139533934916
+    second: walk LR
+  - first:
+      74: -6258817700546499485
+    second: stand stance
+  - first:
+      74: -427236748050222798
+    second: wallover
+  - first:
+      74: 1420770986316445164
+    second: landing
+  - first:
+      74: -2812568738813221164
+    second: jump02
+  - first:
+      74: 5826557733320977955
+    second: down
+  - first:
+      74: 3308079120910726559
+    second: dead
+  - first:
+      74: 1088129795947907490
+    second: jitabata
+  - first:
+      74: -145403793468495680
+    second: kneesit
+  - first:
+      74: 7964698753709436734
+    second: sitdown
+  - first:
+      74: 6646253166350025007
+    second: standup
+  - first:
+      74: -4254625662492937289
+    second: yoroke
+  externalObjects: {}
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
+    importBlendShapes: 0
+    importCameras: 0
+    importLights: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
