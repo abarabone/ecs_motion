@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-//using UniRx;
-//using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.Jobs;
 using Unity.Mathematics;
@@ -56,26 +54,6 @@ namespace Abss.Character
     //{
     //    public BlobAssetReference<Unity.Physics.Collider> Collider;
     //}
-
-
-    // キャラクタアクションのステート -------------------------------------
-
-    public struct MinicWalkActionState : IComponentData
-    {
-        public int Phase;
-    }
-
-    public struct SoldierWalkActionState : IComponentData
-    {
-        public int Phase;
-    }
-
-
-
-    // 多種コンポーネント兼用 -------------------------------------
-
-    public struct PlayerTag : IComponentData
-    { }
 
 }
 

@@ -1,18 +1,46 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Jobs;
+using Unity.Mathematics;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Entities;
+using Unity.Transforms;
+using Unity.Rendering;
+using Unity.Properties;
+using Unity.Burst;
+using Unity.Physics;
 
-public class CharacterData : MonoBehaviour
+using Abss.Geometry;
+
+namespace Abss.Character
 {
-    // Start is called before the first frame update
-    void Start()
+
+
+    // 多種コンポーネント兼用 -------------------------------------
+
+    public struct PlayerTag : IComponentData
+    { }
+
+
+
+    // キャラクタアクションのステート -------------------------------------
+
+    public struct MinicWalkActionState : IComponentData
     {
-        
+        public int Phase;
     }
 
-    // Update is called once per frame
-    void Update()
+    public struct SoldierWalkActionState : IComponentData
     {
-        
+        public int Phase;
     }
+
+    public struct AntWalkActionState : IComponentData
+    {
+        public int Phase;
+    }
+    
 }
