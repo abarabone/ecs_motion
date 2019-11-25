@@ -30,7 +30,7 @@ namespace Abss.Character
     //[DisableAutoCreation]
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
     [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
-    public class SoldierWalkActionSystem : JobComponentSystem
+    public class MinicrWalkActionSystem : JobComponentSystem
     {
 
         EntityCommandBufferSystem ecb;
@@ -47,7 +47,7 @@ namespace Abss.Character
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
-            inputDeps = new SolderWalkActionJob
+            inputDeps = new MinicWalkActionJob
             {
                 Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
                 MotionInfos = this.GetComponentDataFromEntity<MotionInfoData>( isReadOnly: true ),
@@ -63,8 +63,8 @@ namespace Abss.Character
         }
 
 
-        struct SolderWalkActionJob : IJobForEachWithEntity
-            <WalkActionState, MoveHandlingData, CharacterLinkData>
+        struct MinicWalkActionJob : IJobForEachWithEntity
+            <MinicWalkActionState, MoveHandlingData, CharacterLinkData>
         {
 
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
@@ -83,7 +83,7 @@ namespace Abss.Character
 
             public void Execute(
                 Entity entity, int index,
-                ref WalkActionState state,
+                ref MinicWalkActionState state,
                 [ReadOnly] ref MoveHandlingData hander,
                 [ReadOnly] ref CharacterLinkData linker
             )

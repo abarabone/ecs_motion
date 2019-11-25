@@ -80,31 +80,59 @@ namespace Abss.Motion
 
     
 
-    static public class MotionExtension
+    static public class Motion
     {
         /// <summary>
         /// モーション初期化セット、disable があれば消す
         /// </summary>
-        static public void Start
-            ( ref EntityCommandBuffer.Concurrent cmd, Entity MotionEntity, MotionInitializeData init )
+        static public void Start( int entityIndex,
+            ref EntityCommandBuffer.Concurrent cmd, Entity motinEntity, MotionInfoData motionInfo,
+            int motionIndex, bool isLooping, float delayTime = 0.0f, bool isContinuous = true
+        )
         {
+            if( motionInfo.MotionIndex == motionIndex ) return;
 
+            cmd.AddComponent( entityIndex, motinEntity,
+                new MotionInitializeData
+                {
+                    MotionIndex = motionIndex,
+                    DelayTime = delayTime,
+                    IsContinuous = isContinuous,
+                    IsLooping = isLooping,
+                }
+            );
+            cmd.AddComponent( entityIndex, motinEntity, new MotionProgressTimerTag { } );
         }
         /// <summary>
         /// モーションとストリームに disable
         /// </summary>
-        static public void Stop( Entity MotionEntity, EntityCommandBuffer.Concurrent cmd )
+        static public void Stop( int entityIndex, ref EntityCommandBuffer.Concurrent cmd, Entity motionEntity )
         {
-
+            cmd.RemoveComponent<MotionProgressTimerTag>( entityIndex, motionEntity );
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        static public void Change( int entityIndex,
+            ref EntityCommandBuffer.Concurrent cmd, Entity motinEntity, int motionIndex, bool isContinuous = true
+        )
+        {
+            cmd.AddComponent( entityIndex, motinEntity,
+                new MotionInitializeData
+                {
+                    MotionIndex = motionIndex,
+                    IsContinuous = isContinuous,
+                }
+            );
         }
 
 
-        static public void SetWeight( ref this MotionBlend2WeightData data, float weight0, float weight1 )
+        static public void SetWeight( ref MotionBlend2WeightData data, float weight0, float weight1 )
         {
             data.WeightNormalized0 = weight0 / ( weight0 + weight1 );
             data.WeightNormalized1 = 1.0f - data.WeightNormalized0;
         }
-        static public void SetWeight( ref this MotionBlend3WeightData data, float weight0, float weight1, float weight2 )
+        static public void SetWeight( ref MotionBlend3WeightData data, float weight0, float weight1, float weight2 )
         {
             var totalWeight = weight0 + weight1 + weight2;
             data.WeightNormalized0 = weight0 / totalWeight;

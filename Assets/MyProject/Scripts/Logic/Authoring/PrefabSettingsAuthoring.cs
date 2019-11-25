@@ -74,7 +74,7 @@ namespace Abss.Arthuring
 
             // 先頭キャラのみ
             em.AddComponentData( this.ents[ 0 ], new PlayerTag { } );
-            em.AddComponentData( this.ents[ 0 ], new WalkActionState { } );
+            em.AddComponentData( this.ents[ 0 ], new SoldierWalkActionState { } );
             var post = em.GetComponentData<CharacterLinkData>( this.ents[ 0 ] ).PostureEntity;
             em.AddComponentData( post, new PlayerTag { } );
             em.AddComponentData( post, new MoveHandlingData { } );

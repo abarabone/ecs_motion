@@ -60,7 +60,12 @@ namespace Abss.Character
 
     // キャラクタアクションのステート -------------------------------------
 
-    public struct WalkActionState : IComponentData
+    public struct MinicWalkActionState : IComponentData
+    {
+        public int Phase;
+    }
+
+    public struct SoldierWalkActionState : IComponentData
     {
         public int Phase;
     }

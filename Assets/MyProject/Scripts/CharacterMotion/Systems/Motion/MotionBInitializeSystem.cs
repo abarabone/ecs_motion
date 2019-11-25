@@ -81,8 +81,9 @@ namespace Abss.Motion
                 initSection( ref motionClip, linker.RotationStreamTop, KeyStreamSection.rotations, ref init );
 
                 cursor.InitializeCursor( ref motionClip, init.DelayTime );
-
-                //if( )
+                
+                makeEnableSection( index, linker.PositionStreamTop );
+                makeEnableSection( index, linker.RotationStreamTop );
 
                 this.Commands.RemoveComponent<MotionInitializeData>( index, entity );
             }
@@ -111,10 +112,13 @@ namespace Abss.Motion
                 }
             }
 
-
-            void makeEnableStreams( )
+            
+            void makeEnableSection( int index, Entity entTop )
             {
-
+                for( var ent = entTop; ent != Entity.Null; ent = this.Linkers[ ent ].NextStreamEntity )
+                {
+                    this.Commands.RemoveComponent<Disabled>( index, ent );
+                }
             }
         }
 

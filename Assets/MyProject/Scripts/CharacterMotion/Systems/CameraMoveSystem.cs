@@ -54,7 +54,7 @@ namespace Abss.Character
                         var camOffset = new float3( 0.0f, 0.4f, -camz );
 
                         tfCam.position =
-                            pos.Value + new float3(0.0f,0.8f,0.0f) + math.mul( acts.LookRotation, camOffset );
+                            pos.Value + new float3(0.0f,0.8f-0.43f,0.0f) + math.mul( acts.LookRotation, camOffset );
 
                     }
                 );

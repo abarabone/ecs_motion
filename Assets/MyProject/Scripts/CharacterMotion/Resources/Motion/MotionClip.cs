@@ -302,7 +302,7 @@ namespace Abss.Motion
 
             var name = replace_( motionClip.name );
 
-            EnumCreator.Create( $"{name}", qNameList, $"Assets/Enum_{name}.cs" );
+            ConstCreator.Create( $"{name}", qNameList, $"Assets/{name}_indices.cs" );
         }
     }
 
