@@ -22,7 +22,7 @@ namespace Abss.Arthuring
     /// <summary>
     /// つかわない
     /// </summary>
-    public class PlayerCharacterAuthoring : CharacterAuthoring
+    public class MinicCharacterAuthoring : CharacterAuthoring
     {
 
 
@@ -33,11 +33,9 @@ namespace Abss.Arthuring
 
             var prefab = base.Convert( em, drawResources );
 
-
-            em.AddComponentData( prefab, new PlayerTag { } );
-
-            //em.World.GetExistingSystem<PlayerMoveSystem>().TfCamera = this.Camera.transform;
             
+            em.AddComponentData( prefab, new MinicWalkActionState { } );
+
 
             return prefab;
         }

@@ -64,7 +64,7 @@ namespace Abss.Character
 
 
         struct AntWalkActionJob : IJobForEachWithEntity
-            <SoldierWalkActionState, MoveHandlingData, CharacterLinkData>
+            <AntWalkActionState, MoveHandlingData, CharacterLinkData>
         {
 
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
@@ -83,7 +83,7 @@ namespace Abss.Character
 
             public void Execute(
                 Entity entity, int index,
-                ref SoldierWalkActionState state,
+                ref AntWalkActionState state,
                 [ReadOnly] ref MoveHandlingData hander,
                 [ReadOnly] ref CharacterLinkData linker
             )

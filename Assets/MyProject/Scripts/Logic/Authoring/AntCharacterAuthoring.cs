@@ -22,7 +22,7 @@ namespace Abss.Arthuring
     /// <summary>
     /// つかわない
     /// </summary>
-    public class PlayerCharacterAuthoring : CharacterAuthoring
+    public class AntCharacterAuthoring : CharacterAuthoring
     {
 
 
@@ -33,11 +33,12 @@ namespace Abss.Arthuring
 
             var prefab = base.Convert( em, drawResources );
 
+            em.AddComponentData( prefab, new AntWalkActionState { } );
 
-            em.AddComponentData( prefab, new PlayerTag { } );
+            //var post = em.GetComponentData<CharacterLinkData>( prefab );//
+            //em.AddComponentData( post.PostureEntity, new AntWalkActionState { } );//
+            //em.AddComponentData( post.PostureEntity, new MoveHandlingData { } );//
 
-            //em.World.GetExistingSystem<PlayerMoveSystem>().TfCamera = this.Camera.transform;
-            
 
             return prefab;
         }
