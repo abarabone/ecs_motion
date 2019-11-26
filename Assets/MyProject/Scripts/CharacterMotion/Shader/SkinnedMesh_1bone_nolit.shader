@@ -122,7 +122,7 @@ Shader "Custom/SkinnedMesh_1bone_nolit"
 			{
 				fixed4 texcol = tex2D(_MainTex, i.uv);
 				
-				fixed4 col = fixed4(texcol * i.color.xyz, 1.0);// * _Color;
+				fixed4 col = fixed4(texcol * i.color.xyz, 1.0) * _Color;
 
 			//	UNITY_APPLY_FOG(i.fogCoord, col);
 

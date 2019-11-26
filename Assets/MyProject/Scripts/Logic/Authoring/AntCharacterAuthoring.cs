@@ -35,9 +35,9 @@ namespace Abss.Arthuring
 
             em.AddComponentData( prefab, new AntWalkActionState { } );
 
-            //var post = em.GetComponentData<CharacterLinkData>( prefab );//
-            //em.AddComponentData( post.PostureEntity, new AntWalkActionState { } );//
-            //em.AddComponentData( post.PostureEntity, new MoveHandlingData { } );//
+            var post = em.GetComponentData<CharacterLinkData>( prefab );//
+            em.AddComponentData( post.PostureEntity, new AntWalkActionState { } );//
+            em.AddComponentData( post.PostureEntity, new MoveHandlingData { } );//
 
 
             return prefab;
