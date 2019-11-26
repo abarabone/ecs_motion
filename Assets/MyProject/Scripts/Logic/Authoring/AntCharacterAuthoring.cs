@@ -33,10 +33,11 @@ namespace Abss.Arthuring
 
             var prefab = base.Convert( em, drawResources );
 
+            em.AddComponentData( prefab, new AntTag { } );
             em.AddComponentData( prefab, new AntWalkActionState { } );
 
             var post = em.GetComponentData<CharacterLinkData>( prefab );//
-            em.AddComponentData( post.PostureEntity, new AntWalkActionState { } );//
+            em.AddComponentData( post.PostureEntity, new AntTag { } );//
             em.AddComponentData( post.PostureEntity, new MoveHandlingData { } );//
 
 

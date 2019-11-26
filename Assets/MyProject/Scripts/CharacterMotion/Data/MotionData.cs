@@ -78,7 +78,7 @@ namespace Abss.Motion
 
     
 
-    static public class Motion
+    static public class MotionOp
     {
         /// <summary>
         /// モーション初期化セット、disable があれば消す

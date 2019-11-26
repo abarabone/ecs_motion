@@ -71,7 +71,6 @@ namespace Abss.Character
                 Entity entity, int index,
                 [ReadOnly] ref MoveHandlingData handler,
                 [ReadOnly] ref GroundHitResultData ground,
-                //ref GroundHitResultData ground,
                 [ReadOnly] ref Translation pos,
                 ref PhysicsVelocity v
             )
@@ -79,21 +78,15 @@ namespace Abss.Character
 
                 ref var acts = ref handler.ControlAction;
 
-
-                var upf = 0.0f;
-
-                if( acts.JumpForce > 0.0f && ground.IsGround )
-                {
-                    upf = acts.JumpForce;
-                    //acts.JumpForce = 0.0f;//
-                }
-
                 var vlinear = v.Linear;
-                var xyDir = acts.MoveDirection * this.DeltaTime * 170;
 
-                xyDir.y = vlinear.y + upf;
+                var upf = math.select( 0.0f, acts.JumpForce, ground.IsGround );
 
-                v.Linear = math.min( xyDir, new float3( 10, 1000, 10 ) );
+                var xzDir = acts.MoveDirection * ( this.DeltaTime * 170.0f );
+                
+                xzDir.y = vlinear.y + upf;
+
+                v.Linear = xzDir;//math.min( xyDir, new float3( 1000, 1000, 1000 ) );
 
             }
         }

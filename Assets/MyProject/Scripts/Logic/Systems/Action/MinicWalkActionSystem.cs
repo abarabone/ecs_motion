@@ -92,10 +92,21 @@ namespace Abss.Character
 
                 var motionInfo = this.MotionInfos[ linker.MainMotionEntity ];
 
+
+                if( state.Phase == 1 )
+                {
+                    var cursor = this.MotionCursors[ linker.MainMotionEntity ];
+                    if( cursor.CurrentPosition > cursor.TotalLength )
+                        state.Phase = 0;
+                    return;
+                }
+
+
                 if( acts.IsChangeMotion )
                 {
-                    this.Commands.AddComponent( index, linker.MainMotionEntity,
-                        new MotionInitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10, IsContinuous = true } );
+                    MotionOp.Start( index, ref this.Commands, linker.MainMotionEntity, motionInfo, Motion_minic.slash01HL, true, 0.1f );
+                    state.Phase = 1;
+                    return;
                 }
 
                 if( !GroundResults[linker.PostureEntity].IsGround )

@@ -24,6 +24,9 @@ namespace Abss.Character
     public struct PlayerTag : IComponentData
     { }
 
+    public struct AntTag : IComponentData
+    { }
+
 
 
     // キャラクタアクションのステート -------------------------------------

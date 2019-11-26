@@ -51,15 +51,14 @@ namespace Abss.Character
 
 
 
-        [BurstCompile]
+        [BurstCompile, RequireComponentTag(typeof(AntTag))]
         struct AiJob : IJobForEachWithEntity
-            <AntWalkActionState, MoveHandlingData>//
+            <MoveHandlingData>//
         {
 
 
             public void Execute(
                 Entity entity, int index,
-                [ReadOnly] ref AntWalkActionState state,
                 [WriteOnly] ref MoveHandlingData handler
             )
             {

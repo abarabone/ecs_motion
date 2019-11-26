@@ -91,7 +91,7 @@ namespace Abss.Character
                             HorizontalRotation = this.hrot,
                             VerticalAngle = this.vangle,
                             JumpForce = jumpForce,
-                            IsChangeMotion = gp.bButton.wasPressedThisFrame,
+                            IsChangeMotion = gp.rightShoulder.wasPressedThisFrame,
                         };
                     };
                     return;

@@ -91,7 +91,11 @@ namespace Abss.Character
                 ref var acts = ref hander.ControlAction;
 
                 var motionInfo = this.MotionInfos[ linker.MainMotionEntity ];
-                
+
+                MotionOp.Start( index, ref this.Commands, linker.MainMotionEntity, motionInfo, Motion_ant.walking, true, 0.1f );
+
+                this.Rotations[ linker.PostureEntity ] =
+                    new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
             }
         }
 

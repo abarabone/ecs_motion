@@ -44,7 +44,6 @@ namespace Abss.Character
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-
             inputDeps = new HorizontalMoveJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
@@ -57,7 +56,7 @@ namespace Abss.Character
 
 
 
-        [BurstCompile]
+        [BurstCompile, RequireComponentTag(typeof(AntTag))]
         struct HorizontalMoveJob : IJobForEachWithEntity
             <MoveHandlingData, GroundHitResultData, Translation, PhysicsVelocity>
         {
@@ -71,29 +70,17 @@ namespace Abss.Character
                 Entity entity, int index,
                 [ReadOnly] ref MoveHandlingData handler,
                 [ReadOnly] ref GroundHitResultData ground,
-                //ref GroundHitResultData ground,
                 [ReadOnly] ref Translation pos,
                 ref PhysicsVelocity v
             )
             {
 
                 ref var acts = ref handler.ControlAction;
+                
 
+                var xyDir = acts.MoveDirection * (this.DeltaTime * 170.0f);
 
-                var upf = 0.0f;
-
-                if( acts.JumpForce > 0.0f && ground.IsGround )
-                {
-                    upf = acts.JumpForce;
-                    //acts.JumpForce = 0.0f;//
-                }
-
-                var vlinear = v.Linear;
-                var xyDir = acts.MoveDirection * this.DeltaTime * 170;
-
-                xyDir.y = vlinear.y + upf;
-
-                v.Linear = math.min( xyDir, new float3( 10, 1000, 10 ) );
+                v.Linear = xyDir;//math.min( xyDir, new float3( 1000, 1000, 1000 ) );
 
             }
         }
