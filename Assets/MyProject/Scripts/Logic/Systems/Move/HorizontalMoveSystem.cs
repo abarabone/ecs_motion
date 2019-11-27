@@ -82,7 +82,7 @@ namespace Abss.Character
 
                 var upf = math.select( 0.0f, acts.JumpForce, ground.IsGround );
 
-                var xzDir = acts.MoveDirection * ( this.DeltaTime * 170.0f );
+                var xzDir = acts.MoveDirection * ( this.DeltaTime * 300.0f );
                 
                 xzDir.y = vlinear.y + upf;
 

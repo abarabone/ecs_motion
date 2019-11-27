@@ -82,7 +82,7 @@ namespace Abss.Character
 
 
             public void Execute(
-                Entity entity, int index,
+                Entity entity, int jobIndex,
                 ref MinicWalkActionState state,
                 [ReadOnly] ref MoveHandlingData hander,
                 [ReadOnly] ref CharacterLinkData linker
@@ -92,19 +92,22 @@ namespace Abss.Character
 
                 var motionInfo = this.MotionInfos[ linker.MainMotionEntity ];
 
+                var motion = new MotionOperator( this.Commands, this.MotionInfos, this.MotionCursors, linker.MainMotionEntity, jobIndex );
+
 
                 if( state.Phase == 1 )
                 {
                     var cursor = this.MotionCursors[ linker.MainMotionEntity ];
                     if( cursor.CurrentPosition > cursor.TotalLength )
                         state.Phase = 0;
+
                     return;
                 }
 
 
                 if( acts.IsChangeMotion )
                 {
-                    MotionOp.Start( index, ref this.Commands, linker.MainMotionEntity, motionInfo, Motion_minic.slash01HL, true, 0.1f );
+                    MotionOp.Start( jobIndex, ref this.Commands, linker.MainMotionEntity, motionInfo, Motion_minic.slash01HL, true, 0.1f );
                     state.Phase = 1;
                     return;
                 }
@@ -112,15 +115,22 @@ namespace Abss.Character
                 if( !GroundResults[linker.PostureEntity].IsGround )
                 {
                     if( motionInfo.MotionIndex != (int)Motion_minic.jumpdown )
-                        this.Commands.AddComponent( index, linker.MainMotionEntity,
+                        this.Commands.AddComponent( jobIndex, linker.MainMotionEntity,
                             new MotionInitializeData { MotionIndex = 0, DelayTime = 0.1f, IsContinuous = true } );
                     return;
                 }
 
-                if( math.lengthsq(acts.MoveDirection) >= 0.01f )
+                if( math.lengthsq( acts.MoveDirection ) >= 0.5f*0.5f )
+                {
+                    motion.Start( Motion_minic.run01, isLooping: true, delayTime: 0.05f );
+
+                    this.Rotations[ linker.PostureEntity ] =
+                        new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
+                }
+                else if( math.lengthsq(acts.MoveDirection) >= 0.01f )
                 {
                     if( motionInfo.MotionIndex != (int)Motion_minic.walk02 )
-                        this.Commands.AddComponent( index, linker.MainMotionEntity,
+                        this.Commands.AddComponent( jobIndex, linker.MainMotionEntity,
                             new MotionInitializeData { MotionIndex = (int)Motion_minic.walk02, DelayTime = 0.1f, IsContinuous = true } );
 
                     this.Rotations[ linker.PostureEntity ] =
@@ -129,7 +139,7 @@ namespace Abss.Character
                 else
                 {
                     if( motionInfo.MotionIndex != (int)Motion_minic.stand02 )
-                        this.Commands.AddComponent( index, linker.MainMotionEntity,
+                        this.Commands.AddComponent( jobIndex, linker.MainMotionEntity,
                             new MotionInitializeData { MotionIndex = (int)Motion_minic.stand02, DelayTime = 0.2f, IsContinuous = true } );
 
                     //this.Rotations[ linker.PostureEntity ] =

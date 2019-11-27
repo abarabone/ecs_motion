@@ -77,7 +77,7 @@ namespace Abss.Motion
 
     
 
-    public struct MotionOperator
+    public ref struct MotionOperator
     {
         MotionInfoData info;
         //MotionCursorData cursor;
@@ -108,6 +108,8 @@ namespace Abss.Motion
         {
             if( this.info.MotionIndex == motionIndex ) return;
 
+            this.cmd.AddComponent( this.jobIndex, this.entity, new MotionProgressTimerTag { } );
+
             this.cmd.AddComponent( this.jobIndex, this.entity,
                 new MotionInitializeData
                 {
@@ -117,13 +119,12 @@ namespace Abss.Motion
                     IsLooping = isLooping,
                 }
             );
-            cmd.AddComponent( this.jobIndex, this.entity, new MotionProgressTimerTag { } );
         }
 
         /// <summary>
-        /// モーションとストリームに disable
+        /// 
         /// </summary>
-        public void Stop( int entityIndex, ref EntityCommandBuffer.Concurrent cmd, Entity motionEntity )
+        public void Stop()
         {
             this.cmd.RemoveComponent<MotionProgressTimerTag>( this.jobIndex, this.entity );
         }

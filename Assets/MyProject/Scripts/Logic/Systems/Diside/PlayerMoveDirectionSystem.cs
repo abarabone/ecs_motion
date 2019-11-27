@@ -26,19 +26,6 @@ namespace Abss.Character
 {
 
 
-    public struct ControlActionUnit
-    {
-        public float3 MoveDirection;
-        public quaternion LookRotation;
-        public quaternion HorizontalRotation;
-        public float VerticalAngle;
-
-        public float3 LookDirection => math.forward( this.LookRotation );
-
-        public float JumpForce;
-        public bool IsChangeMotion;
-    }
-
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]

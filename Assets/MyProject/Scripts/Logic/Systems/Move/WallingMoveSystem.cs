@@ -77,10 +77,21 @@ namespace Abss.Character
 
                 ref var acts = ref handler.ControlAction;
                 
+                var move = acts.MoveDirection * (this.DeltaTime * 170.0f);
 
-                var xyDir = acts.MoveDirection * (this.DeltaTime * 170.0f);
 
-                v.Linear = xyDir;//math.min( xyDir, new float3( 1000, 1000, 1000 ) );
+
+                var hitInput = new RaycastInput
+                {
+                    Start = pos.Value + 
+                    Position = pos.Value + sphere.Center,
+                    MaxDistance = sphere.Distance,
+                    Filter = sphere.filter,
+                };
+                var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
+
+
+
 
             }
         }
