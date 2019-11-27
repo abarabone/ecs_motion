@@ -37,7 +37,7 @@ namespace Abss.Motion
                 Commands = commandBuffer.ToConcurrent(),
                 Linkers  = this.GetComponentDataFromEntity<StreamRelationData>(),
                 Shifters = this.GetComponentDataFromEntity<StreamKeyShiftData>(),
-                Timers   = this.GetComponentDataFromEntity<motioncur>(),
+                Timers   = this.GetComponentDataFromEntity<StreamCursorData>(),
                 Caches   = this.GetComponentDataFromEntity<StreamNearKeysCacheData>(),
 
             }
@@ -65,7 +65,7 @@ namespace Abss.Motion
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<StreamNearKeysCacheData> Caches;
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<motioncur>  Timers;
+            public ComponentDataFromEntity<StreamCursorData>  Timers;
 
 
             public void Execute(

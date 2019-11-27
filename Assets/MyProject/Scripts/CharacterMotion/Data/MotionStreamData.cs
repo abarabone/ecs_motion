@@ -74,12 +74,8 @@ namespace Abss.Motion
     /// （スタート時刻と現在時刻を比較する方法だと、速度変化や休止ができないため）
     /// ※ただし現在時刻法だと、不要な更新をなくせるので、こちらのほうがいい面も多い
     /// </summary>
-    public struct motioncur : IComponentData
+    public struct StreamCursorData : IComponentData
     {
-        //public float	TimeProgress;	// スタート時は 0（繊維時はマイナスからもあり）
-        //public float	TimeLength;
-        //public float	TimeScale;
-        //      public bool IsLooping;// まだ未実装
         public MotionCursorData Cursor;
     }
 
@@ -164,6 +160,49 @@ namespace Abss.Motion
 
         //    progress.TimeProgress = -delayTimer;
         //}
+
+        /// <summary>
+        /// キーバッファをストリーム先頭に初期化する。
+        /// </summary>
+        static public unsafe void InitializeKeys(
+            ref this StreamNearKeysCacheData nearKeys,
+            ref StreamKeyShiftData shift
+        )
+        {
+            var index0 = 0;
+            var index1 = math.min( 1, shift.KeyLength - 1 );
+            var index2 = math.min( 2, shift.KeyLength - 1 );
+
+            nearKeys.Time_From = shift.Keys[ index0 ].Time.x;
+            nearKeys.Time_To = shift.Keys[ index1 ].Time.x;
+            nearKeys.Time_Next = shift.Keys[ index2 ].Time.x;
+
+            nearKeys.Value_Prev = shift.Keys[ index0 ].Value;
+            nearKeys.Value_From = shift.Keys[ index0 ].Value;
+            nearKeys.Value_To = shift.Keys[ index1 ].Value;
+            nearKeys.Value_Next = shift.Keys[ index2 ].Value;
+
+            shift.KeyIndex_Next = index2;
+        }
+
+        static public unsafe void InitializeKeysContinuous(
+            ref this StreamNearKeysCacheData nearKeys,
+            ref StreamKeyShiftData shift,
+            float delayTimer = 0.0f// 再検討の余地あり（変な挙動あり）
+        )
+        {
+            var index0 = 0;
+            var index1 = math.min( 1, shift.KeyLength - 1 );
+
+            nearKeys.Time_From = -delayTimer;
+            nearKeys.Time_To = shift.Keys[ index0 ].Time.x;
+            nearKeys.Time_Next = shift.Keys[ index1 ].Time.x;
+
+            nearKeys.Value_To = shift.Keys[ index0 ].Value;
+            nearKeys.Value_Next = shift.Keys[ index1 ].Value;
+
+            shift.KeyIndex_Next = index1;
+        }
 
 
         /// <summary>

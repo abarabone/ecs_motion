@@ -42,14 +42,14 @@ namespace Abss.Motion
         /// </summary>
         [BurstCompile]
         struct StreamProgressAndInterporationJob : IJobForEach
-            <motioncur, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
+            <StreamCursorData, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
         {
 
             public float DeltaTime;
 
 
             public void Execute(
-                ref motioncur timer,
+                ref StreamCursorData timer,
                 ref StreamKeyShiftData shiftInfo,
                 ref StreamNearKeysCacheData nearKeys,
                 [WriteOnly] ref StreamInterpolatedData dst

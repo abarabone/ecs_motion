@@ -120,7 +120,7 @@ namespace Abss.Arthuring
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
                 typeof( StreamNearKeysCacheData ),
-                typeof( motioncur ),
+                typeof( StreamCursorData ),
                 typeof( StreamInterpolatedData ),
                 typeof( Prefab )
             };

@@ -82,7 +82,7 @@ namespace Abss.Character
 
 
             public void Execute(
-                Entity entity, int index,
+                Entity entity, int jobIndex,
                 ref AntWalkActionState state,
                 [ReadOnly] ref MoveHandlingData hander,
                 [ReadOnly] ref CharacterLinkData linker
@@ -90,9 +90,9 @@ namespace Abss.Character
             {
                 ref var acts = ref hander.ControlAction;
 
-                var motionInfo = this.MotionInfos[ linker.MainMotionEntity ];
-
-                MotionOp.Start( index, ref this.Commands, linker.MainMotionEntity, motionInfo, Motion_ant.walking, true, 0.1f );
+                var motion = new MotionOperator( this.Commands, this.MotionInfos, this.MotionCursors, linker.MainMotionEntity, jobIndex );
+                
+                motion.Start( Motion_ant.walking, isLooping: true, delayTime: 0.1f );
 
                 this.Rotations[ linker.PostureEntity ] =
                     new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
