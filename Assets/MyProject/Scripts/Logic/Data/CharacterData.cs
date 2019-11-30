@@ -29,6 +29,10 @@ namespace Abss.Character
 
 
 
+    public struct WallHungerTag : IComponentData
+    { }
+
+
     // キャラクタアクションのステート -------------------------------------
 
     public struct MinicWalkActionState : IComponentData

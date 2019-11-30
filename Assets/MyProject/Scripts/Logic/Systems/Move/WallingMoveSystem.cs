@@ -10,6 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Physics;
 using Unity.Physics.Systems;
+using Unity.Physics.Extensions;
 using UnityEngine.InputSystem;
 
 using Collider = Unity.Physics.Collider;
@@ -19,6 +20,7 @@ using Abss.Misc;
 using Abss.Utilities;
 using Abss.SystemGroup;
 using Abss.Character;
+using Abss.Geometry;
 
 namespace Abss.Character
 {
@@ -56,9 +58,9 @@ namespace Abss.Character
 
 
 
-        [BurstCompile, RequireComponentTag(typeof(AntTag))]
+        [BurstCompile, RequireComponentTag(typeof(WallHungerTag))]
         struct HorizontalMoveJob : IJobForEachWithEntity
-            <MoveHandlingData, GroundHitResultData, Translation, PhysicsVelocity>
+            <Translation, Rotation, PhysicsVelocity>
         {
 
             [ReadOnly] public float DeltaTime;
@@ -68,32 +70,53 @@ namespace Abss.Character
 
             public unsafe void Execute(
                 Entity entity, int index,
-                [ReadOnly] ref MoveHandlingData handler,
-                [ReadOnly] ref GroundHitResultData ground,
                 [ReadOnly] ref Translation pos,
+                [ReadOnly] ref Rotation rot,
                 ref PhysicsVelocity v
             )
             {
 
-                ref var acts = ref handler.ControlAction;
-                
-                var move = acts.MoveDirection * (this.DeltaTime * 170.0f);
+                var dir = math.forward( rot.Value );
+                var move = dir * (this.DeltaTime * 170.0f);
+                var rtf = new RigidTransform( rot.Value, pos.Value );
 
+                var localCenter = new float3( 0.0f, 1.5f, 0.0f );//
 
-
+                var st = math.transform( rtf, localCenter );
+                var ed = st + math.mul( rot.Value, ray.DirectionAndLength.As_float3() ) * ray.DirectionAndLength.w;
                 var hitInput = new RaycastInput
                 {
-                    Start = pos.Value + 
-                    Position = pos.Value + sphere.Center,
-                    MaxDistance = sphere.Distance,
-                    Filter = sphere.filter,
+                    Start = st,
+                    End = ed,
+                    Filter = ray.filter,
                 };
-                var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
+                var isHit = this.CollisionWorld.CastRay( hitInput, );// 自身のコライダを除外できればシンプルになるんだが…
 
 
 
 
             }
+        }
+
+        public struct AnyHitUnselfCollector<T> : ICollector<T> where T : struct, IQueryResult
+        {
+            public bool EarlyOutOnFirstHit => true;
+            public float MaxFraction { get; }
+            public int NumHits => 0;
+
+            public AnyHitUnselfCollector( float maxFraction )
+            {
+                MaxFraction = maxFraction;
+            }
+
+            public bool AddHit( T hit )
+            {
+                hit.
+                return true;
+            }
+
+            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
+            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex ) { }
         }
 
     }

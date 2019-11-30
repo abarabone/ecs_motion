@@ -169,7 +169,7 @@ namespace Abss.Arthuring
                             em.AddComponentData( ent, new GroundHitRayData
                             {
                                 Center = srcSphere.center,
-                                Distance = srcSphere.radius,
+                                DirectionAndLength = new float4(math.up()*-1, srcSphere.radius),// 向きは暫定
                                 filter = LegacyColliderProducer.GetFilter( srcSphere, groupIndex ),
                             } );
                         }

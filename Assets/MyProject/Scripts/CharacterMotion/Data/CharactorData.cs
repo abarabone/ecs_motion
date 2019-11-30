@@ -47,7 +47,7 @@ namespace Abss.Character
     public struct GroundHitRayData : IComponentData
     {
         public float3 Center;
-        public float Distance;
+        public float4 DirectionAndLength;
         public CollisionFilter filter;
     }
     //public struct GroundHitColliderData : IComponentData

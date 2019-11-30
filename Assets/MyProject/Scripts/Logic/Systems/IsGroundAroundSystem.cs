@@ -55,7 +55,7 @@ namespace Abss.Character
 
         [BurstCompile]
         struct IsGroundAroundJob : IJobForEachWithEntity
-            <GroundHitResultData, GroundHitSphereData, Translation>
+            <GroundHitResultData, GroundHitSphereData, Translation, Rotation>
         {
 
             [ReadOnly] public CollisionWorld CollisionWorld;
@@ -65,14 +65,16 @@ namespace Abss.Character
                 Entity entity, int index,
                 [WriteOnly] ref GroundHitResultData ground,
                 [ReadOnly] ref GroundHitSphereData sphere,
-                [ReadOnly] ref Translation pos
+                [ReadOnly] ref Translation pos,
+                [ReadOnly] ref Rotation rot
             )
             {
                 var a = new NativeList<DistanceHit>( Allocator.Temp );
+                var rtf = new RigidTransform( rot.Value, pos.Value );
 
                 var hitInput = new PointDistanceInput
                 {
-                    Position = pos.Value + sphere.Center,
+                    Position = math.transform( rtf, sphere.Center ),
                     MaxDistance = sphere.Distance,
                     Filter = sphere.filter,
                 };
