@@ -19,9 +19,7 @@ using Abss.Common.Extension;
 
 namespace Abss.Arthuring
 {
-    /// <summary>
-    /// つかわない
-    /// </summary>
+
     public class RikuCharacterAuthoring : CharacterAuthoring
     {
 
@@ -34,6 +32,10 @@ namespace Abss.Arthuring
             var prefab = base.Convert( em, drawResources );
 
             em.AddComponentData( prefab, new SoldierWalkActionState { } );
+
+            var post = em.GetComponentData<CharacterLinkData>( prefab );//
+            em.AddComponentData( post.PostureEntity, new MoveHandlingData { } );//
+            em.AddComponentData( post.PostureEntity, new HorizontalMovingTag { } );//
 
             return prefab;
         }

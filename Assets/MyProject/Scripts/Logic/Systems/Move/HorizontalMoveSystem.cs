@@ -57,7 +57,7 @@ namespace Abss.Character
 
 
 
-        [BurstCompile]
+        [BurstCompile, RequireComponentTag(typeof(HorizontalMovingTag))]
         struct HorizontalMoveJob : IJobForEachWithEntity
             <MoveHandlingData, GroundHitResultData, Translation, PhysicsVelocity>
         {

@@ -29,6 +29,8 @@ namespace Abss.Character
 
 
 
+    public struct HorizontalMovingTag : IComponentData
+    { }
     public struct WallHunggingData : IComponentData
     {
         public int State;

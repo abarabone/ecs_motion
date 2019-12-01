@@ -19,9 +19,7 @@ using Abss.Common.Extension;
 
 namespace Abss.Arthuring
 {
-    /// <summary>
-    /// つかわない
-    /// </summary>
+
     public class AntCharacterAuthoring : CharacterAuthoring
     {
 

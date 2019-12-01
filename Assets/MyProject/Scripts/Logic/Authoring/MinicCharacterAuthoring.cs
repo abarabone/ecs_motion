@@ -19,9 +19,7 @@ using Abss.Common.Extension;
 
 namespace Abss.Arthuring
 {
-    /// <summary>
-    /// つかわない
-    /// </summary>
+
     public class MinicCharacterAuthoring : CharacterAuthoring
     {
 
@@ -36,6 +34,9 @@ namespace Abss.Arthuring
             
             em.AddComponentData( prefab, new MinicWalkActionState { } );
 
+            var post = em.GetComponentData<CharacterLinkData>( prefab );//
+            em.AddComponentData( post.PostureEntity, new MoveHandlingData { } );//
+            em.AddComponentData( post.PostureEntity, new HorizontalMovingTag { } );//
 
             return prefab;
         }

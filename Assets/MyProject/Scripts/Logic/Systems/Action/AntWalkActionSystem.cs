@@ -63,6 +63,7 @@ namespace Abss.Character
         }
 
 
+        [RequireComponentTag(typeof(AntTag))]
         struct AntWalkActionJob : IJobForEachWithEntity
             <AntWalkActionState, MoveHandlingData, CharacterLinkData>
         {
@@ -88,14 +89,14 @@ namespace Abss.Character
                 [ReadOnly] ref CharacterLinkData linker
             )
             {
-                ref var acts = ref hander.ControlAction;
+                //ref var acts = ref hander.ControlAction;
 
-                var motion = new MotionOperator( this.Commands, this.MotionInfos, this.MotionCursors, linker.MainMotionEntity, jobIndex );
+                //var motion = new MotionOperator( this.Commands, this.MotionInfos, this.MotionCursors, linker.MainMotionEntity, jobIndex );
                 
-                motion.Start( Motion_ant.walking, isLooping: true, delayTime: 0.1f );
+                //motion.Start( Motion_ant.walking, isLooping: true, delayTime: 0.1f );
 
-                this.Rotations[ linker.PostureEntity ] =
-                    new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
+                //this.Rotations[ linker.PostureEntity ] =
+                //    new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
             }
         }
 
