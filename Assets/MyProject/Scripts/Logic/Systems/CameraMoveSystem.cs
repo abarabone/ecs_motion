@@ -52,12 +52,13 @@ namespace Abss.Character
 
                         tfCam.rotation = acts.LookRotation;
 
-                        var camz = 2.5f - math.abs( acts.VerticalAngle ) / math.radians( 90.0f ) * 1.5f;
-                        //var camz = 2.5f + math.min( 0.0f, acts.VerticalAngle ) / math.radians( 90.0f ) * 1.5f;
+                        //var camz = 2.5f - math.abs( acts.VerticalAngle ) / math.radians( 90.0f ) * 1.5f;
+                        var camz = 2.5f + math.min( 0.0f, acts.VerticalAngle ) / math.radians( 90.0f ) * 1.5f;
                         var camOffset = new float3( 0.0f, 0.4f, -camz );
 
                         tfCam.position =
-                            pos.Value + new float3( 0.0f, 0.8f - 0.43f, 0.0f ) + math.mul( acts.LookRotation, camOffset );
+                            //pos.Value + new float3( 0.0f, 0.8f - 0.43f, 0.0f ) + math.mul( acts.LookRotation, camOffset );
+                            pos.Value + new float3( 0.0f, 0.8f, 0.0f ) + math.mul( acts.LookRotation, camOffset );
                     }
                 );
 
@@ -82,6 +83,7 @@ namespace Abss.Character
             //        }
             //    );
         }
+
 
         public struct AnyHitExcludeSelfCollector3 : ICollector<DistanceHit>
         {

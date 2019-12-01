@@ -93,9 +93,11 @@ namespace Abss.Character
                 //    Filter = ray.filter,
                 //};
                 //var isHit = this.CollisionWorld.CastRay( hitInput, );// 自身のコライダを除外できればシンプルになるんだが…
-                
 
 
+                var y = v.Linear.y;
+                v.Linear = move;
+                v.Linear.y = y;
 
             }
         }

@@ -366,10 +366,14 @@ namespace Abss.Arthuring
             filter.GroupIndex = groupIndex;
 
             var cfa = shape.GetComponentInParent<ColliderFilterAuthoring>();
+            //var cfa = shape.GetComponent<ColliderFilterAuthoring>();
+            //if( cfa == null ) cfa = shape.GetComponentInParent<ColliderFilterAuthoring>();
+            if( cfa == null ) Debug.Log( $"{shape.name}->null {filter.BelongsTo} {filter.CollidesWith}" );//
             if( cfa == null ) return filter;
             
             filter.BelongsTo = cfa.BelongsTo.Value;
             filter.CollidesWith = cfa.CollidesWith.Value;
+            Debug.Log($"{shape.name}->{cfa.name} {filter.BelongsTo} {filter.CollidesWith}");//
             return filter;
         }
 
