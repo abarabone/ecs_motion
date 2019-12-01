@@ -15,6 +15,7 @@ using UnityEngine.InputSystem;
 
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
+using RaycastHit = Unity.Physics.RaycastHit;
 
 using Abss.Misc;
 using Abss.Utilities;
@@ -53,13 +54,14 @@ namespace Abss.Character
 
         [BurstCompile, RequireComponentTag(typeof(AntTag))]
         struct AiJob : IJobForEachWithEntity
-            <MoveHandlingData>//
+            <MoveHandlingData, WallHunggingData>//
         {
 
 
             public void Execute(
                 Entity entity, int index,
-                [WriteOnly] ref MoveHandlingData handler
+                [WriteOnly] ref MoveHandlingData handler,
+                [ReadOnly] ref WallHunggingData walling
             )
             {
 
@@ -67,6 +69,62 @@ namespace Abss.Character
                 handler.ControlAction.LookRotation = quaternion.identity;
                 handler.ControlAction.MoveDirection = new float3( 0, 0, 1 );
 
+            }
+        }
+
+
+
+
+        //public struct ClosestHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
+        public struct ClosestHitExcludeSelfCollector : ICollector<RaycastHit>
+        {
+            public bool EarlyOutOnFirstHit => false;
+            public float MaxFraction { get; private set; }
+            public int NumHits { get; private set; }
+
+            private RaycastHit m_ClosestHit;
+            public RaycastHit ClosestHit => m_ClosestHit;
+
+            NativeSlice<RigidBody> rigidbodies;
+            Entity self;
+
+            public ClosestHitExcludeSelfCollector
+                ( float maxFraction, Entity selfEntity, NativeSlice<RigidBody> rigidbodies )
+            {
+                MaxFraction = maxFraction;
+                m_ClosestHit = default( RaycastHit );
+                NumHits = 0;
+                this.rigidbodies = rigidbodies;
+                this.self = selfEntity;
+            }
+
+
+            public bool AddHit( RaycastHit hit )
+            {
+                if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
+
+                MaxFraction = hit.Fraction;
+                m_ClosestHit = hit;
+                NumHits = 1;
+                return true;
+            }
+
+            public void TransformNewHits
+                ( int oldNumHits, float oldFraction, Unity.Physics.Math.MTransform transform, uint numSubKeyBits, uint subKey )
+            {
+                if( m_ClosestHit.Fraction < oldFraction )
+                {
+                    m_ClosestHit.Transform( transform, numSubKeyBits, subKey );
+                }
+            }
+
+            public void TransformNewHits
+                ( int oldNumHits, float oldFraction, Unity.Physics.Math.MTransform transform, int rigidBodyIndex )
+            {
+                if( m_ClosestHit.Fraction < oldFraction )
+                {
+                    m_ClosestHit.Transform( transform, rigidBodyIndex );
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ using UnityEngine.InputSystem;
 
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
+using RaycastHit = Unity.Physics.RaycastHit;
 
 using Abss.Misc;
 using Abss.Utilities;
@@ -58,7 +59,7 @@ namespace Abss.Character
 
 
 
-        [BurstCompile, RequireComponentTag(typeof(WallHungerTag))]
+        [BurstCompile, RequireComponentTag(typeof(WallHunggingData))]
         struct HorizontalMoveJob : IJobForEachWithEntity
             <Translation, Rotation, PhysicsVelocity>
         {
@@ -82,42 +83,23 @@ namespace Abss.Character
 
                 var localCenter = new float3( 0.0f, 1.5f, 0.0f );//
 
-                var st = math.transform( rtf, localCenter );
-                var ed = st + math.mul( rot.Value, ray.DirectionAndLength.As_float3() ) * ray.DirectionAndLength.w;
-                var hitInput = new RaycastInput
-                {
-                    Start = st,
-                    End = ed,
-                    Filter = ray.filter,
-                };
-                var isHit = this.CollisionWorld.CastRay( hitInput, );// 自身のコライダを除外できればシンプルになるんだが…
-
+                var a = this.CollisionWorld.Bodies;
+                //var st = math.transform( rtf, localCenter );
+                //var ed = st + math.mul( rot.Value, ray.DirectionAndLength.As_float3() ) * ray.DirectionAndLength.w;
+                //var hitInput = new RaycastInput
+                //{
+                //    Start = st,
+                //    End = ed,
+                //    Filter = ray.filter,
+                //};
+                //var isHit = this.CollisionWorld.CastRay( hitInput, );// 自身のコライダを除外できればシンプルになるんだが…
+                
 
 
 
             }
         }
 
-        public struct AnyHitUnselfCollector<T> : ICollector<T> where T : struct, IQueryResult
-        {
-            public bool EarlyOutOnFirstHit => true;
-            public float MaxFraction { get; }
-            public int NumHits => 0;
-
-            public AnyHitUnselfCollector( float maxFraction )
-            {
-                MaxFraction = maxFraction;
-            }
-
-            public bool AddHit( T hit )
-            {
-                hit.
-                return true;
-            }
-
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex ) { }
-        }
 
     }
 }

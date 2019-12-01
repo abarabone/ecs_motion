@@ -29,8 +29,10 @@ namespace Abss.Character
 
 
 
-    public struct WallHungerTag : IComponentData
-    { }
+    public struct WallHunggingData : IComponentData
+    {
+        public int State;
+    }
 
 
     // キャラクタアクションのステート -------------------------------------
