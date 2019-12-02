@@ -59,9 +59,9 @@ namespace Abss.Character
 
 
 
-        [BurstCompile, RequireComponentTag(typeof(WallHunggingData))]
+        [BurstCompile]
         struct HorizontalMoveJob : IJobForEachWithEntity
-            <Translation, Rotation, PhysicsVelocity>
+            <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation, PhysicsVelocity>
         {
 
             [ReadOnly] public float DeltaTime;
@@ -71,29 +71,33 @@ namespace Abss.Character
 
             public unsafe void Execute(
                 Entity entity, int index,
+                [ReadOnly] ref WallHunggingData walling,
+                [ReadOnly] ref MoveHandlingData handler,
+                [ReadOnly] ref GroundHitSphereData sphere,
                 [ReadOnly] ref Translation pos,
                 [ReadOnly] ref Rotation rot,
                 ref PhysicsVelocity v
             )
             {
 
-                var dir = math.forward( rot.Value );
-                var move = dir * (this.DeltaTime * 170.0f);
                 var rtf = new RigidTransform( rot.Value, pos.Value );
 
-                var localCenter = new float3( 0.0f, 1.5f, 0.0f );//
+                var dir = math.forward( rot.Value );
+                var move = dir * (this.DeltaTime * 170.0f);
+                
+                
+                var st = math.transform( rtf, ray.Start ) + dir * ray.Ray.Length;
+                var ed = st + math.mul( rot.Value, ray.Ray.Line );
+                var hitInput = new RaycastInput
+                {
+                    Start = st,
+                    End = ed,
+                    Filter = ray.Filter,
+                };
+                var collector = new AnyRayHitExcludeSelfCollector( 1.0f, entity, this.CollisionWorld.Bodies );
+                var isHit = this.CollisionWorld.CastRay( hitInput, ref collector );
 
-                var a = this.CollisionWorld.Bodies;
-                //var st = math.transform( rtf, localCenter );
-                //var ed = st + math.mul( rot.Value, ray.DirectionAndLength.As_float3() ) * ray.DirectionAndLength.w;
-                //var hitInput = new RaycastInput
-                //{
-                //    Start = st,
-                //    End = ed,
-                //    Filter = ray.filter,
-                //};
-                //var isHit = this.CollisionWorld.CastRay( hitInput, );// 自身のコライダを除外できればシンプルになるんだが…
-
+                if( collector.NumHits > 0 ) move = collector.
 
                 var y = v.Linear.y;
                 v.Linear = move;

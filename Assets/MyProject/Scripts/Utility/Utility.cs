@@ -6,6 +6,10 @@ using System.Linq;
 using UnityEngine;
 using Unity.Linq;
 using Unity.Collections;
+using Unity.Mathematics;
+
+using Abss.Common.Extension;
+using Abss.Geometry;
 
 namespace Abss.Utilities
 {
@@ -93,5 +97,15 @@ namespace Abss.Utilities
             new ComputeBuffer( 1, sizeof( uint ) * 5, ComputeBufferType.IndirectArguments, ComputeBufferMode.Immutable );
     }
 
+
+
+    public struct DirectionAndLength
+    {
+        public float4 value;
+
+        public float3 Line { get => this.Direction * this.Length; }
+        public float3 Direction { get => value.As_float3(); }
+        public float Length { get => value.w; }
+    }
 }
 

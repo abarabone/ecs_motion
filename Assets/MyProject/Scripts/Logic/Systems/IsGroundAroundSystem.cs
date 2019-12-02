@@ -82,7 +82,7 @@ namespace Abss.Character
                 };
                 //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
 
-                var collector = new AnyHitExcludeSelfCollector( sphere.Distance, entity, CollisionWorld.Bodies );
+                var collector = new AnyDistanceHitExcludeSelfCollector( sphere.Distance, entity, CollisionWorld.Bodies );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
 
                 //var castInput = new RaycastInput
@@ -104,74 +104,74 @@ namespace Abss.Character
         }
 
 
-        public struct AnyHitExcludeSelfCollector : ICollector<DistanceHit>
-        {
-            public bool EarlyOutOnFirstHit => false;//{ get; private set; }
-            public float MaxFraction { get; private set; }
-            public int NumHits { get; private set; }
-
-            NativeSlice<RigidBody> rigidbodies;
-            Entity self;
-
-            public AnyHitExcludeSelfCollector
-                ( float maxFraction, Entity selfEntity, NativeSlice<RigidBody> rigidbodies )
-            {
-                MaxFraction = maxFraction;
-                this.rigidbodies = rigidbodies;
-                this.self = selfEntity;
-                this.NumHits = 0;
-            }
-
-            public bool AddHit( DistanceHit hit )
-            {
-                //this.MaxFraction = hit.Fraction;
-                //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return true;
-                //this.NumHits++;
-                return true;
-            }
-
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
-            {
-                //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
-                if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
-                this.NumHits++;
-            }
-        }
-        public struct AnyHitExcludeSelfCollector2 : ICollector<RaycastHit>
-        {
-            public bool EarlyOutOnFirstHit => true;//{ get; private set; }
-            public float MaxFraction { get; private set; }
-            public int NumHits { get; private set; }
-
-            NativeSlice<RigidBody> rigidbodies;
-            Entity self;
-
-            public AnyHitExcludeSelfCollector2
-                ( float maxFraction, Entity selfEntity, NativeSlice<RigidBody> rigidbodies )
-            {
-                MaxFraction = maxFraction;
-                this.rigidbodies = rigidbodies;
-                this.self = selfEntity;
-                this.NumHits = 0;
-            }
-
-            public bool AddHit( RaycastHit hit )
-            {
-                //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
-                //this.MaxFraction = hit.Fraction;
-                //this.NumHits++;
-                return true;
-            }
-
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
-            {
-                //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
-                if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
-                this.NumHits++;
-            }
-        }
     }
 
+    public struct AnyDistanceHitExcludeSelfCollector : ICollector<DistanceHit>
+    {
+        public bool EarlyOutOnFirstHit => false;//{ get; private set; }
+        public float MaxFraction { get; private set; }
+        public int NumHits { get; private set; }
+
+        NativeSlice<RigidBody> rigidbodies;
+        Entity self;
+
+        public AnyDistanceHitExcludeSelfCollector
+            ( float maxFraction, Entity selfEntity, NativeSlice<RigidBody> rigidbodies )
+        {
+            MaxFraction = maxFraction;
+            this.rigidbodies = rigidbodies;
+            this.self = selfEntity;
+            this.NumHits = 0;
+        }
+
+        public bool AddHit( DistanceHit hit )
+        {
+            //this.MaxFraction = hit.Fraction;
+            //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return true;
+            //this.NumHits++;
+            return true;
+        }
+
+        public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
+        public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
+        {
+            //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
+            if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
+            this.NumHits++;
+        }
+    }
+    public struct AnyRayHitExcludeSelfCollector : ICollector<RaycastHit>
+    {
+        public bool EarlyOutOnFirstHit => true;//{ get; private set; }
+        public float MaxFraction { get; private set; }
+        public int NumHits { get; private set; }
+
+        NativeSlice<RigidBody> rigidbodies;
+        Entity self;
+
+        public AnyRayHitExcludeSelfCollector
+            ( float maxFraction, Entity selfEntity, NativeSlice<RigidBody> rigidbodies )
+        {
+            MaxFraction = maxFraction;
+            this.rigidbodies = rigidbodies;
+            this.self = selfEntity;
+            this.NumHits = 0;
+        }
+
+        public bool AddHit( RaycastHit hit )
+        {
+            //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
+            //this.MaxFraction = hit.Fraction;
+            //this.NumHits++;
+            return true;
+        }
+
+        public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
+        public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
+        {
+            //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
+            if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
+            this.NumHits++;
+        }
+    }
 }

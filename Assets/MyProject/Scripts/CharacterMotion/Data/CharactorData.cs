@@ -14,6 +14,7 @@ using Unity.Burst;
 using Unity.Physics;
 
 using Abss.Geometry;
+using Abss.Utilities;
 
 namespace Abss.Character
 {
@@ -46,9 +47,9 @@ namespace Abss.Character
     }
     public struct GroundHitRayData : IComponentData
     {
-        public float3 Center;
-        public float4 DirectionAndLength;
-        public CollisionFilter filter;
+        public float3 Start;
+        public DirectionAndLength Ray;
+        public CollisionFilter Filter;
     }
     //public struct GroundHitColliderData : IComponentData
     //{
