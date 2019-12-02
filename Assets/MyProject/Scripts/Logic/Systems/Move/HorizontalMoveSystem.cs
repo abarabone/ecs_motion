@@ -75,7 +75,6 @@ namespace Abss.Character
                 ref PhysicsVelocity v
             )
             {
-
                 ref var acts = ref handler.ControlAction;
 
                 var vlinear = v.Linear;

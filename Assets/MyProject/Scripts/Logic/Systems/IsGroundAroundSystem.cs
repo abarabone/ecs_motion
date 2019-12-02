@@ -78,7 +78,7 @@ namespace Abss.Character
                 {
                     Position = math.transform( rtf, sphere.Center ),
                     MaxDistance = sphere.Distance,
-                    Filter = sphere.filter,
+                    Filter = sphere.Filter,
                 };
                 //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
 

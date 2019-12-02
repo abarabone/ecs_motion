@@ -95,8 +95,8 @@ namespace Abss.Character
 
                 motion.Start( Motion_ant.walking, isLooping: true, delayTime: 0.1f );
 
-                this.Rotations[ linker.PostureEntity ] =
-                    new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
+                //this.Rotations[ linker.PostureEntity ] =
+                //    new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
             }
         }
 

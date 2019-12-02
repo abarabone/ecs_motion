@@ -54,19 +54,20 @@ namespace Abss.Character
 
         [BurstCompile, RequireComponentTag(typeof(AntTag))]
         struct AiJob : IJobForEachWithEntity
-            <MoveHandlingData>//
+            <MoveHandlingData, Rotation>//
         {
 
 
             public void Execute(
                 Entity entity, int index,
-                [WriteOnly] ref MoveHandlingData handler
+                [WriteOnly] ref MoveHandlingData handler,
+                [ReadOnly] ref Rotation rot
             )
             {
 
-                handler.ControlAction.HorizontalRotation = quaternion.identity;
-                handler.ControlAction.LookRotation = quaternion.identity;
-                handler.ControlAction.MoveDirection = new float3( 0, 0, 1 );
+                //handler.ControlAction.HorizontalRotation = quaternion.identity;
+                //handler.ControlAction.LookRotation = quaternion.identity;
+                handler.ControlAction.MoveDirection = math.forward(rot.Value);
 
             }
         }

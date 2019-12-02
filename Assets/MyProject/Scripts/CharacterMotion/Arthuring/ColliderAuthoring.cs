@@ -169,7 +169,7 @@ namespace Abss.Arthuring
                             em.AddComponentData( ent, new GroundHitRayData
                             {
                                 Start = srcSphere.center,
-                                Ray = new float4(math.up()*-1, srcSphere.radius),// 向きは暫定
+                                Ray = new DirectionAndLength { value = new float4( math.up() * -1, srcSphere.radius ) },// 向きは暫定
                                 Filter = LegacyColliderProducer.GetFilter( srcSphere, groupIndex ),
                             } );
                         }
@@ -183,7 +183,7 @@ namespace Abss.Arthuring
                             {
                                 Center = srcSphere.center,
                                 Distance = srcSphere.radius,
-                                filter = LegacyColliderProducer.GetFilter( srcSphere, groupIndex ),
+                                Filter = LegacyColliderProducer.GetFilter( srcSphere, groupIndex ),
                             } );
                         }
                         break;
