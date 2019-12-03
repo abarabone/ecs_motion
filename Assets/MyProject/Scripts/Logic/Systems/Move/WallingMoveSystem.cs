@@ -59,7 +59,7 @@ namespace Abss.Character
 
 
 
-        [BurstCompile]
+        //[BurstCompile]
         struct HorizontalMoveJob : IJobForEachWithEntity
             <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation>//, PhysicsVelocity>
         {
@@ -78,43 +78,117 @@ namespace Abss.Character
                 //[ReadOnly] ref Rotation rot,
                 ref Translation pos,
                 ref Rotation rot//,
-                //ref PhysicsVelocity v
+                                //ref PhysicsVelocity v
             )
             {
                 var rtf = new RigidTransform( rot.Value, pos.Value );
 
-                var dir = math.forward( rot.Value );
-                var move = dir * (this.DeltaTime * 3.0f);
+                //var dir = math.forward( rot.Value );
+                //var move = dir * ( this.DeltaTime * 3.0f );
 
 
-                var st = math.transform( rtf, sphere.Center ) + dir * sphere.Distance * 1.01f;
-                var ed = st + move;
-                var hitInput = new RaycastInput
-                {
-                    Start = st,
-                    End = ed,
-                    Filter = sphere.Filter,
-                };
-                var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, entity, this.CollisionWorld.Bodies );
-                var isHit = this.CollisionWorld.CastRay( hitInput, ref collector );
-                //var a = new NativeList<RaycastHit>( Allocator.Temp );
-                //var isHit = this.CollisionWorld.CastRay( hitInput, out var a );
+                //var st = math.transform( rtf, sphere.Center ) + dir * sphere.Distance;// * 1.01f;
+                //var ed = st + move;
+                //var hitInput = new RaycastInput
+                //{
+                //    Start = st,
+                //    End = ed,
+                //    Filter = sphere.Filter,
+                //};
+                //var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, entity, this.CollisionWorld.Bodies );
+                //var isHit = this.CollisionWorld.CastRay( hitInput, ref collector );
+                ////var a = new NativeList<RaycastHit>( Allocator.Temp );
+                ////var isHit = this.CollisionWorld.CastRay( hitInput, out var a );
 
-                if( collector.NumHits == 0 )
-                {
-                    //v.Linear = move / this.DeltaTime;
-                    pos.Value += move;
-                    //a.Dispose();
-                    return;
-                }
+                //if( collector.NumHits == 0 )
+                //{
+                //    //v.Linear = move / this.DeltaTime;
+                //    pos.Value += move;
+                //    //a.Dispose();
+                //    return;
+                //}
 
                 //var movetowall = collector.ClosestHit.Position - pos.Value;
 
-                var f = ed - st;
-                var n = collector.ClosestHit.SurfaceNormal;
-                pos.Value = collector.ClosestHit.Position;
-                rot.Value = quaternion.LookRotation( math.normalize(f-math.dot(f,n)*n), n);
+                //var f = collector.ClosestHit.Position - st;
+                //var n = collector.ClosestHit.SurfaceNormal;
+                //var w = f - math.dot( f, n ) * n;
+                ////var newForward = math.select( math.mul( rot.Value, math.up() ), w, math.lengthsq(w) > 0.0f );
+                //var newForward = math.lengthsq( w ) > 0.0f ? math.normalize( w ) : math.mul( rot.Value, math.up() );
+                //pos.Value = collector.ClosestHit.Position + n * sphere.Distance;
+                //rot.Value = quaternion.LookRotation( newForward, n );
                 //a.Dispose();
+
+                        var up = math.mul( rot.Value, math.up() );
+                        var fwd = math.forward( rot.Value );
+                        var move = fwd * ( this.DeltaTime * 3.0f );
+
+                switch(walling.State)
+                {
+                    case 0:
+                    {
+                        var fwdRay = move + fwd * sphere.Distance;
+                        var (isHit, hit) = raycast( pos.Value, fwdRay, entity, sphere.Filter );
+
+                        if( isHit )
+                        {
+                            var (newpos, newrot) = caluclateGroundPosture
+                                ( pos.Value, hit.Position, hit.SurfaceNormal, up, sphere.Distance );
+
+                            pos.Value = newpos;
+                            rot.Value = newrot;
+                            return;
+                        }
+                    }
+                    {
+                        var movedPos = pos.Value + move;
+                        //var underRay = up * -( sphere.Distance * 1.5f );
+                        //var (isHit, hit) = raycast( movedPos, underRay, entity, sphere.Filter );
+
+                        //if( isHit )
+                        //{
+                        //    var (newpos, newrot) = caluclateGroundPosture
+                        //        ( movedPos, hit.Position, hit.SurfaceNormal, fwd, sphere.Distance );
+
+                        //    pos.Value = newpos;
+                        //    rot.Value = newrot;
+                        //    return;
+                        //}
+
+                        pos.Value = movedPos;
+                    }
+                    break;
+                }
+            }
+
+
+            (bool isHit, RaycastHit hit) raycast
+                ( float3 pos, float3 ray, Entity ent, CollisionFilter filter )
+            {
+                var hitInput = new RaycastInput
+                {
+                    Start = pos,
+                    End = pos + ray,
+                    Filter = filter,
+                };
+                var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, ent, this.CollisionWorld.Bodies );
+                /*var isHit = */this.CollisionWorld.CastRay( hitInput, ref collector );
+
+                return (collector.NumHits > 0, collector.ClosestHit);
+            }
+
+            (float3 pos, quaternion rot) caluclateGroundPosture
+                ( float3 o, float3 p, float3 n, float3 up, float r )
+            {
+                var f = p - o;
+                var w = f - math.dot( f, n ) * n;
+
+                var newfwd = math.select( up, math.normalize(w), math.lengthsq(w) > 0.0f );
+                //var newfwd = math.lengthsq( w ) > 0.0f ? math.normalize( w ) : up;
+                var newpos = p + n * r;
+                var newrot = quaternion.LookRotation( newfwd, n );
+                
+                return (newpos, newrot);
             }
         }
 
@@ -131,7 +205,8 @@ namespace Abss.Character
         NativeSlice<RigidBody> rigidbodies;
         Entity self;
 
-        private RaycastHit m_ClosestHit;
+        RaycastHit currentHit;
+        RaycastHit m_ClosestHit;
         public RaycastHit ClosestHit => m_ClosestHit;
 
         public ClosestRayHitExcludeSelfCollector
@@ -139,6 +214,7 @@ namespace Abss.Character
         {
             MaxFraction = maxFraction;
             m_ClosestHit = default( RaycastHit );
+            this.currentHit = default( RaycastHit );
             this.rigidbodies = rigidbodies;
             this.self = selfEntity;
             this.NumHits = 0;
@@ -150,7 +226,7 @@ namespace Abss.Character
             //this.MaxFraction = hit.Fraction;
             //this.NumHits++;
             //MaxFraction = hit.Fraction;
-            m_ClosestHit = hit;
+            this.currentHit = hit;
             return true;
         }
 
@@ -168,8 +244,9 @@ namespace Abss.Character
             //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
             if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
 
-            if( m_ClosestHit.Fraction < oldFraction )
+            if( this.currentHit.Fraction < oldFraction )
             {
+                m_ClosestHit = this.currentHit;
                 m_ClosestHit.Transform( transform, rigidBodyIndex );
                 MaxFraction = m_ClosestHit.Fraction;
                 NumHits = 1;

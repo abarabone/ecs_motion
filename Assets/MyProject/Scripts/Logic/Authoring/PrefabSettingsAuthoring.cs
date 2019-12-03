@@ -67,7 +67,7 @@ namespace Abss.Arthuring
                     this.ents.Add( em.Instantiate( this.PrefabEntities[ model ] ) );
 
                     var chlinker = em.GetComponentData<CharacterLinkData>( this.ents[this.ents.Count-1] );
-                    em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i, 0, model ) } );
+                    em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i, 0, -model*5 ) } );
                     em.SetComponentData( chlinker.MainMotionEntity, new MotionInitializeData { MotionIndex = i % mclip.Motions.Length } );
                 }
             }
