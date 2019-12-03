@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Linq;
 using Unity.Mathematics;
+using Unity.Physics;
 
 using Abss.Geometry;
 using Abss.Utilities;
@@ -38,6 +39,7 @@ namespace Abss.Arthuring
             em.AddComponentData( post.PostureEntity, new AntTag { } );//
             em.AddComponentData( post.PostureEntity, new MoveHandlingData { } );//
             em.AddComponentData( post.PostureEntity, new WallHunggingData { } );//
+            em.RemoveComponent<PhysicsVelocity>( post.PostureEntity );//
 
 
             return prefab;

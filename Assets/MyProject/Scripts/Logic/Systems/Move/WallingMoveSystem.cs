@@ -61,7 +61,7 @@ namespace Abss.Character
 
         [BurstCompile]
         struct HorizontalMoveJob : IJobForEachWithEntity
-            <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation, PhysicsVelocity>
+            <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation>//, PhysicsVelocity>
         {
 
             [ReadOnly] public float DeltaTime;
@@ -77,8 +77,8 @@ namespace Abss.Character
                 //[ReadOnly] ref Translation pos,
                 //[ReadOnly] ref Rotation rot,
                 ref Translation pos,
-                ref Rotation rot,
-                ref PhysicsVelocity v
+                ref Rotation rot//,
+                //ref PhysicsVelocity v
             )
             {
                 var rtf = new RigidTransform( rot.Value, pos.Value );
@@ -95,7 +95,7 @@ namespace Abss.Character
                     End = ed,
                     Filter = sphere.Filter,
                 };
-                var collector = new ClosestHitCollector<RaycastHit>( 1.0f );//, entity, this.CollisionWorld.Bodies );
+                var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, entity, this.CollisionWorld.Bodies );
                 var isHit = this.CollisionWorld.CastRay( hitInput, ref collector );
                 //var a = new NativeList<RaycastHit>( Allocator.Temp );
                 //var isHit = this.CollisionWorld.CastRay( hitInput, out var a );
@@ -110,9 +110,10 @@ namespace Abss.Character
 
                 //var movetowall = collector.ClosestHit.Position - pos.Value;
 
+                var f = ed - st;
                 var n = collector.ClosestHit.SurfaceNormal;
                 pos.Value = collector.ClosestHit.Position;
-                rot.Value = quaternion.LookRotation( math.normalize(dir-math.dot(dir,n)*n), n);
+                rot.Value = quaternion.LookRotation( math.normalize(f-math.dot(f,n)*n), n);
                 //a.Dispose();
             }
         }
@@ -170,9 +171,9 @@ namespace Abss.Character
             if( m_ClosestHit.Fraction < oldFraction )
             {
                 m_ClosestHit.Transform( transform, rigidBodyIndex );
+                MaxFraction = m_ClosestHit.Fraction;
+                NumHits = 1;
             }
-            MaxFraction = m_ClosestHit.Fraction;
-            NumHits = 1;
         }
     }
 }
