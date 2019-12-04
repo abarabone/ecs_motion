@@ -120,7 +120,7 @@ namespace Abss.Character
                 //a.Dispose();
 
                         var up = math.mul( rot.Value, math.up() );
-                        var fwd = math.forward( rot.Value );
+                var fwd = math.mul( rot.Value, Vector3.forward );//math.forward( rot.Value );
                         var move = fwd * ( this.DeltaTime * 3.0f );
 
                 switch(walling.State)
@@ -142,18 +142,18 @@ namespace Abss.Character
                     }
                     {
                         var movedPos = pos.Value + move;
-                        //var underRay = up * -( sphere.Distance * 1.5f );
-                        //var (isHit, hit) = raycast( movedPos, underRay, entity, sphere.Filter );
+                        var underRay = up * -( sphere.Distance * 1.5f );
+                        var (isHit, hit) = raycast( movedPos, underRay, entity, sphere.Filter );
 
-                        //if( isHit )
-                        //{
-                        //    var (newpos, newrot) = caluclateGroundPosture
-                        //        ( movedPos, hit.Position, hit.SurfaceNormal, fwd, sphere.Distance );
+                        if( isHit )
+                        {
+                            var (newpos, newrot) = caluclateGroundPosture
+                                ( movedPos, hit.Position, hit.SurfaceNormal, fwd, sphere.Distance );
 
-                        //    pos.Value = newpos;
-                        //    rot.Value = newrot;
-                        //    return;
-                        //}
+                            pos.Value = newpos;
+                            rot.Value = newrot;
+                            return;
+                        }
 
                         pos.Value = movedPos;
                     }
@@ -171,8 +171,10 @@ namespace Abss.Character
                     End = pos + ray,
                     Filter = filter,
                 };
-                var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, ent, this.CollisionWorld.Bodies );
-                /*var isHit = */this.CollisionWorld.CastRay( hitInput, ref collector );
+                //var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, ent, this.CollisionWorld.Bodies );
+                var collector = new ClosestHitCollector<RaycastHit>( 1.0f );
+                /*var isHit = */
+                this.CollisionWorld.CastRay( hitInput, ref collector );
 
                 return (collector.NumHits > 0, collector.ClosestHit);
             }
@@ -183,10 +185,10 @@ namespace Abss.Character
                 var f = p - o;
                 var w = f - math.dot( f, n ) * n;
 
-                var newfwd = math.select( up, math.normalize(w), math.lengthsq(w) > 0.0f );
-                //var newfwd = math.lengthsq( w ) > 0.0f ? math.normalize( w ) : up;
+                //var newfwd = math.select( up, math.normalize(w), math.lengthsq(w) > float.Epsilon );
+                var newfwd = math.lengthsq( w ) > float.Epsilon ? math.normalize( w ) : up;
                 var newpos = p + n * r;
-                var newrot = quaternion.LookRotation( newfwd, n );
+                var newrot = Quaternion.LookRotation( newfwd, n );//quaternion.LookRotation( newfwd, n );
                 
                 return (newpos, newrot);
             }
