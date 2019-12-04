@@ -67,7 +67,7 @@ namespace Abss.Character
 
                 //handler.ControlAction.HorizontalRotation = quaternion.identity;
                 //handler.ControlAction.LookRotation = quaternion.identity;
-                handler.ControlAction.MoveDirection = math.forward(rot.Value);
+                //handler.ControlAction.MoveDirection = math.forward(rot.Value);
 
             }
         }

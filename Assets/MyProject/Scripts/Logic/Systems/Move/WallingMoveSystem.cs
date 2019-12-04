@@ -71,7 +71,7 @@ namespace Abss.Character
 
             public unsafe void Execute(
                 Entity entity, int index,
-                [ReadOnly] ref WallHunggingData walling,
+                ref WallHunggingData walling,
                 [ReadOnly] ref MoveHandlingData handler,
                 [ReadOnly] ref GroundHitSphereData sphere,
                 //[ReadOnly] ref Translation pos,
@@ -82,65 +82,48 @@ namespace Abss.Character
             )
             {
                 var rtf = new RigidTransform( rot.Value, pos.Value );
-
-                //var dir = math.forward( rot.Value );
-                //var move = dir * ( this.DeltaTime * 3.0f );
-
-
-                //var st = math.transform( rtf, sphere.Center ) + dir * sphere.Distance;// * 1.01f;
-                //var ed = st + move;
-                //var hitInput = new RaycastInput
-                //{
-                //    Start = st,
-                //    End = ed,
-                //    Filter = sphere.Filter,
-                //};
-                //var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, entity, this.CollisionWorld.Bodies );
-                //var isHit = this.CollisionWorld.CastRay( hitInput, ref collector );
-                ////var a = new NativeList<RaycastHit>( Allocator.Temp );
-                ////var isHit = this.CollisionWorld.CastRay( hitInput, out var a );
-
-                //if( collector.NumHits == 0 )
-                //{
-                //    //v.Linear = move / this.DeltaTime;
-                //    pos.Value += move;
-                //    //a.Dispose();
-                //    return;
-                //}
-
-                //var movetowall = collector.ClosestHit.Position - pos.Value;
-
-                //var f = collector.ClosestHit.Position - st;
-                //var n = collector.ClosestHit.SurfaceNormal;
-                //var w = f - math.dot( f, n ) * n;
-                ////var newForward = math.select( math.mul( rot.Value, math.up() ), w, math.lengthsq(w) > 0.0f );
-                //var newForward = math.lengthsq( w ) > 0.0f ? math.normalize( w ) : math.mul( rot.Value, math.up() );
-                //pos.Value = collector.ClosestHit.Position + n * sphere.Distance;
-                //rot.Value = quaternion.LookRotation( newForward, n );
-                //a.Dispose();
-
-                        var up = math.mul( rot.Value, math.up() );
+                
+                var up = math.mul( rot.Value, math.up() );
                 var fwd = math.mul( rot.Value, Vector3.forward );//math.forward( rot.Value );
-                        var move = fwd * ( this.DeltaTime * 3.0f );
+
+
+                var (origin, ray, forwardWhenVirtical) = getRayParams( walling.State, pos.Value, rot.Value );
+                
+                var (isHit, hit) = raycast( origin, ray, entity, sphere.Filter );
+
+                if( isHit )
+                {
+                    var (newpos, newrot) = caluclateWallPosture
+                        ( origin, hit.Position, hit.SurfaceNormal, forwardWhenVirtical, sphere.Distance );
+
+                    pos.Value = newpos;
+                    rot.Value = newrot;
+                    walling.State = ++walling.State & 3;
+                    return;
+                }
+
+                return;
 
                 switch(walling.State)
                 {
                     case 0:
                     {
+                        var move = fwd * ( this.DeltaTime * 3.0f );
                         var fwdRay = move + fwd * sphere.Distance;
                         var (isHit, hit) = raycast( pos.Value, fwdRay, entity, sphere.Filter );
 
                         if( isHit )
                         {
-                            var (newpos, newrot) = caluclateGroundPosture
+                            var (newpos, newrot) = caluclateWallPosture
                                 ( pos.Value, hit.Position, hit.SurfaceNormal, up, sphere.Distance );
 
                             pos.Value = newpos;
                             rot.Value = newrot;
-                            return;
+                            break;
                         }
                     }
                     {
+                        var move = fwd * ( this.DeltaTime * 3.0f );
                         var movedPos = pos.Value + move;
                         var underRay = up * -( sphere.Distance * 1.5f );
                         var (isHit, hit) = raycast( movedPos, underRay, entity, sphere.Filter );
@@ -152,23 +135,115 @@ namespace Abss.Character
 
                             pos.Value = newpos;
                             rot.Value = newrot;
-                            return;
+                            break;
                         }
 
                         pos.Value = movedPos;
+                        walling.State++;
+                    }
+                    break;
+                    case 1:
+                    {
+                        var move = up * -sphere.Distance;
+                        var movedPos = pos.Value + move;
+                        var backRay = fwd * -( sphere.Distance * 1.5f );
+                        var (isHit, hit) = raycast( movedPos, backRay, entity, sphere.Filter );
+
+                        if( isHit )
+                        {
+                            var (newpos, newrot) = caluclateGroundPosture
+                                ( movedPos, hit.Position, hit.SurfaceNormal, -up, sphere.Distance );
+
+                            pos.Value = newpos;
+                            rot.Value = newrot;
+                            walling.State = 0;
+                            break;
+                        }
+
+                        pos.Value = movedPos;
+                        //walling.State++;
+                        walling.State = 0;
                     }
                     break;
                 }
             }
 
 
+            (float3 origin, float3 ray, float3 forwardWhenVirtical) getRayParams
+                (int state, float3 pos, quaternion rot)
+            {
+
+                var up = math.mul( rot, math.up() );
+                var fwd = math.mul( rot, Vector3.forward );//math.forward( rot.Value );
+
+
+                switch( state )
+                {
+                    case 0:
+                    {
+                        var move = fwd * ( this.DeltaTime * 3.0f );
+                        var fwdRay = move + fwd * sphere.Distance;
+
+                        return (pos, fwdRay, up);
+                    }
+                    case 1:
+                    {
+                        var move = fwd * ( this.DeltaTime * 3.0f );
+                        var movedPos = pos.Value + move;
+                        var underRay = up * -( sphere.Distance * 1.5f );
+
+                        return (movedPos, underRay, fwd);
+                    }
+                    case 2:
+                    {
+                        var move = up * -sphere.Distance;
+                        var movedPos = pos.Value + move;
+                        var backRay = fwd * -( sphere.Distance * 1.5f );
+
+                        return (movedPos, backRay, -up);
+                    }
+                    case 3:
+                    {
+                        var move = fwd * -sphere.Distance;
+                        var movedPos = pos.Value + move;
+                        var upRay = up * ( sphere.Distance * 1.5f );
+
+                        return (movedPos, upRay, -fwd);
+                    }
+                }
+
+                return (float3.zero, float3.zero, float3.zero);
+            }
+
+
+            bool isHitWallAndSetPosture(
+                ref float3 pos, ref quaternion rot,
+                float3 origin, float3 ray, float3 forwardWhenVirtical,
+                Entity ent, CollisionFilter filter, float margin
+            )
+            {
+                var (isHit, hit) = raycast( origin, ray, ent, filter );
+
+                if( isHit )
+                {
+                    var (newpos, newrot) = caluclateGroundPosture
+                        ( origin, hit.Position, hit.SurfaceNormal, forwardWhenVirtical, margin );
+
+                    pos = newpos;
+                    rot = newrot;
+                }
+
+                return isHit;
+            }
+
+
             (bool isHit, RaycastHit hit) raycast
-                ( float3 pos, float3 ray, Entity ent, CollisionFilter filter )
+                ( float3 origin, float3 ray, Entity ent, CollisionFilter filter )
             {
                 var hitInput = new RaycastInput
                 {
-                    Start = pos,
-                    End = pos + ray,
+                    Start = origin,
+                    End = origin + ray,
                     Filter = filter,
                 };
                 //var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, ent, this.CollisionWorld.Bodies );
@@ -179,17 +254,30 @@ namespace Abss.Character
                 return (collector.NumHits > 0, collector.ClosestHit);
             }
 
-            (float3 pos, quaternion rot) caluclateGroundPosture
+            (float3 newpos, quaternion newrot) caluclateWallPosture
                 ( float3 o, float3 p, float3 n, float3 up, float r )
             {
                 var f = p - o;
                 var w = f - math.dot( f, n ) * n;
 
-                //var newfwd = math.select( up, math.normalize(w), math.lengthsq(w) > float.Epsilon );
-                var newfwd = math.lengthsq( w ) > float.Epsilon ? math.normalize( w ) : up;
+                var newfwd = math.select( up, math.normalize( w * math.sign( math.dot( up, w ) ) ), math.lengthsq( w ) > 0.001 );
+                //var newfwd = math.lengthsq(w) > 0.001f ? math.normalize( w * math.sign( math.dot( up, w ) ) ) : up;
                 var newpos = p + n * r;
-                var newrot = Quaternion.LookRotation( newfwd, n );//quaternion.LookRotation( newfwd, n );
-                
+                var newrot = quaternion.LookRotation( newfwd, n );
+
+                return (newpos, newrot);
+            }
+            (float3 newpos, quaternion newrot) caluclateGroundPosture
+                ( float3 o, float3 p, float3 n, float3 up, float r )
+            {
+                var f = p - o;
+                var w = f - math.dot( f, n ) * n;
+
+                var newfwd = math.select( up, math.normalize( w ), math.lengthsq( w ) > 0.001 );
+                //var newfwd = math.lengthsq(w) > 0.001f ? math.normalize(w) : up;
+                var newpos = p + n * r;
+                var newrot = quaternion.LookRotation( newfwd, n );
+
                 return (newpos, newrot);
             }
         }
