@@ -103,9 +103,9 @@ namespace Abss.Utilities
     {
         public float4 value;
 
-        public float3 Line { get => this.Direction * this.Length; }
-        public float3 Direction { get => value.As_float3(); }
-        public float Length { get => value.w; }
+        public float3 Ray { get => this.Direction * this.Length; }
+        public float3 Direction { get => value.As_float3(); set => this.value = new float4(value, this.value.w); }
+        public float Length { get => value.w; set => this.value.w = value; }
     }
 }
 

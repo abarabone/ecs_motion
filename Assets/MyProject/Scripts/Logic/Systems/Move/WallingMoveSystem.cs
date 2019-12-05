@@ -27,8 +27,7 @@ namespace Abss.Character
 {
 
     /// <summary>
-    /// 与えられた方向を向き、与えられた水平移動をする。
-    /// ジャンプが必要なら、地面と接触していればジャンプする。←暫定
+    /// 
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
@@ -81,14 +80,17 @@ namespace Abss.Character
                                 //ref PhysicsVelocity v
             )
             {
-                var rtf = new RigidTransform( rot.Value, pos.Value );
-                
-                var up = math.mul( rot.Value, math.up() );
-                var fwd = math.mul( rot.Value, Vector3.forward );//math.forward( rot.Value );
+                //var rtf = new RigidTransform( rot.Value, pos.Value );
+
+                //var up = math.mul( rot.Value, math.up() );
+                //var fwd = math.mul( rot.Value, Vector3.forward );//math.forward( rot.Value );
 
 
-                var (origin, ray, forwardWhenVirtical) = getRayParams( walling.State, pos.Value, rot.Value );
+                //var (origin, ray, forwardWhenVirtical) = getRayParams( walling.State, pos.Value, rot.Value );
+
+                var fwdray = new DirectionAndLength { Direction = new float3( 0.0f, 0.0f, 1.0f ), Length = sphere.Distance };
                 
+
                 var (isHit, hit) = raycast( origin, ray, entity, sphere.Filter );
 
                 if( isHit )
@@ -167,53 +169,76 @@ namespace Abss.Character
                     break;
                 }
             }
-
-
-            (float3 origin, float3 ray, float3 forwardWhenVirtical) getRayParams
-                (int state, float3 pos, quaternion rot)
+            float a(
+                ref float3 pos, ref quaternion rot,
+                DirectionAndLength fwdRay, float3 origin, float cycleRadian,
+                Entity ent, GroundHitSphereData sphere
+            )
             {
+                var rotfwd = quaternion.RotateX( cycleRadian - math.radians( 90.0f ) );
+                var fwddir = math.mul( rotfwd, fwdRay.Direction );
+                var rotgnd = quaternion.RotateX( cycleRadian );
+                var gndray = math.mul( rotgnd, fwdRay.Ray );
 
-                var up = math.mul( rot, math.up() );
-                var fwd = math.mul( rot, Vector3.forward );//math.forward( rot.Value );
+                var (isHit, hit) = raycast( origin, gndray, ent, sphere.Filter );
 
-
-                switch( state )
+                if( isHit )
                 {
-                    case 0:
-                    {
-                        var move = fwd * ( this.DeltaTime * 3.0f );
-                        var fwdRay = move + fwd * sphere.Distance;
-
-                        return (pos, fwdRay, up);
-                    }
-                    case 1:
-                    {
-                        var move = fwd * ( this.DeltaTime * 3.0f );
-                        var movedPos = pos.Value + move;
-                        var underRay = up * -( sphere.Distance * 1.5f );
-
-                        return (movedPos, underRay, fwd);
-                    }
-                    case 2:
-                    {
-                        var move = up * -sphere.Distance;
-                        var movedPos = pos.Value + move;
-                        var backRay = fwd * -( sphere.Distance * 1.5f );
-
-                        return (movedPos, backRay, -up);
-                    }
-                    case 3:
-                    {
-                        var move = fwd * -sphere.Distance;
-                        var movedPos = pos.Value + move;
-                        var upRay = up * ( sphere.Distance * 1.5f );
-
-                        return (movedPos, upRay, -fwd);
-                    }
+                   (pos, rot) = caluclateWallPosture
+                        ( origin, hit.Position, hit.SurfaceNormal, fwddir, fwdRay.Length );
+                    
+                    return cycleRadian + math.radians( 90.0f );
                 }
 
-                return (float3.zero, float3.zero, float3.zero);
+                return math.radians( 90.0f );
             }
+
+
+            //(float3 origin, float3 ray, float3 forwardWhenVirtical) getRayParams
+            //    ( int state, float3 pos, quaternion rot )
+            //{
+
+            //    var up = math.mul( rot, math.up() );
+            //    var fwd = math.mul( rot, Vector3.forward );//math.forward( rot.Value );
+
+
+            //    switch( state )
+            //    {
+            //        case 0:
+            //        {
+            //            var move = fwd * ( this.DeltaTime * 3.0f );
+            //            var fwdRay = move + fwd * sphere.Distance;
+
+            //            return (pos, fwdRay, up);
+            //        }
+            //        case 1:
+            //        {
+            //            var move = fwd * ( this.DeltaTime * 3.0f );
+            //            var movedPos = pos.Value + move;
+            //            var underRay = up * -( sphere.Distance * 1.5f );
+
+            //            return (movedPos, underRay, fwd);
+            //        }
+            //        case 2:
+            //        {
+            //            var move = up * -sphere.Distance;
+            //            var movedPos = pos.Value + move;
+            //            var backRay = fwd * -( sphere.Distance * 1.5f );
+
+            //            return (movedPos, backRay, -up);
+            //        }
+            //        case 3:
+            //        {
+            //            var move = fwd * -sphere.Distance;
+            //            var movedPos = pos.Value + move;
+            //            var upRay = up * ( sphere.Distance * 1.5f );
+
+            //            return (movedPos, upRay, -fwd);
+            //        }
+            //    }
+
+            //    return (float3.zero, float3.zero, float3.zero);
+            //}
 
 
             bool isHitWallAndSetPosture(
