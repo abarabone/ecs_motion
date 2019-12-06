@@ -169,28 +169,37 @@ namespace Abss.Character
                     break;
                 }
             }
-            float a(
-                ref float3 pos, ref quaternion rot,
-                DirectionAndLength fwdRay, float3 origin, float cycleRadian,
+            (float3 newpos, quaternion newrot, quaternion rotCycle) a(
+                ref float3 pos, ref quaternion rot, quaternion rotCycleCurrent,
+                float3 origin, float cycleRadian, float rayLength,
                 Entity ent, GroundHitSphereData sphere
             )
             {
-                var rotfwd = quaternion.RotateX( cycleRadian - math.radians( 90.0f ) );
-                var fwddir = math.mul( rotfwd, fwdRay.Direction );
-                var rotgnd = quaternion.RotateX( cycleRadian );
-                var gndray = math.mul( rotgnd, fwdRay.Ray );
+                var angle90 = math.radians( 90.0f );
+                var rot90 = quaternion.RotateX( cycleRadian );
+
+                var rotCycleNext = math.mul( rot90, rotCycleCurrent );
+
+
+                var lray = new float3( 0.0f, 0.0f, rayLength );
+
+                var rotCurrent = math.mul( rot, rotCycleCurrent );
+                var fwdray = math.mul( rotCurrent, lray );
+
+                var rotNext = math.mul( rot, rotCycleNext );
+                var gndray = math.mul( rotNext, lray );
+
 
                 var (isHit, hit) = raycast( origin, gndray, ent, sphere.Filter );
 
-                if( isHit )
-                {
-                   (pos, rot) = caluclateWallPosture
-                        ( origin, hit.Position, hit.SurfaceNormal, fwddir, fwdRay.Length );
-                    
-                    return cycleRadian + math.radians( 90.0f );
-                }
+                if( !isHit ) return (pos, rot, rotCurrent);
 
-                return math.radians( 90.0f );
+
+                var (newpos, newrot) = caluclateWallPosture
+                    ( origin, hit.Position, hit.SurfaceNormal, fwddir, fwdRay.Length );
+                    
+                return (newpos, newrot, rotCycleNext);
+
             }
 
 
