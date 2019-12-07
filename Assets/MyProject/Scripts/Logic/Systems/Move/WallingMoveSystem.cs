@@ -88,8 +88,8 @@ namespace Abss.Character
 
                 //var (origin, ray, forwardWhenVirtical) = getRayParams( walling.State, pos.Value, rot.Value );
 
-                var fwdray = new DirectionAndLength { Direction = new float3( 0.0f, 0.0f, 1.0f ), Length = sphere.Distance };
-                
+
+
 
                 var (isHit, hit) = raycast( origin, ray, entity, sphere.Filter );
 
@@ -169,37 +169,35 @@ namespace Abss.Character
                     break;
                 }
             }
-            (float3 newpos, quaternion newrot, quaternion rotCycle) a(
+            (bool isHit, float3 newpos, quaternion newrot, quaternion rotCycle) raycastHitGroundCycle(
                 ref float3 pos, ref quaternion rot, quaternion rotCycleCurrent,
-                float3 origin, float cycleRadian, float rayLength,
-                Entity ent, GroundHitSphereData sphere
+                float3 origin, float rayLength, float bodySize,
+                Entity ent, CollisionFilter filter
             )
             {
-                var angle90 = math.radians( 90.0f );
-                var rot90 = quaternion.RotateX( cycleRadian );
+                var rot90 = quaternion.RotateX( math.radians( 90.0f ) );
 
                 var rotCycleNext = math.mul( rot90, rotCycleCurrent );
 
 
-                var lray = new float3( 0.0f, 0.0f, rayLength );
+                var fwdray = new float3( 0.0f, 0.0f, rayLength );
 
                 var rotCurrent = math.mul( rot, rotCycleCurrent );
-                var fwdray = math.mul( rotCurrent, lray );
+                var vray = math.mul( rotCurrent, fwdray );
 
                 var rotNext = math.mul( rot, rotCycleNext );
-                var gndray = math.mul( rotNext, lray );
+                var gndray = math.mul( rotNext, fwdray );
 
 
-                var (isHit, hit) = raycast( origin, gndray, ent, sphere.Filter );
+                var (isHit, hit) = raycast( origin, gndray, ent, filter );
 
-                if( !isHit ) return (pos, rot, rotCurrent);
+                if( !isHit ) return (false, pos, rot, rotCycleNext);
 
 
                 var (newpos, newrot) = caluclateWallPosture
-                    ( origin, hit.Position, hit.SurfaceNormal, fwddir, fwdRay.Length );
+                    ( origin, hit.Position, hit.SurfaceNormal, vray, bodySize );
                     
-                return (newpos, newrot, rotCycleNext);
-
+                return (true, newpos, newrot, quaternion.identity);
             }
 
 
