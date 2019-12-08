@@ -13,7 +13,7 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-using Abss.Geometry;
+using Abss.Utilities;
 
 namespace Abss.Character
 {
@@ -27,6 +27,34 @@ namespace Abss.Character
     public struct AntTag : IComponentData
     { }
 
+
+    // 当たり判定 -----------------------------------------------
+
+    public struct GroundHitResultData : IComponentData
+    {
+        public bool IsGround;
+    }
+    public struct WallHitResultData : IComponentData
+    {
+        public bool IsWalling;
+        public 
+    }
+    public struct GroundHitSphereData : IComponentData
+    {
+        public float3 Center;
+        public float Distance;
+        public CollisionFilter Filter;
+    }
+    public struct GroundHitRayData : IComponentData
+    {
+        public float3 Start;
+        public DirectionAndLength Ray;
+        public CollisionFilter Filter;
+    }
+    //public struct GroundHitColliderData : IComponentData
+    //{
+    //    public BlobAssetReference<Unity.Physics.Collider> Collider;
+    //}
 
 
     public struct HorizontalMovingTag : IComponentData

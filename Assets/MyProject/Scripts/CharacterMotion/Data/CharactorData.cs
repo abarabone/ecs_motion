@@ -35,26 +35,5 @@ namespace Abss.Character
     }
 
 
-    public struct GroundHitResultData : IComponentData
-    {
-        public bool IsGround;
-    }
-    public struct GroundHitSphereData : IComponentData
-    {
-        public float3 Center;
-        public float Distance;
-        public CollisionFilter Filter;
-    }
-    public struct GroundHitRayData : IComponentData
-    {
-        public float3 Start;
-        public DirectionAndLength Ray;
-        public CollisionFilter Filter;
-    }
-    //public struct GroundHitColliderData : IComponentData
-    //{
-    //    public BlobAssetReference<Unity.Physics.Collider> Collider;
-    //}
-
 }
 

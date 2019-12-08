@@ -22,6 +22,7 @@ using Abss.Utilities;
 using Abss.SystemGroup;
 using Abss.Character;
 using Abss.Geometry;
+using Abss.Physics;
 
 namespace Abss.Character
 {
@@ -56,7 +57,7 @@ namespace Abss.Character
         }
 
 
-        struct FreeFallWithHitJob : IJobForEach
+        struct FreeFallWithHitJob : IJobForEachWithEntity
             <GroundHitSphereData, Translation, Rotation>
         {
 
@@ -64,19 +65,19 @@ namespace Abss.Character
 
 
             public void Execute(
+                Entity entity, int index,
                 ref GroundHitSphereData sphere,
                 ref Translation pos,
                 ref Rotation rot
             )
             {
 
-
-                //var a = new NativeList<DistanceHit>( Allocator.Temp );
-                var rtf = new RigidTransform( rot.Value, pos.Value );
+                
+                //var rtf = new RigidTransform( rot.Value, pos.Value );
 
                 var hitInput = new PointDistanceInput
                 {
-                    Position = math.transform( rtf, sphere.Center ),
+                    Position = pos.Value,//math.transform( rtf, sphere.Center ),
                     MaxDistance = sphere.Distance,
                     Filter = sphere.Filter,
                 };
@@ -84,6 +85,7 @@ namespace Abss.Character
 
                 var collector = new AnyDistanceHitExcludeSelfCollector( sphere.Distance, entity, CollisionWorld.Bodies );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
+
 
 
             }
