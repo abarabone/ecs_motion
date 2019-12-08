@@ -10,8 +10,8 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Physics;
 using Unity.Physics.Systems;
+using Unity.Physics.Extensions;
 using UnityEngine.InputSystem;
-using UnityEngine.Assertions;
 
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
@@ -19,18 +19,22 @@ using RaycastHit = Unity.Physics.RaycastHit;
 
 using Abss.Misc;
 using Abss.Utilities;
-using Abss.Character;
-using Abss.Physics;
 using Abss.SystemGroup;
+using Abss.Character;
+using Abss.Geometry;
 
 namespace Abss.Character
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
-    public class IsGroundAroundSystem : JobComponentSystem
+    public class FreeFallWithHitSystem : JobComponentSystem
     {
-        
+
+
         BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
 
 
@@ -38,40 +42,35 @@ namespace Abss.Character
         {
             this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
         }
-        
+
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-
-            inputDeps = new IsGroundAroundJob
+            inputDeps = new FreeFallWithHitJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
             }
             .Schedule( this, inputDeps );
 
-
             return inputDeps;
         }
 
 
-
-
-        [BurstCompile]
-        struct IsGroundAroundJob : IJobForEachWithEntity
-            <GroundHitResultData, GroundHitSphereData, Translation, Rotation>
+        struct FreeFallWithHitJob : IJobForEach
+            <GroundHitSphereData, Translation, Rotation>
         {
 
             [ReadOnly] public CollisionWorld CollisionWorld;
 
 
-            public unsafe void Execute(
-                Entity entity, int index,
-                [WriteOnly] ref GroundHitResultData ground,
-                [ReadOnly] ref GroundHitSphereData sphere,
-                [ReadOnly] ref Translation pos,
-                [ReadOnly] ref Rotation rot
+            public void Execute(
+                ref GroundHitSphereData sphere,
+                ref Translation pos,
+                ref Rotation rot
             )
             {
+
+
                 //var a = new NativeList<DistanceHit>( Allocator.Temp );
                 var rtf = new RigidTransform( rot.Value, pos.Value );
 
@@ -86,25 +85,8 @@ namespace Abss.Character
                 var collector = new AnyDistanceHitExcludeSelfCollector( sphere.Distance, entity, CollisionWorld.Bodies );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
 
-                //var castInput = new RaycastInput
-                //{
-                //    Start = math.transform( rtf, sphere.Center ),
-                //    End = math.transform( rtf, sphere.Center ) + ( math.up() * -sphere.Distance ),
-                //    Filter = sphere.filter,
-                //};
-                //var collector = new AnyHitExcludeSelfCollector2( 1.0f, entity, this.CollisionWorld.Bodies );
-                //var isHit = this.CollisionWorld.CastRay( castInput, ref collector );
 
-                //ground = new GroundHitResultData { IsGround = ( isHit && a.Length > 1 ) };
-                //ground.IsGround = a.Length > 1;
-                ground.IsGround = collector.NumHits > 0;
-                //ground.IsGround = isHit;
-
-                //a.Dispose();
             }
         }
-
-
     }
-
 }
