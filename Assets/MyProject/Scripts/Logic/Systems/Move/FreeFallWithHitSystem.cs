@@ -31,7 +31,8 @@ namespace Abss.Character
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
+    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class FreeFallWithHitSystem : JobComponentSystem
     {
 
@@ -46,7 +47,7 @@ namespace Abss.Character
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            return inputDeps;
+            //return inputDeps;
             inputDeps = new FreeFallWithHitJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
@@ -57,7 +58,7 @@ namespace Abss.Character
         }
 
 
-        [BurstCompile]
+        //[BurstCompile]
         struct FreeFallWithHitJob : IJobForEachWithEntity
             <WallHitResultData, GroundHitSphereData, Translation, Rotation>
         {
@@ -66,14 +67,14 @@ namespace Abss.Character
 
 
             public void Execute(
-                Entity entity, int index,
+                Entity entity, int jobIndex,
                 [WriteOnly] ref WallHitResultData result,
                 [ReadOnly] ref GroundHitSphereData sphere,
                 [WriteOnly] ref Translation pos,
                 [WriteOnly] ref Rotation rot
             )
             {
-                return;
+                //return;
                 
                 //var rtf = new RigidTransform( rot.Value, pos.Value );
 

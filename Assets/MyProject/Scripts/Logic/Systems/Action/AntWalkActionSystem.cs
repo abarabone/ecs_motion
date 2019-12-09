@@ -115,7 +115,8 @@ namespace Abss.Character
                         this.Commands.AddComponent( jobIndex, linker.PostureEntity, new WallHitResultData { } );
                     }
                 }
-                else
+
+                if( this.WallHitResults.Exists(linker.PostureEntity) )
                 {
                     if( this.WallHitResults[ linker.PostureEntity ].IsHit )
                     {
