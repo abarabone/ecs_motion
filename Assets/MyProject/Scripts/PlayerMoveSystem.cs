@@ -54,7 +54,7 @@ namespace Abss.Character
             inputDeps = new PlayerMoveJob
             {
                 CamRotWorld = camRotWorld,
-                DeltaTime = Time.deltaTime,
+                DeltaTime = Time.DeltaTime,
                 StickDir = input.lStickDir,
                 JumpForce = input.jumpForce,
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
@@ -64,7 +64,7 @@ namespace Abss.Character
             var rs = gp != null ? gp.rightStick.ReadValue() : Mouse.current.delta.ReadValue() * 0.5f;
 
             //tfCamera.Rotate( Vector3.left, rs.y * 90.0f * Time.deltaTime );
-            tfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.deltaTime );
+            tfCamera.Rotate( Vector3.up, rs.x * 90.0f * Time.DeltaTime );
 
             return inputDeps;
 

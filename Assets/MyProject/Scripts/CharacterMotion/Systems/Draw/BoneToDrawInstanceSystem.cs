@@ -63,7 +63,7 @@ namespace Abss.Draw
 
 
 
-            public void Execute(
+            public unsafe void Execute(
                 [ReadOnly] ref BoneIndexData indexer,
                 [ReadOnly] ref BoneDrawTargetIndexWorkData target,
                 [ReadOnly] ref Translation pos,
@@ -73,9 +73,12 @@ namespace Abss.Draw
 
                 var i = target.InstanceBoneOffset * 2;
 
-                var dstInstances = this.NativeBuffers[ indexer.ModelIndex ].InstanceBoneVectors;
-                dstInstances[ i + 0 ] = new float4( pos.Value, 1.0f );
-                dstInstances[ i + 1 ] = rot.Value.value;
+                //var dstInstances = this.NativeBuffers[ indexer.ModelIndex ].InstanceBoneVectors;
+                //dstInstances[ i + 0 ] = new float4( pos.Value, 1.0f );
+                //dstInstances[ i + 1 ] = rot.Value.value;
+                var pDstInstances = this.NativeBuffers[ indexer.ModelIndex ].pInstanceBoneVectors;
+                pDstInstances[ i + 0 ] = new float4( pos.Value, 1.0f );
+                pDstInstances[ i + 1 ] = rot.Value.value;
 
             }
         }

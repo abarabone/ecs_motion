@@ -9,6 +9,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using System.Runtime.InteropServices;
+using Unity.Collections.LowLevel.Unsafe;
 
 using Abss.Cs;
 using Abss.Arthuring;
@@ -18,10 +19,11 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
-    public struct DrawInstanceNativeBufferUnit
+    public unsafe struct DrawInstanceNativeBufferUnit
     {
         public ThreadSafeCounter<Persistent> InstanceCounter;
-        public NativeSlice<float4> InstanceBoneVectors;
+        //public NativeSlice<float4> InstanceBoneVectors;
+        public float4* pInstanceBoneVectors;
         public int VectorLengthOfBone;
         public int OffsetInBuffer;
     }
@@ -36,7 +38,7 @@ namespace Abss.Draw
         public NativeArray<float4> InstanceBoneVectors;
 
 
-        public void Initialize( DrawMeshResourceHolder resources )
+        public unsafe void Initialize( DrawMeshResourceHolder resources )
         {
             var arrayLengths = resources.Units
                 .Select( x => x.VectorLengthOfBone * x.Mesh.bindposes.Length * x.MaxInstance )
@@ -53,7 +55,8 @@ namespace Abss.Draw
             {
                 this.Units[ i ] = new DrawInstanceNativeBufferUnit
                 {
-                    InstanceBoneVectors = this.InstanceBoneVectors.Slice( start, arrayLengths[ i ] ),
+                    //InstanceBoneVectors = this.InstanceBoneVectors.Slice( start, arrayLengths[ i ] ),
+                    pInstanceBoneVectors = (float4*)NativeArrayUnsafeUtility.GetUnsafePtr( this.InstanceBoneVectors ) + start,
                     InstanceCounter = new ThreadSafeCounter<Persistent>( 0 ),
                     OffsetInBuffer = start,
                     VectorLengthOfBone = resources.Units[i].VectorLengthOfBone,

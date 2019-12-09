@@ -56,7 +56,7 @@ namespace Abss.Motion
             <MotionInitializeData, MotionStreamLinkData, MotionClipData, MotionInfoData>
         {
 
-            [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.Concurrent Commands;
 
             [NativeDisableParallelForRestriction][ReadOnly]
             public ComponentDataFromEntity<StreamRelationData>      Linkers;

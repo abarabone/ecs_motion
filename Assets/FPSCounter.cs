@@ -80,8 +80,8 @@ public class FPSCounterSystem : ComponentSystem
 
 	protected override void OnUpdate()
     {
-        m_timeleft -= Time.deltaTime;
-        m_accum += Time.timeScale / Time.deltaTime;
+        m_timeleft -= Time.DeltaTime;
+        m_accum += Time.timeScale / Time.DeltaTime;
         m_frames++;
 
         if ( 0 < m_timeleft ) return;

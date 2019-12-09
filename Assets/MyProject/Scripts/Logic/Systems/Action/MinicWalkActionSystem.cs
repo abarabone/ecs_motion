@@ -67,7 +67,7 @@ namespace Abss.Character
             <MinicWalkActionState, MoveHandlingData, CharacterLinkData>
         {
 
-            [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.Concurrent Commands;
 
             [ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
             [ReadOnly] public ComponentDataFromEntity<GroundHitResultData> GroundResults;

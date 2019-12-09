@@ -53,8 +53,8 @@ namespace Abss.Motion
         struct MotionInitializeJob : IJobForEachWithEntity
             <MotionInitializeData, MotionStreamLinkData, MotionClipData, MotionInfoData, MotionCursorData>
         {
-
-            [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
+            
+            public EntityCommandBuffer.Concurrent Commands;
 
             [NativeDisableParallelForRestriction][ReadOnly]
             public ComponentDataFromEntity<StreamRelationData>      Linkers;

@@ -67,7 +67,7 @@ namespace Abss.Arthuring
                     this.ents.Add( em.Instantiate( this.PrefabEntities[ model ] ) );
 
                     var chlinker = em.GetComponentData<CharacterLinkData>( this.ents[this.ents.Count-1] );
-                    em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i*3, 0, -model*20 ) } );
+                    em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i*3, 0, -model*5 ) } );
                     em.SetComponentData( chlinker.MainMotionEntity, new MotionInitializeData { MotionIndex = i % mclip.Motions.Length } );
                 }
             }
@@ -80,17 +80,17 @@ namespace Abss.Arthuring
             
         }
 
-        void Update()
-        {
-            if( !Input.GetMouseButtonDown( 0 ) ) return;
-            if( this.ents.Count == 0 ) return;
+        //void Update()
+        //{
+        //    if( !Input.GetMouseButtonDown( 0 ) ) return;
+        //    if( this.ents.Count == 0 ) return;
 
-            var em = World.Active.EntityManager;
+        //    var em = World.Active.EntityManager;
 
-            var ent = this.ents.Last();
-            em.DestroyEntity( ent );
-            this.ents.Remove( ent );
-        }
+        //    var ent = this.ents.Last();
+        //    em.DestroyEntity( ent );
+        //    this.ents.Remove( ent );
+        //}
 
 
         public abstract class ConvertToMainCustomPrefabEntityBehaviour : ConvertToCustomPrefabEntityBehaviour

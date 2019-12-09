@@ -72,7 +72,7 @@ namespace Abss.Character
             <AntWalkActionState, MoveHandlingData, CharacterLinkData>
         {
 
-            [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.Concurrent Commands;
 
             [ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
             [NativeDisableParallelForRestriction]

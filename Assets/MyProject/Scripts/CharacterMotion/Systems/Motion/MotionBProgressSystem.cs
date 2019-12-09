@@ -27,7 +27,7 @@ namespace Abss.Motion
 
             inputDeps = new MotionProgressJob
             {
-                DeltaTime = Time.deltaTime,
+                DeltaTime = Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
 

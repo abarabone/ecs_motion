@@ -62,63 +62,7 @@ namespace Abss.Character
                     }
                 );
 
-            //var buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();//
-            //var CollisionWorld = buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;//
-            //this.Entities.With( this.eq )
-            //    .ForEach(
-            //        ( Entity entity, ref Translation pos, ref Rotation rot, ref GroundHitSphereData sphere, ref GroundHitResultData ground ) =>
-            //        {
-            //            var rtf = new RigidTransform( rot.Value, pos.Value );
-
-            //            var hitInput = new PointDistanceInput
-            //            {
-            //                Position = pos.Value,//math.transform( rtf, sphere.Center ),
-            //                MaxDistance = sphere.Distance,
-            //                Filter = sphere.filter,
-            //            };
-            //        var collector = new AnyHitExcludeSelfCollector3( sphere.Distance, entity, CollisionWorld.Bodies );
-            //            var isHit = CollisionWorld.CalculateDistance( hitInput, ref collector );
-            //            Debug.Log( collector.NumHits );
-            //            ground.IsGround = collector.NumHits > 0;//isHit;
-            //        }
-            //    );
         }
 
-
-        public struct AnyHitExcludeSelfCollector3 : ICollector<DistanceHit>
-        {
-            public bool EarlyOutOnFirstHit => false;//{ get; private set; }
-            public float MaxFraction { get; private set; }
-            public int NumHits { get; private set; }
-
-            NativeSlice<RigidBody> rigidbodies;
-            Entity self;
-
-            public AnyHitExcludeSelfCollector3
-                ( float maxFraction, Entity selfEntity, NativeSlice<RigidBody> rigidbodies )
-            {
-                MaxFraction = maxFraction;
-                this.rigidbodies = rigidbodies;
-                this.self = selfEntity;
-                this.NumHits = 0;
-            }
-
-            public bool AddHit( DistanceHit hit )
-            {
-                //Debug.Log( $"{hit.RigidBodyIndex} {this.rigidbodies[ hit.RigidBodyIndex ].Entity}" );
-                //this.MaxFraction = hit.Fraction;
-                //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return true;
-                //this.NumHits++;
-                return true;
-            }
-
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { Debug.Log( $"a" ); }
-            public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
-            {
-                //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
-                if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
-                this.NumHits++;
-            }
-        }
     }
 }

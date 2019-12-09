@@ -55,7 +55,7 @@ namespace Abss.Character
                     {
                         var gp = Gamepad.current;
 
-                        var rdir = gp.rightStick.ReadValue() * 5.0f * Time.deltaTime;
+                        var rdir = gp.rightStick.ReadValue() * 5.0f * Time.DeltaTime;
                         //var rdir = new float3( rs.x, rs.y, 0.0f );
 
                         this.vangle -= rdir.y;
@@ -90,7 +90,7 @@ namespace Abss.Character
                     {
                         
                         var ms = Mouse.current;
-                        var rdir = ms.delta.ReadValue() * Time.deltaTime;
+                        var rdir = ms.delta.ReadValue() * Time.DeltaTime;
 
                         this.vangle -= rdir.y;
                         this.vangle = math.min( this.vangle, math.radians( 90.0f ) );

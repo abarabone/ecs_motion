@@ -30,7 +30,8 @@ namespace Abss.Character
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
+    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class WallingMoveSystem : JobComponentSystem
     {
 
@@ -49,7 +50,7 @@ namespace Abss.Character
             inputDeps = new HorizontalMoveJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
-                DeltaTime = Time.deltaTime,
+                DeltaTime = Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
 

@@ -28,7 +28,8 @@ namespace Abss.Character
     /// ジャンプが必要なら、地面と接触していればジャンプする。←暫定
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
+    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class HorizontalMoveSystem : JobComponentSystem
     {
 
@@ -48,7 +49,7 @@ namespace Abss.Character
             inputDeps = new HorizontalMoveJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
-                DeltaTime = Time.deltaTime,
+                DeltaTime = Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
 

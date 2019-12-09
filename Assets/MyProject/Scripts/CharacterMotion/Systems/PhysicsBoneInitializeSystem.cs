@@ -61,7 +61,7 @@ namespace Abss.Physics
             <BoneInitializeData, /*Translation, Rotation,*/ PhysicsVelocity>
         {
 
-            [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.Concurrent Commands;
 
             [NativeDisableParallelForRestriction]
             //[ReadOnly]
