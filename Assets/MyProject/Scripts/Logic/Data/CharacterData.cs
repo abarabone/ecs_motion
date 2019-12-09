@@ -34,11 +34,6 @@ namespace Abss.Character
     {
         public bool IsGround;
     }
-    public struct WallHitResultData : IComponentData
-    {
-        public bool IsWalling;
-        public 
-    }
     public struct GroundHitSphereData : IComponentData
     {
         public float3 Center;
@@ -56,6 +51,10 @@ namespace Abss.Character
     //    public BlobAssetReference<Unity.Physics.Collider> Collider;
     //}
 
+    public struct WallHitResultData : IComponentData
+    {
+        public bool IsHit;
+    }
 
     public struct HorizontalMovingTag : IComponentData
     { }

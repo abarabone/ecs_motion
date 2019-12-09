@@ -50,11 +50,15 @@ namespace Abss.Character
             inputDeps = new AntWalkActionJob
             {
                 Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
+
                 MotionInfos = this.GetComponentDataFromEntity<MotionInfoData>( isReadOnly: true ),
-                GroundResults = this.GetComponentDataFromEntity<GroundHitResultData>( isReadOnly: true ),
-                Rotations = this.GetComponentDataFromEntity<Rotation>(),
                 MotionCursors = this.GetComponentDataFromEntity<MotionCursorData>(),
                 MotionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>(),
+                
+                WallHitResults = this.GetComponentDataFromEntity<WallHitResultData>( isReadOnly: true ),
+                Wallings = this.GetComponentDataFromEntity<WallHunggingData>( isReadOnly: true ),
+                
+                Rotations = this.GetComponentDataFromEntity<Rotation>(),
             }
             .Schedule( this, inputDeps );
             this.ecb.AddJobHandleForProducer( inputDeps );
@@ -71,15 +75,17 @@ namespace Abss.Character
             [ReadOnly] public EntityCommandBuffer.Concurrent Commands;
 
             [ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
-            [ReadOnly] public ComponentDataFromEntity<GroundHitResultData> GroundResults;
-
-            [NativeDisableParallelForRestriction]
-            [WriteOnly] public ComponentDataFromEntity<Rotation> Rotations;
-
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<MotionCursorData> MotionCursors;
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<MotionBlend2WeightData> MotionWeights;
+            
+            [ReadOnly] public ComponentDataFromEntity<WallHitResultData> WallHitResults;
+            [ReadOnly] public ComponentDataFromEntity<WallHunggingData> Wallings;
+
+            [NativeDisableParallelForRestriction]
+            [WriteOnly] public ComponentDataFromEntity<Rotation> Rotations;
+
 
 
             public void Execute(
@@ -97,6 +103,29 @@ namespace Abss.Character
 
                 //this.Rotations[ linker.PostureEntity ] =
                 //    new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
+                
+
+                if( this.Wallings.Exists(linker.PostureEntity) )
+                {
+                    if( this.Wallings[linker.PostureEntity].State >= 2 )
+                    {
+                        this.Commands.RemoveComponent<WallHunggingData>( jobIndex, linker.PostureEntity );
+
+                        this.Commands.AddComponent( jobIndex, linker.PostureEntity, new PhysicsVelocity { } );
+                        this.Commands.AddComponent( jobIndex, linker.PostureEntity, new WallHitResultData { } );
+                    }
+                }
+                else
+                {
+                    if( this.WallHitResults[ linker.PostureEntity ].IsHit )
+                    {
+                        this.Commands.RemoveComponent<PhysicsVelocity>( jobIndex, linker.PostureEntity );
+                        this.Commands.RemoveComponent<WallHitResultData>( jobIndex, linker.PostureEntity );
+
+                        this.Commands.AddComponent( jobIndex, linker.PostureEntity, new WallHunggingData { } );
+                    }
+                }
+
             }
         }
 

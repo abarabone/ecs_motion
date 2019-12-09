@@ -72,10 +72,10 @@ namespace Abss.Arthuring
                 }
             );
 
-            // 暫定
-            {
-                em.AddComponentData( posturePrefab, new GroundHitResultData { } );
-            }
+            //// 暫定
+            //{
+            //    em.AddComponentData( posturePrefab, new GroundHitResultData { } );
+            //}
 
 
             if( jointPrefabs.IsCreated ) jointPrefabs.Dispose();

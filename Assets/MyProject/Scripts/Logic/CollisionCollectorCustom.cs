@@ -71,6 +71,64 @@ namespace Abss.Physics
         }
     }
 
+    public struct ClosestDistanceHitExcludeSelfCollector : ICollector<DistanceHit>
+    {
+        public bool EarlyOutOnFirstHit => false;//{ get; private set; }
+        public float MaxFraction { get; private set; }
+        public int NumHits { get; private set; }
+
+        NativeSlice<RigidBody> rigidbodies;
+        Entity self;
+
+        DistanceHit currentHit;
+        DistanceHit m_ClosestHit;
+        public DistanceHit ClosestHit => m_ClosestHit;
+
+        public ClosestDistanceHitExcludeSelfCollector
+            ( float maxFraction, Entity selfEntity, NativeSlice<RigidBody> rigidbodies )
+        {
+            MaxFraction = maxFraction;
+            m_ClosestHit = default( DistanceHit );
+            this.currentHit = default( DistanceHit );
+            this.rigidbodies = rigidbodies;
+            this.self = selfEntity;
+            this.NumHits = 0;
+        }
+
+        public bool AddHit( DistanceHit hit )
+        {
+            //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
+            //this.MaxFraction = hit.Fraction;
+            //this.NumHits++;
+            //MaxFraction = hit.Fraction;
+            this.currentHit = hit;
+            return true;
+        }
+
+        public void TransformNewHits
+            ( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey )
+        {
+            //if( m_ClosestHit.Fraction < oldFraction )
+            //{
+            //    m_ClosestHit.Transform( transform, numSubKeyBits, subKey );
+            //}
+        }
+        public void TransformNewHits
+            ( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
+        {
+            //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
+            if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
+
+            if( this.currentHit.Fraction < oldFraction )
+            {
+                m_ClosestHit = this.currentHit;
+                m_ClosestHit.Transform( transform, rigidBodyIndex );
+                MaxFraction = m_ClosestHit.Fraction;
+                NumHits = 1;
+            }
+        }
+    }
+
 
 
     public struct AnyDistanceHitExcludeSelfCollector : ICollector<DistanceHit>

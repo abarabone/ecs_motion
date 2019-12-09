@@ -56,7 +56,7 @@ namespace Abss.Character
 
 
 
-        [BurstCompile]
+        //[BurstCompile]
         struct IsGroundAroundJob : IJobForEachWithEntity
             <GroundHitResultData, GroundHitSphereData, Translation, Rotation>
         {

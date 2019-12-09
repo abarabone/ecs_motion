@@ -44,9 +44,9 @@ namespace Abss.Character
             this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
         }
 
-
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
+            return inputDeps;
             inputDeps = new FreeFallWithHitJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
@@ -57,8 +57,9 @@ namespace Abss.Character
         }
 
 
+        [BurstCompile]
         struct FreeFallWithHitJob : IJobForEachWithEntity
-            <GroundHitSphereData, Translation, Rotation>
+            <WallHitResultData, GroundHitSphereData, Translation, Rotation>
         {
 
             [ReadOnly] public CollisionWorld CollisionWorld;
@@ -66,12 +67,13 @@ namespace Abss.Character
 
             public void Execute(
                 Entity entity, int index,
-                ref GroundHitSphereData sphere,
-                ref Translation pos,
-                ref Rotation rot
+                [WriteOnly] ref WallHitResultData result,
+                [ReadOnly] ref GroundHitSphereData sphere,
+                [WriteOnly] ref Translation pos,
+                [WriteOnly] ref Rotation rot
             )
             {
-
+                return;
                 
                 //var rtf = new RigidTransform( rot.Value, pos.Value );
 
@@ -83,11 +85,23 @@ namespace Abss.Character
                 };
                 //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
 
-                var collector = new AnyDistanceHitExcludeSelfCollector( sphere.Distance, entity, CollisionWorld.Bodies );
+                var collector = new ClosestDistanceHitExcludeSelfCollector( sphere.Distance, entity, CollisionWorld.Bodies );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
 
+                if( collector.NumHits == 0 ) return;
 
 
+                result.IsHit = true;
+
+                var n = collector.ClosestHit.SurfaceNormal;
+                var p = collector.ClosestHit.Position;
+                pos.Value = p + n * sphere.Distance;
+
+                var right = math.mul( rot.Value, new float3( 1.0f, 0.0f, 0.0f ) );
+                var forward = math.cross( n, right );
+                var safe_forward = math.select( math.forward(rot.Value), forward, math.dot(right, n) > 0.001f );
+                rot.Value = quaternion.LookRotation( safe_forward, n );
+                
             }
         }
     }
