@@ -61,7 +61,7 @@ namespace Abss.Character
 
         //[BurstCompile]
         struct HorizontalMoveJob : IJobForEachWithEntity
-            <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation>//, PhysicsVelocity>
+            <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation, PhysicsVelocity>
         {
 
             [ReadOnly] public float DeltaTime;
@@ -77,8 +77,8 @@ namespace Abss.Character
                 //[ReadOnly] ref Translation pos,
                 //[ReadOnly] ref Rotation rot,
                 ref Translation pos,
-                ref Rotation rot//,
-                                //ref PhysicsVelocity v
+                ref Rotation rot,
+                                ref PhysicsVelocity v
             )
             {
 
@@ -93,7 +93,7 @@ namespace Abss.Character
                         var fwdRay = move + fwd * sphere.Distance*2;
 
                         var isHit = raycastHitToWall_(
-                            ref pos.Value, ref rot.Value,
+                            ref v, ref pos.Value, ref rot.Value, this.DeltaTime,
                             pos.Value, fwdRay, sphere.Distance, up, entity, sphere.Filter );
 
                         if( isHit ) return;
@@ -105,7 +105,7 @@ namespace Abss.Character
                         var underRay = up * -( sphere.Distance * 1.5f );
 
                         var isHit = raycastHitToWall_(
-                            ref pos.Value, ref rot.Value,
+                            ref v, ref pos.Value, ref rot.Value, this.DeltaTime,
                             movedPos, underRay, sphere.Distance, fwd, entity, sphere.Filter );
 
                         if( isHit ) return;
@@ -119,7 +119,7 @@ namespace Abss.Character
                         var backRay = fwd * -( sphere.Distance * 1.5f );
 
                         var isHit = raycastHitToWall_(
-                            ref pos.Value, ref rot.Value,
+                            ref v, ref pos.Value, ref rot.Value, this.DeltaTime,
                             movedPos, backRay, sphere.Distance, -up, entity, sphere.Filter );
 
                         if( isHit ) { walling.State = 0; return; }
@@ -131,7 +131,7 @@ namespace Abss.Character
             }
 
             bool raycastHitToWall_(
-                ref float3 pos, ref quaternion rot,
+                ref PhysicsVelocity v, ref float3 pos, ref quaternion rot, float dt,
                 float3 origin, float3 gndray, float bodySize, float3 fwddir,
                 Entity ent, CollisionFilter filter
             )
@@ -144,7 +144,15 @@ namespace Abss.Character
                     var (newpos, newrot) = caluclateWallPosture
                         ( origin, hit.Position, hit.SurfaceNormal, fwddir, bodySize );
 
-                    pos = newpos;
+                    //pos = newpos;
+                    var rdt = math.rcp( dt );
+                    v.Linear = ( newpos - pos ) * rdt;
+
+                    var invprev = math.inverse( newrot );
+                    var drot = math.mul( invprev, rot );
+                    var axis = drot.value.As_float3();
+                    var angle = math.lengthsq( drot );
+                    v.Angular = axis * ( angle * rdt );
                     rot = newrot;
                 }
 

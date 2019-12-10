@@ -40,6 +40,7 @@ namespace Abss.Character
         protected override void OnCreate()
         {
             this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            //this.ecb = this.World.GetExistingSystem<EndSimulationEntityCommandBufferSystem>();
 
         }
 
@@ -103,15 +104,15 @@ namespace Abss.Character
 
                 //this.Rotations[ linker.PostureEntity ] =
                 //    new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
-                
 
-                if( this.Wallings.Exists(linker.PostureEntity) )
+
+                if( this.Wallings.Exists( linker.PostureEntity ) )
                 {
-                    if( this.Wallings[linker.PostureEntity].State >= 2 )
+                    if( this.Wallings[ linker.PostureEntity ].State >= 2 )
                     {
                         this.Commands.RemoveComponent<WallHunggingData>( jobIndex, linker.PostureEntity );
 
-                        this.Commands.AddComponent( jobIndex, linker.PostureEntity, new PhysicsVelocity { } );
+                        //this.Commands.AddComponent( jobIndex, linker.PostureEntity, new PhysicsVelocity { } );
                         this.Commands.AddComponent( jobIndex, linker.PostureEntity, new WallHitResultData { } );
                     }
                 }
@@ -120,7 +121,7 @@ namespace Abss.Character
                 {
                     if( this.WallHitResults[ linker.PostureEntity ].IsHit )
                     {
-                        this.Commands.RemoveComponent<PhysicsVelocity>( jobIndex, linker.PostureEntity );
+                        //this.Commands.RemoveComponent<PhysicsVelocity>( jobIndex, linker.PostureEntity );
                         this.Commands.RemoveComponent<WallHitResultData>( jobIndex, linker.PostureEntity );
 
                         this.Commands.AddComponent( jobIndex, linker.PostureEntity, new WallHunggingData { } );
