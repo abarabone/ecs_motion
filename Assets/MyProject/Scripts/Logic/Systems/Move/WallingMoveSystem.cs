@@ -61,7 +61,7 @@ namespace Abss.Character
 
         //[BurstCompile]
         struct HorizontalMoveJob : IJobForEachWithEntity
-            <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation, PhysicsVelocity>
+            <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation, PhysicsVelocity, physics>
         {
 
             [ReadOnly] public float DeltaTime;
@@ -144,15 +144,15 @@ namespace Abss.Character
                     var (newpos, newrot) = caluclateWallPosture
                         ( origin, hit.Position, hit.SurfaceNormal, fwddir, bodySize );
 
-                    //pos = newpos;
+                    pos = newpos;
                     var rdt = math.rcp( dt );
-                    v.Linear = ( newpos - pos ) * rdt;
+                    v.Linear = 0;//( newpos - pos ) * rdt;
 
                     var invprev = math.inverse( newrot );
                     var drot = math.mul( invprev, rot );
                     var axis = drot.value.As_float3();
                     var angle = math.lengthsq( drot );
-                    v.Angular = axis * ( angle * rdt );
+                    v.Angular = float3.zero;//axis * ( angle * rdt );
                     rot = newrot;
                 }
 

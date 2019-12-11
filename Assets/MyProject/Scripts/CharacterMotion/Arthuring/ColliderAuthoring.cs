@@ -249,7 +249,7 @@ namespace Abss.Arthuring
                     ? em.GetComponentData<PhysicsCollider>( ent ).MassProperties
                     : MassProperties.UnitSphere;
 
-                var phymass = rb.isKinematic
+                var physicsMass = rb.isKinematic
                     ? PhysicsMass.CreateKinematic( massProp )
                     : PhysicsMass.CreateDynamic( massProp, rb.mass );
 
@@ -257,11 +257,11 @@ namespace Abss.Arthuring
                 var freez_xy = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
                 if( rb.constraints == freez_xy )
                 {
-                    phymass.InverseInertia = new float3( 0, 1, 0 );
+                    physicsMass.InverseInertia = new float3( 0, 1, 0 );
                 }
 
                 //if( !rb.isKinematic )
-                    em.AddComponentData( ent, phymass );
+                    em.AddComponentData( ent, physicsMass );
                 // キネマティックの場合は、つけなくても大丈夫みたい（主にジョイントにとって）
                 // が、いちおうつけておく
 

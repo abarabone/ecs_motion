@@ -42,6 +42,7 @@ namespace Abss.Arthuring
             //em.RemoveComponent<PhysicsVelocity>( post.PostureEntity );//
 
             em.AddComponentData( post.PostureEntity, new WallHitResultData { } );
+            em.AddComponentData( post.PostureEntity, new WallHitResultData { } );
 
 
             return prefab;
