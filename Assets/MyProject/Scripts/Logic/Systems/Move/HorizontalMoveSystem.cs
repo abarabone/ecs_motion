@@ -52,7 +52,7 @@ namespace Abss.Character
                 DeltaTime = Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
-
+            
             return inputDeps;
         }
 

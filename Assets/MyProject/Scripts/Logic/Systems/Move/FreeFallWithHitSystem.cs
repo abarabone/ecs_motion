@@ -74,8 +74,7 @@ namespace Abss.Character
                 [WriteOnly] ref Rotation rot
             )
             {
-                //return;
-                
+
                 //var rtf = new RigidTransform( rot.Value, pos.Value );
 
                 var hitInput = new PointDistanceInput

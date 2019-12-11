@@ -22,6 +22,7 @@ using Abss.Utilities;
 using Abss.SystemGroup;
 using Abss.Character;
 using Abss.Geometry;
+using Abss.Physics;
 
 namespace Abss.Character
 {
@@ -53,7 +54,7 @@ namespace Abss.Character
                 DeltaTime = Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
-
+            
             return inputDeps;
         }
 
@@ -61,7 +62,7 @@ namespace Abss.Character
 
         //[BurstCompile]
         struct HorizontalMoveJob : IJobForEachWithEntity
-            <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation, PhysicsVelocity, physics>
+            <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation, PhysicsVelocity>
         {
 
             [ReadOnly] public float DeltaTime;
@@ -78,10 +79,10 @@ namespace Abss.Character
                 //[ReadOnly] ref Rotation rot,
                 ref Translation pos,
                 ref Rotation rot,
-                                ref PhysicsVelocity v
+                                ref PhysicsVelocity v//, ref PhysicsGravityFactor g
             )
             {
-
+                
                 var up = math.mul( rot.Value, math.up() );
                 var fwd = math.forward( rot.Value );
 
@@ -145,13 +146,13 @@ namespace Abss.Character
                         ( origin, hit.Position, hit.SurfaceNormal, fwddir, bodySize );
 
                     pos = newpos;
-                    var rdt = math.rcp( dt );
-                    v.Linear = 0;//( newpos - pos ) * rdt;
+                    //var rdt = math.rcp( dt );
+                    v.Linear = 0;// ( newpos - pos ) * rdt;
 
-                    var invprev = math.inverse( newrot );
-                    var drot = math.mul( invprev, rot );
-                    var axis = drot.value.As_float3();
-                    var angle = math.lengthsq( drot );
+                    //var invprev = math.inverse( newrot );
+                    //var drot = math.mul( invprev, rot );
+                    //var axis = drot.value.As_float3();
+                    //var angle = math.lengthsq( drot );
                     v.Angular = float3.zero;//axis * ( angle * rdt );
                     rot = newrot;
                 }
@@ -168,8 +169,8 @@ namespace Abss.Character
                         End = origin_ + ray_,
                         Filter = filter_,
                     };
-                    //var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, ent, this.CollisionWorld.Bodies );
-                    var collector = new ClosestHitCollector<RaycastHit>( 1.0f );
+                    var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, ent, cw.Bodies );
+                    //var collector = new ClosestHitCollector<RaycastHit>( 1.0f );
                     /*var isHit = */
                     cw.CastRay( hitInput, ref collector );
 

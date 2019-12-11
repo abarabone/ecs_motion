@@ -55,11 +55,12 @@ namespace Abss.Character
                 MotionInfos = this.GetComponentDataFromEntity<MotionInfoData>( isReadOnly: true ),
                 MotionCursors = this.GetComponentDataFromEntity<MotionCursorData>(),
                 MotionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>(),
-                
+
                 WallHitResults = this.GetComponentDataFromEntity<WallHitResultData>( isReadOnly: true ),
                 Wallings = this.GetComponentDataFromEntity<WallHunggingData>( isReadOnly: true ),
-                
+
                 Rotations = this.GetComponentDataFromEntity<Rotation>(),
+                GravityFactors = this.GetComponentDataFromEntity<PhysicsGravityFactor>(),
             }
             .Schedule( this, inputDeps );
             this.ecb.AddJobHandleForProducer( inputDeps );
@@ -86,7 +87,8 @@ namespace Abss.Character
 
             [NativeDisableParallelForRestriction]
             [WriteOnly] public ComponentDataFromEntity<Rotation> Rotations;
-
+            [NativeDisableParallelForRestriction]
+            [WriteOnly] public ComponentDataFromEntity<PhysicsGravityFactor> GravityFactors;
 
 
             public void Execute(
@@ -106,25 +108,29 @@ namespace Abss.Character
                 //    new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
 
 
-                if( this.Wallings.Exists( linker.PostureEntity ) )
-                {
-                    if( this.Wallings[ linker.PostureEntity ].State >= 2 )
-                    {
-                        this.Commands.RemoveComponent<WallHunggingData>( jobIndex, linker.PostureEntity );
+                var post = linker.PostureEntity;
 
-                        //this.Commands.AddComponent( jobIndex, linker.PostureEntity, new PhysicsVelocity { } );
-                        this.Commands.AddComponent( jobIndex, linker.PostureEntity, new WallHitResultData { } );
+                if( this.Wallings.Exists( post ) )
+                {
+                    if( this.Wallings[ post ].State >= 2 )
+                    {
+                        this.Commands.RemoveComponent<WallHunggingData>( jobIndex, post );
+
+                        //this.Commands.AddComponent( jobIndex, post, new PhysicsVelocity { } );
+                        this.Commands.AddComponent( jobIndex, post, new WallHitResultData { } );
+                        this.GravityFactors[ post ] = new PhysicsGravityFactor { Value = 1.0f };
                     }
                 }
 
-                if( this.WallHitResults.Exists(linker.PostureEntity) )
+                if( this.WallHitResults.Exists( post ) )
                 {
-                    if( this.WallHitResults[ linker.PostureEntity ].IsHit )
+                    if( this.WallHitResults[ post ].IsHit )
                     {
-                        //this.Commands.RemoveComponent<PhysicsVelocity>( jobIndex, linker.PostureEntity );
-                        this.Commands.RemoveComponent<WallHitResultData>( jobIndex, linker.PostureEntity );
+                        //this.Commands.RemoveComponent<PhysicsVelocity>( jobIndex, post );
+                        this.Commands.RemoveComponent<WallHitResultData>( jobIndex, post );
 
-                        this.Commands.AddComponent( jobIndex, linker.PostureEntity, new WallHunggingData { } );
+                        this.Commands.AddComponent( jobIndex, post, new WallHunggingData { } );
+                        this.GravityFactors[ post ] = new PhysicsGravityFactor { Value = 0.0f };
                     }
                 }
 
