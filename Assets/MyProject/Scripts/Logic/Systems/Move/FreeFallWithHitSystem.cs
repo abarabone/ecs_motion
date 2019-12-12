@@ -63,7 +63,7 @@ namespace Abss.Character
             <WallHitResultData, GroundHitSphereData, Translation, Rotation>
         {
 
-            [ReadOnly] public CollisionWorld CollisionWorld;
+            public CollisionWorld CollisionWorld;
 
 
             public void Execute(
@@ -86,6 +86,7 @@ namespace Abss.Character
                 //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
 
                 var collector = new ClosestDistanceHitExcludeSelfCollector( sphere.Distance, entity, CollisionWorld.Bodies );
+                //var collector = new ClosestHitCollector<DistanceHit>( sphere.Distance );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
 
                 if( collector.NumHits == 0 ) return;

@@ -82,7 +82,7 @@ namespace Abss.Character
                                 ref PhysicsVelocity v//, ref PhysicsGravityFactor g
             )
             {
-                
+                //var v = default(PhysicsVelocity);
                 var up = math.mul( rot.Value, math.up() );
                 var fwd = math.forward( rot.Value );
 
@@ -97,7 +97,7 @@ namespace Abss.Character
                             ref v, ref pos.Value, ref rot.Value, this.DeltaTime,
                             pos.Value, fwdRay, sphere.Distance, up, entity, sphere.Filter );
 
-                        if( isHit ) return;
+                        if( isHit ) break;
                         pos.Value += move;
                     }
                     {
@@ -109,7 +109,7 @@ namespace Abss.Character
                             ref v, ref pos.Value, ref rot.Value, this.DeltaTime,
                             movedPos, underRay, sphere.Distance, fwd, entity, sphere.Filter );
 
-                        if( isHit ) return;
+                        if( isHit ) break;
                         walling.State++;
                     }
                     break;
@@ -129,6 +129,8 @@ namespace Abss.Character
                     break;
                 }
 
+                v.Linear = 0;//
+                v.Angular = float3.zero;//
             }
 
             bool raycastHitToWall_(
@@ -145,15 +147,15 @@ namespace Abss.Character
                     var (newpos, newrot) = caluclateWallPosture
                         ( origin, hit.Position, hit.SurfaceNormal, fwddir, bodySize );
 
-                    pos = newpos;
                     //var rdt = math.rcp( dt );
-                    v.Linear = 0;// ( newpos - pos ) * rdt;
+                    //v.Linear = ( newpos - pos ) * rdt;
+                    pos = newpos;
 
                     //var invprev = math.inverse( newrot );
                     //var drot = math.mul( invprev, rot );
                     //var axis = drot.value.As_float3();
                     //var angle = math.lengthsq( drot );
-                    v.Angular = float3.zero;//axis * ( angle * rdt );
+                    //v.Angular = axis * ( angle * rdt );
                     rot = newrot;
                 }
 

@@ -108,32 +108,6 @@ namespace Abss.Character
                 //    new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
 
 
-                var post = linker.PostureEntity;
-
-                if( this.Wallings.Exists( post ) )
-                {
-                    if( this.Wallings[ post ].State >= 2 )
-                    {
-                        this.Commands.RemoveComponent<WallHunggingData>( jobIndex, post );
-
-                        //this.Commands.AddComponent( jobIndex, post, new PhysicsVelocity { } );
-                        this.Commands.AddComponent( jobIndex, post, new WallHitResultData { } );
-                        this.GravityFactors[ post ] = new PhysicsGravityFactor { Value = 1.0f };
-                    }
-                }
-
-                if( this.WallHitResults.Exists( post ) )
-                {
-                    if( this.WallHitResults[ post ].IsHit )
-                    {
-                        //this.Commands.RemoveComponent<PhysicsVelocity>( jobIndex, post );
-                        this.Commands.RemoveComponent<WallHitResultData>( jobIndex, post );
-
-                        this.Commands.AddComponent( jobIndex, post, new WallHunggingData { } );
-                        this.GravityFactors[ post ] = new PhysicsGravityFactor { Value = 0.0f };
-                    }
-                }
-
             }
         }
 

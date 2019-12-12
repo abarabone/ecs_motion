@@ -51,6 +51,10 @@ namespace Abss.Character
     //    public BlobAssetReference<Unity.Physics.Collider> Collider;
     //}
 
+    public struct WallHunggingData : IComponentData
+    {
+        public int State;
+    }
     public struct WallHitResultData : IComponentData
     {
         public bool IsHit;
@@ -58,10 +62,6 @@ namespace Abss.Character
 
     public struct HorizontalMovingTag : IComponentData
     { }
-    public struct WallHunggingData : IComponentData
-    {
-        public int State;
-    }
 
 
     // キャラクタアクションのステート -------------------------------------
