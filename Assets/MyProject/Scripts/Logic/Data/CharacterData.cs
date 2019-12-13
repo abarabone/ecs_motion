@@ -51,6 +51,8 @@ namespace Abss.Character
     //    public BlobAssetReference<Unity.Physics.Collider> Collider;
     //}
 
+    public struct WallingTag : IComponentData
+    { }
     public struct WallHunggingData : IComponentData
     {
         public int State;

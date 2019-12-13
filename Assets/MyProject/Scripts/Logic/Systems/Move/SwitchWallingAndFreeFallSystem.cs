@@ -31,17 +31,32 @@ namespace Abss.Character
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    [UpdateAfter(typeof(WallingMoveSystem))]
+    //[UpdateAfter( typeof( FreeFallWithHitSystem ) )]
+    //[UpdateInGroup( typeof( SimulationSystemGroup ) )]
     //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class SwitchWallingAndFreeFallWithHitSystem : JobComponentSystem
     {
 
+
+        EntityCommandBufferSystem ecb;
+
+
+
+        protected override void OnCreate()
+        {
+            this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            //this.ecb = this.World.GetExistingSystem<EndSimulationEntityCommandBufferSystem>();
+
+        }
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
             //return inputDeps;
             inputDeps = new SwitchWallingAndFreeFallWithHitJob
             {
+                Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
+                WallHitResults = this.GetComponentDataFromEntity<WallHitResultData>( isReadOnly : true ),
             }
             .Schedule( this, inputDeps );
 
@@ -50,42 +65,49 @@ namespace Abss.Character
 
 
         //[BurstCompile]
+        [RequireComponentTag(typeof(WallingTag))]
         struct SwitchWallingAndFreeFallWithHitJob : IJobForEachWithEntity
-            <WallHunggingData, WallHitResultData, GroundHitSphereData, PhysicsGravityFactor>
+            <WallHunggingData, PhysicsGravityFactor>
         {
 
+            public EntityCommandBuffer.Concurrent Commands;
+
+            [ReadOnly]
+            public ComponentDataFromEntity<WallHitResultData> WallHitResults;
 
 
             public void Execute(
                 Entity entity, int jobIndex,
-                [ReadOnly] ref WallHunggingData walling,
-                [ReadOnly] ref WallHitResultData result,
-                [ReadOnly] ref GroundHitSphereData sphere,
+                ref WallHunggingData walling,
                 [WriteOnly] ref PhysicsGravityFactor g
             )
             {
 
-                if( this.Wallings.Exists( post ) )
-                {
-                    if( this.Wallings[ post ].State >= 2 )
-                    {
-                        this.Commands.RemoveComponent<WallHunggingData>( jobIndex, post );
+                var isFreeFalling = this.WallHitResults.Exists( entity );
+                
 
-                        //this.Commands.AddComponent( jobIndex, post, new PhysicsVelocity { } );
-                        this.Commands.AddComponent( jobIndex, post, new WallHitResultData { } );
-                        this.GravityFactors[ post ] = new PhysicsGravityFactor { Value = 1.0f };
+                if( !isFreeFalling )
+                {
+                    if( walling.State >= 2 )
+                    {
+                        //this.Commands.RemoveComponent<WallHunggingData>( jobIndex, entity );
+
+                        //this.Commands.AddComponent( jobIndex, entity, new PhysicsVelocity { } );
+                        this.Commands.AddComponent( jobIndex, entity, new WallHitResultData { } );
+                        g = new PhysicsGravityFactor { Value = 1.0f };
                     }
                 }
 
-                if( this.WallHitResults.Exists( post ) )
+                if( isFreeFalling )
                 {
-                    if( this.WallHitResults[ post ].IsHit )
+                    if( this.WallHitResults[ entity ].IsHit )
                     {
-                        //this.Commands.RemoveComponent<PhysicsVelocity>( jobIndex, post );
-                        this.Commands.RemoveComponent<WallHitResultData>( jobIndex, post );
+                        //this.Commands.RemoveComponent<PhysicsVelocity>( jobIndex, entity );
+                        this.Commands.RemoveComponent<WallHitResultData>( jobIndex, entity );
 
-                        this.Commands.AddComponent( jobIndex, post, new WallHunggingData { } );
-                        this.GravityFactors[ post ] = new PhysicsGravityFactor { Value = 0.0f };
+                        //this.Commands.AddComponent( jobIndex, entity, new WallHunggingData { } );
+                        g = new PhysicsGravityFactor { Value = 0.0f };
+                        walling.State = 0;
                     }
                 }
 

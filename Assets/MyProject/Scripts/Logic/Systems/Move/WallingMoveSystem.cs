@@ -61,6 +61,7 @@ namespace Abss.Character
 
 
         //[BurstCompile]
+        [RequireComponentTag(typeof(WallingTag)), ExcludeComponent(typeof(WallHitResultData))]
         struct HorizontalMoveJob : IJobForEachWithEntity
             <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation, PhysicsVelocity>
         {

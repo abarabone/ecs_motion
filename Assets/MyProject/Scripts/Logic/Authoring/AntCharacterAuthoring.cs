@@ -35,14 +35,15 @@ namespace Abss.Arthuring
             em.AddComponentData( prefab, new AntTag { } );
             em.AddComponentData( prefab, new AntWalkActionState { } );
 
-            var post = em.GetComponentData<CharacterLinkData>( prefab );//
-            em.AddComponentData( post.PostureEntity, new AntTag { } );//
-            em.AddComponentData( post.PostureEntity, new MoveHandlingData { } );//
-            em.AddComponentData( post.PostureEntity, new WallHunggingData { } );//
+            var linker = em.GetComponentData<CharacterLinkData>( prefab );//
+            em.AddComponentData( linker.PostureEntity, new AntTag { } );//
+            em.AddComponentData( linker.PostureEntity, new MoveHandlingData { } );//
+            em.AddComponentData( linker.PostureEntity, new WallHunggingData { } );//
             //em.RemoveComponent<PhysicsVelocity>( post.PostureEntity );//
 
+            em.AddComponentData<WallingTag>( linker.PostureEntity, new WallingTag { } );
             //em.AddComponentData( post.PostureEntity, new WallHitResultData { } );
-            em.AddComponentData( post.PostureEntity, new PhysicsGravityFactor { } );
+            em.AddComponentData( linker.PostureEntity, new PhysicsGravityFactor { } );
 
             return prefab;
         }
