@@ -49,7 +49,7 @@ namespace Abss.Character
             inputDeps = new HorizontalMoveJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
-                DeltaTime = Time.DeltaTime,
+                DeltaTime = UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
             

@@ -92,7 +92,7 @@ namespace Abss.Character
                     case 0:
                     {
                         var move = fwd * ( this.DeltaTime * 13.0f );
-                        var fwdRay = move + fwd * sphere.Distance*2;
+                        var fwdRay = move + fwd * sphere.Distance * 1.5f;
 
                         var isHit = raycastHitToWall_(
                             ref v, ref pos.Value, ref rot.Value, this.DeltaTime,
@@ -111,7 +111,7 @@ namespace Abss.Character
                             movedPos, underRay, sphere.Distance, fwd, entity, sphere.Filter );
 
                         if( isHit ) break;
-                        v.Linear = move / this.DeltaTime;
+                        v.Linear = move * math.rcp( this.DeltaTime );
                         walling.State++;
                     }
                     break;
@@ -131,8 +131,8 @@ namespace Abss.Character
                     break;
                 }
 
-                v.Linear = 0;//
-                v.Angular = float3.zero;//
+                //v.Linear = 0;//
+                //v.Angular = float3.zero;//
             }
 
             bool raycastHitToWall_(
@@ -151,15 +151,21 @@ namespace Abss.Character
                     //var (newpos, newrot) = caluclateWallPosture
                         ( origin, h.hit.Position, h.hit.SurfaceNormal, fwddir, bodySize );
 
-                    //var rdt = math.rcp( dt );
-                    //v.Linear = ( newpos - pos ) * rdt;
-                    pos = newposrot.pos;
+                    var rdt = math.rcp( dt );
+                    v.Linear = ( newposrot.pos - pos ) * rdt;
+                    //pos = newposrot.pos;
 
-                    //var invprev = math.inverse( newrot );
+                    //var invprev = math.inverse( newposrot.rot );
+                    //var drot = math.mul( invprev, rot );
+                    //var angle = math.acos( drot.value.w ) * 2.0f;
+                    //var sin = math.sin( angle );
+                    //var axis = drot.value.As_float3() * math.rcp( sin );
+                    //var invprev = math.inverse( newposrot.rot );
                     //var drot = math.mul( invprev, rot );
                     //var axis = drot.value.As_float3();
                     //var angle = math.lengthsq( drot );
                     //v.Angular = axis * ( angle * rdt );
+                    v.Angular = float3.zero;
                     rot = newposrot.rot;
                 }
 
