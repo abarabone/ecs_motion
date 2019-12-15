@@ -28,6 +28,8 @@ namespace Abss.Arthuring
         public override Entity Convert
             ( EntityManager em, DrawMeshResourceHolder drawResources )
         {
+            if( !this.gameObject.activeSelf ) this.gameObject.SetActive( true );// 繰り返し使用されるときに必要になる
+
 
             var drawAuthor = this.GetComponent<DrawSkinnedMeshAuthoring>();
             var drawPrefab = drawAuthor.Convert( em, drawResources );
