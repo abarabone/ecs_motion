@@ -50,8 +50,8 @@ namespace Abss.Character
         {
             inputDeps = new HorizontalMoveJob
             {
-                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
-                DeltaTime = Time.DeltaTime,
+                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
+                DeltaTime = UnityEngine.Time.fixedDeltaTime,
             }
             .Schedule( this, inputDeps );
             
@@ -60,7 +60,7 @@ namespace Abss.Character
 
 
 
-        //[BurstCompile]
+        [BurstCompile]
         [RequireComponentTag(typeof(WallingTag)), ExcludeComponent(typeof(WallHitResultData))]
         struct HorizontalMoveJob : IJobForEachWithEntity
             <WallHunggingData, MoveHandlingData, GroundHitSphereData, Translation, Rotation, PhysicsVelocity>
@@ -68,7 +68,7 @@ namespace Abss.Character
 
             [ReadOnly] public float DeltaTime;
 
-            [ReadOnly] public CollisionWorld CollisionWorld;
+            [ReadOnly] public PhysicsWorld CollisionWorld;
 
 
             public unsafe void Execute(
@@ -99,11 +99,11 @@ namespace Abss.Character
                             pos.Value, fwdRay, sphere.Distance, up, entity, sphere.Filter );
 
                         if( isHit ) break;
-                        pos.Value += move;
+                        //pos.Value += move;
                     }
                     {
-                        //var move = fwd * ( this.DeltaTime * 13.0f );
-                        var movedPos = pos.Value;// + move;
+                        var move = fwd * ( this.DeltaTime * 13.0f );
+                        var movedPos = pos.Value + move;
                         var underRay = up * -( sphere.Distance * 1.5f );
 
                         var isHit = raycastHitToWall_(
@@ -111,6 +111,7 @@ namespace Abss.Character
                             movedPos, underRay, sphere.Distance, fwd, entity, sphere.Filter );
 
                         if( isHit ) break;
+                        v.Linear = move / this.DeltaTime;
                         walling.State++;
                     }
                     break;
@@ -164,7 +165,7 @@ namespace Abss.Character
 
 
                 (bool isHit, RaycastHit hit) raycast
-                    ( ref CollisionWorld cw, float3 origin_, float3 ray_, Entity ent_, CollisionFilter filter_ )
+                    ( ref PhysicsWorld cw, float3 origin_, float3 ray_, Entity ent_, CollisionFilter filter_ )
                 {
                     var hitInput = new RaycastInput
                     {

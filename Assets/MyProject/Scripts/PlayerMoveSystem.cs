@@ -57,7 +57,7 @@ namespace Abss.Character
                 DeltaTime = Time.DeltaTime,
                 StickDir = input.lStickDir,
                 JumpForce = input.jumpForce,
-                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
+                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
             }
             .Schedule( this, inputDeps );
 
@@ -102,7 +102,7 @@ namespace Abss.Character
             [ReadOnly] public float DeltaTime;
             [ReadOnly] public float JumpForce;
 
-            [ReadOnly] public CollisionWorld CollisionWorld;
+            [ReadOnly] public PhysicsWorld CollisionWorld;
 
 
             public unsafe void Execute(

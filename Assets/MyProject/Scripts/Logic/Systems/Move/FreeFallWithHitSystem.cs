@@ -50,7 +50,7 @@ namespace Abss.Character
             //return inputDeps;
             inputDeps = new FreeFallWithHitJob
             {
-                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
+                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
             }
             .Schedule( this, inputDeps );
 
@@ -63,7 +63,8 @@ namespace Abss.Character
             <WallHitResultData, GroundHitSphereData, Translation, Rotation>
         {
 
-            public CollisionWorld CollisionWorld;
+            [ReadOnly] public PhysicsWorld CollisionWorld;
+            //public PhysicsWorld PhysicsWorld;
 
 
             public void Execute(

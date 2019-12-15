@@ -48,7 +48,7 @@ namespace Abss.Character
 
             inputDeps = new HorizontalMoveJob
             {
-                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
+                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
                 DeltaTime = Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
@@ -65,7 +65,7 @@ namespace Abss.Character
 
             [ReadOnly] public float DeltaTime;
 
-            [ReadOnly] public CollisionWorld CollisionWorld;
+            [ReadOnly] public PhysicsWorld CollisionWorld;
 
 
             public unsafe void Execute(

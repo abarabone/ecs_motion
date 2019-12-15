@@ -45,7 +45,7 @@ namespace Abss.Character
 
             inputDeps = new IsGroundAroundJob
             {
-                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
+                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
             }
             .Schedule( this, inputDeps );
 
@@ -61,7 +61,7 @@ namespace Abss.Character
             <GroundHitResultData, GroundHitSphereData, Translation, Rotation>
         {
 
-            [ReadOnly] public CollisionWorld CollisionWorld;
+            [ReadOnly] public PhysicsWorld CollisionWorld;
 
 
             public unsafe void Execute(
