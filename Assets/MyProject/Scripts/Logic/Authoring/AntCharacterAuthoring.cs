@@ -39,11 +39,11 @@ namespace Abss.Arthuring
             em.AddComponentData( linker.PostureEntity, new AntTag { } );//
             em.AddComponentData( linker.PostureEntity, new MoveHandlingData { } );//
             em.AddComponentData( linker.PostureEntity, new WallHunggingData { } );//
-            //em.RemoveComponent<PhysicsVelocity>( post.PostureEntity );//
+            //em.RemoveComponent<PhysicsVelocity>( linker.PostureEntity );//
 
-            em.AddComponentData<WallingTag>( linker.PostureEntity, new WallingTag { } );
-            //em.AddComponentData( post.PostureEntity, new WallHitResultData { } );
-            em.AddComponentData( linker.PostureEntity, new PhysicsGravityFactor { } );
+            em.AddComponentData( linker.PostureEntity, new WallingTag { } );
+            //em.AddComponentData( linker.PostureEntity, new WallHitResultData { } );
+            em.AddComponentData( linker.PostureEntity, new PhysicsGravityFactor { Value = 1.0f } );
 
             return prefab;
         }

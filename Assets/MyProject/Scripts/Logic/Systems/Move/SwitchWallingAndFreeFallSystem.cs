@@ -32,8 +32,8 @@ namespace Abss.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateAfter(typeof(WallingMoveSystem))]
-    //[UpdateAfter( typeof( FreeFallWithHitSystem ) )]
-    //[UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    [UpdateAfter( typeof( FreeFallWithHitSystem ) )]
+    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
     //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class SwitchWallingAndFreeFallWithHitSystem : JobComponentSystem
     {
@@ -86,18 +86,6 @@ namespace Abss.Character
                 var isFreeFalling = this.WallHitResults.Exists( entity );
                 
 
-                if( !isFreeFalling )
-                {
-                    if( walling.State >= 2 )
-                    {
-                        //this.Commands.RemoveComponent<WallHunggingData>( jobIndex, entity );
-
-                        //this.Commands.AddComponent( jobIndex, entity, new PhysicsVelocity { } );
-                        this.Commands.AddComponent( jobIndex, entity, new WallHitResultData { } );
-                        g = new PhysicsGravityFactor { Value = 1.0f };
-                    }
-                }
-
                 if( isFreeFalling )
                 {
                     if( this.WallHitResults[ entity ].IsHit )
@@ -108,6 +96,18 @@ namespace Abss.Character
                         //this.Commands.AddComponent( jobIndex, entity, new WallHunggingData { } );
                         g = new PhysicsGravityFactor { Value = 0.0f };
                         walling.State = 0;
+                    }
+                }
+
+                if( !isFreeFalling )
+                {
+                    if( walling.State >= 2 )
+                    {
+                        //this.Commands.RemoveComponent<WallHunggingData>( jobIndex, entity );
+
+                        //this.Commands.AddComponent( jobIndex, entity, new PhysicsVelocity { } );
+                        this.Commands.AddComponent( jobIndex, entity, new WallHitResultData { } );
+                        g = new PhysicsGravityFactor { Value = 1.0f };
                     }
                 }
 
