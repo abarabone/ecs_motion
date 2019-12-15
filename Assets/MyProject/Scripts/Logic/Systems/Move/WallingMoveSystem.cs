@@ -142,29 +142,32 @@ namespace Abss.Character
             )
             {
 
-                var (isHit, hit) = raycast( ref this.CollisionWorld, origin, gndray, ent, filter );
+                var h = raycast( ref this.CollisionWorld, origin, gndray, ent, filter );
+                //var (isHit, hit) = raycast( ref this.CollisionWorld, origin, gndray, ent, filter );
 
-                if( isHit )
+                if( h.isHit )
                 {
-                    var (newpos, newrot) = caluclateWallPosture
-                        ( origin, hit.Position, hit.SurfaceNormal, fwddir, bodySize );
+                    var newposrot = caluclateWallPosture
+                    //var (newpos, newrot) = caluclateWallPosture
+                        ( origin, h.hit.Position, h.hit.SurfaceNormal, fwddir, bodySize );
 
                     //var rdt = math.rcp( dt );
                     //v.Linear = ( newpos - pos ) * rdt;
-                    pos = newpos;
+                    pos = newposrot.pos;
 
                     //var invprev = math.inverse( newrot );
                     //var drot = math.mul( invprev, rot );
                     //var axis = drot.value.As_float3();
                     //var angle = math.lengthsq( drot );
                     //v.Angular = axis * ( angle * rdt );
-                    rot = newrot;
+                    rot = newposrot.rot;
                 }
 
-                return isHit;
+                return h.isHit;
 
 
-                (bool isHit, RaycastHit hit) raycast
+                HitFlagAndResult raycast
+                //( bool isHit, RaycastHit hit) raycast
                     ( ref PhysicsWorld cw, float3 origin_, float3 ray_, Entity ent_, CollisionFilter filter_ )
                 {
                     var hitInput = new RaycastInput
@@ -178,10 +181,12 @@ namespace Abss.Character
                     /*var isHit = */
                     cw.CastRay( hitInput, ref collector );
 
-                    return (collector.NumHits > 0, collector.ClosestHit);
+                    return new HitFlagAndResult { isHit=collector.NumHits > 0, hit=collector.ClosestHit};
+                    //return (collector.NumHits > 0, collector.ClosestHit);
                 }
 
-                (float3 newpos, quaternion newrot) caluclateWallPosture
+                PosAndRot caluclateWallPosture
+                //( float3 newpos, quaternion newrot) caluclateWallPosture
                     ( float3 o, float3 p, float3 n, float3 up, float r )
                 {
                     var f = p - o;
@@ -193,8 +198,20 @@ namespace Abss.Character
                     var newpos = p + n * r;
                     var newrot = quaternion.LookRotation( newfwd, n );
 
-                    return (newpos, newrot);
+                    return new PosAndRot { pos = newpos, rot = newrot };
+                    //return (newpos, newrot);
                 }
+            }
+            // burst でタプルが使えるようになるまでの代用
+            struct PosAndRot
+            {
+                public float3 pos;
+                public quaternion rot;
+            }
+            struct HitFlagAndResult
+            {
+                public bool isHit;
+                public RaycastHit hit;
             }
         }
 
