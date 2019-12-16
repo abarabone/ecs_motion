@@ -25,12 +25,14 @@ namespace Abss.Draw
 
         DrawMeshCsSystem drawSystem;
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
-        
+
+        DrawInstanceTempBufferAllocationSystem tempBufferSystem;//
 
         protected override void OnStartRunning()
         {
             this.drawSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
             this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
+            this.tempBufferSystem = this.World.GetExistingSystem<DrawInstanceTempBufferAllocationSystem>();//
         }
 
 
@@ -40,6 +42,7 @@ namespace Abss.Draw
             if( !nativeInstanceBuffers.Units.IsCreated ) return inputDeps;
 
 
+            inputDeps = JobHandle.CombineDependencies( inputDeps, this.tempBufferSystem.inputDeps );//
             inputDeps = new BoneToDrawInstanceJob
             {
                 NativeBuffers = nativeInstanceBuffers.Units,

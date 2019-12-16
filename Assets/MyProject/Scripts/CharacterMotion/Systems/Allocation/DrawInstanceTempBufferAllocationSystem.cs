@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Jobs.LowLevel.Unsafe;
 
 using Abss.Cs;
 using Abss.Arthuring;
@@ -21,7 +22,7 @@ namespace Abss.Draw
     /// ジョブで依存関係をスケジュールしてバッファを確保したいが、うまくいかない
     /// そもそもジョブで確保できるのか、外部に渡せるのかもわからない
     /// </summary>
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [AlwaysUpdateSystem]
     [UpdateInGroup( typeof( DrawAllocationGroup ) )]
     //[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
@@ -37,9 +38,13 @@ namespace Abss.Draw
         DrawMeshCsSystem drawMeshCsSystem;
 
 
+        public JobHandle inputDeps;//
+
+
         protected override void OnStartRunning()
         {
             this.drawMeshCsSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
+            //this.TempInstanceBoneVectors = new NativeArray<float4>( 1, Allocator.Temp );//
         }
 
 
@@ -48,15 +53,18 @@ namespace Abss.Draw
             if( !this.drawMeshCsSystem.NativeBuffers.Units.IsCreated )
                 return inputDeps;
 
-            if( this.TempInstanceBoneVectors.IsCreated )
-                this.TempInstanceBoneVectors.Dispose();
+            //if( this.TempInstanceBoneVectors.IsCreated )
+            //    this.TempInstanceBoneVectors.Dispose();
 
-
+            this.TempInstanceBoneVectors = new NativeArray<float4>( 1, Allocator.TempJob );//
+            
             inputDeps = new DrawInstanceTempBufferAllocationJob
             {
                 NativeInstances = this.drawMeshCsSystem.NativeBuffers.Units,
+                InstanceVectorBuffer = this.TempInstanceBoneVectors,
             }
             .Schedule( inputDeps );
+            this.inputDeps = inputDeps;//
             
             return inputDeps;
         }
@@ -69,27 +77,30 @@ namespace Abss.Draw
 
 
 
-
-        struct DrawInstanceTempBufferAllocationJob : IJob
+        //[BurstCompile]
+        unsafe struct DrawInstanceTempBufferAllocationJob : IJob
         {
 
-            //[ReadOnly]
-            [NativeDisableParallelForRestriction]
+            [ReadOnly]
             public NativeArray<DrawInstanceNativeBufferUnit> NativeInstances;
 
+            //[NativeDisableParallelForRestriction]
             //public NativeArray<float4> InstanceVectorBuffer;
+            public void *pSystem;
 
 
-            public void Execute()
+            public unsafe void Execute()
             {
 
-                //var length = 0;
-                //foreach( var x in this.NativeInstances )
-                //{
-                //    length += x.InstanceCounter.Count;
-                //}
+                var length = 0;
+                foreach( var x in this.NativeInstances )
+                {
+                    length += x.InstanceCounter.Count;
+                }
 
-                //Debug.Log( length );
+                var p = (DrawInstanceTempBufferAllocationSystem*)
+                //this.InstanceVectorBuffer.Dispose();
+                //this.InstanceVectorBuffer = new NativeArray<float4>( length, Allocator.Temp );
             }
         }
     }
