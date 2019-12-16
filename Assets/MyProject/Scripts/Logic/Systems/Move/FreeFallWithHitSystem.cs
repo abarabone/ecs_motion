@@ -58,7 +58,7 @@ namespace Abss.Character
         }
 
 
-        //[BurstCompile]
+        [BurstCompile]
         struct FreeFallWithHitJob : IJobForEachWithEntity
             <WallHitResultData, GroundHitSphereData, Translation, Rotation>
         {

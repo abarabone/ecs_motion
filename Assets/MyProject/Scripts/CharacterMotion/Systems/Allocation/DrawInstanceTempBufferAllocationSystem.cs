@@ -73,7 +73,7 @@ namespace Abss.Draw
         struct DrawInstanceTempBufferAllocationJob : IJob
         {
 
-            [ReadOnly]
+            //[ReadOnly]
             [NativeDisableParallelForRestriction]
             public NativeArray<DrawInstanceNativeBufferUnit> NativeInstances;
 

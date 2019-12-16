@@ -27,7 +27,7 @@ namespace Abss.Motion
 
             inputDeps = new StreamProgressAndInterporationJob
             {
-                DeltaTime = Time.DeltaTime,
+                DeltaTime = UnityEngine.Time.deltaTime,//Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
 

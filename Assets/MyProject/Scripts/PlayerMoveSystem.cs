@@ -54,7 +54,7 @@ namespace Abss.Character
             inputDeps = new PlayerMoveJob
             {
                 CamRotWorld = camRotWorld,
-                DeltaTime = Time.DeltaTime,
+                DeltaTime = UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
                 StickDir = input.lStickDir,
                 JumpForce = input.jumpForce,
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,

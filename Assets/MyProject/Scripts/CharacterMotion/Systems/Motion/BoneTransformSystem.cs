@@ -38,7 +38,7 @@ namespace Abss.Motion
                 BonePositions = this.GetComponentDataFromEntity<Translation>(),
                 BoneRotations = this.GetComponentDataFromEntity<Rotation>(),
                 BoneVelocities = this.GetComponentDataFromEntity<PhysicsVelocity>(),
-                DeltaTime = Time.DeltaTime,
+                DeltaTime = UnityEngine.Time.deltaTime,//Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
 
