@@ -33,18 +33,17 @@ namespace Abss.Draw
 
 
         // 一括ボーンフレームバッファ
-        public NativeArray<float4> TempInstanceBoneVectors { get; private set; }
+        //public NativeArray<float4> TempInstanceBoneVectors { get; private set; }
+        public JobAllocatableBuffer<float4, Temp> TempInstanceBoneVectors { get; private set; }
 
         DrawMeshCsSystem drawMeshCsSystem;
-
-
-        public JobHandle inputDeps;//
+        
+        public JobHandle inputDeps { get; private set; }//
 
 
         protected override void OnStartRunning()
         {
             this.drawMeshCsSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
-            //this.TempInstanceBoneVectors = new NativeArray<float4>( 1, Allocator.Temp );//
         }
 
 
@@ -53,11 +52,9 @@ namespace Abss.Draw
             if( !this.drawMeshCsSystem.NativeBuffers.Units.IsCreated )
                 return inputDeps;
 
-            //if( this.TempInstanceBoneVectors.IsCreated )
-            //    this.TempInstanceBoneVectors.Dispose();
+            this.TempInstanceBoneVectors = new JobAllocatableBuffer<float4, Temp>( 0 );
+            // .Dispose() は、DrawMeshCsSystem にて行う。離れているので注意。
 
-            this.TempInstanceBoneVectors = new NativeArray<float4>( 1, Allocator.TempJob );//
-            
             inputDeps = new DrawInstanceTempBufferAllocationJob
             {
                 NativeInstances = this.drawMeshCsSystem.NativeBuffers.Units,
@@ -65,14 +62,14 @@ namespace Abss.Draw
             }
             .Schedule( inputDeps );
             this.inputDeps = inputDeps;//
-            
+
             return inputDeps;
         }
 
         protected override void OnDestroy()
         {
-            if( this.TempInstanceBoneVectors.IsCreated )
-                this.TempInstanceBoneVectors.Dispose();
+            //this.TempInstanceBoneVectors.Dispose();
+            // DrawMeshCsSystem で適切に行われれば、必要ない
         }
 
 
@@ -84,47 +81,71 @@ namespace Abss.Draw
             [ReadOnly]
             public NativeArray<DrawInstanceNativeBufferUnit> NativeInstances;
 
-            //[NativeDisableParallelForRestriction]
-            //public NativeArray<float4> InstanceVectorBuffer;
-            public void *pSystem;
+            public JobAllocatableBuffer<float4, Temp> InstanceVectorBuffer;
 
 
             public unsafe void Execute()
             {
-
                 var length = 0;
                 foreach( var x in this.NativeInstances )
                 {
                     length += x.InstanceCounter.Count;
                 }
 
-                var p = (DrawInstanceTempBufferAllocationSystem*)
-                //this.InstanceVectorBuffer.Dispose();
-                //this.InstanceVectorBuffer = new NativeArray<float4>( length, Allocator.Temp );
+                this.InstanceVectorBuffer.AllocateBuffer( length );
             }
         }
     }
 
-    public unsafe struct JobAllocatableBuffer<T> : System.IDisposable
+
+    public unsafe struct JobAllocatableBuffer<T,Tallocator> : System.IDisposable
         where T:struct
+        where Tallocator:IAllocatorLabel,new()
     {
+
+        [NativeDisableContainerSafetyRestriction]
         NativeArray<int> bufferPointerHolder;
 
-        public JobAllocatableBuffer( Allocator allocator ) =>
-            this.bufferPointerHolder = new NativeArray<int>( 1, allocator );
+        public void* pBuffer
+        {
+            get => (void*)this.bufferPointerHolder[ 0 ];
+            private set => this.bufferPointerHolder[ 0 ] = (int)value;
+        }
 
-        public void Dispose() =>
-            this.bufferPointerHolder.Dispose();
 
-        public void AllocBuffer( int length, Allocator allocator )
+        public JobAllocatableBuffer( int length )
+        {
+            var allocator = new Tallocator().Label;
+            this.bufferPointerHolder = new NativeArray<int>( 1, allocator, NativeArrayOptions.ClearMemory );
+
+            if( length > 0 ) this.AllocateBuffer( length );
+        }
+
+        public void AllocateBuffer( int length )
         {
             var size = UnsafeUtility.SizeOf<T>();
             var align = UnsafeUtility.AlignOf<T>();
-            this.bufferPointerHolder[ 0 ] = (int)UnsafeUtility.Malloc( size, align, allocator );
+            var allocator = new Tallocator().Label;
+
+            this.pBuffer = UnsafeUtility.Malloc( size * length, align, allocator );
         }
-        public void DisposeBuffer()
+
+        public void Dispose()
         {
-            UnsafeUtility.Free( this.bufferPointerHolder[0], allo
+            if( !this.bufferPointerHolder.IsCreated ) return;
+            
+            if( this.pBuffer != null )
+                disposeBuffer_( this.pBuffer );
+
+            this.bufferPointerHolder.Dispose();
+
+
+            void disposeBuffer_( void* pBuffer )
+            {
+                var allocator = new Tallocator().Label;
+                UnsafeUtility.Free( (void*)pBuffer, allocator );
+            }
         }
+
     }
 }

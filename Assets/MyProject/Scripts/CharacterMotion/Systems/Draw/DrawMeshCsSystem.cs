@@ -177,6 +177,9 @@ namespace Abss.Draw
                 
                 Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
             }
+
+            this.tempBufferSystem.TempInstanceBoneVectors.Dispose();
+            // 本体と離れているので忘れないよう…
             
             return inputDeps;
         }
