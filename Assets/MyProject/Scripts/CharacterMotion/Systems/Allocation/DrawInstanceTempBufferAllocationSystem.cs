@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
-using Unity.Jobs.LowLevel.Unsafe;
+using Unity.Collections.LowLevel.Unsafe;
 
 using Abss.Cs;
 using Abss.Arthuring;
@@ -102,6 +102,29 @@ namespace Abss.Draw
                 //this.InstanceVectorBuffer.Dispose();
                 //this.InstanceVectorBuffer = new NativeArray<float4>( length, Allocator.Temp );
             }
+        }
+    }
+
+    public unsafe struct JobAllocatableBuffer<T> : System.IDisposable
+        where T:struct
+    {
+        NativeArray<int> bufferPointerHolder;
+
+        public JobAllocatableBuffer( Allocator allocator ) =>
+            this.bufferPointerHolder = new NativeArray<int>( 1, allocator );
+
+        public void Dispose() =>
+            this.bufferPointerHolder.Dispose();
+
+        public void AllocBuffer( int length, Allocator allocator )
+        {
+            var size = UnsafeUtility.SizeOf<T>();
+            var align = UnsafeUtility.AlignOf<T>();
+            this.bufferPointerHolder[ 0 ] = (int)UnsafeUtility.Malloc( size, align, allocator );
+        }
+        public void DisposeBuffer()
+        {
+            UnsafeUtility.Free( this.bufferPointerHolder[0], allo
         }
     }
 }
