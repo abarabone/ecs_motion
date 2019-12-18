@@ -58,8 +58,8 @@ namespace Abss.Draw
                 var mat = resourceUnit.Material;
 
                 var boneLength = mesh.bindposes.Length;
-                var stride = Marshal.SizeOf( typeof( float4 ) ) * resourceUnit.VectorLengthOfBone;
-                var bufferLength = resourceUnit.MaxInstance * resourceUnit.VectorLengthOfBone * boneLength;
+                var stride = Marshal.SizeOf( typeof( float4 ) ) * resourceUnit.VectorLengthInBone;
+                var bufferLength = resourceUnit.MaxInstance * resourceUnit.VectorLengthInBone * boneLength;
 
                 bufferUnit.TransformBuffer =
                     new ComputeBuffer( bufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable );

@@ -94,7 +94,7 @@ namespace Abss.Draw
 
                 var boneLength = mesh.bindposes.Length;
 
-                var outputVectorCount = instanceCount * boneLength * nativebuf.VectorLengthOfBone;
+                var outputVectorCount = instanceCount * boneLength * nativebuf.VectorLengthInBone;
                 var srcBuffer = this.NativeBuffers.InstanceBoneVectors;//this.tempBufferSystem.TempInstanceBoneVectors;
                 var dstBuffer = devicebuf.TransformBuffer;
                 dstBuffer.SetData( srcBuffer, nativebuf.OffsetInBuffer, 0, outputVectorCount );

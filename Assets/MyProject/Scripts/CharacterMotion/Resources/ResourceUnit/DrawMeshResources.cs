@@ -24,7 +24,7 @@ namespace Abss.Draw
         public int MeshId;
         public Mesh Mesh;
         public Material Material;
-        public int VectorLengthOfBone;
+        public int VectorLengthInBone;
         public int MaxInstance;
     }
 
@@ -35,7 +35,7 @@ namespace Abss.Draw
         TRS     = 3,
         Matrix  = 4,
     }
-    public struct bone_unit
+    public struct TRBoneUnit
     {
         public float4 pos;
         public quaternion rot;
@@ -57,7 +57,7 @@ namespace Abss.Draw
                 MeshId = meshId,
                 Mesh = mesh,
                 Material = mat,
-                VectorLengthOfBone = (int)boneType,
+                VectorLengthInBone = (int)boneType,
                 MaxInstance = maxInstance,
             };
             this.Units.Add( resource );

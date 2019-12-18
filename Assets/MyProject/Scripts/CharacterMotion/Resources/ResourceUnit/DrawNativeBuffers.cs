@@ -22,10 +22,9 @@ namespace Abss.Draw
     public unsafe struct DrawInstanceNativeBufferUnit
     {
         public ThreadSafeCounter<Persistent> InstanceCounter;
-        //public NativeSlice<float4> InstanceBoneVectors;
-        public float4* pInstanceBoneVectors;
-        public int VectorLengthOfBone;
         public int OffsetInBuffer;
+
+        public int VectorLengthInBone;
     }
 
     
@@ -35,41 +34,34 @@ namespace Abss.Draw
         
         public NativeArray<DrawInstanceNativeBufferUnit> Units;
 
-        public NativeArray<float4> InstanceBoneVectors;
+        public JobAllocatableBuffer<float4, Temp> InstanceBoneTempVectors;
+
 
 
         public unsafe void Initialize( DrawMeshResourceHolder resources )
         {
-            var arrayLengths = resources.Units
-                .Select( x => x.VectorLengthOfBone * x.Mesh.bindposes.Length * x.MaxInstance )
-                .ToArray();
-
-            this.Units = 
-                new NativeArray<DrawInstanceNativeBufferUnit>( arrayLengths.Length, Allocator.Persistent );
-
-            this.InstanceBoneVectors =
-                new NativeArray<float4>( arrayLengths.Sum(), Allocator.Persistent );
-
-            var start = 0;
-            for( var i = 0; i < arrayLengths.Length; i++ )
-            {
-                this.Units[ i ] = new DrawInstanceNativeBufferUnit
+            var q =
+                from x in resources.Units
+                select new DrawInstanceNativeBufferUnit
                 {
-                    //InstanceBoneVectors = this.InstanceBoneVectors.Slice( start, arrayLengths[ i ] ),
-                    pInstanceBoneVectors = (float4*)NativeArrayUnsafeUtility.GetUnsafePtr( this.InstanceBoneVectors ) + start,
                     InstanceCounter = new ThreadSafeCounter<Persistent>( 0 ),
-                    OffsetInBuffer = start,
-                    VectorLengthOfBone = resources.Units[i].VectorLengthOfBone,
+                    VectorLengthInBone = x.VectorLengthInBone,
                 };
-
-                start += arrayLengths[ i ];
-            }
+            this.Units = q.ToNativeArray( Allocator.Persistent );
         }
 
-        public void Reset()
+
+        public void ResetOnFrame()
         {
             foreach( var x in this.Units )
                 x.InstanceCounter.Reset();
+
+            this.InstanceBoneTempVectors = new JobAllocatableBuffer<float4, Temp>( 0 );
+        }
+
+        public void ClearOnFrame()
+        {
+            this.InstanceBoneTempVectors.Dispose();
         }
 
 
@@ -81,9 +73,61 @@ namespace Abss.Draw
             }
 
             this.Units.Dispose();
-            this.InstanceBoneVectors.Dispose();
+            this.InstanceBoneTempVectors.Dispose();
         }
 
     }
 
+
+    public unsafe struct JobAllocatableBuffer<T, Tallocator> : IDisposable
+        where T : struct
+        where Tallocator : IAllocatorLabel, new()
+    {
+
+        [NativeDisableContainerSafetyRestriction]
+        NativeArray<int> bufferPointerHolder;
+
+        public void* pBuffer
+        {
+            get => (void*)this.bufferPointerHolder[ 0 ];
+            private set => this.bufferPointerHolder[ 0 ] = (int)value;
+        }
+
+
+        public JobAllocatableBuffer( int length )
+        {
+            var allocator = new Tallocator().Label;
+            this.bufferPointerHolder = new NativeArray<int>( 1, allocator, NativeArrayOptions.ClearMemory );
+
+            if( length > 0 ) this.AllocateBuffer( length );
+        }
+
+        public void AllocateBuffer( int length )
+        {
+            var size = UnsafeUtility.SizeOf<T>();
+            var align = UnsafeUtility.AlignOf<T>();
+            var allocator = new Tallocator().Label;
+
+            this.pBuffer = UnsafeUtility.Malloc( size * length, align, allocator );
+        }
+
+        public void Dispose()
+        {
+            if( !this.bufferPointerHolder.IsCreated ) return;
+
+            if( this.pBuffer != null )
+                disposeBuffer_( this.pBuffer );
+
+            this.bufferPointerHolder.Dispose();
+            this.bufferPointerHolder = new NativeArray<int>();
+
+
+            void disposeBuffer_( void* pBuffer )
+            {
+                var allocator = new Tallocator().Label;
+                UnsafeUtility.Free( (void*)pBuffer, allocator );
+            }
+        }
+
+    }
 }
