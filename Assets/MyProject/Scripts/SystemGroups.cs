@@ -21,38 +21,39 @@ using System.Runtime.InteropServices;
 namespace Abss.SystemGroup
 {
 
-    //[DisableAutoCreation]
     [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    //[DisableAutoCreation]
     public class ObjectMoveSystemGroup : ComponentSystemGroup
     { }
 
-    //[DisableAutoCreation]
     [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+    //[DisableAutoCreation]
     public class ObjectLogicSystemGroup : ComponentSystemGroup
     { }
 
 
+    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
     //[DisableAutoCreation]
     //[UpdateAfter(typeof(ObjectLogicSystemGroup))]
-    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
     public class DrawPrevSystemGroup : ComponentSystemGroup
     { }
 
+    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
     //[DisableAutoCreation]
     [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
-    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
     public class MotionSystemGroup : ComponentSystemGroup
     { }
 
+    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+    //[DisableAutoCreation]
     [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
     [UpdateBefore( typeof( DrawSystemGroup ) )]
-    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
     public class DrawAllocationGroup : ComponentSystemGroup
     { }
 
+    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
     //[DisableAutoCreation]
     [UpdateAfter( typeof( MotionSystemGroup ) )]
-    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
     public class DrawSystemGroup : ComponentSystemGroup
     { }
 

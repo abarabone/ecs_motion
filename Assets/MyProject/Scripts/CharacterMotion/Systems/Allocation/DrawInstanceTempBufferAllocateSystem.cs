@@ -27,7 +27,7 @@ namespace Abss.Draw
     [UpdateInGroup( typeof( DrawAllocationGroup ) )]
     //[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
     //[UpdateInGroup( typeof( DrawSystemGroup ) )]
-    public class DrawInstanceTempBufferAllocationSystem : JobComponentSystem
+    public class DrawInstanceTempBufferAllocateSystem : JobComponentSystem
     {
 
 
@@ -55,7 +55,7 @@ namespace Abss.Draw
             this.TempInstanceBoneVectors = new JobAllocatableBuffer<float4, Temp>( 0 );
             // .Dispose() は、DrawMeshCsSystem にて行う。離れているので注意。
 
-            inputDeps = new DrawInstanceTempBufferAllocationJob
+            inputDeps = new DrawInstanceTempBufferAllocateJob
             {
                 NativeInstances = this.drawMeshCsSystem.NativeBuffers.Units,
                 InstanceVectorBuffer = this.TempInstanceBoneVectors,
@@ -75,7 +75,7 @@ namespace Abss.Draw
 
 
         //[BurstCompile]
-        unsafe struct DrawInstanceTempBufferAllocationJob : IJob
+        unsafe struct DrawInstanceTempBufferAllocateJob : IJob
         {
 
             [ReadOnly]
@@ -97,55 +97,4 @@ namespace Abss.Draw
         }
     }
 
-
-    public unsafe struct JobAllocatableBuffer<T,Tallocator> : System.IDisposable
-        where T:struct
-        where Tallocator:IAllocatorLabel,new()
-    {
-
-        [NativeDisableContainerSafetyRestriction]
-        NativeArray<int> bufferPointerHolder;
-
-        public void* pBuffer
-        {
-            get => (void*)this.bufferPointerHolder[ 0 ];
-            private set => this.bufferPointerHolder[ 0 ] = (int)value;
-        }
-
-
-        public JobAllocatableBuffer( int length )
-        {
-            var allocator = new Tallocator().Label;
-            this.bufferPointerHolder = new NativeArray<int>( 1, allocator, NativeArrayOptions.ClearMemory );
-
-            if( length > 0 ) this.AllocateBuffer( length );
-        }
-
-        public void AllocateBuffer( int length )
-        {
-            var size = UnsafeUtility.SizeOf<T>();
-            var align = UnsafeUtility.AlignOf<T>();
-            var allocator = new Tallocator().Label;
-
-            this.pBuffer = UnsafeUtility.Malloc( size * length, align, allocator );
-        }
-
-        public void Dispose()
-        {
-            if( !this.bufferPointerHolder.IsCreated ) return;
-            
-            if( this.pBuffer != null )
-                disposeBuffer_( this.pBuffer );
-
-            this.bufferPointerHolder.Dispose();
-
-
-            void disposeBuffer_( void* pBuffer )
-            {
-                var allocator = new Tallocator().Label;
-                UnsafeUtility.Free( (void*)pBuffer, allocator );
-            }
-        }
-
-    }
 }

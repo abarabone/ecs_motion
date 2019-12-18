@@ -26,13 +26,13 @@ namespace Abss.Draw
         DrawMeshCsSystem drawSystem;
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
-        DrawInstanceTempBufferAllocationSystem tempBufferSystem;//
+        DrawInstanceTempBufferAllocateSystem tempBufferSystem;//
 
         protected override void OnStartRunning()
         {
             this.drawSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
             this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
-            this.tempBufferSystem = this.World.GetExistingSystem<DrawInstanceTempBufferAllocationSystem>();//
+            this.tempBufferSystem = this.World.GetExistingSystem<DrawInstanceTempBufferAllocateSystem>();//
         }
 
 
