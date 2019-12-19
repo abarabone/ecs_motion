@@ -23,7 +23,9 @@ namespace Abss.Misc
 
 		public ThreadSafeCounter( int initValue )
 		{
-			pCounter = (int*)UnsafeUtility.Malloc( UnsafeUtility.SizeOf<int>(), 4, new Tallocator().Label );
+            var size = UnsafeUtility.SizeOf<int>();
+            var align = UnsafeUtility.AlignOf<int>();
+			pCounter = (int*)UnsafeUtility.Malloc( size, align, new Tallocator().Label );
 			
 			*pCounter = initValue;
 		}

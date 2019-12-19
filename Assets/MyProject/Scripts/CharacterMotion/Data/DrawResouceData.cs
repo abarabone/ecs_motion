@@ -15,6 +15,8 @@ using Abss.Geometry;
 using System.Runtime.InteropServices;
 using System;
 
+using Abss.Misc;
+
 namespace Abss.Draw
 {
 
@@ -27,13 +29,8 @@ namespace Abss.Draw
     {
         public int VectorLengthInBone;
         public int BoneLength;
-        //public 
+        public ThreadSafeCounter<Persistent> InstanceCounter;
     }
 
 
-
-    public struct ThreadSafeCounter
-    {
-
-    }
 }
