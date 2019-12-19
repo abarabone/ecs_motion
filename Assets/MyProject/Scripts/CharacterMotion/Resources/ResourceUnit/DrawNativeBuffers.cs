@@ -34,7 +34,7 @@ namespace Abss.Draw
         
         public NativeArray<DrawInstanceNativeBufferUnit> Units;
 
-        public JobAllocatableBuffer<float4, Temp> InstanceBoneTempVectors;
+        public JobAllocatableBuffer_<float4, Temp> InstanceBoneTempVectors;
 
 
 
@@ -56,7 +56,7 @@ namespace Abss.Draw
             foreach( var x in this.Units )
                 x.InstanceCounter.Reset();
 
-            this.InstanceBoneTempVectors = new JobAllocatableBuffer<float4, Temp>( 0 );
+            this.InstanceBoneTempVectors = new JobAllocatableBuffer_<float4, Temp>( 0 );
         }
 
         public void ClearOnFrame()
@@ -79,7 +79,7 @@ namespace Abss.Draw
     }
 
 
-    public unsafe struct JobAllocatableBuffer<T, Tallocator> : IDisposable
+    public unsafe struct JobAllocatableBuffer_<T, Tallocator> : IDisposable
         where T : struct
         where Tallocator : IAllocatorLabel, new()
     {
@@ -94,7 +94,7 @@ namespace Abss.Draw
         }
 
 
-        public JobAllocatableBuffer( int length )
+        public JobAllocatableBuffer_( int length )
         {
             var allocator = new Tallocator().Label;
             this.bufferPointerHolder = new NativeArray<int>( 1, allocator, NativeArrayOptions.ClearMemory );

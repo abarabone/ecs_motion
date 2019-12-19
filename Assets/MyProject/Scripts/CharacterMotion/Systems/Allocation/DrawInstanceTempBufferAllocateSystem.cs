@@ -34,7 +34,7 @@ namespace Abss.Draw
 
         // 一括ボーンフレームバッファ
         //public NativeArray<float4> TempInstanceBoneVectors { get; private set; }
-        public JobAllocatableBuffer<float4, Temp> TempInstanceBoneVectors { get; private set; }
+        public JobAllocatableBuffer_<float4, Temp> TempInstanceBoneVectors { get; private set; }
 
         DrawMeshCsSystem drawMeshCsSystem;
         
@@ -52,7 +52,7 @@ namespace Abss.Draw
             if( !this.drawMeshCsSystem.NativeBuffers.Units.IsCreated )
                 return inputDeps;
 
-            this.TempInstanceBoneVectors = new JobAllocatableBuffer<float4, Temp>( 0 );
+            this.TempInstanceBoneVectors = new JobAllocatableBuffer_<float4, Temp>( 0 );
             // .Dispose() は、DrawMeshCsSystem にて行う。離れているので注意。
 
             inputDeps = new DrawInstanceTempBufferAllocateJob
@@ -81,7 +81,7 @@ namespace Abss.Draw
             [ReadOnly]
             public NativeArray<DrawInstanceNativeBufferUnit> NativeInstances;
 
-            public JobAllocatableBuffer<float4, Temp> InstanceVectorBuffer;
+            public JobAllocatableBuffer_<float4, Temp> InstanceVectorBuffer;
 
 
             public unsafe void Execute()
