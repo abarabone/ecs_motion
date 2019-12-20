@@ -34,26 +34,26 @@ namespace Abss.Draw
 
         // 一括ボーンフレームバッファ
         //public NativeArray<float4> TempInstanceBoneVectors { get; private set; }
-        public JobAllocatableBuffer_<float4, Temp> TempInstanceBoneVectors { get; private set; }
+        //public JobAllocatableBuffer_<float4, Temp> TempInstanceBoneVectors { get; private set; }
 
-        DrawMeshCsSystem drawMeshCsSystem;
+        //DrawMeshCsSystem drawMeshCsSystem;
         
         public JobHandle inputDeps { get; private set; }//
 
 
-        protected override void OnStartRunning()
-        {
-            this.drawMeshCsSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
-        }
+        //protected override void OnStartRunning()
+        //{
+        //    this.drawMeshCsSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
+        //}
 
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            if( !this.drawMeshCsSystem.NativeBuffers.Units.IsCreated )
-                return inputDeps;
+            //if( !this.drawMeshCsSystem.NativeBuffers.Units.IsCreated )
+            //    return inputDeps;
 
-            this.TempInstanceBoneVectors = new JobAllocatableBuffer_<float4, Temp>( 0 );
-            // .Dispose() は、DrawMeshCsSystem にて行う。離れているので注意。
+            //this.TempInstanceBoneVectors = new JobAllocatableBuffer_<float4, Temp>( 0 );
+            //// .Dispose() は、DrawMeshCsSystem にて行う。離れているので注意。
 
             inputDeps = new DrawInstanceTempBufferAllocateJob
             {
@@ -78,10 +78,11 @@ namespace Abss.Draw
         unsafe struct DrawInstanceTempBufferAllocateJob : IJob
         {
 
-            [ReadOnly]
-            public NativeArray<DrawInstanceNativeBufferUnit> NativeInstances;
+            [WriteOnly]
+            public ComponentDataFromEntity<DrawNativeTransformBufferData> NativeTransformss;
 
-            public JobAllocatableBuffer_<float4, Temp> InstanceVectorBuffer;
+            [ReadOnly]
+            public ComponentDataFromEntity<DrawInstanceCounterData> InstanceCounters;
 
 
             public unsafe void Execute()

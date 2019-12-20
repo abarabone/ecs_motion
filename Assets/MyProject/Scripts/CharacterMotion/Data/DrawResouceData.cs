@@ -25,12 +25,12 @@ namespace Abss.Draw
 
     public class DrawComputeTransformBufferData : IComponentData
     {
-        public ComputeBuffer TransformBuffer;
+        public ComputeBuffer Transforms;
     }
 
     public unsafe struct DrawNativeTransformBufferData : IComponentData
     {
-        public JobAllocatableBuffer<float4, Temp> TransformBuffer;
+        public SimpleNativeBuffer<float4, Temp> Transforms;
     }
 
 
@@ -64,12 +64,12 @@ namespace Abss.Draw
 
 
 
-    public unsafe struct JobAllocatableBuffer<T, Tallocator> : IDisposable
+    public unsafe struct SimpleNativeBuffer<T, Tallocator> : IDisposable
         where T : unmanaged
         where Tallocator : IAllocatorLabel, new()
     {
 
-        public T* p { get; private set; }
+        public T* pBuffer { get; private set; }
 
 
         public void Allocate( int length )
@@ -78,13 +78,13 @@ namespace Abss.Draw
             var align = UnsafeUtility.AlignOf<T>();
             var allocator = new Tallocator().Label;
 
-            this.p = (T*)UnsafeUtility.Malloc( size * length, align, allocator );
+            this.pBuffer = (T*)UnsafeUtility.Malloc( size * length, align, allocator );
         }
 
         public void Dispose()
         {
             var allocator = new Tallocator().Label;
-            UnsafeUtility.Free( (void*)this.p, allocator );
+            UnsafeUtility.Free( (void*)this.pBuffer, allocator );
         }
 
     }
