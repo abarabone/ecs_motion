@@ -20,7 +20,7 @@ namespace Abss.Character
 {
 
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
-    [UpdateInGroup(typeof(ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
     public class CameraMoveSystem : ComponentSystem
     {
 

@@ -9,7 +9,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.SystemGroup;
 using Abss.Utilities;
@@ -20,7 +20,7 @@ namespace Abss.Motion
 {
 
     [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class StreamToBoneSystem : JobComponentSystem
     {
 

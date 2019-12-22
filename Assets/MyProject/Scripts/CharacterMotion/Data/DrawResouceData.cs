@@ -23,40 +23,46 @@ namespace Abss.Draw
 
     // 全体で１つ -----------------------
 
-    public class DrawComputeTransformBufferData : IComponentData
+    public class DrawSystemComputeTransformBufferData : IComponentData
     {
         public ComputeBuffer Transforms;
     }
 
-    public unsafe struct DrawNativeTransformBufferData : IComponentData
+    public struct DrawSystemNativeTransformBufferData : IComponentData
     {
         public SimpleNativeBuffer<float4, Temp> Transforms;
     }
 
+    // チャンクで１つ -----------------------
+
+    public struct DrawChunkBufferLinkerData : IComponentData
+    {
+        public Entity BufferEntity;
+    }
 
     // メッシュごと -----------------------
 
-    public struct DrawBoneInfoData : IComponentData
+    public struct DrawModelBoneInfoData : IComponentData
     {
         public int VectorLengthInBone;
         public int BoneLength;
     }
 
-    public struct DrawInstanceCounterData : IComponentData
+    public struct DrawModelInstanceCounterData : IComponentData
     {
         public ThreadSafeCounter<Persistent> InstanceCounter;
     }
-    public struct DrawInstanceOffsetData : IComponentData
+    public struct DrawModelInstanceOffsetData : IComponentData
     {
         public int VectorOffsetInBuffer;
     }
 
-    public class DrawComputeArgumentsBufferData : IComponentData
+    public class DrawModelComputeArgumentsBufferData : IComponentData
     {
         public ComputeBuffer InstanceArgumentsBuffer;
     }
 
-    public class DrawMeshData : IComponentData
+    public class DrawModelMeshData : IComponentData
     {
         public Mesh Mesh;
         public Material Material;
@@ -72,7 +78,7 @@ namespace Abss.Draw
         public T* pBuffer { get; private set; }
 
 
-        public void Allocate( int length )
+        public SimpleNativeBuffer( int length )
         {
             var size = UnsafeUtility.SizeOf<T>();
             var align = UnsafeUtility.AlignOf<T>();

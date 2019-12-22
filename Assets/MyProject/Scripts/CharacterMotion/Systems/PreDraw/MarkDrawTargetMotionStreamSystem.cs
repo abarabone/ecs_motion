@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.Motion;
 using Abss.SystemGroup;
@@ -16,7 +16,7 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
-    [UpdateInGroup( typeof( DrawPrevSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
     public class MarkDrawTargetMotionStreamSystem : JobComponentSystem
     {
 

@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.Motion;
 using Abss.SystemGroup;
@@ -23,8 +23,7 @@ namespace Abss.Draw
     /// そもそもジョブで確保できるのか、外部に渡せるのかもわからない
     /// </summary>
     //[DisableAutoCreation]
-    [AlwaysUpdateSystem]
-    [UpdateInGroup( typeof( DrawAllocationGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawAllocationGroup ) )]
     //[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
     //[UpdateInGroup( typeof( DrawSystemGroup ) )]
     public class DrawInstanceTempBufferAllocateSystem : JobComponentSystem
@@ -32,68 +31,80 @@ namespace Abss.Draw
 
 
 
-        // 一括ボーンフレームバッファ
-        //public NativeArray<float4> TempInstanceBoneVectors { get; private set; }
-        //public JobAllocatableBuffer_<float4, Temp> TempInstanceBoneVectors { get; private set; }
-
-        //DrawMeshCsSystem drawMeshCsSystem;
-        
-        public JobHandle inputDeps { get; private set; }//
+        EntityQuery drawQuery;
 
 
-        //protected override void OnStartRunning()
-        //{
-        //    this.drawMeshCsSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
-        //}
+
+
+        protected override void OnCreate()
+        {
+            this.drawQuery = this.GetEntityQuery(
+                ComponentType.ReadOnly<DrawModelInstanceCounterData>(),
+                ComponentType.ReadWrite<DrawModelInstanceOffsetData>()
+            );
+
+
+        }
+
 
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            //if( !this.drawMeshCsSystem.NativeBuffers.Units.IsCreated )
-            //    return inputDeps;
-
-            //this.TempInstanceBoneVectors = new JobAllocatableBuffer_<float4, Temp>( 0 );
-            //// .Dispose() は、DrawMeshCsSystem にて行う。離れているので注意。
 
             inputDeps = new DrawInstanceTempBufferAllocateJob
             {
-                NativeInstances = this.drawMeshCsSystem.NativeBuffers.Units,
-                InstanceVectorBuffer = this.TempInstanceBoneVectors,
+                NativeBuffers = this.GetComponentDataFromEntity<DrawSystemNativeTransformBufferData>(),
+
+                InstanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>(isReadOnly:true),
+                InstanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>(),
+                BufferLinkType = this.GetArchetypeChunkComponentType<DrawChunkBufferLinkerData>(isReadOnly:true),
             }
-            .Schedule( inputDeps );
-            this.inputDeps = inputDeps;//
+            .Schedule( this.drawQuery, inputDeps );
+
 
             return inputDeps;
         }
 
-        protected override void OnDestroy()
-        {
-            //this.TempInstanceBoneVectors.Dispose();
-            // DrawMeshCsSystem で適切に行われれば、必要ない
-        }
 
 
 
         //[BurstCompile]
-        unsafe struct DrawInstanceTempBufferAllocateJob : IJob
+        unsafe struct DrawInstanceTempBufferAllocateJob : IJobChunk
         {
 
             [WriteOnly]
-            public ComponentDataFromEntity<DrawNativeTransformBufferData> NativeTransformss;
+            public ComponentDataFromEntity<DrawSystemNativeTransformBufferData> NativeBuffers; 
 
             [ReadOnly]
-            public ComponentDataFromEntity<DrawInstanceCounterData> InstanceCounters;
+            public ArchetypeChunkComponentType<DrawModelInstanceCounterData> InstanceCounterType;
+            [WriteOnly]
+            public ArchetypeChunkComponentType<DrawModelInstanceOffsetData> InstanceOffsetType;
+            [ReadOnly]
+            public ArchetypeChunkComponentType<DrawChunkBufferLinkerData> BufferLinkType;
 
 
-            public unsafe void Execute()
+            public void Execute( ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex )
             {
-                var length = 0;
-                foreach( var x in this.NativeInstances )
+
+                var counters = chunk.GetNativeArray( this.InstanceCounterType );
+                var offsets = chunk.GetNativeArray( this.InstanceOffsetType );
+
+                var sum = 0;
+                for( var i=0; i<chunk.Count; i++ )
                 {
-                    length += x.InstanceCounter.Count;
+
+                    offsets[ i ] = new DrawModelInstanceOffsetData { VectorOffsetInBuffer = sum };
+
+                    sum += counters[ i ].InstanceCounter.Count;
+
                 }
 
-                this.InstanceVectorBuffer.AllocateBuffer( length );
+                var ent = chunk.GetChunkComponentData(this.BufferLinkType).BufferEntity;
+                this.NativeBuffers[ ent ] = new DrawSystemNativeTransformBufferData
+                {
+                    Transforms = new SimpleNativeBuffer<float4, Temp>( sum ),
+                };
+
             }
         }
     }

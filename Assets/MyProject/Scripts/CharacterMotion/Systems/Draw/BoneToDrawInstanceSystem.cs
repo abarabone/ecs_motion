@@ -9,7 +9,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.Motion;
 using Abss.SystemGroup;
@@ -18,8 +18,7 @@ namespace Abss.Draw
 {
 
     //[DisableAutoCreation]
-    //[UpdateAfter( typeof( DrawInstanceTempBufferAllocationSystem ) )]
-    [UpdateInGroup(typeof(DrawSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     public class BoneToDrawInstanceSystem : JobComponentSystem
     {
 
@@ -42,7 +41,7 @@ namespace Abss.Draw
             if( !nativeInstanceBuffers.Units.IsCreated ) return inputDeps;
 
 
-            inputDeps = JobHandle.CombineDependencies( inputDeps, this.tempBufferSystem.inputDeps );//
+            //inputDeps = JobHandle.CombineDependencies( inputDeps, this.tempBufferSystem.inputDeps );//
             inputDeps = new BoneToDrawInstanceJob
             {
                 NativeBuffers = nativeInstanceBuffers.Units,

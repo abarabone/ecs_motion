@@ -21,41 +21,80 @@ using System.Runtime.InteropServices;
 namespace Abss.SystemGroup
 {
 
-    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
-    //[DisableAutoCreation]
-    public class ObjectMoveSystemGroup : ComponentSystemGroup
-    { }
+    namespace Simulation
+    {
 
-    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-    //[DisableAutoCreation]
-    public class ObjectLogicSystemGroup : ComponentSystemGroup
-    { }
+        namespace Move
+        {
+
+            [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+            //[DisableAutoCreation]
+            public class ObjectMoveSystemGroup : ComponentSystemGroup
+            { }
+
+        }
+
+    }
+
+    namespace Presentation
+    {
+
+        namespace Logic
+        {
+
+            [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+            //[DisableAutoCreation]
+            public class ObjectLogicSystemGroup : ComponentSystemGroup
+            { }
+
+        }
 
 
-    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-    //[DisableAutoCreation]
-    //[UpdateAfter(typeof(ObjectLogicSystemGroup))]
-    public class DrawPrevSystemGroup : ComponentSystemGroup
-    { }
+        namespace DrawModel
+        {
 
-    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-    //[DisableAutoCreation]
-    [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
-    public class MotionSystemGroup : ComponentSystemGroup
-    { }
+            [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+            //[DisableAutoCreation]
+            //[UpdateAfter(typeof(ObjectLogicSystemGroup))]
+            public class DrawPrevSystemGroup : ComponentSystemGroup
+            { }
 
-    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-    //[DisableAutoCreation]
-    [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
-    [UpdateBefore( typeof( DrawSystemGroup ) )]
-    public class DrawAllocationGroup : ComponentSystemGroup
-    { }
+            [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+            //[DisableAutoCreation]
+            [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
+            [UpdateBefore( typeof( DrawSystemGroup ) )]
+            public class DrawAllocationGroup : ComponentSystemGroup
+            { }
 
-    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-    //[DisableAutoCreation]
-    [UpdateAfter( typeof( MotionSystemGroup ) )]
-    public class DrawSystemGroup : ComponentSystemGroup
-    { }
+
+            namespace Motion
+            {
+
+                [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+                //[DisableAutoCreation]
+                [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
+                public class MotionSystemGroup : ComponentSystemGroup
+                { }
+
+            }
+
+
+            [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+            //[DisableAutoCreation]
+            [UpdateAfter( typeof( Motion.MotionSystemGroup ) )]
+            public class DrawSystemGroup : ComponentSystemGroup
+            { }
+
+            [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+            //[DisableAutoCreation]
+            [UpdateAfter( typeof( DrawSystemGroup ) )]
+            public class DrawDeallocationGroup : ComponentSystemGroup
+            { }
+
+        }
+
+
+    }
 
 
 

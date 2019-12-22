@@ -8,6 +8,8 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
+using Unity.Collections.LowLevel.Unsafe;
+using System.Runtime.InteropServices;
 
 using Abss.Geometry;
 using Abss.Utilities;
@@ -46,28 +48,30 @@ namespace Abss.Arthuring
         void Awake()
         {
             var em = World.Active.EntityManager;
-            
+
 
             var drawMeshCsSystem = em.World.GetExistingSystem<DrawMeshCsSystem>();
             var drawMeshCsResourceHolder = drawMeshCsSystem.GetResourceHolder();
 
+            var sysEnt = initDrawSystemComponents_();
+
             this.PrefabEntities = this.PrefabGameObjects
-                .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder ) )
+                .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
                 .ToArray();
 
 
             // モーション設定
             foreach( var model in Enumerable.Range( 0, this.PrefabEntities.Length ) )
             {
-                var mlinker = em.GetComponentData<CharacterLinkData>( this.PrefabEntities[model] );
+                var mlinker = em.GetComponentData<CharacterLinkData>( this.PrefabEntities[ model ] );
                 ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MainMotionEntity ).ClipData.Value;
 
                 foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
                 {
                     this.ents.Add( em.Instantiate( this.PrefabEntities[ model ] ) );
 
-                    var chlinker = em.GetComponentData<CharacterLinkData>( this.ents[this.ents.Count-1] );
-                    em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i*3, 0, -model*5 ) } );
+                    var chlinker = em.GetComponentData<CharacterLinkData>( this.ents[ this.ents.Count - 1 ] );
+                    em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i * 3, 0, -model * 5 ) } );
                     em.SetComponentData( chlinker.MainMotionEntity, new MotionInitializeData { MotionIndex = i % mclip.Motions.Length } );
                 }
             }
@@ -76,9 +80,70 @@ namespace Abss.Arthuring
             em.AddComponentData( this.ents[ 0 ], new PlayerTag { } );
             var post = em.GetComponentData<CharacterLinkData>( this.ents[ 0 ] ).PostureEntity;
             em.AddComponentData( post, new PlayerTag { } );//
-            //em.AddComponentData( post, new MoveHandlingData { } );//
-            
+                                                           //em.AddComponentData( post, new MoveHandlingData { } );//
+
+        
+            void initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
+            {
+
+                var boneVectorBuffer = em.GetComponentData<DrawSystemComputeTransformBufferData>(sysEnt).Transforms;
+                mat.SetBuffer( "BoneVectorBuffer", boneVectorBuffer );
+                mat.SetInt( "BoneVectorOffset", 0 );
+                mat.SetInt( "BoneVectorLength", mesh.boneWeights.Length * (int)boneType );
+
+                var drawModelArchetype = em.CreateArchetype(
+                    typeof( DrawModelBoneInfoData ),
+                    typeof( DrawModelInstanceCounterData ),
+                    typeof( DrawModelInstanceOffsetData ),
+                    typeof( DrawModelMeshData ),
+                    typeof( DrawModelComputeArgumentsBufferData )
+                );
+                var ent = em.CreateEntity( drawModelArchetype );
+
+                em.SetComponentData( ent,
+                    new DrawModelBoneInfoData
+                    {
+                        BoneLength = 0,
+                        VectorLengthInBone = (int)boneType,
+                    }
+                );
+                em.SetComponentData( ent,
+                    new DrawModelMeshData
+                    {
+                        Mesh = mesh,
+                        Material = mat,
+                    }
+                );
+                em.SetComponentData( ent,
+                    new DrawModelComputeArgumentsBufferData
+                    {
+                        InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
+                    }
+                );
+            }
+
+            Entity initDrawSystemComponents_()
+            {
+                var drawBufferArchetype = em.CreateArchetype(
+                    typeof(DrawSystemComputeTransformBufferData),
+                    typeof(DrawSystemNativeTransformBufferData)
+                );
+                var ent = em.CreateEntity( drawBufferArchetype );
+
+                const int maxBuffer = 1000 * 16 * 2;//
+                var stride = Marshal.SizeOf( typeof( float4 ) );
+                em.SetComponentData( ent,
+                    new DrawSystemComputeTransformBufferData
+                    {
+                        Transforms = new ComputeBuffer
+                            ( maxBuffer, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
+                );
+
+                return ent;
+            }
         }
+
+
 
         //void Update()
         //{
@@ -98,7 +163,7 @@ namespace Abss.Arthuring
 
         public abstract class ConvertToCustomPrefabEntityBehaviour : MonoBehaviour
         {
-            abstract public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres );
+            abstract public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, Action<Mesh, Material, BoneType> initDrawModelComponentsAction );
         }
     }
 

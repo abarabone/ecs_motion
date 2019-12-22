@@ -9,7 +9,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.SystemGroup;
 using Abss.Utilities;
@@ -21,39 +21,39 @@ namespace Abss.Motion
 
     //[DisableAutoCreation]
     [UpdateAfter( typeof( StreamToBoneSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class BoneLv01TransformSystem : _BoneTransformLeveledSystem<BoneLv01LinkData>
     { }
     [UpdateAfter( typeof( BoneLv01TransformSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class BoneLv02TransformSystem : _BoneTransformLeveledSystem<BoneLv02LinkData>
     { }
     [UpdateAfter( typeof( BoneLv02TransformSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class BoneLv03TransformSystem : _BoneTransformLeveledSystem<BoneLv03LinkData>
     { }
     [UpdateAfter( typeof( BoneLv03TransformSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class BoneLv04TransformSystem : _BoneTransformLeveledSystem<BoneLv04LinkData>
     { }
     [UpdateAfter( typeof( BoneLv04TransformSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class BoneLv05TransformSystem : _BoneTransformLeveledSystem<BoneLv05LinkData>
     { }
     [UpdateAfter( typeof( BoneLv05TransformSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class BoneLv06TransformSystem : _BoneTransformLeveledSystem<BoneLv06LinkData>
     { }
     [UpdateAfter( typeof( BoneLv06TransformSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class BoneLv07TransformSystem : _BoneTransformLeveledSystem<BoneLv07LinkData>
     { }
     [UpdateAfter( typeof( BoneLv07TransformSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class BoneLv08TransformSystem : _BoneTransformLeveledSystem<BoneLv08LinkData>
     { }
     [UpdateAfter( typeof( BoneLv08TransformSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class BoneLv09TransformSystem : _BoneTransformLeveledSystem<BoneLv09LinkData>
     { }
 

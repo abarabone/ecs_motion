@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.Motion;
 using Abss.SystemGroup;

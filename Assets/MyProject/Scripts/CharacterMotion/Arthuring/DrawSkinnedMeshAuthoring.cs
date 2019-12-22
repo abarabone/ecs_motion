@@ -29,7 +29,7 @@ namespace Abss.Arthuring
         public BoneType BoneType = BoneType.TR;
         
 
-        public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres )
+        public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, Action<Mesh,Material,BoneType> initDrawModelComponentsAction )
         {
             
             var mrs = this.GetComponentsInChildren<SkinnedMeshRenderer>();

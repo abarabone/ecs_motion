@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Physics;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.SystemGroup;
 using Abss.Utilities;
@@ -24,7 +24,7 @@ namespace Abss.Physics
     //[DisableAutoCreation]
     //[UpdateInGroup( typeof( BonePhysicsSystemGroup ) )]
     [UpdateBefore( typeof( MotionStreamProgressAndInterporationSystem ) )]
-    [UpdateInGroup( typeof( MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
     public class PhysicsBoneInitializeSystem : JobComponentSystem
     {
 
@@ -33,7 +33,7 @@ namespace Abss.Physics
 
         protected override void OnCreate()
         {
-            this.ecb = World.Active.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
         }
 
 

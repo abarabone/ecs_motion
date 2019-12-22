@@ -33,7 +33,7 @@ namespace Abss.Character
     //[DisableAutoCreation]
     [UpdateAfter(typeof(WallingMoveSystem))]
     [UpdateAfter( typeof( FreeFallWithHitSystem ) )]
-    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
     //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class SwitchWallingAndFreeFallWithHitSystem : JobComponentSystem
     {

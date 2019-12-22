@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.Misc;
 using Abss.SystemGroup;
@@ -18,7 +18,7 @@ namespace Abss.Draw
 
     [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
     [UpdateBefore( typeof( MarkDrawTargetMotionStreamSystem ) )]
-    [UpdateInGroup(typeof(DrawPrevSystemGroup))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     public class DrawCullingDummySystem : JobComponentSystem
     {
 

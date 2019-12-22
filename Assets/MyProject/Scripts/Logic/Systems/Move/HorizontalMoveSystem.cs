@@ -28,7 +28,7 @@ namespace Abss.Character
     /// ジャンプが必要なら、地面と接触していればジャンプする。←暫定
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
     //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class HorizontalMoveSystem : JobComponentSystem
     {

@@ -12,7 +12,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Physics;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.SystemGroup;
 using Abss.Utilities;
@@ -24,7 +24,7 @@ namespace Abss.Motion
 
     //[DisableAutoCreation]
     [UpdateAfter(typeof( StreamToBoneSystem ) )]
-    [UpdateInGroup(typeof(MotionSystemGroup))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
     public class BoneTransformSystem : JobComponentSystem
     {
 

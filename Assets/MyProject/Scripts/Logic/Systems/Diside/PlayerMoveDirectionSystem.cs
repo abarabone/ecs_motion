@@ -28,7 +28,7 @@ namespace Abss.Character
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
     public class PlayerMoveDirectionSystem : JobComponentSystem
     {
 

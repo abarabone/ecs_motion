@@ -25,7 +25,7 @@ namespace Abss.Character
 
     [DisableAutoCreation]
     //[UpdateAfter( typeof( EndFramePhysicsSystem ) )]
-    [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
     public class PlayerMoveSystem : JobComponentSystem
     {
         

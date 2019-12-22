@@ -13,7 +13,7 @@ namespace Abss.Motion
 {
     
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
-    [UpdateInGroup(typeof(MotionSystemGroup))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
     public class MotionInitializeSystem : JobComponentSystem
     {
 
@@ -22,7 +22,7 @@ namespace Abss.Motion
 
         protected override void OnCreate()
         {
-            this.ecb = World.Active.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            this.ecb = this.World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
         }
         
 

@@ -23,8 +23,8 @@ namespace Abss.Character
 {
 
     [DisableAutoCreation]
-    //[UpdateInGroup( typeof( ObjectLogicSystemGroup ) )]
-    [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
+    //[UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
     public class ___System : JobComponentSystem
     {
         

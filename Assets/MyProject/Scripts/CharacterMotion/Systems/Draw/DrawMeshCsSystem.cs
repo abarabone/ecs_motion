@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.Misc;
 using Abss.SystemGroup;
@@ -19,7 +19,7 @@ namespace Abss.Draw
 
     //[DisableAutoCreation]
     [UpdateAfter(typeof( BoneToDrawInstanceSystem ) )]
-    [UpdateInGroup(typeof(DrawSystemGroup))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     public class BeginDrawCsBarier : EntityCommandBufferSystem
     { }
 
@@ -30,15 +30,11 @@ namespace Abss.Draw
     //[AlwaysUpdateSystem]
     //[DisableAutoCreation]
     [UpdateAfter(typeof( BeginDrawCsBarier ) )]
-    [UpdateInGroup(typeof(DrawSystemGroup))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     public class DrawMeshCsSystem : JobComponentSystem
     {
 
         public int MaxInstance = 10000;
-
-
-
-        DrawInstanceTempBufferAllocateSystem tempBufferSystem;
 
 
         
@@ -58,8 +54,6 @@ namespace Abss.Draw
 
         protected override void OnStartRunning()
         {
-
-            this.tempBufferSystem = this.World.GetExistingSystem<DrawInstanceTempBufferAllocateSystem>();
 
             this.ComputeBuffers.Initialize( this.resourceHolder );
             this.NativeBuffers.Initialize( this.resourceHolder );

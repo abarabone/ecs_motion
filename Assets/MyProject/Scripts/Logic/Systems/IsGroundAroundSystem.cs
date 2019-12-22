@@ -27,7 +27,7 @@ namespace Abss.Character
 {
 
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
     public class IsGroundAroundSystem : JobComponentSystem
     {
         

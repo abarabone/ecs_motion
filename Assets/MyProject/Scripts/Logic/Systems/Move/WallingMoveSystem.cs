@@ -31,7 +31,7 @@ namespace Abss.Character
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
     //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
     public class WallingMoveSystem : JobComponentSystem
     {

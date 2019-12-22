@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 
-using Abss.Cs;
+
 using Abss.Arthuring;
 using Abss.Motion;
 using Abss.SystemGroup;
@@ -22,7 +22,7 @@ namespace Abss.Draw
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( DrawAllocationGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawAllocationGroup ) )]
     //[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
     //[UpdateInGroup( typeof( DrawSystemGroup ) )]
     public class DrawInstanceTempBufferFreeSystem : ComponentSystem
@@ -31,7 +31,7 @@ namespace Abss.Draw
 
         protected override void OnStartRunning()
         {
-            this.drawMeshCsSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
+
         }
 
 
@@ -40,8 +40,6 @@ namespace Abss.Draw
         {
 
 
-            this.tempBufferSystem.TempInstanceBoneVectors.Dispose();
-            // 本体と離れているので忘れないよう…
 
 
         }
