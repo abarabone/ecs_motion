@@ -26,10 +26,10 @@ namespace Abss.Arthuring
 
 
         public override Entity Convert
-            ( EntityManager em, DrawMeshResourceHolder drawResources )
+            ( EntityManager em, DrawMeshResourceHolder drawResources, Action<Mesh, Material, BoneType> initDrawModelComponentsAction )
         {
 
-            var prefab = base.Convert( em, drawResources );
+            var prefab = base.Convert( em, drawResources, initDrawModelComponentsAction );
 
             
             em.AddComponentData( prefab, new MinicWalkActionState { } );

@@ -57,6 +57,7 @@ namespace Abss.Draw
 
                 InstanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>(isReadOnly:true),
                 InstanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>(),
+
                 BufferLinkType = this.GetArchetypeChunkComponentType<DrawChunkBufferLinkerData>(isReadOnly:true),
             }
             .Schedule( this.drawQuery, inputDeps );
@@ -72,13 +73,13 @@ namespace Abss.Draw
         unsafe struct DrawInstanceTempBufferAllocateJob : IJobChunk
         {
 
-            [WriteOnly]
+            [WriteOnly][NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<DrawSystemNativeTransformBufferData> NativeBuffers; 
 
             [ReadOnly]
             public ArchetypeChunkComponentType<DrawModelInstanceCounterData> InstanceCounterType;
-            [WriteOnly]
             public ArchetypeChunkComponentType<DrawModelInstanceOffsetData> InstanceOffsetType;
+
             [ReadOnly]
             public ArchetypeChunkComponentType<DrawChunkBufferLinkerData> BufferLinkType;
 
@@ -93,9 +94,9 @@ namespace Abss.Draw
                 for( var i=0; i<chunk.Count; i++ )
                 {
 
-                    offsets[ i ] = new DrawModelInstanceOffsetData { VectorOffsetInBuffer = sum };
+                    //offsets[ i ] = new DrawModelInstanceOffsetData { VectorOffsetInBuffer = sum };
 
-                    sum += counters[ i ].InstanceCounter.Count;
+                    //sum += counters[ i ].InstanceCounter.Count;
 
                 }
 

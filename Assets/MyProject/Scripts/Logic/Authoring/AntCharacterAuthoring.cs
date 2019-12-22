@@ -18,6 +18,8 @@ using Abss.Draw;
 using Abss.Character;
 using Abss.Common.Extension;
 
+using Material = UnityEngine.Material;
+
 namespace Abss.Arthuring
 {
 
@@ -27,10 +29,10 @@ namespace Abss.Arthuring
 
 
         public override Entity Convert
-            ( EntityManager em, DrawMeshResourceHolder drawResources )
+            ( EntityManager em, DrawMeshResourceHolder drawResources, Action<Mesh, Material, BoneType> initDrawModelComponentsAction )
         {
 
-            var prefab = base.Convert( em, drawResources );
+            var prefab = base.Convert( em, drawResources, initDrawModelComponentsAction );
 
             em.AddComponentData( prefab, new AntTag { } );
             em.AddComponentData( prefab, new AntWalkActionState { } );

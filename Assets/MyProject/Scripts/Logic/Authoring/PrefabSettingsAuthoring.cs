@@ -55,9 +55,19 @@ namespace Abss.Arthuring
 
             var sysEnt = initDrawSystemComponents_();
 
+            var drawModelArchetype = em.CreateArchetype(
+                typeof( DrawModelBoneInfoData ),
+                typeof( DrawModelInstanceCounterData ),
+                typeof( DrawModelInstanceOffsetData ),
+                typeof( DrawModelMeshData ),
+                typeof( DrawModelComputeArgumentsBufferData )
+            );
+
             this.PrefabEntities = this.PrefabGameObjects
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
                 .ToArray();
+
+            initChunkSystemComponent_();
 
 
             // モーション設定
@@ -88,16 +98,16 @@ namespace Abss.Arthuring
 
                 var boneVectorBuffer = em.GetComponentData<DrawSystemComputeTransformBufferData>(sysEnt).Transforms;
                 mat.SetBuffer( "BoneVectorBuffer", boneVectorBuffer );
-                mat.SetInt( "BoneVectorOffset", 0 );
-                mat.SetInt( "BoneVectorLength", mesh.boneWeights.Length * (int)boneType );
+                mat.SetInt( "BoneVectorLength", mesh.bindposes.Length * (int)boneType );
+                mat.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
 
-                var drawModelArchetype = em.CreateArchetype(
-                    typeof( DrawModelBoneInfoData ),
-                    typeof( DrawModelInstanceCounterData ),
-                    typeof( DrawModelInstanceOffsetData ),
-                    typeof( DrawModelMeshData ),
-                    typeof( DrawModelComputeArgumentsBufferData )
-                );
+                //var drawModelArchetype = em.CreateArchetype(
+                //    typeof( DrawModelBoneInfoData ),
+                //    typeof( DrawModelInstanceCounterData ),
+                //    typeof( DrawModelInstanceOffsetData ),
+                //    typeof( DrawModelMeshData ),
+                //    typeof( DrawModelComputeArgumentsBufferData )
+                //);
                 var ent = em.CreateEntity( drawModelArchetype );
 
                 em.SetComponentData( ent,
@@ -112,6 +122,12 @@ namespace Abss.Arthuring
                     {
                         Mesh = mesh,
                         Material = mat,
+                    }
+                );
+                em.SetComponentData( ent,
+                    new DrawModelInstanceCounterData
+                    {
+                        InstanceCounter = new ThreadSafeCounter<Persistent>(0),
                     }
                 );
                 em.SetComponentData( ent,
@@ -137,9 +153,22 @@ namespace Abss.Arthuring
                     {
                         Transforms = new ComputeBuffer
                             ( maxBuffer, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
+                    }
                 );
 
                 return ent;
+            }
+            void initChunkSystemComponent_()
+            {
+                var q = em.CreateEntityQuery(
+                    typeof( DrawModelBoneInfoData ),
+                    typeof( DrawModelInstanceCounterData ),
+                    typeof( DrawModelInstanceOffsetData ),
+                    typeof( DrawModelMeshData ),
+                    typeof( DrawModelComputeArgumentsBufferData )
+                );
+                em.AddChunkComponentData( q, new DrawChunkBufferLinkerData { BufferEntity = sysEnt } );
+                q.Dispose();
             }
         }
 

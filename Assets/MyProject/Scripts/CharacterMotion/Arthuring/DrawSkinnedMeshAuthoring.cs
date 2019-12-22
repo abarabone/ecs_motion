@@ -41,6 +41,7 @@ namespace Abss.Arthuring
             mat.enableInstancing = true;
 
             var drawIndex = drawres.AddDrawMeshResource( mesh, mat, this.BoneType, this.MaxInstance );
+            initDrawModelComponentsAction( mesh, mat, this.BoneType );
 
             return DrawMeshPrefabCreator.CreatePrefab( em, drawIndex, mesh.bindposes.Length );
 
