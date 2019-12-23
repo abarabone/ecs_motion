@@ -41,7 +41,8 @@ namespace Abss.Draw
     /// </summary>
     public struct DrawModelIndexData : IComponentData
     {
-        public int ModelIndex;
+        public Entity ModelEntity;//
+        public int ModelIndex;//
         public int BoneLength;
     }
     public struct DrawInstanceTargetWorkData : IComponentData

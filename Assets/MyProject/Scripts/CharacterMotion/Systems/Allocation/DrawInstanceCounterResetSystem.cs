@@ -18,45 +18,43 @@ namespace Abss.Draw
 
     [UpdateBefore( typeof( DrawCullingDummySystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
-    public class DrawInstanceResetSystem : JobComponentSystem
+    public class DrawInstanceCounterResetSystem : ComponentSystem
     {
 
-        EntityQuery instanceCounterQuery;
-
-
-        protected override void OnCreate()
+        protected override void OnStartRunning()
         {
-            this.instanceCounterQuery = this.GetEntityQuery(
-                ComponentType.ReadWrite<DrawModelInstanceCounterData>()
-            );
+            this.Entities
+                .ForEach(
+                    ( ref DrawModelInstanceCounterData counter ) =>
+                    {
+                        counter.InstanceCounter = new ThreadSafeCounter<Persistent>(0);
+                    }
+                );
+        }
+
+        protected override void OnUpdate()
+        {
+
+            this.Entities
+                .ForEach(
+                    ( ref DrawModelInstanceCounterData counter ) =>
+                    {
+                        counter.InstanceCounter.Reset();
+                    }
+                );
+
         }
 
         protected override void OnDestroy()
         {
-            this.Entities.wi(this.instanceCounterQuery)
-                .for
+            this.Entities
+                .ForEach(
+                    ( ref DrawModelInstanceCounterData counter ) =>
+                    {
+                        counter.InstanceCounter.Dispose();
+                    }
+                );
         }
-
-
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
-        {
-            var nativeInstanceBuffers = this.drawSystem.NativeBuffers;
-            if( !nativeInstanceBuffers.Units.IsCreated ) return inputDeps;
-
-
-            nativeInstanceBuffers.Reset();
-
-            inputDeps = new DrawCullingDummyJob
-            {
-                NativeBuffers = nativeInstanceBuffers.Units,
-            }
-            .Schedule( this, inputDeps );
-
-
-            this.presentationBarier.AddJobHandleForProducer( inputDeps );
-            return inputDeps;
-        }
-
 
     }
 

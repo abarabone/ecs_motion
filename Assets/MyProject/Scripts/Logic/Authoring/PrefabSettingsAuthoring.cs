@@ -93,7 +93,7 @@ namespace Abss.Arthuring
                                                            //em.AddComponentData( post, new MoveHandlingData { } );//
 
         
-            void initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
+            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
             {
 
                 var boneVectorBuffer = em.GetComponentData<DrawSystemComputeTransformBufferData>(sysEnt).Transforms;
@@ -113,7 +113,7 @@ namespace Abss.Arthuring
                 em.SetComponentData( ent,
                     new DrawModelBoneInfoData
                     {
-                        BoneLength = 0,
+                        BoneLength = mesh.bindposes.Length,//
                         VectorLengthInBone = (int)boneType,
                     }
                 );
@@ -125,17 +125,13 @@ namespace Abss.Arthuring
                     }
                 );
                 em.SetComponentData( ent,
-                    new DrawModelInstanceCounterData
-                    {
-                        InstanceCounter = new ThreadSafeCounter<Persistent>(0),
-                    }
-                );
-                em.SetComponentData( ent,
                     new DrawModelComputeArgumentsBufferData
                     {
                         InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
                     }
                 );
+
+                return ent;
             }
 
             Entity initDrawSystemComponents_()
@@ -158,6 +154,7 @@ namespace Abss.Arthuring
 
                 return ent;
             }
+
             void initChunkSystemComponent_()
             {
                 var q = em.CreateEntityQuery(
@@ -192,7 +189,7 @@ namespace Abss.Arthuring
 
         public abstract class ConvertToCustomPrefabEntityBehaviour : MonoBehaviour
         {
-            abstract public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, Action<Mesh, Material, BoneType> initDrawModelComponentsAction );
+            abstract public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsAction );
         }
     }
 

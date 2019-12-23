@@ -94,9 +94,9 @@ namespace Abss.Draw
                 for( var i=0; i<chunk.Count; i++ )
                 {
 
-                    //offsets[ i ] = new DrawModelInstanceOffsetData { VectorOffsetInBuffer = sum };
+                    offsets[ i ] = new DrawModelInstanceOffsetData { VectorOffsetInBuffer = sum };
 
-                    //sum += counters[ i ].InstanceCounter.Count;
+                    sum += counters[ i ].InstanceCounter.Count;
 
                 }
 

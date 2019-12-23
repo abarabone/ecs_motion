@@ -29,7 +29,7 @@ namespace Abss.Arthuring
         public BoneType BoneType = BoneType.TR;
         
 
-        public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, Action<Mesh,Material,BoneType> initDrawModelComponentsAction )
+        public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, Func<Mesh,Material,BoneType,Entity> initDrawModelComponentsAction )
         {
             
             var mrs = this.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -41,9 +41,9 @@ namespace Abss.Arthuring
             mat.enableInstancing = true;
 
             var drawIndex = drawres.AddDrawMeshResource( mesh, mat, this.BoneType, this.MaxInstance );
-            initDrawModelComponentsAction( mesh, mat, this.BoneType );
+            var modelEntity = initDrawModelComponentsAction( mesh, mat, this.BoneType );
 
-            return DrawMeshPrefabCreator.CreatePrefab( em, drawIndex, mesh.bindposes.Length );
+            return DrawMeshPrefabCreator.CreatePrefab( em, drawIndex, mesh.bindposes.Length, modelEntity );
 
 
             // メッシュを結合する
@@ -102,7 +102,7 @@ namespace Abss.Arthuring
         );
 
 
-        static public Entity CreatePrefab( EntityManager em, int modelIndex, int boneLength )
+        static public Entity CreatePrefab( EntityManager em, int modelIndex, int boneLength, Entity modelEntity )
         {
             var archetype = archetypeCache.GetOrCreateArchetype( em );
 
@@ -111,6 +111,7 @@ namespace Abss.Arthuring
             em.SetComponentData( ent,
                 new DrawModelIndexData
                 {
+                    ModelEntity = modelEntity,
                     ModelIndex = modelIndex,
                     BoneLength = boneLength,
                 }

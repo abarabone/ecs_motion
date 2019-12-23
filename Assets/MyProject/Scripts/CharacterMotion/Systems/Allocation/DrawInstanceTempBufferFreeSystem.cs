@@ -22,25 +22,24 @@ namespace Abss.Draw
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawAllocationGroup ) )]
-    //[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
-    //[UpdateInGroup( typeof( DrawSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
+    [UpdateAfter( typeof( DrawMeshCsSystem ) )]
     public class DrawInstanceTempBufferFreeSystem : ComponentSystem
     {
 
-
-        protected override void OnStartRunning()
-        {
-
-        }
 
 
 
         protected override void OnUpdate()
         {
 
-
-
+            this.Entities
+                .ForEach(
+                    ( ref DrawSystemNativeTransformBufferData buf ) =>
+                    {
+                        buf.Transforms.Dispose();
+                    }
+                );
 
         }
 
