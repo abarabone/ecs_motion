@@ -18,6 +18,7 @@ namespace Abss.Draw
 {
 
     //[DisableAutoCreation]
+    [UpdateBefore(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     public class BoneToDrawInstanceSystem : JobComponentSystem
     {

@@ -28,7 +28,7 @@ namespace Abss.Draw
     /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
     /// </summary>
     //[AlwaysUpdateSystem]
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     public class DrawMeshCsSystem : JobComponentSystem
