@@ -57,6 +57,7 @@ namespace Abss.Draw
 
                 InstanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>(isReadOnly:true),
                 InstanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>(),
+                BoneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneInfoData>( isReadOnly: true ),
 
                 BufferLinkType = this.GetArchetypeChunkComponentType<DrawChunkBufferLinkerData>(isReadOnly:true),
             }
@@ -76,9 +77,11 @@ namespace Abss.Draw
             [WriteOnly][NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<DrawSystemNativeTransformBufferData> NativeBuffers; 
 
+            public ArchetypeChunkComponentType<DrawModelInstanceOffsetData> InstanceOffsetType;
             [ReadOnly]
             public ArchetypeChunkComponentType<DrawModelInstanceCounterData> InstanceCounterType;
-            public ArchetypeChunkComponentType<DrawModelInstanceOffsetData> InstanceOffsetType;
+            [ReadOnly]
+            public ArchetypeChunkComponentType<DrawModelBoneInfoData> BoneInfoType;
 
             [ReadOnly]
             public ArchetypeChunkComponentType<DrawChunkBufferLinkerData> BufferLinkType;
@@ -89,22 +92,38 @@ namespace Abss.Draw
 
                 var counters = chunk.GetNativeArray( this.InstanceCounterType );
                 var offsets = chunk.GetNativeArray( this.InstanceOffsetType );
+                var infos = chunk.GetNativeArray( this.BoneInfoType );
+
+                var vectorOffsets = stackalloc int [ chunk.Count ];
+
 
                 var sum = 0;
-                for( var i=0; i<chunk.Count; i++ )
+                for( var i = 0; i < chunk.Count; i++ )
                 {
+                    vectorOffsets[ i ] = sum;
 
-                    offsets[ i ] = new DrawModelInstanceOffsetData { VectorOffsetInBuffer = sum };
-
-                    sum += counters[ i ].InstanceCounter.Count;
-
+                    var instanceCount = counters[ i ].InstanceCounter.Count;
+                    var instanceVectorSize = infos[ i ].BoneLength * infos[ i ].VectorLengthInBone;
+                    var modelBufferSize = instanceCount * instanceVectorSize;
+                    sum += modelBufferSize;
                 }
+
 
                 var ent = chunk.GetChunkComponentData(this.BufferLinkType).BufferEntity;
                 this.NativeBuffers[ ent ] = new DrawSystemNativeTransformBufferData
                 {
                     Transforms = new SimpleNativeBuffer<float4, Temp>( sum ),
                 };
+
+
+                var pBufferStart = this.NativeBuffers[ ent ].Transforms.pBuffer;
+                for( var i = 0; i < chunk.Count; i++ )
+                {
+                    offsets[ i ] = new DrawModelInstanceOffsetData
+                    {
+                        pVectorOffsetInBuffer = pBufferStart + vectorOffsets[i],
+                    };
+                }
 
             }
         }

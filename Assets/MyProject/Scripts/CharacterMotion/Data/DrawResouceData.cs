@@ -52,9 +52,9 @@ namespace Abss.Draw
     {
         public ThreadSafeCounter<Persistent> InstanceCounter;
     }
-    public struct DrawModelInstanceOffsetData : IComponentData
+    public unsafe struct DrawModelInstanceOffsetData : IComponentData
     {
-        public int VectorOffsetInBuffer;
+        public float4 *pVectorOffsetInBuffer;
     }
 
     public class DrawModelComputeArgumentsBufferData : IComponentData

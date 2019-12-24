@@ -16,7 +16,7 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
     [UpdateBefore( typeof( MarkDrawTargetMotionStreamSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]

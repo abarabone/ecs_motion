@@ -42,10 +42,10 @@ namespace Abss.Draw
             if( !nativeInstanceBuffers.Units.IsCreated ) return inputDeps;
 
 
-            //inputDeps = JobHandle.CombineDependencies( inputDeps, this.tempBufferSystem.inputDeps );//
             inputDeps = new BoneToDrawInstanceJob
             {
-                NativeBuffers = nativeInstanceBuffers.Units,
+                DrawModelInfos = this.GetComponentDataFromEntity<DrawModelBoneInfoData>( isReadOnly: true ),
+                DrawModelOffsets = this.GetComponentDataFromEntity <DrawModelInstanceOffsetData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
 
@@ -55,18 +55,19 @@ namespace Abss.Draw
         }
 
 
-        [BurstCompile]
+        [BurstCompile, ExcludeComponent(typeof(Scale))]
         struct BoneToDrawInstanceJob : IJobForEach
-            <BoneIndexData, BoneDrawTargetIndexWorkData, Translation, Rotation>
+            <BoneDrawLinkData, BoneIndexData, BoneDrawTargetIndexWorkData, Translation, Rotation>
         {
 
-
-            [NativeDisableParallelForRestriction]
-            public NativeArray<DrawInstanceNativeBufferUnit> NativeBuffers;
-
+            [ReadOnly]
+            public ComponentDataFromEntity<DrawModelBoneInfoData> DrawModelInfos;
+            [ReadOnly]
+            public ComponentDataFromEntity<DrawModelInstanceOffsetData> DrawModelOffsets;
 
 
             public unsafe void Execute(
+                [ReadOnly] ref BoneDrawLinkData linker,
                 [ReadOnly] ref BoneIndexData indexer,
                 [ReadOnly] ref BoneDrawTargetIndexWorkData target,
                 [ReadOnly] ref Translation pos,
@@ -74,14 +75,12 @@ namespace Abss.Draw
             )
             {
 
-                var i = target.InstanceBoneOffset * 2;
+                var vectorLengthInBone = this.DrawModelInfos[ linker.DrawEntity ].VectorLengthInBone;
+                var i = target.InstanceBoneOffset * vectorLengthInBone;
 
-                //var dstInstances = this.NativeBuffers[ indexer.ModelIndex ].InstanceBoneVectors;
-                //dstInstances[ i + 0 ] = new float4( pos.Value, 1.0f );
-                //dstInstances[ i + 1 ] = rot.Value.value;
-                var pDstInstances = this.NativeBuffers[ indexer.ModelIndex ].pInstanceBoneVectors;
-                pDstInstances[ i + 0 ] = new float4( pos.Value, 1.0f );
-                pDstInstances[ i + 1 ] = rot.Value.value;
+                var pInstance = this.DrawModelOffsets[ linker.DrawEntity ].pVectorOffsetInBuffer;
+                pInstance[ i + 0 ] = new float4( pos.Value, 1.0f );
+                pInstance[ i + 1 ] = rot.Value.value;
 
             }
         }
