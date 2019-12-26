@@ -20,7 +20,7 @@ namespace Abss.Draw
     [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
     [UpdateBefore( typeof( MarkDrawTargetMotionStreamSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
-    public class DrawCullingDummySystem : JobComponentSystem
+    public class DrawCullingDummySystem_ : JobComponentSystem
     {
 
         DrawMeshCsSystem drawSystem;

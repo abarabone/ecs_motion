@@ -15,8 +15,8 @@ using Abss.SystemGroup;
 namespace Abss.Motion
 {
     
-    //[UpdateAfter(typeof())]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
+    //[UpdateAfter(typeof())]
     public class MotionStreamProgressAndInterporationSystem : JobComponentSystem
     {
 

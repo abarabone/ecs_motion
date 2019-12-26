@@ -18,8 +18,9 @@ namespace Abss.Draw
 {
 
     //[DisableAutoCreation]
-    [UpdateBefore(typeof( BeginDrawCsBarier ) )]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
+    //[UpdateAfter(typeof())]
+    //[UpdateBefore(typeof( BeginDrawCsBarier ) )]
     public class BoneToDrawInstanceSystem : JobComponentSystem
     {
 
@@ -44,7 +45,7 @@ namespace Abss.Draw
 
             inputDeps = new BoneToDrawInstanceJob
             {
-                DrawModelInfos = this.GetComponentDataFromEntity<DrawModelBoneInfoData>( isReadOnly: true ),
+                DrawModelInfos = this.GetComponentDataFromEntity<DrawModelBoneUnitSizeData>( isReadOnly: true ),
                 DrawModelOffsets = this.GetComponentDataFromEntity <DrawModelInstanceOffsetData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
@@ -61,7 +62,7 @@ namespace Abss.Draw
         {
 
             [ReadOnly]
-            public ComponentDataFromEntity<DrawModelBoneInfoData> DrawModelInfos;
+            public ComponentDataFromEntity<DrawModelBoneUnitSizeData> DrawModelInfos;
             [ReadOnly]
             public ComponentDataFromEntity<DrawModelInstanceOffsetData> DrawModelOffsets;
 
@@ -76,7 +77,7 @@ namespace Abss.Draw
             {
 
                 var vectorLengthInBone = this.DrawModelInfos[ linker.DrawEntity ].VectorLengthInBone;
-                var i = target.InstanceBoneOffset * vectorLengthInBone;
+                var i = target.VectorOffsetInBuffer * vectorLengthInBone;
 
                 var pInstance = this.DrawModelOffsets[ linker.DrawEntity ].pVectorOffsetInBuffer;
                 pInstance[ i + 0 ] = new float4( pos.Value, 1.0f );

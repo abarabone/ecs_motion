@@ -16,7 +16,11 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
     
+    /// <summary>
+    /// 描画対象ボーンのマークを兼ね、モデル内描画位置をセットする。
+    /// </summary>
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
+    [UpdateAfter( typeof( DrawCullingDummySystem ) )]
     public class MarkDrawTargetBoneSystem : JobComponentSystem
     {
 
@@ -26,7 +30,7 @@ namespace Abss.Draw
 
             inputDeps = new MarkBoneJob
             {
-                DrawIndexers = this.GetComponentDataFromEntity<DrawModelIndexData>( isReadOnly: true ),
+                //DrawIndexers = this.GetComponentDataFromEntity<DrawModelIndexData>( isReadOnly: true ),
                 DrawTargets = this.GetComponentDataFromEntity<DrawInstanceTargetWorkData>( isReadOnly:true ),
             }
             .Schedule( this, inputDeps );
@@ -40,8 +44,8 @@ namespace Abss.Draw
         struct MarkBoneJob : IJobForEach<BoneDrawLinkData, BoneIndexData, BoneDrawTargetIndexWorkData>
         {
 
-            [ReadOnly]
-            public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
+            //[ReadOnly]
+            //public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
             [ReadOnly]
             public ComponentDataFromEntity<DrawInstanceTargetWorkData> DrawTargets;
 
@@ -52,11 +56,11 @@ namespace Abss.Draw
             )
             {
 
-                var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
+                //var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
                 var drawTarget = this.DrawTargets[ drawLinker.DrawEntity ];
 
-                boneIndexer.InstanceBoneOffset =
-                    drawTarget.InstanceIndex * drawIndexer.BoneLength + boneId.BoneId;
+                boneIndexer.VectorOffsetInBuffer =
+                    drawTarget.InstanceIndex * boneId.BoneLength + boneId.BoneId;
 
             }
         }

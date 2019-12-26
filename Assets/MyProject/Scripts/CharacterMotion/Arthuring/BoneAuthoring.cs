@@ -200,7 +200,7 @@ namespace Abss.Arthuring
 
             em_.SetComponentData( bonePreafabs_,
                 from x in Enumerable.Range( 0, bonePreafabs_.Count() )
-                select new BoneIndexData { ModelIndex = draw.ModelIndex, BoneId = x }
+                select new BoneIndexData { BoneLength = draw.BoneLength, BoneId = x }
             );
         }
         

@@ -17,6 +17,7 @@ namespace Abss.Draw
 {
 
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
+    [UpdateAfter( typeof( DrawCullingDummySystem ) )]
     public class MarkDrawTargetMotionStreamSystem : JobComponentSystem
     {
 

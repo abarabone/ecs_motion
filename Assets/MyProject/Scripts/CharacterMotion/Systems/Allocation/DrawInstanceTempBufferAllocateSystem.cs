@@ -23,9 +23,9 @@ namespace Abss.Draw
     /// そもそもジョブで確保できるのか、外部に渡せるのかもわからない
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawAllocationGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
     //[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
-    //[UpdateInGroup( typeof( DrawSystemGroup ) )]
+    [UpdateAfter(typeof(DrawCullingDummySystem))]
     public class DrawInstanceTempBufferAllocateSystem : JobComponentSystem
     {
 
@@ -57,7 +57,7 @@ namespace Abss.Draw
 
                 InstanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>(isReadOnly:true),
                 InstanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>(),
-                BoneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneInfoData>( isReadOnly: true ),
+                BoneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneUnitSizeData>( isReadOnly: true ),
 
                 BufferLinkType = this.GetArchetypeChunkComponentType<DrawChunkBufferLinkerData>(isReadOnly:true),
             }
@@ -81,7 +81,7 @@ namespace Abss.Draw
             [ReadOnly]
             public ArchetypeChunkComponentType<DrawModelInstanceCounterData> InstanceCounterType;
             [ReadOnly]
-            public ArchetypeChunkComponentType<DrawModelBoneInfoData> BoneInfoType;
+            public ArchetypeChunkComponentType<DrawModelBoneUnitSizeData> BoneInfoType;
 
             [ReadOnly]
             public ArchetypeChunkComponentType<DrawChunkBufferLinkerData> BufferLinkType;

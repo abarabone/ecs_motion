@@ -60,13 +60,13 @@ namespace Abss.Motion
 
     public struct BoneIndexData : IComponentData
     {
-        public int ModelIndex;
         public int BoneId;
+        public int BoneLength;
     }
 
     public struct BoneDrawTargetIndexWorkData : IComponentData
     {
-        public int InstanceBoneOffset;
+        public int VectorOffsetInBuffer;
     }
 
 

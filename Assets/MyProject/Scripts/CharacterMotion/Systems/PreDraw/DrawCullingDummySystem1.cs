@@ -20,7 +20,7 @@ namespace Abss.Draw
     [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
     [UpdateBefore( typeof( MarkDrawTargetMotionStreamSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
-    public class DrawCullingDummySystem1 : JobComponentSystem
+    public class DrawCullingDummySystem : JobComponentSystem
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証

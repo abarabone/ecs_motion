@@ -56,10 +56,10 @@ namespace Abss.Arthuring
             var sysEnt = initDrawSystemComponents_();
 
             var drawModelArchetype = em.CreateArchetype(
-                typeof( DrawModelBoneInfoData ),
+                typeof( DrawModelBoneUnitSizeData ),
                 typeof( DrawModelInstanceCounterData ),
                 typeof( DrawModelInstanceOffsetData ),
-                typeof( DrawModelMeshData ),
+                typeof( DrawModelGeometryData ),
                 typeof( DrawModelComputeArgumentsBufferData )
             );
 
@@ -111,14 +111,14 @@ namespace Abss.Arthuring
                 var ent = em.CreateEntity( drawModelArchetype );
 
                 em.SetComponentData( ent,
-                    new DrawModelBoneInfoData
+                    new DrawModelBoneUnitSizeData
                     {
                         BoneLength = mesh.bindposes.Length,//
                         VectorLengthInBone = (int)boneType,
                     }
                 );
                 em.SetComponentData( ent,
-                    new DrawModelMeshData
+                    new DrawModelGeometryData
                     {
                         Mesh = mesh,
                         Material = mat,
@@ -158,10 +158,10 @@ namespace Abss.Arthuring
             void initChunkSystemComponent_()
             {
                 var q = em.CreateEntityQuery(
-                    typeof( DrawModelBoneInfoData ),
+                    typeof( DrawModelBoneUnitSizeData ),
                     typeof( DrawModelInstanceCounterData ),
                     typeof( DrawModelInstanceOffsetData ),
-                    typeof( DrawModelMeshData ),
+                    typeof( DrawModelGeometryData ),
                     typeof( DrawModelComputeArgumentsBufferData )
                 );
                 em.AddChunkComponentData( q, new DrawChunkBufferLinkerData { BufferEntity = sysEnt } );

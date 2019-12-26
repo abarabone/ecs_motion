@@ -23,8 +23,8 @@ namespace Abss.Motion
 {
 
     //[DisableAutoCreation]
-    [UpdateAfter(typeof( StreamToBoneSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
+    [UpdateAfter(typeof( StreamToBoneSystem ) )]
     public class BoneTransformSystem : JobComponentSystem
     {
 

@@ -42,7 +42,7 @@ namespace Abss.Draw
 
     // メッシュごと -----------------------
 
-    public struct DrawModelBoneInfoData : IComponentData
+    public struct DrawModelBoneUnitSizeData : IComponentData
     {
         public int VectorLengthInBone;
         public int BoneLength;
@@ -62,7 +62,7 @@ namespace Abss.Draw
         public ComputeBuffer InstanceArgumentsBuffer;
     }
 
-    public class DrawModelMeshData : IComponentData
+    public class DrawModelGeometryData : IComponentData
     {
         public Mesh Mesh;
         public Material Material;

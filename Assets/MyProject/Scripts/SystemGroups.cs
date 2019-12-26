@@ -59,12 +59,12 @@ namespace Abss.SystemGroup
             public class DrawPrevSystemGroup : ComponentSystemGroup
             { }
 
-            [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-            //[DisableAutoCreation]
-            [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
-            [UpdateBefore( typeof( DrawSystemGroup ) )]
-            public class DrawAllocationGroup : ComponentSystemGroup
-            { }
+            //[UpdateInGroup( typeof( PresentationSystemGroup ) )]
+            ////[DisableAutoCreation]
+            //[UpdateAfter( typeof( DrawPrevSystemGroup ) )]
+            //[UpdateBefore( typeof( DrawSystemGroup ) )]
+            //public class DrawAllocationGroup : ComponentSystemGroup
+            //{ }
 
 
             namespace Motion
@@ -85,11 +85,11 @@ namespace Abss.SystemGroup
             public class DrawSystemGroup : ComponentSystemGroup
             { }
 
-            [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-            //[DisableAutoCreation]
-            [UpdateAfter( typeof( DrawSystemGroup ) )]
-            public class DrawDeallocationGroup : ComponentSystemGroup
-            { }
+            //[UpdateInGroup( typeof( PresentationSystemGroup ) )]
+            ////[DisableAutoCreation]
+            //[UpdateAfter( typeof( DrawSystemGroup ) )]
+            //public class DrawDeallocationGroup : ComponentSystemGroup
+            //{ }
 
         }
 
