@@ -53,21 +53,21 @@ namespace Abss.Arthuring
             var drawMeshCsSystem = em.World.GetExistingSystem<DrawMeshCsSystem>();
             var drawMeshCsResourceHolder = drawMeshCsSystem.GetResourceHolder();
 
-            var sysEnt = initDrawSystemComponents_();
+            var sysEnt = initDrawSystemComponents_( em );
 
             var drawModelArchetype = em.CreateArchetype(
                 typeof( DrawModelBoneUnitSizeData ),
                 typeof( DrawModelInstanceCounterData ),
                 typeof( DrawModelInstanceOffsetData ),
                 typeof( DrawModelGeometryData ),
-                typeof( DrawModelComputeArgumentsBufferData )
+                typeof( DrawModelComputeArgumentsBufferData ),
+                typeof( DrawModelBufferLinkerData )
             );
 
             this.PrefabEntities = this.PrefabGameObjects
                 .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
                 .ToArray();
-
-            initChunkSystemComponent_();
+            
 
 
             // モーション設定
@@ -90,82 +90,96 @@ namespace Abss.Arthuring
             em.AddComponentData( this.ents[ 0 ], new PlayerTag { } );
             var post = em.GetComponentData<CharacterLinkData>( this.ents[ 0 ] ).PostureEntity;
             em.AddComponentData( post, new PlayerTag { } );//
-                                                           //em.AddComponentData( post, new MoveHandlingData { } );//
+            //em.AddComponentData( post, new MoveHandlingData { } );//
 
-        
-            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
+            return;
+
+
+            Entity initDrawSystemComponents_( EntityManager em_ )
             {
 
-                var boneVectorBuffer = em.GetComponentData<DrawSystemComputeTransformBufferData>(sysEnt).Transforms;
-                mat.SetBuffer( "BoneVectorBuffer", boneVectorBuffer );
-                mat.SetInt( "BoneVectorLength", mesh.bindposes.Length * (int)boneType );
-                mat.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
+                const int maxBufferLength = 1000 * 16 * 2;//
 
-                //var drawModelArchetype = em.CreateArchetype(
-                //    typeof( DrawModelBoneInfoData ),
-                //    typeof( DrawModelInstanceCounterData ),
-                //    typeof( DrawModelInstanceOffsetData ),
-                //    typeof( DrawModelMeshData ),
-                //    typeof( DrawModelComputeArgumentsBufferData )
-                //);
-                var ent = em.CreateEntity( drawModelArchetype );
-
-                em.SetComponentData( ent,
-                    new DrawModelBoneUnitSizeData
-                    {
-                        BoneLength = mesh.bindposes.Length,//
-                        VectorLengthInBone = (int)boneType,
-                    }
+                var drawBufferArchetype = em_.CreateArchetype(
+                    typeof( DrawSystemComputeTransformBufferData ),
+                    typeof( DrawSystemNativeTransformBufferData )
                 );
-                em.SetComponentData( ent,
-                    new DrawModelGeometryData
-                    {
-                        Mesh = mesh,
-                        Material = mat,
-                    }
-                );
-                em.SetComponentData( ent,
-                    new DrawModelComputeArgumentsBufferData
-                    {
-                        InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
-                    }
-                );
+                var ent = em_.CreateEntity( drawBufferArchetype );
 
-                return ent;
-            }
 
-            Entity initDrawSystemComponents_()
-            {
-                var drawBufferArchetype = em.CreateArchetype(
-                    typeof(DrawSystemComputeTransformBufferData),
-                    typeof(DrawSystemNativeTransformBufferData)
-                );
-                var ent = em.CreateEntity( drawBufferArchetype );
-
-                const int maxBuffer = 1000 * 16 * 2;//
                 var stride = Marshal.SizeOf( typeof( float4 ) );
-                em.SetComponentData( ent,
+
+                em_.SetComponentData( ent,
                     new DrawSystemComputeTransformBufferData
                     {
                         Transforms = new ComputeBuffer
-                            ( maxBuffer, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
+                            ( maxBufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
                     }
                 );
 
                 return ent;
             }
 
-            void initChunkSystemComponent_()
+            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
             {
-                var q = em.CreateEntityQuery(
-                    typeof( DrawModelBoneUnitSizeData ),
-                    typeof( DrawModelInstanceCounterData ),
-                    typeof( DrawModelInstanceOffsetData ),
-                    typeof( DrawModelGeometryData ),
-                    typeof( DrawModelComputeArgumentsBufferData )
-                );
-                em.AddChunkComponentData( q, new DrawChunkBufferLinkerData { BufferEntity = sysEnt } );
-                q.Dispose();
+                
+                var boneVectorBuffer = em.GetComponentData<DrawSystemComputeTransformBufferData>( sysEnt ).Transforms;
+
+                var drawModelEnt = createEntityAndInitComponents_();
+
+                setShaderProps_( mat, mesh, boneVectorBuffer );
+
+                return drawModelEnt;
+
+
+                void setShaderProps_( Material mat_, Mesh mesh_, ComputeBuffer boneVectorBuffer_ )
+                {
+                    mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer_ );
+                    mat_.SetInt( "BoneVectorLength", mesh_.bindposes.Length * (int)boneType );
+                    mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
+                }
+
+                Entity createEntityAndInitComponents_()
+                {
+                    //var drawModelArchetype = em.CreateArchetype(
+                    //    typeof( DrawModelBoneInfoData ),
+                    //    typeof( DrawModelInstanceCounterData ),
+                    //    typeof( DrawModelInstanceOffsetData ),
+                    //    typeof( DrawModelMeshData ),
+                    //    typeof( DrawModelComputeArgumentsBufferData )
+                    //);
+                    var ent = em.CreateEntity( drawModelArchetype );
+
+                    em.SetComponentData( ent,
+                        new DrawModelBufferLinkerData
+                        {
+                            BufferEntity = sysEnt,
+                        }
+                    );
+                    em.SetComponentData( ent,
+                        new DrawModelBoneUnitSizeData
+                        {
+                            BoneLength = mesh.bindposes.Length,// より正確なものに変える
+                            VectorLengthInBone = (int)boneType,
+                        }
+                    );
+                    em.SetComponentData( ent,
+                        new DrawModelGeometryData
+                        {
+                            Mesh = mesh,
+                            Material = mat,
+                        }
+                    );
+                    em.SetComponentData( ent,
+                        new DrawModelComputeArgumentsBufferData
+                        {
+                            InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
+                        }
+                    );
+
+                    return ent;
+                }
+
             }
         }
 

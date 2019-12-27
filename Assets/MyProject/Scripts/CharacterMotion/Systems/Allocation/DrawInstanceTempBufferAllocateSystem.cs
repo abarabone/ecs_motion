@@ -59,10 +59,19 @@ namespace Abss.Draw
                 InstanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>(),
                 BoneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneUnitSizeData>( isReadOnly: true ),
 
-                BufferLinkType = this.GetArchetypeChunkComponentType<DrawChunkBufferLinkerData>(isReadOnly:true),
+                BufferLinkType = this.GetArchetypeChunkComponentType<DrawModelBufferLinkerData>(isReadOnly:true),
             }
             .Schedule( this.drawQuery, inputDeps );
 
+
+            //inputDeps = this.Job
+            //    .WithCode(
+            //        () =>
+            //        {
+
+            //        }
+            //    )
+            //    .Schedule( inputDeps );
 
             return inputDeps;
         }
@@ -84,7 +93,7 @@ namespace Abss.Draw
             public ArchetypeChunkComponentType<DrawModelBoneUnitSizeData> BoneInfoType;
 
             [ReadOnly]
-            public ArchetypeChunkComponentType<DrawChunkBufferLinkerData> BufferLinkType;
+            public ArchetypeChunkComponentType<DrawModelBufferLinkerData> BufferLinkType;
 
 
             public void Execute( ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex )

@@ -32,15 +32,14 @@ namespace Abss.Draw
     {
         public SimpleNativeBuffer<float4, Temp> Transforms;
     }
+    
+    
+    // メッシュごと -----------------------
 
-    // チャンクで１つ -----------------------
-
-    public struct DrawChunkBufferLinkerData : IComponentData
+    public struct DrawModelBufferLinkerData : IComponentData
     {
         public Entity BufferEntity;
     }
-
-    // メッシュごと -----------------------
 
     public struct DrawModelBoneUnitSizeData : IComponentData
     {
