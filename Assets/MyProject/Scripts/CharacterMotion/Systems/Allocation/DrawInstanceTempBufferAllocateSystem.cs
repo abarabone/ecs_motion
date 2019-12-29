@@ -82,11 +82,16 @@ namespace Abss.Draw
 
 
         //[BurstCompile]
-        unsafe struct DrawInstanceTempBufferAllocateJob : IJobChunk
+        unsafe struct DrawInstanceTempBufferAllocateJob : IJob
         {
 
             [WriteOnly][NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<DrawSystemNativeTransformBufferData> NativeBuffers; 
+            public ComponentDataFromEntity<DrawSystemNativeTransformBufferData> NativeBuffers;
+
+
+            [ReadOnly][DeallocateOnJobCompletion]
+            public NativeArray<ArchetypeChunk> Chunks;
+
 
             public ArchetypeChunkComponentType<DrawModelInstanceOffsetData> InstanceOffsetType;
             [ReadOnly]
@@ -98,14 +103,23 @@ namespace Abss.Draw
             public ArchetypeChunkComponentType<DrawModelBufferLinkerData> BufferLinkType;
 
 
-            public void Execute( ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex )
+            public void Execute()
             {
 
+
+
+
+
+
+            }
+
+            void Chunk_( ArchetypeChunk chunk )
+            {
                 var counters = chunk.GetNativeArray( this.InstanceCounterType );
                 var offsets = chunk.GetNativeArray( this.InstanceOffsetType );
                 var infos = chunk.GetNativeArray( this.BoneInfoType );
 
-                var vectorOffsets = stackalloc int [ chunk.Count ];
+                var vectorOffsets = stackalloc int[ chunk.Count ];
 
 
                 var sum = 0;
@@ -118,25 +132,29 @@ namespace Abss.Draw
                     var modelBufferSize = instanceCount * instanceVectorSize;
                     sum += modelBufferSize;
                 }
-
-
-                var ent = chunk.GetChunkComponentData(this.BufferLinkType).BufferEntity;
+            }
+            void allocateNativeBuffer( ArchetypeChunk chunk )
+            {
+                var ent = chunk.GetChunkComponentData( this.BufferLinkType ).BufferEntity;
                 this.NativeBuffers[ ent ] = new DrawSystemNativeTransformBufferData
                 {
                     Transforms = new SimpleNativeBuffer<float4, Temp>( sum ),
                 };
+            }
+            void setBufferStartPositionForModel( ArchetypeChunk chunk )
+            {
 
+            
 
                 var pBufferStart = this.NativeBuffers[ ent ].Transforms.pBuffer;
-                for( var i = 0; i < chunk.Count; i++ )
-                {
-                    offsets[ i ] = new DrawModelInstanceOffsetData
+                    for(var i = 0; i<chunk.Count; i++ )
                     {
-                        pVectorOffsetInBuffer = pBufferStart + vectorOffsets[i],
-                    };
-                }
-
-            }
+                        offsets[ i ] = new DrawModelInstanceOffsetData
+                        {
+                            pVectorOffsetInBuffer = pBufferStart + vectorOffsets[ i ],
+                        };
+    }
+}
         }
     }
 
