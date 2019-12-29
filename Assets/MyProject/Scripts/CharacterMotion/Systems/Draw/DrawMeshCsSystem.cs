@@ -74,31 +74,31 @@ namespace Abss.Draw
 
 
 
-            inputDeps = this.Entities
-                .ForEach(
-                    (
-                        in DrawModelBoneUnitSizeData boneUnit,
-                        in DrawModelInstanceCounterData instanceCounter,
-                        in DrawModelComputeArgumentsBufferData shaderArg,
-                        in DrawModelGeometryData geom
-                    ) =>
-                    {
+            //inputDeps = this.Entities
+            //    .ForEach(
+            //        (
+            //            in DrawModelBoneUnitSizeData boneUnit,
+            //            in DrawModelInstanceCounterData instanceCounter,
+            //            in DrawModelComputeArgumentsBufferData shaderArg,
+            //            in DrawModelGeometryData geom
+            //        ) =>
+            //        {
 
-                        var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
+            //            var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
 
-                        var instanceCount = instanceCounter.InstanceCounter.Count;
-                        var argparams = new IndirectArgumentsForInstancing( geom.Mesh, instanceCount );
-                        shaderArg.InstanceArgumentsBuffer.SetData( ref argparams );
+            //            var instanceCount = instanceCounter.InstanceCounter.Count;
+            //            var argparams = new IndirectArgumentsForInstancing( geom.Mesh, instanceCount );
+            //            shaderArg.InstanceArgumentsBuffer.SetData( ref argparams );
 
-                        var outputVectorCount = instanceCount * boneLength * nativebuf.VectorLengthInBone;
-                        var srcBuffer = this.NativeBuffers.InstanceBoneVectors;
-                        var dstBuffer = devicebuf.TransformBuffer;
-                        dstBuffer.SetData( srcBuffer, nativebuf.OffsetInBuffer, 0, outputVectorCount );
+            //            var outputVectorCount = instanceCount * boneLength * nativebuf.VectorLengthInBone;
+            //            var srcBuffer = this.NativeBuffers.InstanceBoneVectors;
+            //            var dstBuffer = devicebuf.TransformBuffer;
+            //            dstBuffer.SetData( srcBuffer, nativebuf.OffsetInBuffer, 0, outputVectorCount );
 
-                        Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
-                    }
-                )
-                .Schedule( inputDeps );
+            //            Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
+            //        }
+            //    )
+            //    .Schedule( inputDeps );
 
 
 

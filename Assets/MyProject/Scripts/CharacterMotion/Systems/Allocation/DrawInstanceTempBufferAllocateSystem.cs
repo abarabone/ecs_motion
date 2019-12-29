@@ -68,18 +68,7 @@ namespace Abss.Draw
         }
 
 
-        void a<T>( JobComponentSystem sys, EntityQuery query, bool isReadOnly )
-            where T:struct,IComponentData
-        {
-            var c0type = sys.GetArchetypeChunkComponentType<T>( isReadOnly );
-            using(var chunks = query.CreateArchetypeChunkArray(Allocator.Temp))
-            {
-                foreach(var chunk in chunks)
-                {
-                    var c0s = chunk.GetNativeArray<T>( c0type );
-                }
-            }
-        }
+
 
 
 
