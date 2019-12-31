@@ -21,7 +21,7 @@ using Abss.Misc;
 namespace Abss.Draw
 {
 
-    // 全体で１つ -----------------------
+    // シングルトン -----------------------
 
     public class DrawSystemComputeTransformBufferData : IComponentData
     {
@@ -36,10 +36,10 @@ namespace Abss.Draw
     
     // メッシュごと -----------------------
 
-    public struct DrawModelBufferLinkerData : IComponentData
-    {
-        public Entity BufferEntity;
-    }
+    //public struct DrawModelBufferLinkerData : IComponentData
+    //{
+    //    public Entity BufferEntity;
+    //}
 
     public struct DrawModelBoneUnitSizeData : IComponentData
     {

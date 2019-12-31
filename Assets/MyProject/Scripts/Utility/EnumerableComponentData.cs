@@ -25,7 +25,7 @@ namespace Abss.Misc
         public EnumerableComponentData( JobComponentSystem sys, EntityQuery query, bool isReadOnly )
         {
             this.ctype = sys.GetArchetypeChunkComponentType<T>( isReadOnly );
-            this.chunks = query.CreateArchetypeChunkArray( Allocator.Temp );
+            this.chunks = query.CreateArchetypeChunkArray(Allocator.TempJob);// Allocator.Temp );
         }
 
         public void Dispose()

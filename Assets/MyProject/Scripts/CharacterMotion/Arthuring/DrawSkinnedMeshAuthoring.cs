@@ -40,10 +40,10 @@ namespace Abss.Arthuring
             mat.shader = this.Shader;// ちゃんとした材質生成が必要
             mat.enableInstancing = true;
 
-            var drawIndex = drawres.AddDrawMeshResource( mesh, mat, this.BoneType, this.MaxInstance );
+            //var drawIndex = drawres.AddDrawMeshResource( mesh, mat, this.BoneType, this.MaxInstance );
             var modelEntity = initDrawModelComponentsAction( mesh, mat, this.BoneType );
 
-            return DrawMeshPrefabCreator.CreatePrefab( em, drawIndex, mesh.bindposes.Length, modelEntity );
+            return DrawMeshPrefabCreator.CreatePrefab( em, 0, mesh.bindposes.Length, modelEntity );
 
 
             // メッシュを結合する
