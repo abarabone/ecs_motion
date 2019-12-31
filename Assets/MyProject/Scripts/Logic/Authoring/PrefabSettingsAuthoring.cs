@@ -18,6 +18,8 @@ using Abss.Motion;
 using Abss.Draw;
 using Abss.Character;
 
+using Abss.Draw;
+
 namespace Abss.Arthuring
 {
 
@@ -53,22 +55,26 @@ namespace Abss.Arthuring
             //var drawMeshCsSystem = em.World.GetExistingSystem<DrawMeshCsSystem>();
             //var drawMeshCsResourceHolder = drawMeshCsSystem.GetResourceHolder();
 
-            var sysEnt = initDrawSystemComponents_( em );
-
             var drawModelArchetype = em.CreateArchetype(
                 typeof( DrawModelBoneUnitSizeData ),
                 typeof( DrawModelInstanceCounterData ),
                 typeof( DrawModelInstanceOffsetData ),
                 typeof( DrawModelGeometryData ),
-                typeof( DrawModelComputeArgumentsBufferData ),
-                typeof( DrawModelBufferLinkerData )
+                typeof( DrawModelComputeArgumentsBufferData )
             );
 
-            this.PrefabEntities = this.PrefabGameObjects
-                //.Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
-                .Select( prefab => prefab.Convert( em, null, initDrawModelComponents_ ) )
-                .ToArray();
-            
+            var eq = em.CreateEntityQuery
+                ( typeof( DrawSystemComputeTransformBufferData ), typeof( DrawSystemNativeTransformBufferData ) );
+            using(eq)
+            {
+                initDrawSystemComponents_( em, eq );
+
+                this.PrefabEntities = this.PrefabGameObjects
+                    //.Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
+                    .Select( prefab => prefab.Convert( em, null, initDrawModelComponents_ ) )
+                    .ToArray();
+            }
+
 
 
             // モーション設定
@@ -96,18 +102,15 @@ namespace Abss.Arthuring
             return;
 
 
-            void initDrawSystemComponents_( EntityManager em_ )
+            void initDrawSystemComponents_( EntityManager em_, EntityQuery eq_ )
             {
 
-                const int maxBufferLength = 1000 * 16 * 2;//
+                eq_.
+                var ent = eq_.GetSingletonEntity();
 
-                var drawBufferArchetype = em_.CreateArchetype(
-                    typeof( DrawSystemComputeTransformBufferData ),
-                    typeof( DrawSystemNativeTransformBufferData )
-                );
-                var ent = em_.CreateEntity( drawBufferArchetype );
                 
-
+                const int maxBufferLength = 1000 * 16 * 2;//
+                
                 var stride = Marshal.SizeOf( typeof( float4 ) );
 
                 em_.SetComponentData( ent,
@@ -121,11 +124,16 @@ namespace Abss.Arthuring
 
             Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
             {
-                
-                var boneVectorBuffer = em.GetComponentData<DrawSystemComputeTransformBufferData>( sysEnt ).Transforms;
+                // キャプチャ
+                var eq_ = eq;
+                var em_ = em;
+                var drawModelArchetype_ = drawModelArchetype;
 
-                var drawModelEnt = createEntityAndInitComponents_();
 
+                var sysEnt = eq.GetSingletonEntity();
+                var drawModelEnt = createEntityAndInitComponents_( drawModelArchetype_ );
+
+                var boneVectorBuffer = em_.GetComponentData<DrawSystemComputeTransformBufferData>(sysEnt).Transforms;
                 setShaderProps_( mat, mesh, boneVectorBuffer );
 
                 return drawModelEnt;
@@ -138,7 +146,7 @@ namespace Abss.Arthuring
                     mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
                 }
 
-                Entity createEntityAndInitComponents_()
+                Entity createEntityAndInitComponents_( EntityArchetype drawModelArchetype__ )
                 {
                     //var drawModelArchetype = em.CreateArchetype(
                     //    typeof( DrawModelBoneInfoData ),
@@ -147,14 +155,8 @@ namespace Abss.Arthuring
                     //    typeof( DrawModelMeshData ),
                     //    typeof( DrawModelComputeArgumentsBufferData )
                     //);
-                    var ent = em.CreateEntity( drawModelArchetype );
-
-                    //em.SetComponentData( ent,
-                    //    new DrawModelBufferLinkerData
-                    //    {
-                    //        BufferEntity = sysEnt,
-                    //    }
-                    //);
+                    var ent = em.CreateEntity( drawModelArchetype__ );
+                    
                     em.SetComponentData( ent,
                         new DrawModelBoneUnitSizeData
                         {

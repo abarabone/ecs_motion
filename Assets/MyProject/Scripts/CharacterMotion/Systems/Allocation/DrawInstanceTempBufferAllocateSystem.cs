@@ -43,8 +43,7 @@ namespace Abss.Draw
             this.drawQuery = this.GetEntityQuery(
                 ComponentType.ReadOnly<DrawModelInstanceCounterData>(),
                 ComponentType.ReadWrite<DrawModelInstanceOffsetData>(),
-                ComponentType.ReadOnly<DrawModelBoneUnitSizeData>(),
-                ComponentType.ReadOnly<DrawModelBufferLinkerData>()
+                ComponentType.ReadOnly<DrawModelBoneUnitSizeData>()
             );
         }
 
@@ -52,16 +51,18 @@ namespace Abss.Draw
 
         protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
         {
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystemNativeTransformBufferData>();
+            var drawSysEnt = this.GetSingletonEntity<DrawSystemNativeTransformBufferData>();
 
             var instanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>();
             var instanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>( isReadOnly: true );
             var boneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneUnitSizeData>( isReadOnly: true );
-            var bufferLinkType = this.GetArchetypeChunkComponentType<DrawModelBufferLinkerData>( isReadOnly: true );
 
             var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 
             inputDeps = this.Job
                 .WithDeallocateOnJobCompletion(chunks)
+                .WithNativeDisableParallelForRestriction(nativeBuffers)
                 .WithCode(
                     () =>
                     {
@@ -73,8 +74,7 @@ namespace Abss.Draw
                             var offsets = chunk.GetNativeArray( instanceOffsetType );
                             var counters = chunk.GetNativeArray( instanceCounterType );
                             var infos = chunk.GetNativeArray( boneInfoType );
-
-
+                            
                             for( var j = 0; j < chunk.Count; j++ )
                             {
                                 offsets[ j ] = new DrawModelInstanceOffsetData
@@ -92,7 +92,8 @@ namespace Abss.Draw
 
 
                         var nativeBuffer = new SimpleNativeBuffer<float4, Temp>( sum );
-                        this.SetSingleton( new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer } );
+                        //this.SetSingleton( new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer } );
+                        nativeBuffers[ drawSysEnt ] = new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer };
 
 
                         var pBufferStart = nativeBuffer.pBuffer;
@@ -118,33 +119,6 @@ namespace Abss.Draw
             return inputDeps;
         }
 
-
-
-
-
-
-        //[BurstCompile]
-        unsafe struct DrawInstanceTempBufferAllocateJob : IJob
-        {
-
-            [WriteOnly][NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<DrawSystemNativeTransformBufferData> NativeBuffers; 
-
-            public ArchetypeChunkComponentType<DrawModelInstanceOffsetData> InstanceOffsetType;
-            [ReadOnly]
-            public ArchetypeChunkComponentType<DrawModelInstanceCounterData> InstanceCounterType;
-            [ReadOnly]
-            public ArchetypeChunkComponentType<DrawModelBoneUnitSizeData> BoneInfoType;
-
-            [ReadOnly]
-            public ArchetypeChunkComponentType<DrawModelBufferLinkerData> BufferLinkType;
-
-
-            public void Execute()
-            {
-
-            }
-        }
     }
 
 }
