@@ -33,6 +33,8 @@ namespace Abss.Draw
 
         EntityQuery drawQuery;
 
+        //DrawSystemComputeTransformBufferData computeBuffer;
+        //DrawSystemNativeTransformBufferData nativeBuffer;
 
 
 
@@ -40,38 +42,78 @@ namespace Abss.Draw
         {
             this.drawQuery = this.GetEntityQuery(
                 ComponentType.ReadOnly<DrawModelInstanceCounterData>(),
-                ComponentType.ReadWrite<DrawModelInstanceOffsetData>()
+                ComponentType.ReadWrite<DrawModelInstanceOffsetData>(),
+                ComponentType.ReadOnly<DrawModelBoneUnitSizeData>(),
+                ComponentType.ReadOnly<DrawModelBufferLinkerData>()
             );
-
-
         }
 
 
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
         {
 
-            inputDeps = new DrawInstanceTempBufferAllocateJob
-            {
-                NativeBuffers = this.GetComponentDataFromEntity<DrawSystemNativeTransformBufferData>(),
+            var instanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>();
+            var instanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>( isReadOnly: true );
+            var boneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneUnitSizeData>( isReadOnly: true );
+            var bufferLinkType = this.GetArchetypeChunkComponentType<DrawModelBufferLinkerData>( isReadOnly: true );
 
-                InstanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>(isReadOnly:true),
-                InstanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>(),
-                BoneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneUnitSizeData>( isReadOnly: true ),
+            var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 
-                BufferLinkType = this.GetArchetypeChunkComponentType<DrawModelBufferLinkerData>(isReadOnly:true),
-            }
-            .Schedule( this.drawQuery, inputDeps );
+            inputDeps = this.Job
+                .WithDeallocateOnJobCompletion(chunks)
+                .WithCode(
+                    () =>
+                    {
+                        var sum = 0;
+
+                        for( var i = 0; i < chunks.Length; i++ )
+                        {
+                            var chunk = chunks[ i ];
+                            var offsets = chunk.GetNativeArray( instanceOffsetType );
+                            var counters = chunk.GetNativeArray( instanceCounterType );
+                            var infos = chunk.GetNativeArray( boneInfoType );
 
 
-            //inputDeps = this.Job
-            //    .WithCode(
-            //        () =>
-            //        {
+                            for( var j = 0; j < chunk.Count; j++ )
+                            {
+                                offsets[ j ] = new DrawModelInstanceOffsetData
+                                {
+                                    pVectorOffsetInBuffer = (float4*)sum,
+                                };
 
-            //        }
-            //    )
-            //    .Schedule( inputDeps );
+                                var instanceCount = counters[ j ].InstanceCounter.Count;
+                                var instanceVectorSize = infos[ j ].BoneLength * infos[ j ].VectorLengthInBone;
+                                var modelBufferSize = instanceCount * instanceVectorSize;
+
+                                sum += modelBufferSize;
+                            }
+                        }
+
+
+                        var nativeBuffer = new SimpleNativeBuffer<float4, Temp>( sum );
+                        this.SetSingleton( new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer } );
+
+
+                        var pBufferStart = nativeBuffer.pBuffer;
+                        for( var i = 0; i < chunks.Length; i++ )
+                        {
+                            var chunk = chunks[ i ];
+                            var offsets = chunk.GetNativeArray( instanceOffsetType );
+
+                            for( var j = 0; j < chunk.Count; j++ )
+                            {
+                                var offset = (int)offsets[ j ].pVectorOffsetInBuffer;
+
+                                offsets[ j ] = new DrawModelInstanceOffsetData
+                                {
+                                    pVectorOffsetInBuffer = pBufferStart + offset,
+                                };
+                            }
+                        }
+                    }
+                )
+                .Schedule( inputDeps );
 
             return inputDeps;
         }
@@ -86,12 +128,7 @@ namespace Abss.Draw
         {
 
             [WriteOnly][NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<DrawSystemNativeTransformBufferData> NativeBuffers;
-
-
-            [ReadOnly][DeallocateOnJobCompletion]
-            public NativeArray<ArchetypeChunk> Chunks;
-
+            public ComponentDataFromEntity<DrawSystemNativeTransformBufferData> NativeBuffers; 
 
             public ArchetypeChunkComponentType<DrawModelInstanceOffsetData> InstanceOffsetType;
             [ReadOnly]
@@ -106,55 +143,7 @@ namespace Abss.Draw
             public void Execute()
             {
 
-
-
-
-
-
             }
-
-            void Chunk_( ArchetypeChunk chunk )
-            {
-                var counters = chunk.GetNativeArray( this.InstanceCounterType );
-                var offsets = chunk.GetNativeArray( this.InstanceOffsetType );
-                var infos = chunk.GetNativeArray( this.BoneInfoType );
-
-                var vectorOffsets = stackalloc int[ chunk.Count ];
-
-
-                var sum = 0;
-                for( var i = 0; i < chunk.Count; i++ )
-                {
-                    vectorOffsets[ i ] = sum;
-
-                    var instanceCount = counters[ i ].InstanceCounter.Count;
-                    var instanceVectorSize = infos[ i ].BoneLength * infos[ i ].VectorLengthInBone;
-                    var modelBufferSize = instanceCount * instanceVectorSize;
-                    sum += modelBufferSize;
-                }
-            }
-            void allocateNativeBuffer( ArchetypeChunk chunk )
-            {
-                var ent = chunk.GetChunkComponentData( this.BufferLinkType ).BufferEntity;
-                this.NativeBuffers[ ent ] = new DrawSystemNativeTransformBufferData
-                {
-                    Transforms = new SimpleNativeBuffer<float4, Temp>( sum ),
-                };
-            }
-            void setBufferStartPositionForModel( ArchetypeChunk chunk )
-            {
-
-            
-
-                var pBufferStart = this.NativeBuffers[ ent ].Transforms.pBuffer;
-                    for(var i = 0; i<chunk.Count; i++ )
-                    {
-                        offsets[ i ] = new DrawModelInstanceOffsetData
-                        {
-                            pVectorOffsetInBuffer = pBufferStart + vectorOffsets[ i ],
-                        };
-    }
-}
         }
     }
 

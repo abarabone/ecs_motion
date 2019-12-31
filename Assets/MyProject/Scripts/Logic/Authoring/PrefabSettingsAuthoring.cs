@@ -50,8 +50,8 @@ namespace Abss.Arthuring
             var em = World.Active.EntityManager;
 
 
-            var drawMeshCsSystem = em.World.GetExistingSystem<DrawMeshCsSystem>();
-            var drawMeshCsResourceHolder = drawMeshCsSystem.GetResourceHolder();
+            //var drawMeshCsSystem = em.World.GetExistingSystem<DrawMeshCsSystem>();
+            //var drawMeshCsResourceHolder = drawMeshCsSystem.GetResourceHolder();
 
             var sysEnt = initDrawSystemComponents_( em );
 
@@ -65,7 +65,8 @@ namespace Abss.Arthuring
             );
 
             this.PrefabEntities = this.PrefabGameObjects
-                .Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
+                //.Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
+                .Select( prefab => prefab.Convert( em, null, initDrawModelComponents_ ) )
                 .ToArray();
             
 
@@ -95,7 +96,7 @@ namespace Abss.Arthuring
             return;
 
 
-            Entity initDrawSystemComponents_( EntityManager em_ )
+            void initDrawSystemComponents_( EntityManager em_ )
             {
 
                 const int maxBufferLength = 1000 * 16 * 2;//
@@ -105,7 +106,7 @@ namespace Abss.Arthuring
                     typeof( DrawSystemNativeTransformBufferData )
                 );
                 var ent = em_.CreateEntity( drawBufferArchetype );
-
+                
 
                 var stride = Marshal.SizeOf( typeof( float4 ) );
 
@@ -116,8 +117,6 @@ namespace Abss.Arthuring
                             ( maxBufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
                     }
                 );
-
-                return ent;
             }
 
             Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
@@ -150,12 +149,12 @@ namespace Abss.Arthuring
                     //);
                     var ent = em.CreateEntity( drawModelArchetype );
 
-                    em.SetComponentData( ent,
-                        new DrawModelBufferLinkerData
-                        {
-                            BufferEntity = sysEnt,
-                        }
-                    );
+                    //em.SetComponentData( ent,
+                    //    new DrawModelBufferLinkerData
+                    //    {
+                    //        BufferEntity = sysEnt,
+                    //    }
+                    //);
                     em.SetComponentData( ent,
                         new DrawModelBoneUnitSizeData
                         {

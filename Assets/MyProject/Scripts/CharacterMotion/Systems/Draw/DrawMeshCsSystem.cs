@@ -17,7 +17,7 @@ using Abss.Utilities;
 namespace Abss.Draw
 {
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateAfter(typeof( BoneToDrawInstanceSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     public class BeginDrawCsBarier : EntityCommandBufferSystem
