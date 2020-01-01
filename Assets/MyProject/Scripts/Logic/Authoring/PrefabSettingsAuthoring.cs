@@ -63,17 +63,13 @@ namespace Abss.Arthuring
                 typeof( DrawModelComputeArgumentsBufferData )
             );
 
-            var eq = em.CreateEntityQuery
-                ( typeof( DrawSystemComputeTransformBufferData ), typeof( DrawSystemNativeTransformBufferData ) );
-            using(eq)
-            {
-                initDrawSystemComponents_( em, eq );
+            
+            initDrawSystemComponents_( em );
 
-                this.PrefabEntities = this.PrefabGameObjects
-                    //.Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
-                    .Select( prefab => prefab.Convert( em, null, initDrawModelComponents_ ) )
-                    .ToArray();
-            }
+            this.PrefabEntities = this.PrefabGameObjects
+                //.Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
+                .Select( prefab => prefab.Convert( em, null, initDrawModelComponents_ ) )
+                .ToArray();
 
 
 
@@ -102,11 +98,10 @@ namespace Abss.Arthuring
             return;
 
 
-            void initDrawSystemComponents_( EntityManager em_, EntityQuery eq_ )
+            void initDrawSystemComponents_( EntityManager em_ )
             {
 
-                eq_.
-                var ent = eq_.GetSingletonEntity();
+                var ent = em_.CreateEntity();
 
                 
                 const int maxBufferLength = 1000 * 16 * 2;//
@@ -122,15 +117,14 @@ namespace Abss.Arthuring
                 );
             }
 
-            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
+            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType, ComponentSystem sys )
             {
                 // キャプチャ
-                var eq_ = eq;
                 var em_ = em;
                 var drawModelArchetype_ = drawModelArchetype;
 
 
-                var sysEnt = eq.GetSingletonEntity();
+                var sysEnt = sys.GetSingletonEntity<DrawSystemComputeTransformBufferData>();
                 var drawModelEnt = createEntityAndInitComponents_( drawModelArchetype_ );
 
                 var boneVectorBuffer = em_.GetComponentData<DrawSystemComputeTransformBufferData>(sysEnt).Transforms;
@@ -204,7 +198,10 @@ namespace Abss.Arthuring
 
         public abstract class ConvertToCustomPrefabEntityBehaviour : MonoBehaviour
         {
-            abstract public Entity Convert( EntityManager em, DrawMeshResourceHolder drawres, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsAction );
+            public Func<Mesh, Material, BoneType, Entity> InitDrawModelComponentFunc;
+
+            abstract public Entity Convert
+                ( EntityManager em, DrawMeshResourceHolder drawres, InitDrawModelComponentFunc initDrawModelComponentsFunc );
         }
     }
 
