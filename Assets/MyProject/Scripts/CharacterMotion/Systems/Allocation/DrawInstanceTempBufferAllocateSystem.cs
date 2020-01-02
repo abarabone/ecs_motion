@@ -55,8 +55,8 @@ namespace Abss.Draw
             var drawSysEnt = this.GetSingletonEntity<DrawSystemNativeTransformBufferData>();
 
             var instanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>();
-            var instanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>( isReadOnly: true );
-            var boneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneUnitSizeData>( isReadOnly: true );
+            var instanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>();// isReadOnly: true );
+            var boneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneUnitSizeData>();// isReadOnly: true );
 
             var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 
@@ -74,7 +74,7 @@ namespace Abss.Draw
                             var offsets = chunk.GetNativeArray( instanceOffsetType );
                             var counters = chunk.GetNativeArray( instanceCounterType );
                             var infos = chunk.GetNativeArray( boneInfoType );
-                            
+
                             for( var j = 0; j < chunk.Count; j++ )
                             {
                                 offsets[ j ] = new DrawModelInstanceOffsetData
@@ -91,7 +91,7 @@ namespace Abss.Draw
                         }
 
 
-                        var nativeBuffer = new SimpleNativeBuffer<float4, Temp>( sum );
+                            var nativeBuffer = new SimpleNativeBuffer<float4, Temp>( sum );
                         //this.SetSingleton( new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer } );
                         nativeBuffers[ drawSysEnt ] = new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer };
 

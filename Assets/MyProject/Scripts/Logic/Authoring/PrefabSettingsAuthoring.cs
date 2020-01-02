@@ -20,6 +20,7 @@ using Abss.Character;
 
 using Abss.Draw;
 
+
 namespace Abss.Arthuring
 {
 
@@ -64,7 +65,7 @@ namespace Abss.Arthuring
             );
 
             
-            initDrawSystemComponents_( em );
+            var sysEnt = initDrawSystemComponents_( em );
 
             this.PrefabEntities = this.PrefabGameObjects
                 //.Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
@@ -98,10 +99,13 @@ namespace Abss.Arthuring
             return;
 
 
-            void initDrawSystemComponents_( EntityManager em_ )
+            Entity initDrawSystemComponents_( EntityManager em_ )
             {
-
-                var ent = em_.CreateEntity();
+                var arch = em_.CreateArchetype(
+                    typeof( DrawSystemComputeTransformBufferData ),
+                    typeof( DrawSystemNativeTransformBufferData )
+                );
+                var ent = em_.CreateEntity( arch );
 
                 
                 const int maxBufferLength = 1000 * 16 * 2;//
@@ -115,19 +119,20 @@ namespace Abss.Arthuring
                             ( maxBufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
                     }
                 );
+
+                return ent;
             }
 
-            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType, ComponentSystem sys )
+            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
             {
-                // キャプチャ
+                // キャプチャ（暫定）
                 var em_ = em;
                 var drawModelArchetype_ = drawModelArchetype;
+                var sysEnt_ = sysEnt;
 
-
-                var sysEnt = sys.GetSingletonEntity<DrawSystemComputeTransformBufferData>();
                 var drawModelEnt = createEntityAndInitComponents_( drawModelArchetype_ );
 
-                var boneVectorBuffer = em_.GetComponentData<DrawSystemComputeTransformBufferData>(sysEnt).Transforms;
+                var boneVectorBuffer = em_.GetComponentData<DrawSystemComputeTransformBufferData>(sysEnt_).Transforms;
                 setShaderProps_( mat, mesh, boneVectorBuffer );
 
                 return drawModelEnt;
@@ -198,10 +203,8 @@ namespace Abss.Arthuring
 
         public abstract class ConvertToCustomPrefabEntityBehaviour : MonoBehaviour
         {
-            public Func<Mesh, Material, BoneType, Entity> InitDrawModelComponentFunc;
-
             abstract public Entity Convert
-                ( EntityManager em, DrawMeshResourceHolder drawres, InitDrawModelComponentFunc initDrawModelComponentsFunc );
+                ( EntityManager em, DrawMeshResourceHolder drawres, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc );
         }
     }
 
