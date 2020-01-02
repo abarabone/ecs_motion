@@ -54,6 +54,8 @@ namespace Abss.Draw
     public unsafe struct DrawModelInstanceOffsetData : IComponentData
     {
         public float4 *pVectorOffsetInBuffer;
+        public int aaa;
+        public int bbb;
     }
 
     public class DrawModelComputeArgumentsBufferData : IComponentData
@@ -75,6 +77,7 @@ namespace Abss.Draw
     {
 
         public T* pBuffer { get; private set; }
+        public int length_;
 
 
         public SimpleNativeBuffer( int length )
@@ -84,6 +87,7 @@ namespace Abss.Draw
             var allocator = new Tallocator().Label;
 
             this.pBuffer = (T*)UnsafeUtility.Malloc( size * length, align, allocator );
+            this.length_ = length;//
         }
 
         public void Dispose()

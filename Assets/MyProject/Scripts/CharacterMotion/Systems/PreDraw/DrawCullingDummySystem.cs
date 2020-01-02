@@ -16,60 +16,44 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
-    [DisableAutoCreation]
+    [UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
     [UpdateBefore( typeof( MarkDrawTargetMotionStreamSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
-    public class DrawCullingDummySystem_ : JobComponentSystem
+    public class DrawCullingDummySystem : JobComponentSystem
     {
 
-        DrawMeshCsSystem drawSystem;
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
 
         protected override void OnStartRunning()
         {
-            this.drawSystem = this.World.GetExistingSystem<DrawMeshCsSystem>();
             this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
         }
 
         
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            var nativeInstanceBuffers = this.drawSystem.NativeBuffers;
-            if( !nativeInstanceBuffers.Units.IsCreated ) return inputDeps;
+
+            var drawModels = this.GetComponentDataFromEntity<DrawModelInstanceCounterData>();
 
 
-            nativeInstanceBuffers.Reset();
+            inputDeps = this.Entities
+                .WithBurst( FloatMode.Fast, FloatPrecision.Standard )
+                .WithNativeDisableParallelForRestriction( drawModels )
+                .ForEach(
+                    ( ref DrawInstanceTargetWorkData target, in DrawModelIndexData indexer ) =>
+                    {
 
-            inputDeps = new DrawCullingDummyJob
-            {
-                NativeBuffers = nativeInstanceBuffers.Units,
-            }
-            .Schedule( this, inputDeps );
+                        target.InstanceIndex = drawModels[ indexer.ModelEntity ].InstanceCounter.GetSerial();
+
+                    }
+                )
+                .Schedule( inputDeps );
 
 
             this.presentationBarier.AddJobHandleForProducer( inputDeps );
             return inputDeps;
-        }
-
-
-        [BurstCompile]
-        struct DrawCullingDummyJob : IJobForEach<DrawModelIndexData, DrawInstanceTargetWorkData>
-        {
-
-            [ReadOnly]
-            public NativeArray<DrawInstanceNativeBufferUnit> NativeBuffers;
-
-
-            public void Execute
-                ( [ReadOnly] ref DrawModelIndexData model, [WriteOnly] ref DrawInstanceTargetWorkData target )
-            {
-
-                target.InstanceIndex = this.NativeBuffers[ model.ModelIndex ].InstanceCounter.GetSerial();
-                //target.InstanceIndex = this.InstanceCounters[ 0 ].GetSerial();
-
-            }
         }
 
     }

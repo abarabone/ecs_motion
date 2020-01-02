@@ -66,32 +66,9 @@ namespace Abss.Draw
                 .WithCode(
                     () =>
                     {
-                        var sum = 0;
+                        var totalVectorLength = sumAndSetVectorOffsets_();
 
-                        for( var i = 0; i < chunks.Length; i++ )
-                        {
-                            var chunk = chunks[ i ];
-                            var offsets = chunk.GetNativeArray( instanceOffsetType );
-                            var counters = chunk.GetNativeArray( instanceCounterType );
-                            var infos = chunk.GetNativeArray( boneInfoType );
-
-                            for( var j = 0; j < chunk.Count; j++ )
-                            {
-                                offsets[ j ] = new DrawModelInstanceOffsetData
-                                {
-                                    pVectorOffsetInBuffer = (float4*)sum,
-                                };
-
-                                var instanceCount = counters[ j ].InstanceCounter.Count;
-                                var instanceVectorSize = infos[ j ].BoneLength * infos[ j ].VectorLengthInBone;
-                                var modelBufferSize = instanceCount * instanceVectorSize;
-
-                                sum += modelBufferSize;
-                            }
-                        }
-
-
-                            var nativeBuffer = new SimpleNativeBuffer<float4, Temp>( sum );
+                        var nativeBuffer = new SimpleNativeBuffer<float4, Temp>( totalVectorLength );
                         //this.SetSingleton( new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer } );
                         nativeBuffers[ drawSysEnt ] = new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer };
 
@@ -109,6 +86,8 @@ namespace Abss.Draw
                                 offsets[ j ] = new DrawModelInstanceOffsetData
                                 {
                                     pVectorOffsetInBuffer = pBufferStart + offset,
+                                    aaa = (int)pBufferStart,
+                                    bbb = offset,
                                 };
                             }
                         }
@@ -117,6 +96,36 @@ namespace Abss.Draw
                 .Schedule( inputDeps );
 
             return inputDeps;
+
+
+
+            int sumAndSetVectorOffsets_()
+            {
+                var sum = 0;
+                for( var i = 0; i < chunks.Length; i++ )
+                {
+                    var chunk = chunks[ i ];
+                    var offsets = chunk.GetNativeArray( instanceOffsetType );
+                    var counters = chunk.GetNativeArray( instanceCounterType );
+                    var infos = chunk.GetNativeArray( boneInfoType );
+
+                    for( var j = 0; j < chunk.Count; j++ )
+                    {
+                        offsets[ j ] = new DrawModelInstanceOffsetData
+                        {
+                            pVectorOffsetInBuffer = (float4*)sum,
+                        };
+
+                        var instanceCount = counters[ j ].InstanceCounter.Count;
+                        var instanceVectorSize = infos[ j ].BoneLength * infos[ j ].VectorLengthInBone;
+                        var modelBufferSize = instanceCount * instanceVectorSize;
+
+                        sum += modelBufferSize;
+                    }
+                }
+
+                return sum;
+            }
         }
 
     }

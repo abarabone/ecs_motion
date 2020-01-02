@@ -21,7 +21,7 @@ namespace Abss.Draw
     /// <summary>
     /// 
     /// </summary>
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     [UpdateAfter( typeof( DrawMeshCsSystem ) )]
     public class DrawInstanceTempBufferFreeSystem : ComponentSystem
