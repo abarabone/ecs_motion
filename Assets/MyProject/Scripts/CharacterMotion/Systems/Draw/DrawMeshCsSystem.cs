@@ -71,34 +71,44 @@ namespace Abss.Draw
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
+            var nativeBuffer = this.GetSingleton<DrawSystemNativeTransformBufferData>();
+            var computeBuffer = this.GetSingleton<DrawSystemComputeTransformBufferData>();//
 
 
+            inputDeps = this.Entities
+                .ForEach(
+                    (
+                        in DrawModelBoneUnitSizeData boneUnit,
+                        in DrawModelInstanceCounterData instanceCounter,
+                        in DrawModelComputeArgumentsBufferData shaderArg,
+                        in DrawModelGeometryData geom
+                    ) =>
+                    {
 
-            //inputDeps = this.Entities
-            //    .ForEach(
-            //        (
-            //            in DrawModelBoneUnitSizeData boneUnit,
-            //            in DrawModelInstanceCounterData instanceCounter,
-            //            in DrawModelComputeArgumentsBufferData shaderArg,
-            //            in DrawModelGeometryData geom
-            //        ) =>
-            //        {
+                        var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
 
-            //            var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
+                        var args = shaderArg.InstanceArgumentsBuffer;
+                        var instanceCount = instanceCounter.InstanceCounter.Count;
+                        var argparams = new IndirectArgumentsForInstancing( geom.Mesh, instanceCount );
+                        args.SetData( ref argparams );
 
-            //            var instanceCount = instanceCounter.InstanceCounter.Count;
-            //            var argparams = new IndirectArgumentsForInstancing( geom.Mesh, instanceCount );
-            //            shaderArg.InstanceArgumentsBuffer.SetData( ref argparams );
+                        var outputVectorCount = instanceCount * boneUnit.BoneLength * boneUnit.VectorLengthInBone;
+                        var srcBuffer = nativeBuffer.Transforms;
+                        var dstBuffer = computeBuffer.Transforms;
+                        dstBuffer.SetData( srcBuffer, 0, 0, srcBuffer.length_ );
 
-            //            var outputVectorCount = instanceCount * boneLength * nativebuf.VectorLengthInBone;
-            //            var srcBuffer = this.NativeBuffers.InstanceBoneVectors;
-            //            var dstBuffer = devicebuf.TransformBuffer;
-            //            dstBuffer.SetData( srcBuffer, nativebuf.OffsetInBuffer, 0, outputVectorCount );
+                        var mesh = geom.Mesh;
 
-            //            Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
-            //        }
-            //    )
-            //    .Schedule( inputDeps );
+
+                        var mat = geom.Material;
+                        mat.SetBuffer( "BoneVectorBuffer", dstBuffer );
+                        mat.SetInt( "BoneVectorLength", mesh_.bindposes.Length * (int)boneType );
+                        mat.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
+
+                        Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
+                    }
+                )
+                .Schedule( inputDeps );
 
 
 

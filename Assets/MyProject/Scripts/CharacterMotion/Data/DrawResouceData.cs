@@ -54,8 +54,6 @@ namespace Abss.Draw
     public unsafe struct DrawModelInstanceOffsetData : IComponentData
     {
         public float4 *pVectorOffsetInBuffer;
-        public int aaa;
-        public int bbb;
     }
 
     public class DrawModelComputeArgumentsBufferData : IComponentData

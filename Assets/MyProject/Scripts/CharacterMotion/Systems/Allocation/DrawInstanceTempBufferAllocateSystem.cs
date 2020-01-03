@@ -33,9 +33,6 @@ namespace Abss.Draw
 
         EntityQuery drawQuery;
 
-        //DrawSystemComputeTransformBufferData computeBuffer;
-        //DrawSystemNativeTransformBufferData nativeBuffer;
-
 
 
         protected override void OnCreate()
@@ -68,29 +65,12 @@ namespace Abss.Draw
                     {
                         var totalVectorLength = sumAndSetVectorOffsets_();
 
-                        var nativeBuffer = new SimpleNativeBuffer<float4, Temp>( totalVectorLength );
-                        //this.SetSingleton( new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer } );
-                        nativeBuffers[ drawSysEnt ] = new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer };
+                        var nativeBuffer
+                            = new SimpleNativeBuffer<float4, Temp>( totalVectorLength );
+                        nativeBuffers[ drawSysEnt ]
+                            = new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer };
 
-
-                        var pBufferStart = nativeBuffer.pBuffer;
-                        for( var i = 0; i < chunks.Length; i++ )
-                        {
-                            var chunk = chunks[ i ];
-                            var offsets = chunk.GetNativeArray( instanceOffsetType );
-
-                            for( var j = 0; j < chunk.Count; j++ )
-                            {
-                                var offset = (int)offsets[ j ].pVectorOffsetInBuffer;
-
-                                offsets[ j ] = new DrawModelInstanceOffsetData
-                                {
-                                    pVectorOffsetInBuffer = pBufferStart + offset,
-                                    aaa = (int)pBufferStart,
-                                    bbb = offset,
-                                };
-                            }
-                        }
+                        calculateVectorOffsetPointersInBuffer_( nativeBuffer.pBuffer );
                     }
                 )
                 .Schedule( inputDeps );
@@ -126,6 +106,26 @@ namespace Abss.Draw
 
                 return sum;
             }
+
+            void calculateVectorOffsetPointersInBuffer_( float4* pBufferStart )
+            {
+                for( var i = 0; i < chunks.Length; i++ )
+                {
+                    var chunk = chunks[ i ];
+                    var offsets = chunk.GetNativeArray( instanceOffsetType );
+
+                    for( var j = 0; j < chunk.Count; j++ )
+                    {
+                        var offset = (int)offsets[ j ].pVectorOffsetInBuffer;
+
+                        offsets[ j ] = new DrawModelInstanceOffsetData
+                        {
+                            pVectorOffsetInBuffer = pBufferStart + offset,
+                        };
+                    }
+                }
+            }
+
         }
 
     }

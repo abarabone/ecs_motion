@@ -43,5 +43,21 @@ namespace Abss.Draw
 
         }
 
+
+        protected override void OnDestroy()// 暫定（もっとわかりやすい場所で
+        {
+            var cb = this.GetSingleton<DrawSystemComputeTransformBufferData>();
+            cb.Transforms.Dispose();
+
+            var eq = this.EntityManager.CreateEntityQuery( typeof(DrawModelComputeArgumentsBufferData) );
+            using( eq )
+            {
+                var args = eq.ToComponentDataArray<DrawModelComputeArgumentsBufferData>();
+                foreach(var arg in args)
+                {
+                    arg.InstanceArgumentsBuffer.Dispose();
+                }
+            }
+        }
     }
 }

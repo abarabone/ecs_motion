@@ -64,9 +64,10 @@ namespace Abss.Motion
         public int BoneLength;
     }
 
-    public struct BoneDrawTargetIndexWorkData : IComponentData
+    public unsafe struct BoneDrawTargetIndexWorkData : IComponentData
     {
-        public int VectorOffsetInBuffer;
+        public int BoneOffsetInModelBuffer;//
+        //public float4* pBoneInBuffer;//
     }
 
 

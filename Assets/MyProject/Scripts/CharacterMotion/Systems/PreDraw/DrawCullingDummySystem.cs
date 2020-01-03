@@ -42,7 +42,7 @@ namespace Abss.Draw
                 .WithBurst( FloatMode.Fast, FloatPrecision.Standard )
                 .WithNativeDisableParallelForRestriction( drawModels )
                 .ForEach(
-                    ( ref DrawInstanceTargetWorkData target, in DrawModelIndexData indexer ) =>
+                    ( ref DrawInstanceTargetWorkData target, in DrawIndexOfModelData indexer ) =>
                     {
 
                         target.InstanceIndex = drawModels[ indexer.ModelEntity ].InstanceCounter.GetSerial();

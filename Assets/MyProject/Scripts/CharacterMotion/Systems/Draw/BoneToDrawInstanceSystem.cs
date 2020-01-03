@@ -37,12 +37,13 @@ namespace Abss.Draw
 
             inputDeps = new BoneToDrawInstanceJob
             {
-                DrawModelInfos = this.GetComponentDataFromEntity<DrawModelBoneUnitSizeData>( isReadOnly: true ),
-                DrawModelOffsets = this.GetComponentDataFromEntity <DrawModelInstanceOffsetData>( isReadOnly: true ),
+                modelIndexsOfDrawInstance = this.GetComponentDataFromEntity<DrawIndexOfModelData>( isReadOnly: true ),
+                UnitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModelBoneUnitSizeData>( isReadOnly: true ),
+                OffsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModelInstanceOffsetData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
 
-            
+
             this.presentationBarier.AddJobHandleForProducer( inputDeps );
             return inputDeps;
         }
@@ -54,9 +55,11 @@ namespace Abss.Draw
         {
 
             [ReadOnly]
-            public ComponentDataFromEntity<DrawModelBoneUnitSizeData> DrawModelInfos;
+            public ComponentDataFromEntity<DrawModelBoneUnitSizeData> UnitSizesOfDrawModel;
             [ReadOnly]
-            public ComponentDataFromEntity<DrawModelInstanceOffsetData> DrawModelOffsets;
+            public ComponentDataFromEntity<DrawIndexOfModelData> modelIndexsOfDrawInstance;
+            [ReadOnly]
+            public ComponentDataFromEntity<DrawModelInstanceOffsetData> OffsetsOfDrawModel;
 
 
             public unsafe void Execute(
@@ -68,10 +71,12 @@ namespace Abss.Draw
             )
             {
 
-                var vectorLengthInBone = this.DrawModelInfos[ linkerOfBone.DrawEntity ].VectorLengthInBone;
-                var i = targetOfBone.VectorOffsetInBuffer * vectorLengthInBone;
+                var modelIndexer = this.modelIndexsOfDrawInstance[ linkerOfBone.DrawEntity ];
 
-                var pInstance = this.DrawModelOffsets[ linkerOfBone.DrawEntity ].pVectorOffsetInBuffer;
+                var vectorLengthInBone = this.UnitSizesOfDrawModel[ modelIndexer.ModelEntity ].VectorLengthInBone;
+                var i = targetOfBone.BoneOffsetInModelBuffer * vectorLengthInBone;
+
+                var pInstance = this.OffsetsOfDrawModel[ modelIndexer.ModelEntity ].pVectorOffsetInBuffer;
                 pInstance[ i + 0 ] = new float4( pos.Value, 1.0f );
                 pInstance[ i + 1 ] = rot.Value.value;
 

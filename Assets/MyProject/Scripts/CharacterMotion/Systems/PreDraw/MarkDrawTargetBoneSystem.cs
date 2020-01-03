@@ -31,10 +31,35 @@ namespace Abss.Draw
             inputDeps = new MarkBoneJob
             {
                 //DrawIndexers = this.GetComponentDataFromEntity<DrawModelIndexData>( isReadOnly: true ),
-                DrawTargets = this.GetComponentDataFromEntity<DrawInstanceTargetWorkData>( isReadOnly:true ),
+                DrawTargets = this.GetComponentDataFromEntity<DrawInstanceTargetWorkData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
 
+            //var instanceOffestsOfDrawModel =
+            //    this.GetComponentDataFromEntity<DrawModelInstanceOffsetData>( isReadOnly: true );
+            //var targetsOfDrawInstance =
+            //    this.GetComponentDataFromEntity<DrawInstanceTargetWorkData>( isReadOnly: true );
+
+            //this.Entities
+            //    .WithBurst()
+            //    .WithReadOnly(instanceOffestsOfDrawModel)
+            //    .WithReadOnly(targetsOfDrawInstance)
+            //    .ForEach(
+            //        (
+            //            ref BoneDrawTargetIndexWorkData indexOfBone,
+            //            in BoneDrawLinkData drawLinkerOfBone,
+            //            in BoneIndexData boneIdOfBone
+            //        ) =>
+            //        {
+
+            //            var drawTarget = targetsOfDrawInstance[ drawLinkerOfBone.DrawEntity ];
+
+            //            var a = instanceOffestsOfDrawModel[]
+
+            //            indexOfBone.pBoneInBuffer = 
+
+            //        }
+            //    );
 
             return inputDeps;
         }
@@ -59,7 +84,7 @@ namespace Abss.Draw
                 //var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
                 var drawTarget = this.DrawTargets[ drawLinker.DrawEntity ];
 
-                boneIndexer.VectorOffsetInBuffer =
+                boneIndexer.BoneOffsetInModelBuffer =
                     drawTarget.InstanceIndex * boneId.BoneLength + boneId.BoneId;
 
             }

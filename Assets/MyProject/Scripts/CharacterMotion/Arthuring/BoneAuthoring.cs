@@ -196,7 +196,7 @@ namespace Abss.Arthuring
         static void setBoneId
             ( this EntityManager em_, IEnumerable<Entity> bonePreafabs_, Entity drawPrefab_ )
         {
-            var draw = em_.GetComponentData<DrawModelIndexData>( drawPrefab_ );
+            var draw = em_.GetComponentData<DrawIndexOfModelData>( drawPrefab_ );
 
             em_.SetComponentData( bonePreafabs_,
                 from x in Enumerable.Range( 0, bonePreafabs_.Count() )
