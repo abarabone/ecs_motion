@@ -31,6 +31,7 @@ namespace Abss.Draw
     public struct DrawSystemNativeTransformBufferData : IComponentData
     {
         public SimpleNativeBuffer<float4, Temp> Transforms;
+        public NativeArray<float4> aaa;
     }
     
     
