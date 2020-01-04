@@ -7,7 +7,7 @@ using Unity.Jobs;
 using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
-
+using Unity.Collections.LowLevel.Unsafe;
 
 using Abss.Arthuring;
 using Abss.Misc;
@@ -28,7 +28,7 @@ namespace Abss.Draw
     /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
     /// </summary>
     //[AlwaysUpdateSystem]
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     public class DrawMeshCsSystem : ComponentSystem
@@ -68,15 +68,16 @@ namespace Abss.Draw
         }
 
 
-        protected override void OnUpdate()
+        protected override unsafe void OnUpdate()
         {
 
-            var nativeBuffer = this.GetSingleton<DrawSystemNativeTransformBufferData>();
-            var computeBuffer = this.GetSingleton<DrawSystemComputeTransformBufferData>();//
+            var nativeBuffer = this.GetSingleton<DrawSystemNativeTransformBufferData>().Transforms;
+            var computeBuffer = this.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;//
+            
+            var na = NativeArrayUnsafeUtility
+                .ConvertExistingDataToNativeArray<float4>( nativeBuffer.pBuffer, nativeBuffer.length_, Allocator.None );
 
-            var srcBuffer = nativeBuffer.Transforms;
-            var dstBuffer = computeBuffer.Transforms;
-            //dstBuffer.SetData( srcBuffer, 0, 0, srcBuffer.length_ );
+            computeBuffer.SetData( na );
 
 
             this.Entities
