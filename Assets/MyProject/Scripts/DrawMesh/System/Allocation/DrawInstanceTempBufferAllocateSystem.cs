@@ -58,6 +58,7 @@ namespace Abss.Draw
             var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 
             inputDeps = this.Job
+                .WithBurst()
                 .WithDeallocateOnJobCompletion(chunks)
                 .WithNativeDisableParallelForRestriction(nativeBuffers)
                 .WithCode(

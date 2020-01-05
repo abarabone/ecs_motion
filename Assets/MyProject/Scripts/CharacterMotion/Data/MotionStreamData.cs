@@ -241,33 +241,34 @@ namespace Abss.Motion
             ref MotionCursorData cursor
         )
         {
-            if( cursor.CurrentPosition < nearKeys.Time_To ) return;
+            //if( cursor.CurrentPosition < nearKeys.Time_To ) return;
+            while( cursor.CurrentPosition >= nearKeys.Time_To )
+            {
+                var isEndOfStream = cursor.CurrentPosition >= cursor.TotalLength;
 
+                var timeOffset = getTimeOffsetOverLength( in cursor, isEndOfStream );
 
-            var isEndOfStream = cursor.CurrentPosition >= cursor.TotalLength;
+                var nextIndex = getNextKeyIndex( in shift, isEndOfStream );
+                var nextKey = shift.Keys[ nextIndex ];
 
-            var timeOffset = getTimeOffsetOverLength( in cursor, isEndOfStream );
+                var time_from = nearKeys.Time_To;
+                var time_to = nearKeys.Time_Next;
+                var time_next = nextKey.Time.x;
 
-            var nextIndex = getNextKeyIndex( in shift, isEndOfStream );
-            var nextKey = shift.Keys[ nextIndex ];
+                nearKeys.Time_From = time_from - timeOffset;
+                nearKeys.Time_To = time_to - timeOffset;
+                nearKeys.Time_Next = time_next;
 
-            var time_from = nearKeys.Time_To;
-            var time_to = nearKeys.Time_Next;
-            var time_next = nextKey.Time.x;
+                nearKeys.Value_Prev = nearKeys.Value_From;
+                nearKeys.Value_From = nearKeys.Value_To;
+                nearKeys.Value_To = nearKeys.Value_Next;
+                nearKeys.Value_Next = nextKey.Value;
 
-            nearKeys.Time_From = time_from - timeOffset;
-            nearKeys.Time_To = time_to - timeOffset;
-            nearKeys.Time_Next = time_next;
+                shift.KeyIndex_Next = nextIndex;
 
-            nearKeys.Value_Prev = nearKeys.Value_From;
-            nearKeys.Value_From = nearKeys.Value_To;
-            nearKeys.Value_To = nearKeys.Value_Next;
-            nearKeys.Value_Next = nextKey.Value;
-
-            shift.KeyIndex_Next = nextIndex;
-
-            cursor.CurrentPosition -= timeOffset;
-
+                cursor.CurrentPosition -= timeOffset;
+            }
+            
             return;
 
 

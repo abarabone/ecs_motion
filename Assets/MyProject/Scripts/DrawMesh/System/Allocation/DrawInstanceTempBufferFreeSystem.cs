@@ -46,6 +46,8 @@ namespace Abss.Draw
 
         protected override void OnDestroy()// 暫定（もっとわかりやすい場所で
         {
+            if(!this.HasSingleton<DrawSystemComputeTransformBufferData>()) return;
+
             var cb = this.GetSingleton<DrawSystemComputeTransformBufferData>();
             cb.Transforms.Dispose();
 
