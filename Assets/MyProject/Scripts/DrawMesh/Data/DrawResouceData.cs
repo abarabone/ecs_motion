@@ -21,6 +21,29 @@ using Abss.Misc;
 namespace Abss.Draw
 {
 
+    public class DrawMeshCsResourceUnit
+    {
+        public int MeshId;
+        public Mesh Mesh;
+        public Material Material;
+        public int VectorLengthInBone;
+        public int MaxInstance;
+    }
+
+    public enum BoneType
+    {
+        T = 1,
+        TR = 2,
+        TRS = 3,
+        Matrix = 4,
+    }
+    public struct TRBoneUnit
+    {
+        public float4 pos;
+        public quaternion rot;
+    }
+
+
     // シングルトン -----------------------
 
     public class DrawSystemComputeTransformBufferData : IComponentData

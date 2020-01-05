@@ -66,15 +66,15 @@ Shader "Custom/SkinnedMesh_1bone_nolit_cs"
 			};
 
 
-			struct bone
-			{
-				float4	position;
-				float4	rotation;
-			};
+			//struct bone
+			//{
+			//	float4	position;
+			//	float4	rotation;
+			//};
 
-			StructuredBuffer<bone> bones;
-
-			float	boneLength;
+			StructuredBuffer<float4> BoneVectorBuffer;
+			int	BoneLengthEveryInstance;
+			int BoneVectorOffset;
 
 			fixed4		_Color;
 			sampler2D	_MainTex;
@@ -101,15 +101,19 @@ Shader "Custom/SkinnedMesh_1bone_nolit_cs"
 				//UNITY_SETUP_INSTANCE_ID(v);
 
 				//int i = getInstanceId;
-				int ibone = i *(int)boneLength + v.boneIndex.x;
-				
-				float4	prepos = v.vertex;
-				float4	rpos = rot( prepos, bones[ibone].rotation );
-				float4	tpos = rpos + bones[ibone].position;
-				float4	pos = mul(UNITY_MATRIX_VP, float4(tpos.xyz, 1.0f));//tpos);
-				//float4	pos = UnityObjectToClipPos(tpos);
+				int ibone = i * BoneLengthEveryInstance + v.boneIndex.x;
+				int ivec = BoneVectorOffset + ibone * 2;
 
-				o.vertex = pos;
+				float4 wpos = BoneVectorBuffer[ivec + 0];
+				float4 wrot = BoneVectorBuffer[ivec + 1];
+
+				float4	lvt = v.vertex;
+				float4	rvt = rot( lvt, wrot );
+				float4	tvt = rvt + wpos;
+				float4	wvt = mul(UNITY_MATRIX_VP, float4(tvt.xyz, 1.0f));
+				//float4	wvt = UnityObjectToClipPos(tvt);
+
+				o.vertex = wvt;
 				o.uv = v.uv;
 				o.color = float4(1,1,1,1);
 

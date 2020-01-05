@@ -50,12 +50,9 @@ namespace Abss.Arthuring
 
         void Awake()
         {
-            var em = World.Active.EntityManager;
+            var em = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-
-            //var drawMeshCsSystem = em.World.GetExistingSystem<DrawMeshCsSystem>();
-            //var drawMeshCsResourceHolder = drawMeshCsSystem.GetResourceHolder();
-
+            
             var drawModelArchetype = em.CreateArchetype(
                 typeof( DrawModelBoneUnitSizeData ),
                 typeof( DrawModelInstanceCounterData ),
@@ -69,7 +66,7 @@ namespace Abss.Arthuring
 
             this.PrefabEntities = this.PrefabGameObjects
                 //.Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
-                .Select( prefab => prefab.Convert( em, null, initDrawModelComponents_ ) )
+                .Select( prefab => prefab.Convert( em, initDrawModelComponents_ ) )
                 .ToArray();
 
 
@@ -141,8 +138,8 @@ namespace Abss.Arthuring
                 void setShaderProps_( Material mat_, Mesh mesh_, ComputeBuffer boneVectorBuffer_ )
                 {
                     mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer_ );
-                    mat_.SetInt( "BoneVectorLength", mesh_.bindposes.Length * (int)boneType );
-                    mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
+                    mat_.SetInt( "BoneLengthEveryInstance", mesh_.bindposes.Length );
+                    //mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
                 }
 
                 Entity createEntityAndInitComponents_( EntityArchetype drawModelArchetype__ )
@@ -203,7 +200,7 @@ namespace Abss.Arthuring
         public abstract class ConvertToCustomPrefabEntityBehaviour : MonoBehaviour
         {
             abstract public Entity Convert
-                ( EntityManager em, DrawMeshResourceHolder drawres, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc );
+                ( EntityManager em, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc );
         }
     }
 

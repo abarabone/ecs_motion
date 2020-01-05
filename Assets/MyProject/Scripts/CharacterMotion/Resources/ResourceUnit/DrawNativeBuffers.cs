@@ -18,71 +18,71 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
-    public unsafe struct DrawInstanceNativeBufferUnit
-    {
-        public ThreadSafeCounter<Persistent> InstanceCounter;
-        //public NativeSlice<float4> InstanceBoneVectors;
-        public float4* pInstanceBoneVectors;
-        public int VectorLengthInBone;
-        public int OffsetInBuffer;
-    }
+    //public unsafe struct DrawInstanceNativeBufferUnit
+    //{
+    //    public ThreadSafeCounter<Persistent> InstanceCounter;
+    //    //public NativeSlice<float4> InstanceBoneVectors;
+    //    public float4* pInstanceBoneVectors;
+    //    public int VectorLengthInBone;
+    //    public int OffsetInBuffer;
+    //}
 
 
 
-    public class DrawNativeInstanceBufferHolder : IDisposable
-    {
+    //public class DrawNativeInstanceBufferHolder : IDisposable
+    //{
 
-        public NativeArray<DrawInstanceNativeBufferUnit> Units;
+    //    public NativeArray<DrawInstanceNativeBufferUnit> Units;
 
-        public NativeArray<float4> InstanceBoneVectors;
-
-
-        public unsafe void Initialize( DrawMeshResourceHolder resources )
-        {
-            var arrayLengths = resources.Units
-                .Select( x => x.VectorLengthInBone * x.Mesh.bindposes.Length * x.MaxInstance )
-                .ToArray();
-
-            this.Units =
-                new NativeArray<DrawInstanceNativeBufferUnit>( arrayLengths.Length, Allocator.Persistent );
-
-            this.InstanceBoneVectors =
-                new NativeArray<float4>( arrayLengths.Sum(), Allocator.Persistent );
-
-            var start = 0;
-            for( var i = 0; i < arrayLengths.Length; i++ )
-            {
-                this.Units[ i ] = new DrawInstanceNativeBufferUnit
-                {
-                    //InstanceBoneVectors = this.InstanceBoneVectors.Slice( start, arrayLengths[ i ] ),
-                    pInstanceBoneVectors = (float4*)NativeArrayUnsafeUtility.GetUnsafePtr( this.InstanceBoneVectors ) + start,
-                    InstanceCounter = new ThreadSafeCounter<Persistent>( 0 ),
-                    OffsetInBuffer = start,
-                    VectorLengthInBone = resources.Units[ i ].VectorLengthInBone,
-                };
-
-                start += arrayLengths[ i ];
-            }
-        }
-
-        public void Reset()
-        {
-            foreach( var x in this.Units )
-                x.InstanceCounter.Reset();
-        }
+    //    public NativeArray<float4> InstanceBoneVectors;
 
 
-        public void Dispose()
-        {
-            foreach( var x in this.Units )
-            {
-                x.InstanceCounter.Dispose();
-            }
+    //    public unsafe void Initialize( DrawMeshResourceHolder resources )
+    //    {
+    //        var arrayLengths = resources.Units
+    //            .Select( x => x.VectorLengthInBone * x.Mesh.bindposes.Length * x.MaxInstance )
+    //            .ToArray();
 
-            this.Units.Dispose();
-            this.InstanceBoneVectors.Dispose();
-        }
+    //        this.Units =
+    //            new NativeArray<DrawInstanceNativeBufferUnit>( arrayLengths.Length, Allocator.Persistent );
 
-    }
+    //        this.InstanceBoneVectors =
+    //            new NativeArray<float4>( arrayLengths.Sum(), Allocator.Persistent );
+
+    //        var start = 0;
+    //        for( var i = 0; i < arrayLengths.Length; i++ )
+    //        {
+    //            this.Units[ i ] = new DrawInstanceNativeBufferUnit
+    //            {
+    //                //InstanceBoneVectors = this.InstanceBoneVectors.Slice( start, arrayLengths[ i ] ),
+    //                pInstanceBoneVectors = (float4*)NativeArrayUnsafeUtility.GetUnsafePtr( this.InstanceBoneVectors ) + start,
+    //                InstanceCounter = new ThreadSafeCounter<Persistent>( 0 ),
+    //                OffsetInBuffer = start,
+    //                VectorLengthInBone = resources.Units[ i ].VectorLengthInBone,
+    //            };
+
+    //            start += arrayLengths[ i ];
+    //        }
+    //    }
+
+    //    public void Reset()
+    //    {
+    //        foreach( var x in this.Units )
+    //            x.InstanceCounter.Reset();
+    //    }
+
+
+    //    public void Dispose()
+    //    {
+    //        foreach( var x in this.Units )
+    //        {
+    //            x.InstanceCounter.Dispose();
+    //        }
+
+    //        this.Units.Dispose();
+    //        this.InstanceBoneVectors.Dispose();
+    //    }
+
+    //}
 
 }

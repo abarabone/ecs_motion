@@ -26,14 +26,14 @@ namespace Abss.Arthuring
         
 
         public override Entity Convert
-            ( EntityManager em, DrawMeshResourceHolder drawResources,
+            ( EntityManager em,
             Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc )
         {
             if( !this.gameObject.activeSelf ) this.gameObject.SetActive( true );// 繰り返し使用されるときに必要になる
 
 
             var drawAuthor = this.GetComponent<DrawSkinnedMeshAuthoring>();
-            var drawPrefab = drawAuthor.Convert( em, drawResources, initDrawModelComponentsFunc );
+            var drawPrefab = drawAuthor.Convert( em, initDrawModelComponentsFunc );
 
             var motionAuthors = this.GetComponents<MotionAuthoring>();
             var motionAndStreamPrefabs = ( from x in motionAuthors select x.Convert( em, drawPrefab ) ).ToArray();
