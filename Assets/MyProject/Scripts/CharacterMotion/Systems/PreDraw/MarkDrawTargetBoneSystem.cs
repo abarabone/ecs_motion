@@ -82,7 +82,7 @@ namespace Abss.Draw
             {
 
                 //var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
-                var drawTarget = this.DrawTargets[ drawLinker.DrawEntity ];
+                var drawTarget = this.DrawTargets[ drawLinker.DrawInstanceEntity ];
 
                 boneIndexer.BoneOffsetInModelBuffer =
                     drawTarget.InstanceIndex * boneId.BoneLength + boneId.BoneId;

@@ -139,7 +139,7 @@ namespace Abss.Arthuring
         static public (NameAndEntity[] bonePrefabs, Entity posturePrefab) CreatePrefabs
         (
             EntityManager em,
-            Entity drawPrefab, Entity mainMotionPrefab,
+            Entity drawInstancePrefab, Entity mainMotionPrefab,
             IEnumerable<(StreamEntityUnit[] streams,EnMotionBlendingType blendType)> streamPrefabss,
             float4x4[] mtBones, (bool isEnabled, string path)[] enabledsAndPaths
         )
@@ -161,8 +161,8 @@ namespace Abss.Arthuring
             var boneNameAndPrefabs = createNameAndBonePrefabs( em, qName, boneArchetype );
             var bonePrefabs = (from x in boneNameAndPrefabs select x.Entity).ToArray();
 
-            em.SetComponentData( bonePrefabs, new BoneDrawLinkData { DrawEntity = drawPrefab } );
-            em.setBoneId( bonePrefabs, drawPrefab );
+            em.setDrawComponet( bonePrefabs, drawInstancePrefab );
+            em.setBoneId( bonePrefabs, drawInstancePrefab );
             em.setBoneRelationLinks( posturePrefab, boneNameAndPrefabs, enabledsAndPaths );
             em.removeBoneRelationLinks( bonePrefabs, qBoneMasks );
             em.addBoneStreamLinkData( mainMotionPrefab, boneNameAndPrefabs, streamPrefabss );
@@ -176,6 +176,18 @@ namespace Abss.Arthuring
             return (boneNameAndPrefabs, posturePrefab);
         }
 
+        static void setDrawComponet
+            ( this EntityManager em_, IEnumerable<Entity> bonePrefabs, Entity drawInstancePrefab )
+        {
+            em_.SetComponentData(
+                bonePrefabs,
+                new BoneDrawLinkData
+                {
+                    DrawInstanceEntity = drawInstancePrefab,
+                    DrawModelEntity = em_.GetComponentData<DrawIndexOfModelData>(drawInstancePrefab).ModelEntity,
+                }
+            );
+        }
 
 
         static NameAndEntity[] createNameAndBonePrefabs

@@ -31,7 +31,7 @@ namespace Abss.Draw
     //[DisableAutoCreation]
     [UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    public class DrawMeshCsSystem : ComponentSystem
+    public class DrawMeshCsSystem : JobComponentSystem
     {
 
         public int MaxInstance = 10000;
@@ -68,50 +68,46 @@ namespace Abss.Draw
         }
 
 
-        protected override unsafe void OnUpdate()
+        protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
         {
 
             var nativeBuffer = this.GetSingleton<DrawSystemNativeTransformBufferData>().Transforms;
-            var computeBuffer = this.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;//
-            
-            var na = NativeArrayUnsafeUtility
-                .ConvertExistingDataToNativeArray<float4>( nativeBuffer.pBuffer, nativeBuffer.length_, Allocator.None );
-
-            computeBuffer.SetData( na );
-
+            var computeBuffer = this.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
+            computeBuffer.SetData( nativeBuffer.AsNativeArray() );
 
             this.Entities
+                .WithoutBurst()
                 .ForEach(
                     (
-                        ref DrawModelBoneUnitSizeData boneUnitInfo,
-                        ref DrawModelInstanceCounterData counter
-                        //in DrawModelComputeArgumentsBufferData shaderArg,
-                        //ref DrawModelGeometryData geom
+                        in DrawModelBoneUnitSizeData boneUnitInfo,
+                        in DrawModelInstanceCounterData counter,
+                        in DrawModelInstanceOffsetData offset,
+                        in DrawModelComputeArgumentsBufferData shaderArg,
+                        in DrawModelGeometryData geom
                     ) =>
                     {
 
-                        //var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
+                        var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
 
-                        ////var args = shaderArg.InstanceArgumentsBuffer;
-                        ////var instanceCount = instanceCounter.InstanceCounter.Count;
-                        ////var argparams = new IndirectArgumentsForInstancing( geom.Mesh, instanceCount );
-                        ////args.SetData( ref argparams );
-                        
-                        //var mesh = geom.Mesh;
+                        var mesh = geom.Mesh;
+                        var mat = geom.Material;
+                        var args = shaderArg.InstanceArgumentsBuffer;
 
+                        var vector
 
-                        //var mat = geom.Material;
-                        ////mat.SetBuffer( "BoneVectorBuffer", dstBuffer );
-                        ////mat.SetInt( "BoneVectorLength", mesh.bindposes.Length * (int)boneType );
-                        //mat.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
+                        //mat.SetBuffer( "BoneVectorBuffer", dstBuffer );
+                        //mat.SetInt( "BoneVectorLength", mesh.bindposes.Length * (int)boneType );
+                        mat.SetInt( "BoneVectorOffset", offset.VectorOffsetInBuffer );// 毎フレームのセットが必要
 
-                        ////Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
+                        var instanceCount = counter.InstanceCounter.Count;
+                        var argparams = new IndirectArgumentsForInstancing( mesh, instanceCount );
+                        args.SetData( ref argparams );
+
+                        Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
                     }
                 );
             
-
-
-            return;
+            return inputDeps;
 
             //for( var i = 0; i < this.resourceHolder.Units.Count; i++ )
             //{
@@ -134,11 +130,12 @@ namespace Abss.Draw
             //    var srcBuffer = this.NativeBuffers.InstanceBoneVectors;//this.tempBufferSystem.TempInstanceBoneVectors;
             //    var dstBuffer = devicebuf.TransformBuffer;
             //    dstBuffer.SetData( srcBuffer, nativebuf.OffsetInBuffer, 0, outputVectorCount );
-                
+
             //    Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
             //}
 
             //return inputDeps;
+
         }
 
     }

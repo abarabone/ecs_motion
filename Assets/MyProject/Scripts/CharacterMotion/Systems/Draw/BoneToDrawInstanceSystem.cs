@@ -37,7 +37,6 @@ namespace Abss.Draw
 
             inputDeps = new BoneToDrawInstanceJob
             {
-                modelIndexsOfDrawInstance = this.GetComponentDataFromEntity<DrawIndexOfModelData>( isReadOnly: true ),
                 UnitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModelBoneUnitSizeData>( isReadOnly: true ),
                 OffsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModelInstanceOffsetData>( isReadOnly: true ),
             }
@@ -57,8 +56,6 @@ namespace Abss.Draw
             [ReadOnly]
             public ComponentDataFromEntity<DrawModelBoneUnitSizeData> UnitSizesOfDrawModel;
             [ReadOnly]
-            public ComponentDataFromEntity<DrawIndexOfModelData> modelIndexsOfDrawInstance;
-            [ReadOnly]
             public ComponentDataFromEntity<DrawModelInstanceOffsetData> OffsetsOfDrawModel;
 
 
@@ -71,12 +68,10 @@ namespace Abss.Draw
             )
             {
 
-                var modelIndexer = this.modelIndexsOfDrawInstance[ linkerOfBone.DrawEntity ];
-
-                var vectorLengthInBone = this.UnitSizesOfDrawModel[ modelIndexer.ModelEntity ].VectorLengthInBone;
+                var vectorLengthInBone = this.UnitSizesOfDrawModel[ linkerOfBone.DrawModelEntity ].VectorLengthInBone;
                 var i = targetOfBone.BoneOffsetInModelBuffer * vectorLengthInBone;
 
-                var pInstance = this.OffsetsOfDrawModel[ modelIndexer.ModelEntity ].pVectorOffsetInBuffer;
+                var pInstance = this.OffsetsOfDrawModel[ linkerOfBone.DrawModelEntity ].pVectorOffsetInBuffer;
                 pInstance[ i + 0 ] = new float4( pos.Value, 1.0f );
                 pInstance[ i + 1 ] = rot.Value.value;
 

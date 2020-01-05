@@ -78,7 +78,6 @@ namespace Abss.Draw
         public T* pBuffer { get; private set; }
         public int length_;
 
-
         public SimpleNativeBuffer( int length )
         {
             var size = UnsafeUtility.SizeOf<T>();
@@ -95,6 +94,24 @@ namespace Abss.Draw
             UnsafeUtility.Free( (void*)this.pBuffer, allocator );
         }
 
+    }
+    public static class SimpleNativeBufferUtility
+    {
+        static public unsafe NativeArray<T> AsNativeArray<T, Tallocator>
+            ( ref this SimpleNativeBuffer<T,Tallocator> buffer )
+            where T : unmanaged
+            where Tallocator : IAllocatorLabel, new()
+        {
+            var na = NativeArrayUnsafeUtility
+                .ConvertExistingDataToNativeArray<T>( buffer.pBuffer, buffer.length_, Allocator.None );
+
+            #if ENABLE_UNITY_COLLECTIONS_CHECKS
+            NativeArrayUnsafeUtility
+                .SetAtomicSafetyHandle( ref na, AtomicSafetyHandle.GetTempUnsafePtrSliceHandle() );
+            #endif
+
+            return na;
+        }
     }
 
 }

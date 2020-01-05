@@ -21,7 +21,8 @@ namespace Abss.Motion
     
     public struct BoneDrawLinkData : IComponentData
     {
-        public Entity DrawEntity;
+        public Entity DrawInstanceEntity;
+        public Entity DrawModelEntity;
     }
 
     public struct BoneRelationLinkData : IComponentData

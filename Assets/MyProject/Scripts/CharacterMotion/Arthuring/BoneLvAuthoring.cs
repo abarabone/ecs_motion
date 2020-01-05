@@ -144,7 +144,7 @@ namespace Abss.Arthuring
                 var boneLength = motionClip_.StreamPaths.Length;
 
                 var qDrawLinker = Enumerable
-                    .Repeat( new BoneDrawLinkData { DrawEntity = drawPrefab_ }, boneLength );
+                    .Repeat( new BoneDrawLinkData { DrawInstanceEntity = drawPrefab_ }, boneLength );
 
                 em_.SetComponentData( bonePrefabs_, qDrawLinker );
             }
