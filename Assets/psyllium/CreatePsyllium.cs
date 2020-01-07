@@ -30,6 +30,11 @@ public class CreatePsyllium : MonoBehaviour
 
             new Vector3 (-width,  height, 0),  // 6 
             new Vector3 (width ,  height, 0),  // 7
+
+            new Vector3 (-width,  height, 0),  // 8
+            new Vector3 (width ,  height, 0),  // 9
+            new Vector3 (-width, -height, 0),  // 10
+            new Vector3 (width , -height, 0),  // 11
         };
 
         mesh.uv = new Vector2[] {
@@ -39,6 +44,11 @@ public class CreatePsyllium : MonoBehaviour
             new Vector2 (1, 0.5f),
             new Vector2 (0, 0.5f),
             new Vector2 (1, 0.5f),
+            new Vector2 (0, 1),
+            new Vector2 (1, 1),
+
+            new Vector2 (0, 0),
+            new Vector2 (1, 0),
             new Vector2 (0, 1),
             new Vector2 (1, 1),
         };
@@ -52,6 +62,11 @@ public class CreatePsyllium : MonoBehaviour
             new Vector2 (0, 0),
             new Vector2 (radius, 0),
             new Vector2 (radius, 0),
+
+            new Vector2 (-radius, 0),
+            new Vector2 (-radius, 0),
+            new Vector2 (radius, 0),
+            new Vector2 (radius, 0),
         };
 
         mesh.triangles = new int[] {
@@ -61,9 +76,14 @@ public class CreatePsyllium : MonoBehaviour
             4, 5, 3,
             4, 6, 5, 
             6, 7, 5,
+
+           // 8, 4, 9,
+           // 4, 5, 9,
+           // 1,10, 3,
+           //10,11, 3
         };
 
-        material.SetColor("_Color", new Color(1.0f, 0.1f, 0.01f));
+        //material.SetColor("_Color", new Color(1.0f, 0.1f, 0.01f));
 
         filter.sharedMesh = mesh;
         collider.sharedMesh = mesh;
