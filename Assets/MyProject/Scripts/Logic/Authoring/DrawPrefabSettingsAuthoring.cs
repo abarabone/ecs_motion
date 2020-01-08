@@ -33,17 +33,13 @@ namespace Abss.Arthuring
     }
 
     [DisallowMultipleComponent]
-    public class PrefabSettingsAuthoring : MonoBehaviour
+    public class DrawPrefabSettingsAuthoring : MonoBehaviour
     {
 
         public ConvertToMainCustomPrefabEntityBehaviour[] PrefabGameObjects;
 
         public Entity[] PrefabEntities { get; private set; }
-
-        public int InstanceCountPerModel = 100;
-
-
-        List<Entity> ents = new List<Entity>();
+        
 
         void Awake()
         {
@@ -65,31 +61,7 @@ namespace Abss.Arthuring
                 //.Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
                 .Select( prefab => prefab.Convert( em, initDrawModelComponents_ ) )
                 .ToArray();
-
-
-
-            // モーション設定
-            foreach( var model in Enumerable.Range( 0, this.PrefabEntities.Length ) )
-            {
-                var mlinker = em.GetComponentData<CharacterLinkData>( this.PrefabEntities[ model ] );
-                ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MainMotionEntity ).ClipData.Value;
-
-                foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
-                {
-                    this.ents.Add( em.Instantiate( this.PrefabEntities[ model ] ) );
-
-                    var chlinker = em.GetComponentData<CharacterLinkData>( this.ents[ this.ents.Count - 1 ] );
-                    em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i * 3, 0, -model * 5 ) } );
-                    em.SetComponentData( chlinker.MainMotionEntity, new MotionInitializeData { MotionIndex = i % mclip.Motions.Length } );
-                }
-            }
-
-            // 先頭キャラのみ
-            em.AddComponentData( this.ents[ 0 ], new PlayerTag { } );
-            var post = em.GetComponentData<CharacterLinkData>( this.ents[ 0 ] ).PostureEntity;
-            em.AddComponentData( post, new PlayerTag { } );//
-            //em.AddComponentData( post, new MoveHandlingData { } );//
-
+            
             return;
 
 

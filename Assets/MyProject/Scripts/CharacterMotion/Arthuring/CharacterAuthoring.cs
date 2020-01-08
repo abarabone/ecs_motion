@@ -21,7 +21,7 @@ namespace Abss.Arthuring
 {
 
     [DisallowMultipleComponent]
-    public class CharacterAuthoring : PrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
+    public class CharacterAuthoring : DrawPrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
     {
         
 
