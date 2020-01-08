@@ -125,7 +125,7 @@ namespace Abss.Arthuring
                     em.SetComponentData( ent,
                         new DrawModelBoneUnitSizeData
                         {
-                            BoneLength = mesh.bindposes.Length,// より正確なものに変える
+                            BoneLength = mesh.bindposes.Length > 0 ? mesh.bindposes.Length : 1,// より正確なものに変える
                             VectorLengthInBone = (int)boneType,
                         }
                     );

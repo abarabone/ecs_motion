@@ -9,7 +9,6 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-
 using Abss.Arthuring;
 using Abss.Motion;
 using Abss.SystemGroup;

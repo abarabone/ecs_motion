@@ -39,18 +39,33 @@ namespace Abss.Arthuring
             // モーション設定
             foreach( var model in Enumerable.Range( 0, drawSettings.PrefabEntities.Length ) )
             {
-                var mlinker = em.GetComponentData<CharacterLinkData>( drawSettings.PrefabEntities[ model ] );
-                ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MainMotionEntity ).ClipData.Value;
+                var ent = drawSettings.PrefabEntities[ model ];
 
-                foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
+                if( em.HasComponent<CharacterLinkData>( ent ) )
                 {
-                    this.ents.Add( em.Instantiate( drawSettings.PrefabEntities[ model ] ) );
+                    var mlinker = em.GetComponentData<CharacterLinkData>( ent );
+                    ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MainMotionEntity ).ClipData.Value;
 
-                    var chlinker = em.GetComponentData<CharacterLinkData>( this.ents[ this.ents.Count - 1 ] );
-                    em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i * 3, 0, -model * 5 ) } );
-                    em.SetComponentData( chlinker.MainMotionEntity, new MotionInitializeData { MotionIndex = i % mclip.Motions.Length } );
+                    foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
+                    {
+                        this.ents.Add( em.Instantiate( ent ) );
+
+                        var chlinker = em.GetComponentData<CharacterLinkData>( this.ents.Last() );
+                        em.SetComponentData( chlinker.PostureEntity, new Translation { Value = new float3( i * 3, 0, -model * 5 ) } );
+                        em.SetComponentData( chlinker.MainMotionEntity, new MotionInitializeData { MotionIndex = i % mclip.Motions.Length } );
+                    }
+                }
+                else
+                {
+                    foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
+                    {
+                        this.ents.Add( em.Instantiate( ent ) );
+
+                        em.SetComponentData( this.ents.Last(), new Translation { Value = new float3( i * 3, 0, -model * 5 ) } );
+                    }
                 }
             }
+
 
             // 先頭キャラのみ
             em.AddComponentData( this.ents[ 0 ], new PlayerTag { } );
