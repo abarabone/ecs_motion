@@ -42,7 +42,7 @@
             };
 
 			StructuredBuffer<float4> BoneVectorBuffer;
-			//int	BoneLengthEveryInstance;
+			int	BoneLengthEveryInstance;
 			int BoneVectorOffset;
 
             sampler2D _MainTex;
@@ -59,7 +59,7 @@
 				float4 wdir = BoneVectorBuffer[ivec + 1];
 
 
-				float4x4 mat = unity_ObjectToWorld;
+				//float4x4 mat = unity_ObjectToWorld;
                 //float3 barUp = mat._m01_m11_m21;
                 //float3 barPos = mat._m03_m13_m23;
 				float3 barUp = wdir.xyz;
@@ -73,10 +73,12 @@
 				//float3 barUp = normalize(cross(barForward, cameraToBar));
 				//float3 barSide = normalize(cross(barUp, barForward));
 
-                mat._m00_m10_m20 = barSide;
-                mat._m01_m11_m21 = barUp;
-                mat._m02_m12_m22 = barForward;
-				mat._m03_m13_m23 = wpos.xyz;
+				float4x4 mat = float4x4( float4(barSide,0), float4(barUp, 0), float4(barForward, 0), wpos );
+    //            mat._m00_m10_m20 = barSide;
+    //            mat._m01_m11_m21 = barUp;
+    //            mat._m02_m12_m22 = barForward;
+				//mat._m03_m13_m23 = wpos.xyz;
+				mat = transpose(mat);
 
                 float4 vertex = float4(v.vertex.xy, 0.0, 1.0);
 

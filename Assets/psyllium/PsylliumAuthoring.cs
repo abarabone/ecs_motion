@@ -17,6 +17,11 @@ using Abss.Draw;
 using Abss.Character;
 using Abss.Common.Extension;
 
+
+
+public struct ParticleTag : IComponentData//
+{ }
+
 namespace Abss.Arthuring
 {
 
@@ -39,6 +44,7 @@ namespace Abss.Arthuring
             var modelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.TR );
 
             em.AddComponentData( ent, new Prefab { } );
+            em.AddComponentData( ent, new ParticleTag { } );//
 
             em.AddComponentData( ent,
                 new DrawIndexOfModelData

@@ -13,6 +13,7 @@ using Abss.Arthuring;
 using Abss.Motion;
 using Abss.SystemGroup;
 using Abss.Geometry;
+using Abss.Character;
 
 namespace Abss.Draw
 {
@@ -20,7 +21,7 @@ namespace Abss.Draw
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
-    //[UpdateBefore(typeof( BeginDrawCsBarier ) )]
+    [UpdateBefore( typeof( BeginDrawCsBarier ) )]
     public class PsylliumToDrawInstanceSystem : JobComponentSystem
     {
 
@@ -39,8 +40,10 @@ namespace Abss.Draw
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModelInstanceOffsetData>( isReadOnly: true );
 
             inputDeps = this.Entities
+                //.WithoutBurst()
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
+                .WithAll<ParticleTag>()
                 .ForEach(
                     (
                         in DrawInstanceTargetWorkData target,

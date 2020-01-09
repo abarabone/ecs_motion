@@ -70,19 +70,20 @@ namespace Abss.Arthuring
                 
                 var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
                 var boneVectorBuffer = sys.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
-                setShaderProps_( mat, mesh, boneVectorBuffer );
+                var boneLength = mesh.bindposes.Length > 0 ? mesh.bindposes.Length : 1;// より正確なものに変える
+                setShaderProps_( mat, mesh, boneVectorBuffer, boneLength );
 
-                return createEntityAndInitComponents_( drawModelArchetype_ );
+                return createEntityAndInitComponents_( drawModelArchetype_, boneLength );
 
 
-                void setShaderProps_( Material mat_, Mesh mesh_, ComputeBuffer boneVectorBuffer_ )
+                void setShaderProps_( Material mat_, Mesh mesh_, ComputeBuffer boneVectorBuffer_, int boneLength_ )
                 {
                     mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer_ );
-                    mat_.SetInt( "BoneLengthEveryInstance", mesh_.bindposes.Length );
+                    mat_.SetInt( "BoneLengthEveryInstance", boneLength_ );
                     //mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
                 }
 
-                Entity createEntityAndInitComponents_( EntityArchetype drawModelArchetype__ )
+                Entity createEntityAndInitComponents_( EntityArchetype drawModelArchetype__, int boneLength_ )
                 {
                     //var drawModelArchetype = em.CreateArchetype(
                     //    typeof( DrawModelBoneInfoData ),
@@ -96,7 +97,7 @@ namespace Abss.Arthuring
                     em.SetComponentData( ent,
                         new DrawModelBoneUnitSizeData
                         {
-                            BoneLength = mesh.bindposes.Length > 0 ? mesh.bindposes.Length : 1,// より正確なものに変える
+                            BoneLength = boneLength_,
                             VectorLengthInBone = (int)boneType,
                         }
                     );

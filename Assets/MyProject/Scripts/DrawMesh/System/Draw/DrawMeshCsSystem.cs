@@ -18,7 +18,6 @@ namespace Abss.Draw
 {
 
     //[DisableAutoCreation]
-    [UpdateAfter(typeof( BoneToDrawInstanceSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     public class BeginDrawCsBarier : EntityCommandBufferSystem
     { }
@@ -40,6 +39,12 @@ namespace Abss.Draw
             var nativeBuffer = this.GetSingleton<DrawSystemNativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
             computeBuffer.SetData( nativeBuffer.AsNativeArray() );
+
+            //Debug.Log( "start" );
+            //for(var i=0; i<nativeBuffer.length_; i++ )
+            //{
+            //    Debug.Log( $"{i} {nativeBuffer.pBuffer[i]}" );
+            //}
 
             this.Entities
                 .WithoutBurst()
