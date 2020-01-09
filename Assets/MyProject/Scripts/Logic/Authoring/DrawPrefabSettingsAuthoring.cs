@@ -53,10 +53,7 @@ namespace Abss.Arthuring
                 typeof( DrawModelGeometryData ),
                 typeof( DrawModelComputeArgumentsBufferData )
             );
-
             
-            var sysEnt = initDrawSystemComponents_( em );
-
             this.PrefabEntities = this.PrefabGameObjects
                 //.Select( prefab => prefab.Convert( em, drawMeshCsResourceHolder, initDrawModelComponents_ ) )
                 .Select( prefab => prefab.Convert( em, initDrawModelComponents_ ) )
@@ -65,43 +62,17 @@ namespace Abss.Arthuring
             return;
 
 
-            Entity initDrawSystemComponents_( EntityManager em_ )
-            {
-                var arch = em_.CreateArchetype(
-                    typeof( DrawSystemComputeTransformBufferData ),
-                    typeof( DrawSystemNativeTransformBufferData )
-                );
-                var ent = em_.CreateEntity( arch );
-
-                
-                const int maxBufferLength = 1000 * 16 * 2;//
-                
-                var stride = Marshal.SizeOf( typeof( float4 ) );
-
-                em_.SetComponentData( ent,
-                    new DrawSystemComputeTransformBufferData
-                    {
-                        Transforms = new ComputeBuffer
-                            ( maxBufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
-                    }
-                );
-
-                return ent;
-            }
-
             Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
             {
                 // キャプチャ（暫定）
                 var em_ = em;
                 var drawModelArchetype_ = drawModelArchetype;
-                var sysEnt_ = sysEnt;
-
-                var drawModelEnt = createEntityAndInitComponents_( drawModelArchetype_ );
-
-                var boneVectorBuffer = em_.GetComponentData<DrawSystemComputeTransformBufferData>(sysEnt_).Transforms;
+                
+                var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
+                var boneVectorBuffer = sys.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
                 setShaderProps_( mat, mesh, boneVectorBuffer );
 
-                return drawModelEnt;
+                return createEntityAndInitComponents_( drawModelArchetype_ );
 
 
                 void setShaderProps_( Material mat_, Mesh mesh_, ComputeBuffer boneVectorBuffer_ )

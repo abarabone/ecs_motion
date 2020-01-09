@@ -122,6 +122,7 @@ namespace Abss.Draw
                         offsets[ j ] = new DrawModelInstanceOffsetData
                         {
                             pVectorOffsetInBuffer = pBufferStart + offset,
+                            voffset = offset,//
                         };
                     }
                 }

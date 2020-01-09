@@ -32,7 +32,7 @@ namespace Abss.Arthuring
         {
 
             var mesh = createMesh();
-            var mat = this.Material;
+            var mat = new Material( this.Material );
 
 
             var ent = em.CreateEntity();
@@ -94,10 +94,10 @@ namespace Abss.Arthuring
                 new Vector3 (-width,  height, radius),      // 6 
                 new Vector3 (width ,  height, radius),      // 7
 
-                new Vector3 (-width,  height, -radius),     // 8
-                new Vector3 (width ,  height, -radius),     // 9
-                new Vector3 (-width, -height, radius),      // 10
-                new Vector3 (width , -height, radius),      // 11
+                //new Vector3 (-width,  height, -radius),     // 8
+                //new Vector3 (width ,  height, -radius),     // 9
+                //new Vector3 (-width, -height, radius),      // 10
+                //new Vector3 (width , -height, radius),      // 11
             };
 
             mesh.uv = new Vector2[]
@@ -111,10 +111,10 @@ namespace Abss.Arthuring
                 new Vector2 (0, 1),
                 new Vector2 (1, 1),
 
-                new Vector2 (0, 0),
-                new Vector2 (1, 0),
-                new Vector2 (0, 1),
-                new Vector2 (1, 1),
+                //new Vector2 (0, 0),
+                //new Vector2 (1, 0),
+                //new Vector2 (0, 1),
+                //new Vector2 (1, 1),
             };
 
             //mesh.uv2 = new Vector2[]

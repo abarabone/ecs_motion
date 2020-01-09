@@ -1,4 +1,4 @@
-﻿Shader "Custom/Psyllium"
+﻿Shader "Custom/Psyllium2"
 {
     Properties
     {
@@ -49,6 +49,14 @@
             float4 _MainTex_ST;
             float3 _Color;
 
+
+			half3 rot(half3 lpos, half3 wpos, half3 wdir)
+			{
+				half3 weye = normalize(_WorldSpaceCameraPos - wpos);
+				half3 h = cross(wdir, weye);
+				return lpos.xxx * h;
+			}
+
             v2f vert (appdata v, uint i : SV_InstanceID)
             {
                 v2f o;
@@ -58,40 +66,22 @@
 				float4 wpos = BoneVectorBuffer[ivec + 0];
 				float4 wdir = BoneVectorBuffer[ivec + 1];
 
-
-				float4x4 mat = unity_ObjectToWorld;
-                //float3 barUp = mat._m01_m11_m21;
-                //float3 barPos = mat._m03_m13_m23;
-				float3 barUp = wdir.xyz;
-				float3 barPos = wpos.xyz;
-
-                // Y軸をロックして面をカメラに向ける姿勢行列を作る
-                float3 cameraToBar = barPos - _WorldSpaceCameraPos;
-                float3 barSide = normalize(cross(barUp, cameraToBar));
-                float3 barForward = normalize(cross(barSide, barUp));
-
-				//float3 barUp = normalize(cross(barForward, cameraToBar));
-				//float3 barSide = normalize(cross(barUp, barForward));
-
-                mat._m00_m10_m20 = barSide;
-                mat._m01_m11_m21 = barUp;
-                mat._m02_m12_m22 = barForward;
-				mat._m03_m13_m23 = wpos.xyz;
-
                 float4 vertex = float4(v.vertex.xy, 0.0, 1.0);
+				half3 rpos = rot(vertex.xyz, wpos.xyz, wdir.xyz);
+
+				float4 pos = float4(wpos.xyz + v.vertex.xyz, 1.0f);
 
 
-                vertex = mul(mat, vertex);
+                //float3 offsetVec = normalize(cross(cameraToBar, barSide));
+                //vertex.xyz += offsetVec * v.vertex.z;
 
-                float3 offsetVec = normalize(cross(cameraToBar, barSide));
-                vertex.xyz += offsetVec * v.vertex.z;
-
-                o.vertex = mul(UNITY_MATRIX_VP, vertex);
+                o.vertex = mul(UNITY_MATRIX_VP, pos);
                 o.uv = v.uv;
                 UNITY_TRANSFER_FOG(o,o.vertex);
 
                 return o;
             }
+
 
             fixed4 frag (v2f i) : SV_Target
             {
