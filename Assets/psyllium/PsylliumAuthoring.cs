@@ -123,21 +123,21 @@ namespace Abss.Arthuring
                 //new Vector2 (1, 1),
             };
 
-            //mesh.uv2 = new Vector2[]
+            //mesh.colors = new Color[]
             //{
-            //    new Vector2 (-radius, 0),
-            //    new Vector2 (0, 0),
-            //    new Vector2 (-radius, 0),
-            //    new Vector2 (0, 0),
-            //    new Vector2 (0, 0),
-            //    new Vector2 (0, 0),
-            //    new Vector2 (radius, 0),
-            //    new Vector2 (radius, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
 
-            //    new Vector2 (-radius, 0),
-            //    new Vector2 (-radius, 0),
-            //    new Vector2 (radius, 0),
-            //    new Vector2 (radius, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
             //};
 
             mesh.triangles = new int[]

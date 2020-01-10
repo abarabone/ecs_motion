@@ -1,4 +1,4 @@
-﻿Shader "Custom/Psyllium2"
+﻿Shader "Custom/Psyllium3"
 {
     Properties
     {
@@ -56,17 +56,17 @@
 
 				int ivec = BoneVectorOffset + i * 2;
 
-				half4 wpos = BoneVectorBuffer[ivec + 0];
-				half4 wdir = BoneVectorBuffer[ivec + 1];
+				half4 lvt = v.vertex;
+				half4 wpos0 = BoneVectorBuffer[ivec + 0];
+				half4 wpos1 = BoneVectorBuffer[ivec + 1];
+				half4 wpos = BoneVectorBuffer[ivec + (lvt.y+1)/2];
 
-				half3 eye = wpos.xyz - _WorldSpaceCameraPos;
-				half3 up = wdir.xyz;
+				half3 eye = wpos0.xyz - _WorldSpaceCameraPos;
+				half3 up = normalize(wpos1 - wpos0);
 				half3 side = normalize(cross(up, eye));
 				half3 edgeface = normalize(cross(eye, side));
-				
-				half4x4 mt = half4x4(half4(side, 0), half4(up, 0), half4(edgeface, 0), wpos);
-				half4 lvt = v.vertex;
-				half4 wvt = mul(lvt, mt);
+
+				half4 wvt = half4(wpos.xyz + side * lvt.xxx + edgeface * lvt.zzz, 1);
 
                 o.vertex = mul(UNITY_MATRIX_VP, wvt );
                 o.uv = v.uv;

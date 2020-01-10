@@ -68,25 +68,26 @@
                 // Y軸をロックして面をカメラに向ける姿勢行列を作る
                 float3 cameraToBar = barPos - _WorldSpaceCameraPos;
                 float3 barSide = normalize(cross(barUp, cameraToBar));
-                float3 barForward = normalize(cross(barSide, barUp));
+                //float3 barForward = normalize(cross(barSide, barUp));
+				float3 offsetVec = normalize(cross(cameraToBar, barSide));
 
 				//float3 barUp = normalize(cross(barForward, cameraToBar));
 				//float3 barSide = normalize(cross(barUp, barForward));
 
-				float4x4 mat = float4x4( float4(barSide,0), float4(barUp, 0), float4(barForward, 0), wpos );
+				float4x4 mat = float4x4( float4(barSide,0), float4(barUp, 0), float4(offsetVec, 0), wpos );
     //            mat._m00_m10_m20 = barSide;
     //            mat._m01_m11_m21 = barUp;
     //            mat._m02_m12_m22 = barForward;
 				//mat._m03_m13_m23 = wpos.xyz;
-				mat = transpose(mat);
+				//mat = transpose(mat);
 
-                float4 vertex = float4(v.vertex.xy, 0.0, 1.0);
+				float4 vertex = v.vertex;// float4(v.vertex.xy, 0.0, 1.0);
 
 
-                vertex = mul(mat, vertex);
+                vertex = mul(vertex, mat);
 
-                float3 offsetVec = normalize(cross(cameraToBar, barSide));
-                vertex.xyz += offsetVec * v.vertex.z;
+                //float3 offsetVec = normalize(cross(cameraToBar, barSide));
+                //vertex.xyz += offsetVec * v.vertex.z;
 
                 o.vertex = mul(UNITY_MATRIX_VP, vertex);
                 o.uv = v.uv;

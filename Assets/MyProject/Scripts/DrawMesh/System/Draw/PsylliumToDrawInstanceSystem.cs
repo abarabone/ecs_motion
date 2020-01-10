@@ -57,7 +57,7 @@ namespace Abss.Draw
 
                         var pInstance = offsetsOfDrawModel[ linker.ModelEntity ].pVectorOffsetInBuffer;
                         pInstance[ i + 0 ] = new float4( pos.Value, 1.0f );
-                        pInstance[ i + 1 ] = math.forward( rot.Value ).As_float4();
+                        pInstance[ i + 1 ] = new float4( pos.Value, 1.0f ) + math.forward( rot.Value ).As_float4()*2;
 
                     }
                 )
