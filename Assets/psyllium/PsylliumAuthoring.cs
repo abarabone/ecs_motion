@@ -22,6 +22,22 @@ using Abss.Common.Extension;
 public struct ParticleTag : IComponentData//
 { }
 
+public struct LineParticleData : IComponentData
+{
+    public Entity PointNodeTopEntity;
+    public int PointNodeLength;
+}
+public struct LineParticlePointNodeData : IComponentData
+{
+    public Entity DrawModelEntity;
+    public Entity DrawInstanceEntity;
+    public Entity NextNodeEntity;
+    public int NodeIndex;
+    public int NodeLength;
+}
+
+
+
 namespace Abss.Arthuring
 {
 
@@ -30,6 +46,7 @@ namespace Abss.Arthuring
     {
 
         public Material Material;
+        public int Segment;
 
 
         public override Entity Convert
@@ -44,7 +61,8 @@ namespace Abss.Arthuring
             var modelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.TR );
 
             em.AddComponentData( ent, new Prefab { } );
-            em.AddComponentData( ent, new ParticleTag { } );//
+            if( this.Segment > 0 ) em.AddComponentData( ent, new LineParticleData { PointNodeLength = this.Segment + 1 } );//
+            else em.AddComponentData( ent, new ParticleTag { } );//
 
             em.AddComponentData( ent,
                 new DrawIndexOfModelData

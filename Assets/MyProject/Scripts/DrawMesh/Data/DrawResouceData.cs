@@ -37,11 +37,11 @@ namespace Abss.Draw
         TRS = 3,
         Matrix = 4,
     }
-    public struct TRBoneUnit
-    {
-        public float4 pos;
-        public quaternion rot;
-    }
+    //public struct TRBoneUnit
+    //{
+    //    public float4 pos;
+    //    public quaternion rot;
+    //}
 
 
     // シングルトン -----------------------

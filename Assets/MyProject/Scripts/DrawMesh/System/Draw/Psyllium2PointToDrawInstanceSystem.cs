@@ -22,7 +22,7 @@ namespace Abss.Draw
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
     [UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    public class PsylliumToDrawInstanceSystem : JobComponentSystem
+    public class Psyllium2PointToDrawInstanceSystem : JobComponentSystem
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -46,6 +46,7 @@ namespace Abss.Draw
                 .WithAll<ParticleTag>()
                 .ForEach(
                     (
+                        in LineParticleData particle,
                         in DrawInstanceTargetWorkData target,
                         in DrawIndexOfModelData linker,
                         in Translation pos,
@@ -57,7 +58,7 @@ namespace Abss.Draw
 
                         var pInstance = offsetsOfDrawModel[ linker.ModelEntity ].pVectorOffsetInBuffer;
                         pInstance[ i + 0 ] = new float4( pos.Value, 1.0f );
-                        pInstance[ i + 1 ] = math.forward( rot.Value ).As_float4()*2;
+                        pInstance[ i + 1 ] = new float4( pos.Value, 1.0f ) + math.forward( rot.Value ).As_float4()*2;
 
                     }
                 )
