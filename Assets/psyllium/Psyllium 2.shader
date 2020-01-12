@@ -33,7 +33,7 @@
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
             };
-
+			
             struct v2f
             {
                 float2 uv : TEXCOORD0;
@@ -81,7 +81,9 @@
                 fixed4 col = tex2D(_MainTex, i.uv);
                 col.rgb *= _Color;
                 col.rgb *= 6.;
+
                 UNITY_APPLY_FOG(i.fogCoord, col);
+
                 return col;
             }
             ENDCG

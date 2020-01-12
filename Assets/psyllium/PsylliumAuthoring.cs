@@ -30,8 +30,6 @@ namespace Abss.Arthuring
     public class PsylliumAuthoring : DrawPrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
     {
 
-        public int Segment;
-
         public Material Material;
 
 
@@ -47,10 +45,7 @@ namespace Abss.Arthuring
             var modelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.TR );
 
             em.AddComponentData( ent, new Prefab { } );
-            if( this.Segment > 0 )
-                em.AddComponentData( ent, new LineParticleData { PointNodeLength = this.Segment + 1 } );//
-            else
-                em.AddComponentData( ent, new ParticleTag { } );//
+            em.AddComponentData( ent, new ParticleTag { } );//
 
             em.AddComponentData( ent,
                 new DrawInstanceIndexOfModelData
