@@ -41,7 +41,7 @@ namespace Abss.Arthuring
             ( EntityManager em, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc )
         {
 
-            var mesh = createMesh();
+            var mesh = createMesh( this.Segment );
             var mat = new Material( this.Material );
 
 
@@ -123,7 +123,7 @@ namespace Abss.Arthuring
         }
 
 
-        Mesh createMesh( int pointNodeLength )
+        Mesh createMesh( int segmentLength )
         {
 
             float h = 1.0f;
@@ -136,83 +136,49 @@ namespace Abss.Arthuring
             var planeVertics = new Vector3[]
             {
                 new Vector3(-w, -h, 0),
-                new Vector3(-w, -h, 0),
-                new Vector3(-w, -h, 0),
-                new Vector3(-w, -h, 0),
+                new Vector3(w, -h, 0),
+                new Vector3(-w, h, 0),
+                new Vector3(w, h, 0),
             };
-
-
-
-
-
-
-            mesh.vertices = new Vector3[]
-            {
-                new Vector3 (-width, -height, -radius),     // 0
-                new Vector3 (-width, -height, 0),           // 1
-                new Vector3 (width , -height, -radius),     // 2
-                new Vector3 (width , -height, 0),           // 3
-
-                new Vector3 (-width,  height, 0),           // 4
-                new Vector3 ( width,  height, 0),           // 5
-
-                new Vector3 (-width,  height, radius),      // 6 
-                new Vector3 (width ,  height, radius),      // 7
-
-                //new Vector3 (-width,  height, -radius),     // 8
-                //new Vector3 (width ,  height, -radius),     // 9
-                //new Vector3 (-width, -height, radius),      // 10
-                //new Vector3 (width , -height, radius),      // 11
-            };
-
-            mesh.uv = new Vector2[]
-            {
-                new Vector2 (0, 0),
-                new Vector2 (0, 0.5f),
-                new Vector2 (1, 0),
-                new Vector2 (1, 0.5f),
-                new Vector2 (0, 0.5f),
-                new Vector2 (1, 0.5f),
-                new Vector2 (0, 1),
-                new Vector2 (1, 1),
-
-                //new Vector2 (0, 0),
-                //new Vector2 (1, 0),
-                //new Vector2 (0, 1),
-                //new Vector2 (1, 1),
-            };
-
-            //mesh.colors = new Color[]
-            //{
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //};
-
-            mesh.triangles = new int[]
+            var planeTriangles = new int[]
             {
                 0, 1, 2,
-                1, 3, 2,
-                1, 4, 3,
-                4, 5, 3,
-                4, 6, 5,
-                6, 7, 5,
-
-                // 8, 4, 9,
-                // 4, 5, 9,
-                // 1,10, 3,
-                //10,11, 3
+                2, 3, 1,
             };
+
+
+            var nodeLength = segmentLength + 1;
+
+            var qLeftVertices = Enumerable.Range( 0, nodeLength )
+                .Select( i => new Vector3( -w, i, 0 ) )
+                ;
+            var qRightVertices = Enumerable.Range( 0, nodeLength )
+                .Select( i => new Vector3( w, i, 0 ) )
+                ;
+            var qLineVertices = (qLeftVertices, qRightVertices).Zip()
+                .Select( x => new[] { x.x, x.y } )
+                .Concat()
+                ;
+
+            var qPlaneTris = Enumerable.Repeat( planeTriangles, segmentLength )
+                .SelectMany( ( xs, i ) => from x in xs select x + i * 4 )
+                ;
+
+            var qLeftUvs = Enumerable.Range( 0, nodeLength )
+                .Select( i => new Vector4( 0, 0.5f,  ) )
+                ;
+            var qRightUvs = Enumerable.Range( 0, nodeLength )
+                .Select( i => new Vector4( 1, 0.5f ) )
+                ;
+            var qLineUvs = (qLeftUvs, qRightUvs).Zip()
+                .Select( x => new[] { x.x, x.y } )
+                .Concat()
+                ;
+
+
+            mesh.vertices = qLineVertices.ToArray();
+            mesh.triangles = qPlaneTris.ToArray();
+            mesh.SetUVs( 0, qLineUvs.ToArray() );
 
             return mesh;
         }
