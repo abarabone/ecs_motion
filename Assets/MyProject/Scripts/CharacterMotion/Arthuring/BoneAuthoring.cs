@@ -124,10 +124,10 @@ namespace Abss.Arthuring
             em => em.CreateArchetype
             (
                 typeof( BoneRelationLinkData ),
-                typeof( BoneDrawLinkData ),
+                typeof( DrawTransformLinkData ),
                 //typeof( BoneStream0LinkData ),// 剛体には必要ないので必要な場合に add するようにした　ブレンドの場合には複数必要だし
-                typeof( BoneIndexData ),
-                typeof( BoneDrawTargetIndexWorkData ),
+                typeof( DrawTransformIndexData ),
+                typeof( DrawTransformTargetWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( BoneLocalValueData ),// どうしようか
@@ -162,7 +162,7 @@ namespace Abss.Arthuring
             var bonePrefabs = (from x in boneNameAndPrefabs select x.Entity).ToArray();
 
             em.setDrawComponet( bonePrefabs, drawInstancePrefab );
-            em.setBoneId( bonePrefabs, drawInstancePrefab );
+            em.setBoneId( bonePrefabs, bonePrefabs.Length );
             em.setBoneRelationLinks( posturePrefab, boneNameAndPrefabs, enabledsAndPaths );
             em.removeBoneRelationLinks( bonePrefabs, qBoneMasks );
             em.addBoneStreamLinkData( mainMotionPrefab, boneNameAndPrefabs, streamPrefabss );
@@ -181,10 +181,10 @@ namespace Abss.Arthuring
         {
             em_.SetComponentData(
                 bonePrefabs,
-                new BoneDrawLinkData
+                new DrawTransformLinkData
                 {
                     DrawInstanceEntity = drawInstancePrefab,
-                    DrawModelEntity = em_.GetComponentData<DrawIndexOfModelData>(drawInstancePrefab).ModelEntity,
+                    DrawModelEntity = em_.GetComponentData<DrawInstanceIndexOfModelData>(drawInstancePrefab).DrawModelEntity,
                 }
             );
         }
@@ -206,13 +206,11 @@ namespace Abss.Arthuring
         }
 
         static void setBoneId
-            ( this EntityManager em_, IEnumerable<Entity> bonePreafabs_, Entity drawPrefab_ )
+            ( this EntityManager em_, IEnumerable<Entity> bonePreafabs_, int boneLength )
         {
-            var draw = em_.GetComponentData<DrawIndexOfModelData>( drawPrefab_ );
-
             em_.SetComponentData( bonePreafabs_,
                 from x in Enumerable.Range( 0, bonePreafabs_.Count() )
-                select new BoneIndexData { BoneLength = draw.BoneLength, BoneId = x }
+                select new DrawTransformIndexData { BoneLength = boneLength, BoneId = x }
             );
         }
         

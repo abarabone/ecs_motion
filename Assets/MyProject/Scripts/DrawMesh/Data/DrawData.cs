@@ -21,7 +21,7 @@ namespace Abss.Draw
 	/// <summary>
 	/// カリング用オブジェクトＡＡＢＢ
 	/// </summary>
-	public struct DrawTargetAabb : IComponentData
+	public struct DrawInstanceTargetAabb : IComponentData
 	{
 		public float4	min;
 		public float4	max;
@@ -30,7 +30,7 @@ namespace Abss.Draw
 	/// <summary>
 	/// カリング用オブジェクト球データ
 	/// </summary>
-	public struct DrawTargetSphere : IComponentData
+	public struct DrawInstanceTargetSphere : IComponentData
 	{
 		public float	center;
 		public float	radius;
@@ -39,15 +39,13 @@ namespace Abss.Draw
     /// <summary>
     /// 描画モデルの種類情報
     /// </summary>
-    public struct DrawIndexOfModelData : IComponentData
+    public struct DrawInstanceIndexOfModelData : IComponentData
     {
-        public Entity ModelEntity;//
-        public int ModelIndex;//
-        public int BoneLength;
+        public Entity DrawModelEntity;
     }
     public struct DrawInstanceTargetWorkData : IComponentData
     {
-        public int InstanceIndex;   // -1 なら描画しない
+        public int DrawInstanceId;   // -1 なら描画しない
 	}
 
     //public struct DrawBoneRelationLinkData : IComponentData

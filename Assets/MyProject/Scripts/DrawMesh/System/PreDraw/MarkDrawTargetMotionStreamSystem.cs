@@ -52,7 +52,7 @@ namespace Abss.Draw
 
                 var drawIndexer = this.DrawInstanceIndexers[ drawLinker.DrawEntity ];
 
-                targetFlag.IsDrawTarget = drawIndexer.InstanceIndex > -1;
+                targetFlag.IsDrawTarget = drawIndexer.DrawInstanceId > -1;
 
             }
         }

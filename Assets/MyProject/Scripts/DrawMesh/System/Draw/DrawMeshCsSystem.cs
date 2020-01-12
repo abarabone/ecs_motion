@@ -50,7 +50,6 @@ namespace Abss.Draw
                 .WithoutBurst()
                 .ForEach(
                     (
-                        //in DrawModelBoneUnitSizeData boneUnitInfo,
                         in DrawModelInstanceCounterData counter,
                         in DrawModelInstanceOffsetData offset,
                         in DrawModelComputeArgumentsBufferData shaderArg,

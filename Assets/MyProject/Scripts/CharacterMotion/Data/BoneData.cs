@@ -18,12 +18,6 @@ using Abss.Geometry;
 
 namespace Abss.Motion
 {
-    
-    public struct BoneDrawLinkData : IComponentData
-    {
-        public Entity DrawInstanceEntity;
-        public Entity DrawModelEntity;
-    }
 
     public struct BoneRelationLinkData : IComponentData
     {
@@ -57,18 +51,6 @@ namespace Abss.Motion
     {
         public float3 Position;
         public quaternion Rotation;
-    }
-
-    public struct BoneIndexData : IComponentData
-    {
-        public int BoneId;
-        public int BoneLength;
-    }
-
-    public unsafe struct BoneDrawTargetIndexWorkData : IComponentData
-    {
-        public int BoneOffsetInModelBuffer;//
-        //public float4* pBoneInBuffer;//
     }
 
 

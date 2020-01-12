@@ -60,10 +60,10 @@ namespace Abss.Arthuring
             em => em.CreateArchetype
             (
                 //typeof( BoneRelationLinkData ),
-                typeof( BoneDrawLinkData ),
+                typeof( DrawTransformLinkData ),
                 typeof( BoneStream0LinkData ),
-                typeof( BoneIndexData ),
-                typeof( BoneDrawTargetIndexWorkData ),
+                typeof( DrawTransformIndexData ),
+                typeof( DrawTransformTargetWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Prefab )
@@ -81,7 +81,7 @@ namespace Abss.Arthuring
 
             
             var bonePrefabs = createBonePrefabs( em, motionClip, boneArchetype );
-            setBoneId( em, bonePrefabs, drawPrefab );
+            setBoneId( em, bonePrefabs, bonePrefabs.Length );
             setStreamLinks( em, bonePrefabs, streamPrefabs, motionClip );
             setDrawLinks( em, bonePrefabs, drawPrefab, motionClip );
             setBoneRelationLinks( em, bonePrefabs, posturePrefab, motionClip );
@@ -103,13 +103,11 @@ namespace Abss.Arthuring
                 return bonePrefabs_;
             }
 
-            void setBoneId( EntityManager em_, NativeArray<Entity> bonePreafabs_, Entity drawPrefab_ )
+            void setBoneId( EntityManager em_, NativeArray<Entity> bonePreafabs_, int boneLength )
             {
-                var draw = em_.GetComponentData<DrawIndexOfModelData>( drawPrefab_ );
-
                 em_.SetComponentData( bonePreafabs_,
                     from x in Enumerable.Range( 0, bonePreafabs_.Length )
-                    select new BoneIndexData { BoneLength = draw.BoneLength, BoneId = x }
+                    select new DrawTransformIndexData { BoneLength = boneLength, BoneId = x }
                 );
             }
 
@@ -144,7 +142,7 @@ namespace Abss.Arthuring
                 var boneLength = motionClip_.StreamPaths.Length;
 
                 var qDrawLinker = Enumerable
-                    .Repeat( new BoneDrawLinkData { DrawInstanceEntity = drawPrefab_ }, boneLength );
+                    .Repeat( new DrawTransformLinkData { DrawInstanceEntity = drawPrefab_ }, boneLength );
 
                 em_.SetComponentData( bonePrefabs_, qDrawLinker );
             }

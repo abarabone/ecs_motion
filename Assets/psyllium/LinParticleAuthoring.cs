@@ -19,15 +19,17 @@ using Abss.Common.Extension;
 
 
 
-public struct ParticleTag : IComponentData//
-{ }
 
+public struct LineParticlePointNodeLinkData : IComponentData
+{
+    public Entity NextNodeEntity;
+}
 
 namespace Abss.Arthuring
 {
 
     [DisallowMultipleComponent]
-    public class PsylliumAuthoring : DrawPrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
+    public class LineParticleAuthoring : DrawPrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
     {
 
         public int Segment;
@@ -43,44 +45,81 @@ namespace Abss.Arthuring
             var mat = new Material( this.Material );
 
 
-            var ent = em.CreateEntity();
-            var modelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.TR );
+            var drawModelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.T );
 
-            em.AddComponentData( ent, new Prefab { } );
-            if( this.Segment > 0 )
-                em.AddComponentData( ent, new LineParticleData { PointNodeLength = this.Segment + 1 } );//
-            else
-                em.AddComponentData( ent, new ParticleTag { } );//
+            var drawInstanceEntity = createDrawEntity_( em, drawModelEntity );
 
-            em.AddComponentData( ent,
-                new DrawInstanceIndexOfModelData
-                //new DrawTransformLinkData
-                {
-                    DrawModelEntity = modelEntity,
-                }
-            );
-            em.AddComponentData( ent,
-                new DrawInstanceTargetWorkData
-                {
-                    DrawInstanceId = -1,
-                }
-            );
+            var nodeLength = this.Segment + 1;
+            var nodeEnitities = Enumerable.Range( 0, nodeLength )
+                .Select( i => createDrawNodeEntity_( em, i, nodeLength, drawInstanceEntity, drawModelEntity ) )
+                ;
 
-            em.AddComponentData( ent,
-                new Translation
-                {
-                    Value = float3.zero,
-                }
-            );
-            em.AddComponentData( ent,
-                new Rotation
-                {
-                    Value = quaternion.identity,
-                }
-            );
+            em.SetLinkedEntityGroup( drawInstanceEntity, nodeEnitities );
+
+            return drawInstanceEntity;
 
 
-            return ent;
+            Entity createDrawEntity_( EntityManager em_, Entity drawModelEntity_ )
+            {
+                var ent = em.CreateEntity();
+
+                em_.AddComponentData( ent,
+                    new DrawInstanceIndexOfModelData
+                    {
+                        DrawModelEntity = drawModelEntity_
+                    }
+                );
+                em_.AddComponentData( ent,
+                    new DrawInstanceTargetWorkData
+                    {
+                        DrawInstanceId = -1,
+                    }
+                );
+
+                //em_.AddBuffer<LinkedEntityGroup>( ent );
+                em_.AddComponentData( ent, new Prefab { } );
+
+                return ent;
+            }
+
+            Entity createDrawNodeEntity_
+                ( EntityManager em_, int nodeId_, int pointNodeLength_, Entity drawInstanceEntity_, Entity drawModelEntity_ )
+            {
+                var ent = em.CreateEntity();
+
+                em_.AddComponentData( ent,
+                    new LineParticlePointNodeLinkData
+                    {
+                        NextNodeEntity = Entity.Null,
+                    }
+                );
+
+                em_.AddComponentData( ent,
+                    new DrawTransformLinkData
+                    {
+                        DrawInstanceEntity = drawInstanceEntity_,
+                        DrawModelEntity = drawModelEntity_,
+                    }
+                );
+                em_.AddComponentData( ent,
+                    new DrawTransformIndexData
+                    {
+                        BoneId = nodeId_,
+                        BoneLength = pointNodeLength_,
+                    }
+                );
+                em_.AddComponentData( ent,
+                    new DrawTransformTargetWorkData
+                    {
+                        DrawInstanceId = -1,
+                    }
+                );
+
+                em_.AddComponentData( ent, new Translation { } );
+
+                return ent;
+            }
+
         }
 
 
@@ -92,7 +131,7 @@ namespace Abss.Arthuring
             float radius = width;
 
             Mesh mesh = new Mesh();
-            
+
             mesh.vertices = new Vector3[]
             {
                 new Vector3 (-width, -height, -radius),     // 0

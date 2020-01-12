@@ -22,7 +22,7 @@ namespace Abss.Draw
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
     [UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    public class LineParticleToDrawInstanceSystem : JobComponentSystem
+    public class Psyllium2PointToModelBufferSystem : JobComponentSystem
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -36,27 +36,29 @@ namespace Abss.Draw
         protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
         {
 
+            //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModelBoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModelInstanceOffsetData>( isReadOnly: true );
-
-            var drawInstanceTargets = this.GetComponentDataFromEntity<DrawInstanceTargetWorkData>( isReadOnly: true );
-
 
             inputDeps = this.Entities
                 //.WithoutBurst()
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
+                .WithAll<ParticleTag>()
                 .ForEach(
                     (
-                        in LineParticlePointNodeData node,
-                        in Translation pos
+                        in LineParticleData particle,
+                        in DrawInstanceTargetWorkData target,
+                        in DrawInstanceIndexOfModelData linker,
+                        in Translation pos,
+                        in Rotation rot
                     ) =>
                     {
 
-                        var drawTarget = drawInstanceTargets[ node.DrawInstanceEntity ];
-                        var i = drawTarget.InstanceIndex * node.NodeLength + node.NodeIndex;
+                        var i = target.DrawInstanceId * 2;
 
-                        var pInstance = offsetsOfDrawModel[ node.DrawModelEntity ].pVectorOffsetInBuffer;
-                        pInstance[ i ] = new float4( pos.Value, 1.0f );
+                        var pInstance = offsetsOfDrawModel[ linker.DrawModelEntity ].pVectorOffsetInBuffer;
+                        pInstance[ i + 0 ] = new float4( pos.Value, 1.0f );
+                        pInstance[ i + 1 ] = new float4( pos.Value, 1.0f ) + math.forward( rot.Value ).As_float4()*2;
 
                     }
                 )

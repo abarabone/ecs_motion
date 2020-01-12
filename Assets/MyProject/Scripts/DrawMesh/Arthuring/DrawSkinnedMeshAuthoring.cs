@@ -43,7 +43,7 @@ namespace Abss.Arthuring
             //var drawIndex = drawres.AddDrawMeshResource( mesh, mat, this.BoneType, this.MaxInstance );
             var modelEntity = initDrawModelComponentsAction( mesh, mat, this.BoneType );
 
-            return DrawMeshPrefabCreator.CreatePrefab( em, 0, mesh.bindposes.Length, modelEntity );
+            return DrawMeshPrefabCreator.CreatePrefab( em, mesh.bindposes.Length, modelEntity );
 
 
             // メッシュを結合する
@@ -95,32 +95,30 @@ namespace Abss.Arthuring
         (
             em => em.CreateArchetype
             (
-                typeof( DrawIndexOfModelData ),
+                typeof( DrawInstanceIndexOfModelData ),
                 typeof( DrawInstanceTargetWorkData ),
                 typeof( Prefab )
             )
         );
 
 
-        static public Entity CreatePrefab( EntityManager em, int modelIndex, int boneLength, Entity modelEntity )
+        static public Entity CreatePrefab( EntityManager em, int boneLength, Entity modelEntity )
         {
             var archetype = archetypeCache.GetOrCreateArchetype( em );
 
             var ent = em.CreateEntity( archetype );
 
             em.SetComponentData( ent,
-                new DrawIndexOfModelData
+                new DrawInstanceIndexOfModelData
                 {
-                    ModelEntity = modelEntity,
-                    ModelIndex = modelIndex,
-                    BoneLength = boneLength,
+                    DrawModelEntity = modelEntity,
                 }
             );
 
             em.SetComponentData( ent,
                 new DrawInstanceTargetWorkData
                 {
-                    InstanceIndex = -1,
+                    DrawInstanceId = -1,
                 }
             );
 

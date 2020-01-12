@@ -66,7 +66,7 @@ namespace Abss.Draw
 
 
         [BurstCompile]
-        struct MarkBoneJob : IJobForEach<BoneDrawLinkData, BoneIndexData, BoneDrawTargetIndexWorkData>
+        struct MarkBoneJob : IJobForEach<DrawTransformLinkData, DrawTransformIndexData, DrawTransformTargetWorkData>
         {
 
             //[ReadOnly]
@@ -75,17 +75,16 @@ namespace Abss.Draw
             public ComponentDataFromEntity<DrawInstanceTargetWorkData> DrawTargets;
 
             public void Execute(
-                [ReadOnly] ref BoneDrawLinkData drawLinker,
-                [ReadOnly] ref BoneIndexData boneId,
-                ref BoneDrawTargetIndexWorkData boneIndexer
+                [ReadOnly] ref DrawTransformLinkData drawLinker,
+                [ReadOnly] ref DrawTransformIndexData boneId,
+                ref DrawTransformTargetWorkData boneIndexer
             )
             {
 
                 //var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
                 var drawTarget = this.DrawTargets[ drawLinker.DrawInstanceEntity ];
 
-                boneIndexer.BoneOffsetInModelBuffer =
-                    drawTarget.InstanceIndex * boneId.BoneLength + boneId.BoneId;
+                boneIndexer.DrawInstanceId = drawTarget.DrawInstanceId;
 
             }
         }
