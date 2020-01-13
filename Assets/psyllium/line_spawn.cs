@@ -58,21 +58,25 @@ namespace Abss.Arthuring
         private void Update()
         {
             var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-            this.gameObject
-                .Descendants()
-                .Select( go => go.transform )
-                .Zip( this.positions, ( tf, ent ) => (tf, ent) )
-                .Do( x => em.SetComponentData( x.ent, new Translation { Value = x.tf.position } ) );
+            var tfs = this.GetComponentsInChildren<Transform>().Skip(1).ToArray();
 
-            for( var ent = getNext_( instanceEntity_ ); ent != Entity.Null; ent = getNext_( ent ) )
+            var i = 0;
+            for( var ent = getNext_( this.ents.First() ); ent != Entity.Null; ent = getNext_( ent ) )
             {
 
-
+                setPosition_( ent, tfs[ i++ ].position );
 
             }
 
             Entity getNext_( Entity ent_ ) =>
                 em.GetComponentData<LineParticlePointNodeLinkData>( ent_ ).NextNodeEntity;
+
+            void setPosition_( Entity ent_, float3 pos_ )
+            {
+                var tr = em.GetComponentData<Translation>( ent_ );
+                tr.Value = pos_;
+                em.SetComponentData( ent_, tr );
+            }
         }
 
     }
