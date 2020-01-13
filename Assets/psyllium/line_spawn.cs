@@ -46,26 +46,35 @@ namespace Abss.Arthuring
                 foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
                 {
                     this.ents.Add( em.Instantiate( ent ) );
-
-                    em.SetComponentData( this.ents.Last(), new Translation { Value = this.transform.position.As_float3() + new float3( i, 0, -model * 3 ) } );
-                    em.SetComponentData( this.ents.Last(), new Rotation { Value = quaternion.identity } );
                 }
             }
 
-            //Enumerable.Repeat( new GameObject(), this.positions.Length ).ForEach( go => go.transform.parent = this.transform );//
+            Enumerable
+                .Repeat( new GameObject(), this.ents.Count )
+                .ForEach( go => go.transform.parent = this.transform );
         }
 
 
-        //private void Update()
-        //{
-        //    return;
-        //    var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-        //    this.gameObject
-        //        .Descendants()
-        //        .Select( go => go.transform )
-        //        .Zip( this.positions, (tf, ent) => (tf,ent) )
-        //        .Do( x => em.SetComponentData( x.ent, new Translation { Value = x.tf.position } ) );
-        //}
+        private void Update()
+        {
+            var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+            this.gameObject
+                .Descendants()
+                .Select( go => go.transform )
+                .Zip( this.positions, ( tf, ent ) => (tf, ent) )
+                .Do( x => em.SetComponentData( x.ent, new Translation { Value = x.tf.position } ) );
+
+            for( var ent = getNext_( instanceEntity_ ); ent != Entity.Null; ent = getNext_( ent ) )
+            {
+
+
+
+            }
+
+            Entity getNext_( Entity ent_ ) =>
+                em.GetComponentData<LineParticlePointNodeLinkData>( ent_ ).NextNodeEntity;
+        }
+
     }
 
 }

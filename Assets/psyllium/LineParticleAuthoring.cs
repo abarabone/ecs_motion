@@ -52,11 +52,15 @@ namespace Abss.Arthuring
             var nodeLength = this.Segment + 1;
             var nodeEnitities = Enumerable.Range( 0, nodeLength )
                 .Select( i => createDrawNodeEntity_( em, i, nodeLength, drawInstanceEntity, drawModelEntity ) )
-                ;
+                .ToArray();
+
+            SetChainLink_( em, drawInstanceEntity, nodeEnitities );
 
             em.SetLinkedEntityGroup( drawInstanceEntity, nodeEnitities );
             
             return drawInstanceEntity;
+
+
 
 
             Entity createDrawEntity_( EntityManager em_, Entity drawModelEntity_ )
@@ -73,6 +77,13 @@ namespace Abss.Arthuring
                     new DrawInstanceTargetWorkData
                     {
                         DrawInstanceId = -1,
+                    }
+                );
+
+                em_.AddComponentData( ent,
+                    new LineParticlePointNodeLinkData
+                    {
+                        NextNodeEntity = Entity.Null,
                     }
                 );
 
@@ -120,6 +131,23 @@ namespace Abss.Arthuring
                 return ent;
             }
 
+            void SetChainLink_( EntityManager em_, Entity instanceEntity_, IEnumerable<Entity> nodeEntities_ )
+            {
+
+                setLink_( instanceEntity_, nodeEntities_.First() );
+
+                foreach( var x in (nodeEntities_, nodeEntities_.Skip(1)).Zip((x,y)=>(cur:x,next:y)) )
+                {
+                    setLink_( x.cur, x.next );
+                }
+
+                void setLink_( Entity current_, Entity next_ )
+                {
+                    var linker = em_.GetComponentData<LineParticlePointNodeLinkData>( current_ );
+                    linker.NextNodeEntity = next_;
+                    em_.SetComponentData( instanceEntity_, linker );
+                }
+            }
         }
 
 
@@ -155,12 +183,14 @@ namespace Abss.Arthuring
                 ;
 
 
-            var qDirIdx = Enumerable.Range( 1, pointNodeLength - 2 )
+            var qDirIdxSingle = Enumerable.Range( 1, pointNodeLength - 2 )
                 .Select( i => new Color( i, i, i - 1, i + 1 ) )
                 .Prepend( new Color( 0, 0, 1, 1 ) )
                 .Prepend( new Color( 0, 0, 1, 1 ) )
                 .Append( new Color( pointNodeLength - 1, pointNodeLength - 2, pointNodeLength - 1, pointNodeLength - 1 ) )
                 .Append( new Color( pointNodeLength - 1, pointNodeLength - 2, pointNodeLength - 1, pointNodeLength - 1 ) )
+                ;
+            var qDirIdx = (qDirIdxSingle, qDirIdxSingle).Zip( ( l, r ) => new[] { l, r } )
                 ;
 
 
@@ -178,7 +208,7 @@ namespace Abss.Arthuring
 
             mesh.vertices = qVtx.SelectMany( x => x ).ToArray();
             mesh.uv = qUv.SelectMany( x => x ).ToArray();
-            mesh.colors = qDirIdx.ToArray();
+            mesh.colors = qDirIdx.SelectMany( x => x ).ToArray();
             mesh.triangles = qPlane.SelectMany( x => x ).ToArray();
 
             return mesh;
