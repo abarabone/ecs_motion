@@ -18,7 +18,7 @@ using Abss.Character;
 namespace Abss.Draw
 {
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
     [UpdateBefore( typeof( BeginDrawCsBarier ) )]
@@ -46,7 +46,6 @@ namespace Abss.Draw
                 .WithAll<ParticleTag>()
                 .ForEach(
                     (
-                        in LineParticleData particle,
                         in DrawInstanceTargetWorkData target,
                         in DrawInstanceIndexOfModelData linker,
                         in Translation pos,

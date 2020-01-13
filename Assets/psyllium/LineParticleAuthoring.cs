@@ -36,8 +36,6 @@ namespace Abss.Arthuring
 
         public Material Material;
 
-        Entity[] positions;
-
 
         public override Entity Convert
             ( EntityManager em, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc )
@@ -57,9 +55,7 @@ namespace Abss.Arthuring
                 ;
 
             em.SetLinkedEntityGroup( drawInstanceEntity, nodeEnitities );
-
-            //this.positions = nodeEnitities.ToArray();//
-            //Enumerable.Repeat( new GameObject(), this.positions.Length ).ForEach( go => go.transform.parent = this.transform );//
+            
             return drawInstanceEntity;
 
 
@@ -188,16 +184,5 @@ namespace Abss.Arthuring
             return mesh;
         }
 
-
-        private void Update()
-        {
-            return;
-            var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-            this.gameObject
-                .Descendants()
-                .Select( go => go.transform )
-                .Zip( this.positions, (tf, ent) => (tf,ent) )
-                .Do( x => em.SetComponentData( x.ent, new Translation { Value = x.tf.position } ) );
-        }
     }
 }
