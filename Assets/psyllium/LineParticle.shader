@@ -51,10 +51,11 @@
 				
 				struct appdata
 				{
-					float4 vertex : POSITION;			// y : posIndex / z : edgeVolume
-					float4 uvAndDirIndex : TEXCOORD0;	// x,y : u,v / z,w : dirIndex0, dirIndex1 
+					float4 vertex : POSITION;	// z : edgeVolume
+					half2 uv : TEXCOORD0;
+					half4 index : COLOR;	// wpos, dirp0, dirp-1, dirp+1
 				};
-
+				
 				struct v2f
 				{
 					float2 uv : TEXCOORD0;
@@ -69,37 +70,33 @@
 				sampler2D _MainTex;
 				float4 _Color;
 
-				
+				float3 transform_x(float3 lvt, float3 pos0, float3 pos1, float3 eye)
+				{
+					float3 up = normalize(pos1 - pos0);
+					float3 side = normalize(cross(up, eye));
+					return lvt.xxx * side;
+				}
 				v2f vert( appdata v, uint i : SV_InstanceID )
 				{
 					v2f o;
 
-					int nodeIndex = v.vertex.y;
-					int inode = i * BoneLengthEveryInstance + nodeIndex;
-					int ivec = BoneVectorOffset + inode;
+					int4 ivec = i.xxxx * BoneLengthEveryInstance.xxxx + v.index;
 
-					float4 wpos = BoneVectorBuffer[ivec];
+					float4 wpos = BoneVectorBuffer[ivec.x];
 
+					float4 posbase = BoneVectorBuffer[ivec.y];
+					float4 posfwd = BoneVectorBuffer[ivec.z];
+					float4 posbak = BoneVectorBuffer[ivec.w];
 
-					int dirIndex0 = v.uvAndDirIndex.z;
-					int dirIndex1 = v.uvAndDirIndex.w;
-					int idir0 = BoneVectorOffset + dirIndex0;
-					int idir1 = BoneVectorOffset + dirIndex1;
-
-					float3 wdir = normalize(BoneVectorBuffer[idir1].xyz - BoneVectorBuffer[idir0].xyz);
-
-
+					float4 lvt = v.vertex;
 					float3 eye = wpos.xyz - _WorldSpaceCameraPos;
-					float3 up = wdir.xyz;
-					float3 side = normalize(cross(up, eye));
+					float3 xfwd = transform_x(lvt, posbase, posfwd, eye);
+					float3 xbak = transform_x(lvt, posbase, posbak, eye);
 
-					float3 lvt = v.vertex;
-					float3 wvt = wpos + lvt.xxx * side;
+					float3 wvt = wpos + xfwd*0.5f + xbak*0.5f;
 
 					o.vertex = mul( UNITY_MATRIX_VP, wvt );
-					
-					o.uv = v.uvAndDirIndex.xy;
-
+					o.uv = v.uv;
 					UNITY_TRANSFER_FOG( o, o.vertex );
 
 					return o;

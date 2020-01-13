@@ -36,12 +36,14 @@ namespace Abss.Arthuring
 
         public Material Material;
 
+        Entity[] positions;
+
 
         public override Entity Convert
             ( EntityManager em, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc )
         {
 
-            var mesh = createMesh( this.Segment );
+            var mesh = createMesh( pointNodeLength: this.Segment + 1 );
             var mat = new Material( this.Material );
 
 
@@ -56,6 +58,8 @@ namespace Abss.Arthuring
 
             em.SetLinkedEntityGroup( drawInstanceEntity, nodeEnitities );
 
+            //this.positions = nodeEnitities.ToArray();//
+            //Enumerable.Repeat( new GameObject(), this.positions.Length ).ForEach( go => go.transform.parent = this.transform );//
             return drawInstanceEntity;
 
 
@@ -123,65 +127,77 @@ namespace Abss.Arthuring
         }
 
 
-        Mesh createMesh( int segmentLength )
+        Mesh createMesh( int pointNodeLength )
         {
 
-            float h = 1.0f;
-            float w = 1.0f;
-            float r = w;
+            const float h = 0.5f;
+            const float w = 0.5f;
+            const float d = 0.5f;
 
             Mesh mesh = new Mesh();
 
 
-            var planeVertics = new Vector3[]
+            var startEdgeVtxs   = new[] { new Vector3( -w, 0f, -d ), new Vector3( -w, 0f, -d ) };
+            var nodeVtxs        = new[] { new Vector3( -w, 0f, 0f ), new Vector3( +w, 0f, 0f ) };
+            var endEdgeVtxs     = new[] { new Vector3( -w, 0f, +d ), new Vector3( -w, 0f, +d ) };
+
+            var qVtx = Enumerable
+                .Repeat( nodeVtxs, pointNodeLength )
+                .Prepend( startEdgeVtxs )
+                .Append( endEdgeVtxs )
+                ;
+
+
+            var startEdgeUvs    = new[] { new Vector2( 0.0f, 0.0f ), new Vector2( 1.0f, 0.0f ) };
+            var nodeUvs         = new[] { new Vector2( 0.0f, 0.5f ), new Vector2( 1.0f, 0.5f ) };
+            var endEdgeUvs      = new[] { new Vector2( 0.0f, 1.0f ), new Vector2( 1.0f, 1.0f ) };
+
+            var qUv = Enumerable
+                .Repeat( nodeUvs, pointNodeLength )
+                .Prepend( startEdgeUvs )
+                .Append( endEdgeUvs )
+                ;
+
+
+            var qDirIdx = Enumerable.Range( 1, pointNodeLength - 2 )
+                .Select( i => new Color( i, i, i - 1, i + 1 ) )
+                .Prepend( new Color( 0, 0, 1, 1 ) )
+                .Prepend( new Color( 0, 0, 1, 1 ) )
+                .Append( new Color( pointNodeLength - 1, pointNodeLength - 2, pointNodeLength - 1, pointNodeLength - 1 ) )
+                .Append( new Color( pointNodeLength - 1, pointNodeLength - 2, pointNodeLength - 1, pointNodeLength - 1 ) )
+                ;
+
+
+            var planeTris = new[]
             {
-                new Vector3(-w, -h, 0),
-                new Vector3(w, -h, 0),
-                new Vector3(-w, h, 0),
-                new Vector3(w, h, 0),
-            };
-            var planeTriangles = new int[]
-            {
-                0, 1, 2,
+                0, 2, 1,
                 2, 3, 1,
             };
 
-
-            var nodeLength = segmentLength + 1;
-
-            var qLeftVertices = Enumerable.Range( 0, nodeLength )
-                .Select( i => new Vector3( -w, i, 0 ) )
-                ;
-            var qRightVertices = Enumerable.Range( 0, nodeLength )
-                .Select( i => new Vector3( w, i, 0 ) )
-                ;
-            var qLineVertices = (qLeftVertices, qRightVertices).Zip()
-                .Select( x => new[] { x.x, x.y } )
-                .Concat()
-                ;
-
-            var qPlaneTris = Enumerable.Repeat( planeTriangles, segmentLength )
-                .SelectMany( ( xs, i ) => from x in xs select x + i * 4 )
-                ;
-
-            var qLeftUvs = Enumerable.Range( 0, nodeLength )
-                .Select( i => new Vector4( 0, 0.5f,  ) )
-                ;
-            var qRightUvs = Enumerable.Range( 0, nodeLength )
-                .Select( i => new Vector4( 1, 0.5f ) )
-                ;
-            var qLineUvs = (qLeftUvs, qRightUvs).Zip()
-                .Select( x => new[] { x.x, x.y } )
-                .Concat()
+            var qPlane = Enumerable
+                .Repeat( planeTris, 2 + pointNodeLength - 1 )
+                .Select( ( tri, i ) => tri.Select( x => x + i * 2 ) )
                 ;
 
 
-            mesh.vertices = qLineVertices.ToArray();
-            mesh.triangles = qPlaneTris.ToArray();
-            mesh.SetUVs( 0, qLineUvs.ToArray() );
+            mesh.vertices = qVtx.SelectMany( x => x ).ToArray();
+            mesh.uv = qUv.SelectMany( x => x ).ToArray();
+            mesh.colors = qDirIdx.ToArray();
+            mesh.triangles = qPlane.SelectMany( x => x ).ToArray();
 
             return mesh;
         }
 
+
+        private void Update()
+        {
+            return;
+            var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+            this.gameObject
+                .Descendants()
+                .Select( go => go.transform )
+                .Zip( this.positions, (tf, ent) => (tf,ent) )
+                .Do( x => em.SetComponentData( x.ent, new Translation { Value = x.tf.position } ) );
+        }
     }
 }
