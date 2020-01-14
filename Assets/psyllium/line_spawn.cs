@@ -17,6 +17,7 @@ using Abss.Misc;
 using Abss.Motion;
 using Abss.Draw;
 using Abss.Character;
+using Abss.Common.Extension;
 
 namespace Abss.Arthuring
 {
@@ -38,7 +39,6 @@ namespace Abss.Arthuring
             var drawSettings = this.GetComponent<DrawPrefabSettingsAuthoring>();
 
 
-            // モーション設定
             foreach( var model in Enumerable.Range( 0, drawSettings.PrefabEntities.Length ) )
             {
                 var ent = drawSettings.PrefabEntities[ model ];
@@ -49,27 +49,31 @@ namespace Abss.Arthuring
                 }
             }
 
-            Enumerable
-                .Repeat( new GameObject(), this.ents.Count )
-                .ForEach( go => go.transform.parent = this.transform );
+
+            var tf = this.transform;
+            for( var ent = getNext_( this.ents.First() ); ent != Entity.Null; ent = getNext_( ent ) )
+            {
+                this.nodes.Add( ent );
+                new GameObject().transform.parent = tf;
+            }
+
+            Entity getNext_( Entity ent_ ) =>
+                em.GetComponentData<LineParticlePointNodeLinkData>( ent_ ).NextNodeEntity;
+
         }
+
+        List<Entity> nodes = new List<Entity>();
 
 
         private void Update()
         {
             var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-            var tfs = this.GetComponentsInChildren<Transform>().Skip(1).ToArray();
+            var tfs = this.GetComponentsInChildren<Transform>().Skip( 1 );
 
-            var i = 0;
-            for( var ent = getNext_( this.ents.First() ); ent != Entity.Null; ent = getNext_( ent ) )
+            foreach( var x in (this.nodes, tfs).Zip() )
             {
-
-                setPosition_( ent, tfs[ i++ ].position );
-
+                setPosition_( x.x, x.y.position );
             }
-
-            Entity getNext_( Entity ent_ ) =>
-                em.GetComponentData<LineParticlePointNodeLinkData>( ent_ ).NextNodeEntity;
 
             void setPosition_( Entity ent_, float3 pos_ )
             {
