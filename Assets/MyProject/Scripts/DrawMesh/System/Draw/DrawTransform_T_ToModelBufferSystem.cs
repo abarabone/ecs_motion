@@ -16,7 +16,7 @@ using Abss.SystemGroup;
 namespace Abss.Draw
 {
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
     [UpdateBefore( typeof( BeginDrawCsBarier ) )]

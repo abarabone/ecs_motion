@@ -162,9 +162,9 @@ namespace Abss.Arthuring
             Mesh mesh = new Mesh();
 
 
-            var startEdgeVtxs   = new[] { new Vector3( -w, 0f, -d ), new Vector3( -w, 0f, -d ) };
+            var startEdgeVtxs   = new[] { new Vector3( -w, 0f, -d ), new Vector3( +w, 0f, -d ) };
             var nodeVtxs        = new[] { new Vector3( -w, 0f, 0f ), new Vector3( +w, 0f, 0f ) };
-            var endEdgeVtxs     = new[] { new Vector3( -w, 0f, +d ), new Vector3( -w, 0f, +d ) };
+            var endEdgeVtxs     = new[] { new Vector3( -w, 0f, +d ), new Vector3( +w, 0f, +d ) };
 
             var qVtx = Enumerable
                 .Repeat( nodeVtxs, pointNodeLength )
@@ -184,12 +184,13 @@ namespace Abss.Arthuring
                 ;
 
 
+            var lastNode = pointNodeLength - 1;
             var qDirIdxSingle = Enumerable.Range( 1, pointNodeLength - 2 )
-                .Select( i => new Color( i, i, i - 1, i + 1 ) )
+                .Select( i => new Color( i, i, i + 1, i - 1 ) )
                 .Prepend( new Color( 0, 0, 1, 1 ) )
                 .Prepend( new Color( 0, 0, 1, 1 ) )
-                .Append( new Color( pointNodeLength - 1, pointNodeLength - 2, pointNodeLength - 1, pointNodeLength - 1 ) )
-                .Append( new Color( pointNodeLength - 1, pointNodeLength - 2, pointNodeLength - 1, pointNodeLength - 1 ) )
+                .Append( new Color( lastNode, lastNode - 1, lastNode, lastNode ) )
+                .Append( new Color( lastNode, lastNode - 1, lastNode, lastNode ) )
                 ;
             var qDirIdx = (qDirIdxSingle, qDirIdxSingle).Zip( ( l, r ) => new[] { l, r } )
                 ;

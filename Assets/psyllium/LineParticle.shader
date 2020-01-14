@@ -53,7 +53,7 @@
 				{
 					float4 vertex : POSITION;	// z : edgeVolume
 					half2 uv : TEXCOORD0;
-					half4 index : COLOR;	// wpos, dirp0, dirp-1, dirp+1
+					fixed4 index : COLOR;	// wpos, dirp0, dirp-1, dirp+1
 				};
 				
 				struct v2f
@@ -72,30 +72,37 @@
 
 				float3 transform_x(float3 lvt, float3 pos0, float3 pos1, float3 eye)
 				{
-					float3 up = normalize(pos1 - pos0);
-					float3 side = normalize(cross(up, eye));
-					return lvt.xxx * side;
+					float3 up = pos1 - pos0;
+					float3 side = cross(up, eye);
+					return lvt.xxx * normalize(side);
+					//float3 up = pos1 - pos0;
+					//float3 side = cross(up, eye);
+					//float3 forward = cross(eye, side);
+					//float3x3 mt = float3x3(normalize(up), normalize(side), normalize(forward));
+					//return mul(lvt, mt);
 				}
 				v2f vert( appdata v, uint i : SV_InstanceID )
 				{
 					v2f o;
 
-					int4 ivec = i.xxxx * BoneLengthEveryInstance.xxxx + v.index;
+					int offset = BoneVectorOffset + i * BoneLengthEveryInstance;
+					int4 ivec = offset.xxxx + v.index;
 
-					float4 wpos = BoneVectorBuffer[ivec.x];
+					float3 wpos = BoneVectorBuffer[ivec.x].xyz;
 
-					float4 posbase = BoneVectorBuffer[ivec.y];
-					float4 posfwd = BoneVectorBuffer[ivec.z];
-					float4 posbak = BoneVectorBuffer[ivec.w];
+					float3 posbase = BoneVectorBuffer[ivec.y].xyz;
+					float3 posfwd = BoneVectorBuffer[ivec.z].xyz;
+					float3 posbak = BoneVectorBuffer[ivec.w].xyz;
+					float3 lvt = v.vertex.xyz;
 
-					float4 lvt = v.vertex;
-					float3 eye = wpos.xyz - _WorldSpaceCameraPos;
+					float3 eye = wpos - _WorldSpaceCameraPos.xyz;
 					float3 xfwd = transform_x(lvt, posbase, posfwd, eye);
 					float3 xbak = transform_x(lvt, posbase, posbak, eye);
 
-					float3 wvt = wpos + xfwd*0.5f + xbak*0.5f;
+					float3 wvt = wpos + xfwd;// (wpos + xfwd) * 0.5f + (wpos + xbak) * 0.5f;
+					//float3 wvt = wpos + xvt;//lerp(xfwd, xvt, step(xfwd + xbak, 0.5f));
 
-					o.vertex = mul( UNITY_MATRIX_VP, wvt );
+					o.vertex = mul( UNITY_MATRIX_VP, float4(wvt, 1.0f) );
 					o.uv = v.uv;
 					UNITY_TRANSFER_FOG( o, o.vertex );
 
