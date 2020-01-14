@@ -50,15 +50,15 @@ namespace Abss.Arthuring
 
             var drawInstanceEntity = createDrawEntity_( em, drawModelEntity );
 
-            //var nodeLength = this.Segment + 1;
-            //var nodeEnitities = Enumerable.Range( 0, nodeLength )
-            //    .Select( i => createDrawNodeEntity_( em, i, nodeLength, drawInstanceEntity, drawModelEntity ) )
-            //    .ToArray();
+            var nodeLength = this.Segment + 1;
+            var nodeEnitities = Enumerable.Range( 0, nodeLength )
+                .Select( i => createDrawNodeEntity_( em, i, nodeLength, drawInstanceEntity, drawModelEntity ) )
+                .ToArray();
 
-            //SetChainLink_( em, drawInstanceEntity, nodeEnitities );
+            SetChainLink_( em, drawInstanceEntity, nodeEnitities );
 
-            //em.SetLinkedEntityGroup( drawInstanceEntity, nodeEnitities );
-            
+            em.SetLinkedEntityGroup( drawInstanceEntity, nodeEnitities );
+
             return drawInstanceEntity;
 
 
@@ -97,7 +97,7 @@ namespace Abss.Arthuring
             Entity createDrawNodeEntity_
                 ( EntityManager em_, int nodeId_, int pointNodeLength_, Entity drawInstanceEntity_, Entity drawModelEntity_ )
             {
-                var ent = em.CreateEntity();
+                var ent = em_.CreateEntity();
 
                 em_.AddComponentData( ent,
                     new LineParticlePointNodeLinkData
