@@ -49,10 +49,9 @@ namespace Abss.Arthuring
 
 
             var drawInstanceEntity = createDrawEntity_( em, drawModelEntity );
-
-            var nodeLength = this.Segment + 1;
-            var nodeEnitities = Enumerable.Range( 0, nodeLength )
-                .Select( i => createDrawNodeEntity_( em, i, nodeLength, drawInstanceEntity, drawModelEntity ) )
+            
+            var nodeEnitities = Enumerable.Range( 0, pointNodeLength )
+                .Select( i => createDrawNodeEntity_( em, i, pointNodeLength, drawInstanceEntity, drawModelEntity ) )
                 .ToArray();
 
             SetChainLink_( em, drawInstanceEntity, nodeEnitities );
@@ -146,7 +145,7 @@ namespace Abss.Arthuring
                 {
                     var linker = em_.GetComponentData<LineParticlePointNodeLinkData>( current_ );
                     linker.NextNodeEntity = next_;
-                    em_.SetComponentData( instanceEntity_, linker );
+                    em_.SetComponentData( current_, linker );
                 }
             }
         }
