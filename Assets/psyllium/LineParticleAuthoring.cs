@@ -38,25 +38,26 @@ namespace Abss.Arthuring
 
 
         public override Entity Convert
-            ( EntityManager em, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc )
+            ( EntityManager em, Func<Mesh, Material, BoneType, int, Entity> initDrawModelComponentsFunc )
         {
 
-            var mesh = createMesh( pointNodeLength: this.Segment + 1 );
+            var pointNodeLength = this.Segment + 1;
+            var mesh = createMesh( pointNodeLength );
             var mat = new Material( this.Material );
+            
+            var drawModelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.T, pointNodeLength );
 
-
-            var drawModelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.T );
 
             var drawInstanceEntity = createDrawEntity_( em, drawModelEntity );
 
-            var nodeLength = this.Segment + 1;
-            var nodeEnitities = Enumerable.Range( 0, nodeLength )
-                .Select( i => createDrawNodeEntity_( em, i, nodeLength, drawInstanceEntity, drawModelEntity ) )
-                .ToArray();
+            //var nodeLength = this.Segment + 1;
+            //var nodeEnitities = Enumerable.Range( 0, nodeLength )
+            //    .Select( i => createDrawNodeEntity_( em, i, nodeLength, drawInstanceEntity, drawModelEntity ) )
+            //    .ToArray();
 
-            SetChainLink_( em, drawInstanceEntity, nodeEnitities );
+            //SetChainLink_( em, drawInstanceEntity, nodeEnitities );
 
-            em.SetLinkedEntityGroup( drawInstanceEntity, nodeEnitities );
+            //em.SetLinkedEntityGroup( drawInstanceEntity, nodeEnitities );
             
             return drawInstanceEntity;
 

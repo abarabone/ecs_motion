@@ -26,8 +26,7 @@ namespace Abss.Arthuring
         
 
         public override Entity Convert
-            ( EntityManager em,
-            Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc )
+            ( EntityManager em, Func<Mesh, Material, BoneType, int, Entity> initDrawModelComponentsFunc )
         {
             if( !this.gameObject.activeSelf ) this.gameObject.SetActive( true );// 繰り返し使用されるときに必要になる
 

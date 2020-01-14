@@ -26,7 +26,7 @@ namespace Abss.Arthuring
 
 
         public override Entity Convert
-            ( EntityManager em, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsAction )
+            ( EntityManager em, Func<Mesh, Material, BoneType, int, Entity> initDrawModelComponentsAction )
         {
 
             var prefab = base.Convert( em, initDrawModelComponentsAction );

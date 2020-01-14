@@ -62,7 +62,7 @@ namespace Abss.Arthuring
             return;
 
 
-            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
+            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType, int boneLength )
             {
                 // キャプチャ（暫定）
                 var em_ = em;
@@ -70,7 +70,6 @@ namespace Abss.Arthuring
                 
                 var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
                 var boneVectorBuffer = sys.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
-                var boneLength = mesh.bindposes.Length > 0 ? mesh.bindposes.Length : 1;// より正確なものに変える
                 setShaderProps_( mat, mesh, boneVectorBuffer, boneLength );
 
                 return createEntityAndInitComponents_( drawModelArchetype_, boneLength );
@@ -141,7 +140,7 @@ namespace Abss.Arthuring
         public abstract class ConvertToCustomPrefabEntityBehaviour : MonoBehaviour
         {
             abstract public Entity Convert
-                ( EntityManager em, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc );
+                ( EntityManager em, Func<Mesh, Material, BoneType, int, Entity> initDrawModelComponentsFunc );
         }
     }
 

@@ -34,7 +34,7 @@ namespace Abss.Arthuring
 
 
         public override Entity Convert
-            ( EntityManager em, Func<Mesh, Material, BoneType, Entity> initDrawModelComponentsFunc )
+            ( EntityManager em, Func<Mesh, Material, BoneType, int, Entity> initDrawModelComponentsFunc )
         {
 
             var mesh = createMesh();
@@ -42,7 +42,8 @@ namespace Abss.Arthuring
 
 
             var ent = em.CreateEntity();
-            var modelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.TR );
+            const int boneLength = 1;
+            var modelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.TR, boneLength );
 
             em.AddComponentData( ent, new Prefab { } );
             em.AddComponentData( ent, new ParticleTag { } );//

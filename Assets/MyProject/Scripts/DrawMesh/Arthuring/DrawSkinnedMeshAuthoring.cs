@@ -29,7 +29,7 @@ namespace Abss.Arthuring
         public BoneType BoneType = BoneType.TR;
         
 
-        public Entity Convert( EntityManager em, Func<Mesh,Material,BoneType,Entity> initDrawModelComponentsAction )
+        public Entity Convert( EntityManager em, Func<Mesh, Material, BoneType, int, Entity> initDrawModelComponentsAction )
         {
             
             var mrs = this.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -41,7 +41,7 @@ namespace Abss.Arthuring
             mat.enableInstancing = true;
 
             //var drawIndex = drawres.AddDrawMeshResource( mesh, mat, this.BoneType, this.MaxInstance );
-            var modelEntity = initDrawModelComponentsAction( mesh, mat, this.BoneType );
+            var modelEntity = initDrawModelComponentsAction( mesh, mat, this.BoneType, mesh.bindposes.Length );
 
             return DrawMeshPrefabCreator.CreatePrefab( em, mesh.bindposes.Length, modelEntity );
 
