@@ -66,6 +66,8 @@ namespace Abss.Arthuring
             Entity createDrawEntity_( EntityManager em_, Entity drawModelEntity_ )
             {
                 var ent = em.CreateEntity();
+                em_.AddComponentData( ent, new Prefab { } );
+                //em_.AddBuffer<LinkedEntityGroup>( ent );
 
                 em_.AddComponentData( ent,
                     new DrawInstanceIndexOfModelData
@@ -87,8 +89,6 @@ namespace Abss.Arthuring
                     }
                 );
 
-                //em_.AddBuffer<LinkedEntityGroup>( ent );
-                em_.AddComponentData( ent, new Prefab { } );
 
                 return ent;
             }
@@ -97,6 +97,7 @@ namespace Abss.Arthuring
                 ( EntityManager em_, int nodeId_, int pointNodeLength_, Entity drawInstanceEntity_, Entity drawModelEntity_ )
             {
                 var ent = em_.CreateEntity();
+                em_.AddComponentData( ent, new Prefab { } );
 
                 em_.AddComponentData( ent,
                     new LineParticlePointNodeLinkData

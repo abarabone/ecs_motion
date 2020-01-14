@@ -41,10 +41,10 @@ namespace Abss.Arthuring
             var mat = new Material( this.Material );
 
 
-            var ent = em.CreateEntity();
             const int boneLength = 1;
             var modelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.TR, boneLength );
 
+            var ent = em.CreateEntity();
             em.AddComponentData( ent, new Prefab { } );
             em.AddComponentData( ent, new ParticleTag { } );//
 

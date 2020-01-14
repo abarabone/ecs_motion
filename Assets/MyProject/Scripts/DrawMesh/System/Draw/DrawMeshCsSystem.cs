@@ -26,7 +26,6 @@ namespace Abss.Draw
     /// <summary>
     /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
     /// </summary>
-    //[AlwaysUpdateSystem]
     //[DisableAutoCreation]
     [UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
