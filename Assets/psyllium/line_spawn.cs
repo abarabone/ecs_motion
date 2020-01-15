@@ -50,11 +50,14 @@ namespace Abss.Arthuring
             }
 
 
+            var ipos = 0;
             var tf = this.transform;
             for( var ent = getNext_( this.ents.First() ); ent != Entity.Null; ent = getNext_( ent ) )
             {
                 this.nodes.Add( ent );
-                new GameObject().transform.parent = tf;
+                var go = new GameObject();
+                go.transform.parent = tf;
+                go.transform.position = tf.position + new Vector3( ipos++ * 1.5f, UnityEngine.Random.value * .3f, UnityEngine.Random.value * .3f );
             }
 
             Entity getNext_( Entity ent_ ) =>

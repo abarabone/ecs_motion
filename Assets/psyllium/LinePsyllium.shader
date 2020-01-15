@@ -1,164 +1,107 @@
 ﻿Shader "Custom/LinePsyllium"
 {
-	
+
 	Properties
 	{
 		[NoScaleOffset]
 		_MainTex("Texture", 2D) = "white" {}
 		_Color("Main Color", Color) = (1,1,1)
 	}
-	
-	
+
 	SubShader
 	{
-		//Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-		//Tags{ "Queue" = "Opequre" "IgnoreProjector" = "True" "RenderType" = "Opequre" }
-		//LOD 200
-		
+		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
+
+		Blend SrcAlpha One
+		Lighting Off ZWrite Off Fog
+		{
+			Mode Off
+		}
+
 		Pass
 		{
-			
-			Lighting Off
-			LOD 200
-			
-			Tags
-			{
-				"Queue" = "AlphaTest"
-				//"Queue"="Geometry"
-				"RenderType" = "TransparentCutout"
-				//"RenderType"="Opaque"
-				"IgnoreProjector" = "True"
-				"LightMode" = "Vertex"
-			}
-
-			AlphaTest Greater 0.5
-			Cull Back
-			ZWrite On
-			ZTest LEqual
-			ColorMask RGBA
-
-
 			CGPROGRAM
-				// Upgrade NOTE: excluded shader from DX11, Xbox360, OpenGL ES 2.0 because it uses unsized arrays
-			//	#pragma exclude_renderers d3d11 xbox360 gles
-			//	#pragma only_renderers d3d9 opengl gles
-			//	#pragma glsl
+
+				#pragma target 5.0
 				#pragma vertex vert
 				#pragma fragment frag
-			//	#pragma target 3.0
+				#pragma multi_compile_instancing
 				#pragma multi_compile_fog
-
 				#include "UnityCG.cginc"
-				#include "AutoLight.cginc"
-				
-				struct vtxpos
+				//#include "AutoLight.cginc"
+
+
+				struct appdata
 				{
-					half3	position : POSITION;
-					half2	texcoord : TEXCOORD0;
-					half4	color : COLOR;
+					float4 vertex : POSITION;	// z : edgeVolume
+					half2 uv : TEXCOORD0;
+					fixed4 index : COLOR;	// world pos, dir origin 0, dir origin 1
 				};
-				
+
 				struct v2f
 				{
-					half4	pos : SV_POSITION;
-					half2	uv : TEXCOORD0;
-					fixed4	col : COLOR;
-					UNITY_FOG_COORDS(2)
+					float2 uv : TEXCOORD0;
+					UNITY_FOG_COORDS(1)
+					float4 vertex : SV_POSITION;
 				};
-				
 
+				StructuredBuffer<float4> BoneVectorBuffer;
+				int	BoneLengthEveryInstance;
+				int BoneVectorOffset;
 
-				half4	d[8];
-				
-				half4	p[240];
-				
-				
-				half3 rot_( half3 tpos, int4 i )
+				sampler2D _MainTex;
+				float4 _Color;
+
+				float3 calculate_side(float3 lvt, float3 pos0, float3 pos1, float3 eye)
 				{
-					half3x3	mtRot;
-
-					half3	dir = normalize( p[i.x].xyz - p[i.y].xyz );
-
-					half3	eye = normalize( _WorldSpaceCameraPos - p[i.w].xyz );
-
-					half3	h = cross( dir, eye );
-
-					half3	v = cross( h, eye );
-
-					mtRot[0] = eye;
-					mtRot[1] = v;
-					mtRot[2] = h;	// ラインの水平を正面（ｚ）に向かせたい…のか？ｗ
-
-					return mul( tpos, mtRot );
+					float3 up = pos1 - pos0;
+					float3 side = cross(up, eye);
+					return normalize(side);
 				}
-
-				half3 rot( half3 tpos, int4 i )
+				v2f vert(appdata v, uint i : SV_InstanceID)
 				{
-					half3	dir = normalize( p[i.x].xyz - p[i.y].xyz );
-
-					half3	eye = normalize( _WorldSpaceCameraPos - p[i.w].xyz );
-
-					half3	h = cross( dir, eye );
-
-					return tpos.zzz * h;
-				}
-
-
-
-				v2f vert( vtxpos v )
-				{
-					
 					v2f o;
-					
-					
-					//half3 i = v.color.rga * 255;
-					int4	i = D3DCOLORtoUBYTE4( v.color.bgra );
 
-					half4	pi = p[i.w];
-					
-					half4	pallet = d[pi.w];
-					
-					
-					half3	tpos = v.position * pallet.w;
-					
-					half3	rpos = rot( tpos, i );
-					
-					half4	pos = half4( pi.xyz + rpos, 1.0f );
-					
-					o.pos = mul( UNITY_MATRIX_VP, pos );
-					
-					
-					o.uv = v.texcoord;
+					int offset = BoneVectorOffset + i * BoneLengthEveryInstance;
+					int3 ivec = offset.xxx + v.index.xyz;
 
-					o.col = fixed4( pallet.xyz, 1.0f );
+					float3 wpos = BoneVectorBuffer[ivec.x].xyz;
 
-					UNITY_TRANSFER_FOG( o, o.pos );
+					float3 lvt = v.vertex.xyz;
+					float3 eye = wpos - _WorldSpaceCameraPos.xyz;
+
+					float3 ori0 = BoneVectorBuffer[ivec.y + 0].xyz;
+					float3 fwd0 = BoneVectorBuffer[ivec.y + 1].xyz;
+					float3 ori1 = BoneVectorBuffer[ivec.z + 0].xyz;
+					float3 fwd1 = BoneVectorBuffer[ivec.z + 1].xyz;
+
+					float3 side0 = calculate_side(lvt, ori0, fwd0, eye);
+					float3 side1 = calculate_side(lvt, ori1, fwd1, eye);
+
+					float3 side = (side0 + side1) * 0.5f;
+					float3 edgex = lvt.xxx * side;
+					float3 edgez = lvt.zzz * normalize(cross(eye, side0));//
+					float3 wvt = wpos + edgex + edgez;
+
+					o.vertex = mul(UNITY_MATRIX_VP, float4(wvt, 1.0f));
+					o.uv = v.uv;
+					UNITY_TRANSFER_FOG(o, o.vertex);
 
 					return o;
-					
 				}
 
-				
-				sampler2D _MainTex;
-
-				fixed4 frag( v2f i ) : COLOR
+				fixed4 frag(v2f i) : SV_Target
 				{
-					fixed4 texcol = tex2D( _MainTex, i.uv );
-
-					fixed4 col = fixed4( texcol *i.col );
-
-					clip( col.a - 0.1f );
-
-					UNITY_APPLY_FOG( i.fogCoord, col );
-
+					fixed4 col = tex2D(_MainTex, i.uv);
+					col.rgb *= _Color;
+					col.rgb *= 6.;
+					UNITY_APPLY_FOG(i.fogCoord, col);
 					return col;
 				}
-				
-				
+
 			ENDCG
-			
 		}
-		
+			
 	}
 	
 }
