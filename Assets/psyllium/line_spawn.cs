@@ -41,27 +41,31 @@ namespace Abss.Arthuring
 
             foreach( var model in Enumerable.Range( 0, drawSettings.PrefabEntities.Length ) )
             {
-                var ent = drawSettings.PrefabEntities[ model ];
+                var prefab = drawSettings.PrefabEntities[ model ];
 
                 foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
                 {
-                    this.ents.Add( em.Instantiate( ent ) );
+                    var ent = em.Instantiate( prefab );
+                    this.ents.Add( ent );
+                    createPointNodes_( ent, i, model );
                 }
             }
 
-
-            var ipos = 0;
-            var tf = this.transform;
-            for( var ent = getNext_( this.ents.First() ); ent != Entity.Null; ent = getNext_( ent ) )
+            void createPointNodes_( Entity entity, int i, int j )
             {
-                this.nodes.Add( ent );
-                var go = new GameObject();
-                go.transform.parent = tf;
-                go.transform.position = tf.position + new Vector3( ipos++ * 1.5f, UnityEngine.Random.value * .3f, UnityEngine.Random.value * .3f );
-            }
+                var ipos = 0;
+                var tf = this.transform;
+                for( var ent = getNext_( entity ); ent != Entity.Null; ent = getNext_( ent ) )
+                {
+                    this.nodes.Add( ent );
+                    var go = new GameObject();
+                    go.transform.parent = tf;
+                    go.transform.position = tf.position + new Vector3( j * 30 + ipos++ * 1.5f, UnityEngine.Random.value * .3f, j + i * 2 + UnityEngine.Random.value * .3f );
+                }
 
-            Entity getNext_( Entity ent_ ) =>
-                em.GetComponentData<LineParticlePointNodeLinkData>( ent_ ).NextNodeEntity;
+                Entity getNext_( Entity ent_ ) =>
+                    em.GetComponentData<LineParticlePointNodeLinkData>( ent_ ).NextNodeEntity;
+            }
 
         }
 

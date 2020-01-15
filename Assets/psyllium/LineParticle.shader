@@ -31,7 +31,6 @@
 			Lighting Off
 			LOD 200
 			
-			AlphaTest Greater 0.5
 			Cull Back
 			ZWrite On
 			ZTest LEqual
@@ -113,7 +112,7 @@
 				{
 					fixed4 texcol = tex2D( _MainTex, i.uv );
 					fixed4 col = fixed4( texcol * _Color );
-					//clip( col.a - 0.1f );
+					clip( col.a - 0.5f );// アルファテスト
 
 					UNITY_APPLY_FOG( i.fogCoord, col );
 

@@ -153,6 +153,10 @@ namespace Abss.Arthuring
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isHalfEdge">真ならＺ型、偽ならエ型のメッシュを生成する。</param>
         Mesh createMesh( int pointNodeLength, bool isHalfEdge )
         {
 
@@ -192,6 +196,7 @@ namespace Abss.Arthuring
                     return qVtx
                         .Prepend( endEdgeVtxs )
                         .Append( startEdgeVtxs )
+                        //.Select( (x,i) => new[] { x.First() + Vector3.up*i, x.Last() + Vector3.up*i } )
                         ;
                 }
             }
@@ -239,8 +244,8 @@ namespace Abss.Arthuring
                 else
                 {
                     var q = qNodeIdxSingle
-                        .Prepend( new Color( lastNode, lastNode - 1, lastNode - 1, 0 ) )
-                        .Append( new Color( 0, 0, 0, 0 ) )
+                        .Prepend( new Color( 0, 0, 0, 0 ) )
+                        .Append( new Color( lastNode, lastNode - 1, lastNode - 1, 0 ) )
                         ;
                     return (q, q).Zip( ( l, r ) => new[] { l, r } );
                 }
@@ -256,19 +261,33 @@ namespace Abss.Arthuring
 
                 var qTri = Enumerable
                     .Repeat( planeTris, 2 + pointNodeLength - 1 )
-                    .Select( ( tri, i ) => tri.Select( x => x + i * 2 ) )
                     ;
 
                 if( isHalfEdge )
                 {
-                    return qTri;
+                    return qTri
+                        .Select( ( tri, i ) => tri.Select( x => x + i * 2 ) )
+                        ;
                 }
                 else
                 {
+                    // ここはだいぶ難解になってしまった…
+                    var firstPlaneTris = new[]
+                    {
+                        4, 0, 5,
+                        0, 1, 5,
+                    };
+                    var lastPlaneTris = new[]
+                    {
+                        2, -2, 3,
+                        -2, -1, 3,
+                    };
                     return qTri
-                        .Prepend( planeTris )
-                        .Append( planeTris )
+                        .Prepend( firstPlaneTris )
+                        .Append( lastPlaneTris )
+                        .Select( ( tri, i ) => tri.Select( x => x + i * 2 ) )
                         ;
+                    ;
                 }
             }
             
