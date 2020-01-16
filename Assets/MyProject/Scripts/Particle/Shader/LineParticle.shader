@@ -92,12 +92,15 @@
 					float3 ori1 = BoneVectorBuffer[ivec.z + 0].xyz;
 					float3 fwd1 = BoneVectorBuffer[ivec.z + 1].xyz;
 
-					float3 side0 = calculate_side(lvt, ori0, fwd0, eye);
-					float3 side1 = calculate_side(lvt, ori1, fwd1, eye);
+					float3 eye0 = ori0 - _WorldSpaceCameraPos.xyz;
+					float3 eye1 = fwd1 - _WorldSpaceCameraPos.xyz;
+
+					float3 side0 = calculate_side(lvt, ori0, fwd0, eye0);
+					float3 side1 = calculate_side(lvt, ori1, fwd1, eye1);
 
 					float3 side = (side0 + side1) * 0.5f;
 					float3 edgex = lvt.xxx * side;
-					float3 edgez = lvt.zzz * normalize(cross(eye, side0));
+					float3 edgez = lvt.zzz * normalize(cross(eye, side));
 					float3 wvt = wpos + edgex + edgez;
 
 					o.vertex = mul( UNITY_MATRIX_VP, float4(wvt, 1.0f) );

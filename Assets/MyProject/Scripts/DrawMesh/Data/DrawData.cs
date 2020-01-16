@@ -53,4 +53,46 @@ namespace Abss.Draw
     //    public Entity BoneEntityTop;
     //}
 
+    
+    public interface aaa
+    {
+        Entity Entity { set; }
+    }
+    public struct DrawInstance : aaa
+    {
+        
+        public Entity Entity { get; set; }
+
+        public ComponentDataAccessor<DrawInstanceIndexOfModelData> IndexOfModel;
+
+    }
+
+    public struct ComponentDataAccessor<T> where T : struct, IComponentData
+    {
+        public T this[EntityManager em, Entity ent]
+        {
+            get => em.GetComponentData<T>( ent );
+            set => em.SetComponentData( ent, value );
+        }
+    }
+
+
+    public interface Iaa<T> where T : Iaa<T>
+    {
+        T Init( EntityManager em, Entity entity );
+    }
+
+    static public class ComponentDataExtension
+    {
+        static public T GetEntityAccessor<T>( this EntityManager em, Entity entity ) where T : Iaa<T>, new() =>
+            new T().Init( em, entity );
+
+        static public T aaaaa<T>( this EntityManager em, Entity ent, T e ) where T : aaa, new()
+        {
+            var c = new T();
+            var a = new DrawInstance();
+            a.IndexOfModel[em,ent].
+        }
+
+    }
 }
