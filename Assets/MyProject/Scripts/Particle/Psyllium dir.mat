@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Psyllium 2
+  m_Name: Psyllium dir
   m_Shader: {fileID: 4800000, guid: fe4edda1fe7dc8d4aaf40d3691d03f45, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4

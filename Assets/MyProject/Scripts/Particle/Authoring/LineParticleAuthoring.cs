@@ -16,14 +16,7 @@ using Abss.Motion;
 using Abss.Draw;
 using Abss.Character;
 using Abss.Common.Extension;
-
-
-
-
-public struct LineParticlePointNodeLinkData : IComponentData
-{
-    public Entity NextNodeEntity;
-}
+using Abss.Particle;
 
 namespace Abss.Arthuring
 {

@@ -18,6 +18,7 @@ using Abss.Motion;
 using Abss.Draw;
 using Abss.Character;
 using Abss.Common.Extension;
+using Abss.Particle;
 
 namespace Abss.Arthuring
 {
@@ -55,7 +56,7 @@ namespace Abss.Arthuring
             {
                 var ipos = 0;
                 var tf = this.transform;
-                for( var ent = getNext_( entity ); ent != Entity.Null; ent = getNext_( ent ) )
+                for( var ent = getNext_( entity ); ent.Entity != Entity.Null; ent = getNext_( ent ) )
                 {
                     this.nodes.Add( ent );
                     var go = new GameObject();
@@ -63,13 +64,13 @@ namespace Abss.Arthuring
                     go.transform.position = tf.position + new Vector3( j * 30 + ipos++ * 1.5f, UnityEngine.Random.value * .3f, j + i * 2 + UnityEngine.Random.value * .3f );
                 }
 
-                Entity getNext_( Entity ent_ ) =>
-                    em.GetComponentData<LineParticlePointNodeLinkData>( ent_ ).NextNodeEntity;
+                ParticleNodeEntity getNext_( ParticleNodeEntity ent_ ) =>
+                    em.GetComponentData<LineParticlePointNodeLinkData>( ent_.Entity ).NextNodeEntity;
             }
 
         }
 
-        List<Entity> nodes = new List<Entity>();
+        List<ParticleNodeEntity> nodes = new List<ParticleNodeEntity>();
 
 
         private void Update()
@@ -79,14 +80,7 @@ namespace Abss.Arthuring
 
             foreach( var x in (this.nodes, tfs).Zip() )
             {
-                setPosition_( x.x, x.y.position );
-            }
-
-            void setPosition_( Entity ent_, float3 pos_ )
-            {
-                var tr = em.GetComponentData<Translation>( ent_ );
-                tr.Value = pos_;
-                em.SetComponentData( ent_, tr );
+                em.SetComponentData( x.x, new Translation { Value = x.y.position } );
             }
         }
 

@@ -16,12 +16,7 @@ using Abss.Motion;
 using Abss.Draw;
 using Abss.Character;
 using Abss.Common.Extension;
-
-
-
-public struct ParticleTag : IComponentData//
-{ }
-
+using Abss.Particle;
 
 namespace Abss.Arthuring
 {

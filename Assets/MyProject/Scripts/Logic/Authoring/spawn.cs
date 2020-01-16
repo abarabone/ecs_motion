@@ -49,7 +49,7 @@ namespace Abss.Arthuring
                     em.SetComponentData( this.ents.Last(), new Rotation { Value = quaternion.identity } );
                 }
             }
-            
+            var a = new DrawInstanceEntity();
         }
         
     }
