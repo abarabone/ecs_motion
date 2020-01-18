@@ -14,7 +14,6 @@ using System.Runtime.CompilerServices;
 namespace Abss.Utilities
 {
 
-
     public interface ITypedEntity<T>
         where T : struct, IComponentData
     {

@@ -20,6 +20,32 @@ using Abss.Utilities;
 namespace Abss.Draw
 {
 
+    public struct DrawInstanceEntity :
+        ITypedEntity<
+            DrawInstanceIndexOfModelData,
+            DrawInstanceTargetWorkData
+        >
+    {
+        public Entity Entity { get; set; }
+
+        static public implicit operator DrawInstanceEntity( Entity ent )
+            => new DrawInstanceEntity { Entity = ent };
+    }
+
+
+
+    /// <summary>
+    /// 描画モデルの種類情報
+    /// </summary>
+    public struct DrawInstanceIndexOfModelData : IComponentData
+    {
+        public Entity DrawModelEntity;
+    }
+    public struct DrawInstanceTargetWorkData : IComponentData
+    {
+        public int DrawInstanceId;   // -1 なら描画しない
+    }
+
 
     /// <summary>
     /// カリング用オブジェクトＡＡＢＢ
@@ -39,25 +65,7 @@ namespace Abss.Draw
         public float radius;
     }
 
-    /// <summary>
-    /// 描画モデルの種類情報
-    /// </summary>
-    public struct DrawInstanceIndexOfModelData : IComponentData
-    {
-        public Entity DrawModelEntity;
-    }
-    public struct DrawInstanceTargetWorkData : IComponentData
-    {
-        public int DrawInstanceId;   // -1 なら描画しない
-    }
 
 
-
-
-    public struct DrawInstanceEntity :
-        ITypedEntity<DrawInstanceIndexOfModelData, DrawInstanceTargetWorkData>
-    {
-        public Entity Entity { get; set; }
-    }
 
 }

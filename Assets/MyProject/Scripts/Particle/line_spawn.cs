@@ -64,13 +64,13 @@ namespace Abss.Arthuring
                     go.transform.position = tf.position + new Vector3( j * 30 + ipos++ * 1.5f, UnityEngine.Random.value * .3f, j + i * 2 + UnityEngine.Random.value * .3f );
                 }
 
-                ParticleNodeEntity getNext_( ParticleNodeEntity ent_ ) =>
+                LineParticleNodeEntity getNext_( LineParticleNodeEntity ent_ ) =>
                     em.GetComponentData<LineParticlePointNodeLinkData>( ent_.Entity ).NextNodeEntity;
             }
 
         }
 
-        List<ParticleNodeEntity> nodes = new List<ParticleNodeEntity>();
+        List<LineParticleNodeEntity> nodes = new List<LineParticleNodeEntity>();
 
 
         private void Update()
@@ -80,7 +80,7 @@ namespace Abss.Arthuring
 
             foreach( var x in (this.nodes, tfs).Zip() )
             {
-                em.SetComponentData( x.x, new Translation { Value = x.y.position } );
+                em.SetComponentData( x.x.Entity, new Translation { Value = x.y.position } );
             }
         }
 

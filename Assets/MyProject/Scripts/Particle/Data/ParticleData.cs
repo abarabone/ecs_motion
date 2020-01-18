@@ -21,23 +21,22 @@ using Abss.Motion;
 namespace Abss.Particle
 {
 
-
-
-    public struct ParticleTag : IComponentData
-    { }
-
-
-
-
-    public struct LineParticlePointNodeLinkData : IComponentData
+    public struct PsylliumEntity :
+        ITypedEntity<
+            ParticleTag,
+            DrawInstanceIndexOfModelData,//DrawTransformLinkData
+            DrawInstanceTargetWorkData,
+            Translation,
+            Rotation
+        >
     {
-        public ParticleNodeEntity NextNodeEntity;
+        public Entity Entity { get; set; }
+
+        static public implicit operator PsylliumEntity( Entity ent )
+            => new PsylliumEntity { Entity = ent };
     }
 
-
-
-
-    public struct ParticleNodeEntity :
+    public struct LineParticleNodeEntity :
         ITypedEntity<
             LineParticlePointNodeLinkData,
             DrawTransformLinkData,
@@ -47,6 +46,25 @@ namespace Abss.Particle
         >
     {
         public Entity Entity { get; set; }
+
+        static public implicit operator LineParticleNodeEntity ( Entity ent )
+            => new LineParticleNodeEntity { Entity = ent };
     }
+
+
+
+
+
+    public struct ParticleTag : IComponentData
+    { }
+
+
+    public struct LineParticlePointNodeLinkData : IComponentData
+    {
+        public LineParticleNodeEntity NextNodeEntity;
+    }
+
+
+
 
 }

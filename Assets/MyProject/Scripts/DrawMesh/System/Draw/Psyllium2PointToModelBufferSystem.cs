@@ -14,6 +14,7 @@ using Abss.Motion;
 using Abss.SystemGroup;
 using Abss.Geometry;
 using Abss.Character;
+using Abss.Particle;
 
 namespace Abss.Draw
 {
