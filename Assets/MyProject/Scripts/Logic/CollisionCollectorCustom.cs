@@ -22,7 +22,7 @@ namespace Abss.Physics
         NativeSlice<RigidBody> rigidbodies;
         Entity self;
 
-        RaycastHit currentHit;
+        //RaycastHit currentHit;
         RaycastHit m_ClosestHit;
         public RaycastHit ClosestHit => m_ClosestHit;
 
@@ -31,7 +31,7 @@ namespace Abss.Physics
         {
             MaxFraction = maxFraction;
             m_ClosestHit = default( RaycastHit );
-            this.currentHit = default( RaycastHit );
+            //this.currentHit = default( RaycastHit );
             this.rigidbodies = rigidbodies;
             this.self = selfEntity;
             this.NumHits = 0;
@@ -39,36 +39,36 @@ namespace Abss.Physics
 
         public bool AddHit( RaycastHit hit )
         {
-            //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
-            //this.MaxFraction = hit.Fraction;
-            //this.NumHits++;
-            //MaxFraction = hit.Fraction;
-            this.currentHit = hit;
+            if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
+            this.MaxFraction = hit.Fraction;
+            this.m_ClosestHit = hit;
+            this.NumHits = 1;
+            //this.currentHit = hit;
             return true;
         }
 
-        public void TransformNewHits
-            ( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey )
-        {
-            //if( m_ClosestHit.Fraction < oldFraction )
-            //{
-            //    m_ClosestHit.Transform( transform, numSubKeyBits, subKey );
-            //}
-        }
-        public void TransformNewHits
-            ( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
-        {
-            //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
-            if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
+        //public void TransformNewHits
+        //    ( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey )
+        //{
+        //    //if( m_ClosestHit.Fraction < oldFraction )
+        //    //{
+        //    //    m_ClosestHit.Transform( transform, numSubKeyBits, subKey );
+        //    //}
+        //}
+        //public void TransformNewHits
+        //    ( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
+        //{
+        //    //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
+        //    if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
 
-            if( this.currentHit.Fraction < oldFraction )
-            {
-                m_ClosestHit = this.currentHit;
-                m_ClosestHit.Transform( transform, rigidBodyIndex );
-                MaxFraction = m_ClosestHit.Fraction;
-                NumHits = 1;
-            }
-        }
+        //    if( this.currentHit.Fraction < oldFraction )
+        //    {
+        //        m_ClosestHit = this.currentHit;
+        //        m_ClosestHit.Transform( transform, rigidBodyIndex );
+        //        MaxFraction = m_ClosestHit.Fraction;
+        //        NumHits = 1;
+        //    }
+        //}
     }
 
     public struct ClosestDistanceHitExcludeSelfCollector : ICollector<DistanceHit>
@@ -80,7 +80,7 @@ namespace Abss.Physics
         NativeSlice<RigidBody> rigidbodies;
         Entity self;
 
-        DistanceHit currentHit;
+        //DistanceHit currentHit;
         DistanceHit m_ClosestHit;
         public DistanceHit ClosestHit => m_ClosestHit;
 
@@ -89,7 +89,7 @@ namespace Abss.Physics
         {
             MaxFraction = maxFraction;
             m_ClosestHit = default( DistanceHit );
-            this.currentHit = default( DistanceHit );
+            //this.currentHit = default( DistanceHit );
             this.rigidbodies = rigidbodies;
             this.self = selfEntity;
             this.NumHits = 0;
@@ -97,36 +97,35 @@ namespace Abss.Physics
 
         public bool AddHit( DistanceHit hit )
         {
-            //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
-            //this.MaxFraction = hit.Fraction;
-            //this.NumHits++;
-            //MaxFraction = hit.Fraction;
-            this.currentHit = hit;
+            if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
+            this.MaxFraction = hit.Fraction;
+            this.m_ClosestHit = hit;
+            this.NumHits = 1;
             return true;
         }
 
-        public void TransformNewHits
-            ( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey )
-        {
-            //if( m_ClosestHit.Fraction < oldFraction )
-            //{
-            //    m_ClosestHit.Transform( transform, numSubKeyBits, subKey );
-            //}
-        }
-        public void TransformNewHits
-            ( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
-        {
-            //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
-            if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
+        //public void TransformNewHits
+        //    ( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey )
+        //{
+        //    //if( m_ClosestHit.Fraction < oldFraction )
+        //    //{
+        //    //    m_ClosestHit.Transform( transform, numSubKeyBits, subKey );
+        //    //}
+        //}
+        //public void TransformNewHits
+        //    ( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
+        //{
+        //    //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
+        //    if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
 
-            if( this.currentHit.Fraction < oldFraction )
-            {
-                m_ClosestHit = this.currentHit;
-                m_ClosestHit.Transform( transform, rigidBodyIndex );
-                MaxFraction = m_ClosestHit.Fraction;
-                NumHits = 1;
-            }
-        }
+        //    if( this.currentHit.Fraction < oldFraction )
+        //    {
+        //        m_ClosestHit = this.currentHit;
+        //        m_ClosestHit.Transform( transform, rigidBodyIndex );
+        //        MaxFraction = m_ClosestHit.Fraction;
+        //        NumHits = 1;
+        //    }
+        //}
     }
 
 
@@ -135,7 +134,7 @@ namespace Abss.Physics
     {
         public bool EarlyOutOnFirstHit => false;//{ get; private set; }
         public float MaxFraction { get; private set; }
-        public int NumHits { get; private set; }
+        public int NumHits => 0;//{ get; private set; }
 
         NativeSlice<RigidBody> rigidbodies;
         Entity self;
@@ -146,31 +145,31 @@ namespace Abss.Physics
             MaxFraction = maxFraction;
             this.rigidbodies = rigidbodies;
             this.self = selfEntity;
-            this.NumHits = 0;
+            //this.NumHits = 0;
         }
 
         public bool AddHit( DistanceHit hit )
         {
-            //this.MaxFraction = hit.Fraction;
-            //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return true;
+            if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
+            this.MaxFraction = hit.Fraction;
             //this.NumHits++;
             return true;
         }
 
-        public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
-        public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
-        {
-            //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
-            if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
-            this.NumHits++;
-        }
+        //public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
+        //public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
+        //{
+        //    //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
+        //    if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
+        //    this.NumHits++;
+        //}
     }
 
     public struct AnyRayHitExcludeSelfCollector : ICollector<RaycastHit>
     {
         public bool EarlyOutOnFirstHit => true;//{ get; private set; }
-        public float MaxFraction { get; private set; }
-        public int NumHits { get; private set; }
+        public float MaxFraction { get; }//; private set; }
+        public int NumHits => 0;//{ get; private set; }
 
         NativeSlice<RigidBody> rigidbodies;
         Entity self;
@@ -181,23 +180,23 @@ namespace Abss.Physics
             MaxFraction = maxFraction;
             this.rigidbodies = rigidbodies;
             this.self = selfEntity;
-            this.NumHits = 0;
+            //this.NumHits = 0;
         }
 
         public bool AddHit( RaycastHit hit )
         {
-            //if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
+            if( this.rigidbodies[ hit.RigidBodyIndex ].Entity == this.self ) return false;
             //this.MaxFraction = hit.Fraction;
             //this.NumHits++;
             return true;
         }
 
-        public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
-        public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
-        {
-            //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
-            if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
-            this.NumHits++;
-        }
+        //public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, uint numSubKeyBits, uint subKey ) { }
+        //public void TransformNewHits( int oldNumHits, float oldFraction, Math.MTransform transform, int rigidBodyIndex )
+        //{
+        //    //Debug.Log( $"{rigidBodyIndex} {this.rigidbodies[ rigidBodyIndex ].Entity}" );
+        //    if( this.rigidbodies[ rigidBodyIndex ].Entity == this.self ) return;
+        //    this.NumHits++;
+        //}
     }
 }

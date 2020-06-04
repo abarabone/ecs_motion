@@ -48,3 +48,13 @@ The following packages were 更新済:
   com.unity.timeline をバージョン 1.1.0 から 1.2.6 へ
 The following packages were 削除済:
   com.unity.package-manager-ui@2.2.0
+
+=== Fri Jun  5 00:16:19 2020
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were 更新済:
+  com.unity.ide.rider をバージョン 1.1.0 から 1.1.4 へ
+  com.unity.ide.vscode をバージョン 1.1.3 から 1.2.0 へ
+  com.unity.test-framework をバージョン 1.1.3 から 1.1.14 へ

@@ -59,8 +59,8 @@ namespace Abss.Draw
 
             inputDeps = this.Job
                 .WithBurst()
-                .WithDeallocateOnJobCompletion(chunks)
-                .WithNativeDisableParallelForRestriction(nativeBuffers)
+                .WithDeallocateOnJobCompletion( chunks )
+                .WithNativeDisableParallelForRestriction( nativeBuffers )
                 .WithCode(
                     () =>
                     {
@@ -68,6 +68,7 @@ namespace Abss.Draw
 
                         var nativeBuffer
                             = new SimpleNativeBuffer<float4, Temp>( totalVectorLength );
+
                         nativeBuffers[ drawSysEnt ]
                             = new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer };
 

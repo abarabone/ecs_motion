@@ -45,13 +45,15 @@ namespace Abss.Arthuring
                 {
                     this.ents.Add( em.Instantiate( ent ) );
 
-                    em.SetComponentData( this.ents.Last(), new Translation { Value = this.transform.position.As_float3() + new float3( i, 0, -model*3 ) } );
+                    em.SetComponentData( this.ents.Last(), new Translation { Value = this.transform.position.As_float3() + new float3( i, 0, -model * 3 ) } );
                     em.SetComponentData( this.ents.Last(), new Rotation { Value = quaternion.identity } );
                 }
             }
             var a = new DrawInstanceEntity();
+
+
         }
-        
+
     }
 
 }
