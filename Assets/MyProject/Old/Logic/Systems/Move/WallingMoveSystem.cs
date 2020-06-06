@@ -182,12 +182,12 @@ namespace Abss.Character
                         End = origin_ + ray_,
                         Filter = filter_,
                     };
-                    var collector = new ClosestRayHitExcludeSelfCollector( 1.0f, ent, cw.Bodies );
+                    var collector = new ClosestHitExcludeSelfCollector<RaycastHit>( 1.0f, ent );
                     //var collector = new ClosestHitCollector<RaycastHit>( 1.0f );
                     /*var isHit = */
                     cw.CastRay( hitInput, ref collector );
 
-                    return new HitFlagAndResult { isHit=collector.NumHits > 0, hit=collector.ClosestHit};
+                    return new HitFlagAndResult { isHit=collector.NumHits > 0, hit=collector.ClosestHit };
                     //return (collector.NumHits > 0, collector.ClosestHit);
                 }
 

@@ -86,7 +86,7 @@ namespace Abss.Character
                 };
                 //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
 
-                var collector = new ClosestDistanceHitExcludeSelfCollector( sphere.Distance, entity, CollisionWorld.Bodies );
+                var collector = new ClosestHitExcludeSelfCollector<DistanceHit>( sphere.Distance, entity );
                 //var collector = new ClosestHitCollector<DistanceHit>( sphere.Distance );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
 

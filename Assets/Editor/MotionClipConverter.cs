@@ -1,13 +1,8 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-//using UniRx;
 using Unity.Linq;
-using Unity.Mathematics;
-using Unity.Collections;
-using System;
 using System.IO;
 
 using Abss.Utilities;
@@ -17,98 +12,9 @@ using Abss.Common.Extension;
 namespace Abss.Motion
 {
 
-    //[CustomEditor( typeof( UnityEngine.Object ) )]
-    //public class MotionClipConverter : Editor
-    //{
-
-
-    //}
-
-    
-    public enum KeyStreamSection
-    {
-        positions,
-        rotations,
-        scales,
-        length
-    }
-
-
-    // モーションクリップ（エディタ保管用） --------------------------
-
-    //[CreateAssetMenu( menuName = "Scriptable Object/Motion Clip", fileName = "MotonClip" )]
-    public class MotionClip : ScriptableObject
-    {
-
-        public string[] ClipNames;
-
-        public string[] StreamPaths;
-        //public int[] IndexMapFbxToMotion;// mesh.bones のインデックス → モーションストリームのインデックス
-
-        public MotionDataInAsset MotionData;
-
-        //public BoolReactiveProperty IsWorld = new BoolReactiveProperty( false );
-    }
-
-
-    [Serializable]
-    public struct MotionDataInAsset
-    {
-        public MotionDataUnit[] Motions;
-    }
-
-    [Serializable]
-    public struct MotionDataUnit
-    {
-        public string MotionName;
-
-        public float TimeLength;
-        public Bounds LocalAABB;
-        public WrapMode WrapMode;
-
-        public SectionDataUnit[] Sections;
-    }
-
-    [Serializable]
-    public struct SectionDataUnit
-    {
-        public string SectionName;
-
-        public StreamDataUnit[] Streams;
-    }
-
-    [Serializable]
-    public struct StreamDataUnit
-    {
-        public string StreamPath;
-
-        public KeyDataUnit[] keys;
-    }
-
-    [Serializable]
-    public struct KeyDataUnit
-    {
-        public float Time;
-
-        [Compact]
-        public Vector4 Value;
-    }
-
-    // ----------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
 
     // アニメーションクリップからモーションクリップへのコンバート -----------------------------
 
-#if UNITY_EDITOR
 
     public static partial class MotionClipUtility
     {
@@ -175,7 +81,7 @@ namespace Abss.Motion
 
         static MotionDataInAsset buildMotionData( AnimationClip[] animationClips, string[] streamPaths )
         {
-            
+
             return new MotionDataInAsset
             {
                 Motions = queryMotions( animationClips ).ToArray()
@@ -204,8 +110,8 @@ namespace Abss.Motion
                 from binding in AnimationUtility.GetCurveBindings( clip )
                 where !binding.path.StartsWith( "_" )// _ から始まるものはマニピュレータなので除外（マイルール）
 
-                // セクションでグループ化（ m_LocalPosition など）＆ソート
-                group binding by Path.GetFileNameWithoutExtension( binding.propertyName ) into section_group
+            // セクションでグループ化（ m_LocalPosition など）＆ソート
+            group binding by Path.GetFileNameWithoutExtension( binding.propertyName ) into section_group
                 orderby section_group.Key
 
                 select new SectionDataUnit
@@ -214,11 +120,11 @@ namespace Abss.Motion
                     Streams = queryKeyStreams( clip, section_group ).ToArray()
                 };
 
-            
+
             // セクション内のストリームをクエリする。並び順は、メッシュのボーンと同じ順序となる。
             IEnumerable<StreamDataUnit> queryKeyStreams
                 ( AnimationClip clip, IGrouping<string, EditorCurveBinding> section_group ) =>
-                
+
                 from stream_path in streamPaths
                 join stream_group in
                     from binding in section_group
@@ -241,12 +147,12 @@ namespace Abss.Motion
                 from keyframe in AnimationUtility.GetEditorCurve( clip, stream ).keys
                 select (element: Path.GetExtension( stream.propertyName )[ 1 ], keyFrame: keyframe) into keyBind
 
-                // 時間でグループ化＆ソート
-                group keyBind by keyBind.keyFrame.time into time_group
+            // 時間でグループ化＆ソート
+            group keyBind by keyBind.keyFrame.time into time_group
                 orderby time_group.Key
 
-                // 要素で辞書化し、添え字アクセスできるようにする。
-                let elements = time_group.ToDictionary( x => x.element, x => x.keyFrame.value )
+            // 要素で辞書化し、添え字アクセスできるようにする。
+            let elements = time_group.ToDictionary( x => x.element, x => x.keyFrame.value )
 
                 select new KeyDataUnit
                 {
@@ -297,7 +203,7 @@ namespace Abss.Motion
 
             var qNameList =
                 from x in motionClip.ClipNames
-                select replace_(x)
+                select replace_( x )
                 ;
 
             var name = replace_( motionClip.name );
@@ -306,11 +212,7 @@ namespace Abss.Motion
         }
     }
 
-
-
-
-#endif
-
+    
     // ----------------------------------------------------------
 
 }

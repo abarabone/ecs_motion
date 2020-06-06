@@ -82,8 +82,7 @@ namespace Abss.Character
                     Filter = sphere.Filter,
                 };
                 //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
-
-                var collector = new AnyDistanceHitExcludeSelfCollector( sphere.Distance, entity, CollisionWorld.Bodies );
+                var collector = new AnyHitExcludeSelfCollector<DistanceHit>( sphere.Distance, entity );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
 
                 //var castInput = new RaycastInput
