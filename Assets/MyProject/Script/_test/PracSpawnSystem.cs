@@ -18,7 +18,7 @@ public class PracSpawnSystem : ComponentSystem
     
     protected override void OnUpdate()
     {
-        this.Entities.ForEach( ( ref wotim  ref SpawnData spawn ) => this.EntityManager.Instantiate( spawn.ent ) );
+        //this.Entities.ForEach( ( ref wotim  ref SpawnData spawn ) => this.EntityManager.Instantiate( spawn.ent ) );
     }
     
 }
