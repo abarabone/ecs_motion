@@ -7,7 +7,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-namespace aaa.Draw.Arthuring
+namespace Abarabone.Draw.Arthuring
 {
     [DisallowMultipleComponent]
     class SpawnerAuthoring : MonoBehaviour
@@ -16,7 +16,7 @@ namespace aaa.Draw.Arthuring
 
         public interface IModelAuthoring
         {
-
+            GameObject GameObject { get; }
         }
 
 
