@@ -15,9 +15,7 @@ using Abss.Geometry;
 using System.Runtime.InteropServices;
 using System;
 
-using Abss.Utilities;
-
-namespace Abss.Draw
+namespace Abarabone.Draw
 {
 
     public struct DrawInstanceEntity :
@@ -31,6 +29,29 @@ namespace Abss.Draw
         static public implicit operator DrawInstanceEntity( Entity ent )
             => new DrawInstanceEntity { Entity = ent };
     }
+
+
+
+
+
+    public struct DrawTransformLinkData : IComponentData
+    {
+        public Entity DrawModelEntity;
+        public Entity DrawInstanceEntity;
+    }
+
+    public struct DrawTransformIndexData : IComponentData
+    {
+        public int BoneId;
+        public int BoneLength;
+    }
+
+    public unsafe struct DrawTransformTargetWorkData : IComponentData
+    {
+        public int DrawInstanceId;
+    }
+
+
 
 
 

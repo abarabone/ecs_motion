@@ -95,7 +95,7 @@ namespace Abss.Arthuring
         (
             em => em.CreateArchetype
             (
-                typeof( DrawInstanceIndexOfModelData ),
+                typeof( DrawInstanceModeLinkData ),
                 typeof( DrawInstanceTargetWorkData ),
                 typeof( Prefab )
             )
@@ -109,7 +109,7 @@ namespace Abss.Arthuring
             var ent = em.CreateEntity( archetype );
 
             em.SetComponentData( ent,
-                new DrawInstanceIndexOfModelData
+                new DrawInstanceModeLinkData
                 {
                     DrawModelEntity = modelEntity,
                 }

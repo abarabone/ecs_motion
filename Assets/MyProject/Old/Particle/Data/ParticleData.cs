@@ -24,7 +24,7 @@ namespace Abss.Particle
     public struct PsylliumEntity :
         ITypedEntity<
             ParticleTag,
-            DrawInstanceIndexOfModelData,//DrawTransformLinkData
+            DrawInstanceModeLinkData,//DrawTransformLinkData
             DrawInstanceTargetWorkData,
             Translation,
             Rotation

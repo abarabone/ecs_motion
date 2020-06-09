@@ -184,7 +184,7 @@ namespace Abss.Arthuring
                 new DrawTransformLinkData
                 {
                     DrawInstanceEntity = drawInstancePrefab,
-                    DrawModelEntity = em_.GetComponentData<DrawInstanceIndexOfModelData>(drawInstancePrefab).DrawModelEntity,
+                    DrawModelEntity = em_.GetComponentData<DrawInstanceModeLinkData>(drawInstancePrefab).DrawModelEntity,
                 }
             );
         }

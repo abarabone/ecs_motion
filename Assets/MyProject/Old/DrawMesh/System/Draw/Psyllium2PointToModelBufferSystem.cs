@@ -48,7 +48,7 @@ namespace Abss.Draw
                 .ForEach(
                     (
                         in DrawInstanceTargetWorkData target,
-                        in DrawInstanceIndexOfModelData linker,
+                        in DrawInstanceModeLinkData linker,
                         in Translation pos,
                         in Rotation rot
                     ) =>

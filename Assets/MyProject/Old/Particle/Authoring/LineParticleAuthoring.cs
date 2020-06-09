@@ -64,7 +64,7 @@ namespace Abss.Arthuring
                 //em_.AddBuffer<LinkedEntityGroup>( ent );
 
                 em_.AddComponentData( ent,
-                    new DrawInstanceIndexOfModelData
+                    new DrawInstanceModeLinkData
                     {
                         DrawModelEntity = drawModelEntity_
                     }

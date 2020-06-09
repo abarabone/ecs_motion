@@ -44,7 +44,7 @@ namespace Abss.Arthuring
             em.AddComponentData( ent, new ParticleTag { } );//
 
             em.AddComponentData( ent,
-                new DrawInstanceIndexOfModelData
+                new DrawInstanceModeLinkData
                 //new DrawTransformLinkData
                 {
                     DrawModelEntity = modelEntity,
