@@ -21,14 +21,14 @@ using Abarabone.Misc;
 namespace Abarabone.Draw
 {
 
-    public class DrawMeshCsResourceUnit
-    {
-        public int MeshId;
-        public Mesh Mesh;
-        public Material Material;
-        public int VectorLengthInBone;
-        public int MaxInstance;
-    }
+    //public class DrawMeshCsResourceUnit
+    //{
+    //    public int MeshId;
+    //    public Mesh Mesh;
+    //    public Material Material;
+    //    public int VectorLengthInBone;
+    //    public int MaxInstance;
+    //}
 
     public enum BoneType
     {

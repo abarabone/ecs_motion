@@ -11,7 +11,7 @@ using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 
 
-using Abarabone.Arthuring;
+using Abarabone.Authoring;
 using Abarabone.Motion;
 using Abarabone.SystemGroup;
 using Abarabone.Misc;

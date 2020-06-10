@@ -7,17 +7,15 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-namespace Abarabone.Model.Arthuring
+namespace Abarabone.Model.Authoring
 {
-    public class CharacterModelAuthoring : MonoBehaviour, IModelAuthoring, IConvertGameObjectToEntity
+    public class CharacterModelAuthoring
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
 
-        public Shader Shader;
+        public Shader ShaderForDrawMesh;
 
-
-
-        GameObject IModelAuthoring.GameObject => this.gameObject;
 
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )

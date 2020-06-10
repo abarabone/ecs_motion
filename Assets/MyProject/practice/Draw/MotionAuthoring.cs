@@ -7,7 +7,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-namespace Abarabone.Motion.Arthuring
+namespace Abarabone.Motion.Authoring
 {
     public class MotionAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {

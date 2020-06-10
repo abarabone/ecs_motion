@@ -20,7 +20,7 @@ using Abarabone.Common.Extension;
 
 using Material = UnityEngine.Material;
 
-namespace Abarabone.Arthuring
+namespace Abarabone.Authoring
 {
 
     public class AntCharacterAuthoring : CharacterAuthoring

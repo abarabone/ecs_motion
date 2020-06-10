@@ -18,7 +18,7 @@ using Abarabone.Character;
 using Abarabone.Common.Extension;
 using Abarabone.Particle;
 
-namespace Abarabone.Arthuring
+namespace Abarabone.Authoring
 {
 
     [DisallowMultipleComponent]

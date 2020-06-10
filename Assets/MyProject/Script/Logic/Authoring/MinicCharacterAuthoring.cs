@@ -17,7 +17,7 @@ using Abarabone.Draw;
 using Abarabone.Character;
 using Abarabone.Common.Extension;
 
-namespace Abarabone.Arthuring
+namespace Abarabone.Authoring
 {
 
     public class MinicCharacterAuthoring : CharacterAuthoring

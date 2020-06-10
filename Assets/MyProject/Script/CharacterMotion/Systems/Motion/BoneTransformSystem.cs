@@ -13,7 +13,7 @@ using Unity.Transforms;
 using Unity.Physics;
 
 
-using Abarabone.Arthuring;
+using Abarabone.Authoring;
 using Abarabone.SystemGroup;
 using Abarabone.Utilities;
 using Abarabone.Geometry;

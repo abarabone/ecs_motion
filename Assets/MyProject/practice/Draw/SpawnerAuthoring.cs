@@ -7,7 +7,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-namespace Abarabone.Model.Arthuring
+namespace Abarabone.Model.Authoring
 {
     [DisallowMultipleComponent]
     class SpawnerAuthoring : MonoBehaviour
@@ -15,7 +15,7 @@ namespace Abarabone.Model.Arthuring
 
 
 
-        public IModelAuthoring[] ModelPrefabs;
+        public ModelGroupAuthoring.ModelAuthoringBase[] ModelPrefabs;
 
         public Shader Shader = null;
 

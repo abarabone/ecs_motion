@@ -24,7 +24,7 @@ using BoxCollider = Unity.Physics.BoxCollider;
 using CapsuleCollider = Unity.Physics.CapsuleCollider;
 using MeshCollider = Unity.Physics.MeshCollider;
 
-namespace Abarabone.Arthuring
+namespace Abarabone.Authoring
 {
     /// <summary>
     /// 未整理

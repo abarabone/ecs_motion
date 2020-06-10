@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 
-using Abarabone.Arthuring;
+using Abarabone.Authoring;
 using Abarabone.SystemGroup;
 using Abarabone.Utilities;
 using Abarabone.Geometry;

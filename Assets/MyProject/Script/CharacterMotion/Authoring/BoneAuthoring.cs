@@ -17,7 +17,7 @@ using Abarabone.Motion;
 using Abarabone.Draw;
 using Abarabone.Common.Extension;
 
-namespace Abarabone.Arthuring
+namespace Abarabone.Authoring
 {
 
     [Serializable]

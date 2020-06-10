@@ -18,7 +18,7 @@ using Abarabone.Motion;
 using Abarabone.Draw;
 using Abarabone.Character;
 
-namespace Abarabone.Arthuring
+namespace Abarabone.Authoring
 {
 
     public struct NameAndEntity

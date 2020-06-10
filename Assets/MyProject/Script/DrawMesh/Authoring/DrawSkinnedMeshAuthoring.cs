@@ -13,7 +13,7 @@ using Abarabone.Misc;
 using Abarabone.Motion;
 using Abarabone.Draw;
 
-namespace Abarabone.Arthuring
+namespace Abarabone.Authoring
 {
     [DisallowMultipleComponent]
     class DrawSkinnedMeshAuthoring : MonoBehaviour

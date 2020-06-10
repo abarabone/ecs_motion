@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 
-using Abarabone.Arthuring;
+using Abarabone.Authoring;
 using Abarabone.Misc;
 using Abarabone.SystemGroup;
 
