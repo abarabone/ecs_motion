@@ -5,11 +5,11 @@ using System.Linq;
 using Unity.Linq;
 using System.IO;
 
-using Abss.Utilities;
-using Abss.Common.Extension;
+using Abarabone.Utilities;
+using Abarabone.Common.Extension;
 
 
-namespace Abss.Motion
+namespace Abarabone.Motion
 {
 
 

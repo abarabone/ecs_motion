@@ -11,14 +11,14 @@ using Unity.Linq;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Runtime.InteropServices;
 
-using Abss.Geometry;
-using Abss.Utilities;
-using Abss.Misc;
-using Abss.Motion;
-using Abss.Draw;
-using Abss.Character;
+using Abarabone.Geometry;
+using Abarabone.Utilities;
+using Abarabone.Misc;
+using Abarabone.Motion;
+using Abarabone.Draw;
+using Abarabone.Character;
 
-namespace Abss.Arthuring
+namespace Abarabone.Arthuring
 {
 
     [DisallowMultipleComponent]
