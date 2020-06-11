@@ -10,7 +10,7 @@ using Unity.Transforms;
 namespace Abarabone.Model.Authoring
 {
     public class CharacterModelAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+        : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
     {
 
 

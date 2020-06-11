@@ -13,7 +13,7 @@ namespace Abarabone.Model.Authoring
     using Utilities;
 
 
-    public class ModelGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
+    public class ModelGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs//, IConvertGameObjectToEntity
     {
 
         public class ModelAuthoringBase : MonoBehaviour
@@ -32,7 +32,7 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
-            dstManager.DestroyEntity( entity );
+            //dstManager.DestroyEntity( entity );
 
         }
 
