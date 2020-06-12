@@ -13,7 +13,7 @@ namespace Abarabone.Model.Authoring
     using Utilities;
 
 
-    public class ModelGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs//, IConvertGameObjectToEntity
+    public class ModelGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
         public class ModelAuthoringBase : MonoBehaviour

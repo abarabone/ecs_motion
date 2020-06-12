@@ -9,7 +9,7 @@ using Unity.Transforms;
 
 namespace Abarabone.Motion.Authoring
 {
-    public class MotionAuthoring : MonoBehaviour//, IConvertGameObjectToEntity
+    public class MotionAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )

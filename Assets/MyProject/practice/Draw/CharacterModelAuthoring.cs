@@ -10,12 +10,10 @@ using Unity.Transforms;
 namespace Abarabone.Model.Authoring
 {
     public class CharacterModelAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-
-        public Shader ShaderForDrawMesh;
-
+        public Material Material;
 
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )

@@ -14,7 +14,7 @@ namespace Abarabone.Particle.Aurthoring
     using Draw;
 
     public class PsylliumAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
 
