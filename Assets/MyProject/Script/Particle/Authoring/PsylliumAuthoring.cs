@@ -40,7 +40,7 @@ namespace Abarabone.Authoring
             var modelEntity = initDrawModelComponentsFunc( mesh, mat, BoneType.TR, boneLength );
 
             var ent = em.CreateEntity();
-            em.AddComponentData( ent, new Prefab { } );
+            //em.AddComponentData( ent, new Prefab { } );
             em.AddComponentData( ent, new ParticleTag { } );//
 
             em.AddComponentData( ent,

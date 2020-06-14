@@ -44,6 +44,7 @@ namespace Abarabone.Draw
                     typeof( DrawSystemNativeTransformBufferData )
                 );
                 var ent = em_.CreateEntity( arch );
+                em_.SetName( ent, "draw system" );
 
 
                 const int maxBufferLength = 1000 * 16 * 2;//
@@ -71,23 +72,37 @@ namespace Abarabone.Draw
         }
 
 
+
         protected override void OnDestroy()
         {
             if( !this.HasSingleton<DrawSystemComputeTransformBufferData>() ) return;
 
-            var cb = this.GetSingleton<DrawSystemComputeTransformBufferData>();
-            cb.Transforms.Dispose();
+            disposeTransformComputeBuffer_();
+            disposeComputeArgumentsBuffersAllModels_();
 
-            var eq = this.EntityManager.CreateEntityQuery( typeof( DrawModelComputeArgumentsBufferData ) );
-            using( eq )
+            return;
+
+
+            void disposeTransformComputeBuffer_()
             {
-                var args = eq.ToComponentDataArray<DrawModelComputeArgumentsBufferData>();
-                foreach( var arg in args )
+                var cb = this.GetSingleton<DrawSystemComputeTransformBufferData>();
+                cb.Transforms.Dispose();
+            }
+
+            void disposeComputeArgumentsBuffersAllModels_()
+            {
+                var eq = this.EntityManager.CreateEntityQuery( typeof( DrawModelComputeArgumentsBufferData ) );
+                using( eq )
                 {
-                    arg.InstanceArgumentsBuffer.Dispose();
+                    var args = eq.ToComponentDataArray<DrawModelComputeArgumentsBufferData>();
+                    foreach( var arg in args )
+                    {
+                        arg.InstanceArgumentsBuffer.Dispose();
+                    }
                 }
             }
         }
+
 
     }
 }

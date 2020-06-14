@@ -25,14 +25,14 @@ namespace Abarabone.Model.Authoring
 
         void IDeclareReferencedPrefabs.DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
         {
-            this.ModelPrefabs.ForEach( x => referencedPrefabs.Add(x.gameObject) );
+            referencedPrefabs.AddRange( this.ModelPrefabs.Select(x => x.gameObject) );
         }
 
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
-            //dstManager.DestroyEntity( entity );
+            dstManager.DestroyEntity( entity );
 
         }
 

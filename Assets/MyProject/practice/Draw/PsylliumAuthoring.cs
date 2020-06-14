@@ -10,9 +10,13 @@ using Unity.Mathematics;
 
 namespace Abarabone.Particle.Aurthoring
 {
-    using Model.Authoring;
+    using Model;
     using Draw;
+    using Model.Authoring;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class PsylliumAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
@@ -22,8 +26,12 @@ namespace Abarabone.Particle.Aurthoring
 
 
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
+            Debug.Log( this.name );
 
             var mat = new Material( this.Material );
             var mesh = createMesh();
@@ -31,8 +39,12 @@ namespace Abarabone.Particle.Aurthoring
             var modelEntity = createModelEntity_( dstManager, mesh, mat );
             dstManager.SetName( modelEntity, $"{this.name} draw model" );
 
-            initParticleEntityComponents_( dstManager, entity, modelEntity );
-            dstManager.SetName( entity, $"{this.name} psyllium" );
+            var psylliumEntity = conversionSystem.CreateAdditionalEntity( this.gameObject );
+            initParticleEntityComponents_( dstManager, psylliumEntity, modelEntity );
+            dstManager.SetName( psylliumEntity, $"{this.name} prefab head" );
+
+            dstManager.AddComponentData( entity, new ModelPrefabHeadData { PrefabHeadEntity = psylliumEntity } );
+            dstManager.SetName( entity, $"{this.name} prefab" );
 
             return;
 
