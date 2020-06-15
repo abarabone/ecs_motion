@@ -33,35 +33,32 @@ namespace Abarabone.Particle.Aurthoring
         {
             Debug.Log( this.name );
 
-            var mat = new Material( this.Material );
-            var mesh = createMesh();
-
-            var modelEntity = createModelEntity_( dstManager, mesh, mat );
-            dstManager.SetName( modelEntity, $"{this.name} draw model" );
-
-            var psylliumEntity = conversionSystem.CreateAdditionalEntity( this.gameObject );
-            initParticleEntityComponents_( dstManager, psylliumEntity, modelEntity );
-            dstManager.SetName( psylliumEntity, $"{this.name} prefab head" );
-
-            dstManager.AddComponentData( entity, new ModelPrefabHeadData { PrefabHeadEntity = psylliumEntity } );
-            dstManager.SetName( entity, $"{this.name} prefab" );
-
+            var modelEntity = createModelEntity_( dstManager, this.Material );
+            
+            initParticleEntityComponents_( dstManager, entity, modelEntity );
+            
             return;
 
 
-            Entity createModelEntity_( EntityManager em, Mesh mesh_, Material mat_ )
+            Entity createModelEntity_( EntityManager em, Material srcMaterial )
             {
+                var mat = new Material( srcMaterial );
+                var mesh = createMesh();
+
                 const Draw.BoneType boneType = Draw.BoneType.TR;
                 const int boneLength = 1;
 
                 var modelEntity_ = this.CreateDrawModelEntityComponents( em, mesh, mat, boneType, boneLength );
+                dstManager.SetName( modelEntity_, $"{this.name} draw model" );
 
                 return modelEntity_;
             }
 
             void initParticleEntityComponents_( EntityManager em, Entity mainEntity, Entity modelEntity_ )
             {
-                em.AddComponentData( mainEntity, new Prefab { } );
+                dstManager.SetName( entity, $"{this.name} prefab" );
+
+                em.AddComponentData( mainEntity, new ModelPrefabNoNeedLinkedEntityGroupTag { } );
                 em.AddComponentData( mainEntity, new ParticleTag { } );//
 
                 em.AddComponentData( mainEntity,
@@ -175,4 +172,5 @@ namespace Abarabone.Particle.Aurthoring
         }
 
     }
+    
 }

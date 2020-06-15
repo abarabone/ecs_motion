@@ -34,6 +34,19 @@ namespace Abarabone.Model.Authoring
 
             dstManager.DestroyEntity( entity );
 
+
+            ents = this.ModelPrefabs
+                .Select( x => conversionSystem.GetPrimaryEntity( x.gameObject ) )
+                .ToArray();
+
+        }
+
+        IEnumerable<Entity> ents;
+        void OnDestroy()
+        {
+            var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+            ents.ForEach( x => em.RemoveComponent<LinkedEntityGroup>(x) );
+            Debug.Log("end");
         }
 
     }
