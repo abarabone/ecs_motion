@@ -31,6 +31,12 @@ namespace Abarabone.Utilities
 				;
 		}
 
+        static public string MakePath( this GameObject gameObjects )
+        {
+            var qNames = gameObjects.AncestorsAndSelf().Reverse().Skip( 1 ).Select( x => x.name );
+
+            return string.Join( "/", qNames );
+        }
 
         // Misc.ToNativeArray() だと大丈夫なのに、こちらだとハングするケースがある、なぜ？？ unsafe がらみ？
         //public static NativeArray<T> ToNativeArray<T>( this IEnumerable<T> src, Allocator allocator )

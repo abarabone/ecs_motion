@@ -294,4 +294,48 @@ namespace Abarabone.Common.Extension
             linkedEntityGroup.Dispose();
         }
     }
+
+    static public class GameObjectConversionExtension
+    {
+
+        /// <summary>
+        /// アーキタイプを指定して、追加のエンティティを生成する。
+        /// </summary>
+        static public Entity CreateAdditionalEntity
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, EntityManager em, EntityArchetype archetype )
+        {
+            var ent = gcs.CreateAdditionalEntity( mainGameObject );
+
+            em.SetArchetype( ent, archetype );
+
+            return ent;
+        }
+        /// <summary>
+        /// アーキタイプを指定して、追加のエンティティを複数生成。配列として返す。
+        /// </summary>
+        static public Entity[] CreateAdditionalEntities
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, EntityManager em, EntityArchetype archetype, int length )
+        {
+            return Enumerable.Range(0, length)
+                .Select( i => gcs.CreateAdditionalEntity( mainGameObject, em, archetype ) )
+                .ToArray();
+        }
+        /// <summary>
+        /// アーキタイプを指定して、追加のエンティティを複数生成。NativeArray として返す。
+        /// </summary>
+        static public NativeArray<Entity> CreateAdditionalEntities<TallocatorLabel>
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, EntityManager em, EntityArchetype archetype, int length )
+            where TallocatorLabel : IAllocatorLabel, new()
+        {
+            var ents = new NativeArray<Entity>( length, new TallocatorLabel().Label );
+
+            for( var i=0; i<length; i++ )
+            {
+                ents[i] = gcs.CreateAdditionalEntity( mainGameObject, em, archetype );
+            }
+
+            return ents;
+        }
+
+    }
 }
