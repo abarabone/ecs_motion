@@ -31,7 +31,6 @@ namespace Abarabone.Particle.Aurthoring
         /// </summary>
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
-            Debug.Log( this.name );
 
             var modelEntity = createModelEntity_( dstManager, this.Material );
             
@@ -58,30 +57,38 @@ namespace Abarabone.Particle.Aurthoring
             {
                 dstManager.SetName( entity, $"{this.name} prefab" );
 
-                em.AddComponentData( mainEntity, new ModelPrefabNoNeedLinkedEntityGroupTag { } );
-                em.AddComponentData( mainEntity, new ParticleTag { } );//
-
-                em.AddComponentData( mainEntity,
+                var archetype = em.CreateArchetype(
+                    typeof( ModelPrefabNoNeedLinkedEntityGroupTag ),
+                    typeof( ParticleTag ),
+                    typeof( DrawInstanceModeLinkData ),
+                    typeof( DrawInstanceTargetWorkData ),
+                    typeof( Translation ),
+                    typeof( Rotation )
+                );
+                em.SetArchetype( mainEntity, archetype );
+                
+                
+                em.SetComponentData( mainEntity,
                     new DrawInstanceModeLinkData
                     //new DrawTransformLinkData
                     {
                         DrawModelEntity = modelEntity_,
                     }
                 );
-                em.AddComponentData( mainEntity,
+                em.SetComponentData( mainEntity,
                     new DrawInstanceTargetWorkData
                     {
                         DrawInstanceId = -1,
                     }
                 );
 
-                em.AddComponentData( mainEntity,
+                em.SetComponentData( mainEntity,
                     new Translation
                     {
                         Value = float3.zero,
                     }
                 );
-                em.AddComponentData( mainEntity,
+                em.SetComponentData( mainEntity,
                     new Rotation
                     {
                         Value = quaternion.identity,

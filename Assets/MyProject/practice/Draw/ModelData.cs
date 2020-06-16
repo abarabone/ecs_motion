@@ -26,4 +26,9 @@ namespace Abarabone.Model
     public struct ModelPrefabNoNeedLinkedEntityGroupTag : IComponentData
     { }
 
+    public struct ModelBinderLinkData : IComponentData
+    {
+        public Entity BinderEntity;
+    }
+
 }

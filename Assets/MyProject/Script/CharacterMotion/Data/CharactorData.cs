@@ -19,6 +19,7 @@ using Abarabone.Utilities;
 namespace Abarabone.Character
 {
 
+
     public struct CharacterLinkData : IComponentData
     {
         public Entity PostureEntity;
