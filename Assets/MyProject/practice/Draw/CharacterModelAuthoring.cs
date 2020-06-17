@@ -24,7 +24,7 @@ namespace Abarabone.Model.Authoring
     /// 
     /// </summary>
     public class CharacterModelAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+        : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
     {
 
         public Material Material;
@@ -53,7 +53,7 @@ namespace Abarabone.Model.Authoring
         /// </summary>
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
-
+            Debug.Log("aef");
             var skinnedMeshRenderer = this.GetComponentInChildren<SkinnedMeshRenderer>();
             var (isEnableds, paths) = queryEnabledsAndPaths_( skinnedMeshRenderer );
 
