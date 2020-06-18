@@ -31,6 +31,8 @@ namespace Abarabone.Model.Authoring
 
         public AvatarMask BoneMask;
 
+        //public Transform[] BoneRoots;
+
 
         // ボーン
         // ・ボーンＩＤは、SkinnedMeshRenderer.bones の並び順
@@ -39,6 +41,11 @@ namespace Abarabone.Model.Authoring
         // ・モーションストリームはボーンに対応するようにソートされている
         // ・ボーンとマスクの並び順は同じだと思われるが、念のためボーン名で取得する
 
+        // いずれは…
+        // ・ボーンは、BoneRoots に登録したものから辿れるすべて
+        // ・BoneRoots.Length が 0 なら、最初に取得できた SkinnedMeshRenderer.bones から取得する
+        // ・.RootBone からがいいか？
+        // ・ボーンＩＤは、パスをソートした順番
 
         public EnBoneType Mode;
         public enum EnBoneType
