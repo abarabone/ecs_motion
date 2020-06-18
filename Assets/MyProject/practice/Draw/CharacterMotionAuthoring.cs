@@ -1,18 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 using UnityEngine;
+using Unity.Entities;
+using Unity.Collections;
+using Unity.Transforms;
+using Unity.Mathematics;
 
-public class CharacterMotionAuthoring : MonoBehaviour
+namespace Abarabone.Model.Authoring
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    using Abarabone.Draw;
 
-    // Update is called once per frame
-    void Update()
+    public class CharacterMotionAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
+        {
+
+
+
+        }
     }
 }

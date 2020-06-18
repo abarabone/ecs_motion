@@ -36,6 +36,7 @@ namespace Abarabone.Particle.Aurthoring
             
             initParticleEntityComponents_( dstManager, entity, modelEntity );
             
+            Debug.Log( $"model {dstManager.GetName( entity )}" );
             return;
 
 

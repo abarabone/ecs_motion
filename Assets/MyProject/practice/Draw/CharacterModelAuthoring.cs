@@ -24,7 +24,7 @@ namespace Abarabone.Model.Authoring
     /// 
     /// </summary>
     public class CharacterModelAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
         public Material Material;
@@ -53,16 +53,16 @@ namespace Abarabone.Model.Authoring
         /// </summary>
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
-            Debug.Log("aef");
             var skinnedMeshRenderer = this.GetComponentInChildren<SkinnedMeshRenderer>();
-            var (isEnableds, paths) = queryEnabledsAndPaths_( skinnedMeshRenderer );
+            var (paths, enablePaths) = queryEnabledsAndPaths_( skinnedMeshRenderer );
 
-            BoneEntitiesCreator.CreateEntities( conversionSystem, dstManager, this.gameObject, entity, isEnableds, paths );
+            paths.ForEach( x => Debug.Log( x ) );
+            //BoneEntitiesCreator.CreateEntities( conversionSystem, dstManager, this.gameObject, entity, isEnableds, paths );
 
             return;
 
 
-            (bool[] isEnableds, string[] paths) queryEnabledsAndPaths_( SkinnedMeshRenderer smr )
+            (string[] paths, string[] enablePaths) queryEnabledsAndPaths_( SkinnedMeshRenderer smr, AvatarMask boneMask )
             {
 
                 var bonePaths = queryBonePath( smr ).ToArray();
@@ -70,6 +70,8 @@ namespace Abarabone.Model.Authoring
                 var isBoneEnableds = ( this.BoneMask != null )
                     ? queryBoneIsEnabled(this.BoneMask, bonePaths).ToArray()
                     : bonePaths.Select(x=>true).ToArray();
+
+                var enablePaths = makeEnabledBoneHashSet_( this.)
 
                 return (isBoneEnableds, bonePaths);
 
@@ -84,6 +86,18 @@ namespace Abarabone.Model.Authoring
                         where !bone.name.StartsWith( "_" )
                         select bone.gameObject.MakePath().Substring( pathOffset )
                         ;
+                }
+
+                HashSet<string> makeEnabledBoneHashSet_( AvatarMask boneMask, IEnumerable<string> bonePaths_ )
+                {
+                    var qEnabledBonePaths =
+                        from id in Enumerable.Range( 0, boneMask.transformCount )
+                        let isEnabled = this.BoneMask.GetTransformActive( id )
+                        let path = boneMask.GetTransformPath( id )
+                        select path
+                        ;
+
+                    return new HashSet<string>( qEnabledBonePaths );
                 }
 
                 IEnumerable<bool> queryBoneIsEnabled( AvatarMask boneMask, IEnumerable<string> bonePaths_ )
