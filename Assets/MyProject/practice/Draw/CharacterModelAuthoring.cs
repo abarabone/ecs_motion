@@ -29,7 +29,7 @@ namespace Abarabone.Model.Authoring
 
         public Material Material;
 
-        public AvatarMask BoneMask;
+        //public AvatarMask BoneMask;
 
         //public Transform[] BoneRoots;
 
@@ -61,70 +61,21 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
             var skinnedMeshRenderer = this.GetComponentInChildren<SkinnedMeshRenderer>();
-            var (paths, enablePaths) = queryEnabledsAndPaths_( skinnedMeshRenderer );
+            var paths = queryBonePath_( skinnedMeshRenderer ).ToArray();
 
             paths.ForEach( x => Debug.Log( x ) );
-            //BoneEntitiesCreator.CreateEntities( conversionSystem, dstManager, this.gameObject, entity, isEnableds, paths );
+            BoneEntitiesCreator.CreateEntities( conversionSystem, dstManager, this.gameObject, entity, paths );
 
             return;
 
 
-            (string[] paths, string[] enablePaths) queryEnabledsAndPaths_( SkinnedMeshRenderer smr, AvatarMask boneMask )
+            IEnumerable<string> queryBonePath_( SkinnedMeshRenderer smr_ )
             {
-
-                var bonePaths = queryBonePath( smr ).ToArray();
-
-                var isBoneEnableds = ( this.BoneMask != null )
-                    ? queryBoneIsEnabled(this.BoneMask, bonePaths).ToArray()
-                    : bonePaths.Select(x=>true).ToArray();
-
-                var enablePaths = makeEnabledBoneHashSet_( this.)
-
-                return (isBoneEnableds, bonePaths);
-
-
-                IEnumerable<string> queryBonePath( SkinnedMeshRenderer smr_ )
-                {
-                    var rootPath = smr_.rootBone.gameObject.MakePath();
-                    var pathOffset = rootPath.Length;
-
-                    return
-                        from bone in smr_.bones
-                        where !bone.name.StartsWith( "_" )
-                        select bone.gameObject.MakePath().Substring( pathOffset )
-                        ;
-                }
-
-                HashSet<string> makeEnabledBoneHashSet_( AvatarMask boneMask, IEnumerable<string> bonePaths_ )
-                {
-                    var qEnabledBonePaths =
-                        from id in Enumerable.Range( 0, boneMask.transformCount )
-                        let isEnabled = this.BoneMask.GetTransformActive( id )
-                        let path = boneMask.GetTransformPath( id )
-                        select path
-                        ;
-
-                    return new HashSet<string>( qEnabledBonePaths );
-                }
-
-                IEnumerable<bool> queryBoneIsEnabled( AvatarMask boneMask, IEnumerable<string> bonePaths_ )
-                {
-                    var qIsEnabledAndPathOnMask =
-                        from id in Enumerable.Range( 0, boneMask.transformCount )
-                        let isEnabled = this.BoneMask.GetTransformActive( id )
-                        let path = boneMask.GetTransformPath( id )
-                        select (isEnabled, path)
-                        ;
-
-                    var qIsEnabled =
-                        from bpath in bonePaths_
-                        join x in qIsEnabledAndPathOnMask
-                            on bpath equals x.path
-                        select x.isEnabled
-                        ;
-
-                    return qIsEnabled;
-                }
+                return
+                    from bone in smr_.bones
+                    where !bone.name.StartsWith( "_" )
+                    select bone.gameObject.MakePath( smr_.rootBone.gameObject )
+                    ;
             }
         }
 
@@ -138,7 +89,7 @@ namespace Abarabone.Model.Authoring
         static public void CreateEntities
         (
             GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject,
-            Entity drawInstancePrefab, IEnumerable<bool> isEnableds, IEnumerable<string> paths
+            Entity drawInstancePrefab, IEnumerable<string> paths
         )
         {
             var postArchetype = em.postureArchetypeCache();
@@ -146,11 +97,9 @@ namespace Abarabone.Model.Authoring
 
             var postureEntity = gcs.CreateAdditionalEntity( mainGameObject, em, postArchetype );
             var boneEntities = gcs.CreateAdditionalEntities( mainGameObject, em, boneArchetype, paths.Count() );
-
-            //em.setDrawComponet( boneEntities, drawInstancePrefab );
+            
             em.setBoneId( boneEntities );
-            em.setBoneRelationLinks( postureEntity, boneEntities, paths, isEnableds );
-            em.removeBoneRelationLinks( boneEntities, isEnableds );
+            em.setBoneRelationLinks( postureEntity, boneEntities, paths );
 
             em.SetComponentData( postureEntity, new PostureLinkData { BoneRelationTop = boneEntities[ 0 ] } );
             em.SetComponentData( postureEntity, new Rotation { Value = quaternion.identity } );
@@ -180,118 +129,62 @@ namespace Abarabone.Model.Authoring
             );
 
 
-        static void setDrawComponet
-            ( this EntityManager em_, IEnumerable<Entity> bonePrefabs, Entity drawInstancePrefab )
-        {
-            var drawModelLinker = em_.GetComponentData<DrawInstanceModeLinkData>( drawInstancePrefab );
+        //static void setDrawComponet
+        //    ( this EntityManager em_, IEnumerable<Entity> boneEntities_, Entity drawInstancePrefab )
+        //{
+        //    var drawModelLinker = em_.GetComponentData<DrawInstanceModeLinkData>( drawInstancePrefab );
 
-            em_.SetComponentData(
-                bonePrefabs,
-                new DrawTransformLinkData
-                {
-                    DrawInstanceEntity = drawInstancePrefab,
-                    DrawModelEntity = drawModelLinker.DrawModelEntity,
-                }
-            );
-        }
+        //    em_.SetComponentData(
+        //        boneEntities_,
+        //        new DrawTransformLinkData
+        //        {
+        //            DrawInstanceEntity = drawInstancePrefab,
+        //            DrawModelEntity = drawModelLinker.DrawModelEntity,
+        //        }
+        //    );
+        //}
 
-
-        static NameAndEntity[] createNameAndBonePrefabs
-            ( this EntityManager em_, IEnumerable<string> qName, EntityArchetype archetype )
-        {
-            using( var bonePrefabs = new NativeArray<Entity>( qName.Count(), Allocator.Temp ) )
-            {
-                em_.CreateEntity( archetype, bonePrefabs );
-
-                var q =
-                    from x in (qName, bonePrefabs).Zip()
-                    select new NameAndEntity( x.x, x.y )
-                    ;
-                return q.ToArray();
-            }
-        }
-
+        
         static void setBoneId
-            ( this EntityManager em_, IEnumerable<Entity> bonePreafabs_ )
+            ( this EntityManager em_, IEnumerable<Entity> boneEntities_ )
         {
-            var boneLength = bonePreafabs_.Count();
+            var boneLength = boneEntities_.Count();
 
-            em_.SetComponentData( bonePreafabs_,
+            em_.SetComponentData( boneEntities_,
                 from i in Enumerable.Range(0, boneLength)
                 select new DrawTransformIndexData { BoneLength = boneLength, BoneId = i }
             );
         }
 
-        static void setBoneRelationLinks(
-            this EntityManager em,
-            Entity postureEntity,
-            IEnumerable<Entity> boneEntities,
-            IEnumerable<string> paths,
-            IEnumerable<bool> isEnableds
+        static void setBoneRelationLinks
+        (
+            this EntityManager em, Entity postureEntity,
+            IEnumerable<Entity> boneEntities, IEnumerable<string> paths
         )
         {
-            var qEnabledParentName =
-                from x in (isEnableds, paths).Zip( (x,y) => (isEnabled:x, path:y) )
-                where x.isEnabled
-                let parentPath = System.IO.Path.GetDirectoryName( x.path )
-                let parentName = System.IO.Path.GetFileName( parentPath )
-                select parentName
-                ;
+            var pathToEntDict =
+                (paths, boneEntities).Zip( ( x, y ) => (path: x, ent: y) )
+                .Append( (path: @"\", ent: postureEntity) )
+                .Append( (path: "", ent: Entity.Null) )
+                .ToDictionary( x => x.path, x => x.ent );
 
-            var qEnabledEntity =
-                from x in (isEnableds, boneEntities).Zip( ( x, y ) => (isEnabled: x, ent: y) )
-                where x.isEnabled
-                select x.ent
-                ;
+            var qParentPath = paths
+                .Select( x => System.IO.Path.GetDirectoryName( x ) );
 
-            var qNameAndEntity =
-                from x in (paths, boneEntities).Zip( ( x, y ) => (path: x, ent: y) )
-                let name = System.IO.Path.GetFileName( x.path )
-                select (name, x.ent)
-                ;
-            qNameAndEntity = qNameAndEntity.Prepend( ("", postureEntity) );// ルートを追加
-
-
-            var qParentEnt =
-                from parentName in qEnabledParentName
-                join bone in qNameAndEntity
-                    on parentName equals bone.name
-                select bone.ent
-                ;
-
-            var qNextEnt = qEnabledEntity
+            var qNextPath = paths
                 .Skip( 1 )
-                .Append( Entity.Null );
-
-
+                .Append( "" );
+            
             var qBoneLinker =
-                from x in (qParentEnt, qNextEnt).Zip((x,y) => (parent:x, next:y) )
+                from path in (qParentPath, qNextPath).Zip((x,y) => (parent:x, next:y) )
                 select new BoneRelationLinkData
                 {
-                    ParentBoneEntity = x.parent,
-                    NextBoneEntity = x.next,
+                    ParentBoneEntity = pathToEntDict[path.parent],
+                    NextBoneEntity = pathToEntDict[path.next],
                 };
 
             em.SetComponentData( boneEntities, qBoneLinker );
         }
-
-        // チャンクが別になるから、消さないほうがいい可能性もあり
-        static void removeBoneRelationLinks
-            ( this EntityManager em, IEnumerable<Entity> boneEntities, IEnumerable<bool> isEnableds )
-        {
-            var qDisEnables =
-                from x in (boneEntities, isEnableds).Zip( (x,y) => (bone:x, isEnable:y) )
-                where !x.isEnable
-                select x.bone
-                ;
-            foreach( var x in qDisEnables )
-            {
-                em.RemoveComponent<BoneRelationLinkData>( x );
-                em.RemoveComponent<BoneStream0LinkData>( x );
-            }
-
-        }
-
         
     }
 

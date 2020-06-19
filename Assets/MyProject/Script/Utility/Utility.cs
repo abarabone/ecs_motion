@@ -24,18 +24,42 @@ namespace Abarabone.Utilities
 			return dic.TryGetValue(key, out var result) ? result : defaultValue;
 		}
 
-		static public IEnumerable<string> MakePath( this IEnumerable<GameObject> gameObjects )
+        static public IEnumerable<string> MakePath( this IEnumerable<GameObject> gameObjects, GameObject root )
+        {
+            var offset = root.MakePath().Length;
+
+            return gameObjects.MakePath().Select( x => x.Substring(offset) );
+        }
+        static public IEnumerable<string> MakePath( this IEnumerable<GameObject> gameObjects )
 		{
 			return gameObjects
 				.Select( go => string.Join( "/", go.AncestorsAndSelf().Reverse().Skip(1).Select(x => x.name) ) )
 				;
 		}
 
+        static public string MakePath( this GameObject gameObject, GameObject root )
+        {
+            var offset = root.MakePath().Length;
+
+            return gameObject.MakePath().Substring( offset );
+        }
         static public string MakePath( this GameObject gameObjects )
         {
             var qNames = gameObjects.AncestorsAndSelf().Reverse().Skip( 1 ).Select( x => x.name );
 
             return string.Join( "/", qNames );
+        }
+
+        static public HashSet<string> ToEnabledBoneHashSet( this AvatarMask boneMask_ )
+        {
+            var qEnabledBonePaths =
+                from id in Enumerable.Range( 0, boneMask_.transformCount )
+                let isEnabled = boneMask_.GetTransformActive( id )
+                let path = boneMask_.GetTransformPath( id )
+                select path
+                ;
+
+            return new HashSet<string>( qEnabledBonePaths );
         }
 
         // Misc.ToNativeArray() だと大丈夫なのに、こちらだとハングするケースがある、なぜ？？ unsafe がらみ？
