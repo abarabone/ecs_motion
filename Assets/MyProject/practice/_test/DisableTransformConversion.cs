@@ -10,8 +10,12 @@ namespace Abarabone.Model.Authoring
 {
     using Particle.Aurthoring;
 
-    
-    public class DisableTransformConverion : GameObjectConversionSystem
+    /// <summary>
+    /// TransformConversion をオフにする。
+    /// 正式な方法ではないので、いつまで通用するかわからない。
+    /// </summary>
+    //[DisableAutoCreation]
+    public class DisableTransformConversion : GameObjectConversionSystem
     {
         protected override void OnCreate()
         {

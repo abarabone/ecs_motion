@@ -9,7 +9,7 @@ using Unity.Jobs;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Transforms;
-using Unity.Rendering;
+//using Unity.Rendering;
 using Unity.Properties;
 using Unity.Burst;
 using System.Runtime.InteropServices;

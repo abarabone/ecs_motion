@@ -10,7 +10,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Entities;
 using Unity.Transforms;
-using Unity.Rendering;
+//using Unity.Rendering;
 using Unity.Properties;
 using Unity.Burst;
 

@@ -61,22 +61,11 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
             var skinnedMeshRenderer = this.GetComponentInChildren<SkinnedMeshRenderer>();
-            var paths = queryBonePath_( skinnedMeshRenderer ).ToArray();
 
-            //paths.ForEach( x => Debug.Log( x ) );
-            BoneEntitiesCreator.CreateEntities( conversionSystem, dstManager, this.gameObject, entity, paths );
+            var bones = skinnedMeshRenderer.bones.Where( x => !x.name.StartsWith( "_" ) ).ToArray();
 
-            return;
-
-
-            IEnumerable<string> queryBonePath_( SkinnedMeshRenderer smr_ )
-            {
-                return
-                    from bone in smr_.bones
-                    where !bone.name.StartsWith( "_" )
-                    select bone.gameObject.MakePath( smr_.rootBone.gameObject )
-                    ;
-            }
+            BoneEntitiesCreator.CreateEntities( conversionSystem, dstManager, this.gameObject, bones );
+            
         }
 
     }
@@ -87,27 +76,40 @@ namespace Abarabone.Model.Authoring
 
 
         static public void CreateEntities
-        (
-            GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject,
-            Entity drawInstancePrefab, IEnumerable<string> paths
-        )
+            ( GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, IEnumerable<Transform> bones )
         {
-            var postArchetype = em.postureArchetypeCache();
-            var boneArchetype = em.boneArchetypeCache();
+            var postArchetype = em.postureArchetype();
+            var boneArchetype = em.boneArchetype();
 
-            var postureEntity = gcs.CreateAdditionalEntity( mainGameObject, em, postArchetype );
-            var boneEntities = gcs.CreateAdditionalEntities( mainGameObject, em, boneArchetype, paths.Count() );
-            
-            em.setBoneId( boneEntities );
+            var postureEntity = gcs.CreateAdditionalEntity( em, mainGameObject, postArchetype );
+            var boneEntities = gcs.getOrCreateBoneEntities( em, mainGameObject, bones, boneArchetype );
+
+            var paths = queryBonePath_( bones ).ToArray();
             em.setBoneRelationLinks( postureEntity, boneEntities, paths );
 
-            em.SetComponentData( postureEntity, new PostureLinkData { BoneRelationTop = boneEntities[ 0 ] } );
-            em.SetComponentData( postureEntity, new Rotation { Value = quaternion.identity } );
-            em.SetComponentData( postureEntity, new Translation { Value = float3.zero } );
+            em.setPostureValue( postureEntity, boneEntities.First() );
+        }
+
+        static Entity[] getOrCreateBoneEntities
+            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main, IEnumerable<Transform> bones, EntityArchetype arche )
+        {
+            return bones
+                .Select( bone => gcs.TryGetPrimaryEntity(bone) )
+                .Select( existsEnt => existsEnt != Entity.Null ? addComponents_(existsEnt): create_() )
+                .ToArray()
+                ;
+            
+            Entity addComponents_( Entity exists_ )
+            {
+                var addtype = new ComponentTypes( typeof( BoneRelationLinkData ), typeof( BoneLocalValueData ) );
+                em.AddComponents( exists_, addtype );
+                return exists_;
+            }
+            Entity create_() => gcs.CreateAdditionalEntity( em, main, arche );
         }
 
 
-        static EntityArchetype postureArchetypeCache( this EntityManager em ) =>
+        static EntityArchetype postureArchetype( this EntityManager em ) =>
             em.CreateArchetype
             (
                 typeof( PostureNeedTransformTag ),
@@ -116,14 +118,14 @@ namespace Abarabone.Model.Authoring
                 typeof( Rotation )
             );
 
-        static EntityArchetype boneArchetypeCache( this EntityManager em ) =>
+        static EntityArchetype boneArchetype( this EntityManager em ) =>
             em.CreateArchetype
             (
-                typeof( DrawTransformLinkData ),
-                typeof( DrawTransformIndexData ),
-                typeof( DrawTransformTargetWorkData ),
+                //typeof( DrawTransformLinkData ),
+                //typeof( DrawTransformIndexData ),
+                //typeof( DrawTransformTargetWorkData ),
                 typeof( BoneRelationLinkData ),
-                typeof( BoneLocalValueData ),// どうしようか
+                typeof( BoneLocalValueData ),// 回転と移動をわけたほうがいいか？
                 typeof( Translation ),
                 typeof( Rotation )
             );
@@ -144,16 +146,29 @@ namespace Abarabone.Model.Authoring
         //    );
         //}
 
-        
-        static void setBoneId
-            ( this EntityManager em_, IEnumerable<Entity> boneEntities_ )
-        {
-            var boneLength = boneEntities_.Count();
 
-            em_.SetComponentData( boneEntities_,
-                from i in Enumerable.Range(0, boneLength)
-                select new DrawTransformIndexData { BoneLength = boneLength, BoneId = i }
-            );
+        //static void setBoneId
+        //    ( this EntityManager em_, IEnumerable<Entity> boneEntities_ )
+        //{
+        //    var boneLength = boneEntities_.Count();
+
+        //    em_.SetComponentData( boneEntities_,
+        //        from i in Enumerable.Range(0, boneLength)
+        //        select new DrawTransformIndexData { BoneLength = boneLength, BoneId = i }
+        //    );
+        //}
+
+
+
+        static IEnumerable<string> queryBonePath_( IEnumerable<Transform> bones )
+        {
+            var root = bones.First();
+
+            return
+                from bone in bones
+                where !bone.name.StartsWith( "_" )
+                select bone.gameObject.MakePath( root.gameObject )
+                ;
         }
 
         static void setBoneRelationLinks
@@ -185,7 +200,14 @@ namespace Abarabone.Model.Authoring
 
             em.SetComponentData( boneEntities, qBoneLinker );
         }
-        
+
+        static void setPostureValue( this EntityManager em, Entity postureEntity, Entity boneTopEntity )
+        {
+            em.SetComponentData( postureEntity, new PostureLinkData { BoneRelationTop = boneTopEntity } );
+            em.SetComponentData( postureEntity, new Rotation { Value = quaternion.identity } );
+            em.SetComponentData( postureEntity, new Translation { Value = float3.zero } );
+        }
+
     }
 
 }
