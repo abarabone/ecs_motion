@@ -63,7 +63,7 @@ namespace Abarabone.Model.Authoring
             var skinnedMeshRenderer = this.GetComponentInChildren<SkinnedMeshRenderer>();
             var paths = queryBonePath_( skinnedMeshRenderer ).ToArray();
 
-            paths.ForEach( x => Debug.Log( x ) );
+            //paths.ForEach( x => Debug.Log( x ) );
             BoneEntitiesCreator.CreateEntities( conversionSystem, dstManager, this.gameObject, entity, paths );
 
             return;
@@ -164,16 +164,16 @@ namespace Abarabone.Model.Authoring
         {
             var pathToEntDict =
                 (paths, boneEntities).Zip( ( x, y ) => (path: x, ent: y) )
-                .Append( (path: @"\", ent: postureEntity) )
-                .Append( (path: "", ent: Entity.Null) )
+                .Append( (path: "", ent: postureEntity) )
+                .Append( (path: "\0", ent: Entity.Null) )
                 .ToDictionary( x => x.path, x => x.ent );
 
             var qParentPath = paths
-                .Select( x => System.IO.Path.GetDirectoryName( x ) );
+                .Select( x => x.GetParentPath() );
 
             var qNextPath = paths
                 .Skip( 1 )
-                .Append( "" );
+                .Append( "\0" );
             
             var qBoneLinker =
                 from path in (qParentPath, qNextPath).Zip((x,y) => (parent:x, next:y) )

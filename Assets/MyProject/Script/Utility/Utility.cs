@@ -26,20 +26,18 @@ namespace Abarabone.Utilities
 
         static public IEnumerable<string> MakePath( this IEnumerable<GameObject> gameObjects, GameObject root )
         {
-            var offset = root.MakePath().Length;
-
-            return gameObjects.MakePath().Select( x => x.Substring(offset) );
+            return gameObjects.Select( go => go.MakePath(root) );
         }
         static public IEnumerable<string> MakePath( this IEnumerable<GameObject> gameObjects )
 		{
-			return gameObjects
-				.Select( go => string.Join( "/", go.AncestorsAndSelf().Reverse().Skip(1).Select(x => x.name) ) )
-				;
+			return gameObjects.Select( go => go.MakePath() );
 		}
 
         static public string MakePath( this GameObject gameObject, GameObject root )
         {
-            var offset = root.MakePath().Length;
+            var parent = root.Parent() ?? root;
+
+            var offset = parent.MakePath().Length;
 
             return gameObject.MakePath().Substring( offset );
         }
@@ -48,6 +46,13 @@ namespace Abarabone.Utilities
             var qNames = gameObjects.AncestorsAndSelf().Reverse().Skip( 1 ).Select( x => x.name );
 
             return string.Join( "/", qNames );
+        }
+
+        static public string GetParentPath( this string path )
+        {
+            var len = path.LastIndexOf( "/" );
+            
+            return len == -1 ? "": path.Substring( 0, len );
         }
 
         static public HashSet<string> ToEnabledBoneHashSet( this AvatarMask boneMask_ )
