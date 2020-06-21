@@ -13,6 +13,7 @@ namespace Abarabone.Particle.Aurthoring
     using Model;
     using Draw;
     using Model.Authoring;
+    using Draw.Authoring;
 
     /// <summary>
     /// 
@@ -48,7 +49,7 @@ namespace Abarabone.Particle.Aurthoring
                 const Draw.BoneType boneType = Draw.BoneType.TR;
                 const int boneLength = 1;
 
-                var modelEntity_ = this.CreateDrawModelEntityComponents( em, mesh, mat, boneType, boneLength );
+                var modelEntity_ = em.CreateDrawModelEntityComponents( mesh, mat, boneType, boneLength );
                 dstManager.SetName( modelEntity_, $"{this.name} draw model" );
 
                 return modelEntity_;
