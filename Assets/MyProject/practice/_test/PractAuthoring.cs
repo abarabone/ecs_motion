@@ -13,6 +13,7 @@ using Abarabone.Model;
 public struct SpawnData : IComponentData
 {
     public Entity ent;
+    public int i;
 }
 
 public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
@@ -36,21 +37,36 @@ public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
         var prefab_ent = conversionSystem.GetPrimaryEntity( this.prefab );
 
         dstManager.AddComponentData( entity, new SpawnData { ent = prefab_ent } );
+        
+    }
+    
 
-        //this.prefabEntity = dstManager.GetComponentData<ModelPrefabHeadData>( prefab_ent ).PrefabHeadEntity;
-        Debug.Log( this.name );
+}
+
+public class PracSpawnSystem : SystemBase
+{
+
+    protected override void OnStartRunning()
+    {
+        //var spawn = this.GetSingleton<SpawnData>();
+        //this.EntityManager.Instantiate( spawn.ent );
     }
 
-
-    int i;
-    private void Update()
+    protected override void OnUpdate()
     {
-        if( i++ > 3 ) return;
+        //if( spawn.i++ == 0 ) this.EntityManager.DestroyEntity( this.GetSingletonEntity<SpawnData>() );
+        //this.SetSingleton<SpawnData>( spawn );
 
-        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-        var ent = em.Instantiate( this.prefabEntity );
-        em.SetComponentData( ent, new Translation { Value = new float3( 0, i, 0 ) } );
+        //this.Entities
+        //    .WithoutBurst()
+        //    .ForEach(
+        //        ( Entity ent, ref SpawnData spawn ) =>
+        //        {
+        //            this.EntityManager.Instantiate( spawn.ent );
+        //            this.EntityManager.DestroyEntity( ent );
+        //        }
+        //    )
+        //    .Run();
     }
 
 }

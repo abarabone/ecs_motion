@@ -16,6 +16,7 @@ namespace Abarabone.Geometry
 		static public Mesh ConvertToChMesh( Mesh srcmesh, Transform[] tfBones )
 		{
             var dstmesh = new Mesh();
+            dstmesh.name = "combined";
 
             var vtxs        = srcmesh.vertices;
             var boneWeights = srcmesh.boneWeights;

@@ -248,6 +248,15 @@ namespace Abarabone.Common.Extension
             }
         }
 
+        public static void AddComponents
+            ( this EntityManager em, IEnumerable<Entity> entities, ComponentTypes types )
+        {
+            foreach( var x in entities )
+            {
+                em.AddComponents( x, types );
+            }
+        }
+
         [MethodImpl( MethodImplOptions.AggressiveInlining )]
         public static void SetComponentData<T>
             ( this EntityManager em, IEnumerable<Entity> entities, T component )

@@ -35,42 +35,24 @@ namespace Abarabone.Model.Authoring
     static public class BoneEntitiesConvertUtility
     {
 
-        static public void CreateEntities
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, IEnumerable<Transform> bones )
+        static public void CreateBoneEntities
+            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, Transform[] bones )
         {
-            var postArchetype = em.postureArchetype();
-            var boneArchetype = em.boneArchetype();
+            var postureEntity = gcs.createPostureEntity( em, mainGameObject );
+            var boneEntities = gcs.getOrCreateBoneEntities( em, mainGameObject, bones );
 
-            var postureEntity = gcs.CreateAdditionalEntity( em, mainGameObject, postArchetype );
-            var boneEntities = gcs.getOrCreateBoneEntities( em, mainGameObject, bones, boneArchetype );
+            em.setPostureValue( postureEntity, boneEntities.First() );
 
             var paths = queryBonePath_( bones ).ToArray();
             em.setBoneRelationLinks( postureEntity, boneEntities, paths );
-
-            em.setPostureValue( postureEntity, boneEntities.First() );
         }
 
-        static Entity[] getOrCreateBoneEntities
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main, IEnumerable<Transform> bones, EntityArchetype arche )
+
+        // ----------------------------------------------------------------------------------
+        
+        static Entity createPostureEntity( this GameObjectConversionSystem gcs, EntityManager em, GameObject main )
         {
-            return bones
-                .Select( bone => gcs.TryGetPrimaryEntity( bone ) )
-                .Select( existsEnt => existsEnt != Entity.Null ? addComponents_( existsEnt ) : create_() )
-                .ToArray()
-                ;
-
-            Entity addComponents_( Entity exists_ )
-            {
-                var addtype = new ComponentTypes( typeof( BoneRelationLinkData ), typeof( BoneLocalValueData ) );
-                em.AddComponents( exists_, addtype );
-                return exists_;
-            }
-            Entity create_() => gcs.CreateAdditionalEntity( em, main, arche );
-        }
-
-
-        static EntityArchetype postureArchetype( this EntityManager em ) =>
-            em.CreateArchetype
+            var archetype = em.CreateArchetype
             (
                 typeof( PostureNeedTransformTag ),
                 typeof( PostureLinkData ),
@@ -78,17 +60,48 @@ namespace Abarabone.Model.Authoring
                 typeof( Rotation )
             );
 
-        static EntityArchetype boneArchetype( this EntityManager em ) =>
-            em.CreateArchetype
-            (
-                //typeof( DrawTransformLinkData ),
-                //typeof( DrawTransformIndexData ),
-                //typeof( DrawTransformTargetWorkData ),
-                typeof( BoneRelationLinkData ),
-                typeof( BoneLocalValueData ),// 回転と移動をわけたほうがいいか？
-                typeof( Translation ),
-                typeof( Rotation )
-            );
+            var postureEntity = gcs.CreateAdditionalEntity( em, main, archetype );
+
+            return postureEntity;
+        }
+
+        static Entity[] getOrCreateBoneEntities
+            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main, Transform[] bones )
+        {
+            return bones
+                .Select( bone => gcs.TryGetPrimaryEntity( bone ) )
+                .Select( existsEnt => existsEnt != Entity.Null ? addComponents_(existsEnt) : create_() )
+                .ToArray()
+                ;
+
+            Entity addComponents_( Entity exists_ )
+            {
+                var addtypes = new ComponentTypes
+                (
+                    typeof( BoneRelationLinkData ),
+                    typeof( BoneLocalValueData )
+                );
+
+                em.AddComponents( exists_, addtypes );
+                return exists_;
+            }
+
+            Entity create_()
+            {
+                var archetype = em.CreateArchetype
+                (
+                    //typeof( DrawTransformLinkData ),
+                    //typeof( DrawTransformIndexData ),
+                    //typeof( DrawTransformTargetWorkData ),
+                    typeof( BoneRelationLinkData ),
+                    typeof( BoneLocalValueData ),// 回転と移動をわけたほうがいいか？
+                    typeof( Translation ),
+                    typeof( Rotation )
+                );
+
+                return gcs.CreateAdditionalEntity( em, main, archetype );
+            }
+        }
 
 
         static IEnumerable<string> queryBonePath_( IEnumerable<Transform> bones )

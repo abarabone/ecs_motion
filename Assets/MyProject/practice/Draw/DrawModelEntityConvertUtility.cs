@@ -18,6 +18,7 @@ namespace Abarabone.Draw.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Misc;
     using Abarabone.Utilities;
+    using Abarabone.Geometry;
 
     static public class DrawModelEntityConvertUtility
     {
@@ -26,18 +27,22 @@ namespace Abarabone.Draw.Authoring
             ( this EntityManager em, Mesh mesh, Material mat, BoneType boneType, int boneLength )
         {
 
-            var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
-            var boneVectorBuffer = sys.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
-            setShaderProps_( mat, mesh, boneVectorBuffer, boneLength );
+            setShaderProps_( em, mat, mesh, boneLength );
+            
+            var drawModelEntity = createEntityAndInitComponents_( boneLength );
+            
+            return drawModelEntity;
+            
 
-            return createEntityAndInitComponents_( boneLength );
-
-
-            void setShaderProps_( Material mat_, Mesh mesh_, ComputeBuffer boneVectorBuffer_, int boneLength_ )
+            void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int boneLength_ )
             {
-                mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer_ );
+                var sys = em_.World.GetExistingSystem<DrawBufferManagementSystem>();
+                var boneVectorBuffer = sys.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
+                mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer );
+
                 mat_.SetInt( "BoneLengthEveryInstance", boneLength_ );
-                //mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要
+
+                //mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要なので、ここではやらない
             }
 
             Entity createEntityAndInitComponents_( int boneLength_ )
@@ -76,6 +81,45 @@ namespace Abarabone.Draw.Authoring
             }
 
         }
+
+
+
+        // メッシュを結合する
+        static public Mesh CombineAndConvertMesh( IEnumerable<Mesh> meshes, Transform[] bones )
+        {
+            var qCis =
+                from mesh in meshes
+                select new CombineInstance
+                {
+                    mesh = mesh
+                };
+
+            //return ChMeshConverter.ConvertToChMesh( smrs_.ElementAt( 0 ).sharedMesh, smrs_.ElementAt(0).bones );
+
+            var dstmesh = new Mesh();
+            var boneLength = meshes.First().bindposes.Length;
+
+            // 後でちゃんとした結合に差し替えよう
+            dstmesh.CombineMeshes( qCis.ToArray(), mergeSubMeshes: true, useMatrices: false );
+            dstmesh.boneWeights = (
+                from w in dstmesh.boneWeights
+                select new BoneWeight
+                {
+                    boneIndex0 = w.boneIndex0 % boneLength,
+                    boneIndex1 = w.boneIndex1 % boneLength,
+                    boneIndex2 = w.boneIndex2 % boneLength,
+                    boneIndex3 = w.boneIndex3 % boneLength,
+                    weight0 = w.weight0,
+                    weight1 = w.weight1,
+                    weight2 = w.weight2,
+                    weight3 = w.weight3,
+                }
+            )
+            .ToArray();
+
+            return ChMeshConverter.ConvertToChMesh( dstmesh, bones );
+        }
+
     }
 
 }
