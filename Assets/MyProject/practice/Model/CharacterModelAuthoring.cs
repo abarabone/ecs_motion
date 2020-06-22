@@ -48,20 +48,20 @@ namespace Abarabone.Model.Authoring
             var qMesh = skinnedMeshRenderers.Select( x => x.sharedMesh );
             var bones = skinnedMeshRenderers.First().bones.Where( x => !x.name.StartsWith( "_" ) ).ToArray();
 
-            createModelEntity_( conversionSystem, dstManager, this.gameObject, this.MaterialToDraw, qMesh, bones );
+            createModelEntity_( conversionSystem, this.gameObject, this.MaterialToDraw, qMesh, bones );
 
-            createMainEntity_( conversionSystem, dstManager, this.gameObject );
+            createMainEntity_( conversionSystem, this.gameObject );
 
-            conversionSystem.CreateBoneEntities( dstManager, this.gameObject, bones );
+            conversionSystem.CreateBoneEntities( this.gameObject, bones );
 
-            conversionSystem.CreateDrawInstanceEntities( dstManager, this.gameObject, bones );
+            conversionSystem.CreateDrawInstanceEntities( this.gameObject, bones );
 
             return;
 
 
             void createModelEntity_
                 (
-                    GameObjectConversionSystem gcs_, EntityManager em_, GameObject main_,
+                    GameObjectConversionSystem gcs_, GameObject main_,
                     Material srcMaterial, IEnumerable<Mesh> srcMeshes, Transform[] bones_
                 )
             {
@@ -70,13 +70,14 @@ namespace Abarabone.Model.Authoring
 
                 const Draw.BoneType boneType = Draw.BoneType.TR;
 
-                gcs_.CreateDrawModelEntityComponents( em_,  main_, mesh, mat, boneType, bones_.Length );
+                gcs_.CreateDrawModelEntityComponents(  main_, mesh, mat, boneType, bones_.Length );
             }
 
-            void createMainEntity_
-                ( GameObjectConversionSystem gcs_, EntityManager em_, GameObject main_ )
+            void createMainEntity_( GameObjectConversionSystem gcs_, GameObject main_ )
             {
-                var mainEntity = CharacterModelAuthoring.GetOrCreateMainEntity( gcs_, em_, main_ );
+                var em_ = gcs_.DstEntityManager;
+
+                var mainEntity = CharacterModelAuthoring.GetOrCreateMainEntity( gcs_, main_ );
                 var binderEntity = gcs_.GetPrimaryEntity( main_ );
 
                 em_.AddComponentData( binderEntity,
@@ -90,15 +91,16 @@ namespace Abarabone.Model.Authoring
         }
 
 
-        static public Entity GetOrCreateMainEntity
-            ( GameObjectConversionSystem gcs, EntityManager em, GameObject main )
+        static public Entity GetOrCreateMainEntity( GameObjectConversionSystem gcs, GameObject main )
         {
+            var em = gcs.DstEntityManager;
+
             var mainEntity = gcs.GetEntities( main )
                 .Where( ent_ => em.HasComponent<ModelMainEntityLinkData>( ent_ ) )
                 .FirstOrDefault();
 
             if( mainEntity == Entity.Null )
-                return gcs.CreateAdditionalEntity<ModelMainEntityLinkData>( em, main );
+                return gcs.CreateAdditionalEntity<ModelMainEntityLinkData>( main );
 
             return mainEntity;
         }

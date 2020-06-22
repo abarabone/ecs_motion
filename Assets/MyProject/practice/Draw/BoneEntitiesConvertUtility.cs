@@ -36,15 +36,15 @@ namespace Abarabone.Model.Authoring
     {
 
         static public void CreateBoneEntities
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, Transform[] bones )
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones )
         {
-            var postureEntity = gcs.addComponentsPostureEntity( em, mainGameObject );
-            var boneEntities = gcs.addComponentsBoneEntities( em, mainGameObject, bones );
+            var postureEntity = addComponentsPostureEntity( gcs, mainGameObject );
+            var boneEntities = addComponentsBoneEntities( gcs, mainGameObject, bones );
 
-            em.setPostureValue( postureEntity, boneEntities.First() );
+            setPostureValue( gcs.DstEntityManager, postureEntity, boneEntities.First() );
 
-            var paths = queryBonePath_( bones ).ToArray();
-            em.setBoneRelationLinks( postureEntity, boneEntities, paths );
+            var paths = queryBonePath_( bones, mainGameObject ).ToArray();
+            setBoneRelationLinks( gcs.DstEntityManager, postureEntity, boneEntities, paths );
         }
 
 
@@ -52,9 +52,9 @@ namespace Abarabone.Model.Authoring
         
         
         static Entity addComponentsPostureEntity
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main )
+            ( GameObjectConversionSystem gcs, GameObject main )
         {
-            var ent = CharacterModelAuthoring.GetOrCreateMainEntity(gcs, em, main);
+            var ent = CharacterModelAuthoring.GetOrCreateMainEntity(gcs, main);
             
             var addtypes = new ComponentTypes
             (
@@ -63,14 +63,14 @@ namespace Abarabone.Model.Authoring
                 typeof( Translation ),
                 typeof( Rotation )
             );
-            em.AddComponents( ent, addtypes );
+            gcs.DstEntityManager.AddComponents( ent, addtypes );
 
             return ent;
         }
 
 
         static Entity[] addComponentsBoneEntities
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main, Transform[] bones )
+            ( GameObjectConversionSystem gcs, GameObject main, Transform[] bones )
         {
             return bones
                 .Select( bone => gcs.TryGetPrimaryEntity( bone ) )
@@ -92,26 +92,24 @@ namespace Abarabone.Model.Authoring
                     typeof( Rotation )
                 );
 
-                em.AddComponents( exists_, addtypes );
+                gcs.DstEntityManager.AddComponents( exists_, addtypes );
                 return exists_;
             }
         }
 
 
-        static IEnumerable<string> queryBonePath_( IEnumerable<Transform> bones )
+        static IEnumerable<string> queryBonePath_( IEnumerable<Transform> bones, GameObject main )
         {
-            var root = bones.First();
-
             return
                 from bone in bones
                 where !bone.name.StartsWith( "_" )
-                select bone.gameObject.MakePath( root.gameObject )
+                select bone.gameObject.MakePath( main )
                 ;
         }
 
         static void setBoneRelationLinks
         (
-            this EntityManager em, Entity postureEntity,
+            EntityManager em, Entity postureEntity,
             IEnumerable<Entity> boneEntities, IEnumerable<string> paths
         )
         {
@@ -139,7 +137,7 @@ namespace Abarabone.Model.Authoring
             em.SetComponentData( boneEntities, qBoneLinker );
         }
 
-        static void setPostureValue( this EntityManager em, Entity postureEntity, Entity boneTopEntity )
+        static void setPostureValue( EntityManager em, Entity postureEntity, Entity boneTopEntity )
         {
             em.SetComponentData( postureEntity, new PostureLinkData { BoneRelationTop = boneTopEntity } );
             em.SetComponentData( postureEntity, new Rotation { Value = quaternion.identity } );

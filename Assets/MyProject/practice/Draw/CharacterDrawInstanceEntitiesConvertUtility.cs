@@ -24,12 +24,14 @@ namespace Abarabone.Draw.Authoring
     {
 
         static public void CreateDrawInstanceEntities
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, Transform[] bones )
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones )
         {
 
-            var drawInstanceEntity = gcs.createDrawInstanceEntity( em, mainGameObject, bones.Length );
+            var em = gcs.DstEntityManager;
 
-            gcs.setBoneComponentValues( em, mainGameObject, bones, drawInstanceEntity );
+            var drawInstanceEntity = createDrawInstanceEntity( gcs, mainGameObject, bones.Length );
+
+            setBoneComponentValues( gcs, mainGameObject, bones, drawInstanceEntity );
 
         }
 
@@ -38,14 +40,16 @@ namespace Abarabone.Draw.Authoring
 
         
         static public Entity createDrawInstanceEntity
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main, int boneLength )
+            ( GameObjectConversionSystem gcs, GameObject main, int boneLength )
         {
+            var em = gcs.DstEntityManager;
+
             var archetype = em.CreateArchetype
             (
                 typeof( DrawInstanceModeLinkData ),
                 typeof( DrawInstanceTargetWorkData )
             );
-            var ent = gcs.CreateAdditionalEntity( em, main, archetype );
+            var ent = gcs.CreateAdditionalEntity( main, archetype );
             em.SetName(ent, $"{main.name} draw" );
 
             em.SetComponentData( ent,
@@ -68,10 +72,11 @@ namespace Abarabone.Draw.Authoring
 
         static void setBoneComponentValues
             (
-                this GameObjectConversionSystem gcs, EntityManager em, GameObject main,
+                GameObjectConversionSystem gcs, GameObject main,
                 Transform[] bones, Entity drawInstanceEntity
             )
         {
+            var em = gcs.DstEntityManager;
 
             var boneEntities = bones
                 .Select( bone => gcs.GetPrimaryEntity( bone ) )

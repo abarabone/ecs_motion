@@ -30,22 +30,22 @@ namespace Abarabone.Motion.Authoring
     //    blendChannel1,
     //    overwrite = -1,
     //}
-    
 
 
-        static class ArchetypeA
+
+    static class ArchetypeA
+    {
+        static public ComponentType[] Motion = new ComponentType[]
         {
-            static public ComponentType[] Motion = new ComponentType[]
-            {
                 //typeof( MotionATag ),// 暫定、MotionB 特別するため
                 typeof( MotionInfoData ),
                 typeof( MotionClipData ),
                 typeof( MotionStreamLinkData ),
                 typeof( MotionInitializeData ),
                 typeof( Prefab )
-            };
-            static public ComponentType[] Stream = new ComponentType[]
-            {
+        };
+        static public ComponentType[] Stream = new ComponentType[]
+        {
                 typeof( StreamDrawLinkData ),
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
@@ -53,13 +53,13 @@ namespace Abarabone.Motion.Authoring
                 typeof( StreamCursorData ),
                 typeof( StreamInterpolatedData ),
                 typeof( Prefab )
-            };
-        }
+        };
+    }
 
-        static class ArchetypeB
+    static class ArchetypeB
+    {
+        static public ComponentType[] Motion = new ComponentType[]
         {
-            static public ComponentType[] Motion = new ComponentType[]
-            {
                 typeof( MotionInfoData ),
                 typeof( MotionClipData ),
                 typeof( MotionStreamLinkData ),
@@ -67,9 +67,9 @@ namespace Abarabone.Motion.Authoring
                 typeof( MotionCursorData ),//
                 typeof( MotionProgressTimerTag ),//
                 typeof( Prefab ),
-            };
-            static public ComponentType[] Stream = new ComponentType[]
-            {
+        };
+        static public ComponentType[] Stream = new ComponentType[]
+        {
                 typeof( StreamDrawLinkData ),
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
@@ -77,21 +77,21 @@ namespace Abarabone.Motion.Authoring
                 typeof( StreamInterpolatedData ),
                 typeof( StreamMotionLinkData ),//
                 typeof( Prefab ),
-            };
-        }
-        static class ArchetypeBd
+        };
+    }
+    static class ArchetypeBd
+    {
+        static public ComponentType[] Motion = new ComponentType[]
         {
-            static public ComponentType[] Motion = new ComponentType[]
-            {
                 typeof( MotionInfoData ),
                 typeof( MotionClipData ),
                 typeof( MotionStreamLinkData ),
                 typeof( MotionInitializeData ),
                 typeof( MotionCursorData ),//
                 typeof( Prefab ),
-            };
-            static public ComponentType[] Stream = new ComponentType[]
-            {
+        };
+        static public ComponentType[] Stream = new ComponentType[]
+        {
                 typeof( StreamDrawLinkData ),
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
@@ -99,8 +99,8 @@ namespace Abarabone.Motion.Authoring
                 typeof( StreamInterpolatedData ),
                 typeof( StreamMotionLinkData ),//
                 typeof( Prefab ),
-            };
-        }
+        };
+    }
 
 
 
@@ -116,7 +116,7 @@ namespace Abarabone.Motion.Authoring
 
     static public class MotionEntitiesConvertUntility
     {
-        
+
         static public void CreatePrefab
             (
                 GameObjectConversionSystem gcs, GameObject motionMain, Transform[] bones,
@@ -133,55 +133,83 @@ namespace Abarabone.Motion.Authoring
         }
 
 
-        static Entity[] getBoneEntities( GameObjectConversionSystem gcs, Transform[] bones, AvatarMask streamMask )
+        static GameObject[] getEnabledBoneObjects( Transform[] bones, GameObject root, AvatarMask streamMask )
         {
-            var enableBoneHashSet = streamMask.ToEnabledBoneHashSet();
+            var enabledBoneHashSet = streamMask.ToEnabledBoneHashSet();
 
-            bones.
+            return bones
+                .Select( bone => bone.gameObject )
+                .Where( go => enabledBoneHashSet.Contains( go.MakePath( root ) ) )
+                .ToArray();
         }
 
 
         // モーションエンティティ生成
-        static void initMotionEntity
-            ( GameObjectConversionSystem gcs, GameObject motionMain, MotionClip motionClip, ComponentType[] motionTypes )
+        // メインオブジェクトの関連エンティティとして生成し、リンクもここでつける。
+        static Entity createMotionEntity
+            ( GameObjectConversionSystem gcs, GameObject motionMain, ComponentType[] motionTypes )
         {
             var em = gcs.DstEntityManager;
 
             var motionArchetype = em.CreateArchetype( motionTypes );
-            var motionEntity = gcs.GetPrimaryEntity( motionMain );
-            em.SetArchetype( motionEntity, motionArchetype );
+            var motionEntity = gcs.CreateAdditionalEntity( motionMain, motionArchetype );
+
+            return motionEntity;
+        }
+
+        static void initMotionEntity
+            ( EntityManager em, Entity motionEntity, Entity[] poss, Entity[] rots, MotionClip motionClip )
+        {
+
+            em.SetComponentData( motionEntity, new MotionInfoData { MotionIndex = 0 } );
 
             var motionBlobData = motionClip.ConvertToBlobData();
-            em.SetComponentData( motionEntity, new MotionClipData { ClipData = motionBlobData } );
-            em.SetComponentData( motionEntity, new MotionInfoData { MotionIndex = 0 } );
+            em.SetComponentData( motionEntity,  new MotionClipData { ClipData = motionBlobData } );
+
+
+            em.SetComponentData( motionEntity,
+                new MotionStreamLinkData
+                {
+                    PositionStreamTop = poss.First(),
+                    RotationStreamTop = rots.First(),
+                }
+            );
         }
 
 
         // ストリームエンティティ生成
+        // ボーンオブジェクトの関連エンティティとして生成する。
+        // 
         static Entity[] createStreamEntitiesOfSection
-            ( GameObjectConversionSystem gcs, GameObject motionMainain, Transform[] bones, ComponentType[] streamTypes )
+            (
+                GameObjectConversionSystem gcs, GameObject motionMainain, GameObject[] enabledBoneObjects,
+                ComponentType[] streamTypes
+            )
         {
             var em = gcs.DstEntityManager;
 
             var streamArchetype = em.CreateArchetype( streamTypes );
-            var streamEntities = bones
-                .Select( bone => gcs.CreateAdditionalEntity( em, bone.gameObject, streamArchetype ) )
+            var streamEntities = enabledBoneObjects
+                .Select( boneObject => gcs.CreateAdditionalEntity( boneObject, streamArchetype ) )
                 .ToArray();
 
             return streamEntities;
         }
 
-        static void initStreamEntities( GameObjectConversionSystem gcs, Entity[] streamEntities )
+
+        static void initStreamEntities
+            ( GameObjectConversionSystem gcs, Entity[] streamEntities )
         {
 
             setStreamRelation_( streamEntities, enabledBoneIds );
-            em.SetComponentData( streamEntities, new StreamDrawLinkData { DrawEntity = drawPrefab } );
+            //em.SetComponentData( streamEntities, new StreamDrawLinkData { DrawEntity = drawPrefab } );draw側でやろう
             em.SetComponentData( streamEntities, new StreamMotionLinkData { MotionEntity = motionPrefab } );
 
-            return streamEntities;
+            return;
 
 
-            void setStreamRelation_( NativeArray<Entity> streamEntities_, int[] enabledIds_ )
+            void setStreamRelation_
+                ( GameObjectConversionSystem gcs_, Entity[] streamEntities_, GameObject[] enabledBoneObjects )
             {
 
                 var qNext = streamEntities_
@@ -189,9 +217,9 @@ namespace Abarabone.Motion.Authoring
                     .Append( Entity.Null );
 
                 var qNextLinker =
-                    from x in (qNext, enabledIds_).Zip()
+                    from x in (qNext, enabledBoneObjects).Zip()
                     let next = x.x
-                    let id = x.y
+                    let id = gcs_.GetPrimaryEntity(x.y)
                     select new StreamRelationData
                     {
                         NextStreamEntity = next,
@@ -199,17 +227,6 @@ namespace Abarabone.Motion.Authoring
                     };
                 em.SetComponentData( streamEntities_, qNextLinker );
             }
-        }
-
-        static void initMotionEntity( EntityManager em, Entity motion, Entity[] poss, Entity[] rots )
-        {
-            em.SetComponentData( motion,
-                new MotionStreamLinkData
-                {
-                    PositionStreamTop = poss.First(),
-                    RotationStreamTop = rots.First(),
-                }
-            );
         }
 
         static IEnumerable<StreamEntityUnit> queryStreamEntityUnit(

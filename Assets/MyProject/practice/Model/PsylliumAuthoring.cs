@@ -33,15 +33,15 @@ namespace Abarabone.Particle.Aurthoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
             
-            createModelEntity_( conversionSystem, dstManager, this.gameObject, this.Material );
+            createModelEntity_( conversionSystem, this.gameObject, this.Material );
             
-            initParticleEntityComponents_( conversionSystem, dstManager, this.gameObject );
+            initParticleEntityComponents_( conversionSystem, this.gameObject );
             
             return;
 
 
             void createModelEntity_
-                ( GameObjectConversionSystem gcs, EntityManager em, GameObject main, Material srcMaterial )
+                ( GameObjectConversionSystem gcs, GameObject main, Material srcMaterial )
             {
                 var mat = new Material( srcMaterial );
                 var mesh = createMesh();
@@ -49,13 +49,15 @@ namespace Abarabone.Particle.Aurthoring
                 const Draw.BoneType boneType = Draw.BoneType.TR;
                 const int boneLength = 1;
 
-                var modelEntity_ = gcs.CreateDrawModelEntityComponents( em, main, mesh, mat, boneType, boneLength );
+                var modelEntity_ = gcs.CreateDrawModelEntityComponents( main, mesh, mat, boneType, boneLength );
             }
 
-            void initParticleEntityComponents_
-                ( GameObjectConversionSystem gcs, EntityManager em, GameObject main )
+            void initParticleEntityComponents_( GameObjectConversionSystem gcs, GameObject main )
             {
                 dstManager.SetName( entity, $"{this.name}" );
+
+                var em = gcs.DstEntityManager;
+
 
                 var mainEntity = gcs.GetPrimaryEntity( main );
 
@@ -68,6 +70,7 @@ namespace Abarabone.Particle.Aurthoring
                     typeof( Rotation )
                 );
                 em.SetArchetype( mainEntity, archetype );
+
 
                 em.SetComponentData( mainEntity,
                     new DrawInstanceModeLinkData

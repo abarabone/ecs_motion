@@ -25,23 +25,24 @@ namespace Abarabone.Draw.Authoring
     {
 
 
-        static Dictionary<GameObject, Entity> dict = new Dictionary<GameObject, Entity>();
+        //static Dictionary<GameObject, Entity> dict = new Dictionary<GameObject, Entity>();
 
-        static void SetModelEntity( this GameObjectConversionSystem gcs, GameObject main, Entity entity ) => dict[ main ] = entity;
-        static Entity GetModelEntity( this GameObjectConversionSystem gcs, GameObject main ) => dict[ main ];
+        //static void SetModelEntity( this GameObjectConversionSystem gcs, GameObject main, Entity entity ) => dict[ main ] = entity;
+        //static Entity GetModelEntity( this GameObjectConversionSystem gcs, GameObject main ) => dict[ main ];
 
 
 
         static public Entity CreateDrawModelEntityComponents
             (
-                this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject,
+                this GameObjectConversionSystem gcs, GameObject mainGameObject,
                 Mesh mesh, Material mat, BoneType boneType, int boneLength
             )
         {
+            var em = gcs.DstEntityManager;
 
             setShaderProps_( em, mat, mesh, boneLength );
 
-            var drawModelEntity = createDrawModelEntity_( gcs, em, mainGameObject );
+            var drawModelEntity = createDrawModelEntity_( gcs, mainGameObject );
             setEntityComponentValues_( em, drawModelEntity, mat, mesh, boneLength, boneType );
 
             return drawModelEntity;
@@ -59,9 +60,9 @@ namespace Abarabone.Draw.Authoring
             }
 
             Entity createDrawModelEntity_
-                ( GameObjectConversionSystem gcs_, EntityManager em_, GameObject main_ )
+                ( GameObjectConversionSystem gcs_, GameObject main_ )
             {
-                //var modelObject = createBinderObject_();
+                var em_ = gcs_.DstEntityManager;
 
                 var drawModelArchetype = em_.CreateArchetype(
                     typeof( DrawModelBoneUnitSizeData ),
@@ -70,7 +71,6 @@ namespace Abarabone.Draw.Authoring
                     typeof( DrawModelGeometryData ),
                     typeof( DrawModelComputeArgumentsBufferData )
                 );
-                //var ent = gcs_.CreateAdditionalEntity( em_, main_, drawModelArchetype );
                 var ent = em_.CreateEntity( drawModelArchetype );
 
                 gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.Add( main_, ent );
@@ -78,14 +78,6 @@ namespace Abarabone.Draw.Authoring
                 em_.SetName( ent, $"{main_.name} model" );
 
                 return ent;
-
-
-                //GameObject createBinderObject_()
-                //{
-                //    var modelObject_ = new GameObject( $"{main_.name} model" );
-                //    modelObject_.AddComponent<ModelEntityBinderOnConversion>().Prefab = main_;
-                //    return modelObject_;
-                //}
             }
 
             void setEntityComponentValues_

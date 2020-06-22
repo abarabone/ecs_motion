@@ -35,9 +35,7 @@ namespace Abarabone.Utilities
 
         static public string MakePath( this GameObject gameObject, GameObject root )
         {
-            var parent = root.Parent() ?? root;
-
-            var offset = parent.MakePath().Length;
+            var offset = root.MakePath().Length;
 
             return gameObject.MakePath().Substring( offset );
         }
@@ -133,7 +131,9 @@ namespace Abarabone.Utilities
     }
 
 
-
+    /// <summary>
+    /// 方向と長さを、4 floats で管理する。
+    /// </summary>
     public struct DirectionAndLength
     {
         public float4 value;

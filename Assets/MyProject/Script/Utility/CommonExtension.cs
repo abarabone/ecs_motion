@@ -311,12 +311,12 @@ namespace Abarabone.Common.Extension
         /// アーキタイプを指定して、追加のエンティティを生成する。
         /// </summary>
         static public Entity CreateAdditionalEntity<T>
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject )
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject )
             where T:IComponentData
         {
             var ent = gcs.CreateAdditionalEntity( mainGameObject );
 
-            em.AddComponent<T>( ent );
+            gcs.DstEntityManager.AddComponent<T>( ent );
 
             return ent;
         }
@@ -324,11 +324,11 @@ namespace Abarabone.Common.Extension
         /// アーキタイプを指定して、追加のエンティティを生成する。
         /// </summary>
         static public Entity CreateAdditionalEntity
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, EntityArchetype archetype )
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, EntityArchetype archetype )
         {
             var ent = gcs.CreateAdditionalEntity( mainGameObject );
 
-            em.SetArchetype( ent, archetype );
+            gcs.DstEntityManager.SetArchetype( ent, archetype );
 
             return ent;
         }
@@ -336,24 +336,24 @@ namespace Abarabone.Common.Extension
         /// アーキタイプを指定して、追加のエンティティを複数生成。配列として返す。
         /// </summary>
         static public Entity[] CreateAdditionalEntities
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, EntityArchetype archetype, int length )
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, EntityArchetype archetype, int length )
         {
             return Enumerable.Range(0, length)
-                .Select( i => gcs.CreateAdditionalEntity( em, mainGameObject, archetype ) )
+                .Select( i => gcs.CreateAdditionalEntity( mainGameObject, archetype ) )
                 .ToArray();
         }
         /// <summary>
         /// アーキタイプを指定して、追加のエンティティを複数生成。NativeArray として返す。
         /// </summary>
         static public NativeArray<Entity> CreateAdditionalEntities<TallocatorLabel>
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, EntityArchetype archetype, int length )
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, EntityArchetype archetype, int length )
             where TallocatorLabel : IAllocatorLabel, new()
         {
             var ents = new NativeArray<Entity>( length, new TallocatorLabel().Label );
 
             for( var i=0; i<length; i++ )
             {
-                ents[i] = gcs.CreateAdditionalEntity( em, mainGameObject, archetype );
+                ents[i] = gcs.CreateAdditionalEntity( mainGameObject, archetype );
             }
 
             return ents;
