@@ -14,6 +14,7 @@ namespace Abarabone.Draw.Authoring
     using Draw;
     using Character;
     using Abarabone.Authoring;
+    using Abarabone.Model.Authoring;
 
     using Abarabone.Common.Extension;
     using Abarabone.Misc;
@@ -23,16 +24,28 @@ namespace Abarabone.Draw.Authoring
     static public class DrawModelEntityConvertUtility
     {
 
+
+        static Dictionary<GameObject, Entity> dict = new Dictionary<GameObject, Entity>();
+
+        static void SetModelEntity( this GameObjectConversionSystem gcs, GameObject main, Entity entity ) => dict[ main ] = entity;
+        static Entity GetModelEntity( this GameObjectConversionSystem gcs, GameObject main ) => dict[ main ];
+
+
+
         static public Entity CreateDrawModelEntityComponents
-            ( this EntityManager em, Mesh mesh, Material mat, BoneType boneType, int boneLength )
+            (
+                this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject,
+                Mesh mesh, Material mat, BoneType boneType, int boneLength
+            )
         {
 
             setShaderProps_( em, mat, mesh, boneLength );
-            
-            var drawModelEntity = createEntityAndInitComponents_( boneLength );
-            
+
+            var drawModelEntity = createDrawModelEntity_( gcs, em, mainGameObject );
+            setEntityComponentValues_( em, drawModelEntity, mat, mesh, boneLength, boneType );
+
             return drawModelEntity;
-            
+
 
             void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int boneLength_ )
             {
@@ -45,39 +58,61 @@ namespace Abarabone.Draw.Authoring
                 //mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要なので、ここではやらない
             }
 
-            Entity createEntityAndInitComponents_( int boneLength_ )
+            Entity createDrawModelEntity_
+                ( GameObjectConversionSystem gcs_, EntityManager em_, GameObject main_ )
             {
-                var drawModelArchetype = em.CreateArchetype(
+                //var modelObject = createBinderObject_();
+
+                var drawModelArchetype = em_.CreateArchetype(
                     typeof( DrawModelBoneUnitSizeData ),
                     typeof( DrawModelInstanceCounterData ),
                     typeof( DrawModelInstanceOffsetData ),
                     typeof( DrawModelGeometryData ),
                     typeof( DrawModelComputeArgumentsBufferData )
                 );
-                var ent = em.CreateEntity( drawModelArchetype );
+                //var ent = gcs_.CreateAdditionalEntity( em_, main_, drawModelArchetype );
+                var ent = em_.CreateEntity( drawModelArchetype );
 
-                em.SetComponentData( ent,
+                gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.Add( main_, ent );
+
+                em_.SetName( ent, $"{main_.name} model" );
+
+                return ent;
+
+
+                //GameObject createBinderObject_()
+                //{
+                //    var modelObject_ = new GameObject( $"{main_.name} model" );
+                //    modelObject_.AddComponent<ModelEntityBinderOnConversion>().Prefab = main_;
+                //    return modelObject_;
+                //}
+            }
+
+            void setEntityComponentValues_
+                ( EntityManager em_, Entity ent_, Material mat_, Mesh mesh_, int boneLength_, BoneType boneType_ )
+            {
+
+                em_.SetComponentData( ent_,
                     new DrawModelBoneUnitSizeData
                     {
                         BoneLength = boneLength_,
-                        VectorLengthInBone = (int)boneType,
+                        VectorLengthInBone = (int)boneType_,
                     }
                 );
-                em.SetComponentData( ent,
+                em_.SetComponentData( ent_,
                     new DrawModelGeometryData
                     {
-                        Mesh = mesh,
-                        Material = mat,
+                        Mesh = mesh_,
+                        Material = mat_,
                     }
                 );
-                em.SetComponentData( ent,
+                em_.SetComponentData( ent_,
                     new DrawModelComputeArgumentsBufferData
                     {
                         InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
                     }
                 );
 
-                return ent;
             }
 
         }

@@ -32,16 +32,16 @@ namespace Abarabone.Particle.Aurthoring
         /// </summary>
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
-
-            var modelEntity = createModelEntity_( dstManager, this.Material );
             
-            initParticleEntityComponents_( dstManager, entity, modelEntity );
+            createModelEntity_( conversionSystem, dstManager, this.gameObject, this.Material );
             
-            Debug.Log( $"model {dstManager.GetName( entity )}" );
+            initParticleEntityComponents_( conversionSystem, dstManager, this.gameObject );
+            
             return;
 
 
-            Entity createModelEntity_( EntityManager em, Material srcMaterial )
+            void createModelEntity_
+                ( GameObjectConversionSystem gcs, EntityManager em, GameObject main, Material srcMaterial )
             {
                 var mat = new Material( srcMaterial );
                 var mesh = createMesh();
@@ -49,15 +49,15 @@ namespace Abarabone.Particle.Aurthoring
                 const Draw.BoneType boneType = Draw.BoneType.TR;
                 const int boneLength = 1;
 
-                var modelEntity_ = em.CreateDrawModelEntityComponents( mesh, mat, boneType, boneLength );
-                dstManager.SetName( modelEntity_, $"{this.name} draw model" );
-
-                return modelEntity_;
+                var modelEntity_ = gcs.CreateDrawModelEntityComponents( em, main, mesh, mat, boneType, boneLength );
             }
 
-            void initParticleEntityComponents_( EntityManager em, Entity mainEntity, Entity modelEntity_ )
+            void initParticleEntityComponents_
+                ( GameObjectConversionSystem gcs, EntityManager em, GameObject main )
             {
-                dstManager.SetName( entity, $"{this.name} prefab" );
+                dstManager.SetName( entity, $"{this.name}" );
+
+                var mainEntity = gcs.GetPrimaryEntity( main );
 
                 var archetype = em.CreateArchetype(
                     typeof( ModelPrefabNoNeedLinkedEntityGroupTag ),
@@ -68,13 +68,12 @@ namespace Abarabone.Particle.Aurthoring
                     typeof( Rotation )
                 );
                 em.SetArchetype( mainEntity, archetype );
-                
-                
+
                 em.SetComponentData( mainEntity,
                     new DrawInstanceModeLinkData
                     //new DrawTransformLinkData
                     {
-                        DrawModelEntity = modelEntity_,
+                        DrawModelEntity = gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary[ main ],
                     }
                 );
                 em.SetComponentData( mainEntity,
@@ -108,6 +107,7 @@ namespace Abarabone.Particle.Aurthoring
             float radius = width;
 
             Mesh mesh = new Mesh();
+            mesh.name = "psyllium";
 
             mesh.vertices = new Vector3[]
             {

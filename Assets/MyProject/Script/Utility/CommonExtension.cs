@@ -310,6 +310,19 @@ namespace Abarabone.Common.Extension
         /// <summary>
         /// アーキタイプを指定して、追加のエンティティを生成する。
         /// </summary>
+        static public Entity CreateAdditionalEntity<T>
+            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject )
+            where T:IComponentData
+        {
+            var ent = gcs.CreateAdditionalEntity( mainGameObject );
+
+            em.AddComponent<T>( ent );
+
+            return ent;
+        }
+        /// <summary>
+        /// アーキタイプを指定して、追加のエンティティを生成する。
+        /// </summary>
         static public Entity CreateAdditionalEntity
             ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, EntityArchetype archetype )
         {

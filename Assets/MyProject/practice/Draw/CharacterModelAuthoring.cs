@@ -11,6 +11,7 @@ using Unity.Mathematics;
 namespace Abarabone.Model.Authoring
 {
     using Draw.Authoring;
+    using Abarabone.Common.Extension;
 
     /// <summary>
     /// 
@@ -47,26 +48,59 @@ namespace Abarabone.Model.Authoring
             var qMesh = skinnedMeshRenderers.Select( x => x.sharedMesh );
             var bones = skinnedMeshRenderers.First().bones.Where( x => !x.name.StartsWith( "_" ) ).ToArray();
 
-            var modelEntity = createModelEntity_( dstManager, this.MaterialToDraw, qMesh, bones );
+            createModelEntity_( conversionSystem, dstManager, this.gameObject, this.MaterialToDraw, qMesh, bones );
+
+            createMainEntity_( conversionSystem, dstManager, this.gameObject );
 
             conversionSystem.CreateBoneEntities( dstManager, this.gameObject, bones );
+
+            conversionSystem.CreateDrawInstanceEntities( dstManager, this.gameObject, bones );
 
             return;
 
 
-            Entity createModelEntity_( EntityManager em, Material srcMaterial, IEnumerable<Mesh> srcMeshes, Transform[] bones_ )
+            void createModelEntity_
+                (
+                    GameObjectConversionSystem gcs_, EntityManager em_, GameObject main_,
+                    Material srcMaterial, IEnumerable<Mesh> srcMeshes, Transform[] bones_
+                )
             {
                 var mat = new Material( srcMaterial );
                 var mesh = DrawModelEntityConvertUtility.CombineAndConvertMesh( srcMeshes, bones_ );
 
                 const Draw.BoneType boneType = Draw.BoneType.TR;
 
-                var modelEntity_ = em.CreateDrawModelEntityComponents( mesh, mat, boneType, bones_.Length );
-                dstManager.SetName( modelEntity_, $"{this.name} model" );
-
-                return modelEntity_;
+                gcs_.CreateDrawModelEntityComponents( em_,  main_, mesh, mat, boneType, bones_.Length );
             }
 
+            void createMainEntity_
+                ( GameObjectConversionSystem gcs_, EntityManager em_, GameObject main_ )
+            {
+                var mainEntity = CharacterModelAuthoring.GetOrCreateMainEntity( gcs_, em_, main_ );
+                var binderEntity = gcs_.GetPrimaryEntity( main_ );
+
+                em_.AddComponentData( binderEntity,
+                    new ModelBinderLinkData { MainEntity = mainEntity } );
+
+                em_.SetComponentData( mainEntity,
+                    new ModelMainEntityLinkData { BinderEntity = binderEntity} );
+
+                em_.SetName( mainEntity, $"{main_.name} main" );
+            }
+        }
+
+
+        static public Entity GetOrCreateMainEntity
+            ( GameObjectConversionSystem gcs, EntityManager em, GameObject main )
+        {
+            var mainEntity = gcs.GetEntities( main )
+                .Where( ent_ => em.HasComponent<ModelMainEntityLinkData>( ent_ ) )
+                .FirstOrDefault();
+
+            if( mainEntity == Entity.Null )
+                return gcs.CreateAdditionalEntity<ModelMainEntityLinkData>( em, main );
+
+            return mainEntity;
         }
 
     }

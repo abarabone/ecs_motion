@@ -14,6 +14,7 @@ namespace Abarabone.Draw.Authoring
     using Draw;
     using Character;
     using Abarabone.Authoring;
+    using Abarabone.Model.Authoring;
 
     using Abarabone.Common.Extension;
     using Abarabone.Misc;
@@ -25,16 +26,19 @@ namespace Abarabone.Draw.Authoring
         static public void CreateDrawInstanceEntities
             ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, Transform[] bones )
         {
-            
-            var drawInstanceEntity = gcs.createDrawInstanceEntity( em, mainGameObject, bones.Length, )
-            
+
+            var drawInstanceEntity = gcs.createDrawInstanceEntity( em, mainGameObject, bones.Length );
+
+            gcs.setBoneComponentValues( em, mainGameObject, bones, drawInstanceEntity );
+
         }
 
 
         // ----------------------------------------------------------------------------------
 
+        
         static public Entity createDrawInstanceEntity
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main, int boneLength, Entity modelEntity )
+            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main, int boneLength )
         {
             var archetype = em.CreateArchetype
             (
@@ -42,11 +46,12 @@ namespace Abarabone.Draw.Authoring
                 typeof( DrawInstanceTargetWorkData )
             );
             var ent = gcs.CreateAdditionalEntity( em, main, archetype );
+            em.SetName(ent, $"{main.name} draw" );
 
             em.SetComponentData( ent,
                 new DrawInstanceModeLinkData
                 {
-                    DrawModelEntity = modelEntity,
+                    DrawModelEntity = gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary[ main ],
                 }
             );
 
@@ -61,8 +66,11 @@ namespace Abarabone.Draw.Authoring
         }
 
 
-        static void initBoneComponents
-            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main, Transform[] bones, Entity drawInstanceEntity )
+        static void setBoneComponentValues
+            (
+                this GameObjectConversionSystem gcs, EntityManager em, GameObject main,
+                Transform[] bones, Entity drawInstanceEntity
+            )
         {
 
             var boneEntities = bones

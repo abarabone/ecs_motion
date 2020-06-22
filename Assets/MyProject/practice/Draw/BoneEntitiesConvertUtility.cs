@@ -38,8 +38,8 @@ namespace Abarabone.Model.Authoring
         static public void CreateBoneEntities
             ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, Transform[] bones )
         {
-            var postureEntity = gcs.createPostureEntity( em, mainGameObject );
-            var boneEntities = gcs.getOrCreateBoneEntities( em, mainGameObject, bones );
+            var postureEntity = gcs.addComponentsPostureEntity( em, mainGameObject );
+            var boneEntities = gcs.addComponentsBoneEntities( em, mainGameObject, bones );
 
             em.setPostureValue( postureEntity, boneEntities.First() );
 
@@ -50,45 +50,38 @@ namespace Abarabone.Model.Authoring
 
         // ----------------------------------------------------------------------------------
         
-        static Entity createPostureEntity( this GameObjectConversionSystem gcs, EntityManager em, GameObject main )
+        
+        static Entity addComponentsPostureEntity
+            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main )
         {
-            var archetype = em.CreateArchetype
+            var ent = CharacterModelAuthoring.GetOrCreateMainEntity(gcs, em, main);
+            
+            var addtypes = new ComponentTypes
             (
                 typeof( PostureNeedTransformTag ),
                 typeof( PostureLinkData ),
                 typeof( Translation ),
                 typeof( Rotation )
             );
+            em.AddComponents( ent, addtypes );
 
-            var postureEntity = gcs.CreateAdditionalEntity( em, main, archetype );
-
-            return postureEntity;
+            return ent;
         }
 
-        static Entity[] getOrCreateBoneEntities
+
+        static Entity[] addComponentsBoneEntities
             ( this GameObjectConversionSystem gcs, EntityManager em, GameObject main, Transform[] bones )
         {
             return bones
                 .Select( bone => gcs.TryGetPrimaryEntity( bone ) )
-                .Select( existsEnt => existsEnt != Entity.Null ? addComponents_(existsEnt) : create_() )
+                //.Select( existsEnt => existsEnt != Entity.Null ? addComponents_(existsEnt) : create_() )
+                .Do( ent => addComponents_(ent) )
                 .ToArray()
                 ;
 
             Entity addComponents_( Entity exists_ )
             {
                 var addtypes = new ComponentTypes
-                (
-                    typeof( BoneRelationLinkData ),
-                    typeof( BoneLocalValueData )
-                );
-
-                em.AddComponents( exists_, addtypes );
-                return exists_;
-            }
-
-            Entity create_()
-            {
-                var archetype = em.CreateArchetype
                 (
                     //typeof( DrawTransformLinkData ),
                     //typeof( DrawTransformIndexData ),
@@ -99,7 +92,8 @@ namespace Abarabone.Model.Authoring
                     typeof( Rotation )
                 );
 
-                return gcs.CreateAdditionalEntity( em, main, archetype );
+                em.AddComponents( exists_, addtypes );
+                return exists_;
             }
         }
 

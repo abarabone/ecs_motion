@@ -13,14 +13,26 @@ namespace Abarabone.Model.Authoring
     using Utilities;
 
 
+    /// <summary>
+    /// モデル描画をまとめる工夫を行う。
+    /// テクスチャアトラスとか。
+    /// できればシェーダーでも描画順をまとめいたいけど、unity はマテリアル単位の設定なので無理かな…？
+    /// unity が自動的にやってくれてる可能性もある。
+    /// </summary>
     public class ModelGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
+        /// <summary>
+        /// これを継承しないと、モデルビヘイビアを要求するものに登録できない。
+        /// </summary>
         public class ModelAuthoringBase : MonoBehaviour
         { }
 
+
+
         public ModelAuthoringBase[] ModelPrefabs;
 
+        //public bool MakeTexutreAtlus;
 
 
         void IDeclareReferencedPrefabs.DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
@@ -32,29 +44,9 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
+            // モデルグループ自体にはエンティティは不要
             dstManager.DestroyEntity( entity );
-
-
-            prefabEntities = this.ModelPrefabs
-                .Select( x => conversionSystem.GetPrimaryEntity( x.gameObject ) )
-                .ToArray();
-
-        }
-
-        IEnumerable<Entity> prefabEntities;
-        void OnDestroy()
-        {
-            var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-            this.prefabEntities
-                .Where( x => em.HasComponent<ModelPrefabNoNeedLinkedEntityGroupTag>(x) )
-                .ForEach(
-                    x =>
-                    {
-                        em.RemoveComponent<LinkedEntityGroup>( x );
-                        em.RemoveComponent<ModelPrefabNoNeedLinkedEntityGroupTag>( x );
-                    }
-                );
+            
         }
 
     }

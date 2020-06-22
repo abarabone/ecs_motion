@@ -38,7 +38,7 @@ namespace Abarabone.Draw
 
 
             inputDeps = this.Entities
-                .WithNone<Scale, Rotation>()
+                .WithNone<NonUniformScale, Rotation>()
                 .WithReadOnly( offsetsOfDrawModel )
                 .WithBurst()
                 .ForEach(

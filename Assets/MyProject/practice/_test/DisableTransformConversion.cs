@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
 using Unity.Physics.Authoring;
 using Unity.Transforms;
@@ -8,11 +9,11 @@ using System.Linq;
 
 namespace Abarabone.Model.Authoring
 {
-    using Particle.Aurthoring;
 
     /// <summary>
     /// TransformConversion をオフにする。
-    /// 正式な方法ではないので、いつまで通用するかわからない。
+    /// 正式に紹介された方法ではないので、いつまで通用するかはわからない。
+    /// ハイブリッドレンダラも使えなくなるし、WithOutTransformConversionAttribute みたいなのが待たれる…。
     /// </summary>
     //[DisableAutoCreation]
     public class DisableTransformConversion : GameObjectConversionSystem
@@ -37,5 +38,5 @@ namespace Abarabone.Model.Authoring
         protected override void OnUpdate()
         { }
     }
-    
+
 }

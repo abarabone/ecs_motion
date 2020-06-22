@@ -37,7 +37,7 @@ namespace Abarabone.Draw
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModelInstanceOffsetData>( isReadOnly: true );
 
             inputDeps = this.Entities
-                .WithNone<Scale>()
+                .WithNone<NonUniformScale>()
                 .WithReadOnly( offsetsOfDrawModel )
                 .WithBurst()
                 .ForEach(

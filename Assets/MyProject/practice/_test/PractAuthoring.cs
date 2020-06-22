@@ -43,30 +43,30 @@ public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
 }
 
+[UpdateInGroup(typeof(InitializationSystemGroup))]
 public class PracSpawnSystem : SystemBase
 {
 
-    protected override void OnStartRunning()
-    {
-        //var spawn = this.GetSingleton<SpawnData>();
-        //this.EntityManager.Instantiate( spawn.ent );
-    }
-
     protected override void OnUpdate()
     {
-        //if( spawn.i++ == 0 ) this.EntityManager.DestroyEntity( this.GetSingletonEntity<SpawnData>() );
-        //this.SetSingleton<SpawnData>( spawn );
+        if( !this.HasSingleton<SpawnData>() ) return;
 
-        //this.Entities
-        //    .WithoutBurst()
-        //    .ForEach(
-        //        ( Entity ent, ref SpawnData spawn ) =>
-        //        {
-        //            this.EntityManager.Instantiate( spawn.ent );
-        //            this.EntityManager.DestroyEntity( ent );
-        //        }
-        //    )
-        //    .Run();
+
+        var em = this.EntityManager;
+
+        var spawn = this.GetSingleton<SpawnData>();
+
+        var ent = em.Instantiate( spawn.ent );
+        if( !em.HasComponent<Translation>( ent ) ) ent = em.GetComponentData<ModelBinderLinkData>(ent).MainEntity;
+        
+        em.SetComponentData( ent, new Translation { Value = new float3(0,spawn.i,0) } );
+
+        spawn.i++;
+
+        this.SetSingleton( spawn );
+
+        if( spawn.i >= 1 )
+            this.EntityManager.DestroyEntity( this.GetSingletonEntity<SpawnData>() );
     }
 
 }

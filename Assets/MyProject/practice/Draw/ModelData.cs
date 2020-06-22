@@ -19,6 +19,11 @@ namespace Abarabone.Model
 
     public struct ModelBinderLinkData : IComponentData
     {
+        public Entity MainEntity;
+    }
+
+    public struct ModelMainEntityLinkData : IComponentData
+    {
         public Entity BinderEntity;
     }
 
