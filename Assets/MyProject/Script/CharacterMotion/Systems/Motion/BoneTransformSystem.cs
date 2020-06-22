@@ -91,9 +91,9 @@ namespace Abarabone.Motion
                     var pos = math.mul( prot, lpos ) + ppos;
                     var rot = math.mul( prot, lrot );
 
-                    //if( this.BoneVelocities.Exists( ent ) )
-                    //    this.setVelocity( ent, pos, rot );
-                    //else
+                    if( this.BoneVelocities.Exists( ent ) )
+                        { }//this.setVelocity( ent, pos, rot );
+                    else
                         this.setPosAndRot( ent, pos, rot );
                 }
             }

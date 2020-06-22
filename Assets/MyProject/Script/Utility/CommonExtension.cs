@@ -336,7 +336,7 @@ namespace Abarabone.Common.Extension
         /// アーキタイプを指定して、追加のエンティティを複数生成。配列として返す。
         /// </summary>
         static public Entity[] CreateAdditionalEntities
-            ( this GameObjectConversionSystem gcs,EntityManager em,  GameObject mainGameObject, EntityArchetype archetype, int length )
+            ( this GameObjectConversionSystem gcs, EntityManager em, GameObject mainGameObject, EntityArchetype archetype, int length )
         {
             return Enumerable.Range(0, length)
                 .Select( i => gcs.CreateAdditionalEntity( em, mainGameObject, archetype ) )
