@@ -33,6 +33,8 @@ namespace Abarabone.Draw.Authoring
 
             setBoneComponentValues( gcs, mainGameObject, bones, drawInstanceEntity );
 
+            setStreamComponentValues( gcs, mainGameObject, bones, drawInstanceEntity );
+
         }
 
 
@@ -129,6 +131,26 @@ namespace Abarabone.Draw.Authoring
             }
         }
 
+
+        static void setStreamComponentValues
+            (
+                GameObjectConversionSystem gcs, GameObject main,
+                Transform[] bones, Entity drawInstanceEntity
+            )
+        {
+
+            var em = gcs.DstEntityManager;
+
+            var qStreamEntity =
+                from bone in bones
+                from ent in gcs.GetEntities( bone )
+                where em.HasComponent<StreamRelationData>(ent)
+                select ent
+                ;
+
+            em.AddComponentData( qStreamEntity, new StreamDrawLinkData { DrawEntity = drawInstanceEntity } );
+
+        }
 
 
     }

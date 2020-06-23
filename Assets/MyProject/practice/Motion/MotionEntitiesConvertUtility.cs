@@ -33,7 +33,7 @@ namespace Abarabone.Motion.Authoring
 
 
 
-    static class ArchetypeA
+    static public class ArchetypeA
     {
         static public ComponentType[] Motion = new ComponentType[]
         {
@@ -42,21 +42,19 @@ namespace Abarabone.Motion.Authoring
                 typeof( MotionClipData ),
                 typeof( MotionStreamLinkData ),
                 typeof( MotionInitializeData ),
-                typeof( Prefab )
         };
         static public ComponentType[] Stream = new ComponentType[]
         {
-                typeof( StreamDrawLinkData ),
+                //typeof( StreamDrawLinkData ),
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
                 typeof( StreamNearKeysCacheData ),
                 typeof( StreamCursorData ),
                 typeof( StreamInterpolatedData ),
-                typeof( Prefab )
         };
     }
 
-    static class ArchetypeB
+    static public class ArchetypeB
     {
         static public ComponentType[] Motion = new ComponentType[]
         {
@@ -65,21 +63,19 @@ namespace Abarabone.Motion.Authoring
                 typeof( MotionStreamLinkData ),
                 typeof( MotionInitializeData ),
                 typeof( MotionCursorData ),//
-                typeof( MotionProgressTimerTag ),//
-                typeof( Prefab ),
+                typeof( MotionProgressTimerTag )//
         };
         static public ComponentType[] Stream = new ComponentType[]
         {
-                typeof( StreamDrawLinkData ),
+                //typeof( StreamDrawLinkData ),
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
                 typeof( StreamNearKeysCacheData ),
                 typeof( StreamInterpolatedData ),
-                typeof( StreamMotionLinkData ),//
-                typeof( Prefab ),
+                typeof( StreamMotionLinkData )//
         };
     }
-    static class ArchetypeBd
+    static public class ArchetypeBd
     {
         static public ComponentType[] Motion = new ComponentType[]
         {
@@ -87,18 +83,16 @@ namespace Abarabone.Motion.Authoring
                 typeof( MotionClipData ),
                 typeof( MotionStreamLinkData ),
                 typeof( MotionInitializeData ),
-                typeof( MotionCursorData ),//
-                typeof( Prefab ),
+                typeof( MotionCursorData )//
         };
         static public ComponentType[] Stream = new ComponentType[]
         {
-                typeof( StreamDrawLinkData ),
+                //typeof( StreamDrawLinkData ),
                 typeof( StreamRelationData ),
                 typeof( StreamKeyShiftData ),
                 typeof( StreamNearKeysCacheData ),
                 typeof( StreamInterpolatedData ),
-                typeof( StreamMotionLinkData ),//
-                typeof( Prefab ),
+                typeof( StreamMotionLinkData )//
         };
     }
 
@@ -117,19 +111,22 @@ namespace Abarabone.Motion.Authoring
     static public class MotionEntitiesConvertUntility
     {
 
-        static public void CreatePrefab
+        static public void ConvertMotionEntities
             (
-                GameObjectConversionSystem gcs, GameObject motionMain, Transform[] bones,
+                this GameObjectConversionSystem gcs, GameObject motionMain, Transform[] bones,
                 ComponentType[] motionTypes, ComponentType[] streamTypes,
                 MotionClip motionClip, AvatarMask streamMask
             )
         {
+            var em = gcs.DstEntityManager;
+            var enabledBoneObjects = getEnabledBoneObjects( bones, motionMain, streamMask );
 
-            var motionPrefab = initMotionEntity( em, motionClip, motionArchetype );
-            var posStreamPrefabs = createStreamEntitiesOfSection( em, drawPrefab, motionPrefab, enabledBoneIds, streamArchetype );
-            var rotStreamPrefabs = createStreamEntitiesOfSection( em, drawPrefab, motionPrefab, enabledBoneIds, streamArchetype );
+            var motionEntity = createMotionEntity( gcs, motionMain, motionTypes );
 
-            initMotionEntity( em, motionPrefab, posStreamPrefabs, rotStreamPrefabs );
+            var posStreamEntities = createStreamEntitiesOfSection( gcs, motionMain, enabledBoneObjects, streamTypes );
+            var rotStreamEntities = createStreamEntitiesOfSection( gcs, motionMain, enabledBoneObjects, streamTypes );
+
+            initMotionEntity( em, motionEntity, posStreamEntities, rotStreamEntities, motionClip );
         }
 
 
@@ -154,6 +151,8 @@ namespace Abarabone.Motion.Authoring
             var motionArchetype = em.CreateArchetype( motionTypes );
             var motionEntity = gcs.CreateAdditionalEntity( motionMain, motionArchetype );
 
+            em.SetName( motionEntity, $"{motionMain.name} motion" );
+
             return motionEntity;
         }
 
@@ -165,7 +164,6 @@ namespace Abarabone.Motion.Authoring
 
             var motionBlobData = motionClip.ConvertToBlobData();
             em.SetComponentData( motionEntity,  new MotionClipData { ClipData = motionBlobData } );
-
 
             em.SetComponentData( motionEntity,
                 new MotionStreamLinkData
@@ -191,6 +189,7 @@ namespace Abarabone.Motion.Authoring
             var streamArchetype = em.CreateArchetype( streamTypes );
             var streamEntities = enabledBoneObjects
                 .Select( boneObject => gcs.CreateAdditionalEntity( boneObject, streamArchetype ) )
+                .Do( ent => em.SetName(ent, $"{em.GetName(ent)} stream") )
                 .ToArray();
 
             return streamEntities;
@@ -198,52 +197,42 @@ namespace Abarabone.Motion.Authoring
 
 
         static void initStreamEntities
-            ( GameObjectConversionSystem gcs, Entity[] streamEntities )
+            (
+                GameObjectConversionSystem gcs,
+                Entity motionEntity, Entity[] streamEntities, GameObject[] enabledBoneObjects
+            )
         {
 
-            setStreamRelation_( streamEntities, enabledBoneIds );
-            //em.SetComponentData( streamEntities, new StreamDrawLinkData { DrawEntity = drawPrefab } );draw側でやろう
-            em.SetComponentData( streamEntities, new StreamMotionLinkData { MotionEntity = motionPrefab } );
+            var em = gcs.DstEntityManager;
+
+            em.SetComponentData( streamEntities, new StreamMotionLinkData { MotionEntity = motionEntity } );
+
+            var qRelation = queryStreamRelation_( gcs, streamEntities, enabledBoneObjects );
+            em.SetComponentData( streamEntities, qRelation );
 
             return;
 
 
-            void setStreamRelation_
-                ( GameObjectConversionSystem gcs_, Entity[] streamEntities_, GameObject[] enabledBoneObjects )
+            IEnumerable<StreamRelationData> queryStreamRelation_
+                ( GameObjectConversionSystem gcs_, Entity[] streamEntities_, GameObject[] enabledBoneObjects_ )
             {
+                var em_ = gcs_.DstEntityManager;
 
                 var qNext = streamEntities_
                     .Skip( 1 )
                     .Append( Entity.Null );
 
-                var qNextLinker =
-                    from x in (qNext, enabledBoneObjects).Zip()
+                return
+                    from x in (qNext, enabledBoneObjects_).Zip()
                     let next = x.x
-                    let id = gcs_.GetPrimaryEntity(x.y)
+                    let bone = gcs_.GetPrimaryEntity( x.y )
+                    let boneid = em_.GetComponentData<DrawTransformIndexData>(bone).BoneId
                     select new StreamRelationData
                     {
                         NextStreamEntity = next,
-                        BoneId = id,
+                        BoneId = boneid,
                     };
-                em.SetComponentData( streamEntities_, qNextLinker );
             }
-        }
-
-        static IEnumerable<StreamEntityUnit> queryStreamEntityUnit(
-            IEnumerable<Entity> posStreamPrefabs,
-            IEnumerable<Entity> rotStreamPrefabs,
-            string[] streamPaths, int[] enabledBoneIds
-        )
-        {
-            return
-                from x in (enabledBoneIds, posStreamPrefabs, rotStreamPrefabs).Zip()
-                select new StreamEntityUnit
-                {
-                    Name = System.IO.Path.GetFileName( streamPaths[ x.x ] ),
-                    Position = x.y,
-                    Rotation = x.z,
-                    Scale = Entity.Null,
-                };
         }
 
     }

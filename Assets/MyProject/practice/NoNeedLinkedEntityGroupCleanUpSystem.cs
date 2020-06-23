@@ -12,7 +12,7 @@ namespace Abarabone.Model.Authoring
 {
 
     //[DisableAutoCreation]
-    public class NoNeedLinkedEntityGroupCleanSystem : SystemBase
+    public class NoNeedLinkedEntityGroupCleanUpSystem : SystemBase
     {
         protected override void OnStartRunning()
         {
@@ -21,7 +21,8 @@ namespace Abarabone.Model.Authoring
             using( var q = em.CreateEntityQuery(
                 typeof( ModelPrefabNoNeedLinkedEntityGroupTag ),
                 typeof( LinkedEntityGroup ),
-                typeof( Prefab ) ) )
+                typeof( Prefab ) )
+            )
             using( var ents = q.ToEntityArray( Allocator.TempJob ) )
             {
                 foreach( var ent in ents )
