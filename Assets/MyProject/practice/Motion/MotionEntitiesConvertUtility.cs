@@ -133,6 +133,9 @@ namespace Abarabone.Motion.Authoring
 
             initStreamEntities( gcs, motionEntity, posStreamEntities, enabledBoneIds );
             initStreamEntities( gcs, motionEntity, rotStreamEntities, enabledBoneIds );
+
+
+            setBoneStreamLinks( gcs, posStreamEntities, rotStreamEntities, enabledBoneObjects );
         }
 
 
@@ -176,10 +179,19 @@ namespace Abarabone.Motion.Authoring
             ( EntityManager em, Entity motionEntity, Entity[] poss, Entity[] rots, MotionClip motionClip )
         {
 
-            em.SetComponentData( motionEntity, new MotionInfoData { MotionIndex = 0 } );
-
             var motionBlobData = motionClip.ConvertToBlobData();
-            em.SetComponentData( motionEntity,  new MotionClipData { ClipData = motionBlobData } );
+            em.SetComponentData( motionEntity, new MotionClipData { ClipData = motionBlobData } );
+
+            em.SetComponentData( motionEntity,
+                new MotionInitializeData
+                {
+                    MotionIndex = 10,
+                    DelayTime = 0.0f,
+                    IsContinuous = true,
+                    IsLooping = true,
+                    TimeScale = 1.0f,
+                }
+            );
 
             em.SetComponentData( motionEntity,
                 new MotionStreamLinkData
@@ -250,6 +262,30 @@ namespace Abarabone.Motion.Authoring
             }
         }
 
+
+
+        static void setBoneStreamLinks
+            ( GameObjectConversionSystem gcs, Entity[] poss, Entity[] rots, GameObject[] enabledBoneObjects )
+        {
+            var em = gcs.DstEntityManager;
+
+            var qStreamLink =
+                from x in (poss, rots).Zip()
+                let pos = x.x
+                let rot = x.y
+                select new BoneStream0LinkData
+                {
+                    PositionStreamEntity = pos,
+                    RotationStreamEntity = rot,
+                };
+
+            var qBoneEntity =
+                from bone in enabledBoneObjects
+                select gcs.GetPrimaryEntity( bone )
+                ;
+
+            em.AddComponentData( qBoneEntity, qStreamLink );
+        }
     }
 }
 

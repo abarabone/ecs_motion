@@ -58,6 +58,7 @@ namespace Abarabone.Utilities
             var qEnabledBonePaths =
                 from id in Enumerable.Range( 0, boneMask_.transformCount )
                 let isEnabled = boneMask_.GetTransformActive( id )
+                where isEnabled
                 let path = boneMask_.GetTransformPath( id )
                 select path
                 ;

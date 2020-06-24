@@ -24,15 +24,12 @@ namespace Abarabone.Model.Authoring
 
         //public bool CreateAtlusTexture;
 
-
-        //public AvatarMask BoneMask;
-        //public Transform[] BoneRoots;
         
         public EnBoneType Mode;
         public enum EnBoneType
         {
-            reel_a_chain,
-            in_deep_order,// jobs_per_depth,
+            reelup_chain,
+            jobs_per_depth,
         }
 
 
@@ -55,6 +52,8 @@ namespace Abarabone.Model.Authoring
             conversionSystem.CreateBoneEntities( this.gameObject, bones );
 
             conversionSystem.CreateDrawInstanceEntities( this.gameObject, bones );
+
+            //cleanupEntityLinks_( conversionSystem, this.gameObject );
 
             return;
 
@@ -88,7 +87,43 @@ namespace Abarabone.Model.Authoring
 
                 em_.SetName( mainEntity, $"{main_.name} main" );
             }
+
+            //void cleanupEntityLinks_( GameObjectConversionSystem gcs_, GameObject main_ )
+            //{
+            //    var em = gcs_.DstEntityManager;
+            //    var needs = new NativeList<LinkedEntityGroup>( Allocator.Temp );
+            //    var noneeds = new NativeList<LinkedEntityGroup>( Allocator.Temp );
+
+            //    var buf = em.GetBuffer<LinkedEntityGroup>( gcs_.GetPrimaryEntity( main_ ) );
+
+            //    foreach( var link in buf )
+            //    {
+            //        if( em.GetComponentCount( link.Value ) == 1 && em.HasComponent<Prefab>( link.Value ) )
+            //        {
+            //            noneeds.Add( link );
+            //        }
+            //        else
+            //        {
+            //            needs.Add( link );
+            //        }
+            //    }
+
+            //    if( needs.Length > 0 )
+            //    {
+            //        buf.Clear();
+            //        buf.AddRange( needs.AsArray() );
+            //    }
+            //    if( noneeds.Length > 0 )
+            //    {
+            //        em.DestroyEntity( noneeds.AsArray().Reinterpret<Entity>() );
+            //    }
+
+            //    needs.Dispose();
+            //    noneeds.Dispose();
+            //}
+
         }
+
 
 
         static public Entity GetOrCreateMainEntity( GameObjectConversionSystem gcs, GameObject main )

@@ -16,8 +16,9 @@ namespace Abarabone.Model.Authoring
     {
         protected override void OnDestroy()
         {
-            var em = this.DstEntityManager;//World.DefaultGameObjectInjectionWorld.EntityManager;
-            var links = new NativeList<LinkedEntityGroup>( Allocator.Temp );
+            var em = this.DstEntityManager;
+            var needs = new NativeList<LinkedEntityGroup>( Allocator.Temp );
+            var noneeds = new NativeList<LinkedEntityGroup>( Allocator.Temp );
 
             using( var q = em.CreateEntityQuery(
                 typeof( ModelBinderLinkData ),
@@ -30,31 +31,35 @@ namespace Abarabone.Model.Authoring
                 {
                     var buf = em.GetBuffer<LinkedEntityGroup>( ent );
 
-                    //foreach( var link in buf )
-                    for( var i = 0; i < buf.Length; i++ )
+                    foreach( var link in buf )
                     {
-                        var link = buf[ i ];
-
                         if( em.GetComponentCount(link.Value) == 1 && em.HasComponent<Prefab>(link.Value) )
                         {
-                            //em.DestroyEntity( link.Value );
+                            noneeds.Add( link );
                         }
                         else
                         {
-                            links.Add( link );
+                            needs.Add( link );
                         }
                     }
 
-                    if( links.Length == 0 ) continue;
+                    if( needs.Length > 0 )
+                    {
+                        buf.Clear();
+                        buf.AddRange( needs.AsArray() );
+                    }
+                    if( noneeds.Length > 0 )
+                    {
+                        em.DestroyEntity( noneeds.AsArray().Reinterpret<Entity>() );
+                    }
 
-                    buf.Clear();
-                    buf.AddRange( links.AsArray() );
-                    links.Clear();
+                    needs.Clear();
+                    noneeds.Clear();
                 }
             }
 
-            links.Dispose();
-            this.Enabled = false;
+            needs.Dispose();
+            noneeds.Dispose();
 
             base.OnDestroy();
         }

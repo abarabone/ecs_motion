@@ -12,12 +12,13 @@ namespace Abarabone.Motion.Authoring
     public class MotionAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
-
         public MotionClip MotionClip;
 
         public AvatarMask StreamMask;
 
+        //public bool OverWrite;
 
+        
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
@@ -31,6 +32,18 @@ namespace Abarabone.Motion.Authoring
             conversionSystem.ConvertMotionEntities
                 ( this.gameObject, bones, motionTypes, streamTypes, this.MotionClip, this.StreamMask );
 
+            return;
+
+
+            int getMotionChannel()
+            {
+                var channel = this.GetComponents<MotionAuthoring>()
+                    .Select( ( script, i ) => (script, i) )
+                    .First( x => x.script == this )
+                    .i;
+                return channel;
+            }
+            int getMotion
         }
 
     }
