@@ -8,6 +8,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 
 using Abarabone.Model;
+using Abarabone.Model.Authoring;
 
 
 public struct SpawnData : IComponentData
@@ -19,7 +20,7 @@ public struct SpawnData : IComponentData
 public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {
 
-    public GameObject prefab;
+    public ModelGroupAuthoring.ModelAuthoringBase prefab;
 
     Entity prefabEntity;
 
@@ -27,7 +28,7 @@ public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
     void IDeclareReferencedPrefabs.DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
     {
 
-        referencedPrefabs.Add( this.prefab );
+        referencedPrefabs.Add( this.prefab.gameObject );
 
     }
 

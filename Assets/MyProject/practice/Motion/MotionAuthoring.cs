@@ -21,13 +21,15 @@ namespace Abarabone.Motion.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
-            var smr = this.GetComponentInChildren<SkinnedMeshRenderer>();
+            var bones = this.GetComponentInChildren<SkinnedMeshRenderer>().bones
+                .Where( bone => !bone.name.StartsWith( "_" ) )
+                .ToArray();
 
             var motionTypes = ArchetypeB.Motion;
             var streamTypes = ArchetypeB.Stream;
 
             conversionSystem.ConvertMotionEntities
-                ( this.gameObject, smr.bones, motionTypes, streamTypes, this.MotionClip, this.StreamMask );
+                ( this.gameObject, bones, motionTypes, streamTypes, this.MotionClip, this.StreamMask );
 
         }
 

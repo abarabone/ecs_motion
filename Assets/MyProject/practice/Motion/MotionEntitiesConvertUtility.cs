@@ -120,13 +120,19 @@ namespace Abarabone.Motion.Authoring
         {
             var em = gcs.DstEntityManager;
             var enabledBoneObjects = getEnabledBoneObjects( bones, motionMain, streamMask );
+            var enabledBoneIds = getEnabledBoneIds( bones, motionMain, streamMask );
+
 
             var motionEntity = createMotionEntity( gcs, motionMain, motionTypes );
 
             var posStreamEntities = createStreamEntitiesOfSection( gcs, motionMain, enabledBoneObjects, streamTypes );
             var rotStreamEntities = createStreamEntitiesOfSection( gcs, motionMain, enabledBoneObjects, streamTypes );
 
+
             initMotionEntity( em, motionEntity, posStreamEntities, rotStreamEntities, motionClip );
+
+            initStreamEntities( gcs, motionEntity, posStreamEntities, enabledBoneIds );
+            initStreamEntities( gcs, motionEntity, rotStreamEntities, enabledBoneIds );
         }
 
 
@@ -137,6 +143,16 @@ namespace Abarabone.Motion.Authoring
             return bones
                 .Select( bone => bone.gameObject )
                 .Where( go => enabledBoneHashSet.Contains( go.MakePath( root ) ) )
+                .ToArray();
+        }
+        static int[] getEnabledBoneIds( Transform[] bones, GameObject root, AvatarMask streamMask )
+        {
+            var enabledBoneHashSet = streamMask.ToEnabledBoneHashSet();
+
+            return bones
+                .Select( ( bone, i ) => (go: bone.gameObject, i) )
+                .Where( x => enabledBoneHashSet.Contains( x.go.MakePath( root ) ) )
+                .Select( x => x.i )
                 .ToArray();
         }
 
@@ -199,7 +215,7 @@ namespace Abarabone.Motion.Authoring
         static void initStreamEntities
             (
                 GameObjectConversionSystem gcs,
-                Entity motionEntity, Entity[] streamEntities, GameObject[] enabledBoneObjects
+                Entity motionEntity, Entity[] streamEntities, int[] enabledBoneIds
             )
         {
 
@@ -207,14 +223,14 @@ namespace Abarabone.Motion.Authoring
 
             em.SetComponentData( streamEntities, new StreamMotionLinkData { MotionEntity = motionEntity } );
 
-            var qRelation = queryStreamRelation_( gcs, streamEntities, enabledBoneObjects );
+            var qRelation = queryStreamRelation_( gcs, streamEntities, enabledBoneIds );
             em.SetComponentData( streamEntities, qRelation );
 
             return;
 
 
             IEnumerable<StreamRelationData> queryStreamRelation_
-                ( GameObjectConversionSystem gcs_, Entity[] streamEntities_, GameObject[] enabledBoneObjects_ )
+                ( GameObjectConversionSystem gcs_, Entity[] streamEntities_, int[] enabledBoneIds_ )
             {
                 var em_ = gcs_.DstEntityManager;
 
@@ -223,10 +239,9 @@ namespace Abarabone.Motion.Authoring
                     .Append( Entity.Null );
 
                 return
-                    from x in (qNext, enabledBoneObjects_).Zip()
+                    from x in (qNext, enabledBoneIds_).Zip()
                     let next = x.x
-                    let bone = gcs_.GetPrimaryEntity( x.y )
-                    let boneid = em_.GetComponentData<DrawTransformIndexData>(bone).BoneId
+                    let boneid = x.y
                     select new StreamRelationData
                     {
                         NextStreamEntity = next,
