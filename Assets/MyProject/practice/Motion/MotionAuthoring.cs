@@ -35,15 +35,15 @@ namespace Abarabone.Motion.Authoring
             return;
 
 
-            int getMotionChannel()
-            {
-                var channel = this.GetComponents<MotionAuthoring>()
-                    .Select( ( script, i ) => (script, i) )
-                    .First( x => x.script == this )
-                    .i;
-                return channel;
-            }
-            int getMotion
+            //int getMotionChannel()
+            //{
+            //    var channel = this.GetComponents<MotionAuthoring>()
+            //        .Select( ( script, i ) => (script, i) )
+            //        .First( x => x.script == this )
+            //        .i;
+            //    return channel;
+            //}
+            //int getMotion
         }
 
     }

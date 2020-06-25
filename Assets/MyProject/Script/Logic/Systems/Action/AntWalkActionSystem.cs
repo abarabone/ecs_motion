@@ -69,6 +69,7 @@ namespace Abarabone.Character
         }
 
 
+        [BurstCompile]
         [RequireComponentTag(typeof(AntTag))]
         struct AntWalkActionJob : IJobForEachWithEntity
             <AntWalkActionState, MoveHandlingData, CharacterLinkData>

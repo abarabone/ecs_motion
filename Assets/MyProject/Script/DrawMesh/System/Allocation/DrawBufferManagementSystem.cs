@@ -34,6 +34,7 @@ namespace Abarabone.Draw
 
             initDrawSystemComponents_( this.EntityManager );
 
+            this.Enabled = false;
             return;
 
 
@@ -79,7 +80,7 @@ namespace Abarabone.Draw
 
             disposeTransformComputeBuffer_();
             disposeComputeArgumentsBuffersAllModels_();
-
+            
             return;
 
 

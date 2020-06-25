@@ -63,6 +63,7 @@ namespace Abarabone.Character
         }
 
 
+        [BurstCompile]
         struct MinicWalkActionJob : IJobForEachWithEntity
             <MinicWalkActionState, MoveHandlingData, CharacterLinkData>
         {

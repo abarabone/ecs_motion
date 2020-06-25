@@ -63,6 +63,7 @@ namespace Abarabone.Character
         }
 
 
+        [BurstCompile]
         struct SoldierWalkActionJob : IJobForEachWithEntity
             <SoldierWalkActionState, MoveHandlingData, CharacterLinkData>
         {

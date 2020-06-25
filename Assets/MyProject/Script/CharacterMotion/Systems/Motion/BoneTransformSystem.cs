@@ -25,10 +25,102 @@ namespace Abarabone.Motion
     //[DisableAutoCreation]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
     [UpdateAfter(typeof( StreamToBoneSystem ) )]
-    public class BoneTransformSystem : JobComponentSystem
+    public class BoneTransformSystem : SystemBase//JobComponentSystem
     {
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+
+        protected override void OnUpdate()
+        {
+
+            var boneRelationLinkers = this.GetComponentDataFromEntity<BoneRelationLinkData>( isReadOnly: true );
+            var boneLocals = this.GetComponentDataFromEntity<BoneLocalValueData>( isReadOnly: true );
+            var bonePositions = this.GetComponentDataFromEntity<Translation>();
+            var boneRotations = this.GetComponentDataFromEntity<Rotation>();
+            var boneVelocities = this.GetComponentDataFromEntity<PhysicsVelocity>();
+
+            var deltaTime = this.Time.DeltaTime;
+
+            this.Entities
+                .WithName( "BoneTransformSystem" )
+                .WithAll<PostureNeedTransformTag>()
+                .WithBurst()
+                .WithReadOnly( boneRelationLinkers )
+                .WithReadOnly( boneLocals )
+                //.WithReadOnly( deltaTime )
+                .WithNativeDisableParallelForRestriction( bonePositions )
+                .WithNativeDisableParallelForRestriction( boneRotations )
+                .WithNativeDisableParallelForRestriction( boneVelocities )
+                .ForEach(
+                    ( in PostureLinkData linker ) =>
+                    {
+                        for(
+                            var ent = linker.BoneRelationTop;
+                            ent != Entity.Null;
+                            ent = boneRelationLinkers[ ent ].NextBoneEntity
+                        )
+                        {
+                            var parent = boneRelationLinkers[ ent ].ParentBoneEntity;
+
+                            var ppos = bonePositions[ parent ].Value;
+                            var prot = boneRotations[ parent ].Value;
+
+                            //var lpos = this.BonePositions[ ent ].Value;
+                            //var lrot = this.BoneRotations[ ent ].Value;
+                            var lpos = boneLocals[ ent ].Position;
+                            var lrot = boneLocals[ ent ].Rotation;
+
+                            var pos = math.mul( prot, lpos ) + ppos;
+                            var rot = math.mul( prot, lrot );
+
+                            if( boneVelocities.Exists( ent ) )
+                            { }//this.setVelocity( ent, pos, rot );
+                            else
+                                setPosAndRot_( ent, pos, rot );
+                        }
+                    }
+                )
+                .ScheduleParallel();
+
+            return;
+
+
+            void setPosAndRot_( Entity ent, float3 pos, quaternion rot )
+            {
+                bonePositions[ ent ] = new Translation { Value = pos };
+                boneRotations[ ent ] = new Rotation { Value = rot };
+            }
+
+            void setVelocity_( Entity ent, float3 pos, quaternion rot )
+            {
+                var rcdt = math.rcp( deltaTime );
+
+                var v = boneVelocities[ ent ];
+
+                v.Linear = ( pos - bonePositions[ ent ].Value ) * rcdt;
+
+                //var invprev = math.inverse( this.BoneRotations[ ent ].Value );
+                //var drot = math.mul( invprev, rot );
+                //var angle = math.acos(drot.value.w);
+                //var sin = math.sin( angle );
+                //var axis = drot.value.As_float3() * math.rcp(sin);
+
+                var invprev = math.inverse( boneRotations[ ent ].Value );
+                var drot = math.mul( invprev, rot );
+                var axis = drot.value.As_float3();
+                var angle = math.lengthsq( drot );
+
+                v.Angular = axis * ( angle * rcdt );
+
+                boneVelocities[ ent ] = v;
+
+                //setPosAndRot( ent, pos, rot );//
+            }
+        }
+        
+
+
+
+        protected JobHandle OnUpdate( JobHandle inputDeps )
         {
 
             inputDeps = new BoneTransformJob
