@@ -287,27 +287,27 @@ namespace Abarabone.Authoring
             {
                 switch( srcJoint )
                 {
-                    case UnityEngine.CharacterJoint srcChJoint when srcChJoint.GetComponent<RagdollJointAuthoring>() != null:
-                    {
-                        var srcRagdollJoint = srcChJoint.GetComponent<RagdollJointAuthoring>();
-                        JointData.CreateRagdoll
-                        (
-                            srcRagdollJoint.positionAinA,
-                            srcRagdollJoint.positionBinB,
-                            srcRagdollJoint.twistAxisInA,
-                            srcRagdollJoint.twistAxisInB,
-                            srcRagdollJoint.perpendicularAxisInA,
-                            srcRagdollJoint.perpendicularAxisInB,
-                            math.radians( srcRagdollJoint.maxConeAngle ),
-                            math.radians( srcRagdollJoint.minPerpendicularAngle ),
-                            math.radians( srcRagdollJoint.maxPerpendicularAngle ),
-                            math.radians( srcRagdollJoint.minTwistAngle ),
-                            math.radians( srcRagdollJoint.maxTwistAngle ),
-                            out var jointData0,
-                            out var jointData1
-                        );
-                        return new[] { jointData0, jointData1 };
-                    }
+                    //case UnityEngine.CharacterJoint srcChJoint when srcChJoint.GetComponent<RagdollJointAuthoring>() != null:
+                    //{
+                    //    var srcRagdollJoint = srcChJoint.GetComponent<RagdollJointAuthoring>();
+                    //    JointData.CreateRagdoll
+                    //    (
+                    //        srcRagdollJoint.positionAinA,
+                    //        srcRagdollJoint.positionBinB,
+                    //        srcRagdollJoint.twistAxisInA,
+                    //        srcRagdollJoint.twistAxisInB,
+                    //        srcRagdollJoint.perpendicularAxisInA,
+                    //        srcRagdollJoint.perpendicularAxisInB,
+                    //        math.radians( srcRagdollJoint.maxConeAngle ),
+                    //        math.radians( srcRagdollJoint.minPerpendicularAngle ),
+                    //        math.radians( srcRagdollJoint.maxPerpendicularAngle ),
+                    //        math.radians( srcRagdollJoint.minTwistAngle ),
+                    //        math.radians( srcRagdollJoint.maxTwistAngle ),
+                    //        out var jointData0,
+                    //        out var jointData1
+                    //    );
+                    //    return new[] { jointData0, jointData1 };
+                    //}
 
                     case UnityEngine.CharacterJoint srcChJoint2:
                     {
@@ -336,10 +336,10 @@ namespace Abarabone.Authoring
                     em.SetComponentData( ent,
                         new PhysicsJoint
                         {
-                            JointData = jd,
-                            EntityA = entityA,
-                            EntityB = entityB,
-                            EnableCollision = ( isEnableCollision ? 1 : 0 )
+                            //JointData = jd,
+                            //EntityA = entityA,
+                            //EntityB = entityB,
+                            //EnableCollision = ( isEnableCollision ? 1 : 0 )
                         }
                     );
                     return ent;

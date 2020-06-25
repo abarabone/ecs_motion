@@ -37,6 +37,7 @@ namespace Abarabone.Motion
             var bonePositions = this.GetComponentDataFromEntity<Translation>();
             var boneRotations = this.GetComponentDataFromEntity<Rotation>();
             var boneVelocities = this.GetComponentDataFromEntity<PhysicsVelocity>();
+            var boneMasses = this.GetComponentDataFromEntity<PhysicsMass>( isReadOnly: true );
 
             var deltaTime = this.Time.DeltaTime;
 
@@ -46,7 +47,7 @@ namespace Abarabone.Motion
                 .WithBurst()
                 .WithReadOnly( boneRelationLinkers )
                 .WithReadOnly( boneLocals )
-                //.WithReadOnly( deltaTime )
+                .WithReadOnly( boneMasses )
                 .WithNativeDisableParallelForRestriction( bonePositions )
                 .WithNativeDisableParallelForRestriction( boneRotations )
                 .WithNativeDisableParallelForRestriction( boneVelocities )
@@ -72,8 +73,9 @@ namespace Abarabone.Motion
                             var pos = math.mul( prot, lpos ) + ppos;
                             var rot = math.mul( prot, lrot );
 
-                            if( boneVelocities.Exists( ent ) )
-                            { }//this.setVelocity( ent, pos, rot );
+                            var mass = boneMasses.Exists( ent ) ? boneMasses[ ent ].InverseMass : 0.0f;
+                            if( mass != 0.0f && boneVelocities.Exists( ent ) )
+                                { }//setVelocity_( ent, pos, rot );
                             else
                                 setPosAndRot_( ent, pos, rot );
                         }

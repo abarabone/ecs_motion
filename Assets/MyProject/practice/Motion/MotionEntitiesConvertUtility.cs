@@ -185,7 +185,7 @@ namespace Abarabone.Motion.Authoring
             em.SetComponentData( motionEntity,
                 new MotionInitializeData
                 {
-                    MotionIndex = 10,
+                    MotionIndex = 5,
                     DelayTime = 0.0f,
                     IsContinuous = true,
                     IsLooping = true,
