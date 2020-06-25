@@ -25,12 +25,6 @@ namespace Abarabone.Draw.Authoring
     {
 
 
-        //static Dictionary<GameObject, Entity> dict = new Dictionary<GameObject, Entity>();
-
-        //static void SetModelEntity( this GameObjectConversionSystem gcs, GameObject main, Entity entity ) => dict[ main ] = entity;
-        //static Entity GetModelEntity( this GameObjectConversionSystem gcs, GameObject main ) => dict[ main ];
-
-
 
         static public Entity CreateDrawModelEntityComponents
             (
