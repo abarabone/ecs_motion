@@ -19,6 +19,12 @@ using Abarabone.Geometry;
 namespace Abarabone.Motion
 {
 
+    public struct BoneMainEntityLinkData : IComponentData
+    {
+        public Entity MainEntity;
+    }
+
+
     public struct BoneRelationLinkData : IComponentData
     {
         public Entity NextBoneEntity;

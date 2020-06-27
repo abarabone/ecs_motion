@@ -8,6 +8,7 @@ using Unity.Physics;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 using RaycastHit = Unity.Physics.RaycastHit;
+using Abarabone.Motion;
 
 namespace Abarabone.Physics
 {
@@ -20,22 +21,24 @@ namespace Abarabone.Physics
         public int NumHits { get; private set; }
         
         Entity self;
+        ComponentDataFromEntity<BoneMainEntityLinkData> mainEntityLinks;
         
         T m_ClosestHit;
         public T ClosestHit => m_ClosestHit;
 
         public ClosestHitExcludeSelfCollector
-            ( float maxFraction, Entity selfEntity )
+            ( float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<BoneMainEntityLinkData> mainLinks )
         {
-            MaxFraction = maxFraction;
-            m_ClosestHit = default( T );
-            this.self = selfEntity;
+            this.MaxFraction = maxFraction;
+            this.m_ClosestHit = default( T );
+            this.self = selfMainEntity;
             this.NumHits = 0;
+            this.mainEntityLinks = mainLinks;
         }
 
         public bool AddHit( T hit )
         {
-            if( hit.Entity == this.self ) return false;
+            if( this.mainEntityLinks[hit.Entity].MainEntity == this.self ) return false;
             //if( hit.Fraction >= m_ClosestHit.Fraction ) return false;
             this.MaxFraction = hit.Fraction;
             this.m_ClosestHit = hit;
@@ -54,17 +57,20 @@ namespace Abarabone.Physics
         public int NumHits { get; private set; }
 
         Entity self;
+        ComponentDataFromEntity<BoneMainEntityLinkData> mainEntityLinks;
 
-        public AnyHitExcludeSelfCollector( float maxFraction, Entity selfEntity )
+        public AnyHitExcludeSelfCollector
+            (float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<BoneMainEntityLinkData> mainLinks)
         {
             this.MaxFraction = maxFraction;
-            this.self = selfEntity;
+            this.self = selfMainEntity;
             this.NumHits = 0;
+            this.mainEntityLinks = mainLinks;
         }
 
         public bool AddHit( T hit )
         {
-            if( hit.Entity == this.self ) return false;
+            if (this.mainEntityLinks[hit.Entity].MainEntity == this.self) return false;
             this.NumHits = 1;
             return true;
         }
