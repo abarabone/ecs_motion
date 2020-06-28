@@ -17,14 +17,17 @@ namespace Abarabone.Model
     public struct ModelPrefabNoNeedLinkedEntityGroupTag : IComponentData
     { }
 
-    public struct ModelBinderLinkData : IComponentData
+    public struct BinderObjectMainEntityLinkData : IComponentData
     {
         public Entity MainEntity;
     }
 
-    public struct ModelMainEntityLinkData : IComponentData
+    public struct ObjectBinderLinkData : IComponentData
     {
         public Entity BinderEntity;
     }
+
+    public struct ObjectMainEntityTag : IComponentData
+    { }
 
 }

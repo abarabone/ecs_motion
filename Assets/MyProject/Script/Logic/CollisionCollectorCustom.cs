@@ -38,7 +38,11 @@ namespace Abarabone.Physics
 
         public bool AddHit( T hit )
         {
-            if( this.mainEntityLinks[hit.Entity].MainEntity == this.self ) return false;
+            var ent = this.mainEntityLinks.Exists(hit.Entity)
+                ? this.mainEntityLinks[hit.Entity].MainEntity
+                : hit.Entity;
+            if( ent == this.self ) return false;
+
             //if( hit.Fraction >= m_ClosestHit.Fraction ) return false;
             this.MaxFraction = hit.Fraction;
             this.m_ClosestHit = hit;
@@ -70,7 +74,11 @@ namespace Abarabone.Physics
 
         public bool AddHit( T hit )
         {
-            if (this.mainEntityLinks[hit.Entity].MainEntity == this.self) return false;
+            var ent = this.mainEntityLinks.Exists(hit.Entity)
+                ? this.mainEntityLinks[hit.Entity].MainEntity
+                : hit.Entity;
+            if (ent == this.self) return false;
+
             this.NumHits = 1;
             return true;
         }

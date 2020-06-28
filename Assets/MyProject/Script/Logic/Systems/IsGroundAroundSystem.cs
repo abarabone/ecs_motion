@@ -25,6 +25,7 @@ using Abarabone.SystemGroup;
 
 namespace Abarabone.Character
 {
+    using Abarabone.Motion;
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
@@ -43,9 +44,12 @@ namespace Abarabone.Character
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
+            var mainEntities = this.GetComponentDataFromEntity<BoneMainEntityLinkData>(isReadOnly: true);
+
             inputDeps = new IsGroundAroundJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
+                MainEntities = mainEntities,
             }
             .Schedule( this, inputDeps );
 
@@ -62,6 +66,8 @@ namespace Abarabone.Character
         {
 
             [ReadOnly] public PhysicsWorld CollisionWorld;
+
+            [ReadOnly] public ComponentDataFromEntity<BoneMainEntityLinkData> MainEntities;
 
 
             public unsafe void Execute(
@@ -82,7 +88,7 @@ namespace Abarabone.Character
                     Filter = sphere.Filter,
                 };
                 //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
-                var collector = new AnyHitExcludeSelfCollector<DistanceHit>( sphere.Distance, entity );
+                var collector = new AnyHitExcludeSelfCollector<DistanceHit>( sphere.Distance, entity, this.MainEntities );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
 
                 //var castInput = new RaycastInput

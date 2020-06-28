@@ -58,7 +58,7 @@ public class PracSpawnSystem : SystemBase
         var spawn = this.GetSingleton<SpawnData>();
 
         var ent = em.Instantiate( spawn.ent );
-        if( !em.HasComponent<Translation>( ent ) ) ent = em.GetComponentData<ModelBinderLinkData>(ent).MainEntity;
+        if( !em.HasComponent<Translation>( ent ) ) ent = em.GetComponentData<BinderObjectMainEntityLinkData>(ent).MainEntity;
         
         em.SetComponentData( ent, new Translation { Value = new float3(0,spawn.i,0) } );
 

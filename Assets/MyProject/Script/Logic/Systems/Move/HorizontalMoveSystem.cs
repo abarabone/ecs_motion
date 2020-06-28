@@ -49,7 +49,7 @@ namespace Abarabone.Character
             inputDeps = new HorizontalMoveJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
-                DeltaTime = UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
+                DeltaTime = this.Time.DeltaTime,//UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
             }
             .Schedule( this, inputDeps );
             

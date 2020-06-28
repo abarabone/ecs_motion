@@ -23,6 +23,7 @@ using Abarabone.SystemGroup;
 using Abarabone.Character;
 using Abarabone.Geometry;
 using Abarabone.Physics;
+using Abarabone.Motion;
 
 namespace Abarabone.Character
 {
@@ -48,10 +49,13 @@ namespace Abarabone.Character
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
+            var mainEntities = this.GetComponentDataFromEntity<BoneMainEntityLinkData>(isReadOnly: true);
+
             inputDeps = new HorizontalMoveJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
-                DeltaTime = UnityEngine.Time.fixedDeltaTime,
+                DeltaTime = this.Time.DeltaTime,//UnityEngine.Time.fixedDeltaTime,
+                MainEntities = mainEntities,
             }
             .Schedule( this, inputDeps );
             
@@ -69,6 +73,8 @@ namespace Abarabone.Character
             [ReadOnly] public float DeltaTime;
 
             [ReadOnly] public PhysicsWorld CollisionWorld;
+
+            [ReadOnly] public ComponentDataFromEntity<BoneMainEntityLinkData> MainEntities;
 
 
             public unsafe void Execute(
@@ -96,7 +102,7 @@ namespace Abarabone.Character
 
                         var isHit = raycastHitToWall_(
                             ref v, ref pos.Value, ref rot.Value, this.DeltaTime,
-                            pos.Value, fwdRay, sphere.Distance, up, entity, sphere.Filter );
+                            pos.Value, fwdRay, sphere.Distance, up, entity, sphere.Filter, this.MainEntities);
 
                         if( isHit ) break;
                         //pos.Value += move;
@@ -108,7 +114,7 @@ namespace Abarabone.Character
 
                         var isHit = raycastHitToWall_(
                             ref v, ref pos.Value, ref rot.Value, this.DeltaTime,
-                            movedPos, underRay, sphere.Distance, fwd, entity, sphere.Filter );
+                            movedPos, underRay, sphere.Distance, fwd, entity, sphere.Filter, this.MainEntities);
 
                         if( isHit ) break;
                         v.Linear = move * math.rcp( this.DeltaTime );
@@ -123,7 +129,7 @@ namespace Abarabone.Character
 
                         var isHit = raycastHitToWall_(
                             ref v, ref pos.Value, ref rot.Value, this.DeltaTime,
-                            movedPos, backRay, sphere.Distance, -up, entity, sphere.Filter );
+                            movedPos, backRay, sphere.Distance, -up, entity, sphere.Filter, this.MainEntities );
 
                         if( isHit ) { walling.State = 0; return; }
                         walling.State++;
@@ -135,14 +141,17 @@ namespace Abarabone.Character
                 //v.Angular = float3.zero;//
             }
 
-            bool raycastHitToWall_(
-                ref PhysicsVelocity v, ref float3 pos, ref quaternion rot, float dt,
-                float3 origin, float3 gndray, float bodySize, float3 fwddir,
-                Entity ent, CollisionFilter filter
-            )
+            [BurstCompile]
+            bool raycastHitToWall_
+                (
+                    ref PhysicsVelocity v, ref float3 pos, ref quaternion rot, float dt,
+                    float3 origin, float3 gndray, float bodySize, float3 fwddir,
+                    Entity ent, CollisionFilter filter,
+                    ComponentDataFromEntity<BoneMainEntityLinkData> mainEntities
+                )
             {
 
-                var h = raycast( ref this.CollisionWorld, origin, gndray, ent, filter );
+                var h = raycast( ref this.CollisionWorld, origin, gndray, ent, filter, mainEntities );
                 //var (isHit, hit) = raycast( ref this.CollisionWorld, origin, gndray, ent, filter );
 
                 if( h.isHit )
@@ -174,7 +183,10 @@ namespace Abarabone.Character
 
                 HitFlagAndResult raycast
                 //( bool isHit, RaycastHit hit) raycast
-                    ( ref PhysicsWorld cw, float3 origin_, float3 ray_, Entity ent_, CollisionFilter filter_ )
+                    (
+                        ref PhysicsWorld cw, float3 origin_, float3 ray_, Entity ent_, CollisionFilter filter_,
+                        ComponentDataFromEntity<BoneMainEntityLinkData> mainEntities_
+                    )
                 {
                     var hitInput = new RaycastInput
                     {
@@ -182,7 +194,7 @@ namespace Abarabone.Character
                         End = origin_ + ray_,
                         Filter = filter_,
                     };
-                    var collector = new ClosestHitExcludeSelfCollector<RaycastHit>( 1.0f, ent );
+                    var collector = new ClosestHitExcludeSelfCollector<RaycastHit>( 1.0f, ent, mainEntities_ );
                     //var collector = new ClosestHitCollector<RaycastHit>( 1.0f );
                     /*var isHit = */
                     cw.CastRay( hitInput, ref collector );

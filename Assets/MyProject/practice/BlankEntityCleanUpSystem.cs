@@ -21,7 +21,7 @@ namespace Abarabone.Model.Authoring
             var noneeds = new NativeList<LinkedEntityGroup>( Allocator.Temp );
 
             using( var q = em.CreateEntityQuery(
-                typeof( ModelBinderLinkData ),
+                typeof( BinderObjectMainEntityLinkData ),
                 typeof( LinkedEntityGroup ),
                 typeof( Prefab ) )
             )

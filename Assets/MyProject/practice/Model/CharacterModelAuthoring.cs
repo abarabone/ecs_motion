@@ -47,7 +47,7 @@ namespace Abarabone.Model.Authoring
 
             createModelEntity_( conversionSystem, this.gameObject, this.MaterialToDraw, qMesh, bones );
 
-            createMainEntity_( conversionSystem, this.gameObject );
+            createObjectEntity_( conversionSystem, this.gameObject );
 
             conversionSystem.CreateBoneEntities( this.gameObject, bones );
 
@@ -72,7 +72,7 @@ namespace Abarabone.Model.Authoring
                 gcs_.CreateDrawModelEntityComponents(  main_, mesh, mat, boneType, bones_.Length );
             }
 
-            void createMainEntity_( GameObjectConversionSystem gcs_, GameObject main_ )
+            void createObjectEntity_( GameObjectConversionSystem gcs_, GameObject main_ )
             {
                 var em_ = gcs_.DstEntityManager;
 
@@ -80,10 +80,11 @@ namespace Abarabone.Model.Authoring
                 var binderEntity = gcs_.GetPrimaryEntity( main_ );
 
                 em_.AddComponentData( binderEntity,
-                    new ModelBinderLinkData { MainEntity = mainEntity } );
+                    new BinderObjectMainEntityLinkData { MainEntity = mainEntity } );
 
+                em_.AddComponentData( mainEntity, new ObjectMainEntityTag { } );
                 em_.SetComponentData( mainEntity,
-                    new ModelMainEntityLinkData { BinderEntity = binderEntity} );
+                    new ObjectBinderLinkData { BinderEntity = binderEntity} );
 
                 em_.SetName( mainEntity, $"{main_.name} main" );
             }
@@ -131,11 +132,11 @@ namespace Abarabone.Model.Authoring
             var em = gcs.DstEntityManager;
 
             var mainEntity = gcs.GetEntities( main )
-                .Where( ent_ => em.HasComponent<ModelMainEntityLinkData>( ent_ ) )
+                .Where( ent_ => em.HasComponent<ObjectBinderLinkData>( ent_ ) )
                 .FirstOrDefault();
 
             if( mainEntity == Entity.Null )
-                return gcs.CreateAdditionalEntity<ModelMainEntityLinkData>( main );
+                return gcs.CreateAdditionalEntity<ObjectBinderLinkData>( main );
 
             return mainEntity;
         }

@@ -27,6 +27,8 @@ using Abarabone.Physics;
 namespace Abarabone.Character
 {
 
+    using Abarabone.Motion;
+
     /// <summary>
     /// 
     /// </summary>
@@ -48,9 +50,12 @@ namespace Abarabone.Character
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
             //return inputDeps;
+            var mainEntities = this.GetComponentDataFromEntity<BoneMainEntityLinkData>(isReadOnly: true);
+
             inputDeps = new FreeFallWithHitJob
             {
                 CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
+                MainEntities = mainEntities,
             }
             .Schedule( this, inputDeps );
 
@@ -65,6 +70,8 @@ namespace Abarabone.Character
 
             [ReadOnly] public PhysicsWorld CollisionWorld;
             //public PhysicsWorld PhysicsWorld;
+
+            [ReadOnly] public ComponentDataFromEntity<BoneMainEntityLinkData> MainEntities;
 
 
             public void Execute(
@@ -86,7 +93,7 @@ namespace Abarabone.Character
                 };
                 //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
 
-                var collector = new ClosestHitExcludeSelfCollector<DistanceHit>( sphere.Distance, entity );
+                var collector = new ClosestHitExcludeSelfCollector<DistanceHit>( sphere.Distance, entity, this.MainEntities );
                 //var collector = new ClosestHitCollector<DistanceHit>( sphere.Distance );
                 var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
 

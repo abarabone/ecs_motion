@@ -13,15 +13,17 @@ namespace Abarabone.Physics.Authoring
 {
     using Abarabone.Motion;
     using Abarabone.Character;
+    using UnityEngine.TestTools;
 
     public class OverlapSphereAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
-        public enum Type
+        public enum UseageType
         {
             ForGround,
 
         }
+        public UseageType Useage;
 
 
         public Vector3 Center;
@@ -36,7 +38,12 @@ namespace Abarabone.Physics.Authoring
 
             var ent = getPostureOrBoneEntity_(conversionSystem, entity, this.gameObject);
 
-            initOverlapSphere_(conversionSystem, ent, this.gameObject);
+            switch (this.Useage)
+            {
+                case UseageType.ForGround:
+                    initOverlapSphere_(conversionSystem.DstEntityManager, ent);
+                    break;
+            }
 
             return;
 
@@ -52,11 +59,8 @@ namespace Abarabone.Physics.Authoring
                     .First(x => em_.HasComponent<Translation>(x));
             }
             
-            void initOverlapSphere_(GameObjectConversionSystem gcs_, Entity targetEntity_, GameObject mainObject_)
-            {
-                var em_ = gcs_.DstEntityManager;
-
-                gcs_.CreateAdditionalEntity( targetEntity_,
+            void initOverlapSphere_(EntityManager em_, Entity targetEntity_) =>
+                em_.AddComponentData( targetEntity_,
                     new GroundHitSphereData
                     {
                         Center = this.Center,
@@ -68,7 +72,6 @@ namespace Abarabone.Physics.Authoring
                         }
                     }
                 );
-            }
         }
 
     }

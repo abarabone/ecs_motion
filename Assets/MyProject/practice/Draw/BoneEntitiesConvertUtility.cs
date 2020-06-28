@@ -18,6 +18,8 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Misc;
     using Abarabone.Utilities;
+    using Unity.Physics;
+    using Unity.Physics.Authoring;
 
     // ボーン
     // ・ボーンＩＤは、SkinnedMeshRenderer.bones の並び順
@@ -38,19 +40,34 @@ namespace Abarabone.Model.Authoring
         static public void CreateBoneEntities
             ( this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones )
         {
+
             var postureEntity = addComponentsPostureEntity( gcs, mainGameObject );
             var boneEntities = addComponentsBoneEntities( gcs, mainGameObject, bones );
+
+            addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
             setPostureValue( gcs.DstEntityManager, postureEntity, boneEntities.First() );
 
             var paths = queryBonePath_( bones, mainGameObject ).ToArray();
             setBoneRelationLinks( gcs.DstEntityManager, postureEntity, boneEntities, paths );
+
+            return;
+
+
+            IEnumerable<string> queryBonePath_(IEnumerable<Transform> bones_, GameObject main_)
+            {
+                return
+                    from bone in bones_
+                    where !bone.name.StartsWith("_")
+                    select bone.gameObject.MakePath(main_)
+                    ;
+            }
         }
 
 
         // ----------------------------------------------------------------------------------
-        
-        
+
+
         static Entity addComponentsPostureEntity
             ( GameObjectConversionSystem gcs, GameObject main )
         {
@@ -69,15 +86,20 @@ namespace Abarabone.Model.Authoring
         }
 
 
+        /// <summary>
+        /// ゲームオブジェクトとしての子オブジェクトは、変換プロセスにて、すべてエンティティとして生成されるようす。
+        /// physics もそれをあてにするようなので、ボーンもそれに乗っかろうと思う。
+        /// </summary>
         static Entity[] addComponentsBoneEntities
             ( GameObjectConversionSystem gcs, GameObject main, Transform[] bones )
         {
+            var em = gcs.DstEntityManager;
+
             return bones
                 .Select( bone => gcs.TryGetPrimaryEntity( bone ) )
                 //.Select( existsEnt => existsEnt != Entity.Null ? addComponents_(existsEnt) : create_() )
                 .Do( ent => addComponents_(ent) )
-                .ToArray()
-                ;
+                .ToArray();
 
             Entity addComponents_( Entity exists_ )
             {
@@ -86,26 +108,32 @@ namespace Abarabone.Model.Authoring
                     //typeof( DrawTransformLinkData ),
                     //typeof( DrawTransformIndexData ),
                     //typeof( DrawTransformTargetWorkData ),
-                    typeof( BoneRelationLinkData ),
-                    typeof( BoneLocalValueData ),// 回転と移動をわけたほうがいいか？
-                    typeof( Translation ),
-                    typeof( Rotation )
+                    typeof(BoneRelationLinkData),
+                    typeof(BoneLocalValueData),// 回転と移動をわけたほうがいいか？
+                    typeof(Translation),
+                    typeof(Rotation)
                 );
+                em.AddComponents(exists_, addtypes);
 
-                gcs.DstEntityManager.AddComponents( exists_, addtypes );
                 return exists_;
             }
         }
 
-
-        static IEnumerable<string> queryBonePath_( IEnumerable<Transform> bones, GameObject main )
+        static void addMainEntityLinkForCollider
+            (GameObjectConversionSystem gcs, GameObject main, Transform[] bones)
         {
-            return
-                from bone in bones
-                where !bone.name.StartsWith( "_" )
-                select bone.gameObject.MakePath( main )
-                ;
+            var em = gcs.DstEntityManager;
+            var mainEntity = em.GetComponentData<BinderObjectMainEntityLinkData>
+                (gcs.GetPrimaryEntity(main)).MainEntity;
+
+            var qBoneWithCollider = bones
+                .Where(bone => bone.GetComponent<PhysicsShapeAuthoring>() != null)
+                .Select(bone => gcs.TryGetPrimaryEntity(bone));
+
+            foreach( var ent in qBoneWithCollider )
+                em.AddComponentData(ent, new BoneMainEntityLinkData { MainEntity = mainEntity });
         }
+
 
         static void setBoneRelationLinks
         (
