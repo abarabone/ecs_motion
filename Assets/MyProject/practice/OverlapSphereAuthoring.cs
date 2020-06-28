@@ -8,20 +8,24 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Physics;
 using Unity.Physics.Authoring;
+using Unity.Mathematics;
 
 namespace Abarabone.Physics.Authoring
 {
     using Abarabone.Motion;
     using Abarabone.Character;
-    using UnityEngine.TestTools;
+    using Abarabone.Utilities;
 
     public class OverlapSphereAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
+        /// <summary>
+        /// エンティティはコンポーネントを重複して持てないので、使い方によって型を変えるための指定
+        /// </summary>
         public enum UseageType
         {
-            ForGround,
-
+            SphereForGround,
+            RayForGround,
         }
         public UseageType Useage;
 
@@ -35,13 +39,17 @@ namespace Abarabone.Physics.Authoring
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
-
+            var em = dstManager;
             var ent = getPostureOrBoneEntity_(conversionSystem, entity, this.gameObject);
 
             switch (this.Useage)
             {
-                case UseageType.ForGround:
-                    initOverlapSphere_(conversionSystem.DstEntityManager, ent);
+                case UseageType.SphereForGround:
+                    initGroundOverlapSphere_(em, ent);
+                    break;
+
+                case UseageType.RayForGround:
+                    initGroundRaycast_(em, ent);
                     break;
             }
 
@@ -59,12 +67,26 @@ namespace Abarabone.Physics.Authoring
                     .First(x => em_.HasComponent<Translation>(x));
             }
             
-            void initOverlapSphere_(EntityManager em_, Entity targetEntity_) =>
+            void initGroundOverlapSphere_(EntityManager em_, Entity targetEntity_) =>
                 em_.AddComponentData( targetEntity_,
                     new GroundHitSphereData
                     {
                         Center = this.Center,
                         Distance = this.Radius,
+                        Filter = new CollisionFilter
+                        {
+                            BelongsTo = this.BelongsTo.Value,
+                            CollidesWith = this.CollidesWith.Value,
+                        }
+                    }
+                );
+
+            void initGroundRaycast_(EntityManager em_, Entity targetEntity_) =>
+                em_.AddComponentData( targetEntity_,
+                    new GroundHitRayData
+                    {
+                        Start = this.Center,
+                        Ray = new DirectionAndLength { value = new float4(math.up() * -1, this.Radius) },
                         Filter = new CollisionFilter
                         {
                             BelongsTo = this.BelongsTo.Value,
