@@ -9,6 +9,10 @@ using Unity.Transforms;
 
 namespace Abarabone.Motion.Authoring
 {
+    /// <summary>
+    /// Animator と同じオブジェクトに付ける。
+    /// 複数つけてもよい。
+    /// </summary>
     public class MotionAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 

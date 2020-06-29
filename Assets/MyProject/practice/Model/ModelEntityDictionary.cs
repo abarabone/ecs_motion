@@ -43,4 +43,16 @@ namespace Abarabone.Model.Authoring
         }
     }
 
+
+    static public class ModelEntityDictionaryExtension
+    {
+        static public void AddToModelEntityDictionary
+            ( this GameObjectConversionSystem gcs, GameObject topGameObject, Entity entity ) =>
+            gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.Add(topGameObject, entity);
+
+        static public Entity GetFromModelEntityDictionary
+            (this GameObjectConversionSystem gcs, GameObject topGameObject) =>
+            gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary[topGameObject];
+    }
+
 }

@@ -125,8 +125,8 @@ namespace Abarabone.Motion.Authoring
 
             var motionEntity = createMotionEntity( gcs, motionMain, motionTypes );
 
-            var posStreamEntities = createStreamEntitiesOfSection( gcs, motionMain, enabledBoneObjects, streamTypes );
-            var rotStreamEntities = createStreamEntitiesOfSection( gcs, motionMain, enabledBoneObjects, streamTypes );
+            var posStreamEntities = createStreamEntitiesOfSection( gcs, enabledBoneObjects, streamTypes );
+            var rotStreamEntities = createStreamEntitiesOfSection( gcs, enabledBoneObjects, streamTypes );
 
 
             initMotionEntity( em, motionEntity, posStreamEntities, rotStreamEntities, motionClip );
@@ -142,9 +142,11 @@ namespace Abarabone.Motion.Authoring
         static GameObject[] getEnabledBoneObjects( Transform[] bones, GameObject root, AvatarMask streamMask )
         {
             var enabledBoneHashSet = streamMask.ToEnabledBoneHashSet();
+            Debug.Log(root.MakePath());
 
             return bones
                 .Select( bone => bone.gameObject )
+                .Do(x=>Debug.Log(x.MakePath()))
                 .Where( go => enabledBoneHashSet.Contains( go.MakePath( root ) ) )
                 .ToArray();
         }
@@ -208,7 +210,7 @@ namespace Abarabone.Motion.Authoring
         // 
         static Entity[] createStreamEntitiesOfSection
             (
-                GameObjectConversionSystem gcs, GameObject motionMainain, GameObject[] enabledBoneObjects,
+                GameObjectConversionSystem gcs, GameObject[] enabledBoneObjects,
                 ComponentType[] streamTypes
             )
         {

@@ -36,8 +36,9 @@ namespace Abarabone.Utilities
         static public string MakePath( this GameObject gameObject, GameObject root )
         {
             var offset = root.MakePath().Length;
+            if (offset == 0) return gameObject.MakePath();
 
-            return gameObject.MakePath().Substring( offset );
+            return gameObject.MakePath().Substring( offset + 1 );
         }
         static public string MakePath( this GameObject gameObjects )
         {

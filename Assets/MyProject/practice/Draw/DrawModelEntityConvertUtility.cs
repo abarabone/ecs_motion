@@ -28,18 +28,21 @@ namespace Abarabone.Draw.Authoring
 
         static public Entity CreateDrawModelEntityComponents
             (
-                this GameObjectConversionSystem gcs, GameObject mainGameObject,
+                this GameObjectConversionSystem gcs, GameObject topGameObject,
                 Mesh mesh, Material mat, BoneType boneType, int boneLength
             )
         {
+
+
             var em = gcs.DstEntityManager;
 
             setShaderProps_( em, mat, mesh, boneLength );
 
-            var drawModelEntity = createDrawModelEntity_( gcs, mainGameObject );
+            var drawModelEntity = createDrawModelEntity_( gcs, topGameObject );
             setEntityComponentValues_( em, drawModelEntity, mat, mesh, boneLength, boneType );
 
             return drawModelEntity;
+
 
 
             void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int boneLength_ )
@@ -53,10 +56,12 @@ namespace Abarabone.Draw.Authoring
                 //mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要なので、ここではやらない
             }
 
+
             Entity createDrawModelEntity_
-                ( GameObjectConversionSystem gcs_, GameObject main_ )
+                ( GameObjectConversionSystem gcs_, GameObject top_ )
             {
                 var em_ = gcs_.DstEntityManager;
+
 
                 var drawModelArchetype = em_.CreateArchetype(
                     typeof( DrawModelBoneUnitSizeData ),
@@ -67,12 +72,14 @@ namespace Abarabone.Draw.Authoring
                 );
                 var ent = em_.CreateEntity( drawModelArchetype );
 
-                gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.Add( main_, ent );
+                gcs.AddToModelEntityDictionary(top_, ent);
 
-                em_.SetName( ent, $"{main_.name} model" );
+
+                em_.SetName( ent, $"{top_.name} model" );
 
                 return ent;
             }
+
 
             void setEntityComponentValues_
                 ( EntityManager em_, Entity ent_, Material mat_, Mesh mesh_, int boneLength_, BoneType boneType_ )

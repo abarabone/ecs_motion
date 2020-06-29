@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using UnityEngine;
+using Unity.Linq;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
@@ -14,7 +15,8 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Common.Extension;
 
     /// <summary>
-    /// 
+    /// プライマリエンティティは LinkedEntityGroup のみとする。
+    /// その１つ下に、ＦＢＸのキャラクターを置く。それがメインエンティティとなる。
     /// </summary>
     public class CharacterModelAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
@@ -35,10 +37,6 @@ namespace Abarabone.Model.Authoring
 
 
 
-        /// <summary>
-        /// プライマリエンティティは LinkedEntityGroup のみとする。
-        /// メインエンティティは新しく作る。ただし physics 関連のコンポーネントがプライマリについてしまうので、あとでつけかえる…（嫌だなぁ…）
-        /// </summary>
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
@@ -46,20 +44,23 @@ namespace Abarabone.Model.Authoring
             var qMesh = skinnedMeshRenderers.Select( x => x.sharedMesh );
             var bones = skinnedMeshRenderers.First().bones.Where( x => !x.name.StartsWith( "_" ) ).ToArray();
 
-            createModelEntity_( conversionSystem, this.gameObject, this.MaterialToDraw, qMesh, bones );
+            var top = this.gameObject;
+            var main = transform.GetChild(0).gameObject;
 
-            initObjectEntity_( conversionSystem, this.gameObject );
+            createModelEntity_( conversionSystem, top, this.MaterialToDraw, qMesh, bones );
 
-            conversionSystem.CreateBoneEntities( this.gameObject, bones );
+            initObjectEntity_( conversionSystem, top, main );
 
-            conversionSystem.CreateDrawInstanceEntities( this.gameObject, bones );
+            conversionSystem.CreateBoneEntities( main, bones );
+
+            conversionSystem.CreateDrawInstanceEntities( top, bones );
 
             return;
 
 
             void createModelEntity_
                 (
-                    GameObjectConversionSystem gcs_, GameObject main_,
+                    GameObjectConversionSystem gcs_, GameObject top_,
                     Material srcMaterial, IEnumerable<Mesh> srcMeshes, Transform[] bones_
                 )
             {
@@ -68,48 +69,40 @@ namespace Abarabone.Model.Authoring
 
                 const Draw.BoneType boneType = Draw.BoneType.TR;
 
-                gcs_.CreateDrawModelEntityComponents( main_, mesh, mat, boneType, bones_.Length );
+                gcs_.CreateDrawModelEntityComponents( top_, mesh, mat, boneType, bones_.Length );
             }
 
-
-            void initObjectEntity_( GameObjectConversionSystem gcs_, GameObject main_ )
+            void initObjectEntity_( GameObjectConversionSystem gcs_, GameObject top_, GameObject main_ )
             {
                 var em_ = gcs_.DstEntityManager;
 
-                var mainEntity = CharacterModelAuthoring.GetOrCreateMainEntity(gcs_, main_);
-                var binderEntity = gcs_.GetPrimaryEntity(main_);
+                var binderEntity = gcs_.GetPrimaryEntity(top_);
+                var mainEntity = gcs_.GetPrimaryEntity(main_);
+
 
                 em_.AddComponentData( binderEntity,
                     new BinderObjectMainEntityLinkData { MainEntity = mainEntity } );
 
-                em_.AddComponentData( mainEntity, new ObjectMainEntityTag { } );
+
+                var addtypes = new ComponentTypes
+                (
+                    typeof(ObjectMainEntityTag),
+                    typeof(ObjectBinderLinkData)
+                );
+                em_.AddComponents(mainEntity, addtypes);
+
                 em_.SetComponentData( mainEntity,
                     new ObjectBinderLinkData { BinderEntity = binderEntity} );
 
-                em_.SetName( mainEntity, $"{main_.name} main" );
+
+                em_.SetName( binderEntity, $"{top_.name} binder" );
+                em_.SetName( mainEntity, $"{top_.name} main" );
             }
 
         }
 
 
-
-        static public Entity GetOrCreateMainEntity( GameObjectConversionSystem gcs, GameObject main )
-        {
-            var em = gcs.DstEntityManager;
-
-            var mainEntity = gcs.GetEntities( main )
-                .Where( ent_ => em.HasComponent<ObjectBinderLinkData>( ent_ ) )
-                .FirstOrDefault();
-
-            if( mainEntity == Entity.Null )
-                return gcs.CreateAdditionalEntity<ObjectBinderLinkData>( main );
-
-            return mainEntity;
-        }
-
     }
-
-
 
 }
 

@@ -41,15 +41,17 @@ namespace Abarabone.Model.Authoring
             ( this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones )
         {
 
+            var em = gcs.DstEntityManager;
+
             var postureEntity = addComponentsPostureEntity( gcs, mainGameObject );
-            var boneEntities = addComponentsBoneEntities( gcs, mainGameObject, bones );
+            var boneEntities = addComponentsBoneEntities( gcs, bones );
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
-            setPostureValue( gcs.DstEntityManager, postureEntity, boneEntities.First() );
+            setPostureValue(em, postureEntity, boneEntities.First() );
 
             var paths = queryBonePath_( bones, mainGameObject ).ToArray();
-            setBoneRelationLinks( gcs.DstEntityManager, postureEntity, boneEntities, paths );
+            setBoneRelationLinks(em, postureEntity, boneEntities, paths );
 
             return;
 
@@ -71,7 +73,7 @@ namespace Abarabone.Model.Authoring
         static Entity addComponentsPostureEntity
             ( GameObjectConversionSystem gcs, GameObject main )
         {
-            var ent = CharacterModelAuthoring.GetOrCreateMainEntity(gcs, main);
+            var ent = gcs.GetPrimaryEntity(main);
 
             var addtypes = new ComponentTypes
             (
@@ -91,7 +93,7 @@ namespace Abarabone.Model.Authoring
         /// physics もそれをあてにするようなので、ボーンもそれに乗っかろうと思う。
         /// </summary>
         static Entity[] addComponentsBoneEntities
-            ( GameObjectConversionSystem gcs, GameObject main, Transform[] bones )
+            ( GameObjectConversionSystem gcs, Transform[] bones )
         {
             var em = gcs.DstEntityManager;
 
@@ -123,8 +125,7 @@ namespace Abarabone.Model.Authoring
             (GameObjectConversionSystem gcs, GameObject main, Transform[] bones)
         {
             var em = gcs.DstEntityManager;
-            var mainEntity = em.GetComponentData<BinderObjectMainEntityLinkData>
-                (gcs.GetPrimaryEntity(main)).MainEntity;
+            var mainEntity = gcs.GetPrimaryEntity(main);
 
             var qBoneWithCollider = bones
                 .Where(bone => bone.GetComponent<PhysicsShapeAuthoring>() != null)

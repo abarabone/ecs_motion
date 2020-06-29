@@ -35,7 +35,7 @@ namespace Abarabone.Model.Authoring
         //public bool MakeTexutreAtlus;
 
 
-        void IDeclareReferencedPrefabs.DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
+        public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
         {
             referencedPrefabs.AddRange( this.ModelPrefabs.Select(x => x.gameObject) );
         }
