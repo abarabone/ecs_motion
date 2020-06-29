@@ -16,7 +16,7 @@ namespace Abarabone.Physics.Authoring
     using Abarabone.Character;
     using Abarabone.Utilities;
 
-    public class OverlapSphereAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class HitQueryOverlapSphereAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         /// <summary>
@@ -37,21 +37,14 @@ namespace Abarabone.Physics.Authoring
         public PhysicsCategoryTags CollidesWith;
 
 
+
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
+
             var em = dstManager;
             var ent = getPostureOrBoneEntity_(conversionSystem, entity, this.gameObject);
 
-            switch (this.Useage)
-            {
-                case UseageType.SphereForGround:
-                    initGroundOverlapSphere_(em, ent);
-                    break;
-
-                case UseageType.RayForGround:
-                    initGroundRaycast_(em, ent);
-                    break;
-            }
+            addHitQueryComponent[(int)Useage](this, em, ent);
 
             return;
 
@@ -66,35 +59,38 @@ namespace Abarabone.Physics.Authoring
                     .Do(x => Debug.Log($"{em_.GetName(x)} - {mainObject_.name}"))
                     .First(x => em_.HasComponent<Translation>(x));
             }
-            
-            void initGroundOverlapSphere_(EntityManager em_, Entity targetEntity_) =>
-                em_.AddComponentData( targetEntity_,
+        }
+
+
+        public Action<HitQueryOverlapSphereAuthoring, EntityManager, Entity>[] addHitQueryComponent =
+            new Action<HitQueryOverlapSphereAuthoring, EntityManager, Entity>[]
+        {
+            (this_, em_, targetEntity_) => em_.AddComponentData(targetEntity_,
                     new GroundHitSphereData
                     {
-                        Center = this.Center,
-                        Distance = this.Radius,
+                        Center = this_.Center,
+                        Distance = this_.Radius,
                         Filter = new CollisionFilter
                         {
-                            BelongsTo = this.BelongsTo.Value,
-                            CollidesWith = this.CollidesWith.Value,
+                            BelongsTo = this_.BelongsTo.Value,
+                            CollidesWith = this_.CollidesWith.Value,
                         }
                     }
-                );
+                ),
 
-            void initGroundRaycast_(EntityManager em_, Entity targetEntity_) =>
-                em_.AddComponentData( targetEntity_,
+            (this_, em_, targetEntity_) => em_.AddComponentData(targetEntity_,
                     new GroundHitRayData
                     {
-                        Start = this.Center,
-                        Ray = new DirectionAndLength { value = new float4(math.up() * -1, this.Radius) },
+                        Start = this_.Center,
+                        Ray = new DirectionAndLength { value = new float4(math.up() * -1, this_.Radius) },
                         Filter = new CollisionFilter
                         {
-                            BelongsTo = this.BelongsTo.Value,
-                            CollidesWith = this.CollidesWith.Value,
+                            BelongsTo = this_.BelongsTo.Value,
+                            CollidesWith = this_.CollidesWith.Value,
                         }
                     }
-                );
-        }
+                ),
+         };
 
     }
 }

@@ -72,7 +72,7 @@ namespace Abarabone.Model.Authoring
             ( GameObjectConversionSystem gcs, GameObject main )
         {
             var ent = CharacterModelAuthoring.GetOrCreateMainEntity(gcs, main);
-            
+
             var addtypes = new ComponentTypes
             (
                 typeof( PostureNeedTransformTag ),

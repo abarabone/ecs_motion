@@ -6,12 +6,12 @@ using Abarabone.Physics.Authoring;
 
 namespace Abarabone.Model.Authoring
 {
-    [CustomEditor(typeof(OverlapSphereAuthoring))]
+    [CustomEditor(typeof(HitQueryOverlapSphereAuthoring))]
     public class OverlapSphereHandle : Editor
     {
         public void OnSceneGUI()
         {
-            OverlapSphereAuthoring t = this.target as OverlapSphereAuthoring;
+            HitQueryOverlapSphereAuthoring t = this.target as HitQueryOverlapSphereAuthoring;
 
             Handles.matrix = Matrix4x4.Scale(Vector3.one * 0.5f);
 

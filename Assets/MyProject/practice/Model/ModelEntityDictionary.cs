@@ -12,7 +12,7 @@ namespace Abarabone.Model.Authoring
 
     /// <summary>
     /// モデルエンティティとゲームオブジェクトを紐づける仕組み。
-    /// モデルプレハブはモデルのバインダーエンティティに紐づけるので、別枠が必要になってしまった…。
+    /// モデルプレハブはモデルのメインエンティティに紐づけるので、別枠が必要になった。（そもそもインスタンスとリソースは別か）
     /// </summary>
     public class ModelEntityDictionary : GameObjectConversionSystem
     {

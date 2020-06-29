@@ -36,7 +36,8 @@ namespace Abarabone.Model.Authoring
 
 
         /// <summary>
-        /// 
+        /// プライマリエンティティは LinkedEntityGroup のみとする。
+        /// メインエンティティは新しく作る。ただし physics 関連のコンポーネントがプライマリについてしまうので、あとでつけかえる…（嫌だなぁ…）
         /// </summary>
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
@@ -47,13 +48,11 @@ namespace Abarabone.Model.Authoring
 
             createModelEntity_( conversionSystem, this.gameObject, this.MaterialToDraw, qMesh, bones );
 
-            createObjectEntity_( conversionSystem, this.gameObject );
+            initObjectEntity_( conversionSystem, this.gameObject );
 
             conversionSystem.CreateBoneEntities( this.gameObject, bones );
 
             conversionSystem.CreateDrawInstanceEntities( this.gameObject, bones );
-
-            //cleanupEntityLinks_( conversionSystem, this.gameObject );
 
             return;
 
@@ -69,15 +68,16 @@ namespace Abarabone.Model.Authoring
 
                 const Draw.BoneType boneType = Draw.BoneType.TR;
 
-                gcs_.CreateDrawModelEntityComponents(  main_, mesh, mat, boneType, bones_.Length );
+                gcs_.CreateDrawModelEntityComponents( main_, mesh, mat, boneType, bones_.Length );
             }
 
-            void createObjectEntity_( GameObjectConversionSystem gcs_, GameObject main_ )
+
+            void initObjectEntity_( GameObjectConversionSystem gcs_, GameObject main_ )
             {
                 var em_ = gcs_.DstEntityManager;
 
-                var mainEntity = CharacterModelAuthoring.GetOrCreateMainEntity( gcs_, main_ );
-                var binderEntity = gcs_.GetPrimaryEntity( main_ );
+                var mainEntity = CharacterModelAuthoring.GetOrCreateMainEntity(gcs_, main_);
+                var binderEntity = gcs_.GetPrimaryEntity(main_);
 
                 em_.AddComponentData( binderEntity,
                     new BinderObjectMainEntityLinkData { MainEntity = mainEntity } );
@@ -88,40 +88,6 @@ namespace Abarabone.Model.Authoring
 
                 em_.SetName( mainEntity, $"{main_.name} main" );
             }
-
-            //void cleanupEntityLinks_( GameObjectConversionSystem gcs_, GameObject main_ )
-            //{
-            //    var em = gcs_.DstEntityManager;
-            //    var needs = new NativeList<LinkedEntityGroup>( Allocator.Temp );
-            //    var noneeds = new NativeList<LinkedEntityGroup>( Allocator.Temp );
-
-            //    var buf = em.GetBuffer<LinkedEntityGroup>( gcs_.GetPrimaryEntity( main_ ) );
-
-            //    foreach( var link in buf )
-            //    {
-            //        if( em.GetComponentCount( link.Value ) == 1 && em.HasComponent<Prefab>( link.Value ) )
-            //        {
-            //            noneeds.Add( link );
-            //        }
-            //        else
-            //        {
-            //            needs.Add( link );
-            //        }
-            //    }
-
-            //    if( needs.Length > 0 )
-            //    {
-            //        buf.Clear();
-            //        buf.AddRange( needs.AsArray() );
-            //    }
-            //    if( noneeds.Length > 0 )
-            //    {
-            //        em.DestroyEntity( noneeds.AsArray().Reinterpret<Entity>() );
-            //    }
-
-            //    needs.Dispose();
-            //    noneeds.Dispose();
-            //}
 
         }
 
