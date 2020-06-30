@@ -37,7 +37,7 @@ namespace Abarabone.Authoring
             em.AddComponentData( prefab, new AntTag { } );
             em.AddComponentData( prefab, new AntWalkActionState { } );
 
-            var linker = em.GetComponentData<CharacterLinkData>( prefab );//
+            var linker = em.GetComponentData<ObjectMainCharacterLinkData>( prefab );//
             em.AddComponentData( linker.PostureEntity, new AntTag { } );//
             em.AddComponentData( linker.PostureEntity, new MoveHandlingData { } );//
             em.AddComponentData( linker.PostureEntity, new WallHunggingData { } );//

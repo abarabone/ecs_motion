@@ -20,12 +20,22 @@ namespace Abarabone.Character
 {
 
 
-    public struct CharacterLinkData : IComponentData
+    public struct ObjectMainCharacterLinkData : IComponentData
     {
-        public Entity PostureEntity;
+        public Entity PostureEntity;//廃止予定
         public Entity DrawEntity;
-        public Entity MainMotionEntity;// メインとかサブとかあるのはいまいちな気がするが、どうしようか
+        public Entity MotionEntity;
     }
+
+    public struct ObjectMainCharacterLinkMotion2Data : IComponentData
+    {
+        public Entity DrawEntity;
+        public Entity MotionEntity0;
+        public Entity MotionEntity1;
+    }
+
+
+    // 以下は廃止予定
     public struct CharacterSubMotion1LinkData : IComponentData
     {
         public Entity MotionEntity;

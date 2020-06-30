@@ -65,7 +65,7 @@ namespace Abarabone.Character
 
         [BurstCompile]
         struct MinicWalkActionJob : IJobForEachWithEntity
-            <MinicWalkActionState, MoveHandlingData, CharacterLinkData>
+            <MinicWalkActionState, MoveHandlingData, ObjectMainCharacterLinkData>
         {
 
             public EntityCommandBuffer.Concurrent Commands;
@@ -86,19 +86,19 @@ namespace Abarabone.Character
                 Entity entity, int jobIndex,
                 ref MinicWalkActionState state,
                 [ReadOnly] ref MoveHandlingData hander,
-                [ReadOnly] ref CharacterLinkData linker
+                [ReadOnly] ref ObjectMainCharacterLinkData linker
             )
             {
                 ref var acts = ref hander.ControlAction;
 
-                var motionInfo = this.MotionInfos[ linker.MainMotionEntity ];
+                var motionInfo = this.MotionInfos[ linker.MotionEntity ];
 
-                var motion = new MotionOperator( this.Commands, this.MotionInfos, this.MotionCursors, linker.MainMotionEntity, jobIndex );
+                var motion = new MotionOperator( this.Commands, this.MotionInfos, this.MotionCursors, linker.MotionEntity, jobIndex );
 
 
                 if( state.Phase == 1 )
                 {
-                    var cursor = this.MotionCursors[ linker.MainMotionEntity ];
+                    var cursor = this.MotionCursors[ linker.MotionEntity ];
                     if( cursor.CurrentPosition > cursor.TotalLength )
                         state.Phase = 0;
 
@@ -108,7 +108,7 @@ namespace Abarabone.Character
 
                 if( acts.IsChangeMotion )
                 {
-                    MotionOp.Start( jobIndex, ref this.Commands, linker.MainMotionEntity, motionInfo, Motion_minic.slash01HL, true, 0.1f );
+                    MotionOp.Start( jobIndex, ref this.Commands, linker.MotionEntity, motionInfo, Motion_minic.slash01HL, true, 0.1f );
                     state.Phase = 1;
                     return;
                 }
@@ -116,7 +116,7 @@ namespace Abarabone.Character
                 if( !GroundResults[linker.PostureEntity].IsGround )
                 {
                     if( motionInfo.MotionIndex != (int)Motion_minic.jumpdown )
-                        this.Commands.AddComponent( jobIndex, linker.MainMotionEntity,
+                        this.Commands.AddComponent( jobIndex, linker.MotionEntity,
                             new MotionInitializeData { MotionIndex = 0, DelayTime = 0.1f, IsContinuous = true } );
                     return;
                 }
@@ -131,7 +131,7 @@ namespace Abarabone.Character
                 else if( math.lengthsq(acts.MoveDirection) >= 0.01f )
                 {
                     if( motionInfo.MotionIndex != (int)Motion_minic.walk02 )
-                        this.Commands.AddComponent( jobIndex, linker.MainMotionEntity,
+                        this.Commands.AddComponent( jobIndex, linker.MotionEntity,
                             new MotionInitializeData { MotionIndex = (int)Motion_minic.walk02, DelayTime = 0.1f, IsContinuous = true } );
 
                     this.Rotations[ linker.PostureEntity ] =
@@ -140,7 +140,7 @@ namespace Abarabone.Character
                 else
                 {
                     if( motionInfo.MotionIndex != (int)Motion_minic.stand02 )
-                        this.Commands.AddComponent( jobIndex, linker.MainMotionEntity,
+                        this.Commands.AddComponent( jobIndex, linker.MotionEntity,
                             new MotionInitializeData { MotionIndex = (int)Motion_minic.stand02, DelayTime = 0.2f, IsContinuous = true } );
 
                     //this.Rotations[ linker.PostureEntity ] =

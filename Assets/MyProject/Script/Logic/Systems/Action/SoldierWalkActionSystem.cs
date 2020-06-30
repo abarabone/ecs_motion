@@ -65,7 +65,7 @@ namespace Abarabone.Character
 
         [BurstCompile]
         struct SoldierWalkActionJob : IJobForEachWithEntity
-            <SoldierWalkActionState, MoveHandlingData, CharacterLinkData>
+            <SoldierWalkActionState, MoveHandlingData, ObjectMainCharacterLinkData>
         {
 
             public EntityCommandBuffer.Concurrent Commands;
@@ -86,23 +86,23 @@ namespace Abarabone.Character
                 Entity entity, int index,
                 ref SoldierWalkActionState state,
                 [ReadOnly] ref MoveHandlingData hander,
-                [ReadOnly] ref CharacterLinkData linker
+                [ReadOnly] ref ObjectMainCharacterLinkData linker
             )
             {
                 ref var acts = ref hander.ControlAction;
 
-                var motionInfo = this.MotionInfos[ linker.MainMotionEntity ];
+                var motionInfo = this.MotionInfos[ linker.MotionEntity ];
 
                 if( acts.IsChangeMotion )
                 {
-                    this.Commands.AddComponent( index, linker.MainMotionEntity,
+                    this.Commands.AddComponent( index, linker.MotionEntity,
                         new MotionInitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10, IsContinuous = true } );
                 }
 
                 if( !GroundResults[linker.PostureEntity].IsGround )
                 {
                     if( motionInfo.MotionIndex != Motion_riku.jump02 )
-                        this.Commands.AddComponent( index, linker.MainMotionEntity,
+                        this.Commands.AddComponent( index, linker.MotionEntity,
                             new MotionInitializeData { MotionIndex = Motion_riku.jump02, DelayTime = 0.1f, IsContinuous = true } );
                     return;
                 }
@@ -110,7 +110,7 @@ namespace Abarabone.Character
                 if( math.lengthsq(acts.MoveDirection) >= 0.01f )
                 {
                     if( motionInfo.MotionIndex != Motion_riku.walk_stance )
-                        this.Commands.AddComponent( index, linker.MainMotionEntity,
+                        this.Commands.AddComponent( index, linker.MotionEntity,
                             new MotionInitializeData { MotionIndex = Motion_riku.walk_stance, DelayTime = 0.1f, IsContinuous = true } );
 
                     this.Rotations[ linker.PostureEntity ] =
@@ -119,7 +119,7 @@ namespace Abarabone.Character
                 else
                 {
                     if( motionInfo.MotionIndex != Motion_riku.stand_stance )
-                        this.Commands.AddComponent( index, linker.MainMotionEntity,
+                        this.Commands.AddComponent( index, linker.MotionEntity,
                             new MotionInitializeData { MotionIndex = Motion_riku.stand_stance, DelayTime = 0.2f, IsContinuous = true } );
 
                     //this.Rotations[ linker.PostureEntity ] =

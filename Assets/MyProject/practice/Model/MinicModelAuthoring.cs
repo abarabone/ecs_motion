@@ -14,6 +14,8 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Character;
     using Abarabone.Draw.Authoring;
     using Abarabone.Common.Extension;
+    using Abarabone.Draw;
+    using Abarabone.Motion;
 
     /// <summary>
     /// プライマリエンティティは LinkedEntityGroup のみとする。
@@ -26,14 +28,47 @@ namespace Abarabone.Model.Authoring
         {
             base.Convert(entity, dstManager, conversionSystem);
 
+            var gcs = conversionSystem;
+            var em = dstManager;
 
-            dstManager.AddComponentData(entity, new MinicWalkActionState { });
 
-            var post = dstManager.GetComponentData<CharacterLinkData>(entity);//
-            dstManager.AddComponentData(post.PostureEntity, new MoveHandlingData { });//
-            dstManager.AddComponentData(post.PostureEntity, new HorizontalMovingTag { });//
-            dstManager.AddComponentData(post.PostureEntity, new GroundHitResultData { });//
+            var top = this.gameObject;
+            var main = top.transform.GetChild(0).gameObject;
+            
+            var mainEntity = gcs.GetPrimaryEntity(main);
 
+
+            var types = new ComponentTypes(
+                typeof(ObjectMainCharacterLinkData),
+                
+                typeof(MoveHandlingData),
+                typeof(HorizontalMovingTag),
+                typeof(GroundHitResultData),
+
+                typeof(MinicWalkActionState)
+            );
+            em.AddComponents(mainEntity, types);
+
+
+            var qDrawEntity =
+                from ent in gcs.GetEntities(top).Do(x => Debug.Log(x))
+                where em.HasComponent<DrawInstanceModeLinkData>(ent)
+                select ent
+                ;
+            var qMotionEntity =
+                from ent in gcs.GetEntities(main).Do(x => Debug.Log(x))
+                where em.HasComponent<MotionInfoData>(ent)
+                select ent
+                ;
+
+            em.SetComponentData(mainEntity,
+                new ObjectMainCharacterLinkData
+                {
+                    PostureEntity = mainEntity,//
+                    DrawEntity = qDrawEntity.First(),
+                    MotionEntity = qMotionEntity.First(),
+                }
+            );
         }
 
     }

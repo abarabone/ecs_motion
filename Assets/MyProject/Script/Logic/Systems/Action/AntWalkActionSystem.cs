@@ -72,7 +72,7 @@ namespace Abarabone.Character
         [BurstCompile]
         [RequireComponentTag(typeof(AntTag))]
         struct AntWalkActionJob : IJobForEachWithEntity
-            <AntWalkActionState, MoveHandlingData, CharacterLinkData>
+            <AntWalkActionState, MoveHandlingData, ObjectMainCharacterLinkData>
         {
 
             public EntityCommandBuffer.Concurrent Commands;
@@ -96,12 +96,12 @@ namespace Abarabone.Character
                 Entity entity, int jobIndex,
                 ref AntWalkActionState state,
                 [ReadOnly] ref MoveHandlingData hander,
-                [ReadOnly] ref CharacterLinkData linker
+                [ReadOnly] ref ObjectMainCharacterLinkData linker
             )
             {
                 ref var acts = ref hander.ControlAction;
 
-                var motion = new MotionOperator( this.Commands, this.MotionInfos, this.MotionCursors, linker.MainMotionEntity, jobIndex );
+                var motion = new MotionOperator( this.Commands, this.MotionInfos, this.MotionCursors, linker.MotionEntity, jobIndex );
 
                 motion.Start( Motion_ant.walking, isLooping: true, delayTime: 0.1f );
 

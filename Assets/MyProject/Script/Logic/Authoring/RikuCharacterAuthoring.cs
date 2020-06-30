@@ -33,7 +33,7 @@ namespace Abarabone.Authoring
 
             em.AddComponentData( prefab, new SoldierWalkActionState { } );
 
-            var post = em.GetComponentData<CharacterLinkData>( prefab );//
+            var post = em.GetComponentData<ObjectMainCharacterLinkData>( prefab );//
             em.AddComponentData( post.PostureEntity, new MoveHandlingData { } );//
             em.AddComponentData( post.PostureEntity, new HorizontalMovingTag { } );//
             em.AddComponentData( post.PostureEntity, new GroundHitResultData { } );//

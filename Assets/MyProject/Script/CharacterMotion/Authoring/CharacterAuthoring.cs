@@ -66,11 +66,11 @@ namespace Abarabone.Authoring
             var prefab = CharactorPrefabCreator.CreatePrefab( em, qChildren );
 
             em.SetComponentData( prefab,
-                new CharacterLinkData
+                new ObjectMainCharacterLinkData
                 {
                     PostureEntity = posturePrefab,
                     DrawEntity = drawPrefab,
-                    MainMotionEntity = mainMotionPrefab,
+                    MotionEntity = mainMotionPrefab,
                 }
             );
 
@@ -100,7 +100,7 @@ namespace Abarabone.Authoring
             em => em.CreateArchetype
             (
                 typeof( LinkedEntityGroup ),
-                typeof( CharacterLinkData ),
+                typeof( ObjectMainCharacterLinkData ),
                 typeof( MoveHandlingData ),//
                 typeof( Prefab )
             )

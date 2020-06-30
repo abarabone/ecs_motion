@@ -36,7 +36,9 @@ namespace Abarabone.Model.Authoring
 
 
 
-
+        /// <summary>
+        /// 描画関係はバインダーに、ボーン関係はメインに関連付ける
+        /// </summary>
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
@@ -45,7 +47,7 @@ namespace Abarabone.Model.Authoring
             var bones = skinnedMeshRenderers.First().bones.Where( x => !x.name.StartsWith( "_" ) ).ToArray();
 
             var top = this.gameObject;
-            var main = transform.GetChild(0).gameObject;
+            var main = top.transform.GetChild(0).gameObject;
 
             createModelEntity_( conversionSystem, top, this.MaterialToDraw, qMesh, bones );
 
