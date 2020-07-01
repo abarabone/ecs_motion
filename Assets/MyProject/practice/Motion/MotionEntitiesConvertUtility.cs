@@ -118,6 +118,7 @@ namespace Abarabone.Motion.Authoring
                 MotionClip motionClip, AvatarMask streamMask
             )
         {
+
             var em = gcs.DstEntityManager;
             var enabledBoneObjects = getEnabledBoneObjects( bones, motionMain, streamMask );
             var enabledBoneIds = getEnabledBoneIds( bones, motionMain, streamMask );
@@ -203,6 +204,14 @@ namespace Abarabone.Motion.Authoring
                 }
             );
         }
+
+        static void setLinkForObject
+            ( GameObjectConversionSystem gcs, GameObject top, Entity motionEntity )
+        {
+
+        }
+
+
 
 
         // ストリームエンティティ生成

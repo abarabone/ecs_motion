@@ -11,7 +11,8 @@ using Unity.Mathematics;
 
 namespace Abarabone.Model.Authoring
 {
-    using Draw.Authoring;
+    using Abarabone.Draw.Authoring;
+    using Abarabone.Character;
     using Abarabone.Common.Extension;
 
     /// <summary>
@@ -89,13 +90,26 @@ namespace Abarabone.Model.Authoring
                 var addtypes = new ComponentTypes
                 (
                     typeof(ObjectMainEntityTag),
-                    typeof(ObjectBinderLinkData)
+                    typeof(ObjectBinderLinkData),
+                    typeof(ObjectMainCharacterLinkData)
+                    //typeof(ObjectMotionLinkDate)
                 );
                 em_.AddComponents(mainEntity, addtypes);
 
-                em_.SetComponentData( mainEntity,
-                    new ObjectBinderLinkData { BinderEntity = binderEntity} );
 
+                em_.SetComponentData( mainEntity,
+                    new ObjectBinderLinkData
+                    {
+                        BinderEntity = binderEntity,
+                    }
+                );
+
+                em_.SetComponentData(mainEntity,
+                    new ObjectMainCharacterLinkData
+                    {
+                        PostureEntity = mainEntity,//
+                    }
+                );
 
                 em_.SetName( binderEntity, $"{top_.name} binder" );
                 em_.SetName( mainEntity, $"{top_.name} main" );

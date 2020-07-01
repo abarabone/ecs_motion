@@ -24,10 +24,10 @@ namespace Abarabone.Character
     public struct PostureNeedTransformTag : IComponentData
     { }
 
-	public struct PostureUniqueIdData : IComponentData
-    {
-        public int UniqueId;
-    }
+	//public struct PostureUniqueIdData : IComponentData
+ //   {
+ //       public int UniqueId;
+ //   }
 
 
 

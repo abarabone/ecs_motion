@@ -18,18 +18,20 @@ using Abarabone.Utilities;
 
 namespace Abarabone.Character
 {
-
-
+    //廃止予定
     public struct ObjectMainCharacterLinkData : IComponentData
     {
-        public Entity PostureEntity;//廃止予定
-        public Entity DrawEntity;
+        public Entity PostureEntity;
+        //public Entity DrawEntity;
         public Entity MotionEntity;
     }
 
-    public struct ObjectMainCharacterLinkMotion2Data : IComponentData
+    public struct ObjectMotionLinkDate : IComponentData
     {
-        public Entity DrawEntity;
+        public Entity MotionEntity;
+    }
+    public struct ObjectMotion2LinkData : IComponentData
+    {
         public Entity MotionEntity0;
         public Entity MotionEntity1;
     }
