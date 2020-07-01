@@ -24,7 +24,7 @@ namespace Abarabone.Model.Authoring
     public class MinicModelAuthoring : CharacterModelAuthoring, IConvertGameObjectToEntity
     {
 
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             base.Convert(entity, dstManager, conversionSystem);
 
@@ -39,36 +39,16 @@ namespace Abarabone.Model.Authoring
 
 
             var types = new ComponentTypes(
-                typeof(ObjectMainCharacterLinkData),
-                
-                typeof(MoveHandlingData),
+                typeof(PlayerTag),
+
                 typeof(HorizontalMovingTag),
+                typeof(MoveHandlingData),
                 typeof(GroundHitResultData),
 
                 typeof(MinicWalkActionState)
             );
             em.AddComponents(mainEntity, types);
-
-
-            var qDrawEntity =
-                from ent in gcs.GetEntities(top).Do(x => Debug.Log(x))
-                where em.HasComponent<DrawInstanceModeLinkData>(ent)
-                select ent
-                ;
-            var qMotionEntity =
-                from ent in gcs.GetEntities(main).Do(x => Debug.Log(x))
-                where em.HasComponent<MotionInfoData>(ent)
-                select ent
-                ;
-
-            em.SetComponentData(mainEntity,
-                new ObjectMainCharacterLinkData
-                {
-                    PostureEntity = mainEntity,//
-                    DrawEntity = qDrawEntity.First(),
-                    MotionEntity = qMotionEntity.First(),
-                }
-            );
+            
         }
 
     }

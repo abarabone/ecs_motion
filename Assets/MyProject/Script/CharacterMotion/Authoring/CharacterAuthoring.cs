@@ -69,7 +69,7 @@ namespace Abarabone.Authoring
                 new ObjectMainCharacterLinkData
                 {
                     PostureEntity = posturePrefab,
-                    DrawEntity = drawPrefab,
+                    //DrawEntity = drawPrefab,
                     MotionEntity = mainMotionPrefab,
                 }
             );

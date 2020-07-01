@@ -9,7 +9,7 @@ using Unity.Mathematics;
 
 using Abarabone.Model;
 using Abarabone.Model.Authoring;
-
+using Microsoft.CSharp.RuntimeBinder;
 
 public struct SpawnData : IComponentData
 {
@@ -48,26 +48,43 @@ public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 public class PracSpawnSystem : SystemBase
 {
 
+    EntityCommandBufferSystem cmdSystem;
+
+
+    protected override void OnCreate()
+    {
+        this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+    }
+
+
     protected override void OnUpdate()
     {
-        if( !this.HasSingleton<SpawnData>() ) return;
+        var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+
+        var binders = this.GetComponentDataFromEntity<BinderObjectMainEntityLinkData>( isReadOnly: true );
+        var translations = this.GetComponentDataFromEntity<Translation>();
 
 
-        var em = this.EntityManager;
+        this.Entities
+            .WithNativeDisableParallelForRestriction(translations)
+            .WithReadOnly(binders)
+            .ForEach(
+                (Entity spawnEntity, int entityInQueryIndex, ref SpawnData spawn) =>
+                {
+                    var ent = cmd.Instantiate(entityInQueryIndex, spawn.ent);
 
-        var spawn = this.GetSingleton<SpawnData>();
+                    if (!translations.Exists(ent))
+                        ent = binders[ent].MainEntity;
 
-        var ent = em.Instantiate( spawn.ent );
-        if( !em.HasComponent<Translation>( ent ) ) ent = em.GetComponentData<BinderObjectMainEntityLinkData>(ent).MainEntity;
-        
-        em.SetComponentData( ent, new Translation { Value = new float3(0,spawn.i,0) } );
 
-        spawn.i++;
+                    //translations[ent] = new Translation { Value = new float3(0, spawn.i, 0) };
 
-        this.SetSingleton( spawn );
 
-        if( spawn.i >= 1 )
-            this.EntityManager.DestroyEntity( this.GetSingletonEntity<SpawnData>() );
+                    if (spawn.i++ > 10)
+                        cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
+                }
+            )
+            .ScheduleParallel();
     }
 
 }

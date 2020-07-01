@@ -16,7 +16,7 @@ namespace Abarabone.Motion.Authoring
     using Abarabone.Motion;
     using Abarabone.Draw;
     using Abarabone.Common.Extension;
-
+    using Abarabone.Character;
 
     public enum EnMotionType
     {
@@ -137,6 +137,8 @@ namespace Abarabone.Motion.Authoring
 
 
             setBoneStreamLinks( gcs, posStreamEntities, rotStreamEntities, enabledBoneObjects );
+
+            setLinkForObjectEntity(gcs, motionMain, motionEntity);
         }
 
 
@@ -205,10 +207,15 @@ namespace Abarabone.Motion.Authoring
             );
         }
 
-        static void setLinkForObject
-            ( GameObjectConversionSystem gcs, GameObject top, Entity motionEntity )
+        static void setLinkForObjectEntity
+            ( GameObjectConversionSystem gcs, GameObject main, Entity motionEntity )
         {
+            var em = gcs.DstEntityManager;
+            var mainEntity = gcs.GetPrimaryEntity(main);
 
+            var link = em.GetComponentData<ObjectMainCharacterLinkData>(mainEntity);
+            link.MotionEntity = motionEntity;
+            em.SetComponentData(mainEntity, link);
         }
 
 
