@@ -293,7 +293,7 @@ namespace Abarabone.Motion.Authoring
                 from x in (poss, rots).Zip()
                 let pos = x.x
                 let rot = x.y
-                select new BoneStream0LinkData
+                select new Bone.Stream0LinkData
                 {
                     PositionStreamEntity = pos,
                     RotationStreamEntity = rot,

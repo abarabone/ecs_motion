@@ -52,7 +52,7 @@ namespace Abarabone.Character
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
             //return inputDeps;
-            var mainEntities = this.GetComponentDataFromEntity<BoneMainEntityLinkData>(isReadOnly: true);
+            var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
 
             inputDeps = new FreeFallWithHitJob
             {
@@ -73,7 +73,7 @@ namespace Abarabone.Character
             [ReadOnly] public PhysicsWorld CollisionWorld;
             //public PhysicsWorld PhysicsWorld;
 
-            [ReadOnly] public ComponentDataFromEntity<BoneMainEntityLinkData> MainEntities;
+            [ReadOnly] public ComponentDataFromEntity<Bone.MainEntityLinkData> MainEntities;
 
 
             public void Execute(

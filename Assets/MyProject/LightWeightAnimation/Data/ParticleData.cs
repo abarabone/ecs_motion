@@ -24,8 +24,8 @@ namespace Abarabone.Particle
     public struct PsylliumEntity :
         ITypedEntity<
             ParticleTag,
-            DrawInstanceModeLinkData,//DrawTransformLinkData
-            DrawInstanceTargetWorkData,
+            DrawInstance.ModeLinkData,//DrawTransformLinkData
+            DrawInstance.TargetWorkData,
             Translation,
             Rotation
         >

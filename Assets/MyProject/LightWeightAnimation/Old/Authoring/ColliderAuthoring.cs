@@ -280,7 +280,7 @@ namespace Abarabone.Authoring
 
                 //if( !rb.isKinematic )
                 {
-                    em.AddComponentData( ent, new BoneInitializeData { PostureEntity = postureEnt } );
+                    em.AddComponentData( ent, new Bone.InitializeData { PostureEntity = postureEnt } );
                     em.SetComponentData( ent, new Translation { Value = rb.position } );
                     em.SetComponentData( ent, new Rotation { Value = rb.rotation } );
                 }

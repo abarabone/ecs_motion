@@ -22,8 +22,8 @@ namespace Abarabone.Draw
 
     public struct DrawInstanceEntity :
         ITypedEntity<
-            DrawInstanceModeLinkData,
-            DrawInstanceTargetWorkData
+            DrawInstance.ModeLinkData,
+            DrawInstance.TargetWorkData
         >
     {
         public Entity Entity { get; set; }
@@ -32,40 +32,43 @@ namespace Abarabone.Draw
             => new DrawInstanceEntity { Entity = ent };
     }
 
-
-
-    /// <summary>
-    /// 描画モデルの種類情報
-    /// </summary>
-    public struct DrawInstanceModeLinkData : IComponentData
+    static public partial class DrawInstance
     {
-        public Entity DrawModelEntity;
+
+
+        /// <summary>
+        /// 描画モデルの種類情報
+        /// </summary>
+        public struct ModeLinkData : IComponentData
+        {
+            public Entity DrawModelEntity;
+        }
+        public struct TargetWorkData : IComponentData
+        {
+            public int DrawInstanceId;   // -1 なら描画しない
+        }
+
+
+        /// <summary>
+        /// カリング用オブジェクトＡＡＢＢ
+        /// </summary>
+        public struct TargetAabb : IComponentData
+        {
+            public float4 min;
+            public float4 max;
+        }
+
+        /// <summary>
+        /// カリング用オブジェクト球データ
+        /// </summary>
+        public struct TargetSphere : IComponentData
+        {
+            public float center;
+            public float radius;
+        }
+
+
+
     }
-    public struct DrawInstanceTargetWorkData : IComponentData
-    {
-        public int DrawInstanceId;   // -1 なら描画しない
-    }
-
-
-    /// <summary>
-    /// カリング用オブジェクトＡＡＢＢ
-    /// </summary>
-    public struct DrawInstanceTargetAabb : IComponentData
-    {
-        public float4 min;
-        public float4 max;
-    }
-
-    /// <summary>
-    /// カリング用オブジェクト球データ
-    /// </summary>
-    public struct DrawInstanceTargetSphere : IComponentData
-    {
-        public float center;
-        public float radius;
-    }
-
-
-
 
 }

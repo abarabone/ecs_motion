@@ -41,10 +41,10 @@ namespace Abarabone.Motion
 
 
 
-        [BurstCompile, ExcludeComponent( typeof( BoneStream1LinkData ), typeof( BoneStream2LinkData ) )]
+        [BurstCompile, ExcludeComponent( typeof( Bone.Stream1LinkData ), typeof( Bone.Stream2LinkData ) )]
         public struct StreamToBoneJob : IJobForEach
             //<BoneStreamLinkData, Translation, Rotation>
-            <BoneStream0LinkData, BoneLocalValueData>
+            <Bone.Stream0LinkData, Bone.LocalValueData>
         {
 
             [ReadOnly]
@@ -52,10 +52,10 @@ namespace Abarabone.Motion
 
 
             public void Execute(
-                [ReadOnly]  ref BoneStream0LinkData streamLinker,
+                [ReadOnly]  ref Bone.Stream0LinkData streamLinker,
                 //[WriteOnly] ref Translation pos,
                 //[WriteOnly] ref Rotation rot
-                [WriteOnly] ref BoneLocalValueData local
+                [WriteOnly] ref Bone.LocalValueData local
             )
             {
 

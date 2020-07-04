@@ -49,8 +49,8 @@ namespace Abarabone.Draw.Authoring
 
             var archetype = em.CreateArchetype
             (
-                typeof( DrawInstanceModeLinkData ),
-                typeof( DrawInstanceTargetWorkData )
+                typeof( DrawInstance.ModeLinkData ),
+                typeof( DrawInstance.TargetWorkData )
             );
             var ent = gcs.CreateAdditionalEntity( top, archetype );
             
@@ -58,14 +58,14 @@ namespace Abarabone.Draw.Authoring
 
 
             em.SetComponentData( ent,
-                new DrawInstanceModeLinkData
+                new DrawInstance.ModeLinkData
                 {
                     DrawModelEntity = gcs.GetFromModelEntityDictionary( top ),
                 }
             );
 
             em.SetComponentData( ent,
-                new DrawInstanceTargetWorkData
+                new DrawInstance.TargetWorkData
                 {
                     DrawInstanceId = -1,
                 }
@@ -111,7 +111,7 @@ namespace Abarabone.Draw.Authoring
             void setDrawComponet_
                 ( EntityManager em_, IEnumerable<Entity> boneEntities_, Entity drawInstanceEntity_ )
             {
-                var drawModelLinker = em_.GetComponentData<DrawInstanceModeLinkData>( drawInstanceEntity_ );
+                var drawModelLinker = em_.GetComponentData<DrawInstance.ModeLinkData>( drawInstanceEntity_ );
 
                 em_.SetComponentData(
                     boneEntities_,

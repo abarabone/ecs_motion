@@ -44,14 +44,14 @@ namespace Abarabone.Authoring
             em.AddComponentData( ent, new ParticleTag { } );//
 
             em.AddComponentData( ent,
-                new DrawInstanceModeLinkData
+                new DrawInstance.ModeLinkData
                 //new DrawTransformLinkData
                 {
                     DrawModelEntity = modelEntity,
                 }
             );
             em.AddComponentData( ent,
-                new DrawInstanceTargetWorkData
+                new DrawInstance.TargetWorkData
                 {
                     DrawInstanceId = -1,
                 }

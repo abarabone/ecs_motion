@@ -111,7 +111,7 @@ namespace Abarabone.Model.Authoring
                     //typeof( DrawTransformIndexData ),
                     //typeof( DrawTransformTargetWorkData ),
                     typeof(Bone.RelationLinkData),
-                    typeof(BoneLocalValueData),// 回転と移動をわけたほうがいいか？
+                    typeof(Bone.LocalValueData),// 回転と移動をわけたほうがいいか？
                     typeof(Translation),
                     typeof(Rotation)
                 );
@@ -132,7 +132,7 @@ namespace Abarabone.Model.Authoring
                 .Select(bone => gcs.TryGetPrimaryEntity(bone));
 
             foreach( var ent in qBoneWithCollider )
-                em.AddComponentData(ent, new BoneMainEntityLinkData { MainEntity = mainEntity });
+                em.AddComponentData(ent, new Bone.MainEntityLinkData { MainEntity = mainEntity });
         }
 
 

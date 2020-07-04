@@ -22,43 +22,43 @@
 //    //[DisableAutoCreation]
 //    [UpdateAfter( typeof( StreamToBoneSystem ) )]
 //    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
-//    public class BoneLv01TransformSystem : _BoneTransformLeveledSystem<BoneLv01LinkData>
+//    public class Bone.Lv01TransformSystem : _BoneTransformLeveledSystem<Bone.Lv01LinkData>
 //    { }
-//    [UpdateAfter( typeof( BoneLv01TransformSystem ) )]
+//    [UpdateAfter( typeof( Bone.Lv01TransformSystem ) )]
 //    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
-//    public class BoneLv02TransformSystem : _BoneTransformLeveledSystem<BoneLv02LinkData>
+//    public class Bone.Lv02TransformSystem : _BoneTransformLeveledSystem<Bone.Lv02LinkData>
 //    { }
-//    [UpdateAfter( typeof( BoneLv02TransformSystem ) )]
+//    [UpdateAfter( typeof( Bone.Lv02TransformSystem ) )]
 //    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
-//    public class BoneLv03TransformSystem : _BoneTransformLeveledSystem<BoneLv03LinkData>
+//    public class Bone.Lv03TransformSystem : _BoneTransformLeveledSystem<Bone.Lv03LinkData>
 //    { }
-//    [UpdateAfter( typeof( BoneLv03TransformSystem ) )]
+//    [UpdateAfter( typeof( Bone.Lv03TransformSystem ) )]
 //    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
-//    public class BoneLv04TransformSystem : _BoneTransformLeveledSystem<BoneLv04LinkData>
+//    public class Bone.Lv04TransformSystem : _BoneTransformLeveledSystem<Bone.Lv04LinkData>
 //    { }
-//    [UpdateAfter( typeof( BoneLv04TransformSystem ) )]
+//    [UpdateAfter( typeof( Bone.Lv04TransformSystem ) )]
 //    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
-//    public class BoneLv05TransformSystem : _BoneTransformLeveledSystem<BoneLv05LinkData>
+//    public class Bone.Lv05TransformSystem : _BoneTransformLeveledSystem<Bone.Lv05LinkData>
 //    { }
-//    [UpdateAfter( typeof( BoneLv05TransformSystem ) )]
+//    [UpdateAfter( typeof( Bone.Lv05TransformSystem ) )]
 //    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
-//    public class BoneLv06TransformSystem : _BoneTransformLeveledSystem<BoneLv06LinkData>
+//    public class Bone.Lv06TransformSystem : _BoneTransformLeveledSystem<Bone.Lv06LinkData>
 //    { }
-//    [UpdateAfter( typeof( BoneLv06TransformSystem ) )]
+//    [UpdateAfter( typeof( Bone.Lv06TransformSystem ) )]
 //    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
-//    public class BoneLv07TransformSystem : _BoneTransformLeveledSystem<BoneLv07LinkData>
+//    public class Bone.Lv07TransformSystem : _BoneTransformLeveledSystem<Bone.Lv07LinkData>
 //    { }
-//    [UpdateAfter( typeof( BoneLv07TransformSystem ) )]
+//    [UpdateAfter( typeof( Bone.Lv07TransformSystem ) )]
 //    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
-//    public class BoneLv08TransformSystem : _BoneTransformLeveledSystem<BoneLv08LinkData>
+//    public class Bone.Lv08TransformSystem : _BoneTransformLeveledSystem<Bone.Lv08LinkData>
 //    { }
-//    [UpdateAfter( typeof( BoneLv08TransformSystem ) )]
+//    [UpdateAfter( typeof( Bone.Lv08TransformSystem ) )]
 //    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
-//    public class BoneLv09TransformSystem : _BoneTransformLeveledSystem<BoneLv09LinkData>
+//    public class Bone.Lv09TransformSystem : _BoneTransformLeveledSystem<Bone.Lv09LinkData>
 //    { }
 
 //    public abstract class _BoneTransformLeveledSystem<T> : JobComponentSystem
-//        where T:struct,IComponentData,IBoneLvLinkData
+//        where T:struct,IComponentData,Bone.ILvLinkData
 //    {
 
 //        protected override JobHandle OnUpdate( JobHandle inputDeps )
@@ -82,7 +82,7 @@
 
 //    [BurstCompile]
 //    public struct BoneTransformLeveledJob<T> : IJobForEachWithEntity<T>//, Translation, Rotation>
-//        where T : struct, IComponentData, IBoneLvLinkData
+//        where T : struct, IComponentData, Bone.ILvLinkData
 //    {
 
 //        [NativeDisableParallelForRestriction]

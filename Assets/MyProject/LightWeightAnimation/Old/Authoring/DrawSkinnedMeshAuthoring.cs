@@ -95,8 +95,8 @@ namespace Abarabone.Authoring
         (
             em => em.CreateArchetype
             (
-                typeof( DrawInstanceModeLinkData ),
-                typeof( DrawInstanceTargetWorkData ),
+                typeof( DrawInstance.ModeLinkData ),
+                typeof( DrawInstance.TargetWorkData ),
                 typeof( Prefab )
             )
         );
@@ -109,14 +109,14 @@ namespace Abarabone.Authoring
             var ent = em.CreateEntity( archetype );
 
             em.SetComponentData( ent,
-                new DrawInstanceModeLinkData
+                new DrawInstance.ModeLinkData
                 {
                     DrawModelEntity = modelEntity,
                 }
             );
 
             em.SetComponentData( ent,
-                new DrawInstanceTargetWorkData
+                new DrawInstance.TargetWorkData
                 {
                     DrawInstanceId = -1,
                 }

@@ -42,7 +42,7 @@ namespace Abarabone.Draw
                 .WithBurst( FloatMode.Fast, FloatPrecision.Standard )
                 .WithNativeDisableParallelForRestriction( drawModels )
                 .ForEach(
-                    ( ref DrawInstanceTargetWorkData target, in DrawInstanceModeLinkData linker ) =>
+                    ( ref DrawInstance.TargetWorkData target, in DrawInstance.ModeLinkData linker ) =>
                     {
 
                         var drawModelData = drawModels[ linker.DrawModelEntity ];

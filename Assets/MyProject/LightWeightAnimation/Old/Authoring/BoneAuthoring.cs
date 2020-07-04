@@ -126,12 +126,12 @@ namespace Abarabone.Authoring
             (
                 typeof( Bone.RelationLinkData ),
                 typeof( DrawTransformLinkData ),
-                //typeof( BoneStream0LinkData ),// 剛体には必要ないので必要な場合に add するようにした　ブレンドの場合には複数必要だし
+                //typeof( Bone.Stream0LinkData ),// 剛体には必要ないので必要な場合に add するようにした　ブレンドの場合には複数必要だし
                 typeof( DrawTransformIndexData ),
                 typeof( DrawTransformTargetWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
-                typeof( BoneLocalValueData ),// どうしようか
+                typeof( Bone.LocalValueData ),// どうしようか
                 typeof( Prefab )
             )
         );
@@ -185,7 +185,7 @@ namespace Abarabone.Authoring
                 new DrawTransformLinkData
                 {
                     DrawInstanceEntity = drawInstancePrefab,
-                    DrawModelEntity = em_.GetComponentData<DrawInstanceModeLinkData>(drawInstancePrefab).DrawModelEntity,
+                    DrawModelEntity = em_.GetComponentData<DrawInstance.ModeLinkData>(drawInstancePrefab).DrawModelEntity,
                 }
             );
         }
@@ -266,7 +266,7 @@ namespace Abarabone.Authoring
             foreach( var x in qDisEnables )
             {
                 em_.RemoveComponent<Bone.RelationLinkData>( x );
-                em_.RemoveComponent<BoneStream0LinkData>( x );
+                em_.RemoveComponent<Bone.Stream0LinkData>( x );
             }
 
         }
@@ -313,7 +313,7 @@ namespace Abarabone.Authoring
                 {
                     case EnMotionBlendingType.blendChannel0:
                     {
-                        var linker = new BoneStream0LinkData
+                        var linker = new Bone.Stream0LinkData
                         {
                             PositionStreamEntity = st.Position,
                             RotationStreamEntity = st.Rotation,
@@ -323,7 +323,7 @@ namespace Abarabone.Authoring
                     break;
                     case EnMotionBlendingType.blendChannel1:
                     {
-                        var linker = new BoneStream1LinkData
+                        var linker = new Bone.Stream1LinkData
                         {
                             PositionStreamEntity = st.Position,
                             RotationStreamEntity = st.Rotation,
@@ -333,7 +333,7 @@ namespace Abarabone.Authoring
                     break;
                     //case 2:
                     //{
-                    //    var linker = new BoneStream2LinkData
+                    //    var linker = new Bone.Stream2LinkData
                     //    {
                     //        PositionStreamEntity = st.Position,
                     //        RotationStreamEntity = st.Rotation,
@@ -351,7 +351,7 @@ namespace Abarabone.Authoring
             //    if( !ist.MoveNext() ) continue;
 
             //    var st0 = ist.Current;
-            //    var linker0 = new BoneStream0LinkData
+            //    var linker0 = new Bone.Stream0LinkData
             //    {
             //        PositionStreamEntity = st0.Position,
             //        RotationStreamEntity = st0.Rotation,
@@ -361,10 +361,10 @@ namespace Abarabone.Authoring
 
             //    if( !ist.MoveNext() ) continue;
 
-            //    em.AddComponentData( x.bone, new BoneMotionBlendLinkData { MotionBlendEntity = mainMotionPrefab } );
+            //    em.AddComponentData( x.bone, new Bone.MotionBlendLinkData { MotionBlendEntity = mainMotionPrefab } );
 
             //    var st1 = ist.Current;
-            //    var linker1 = new BoneStream1LinkData
+            //    var linker1 = new Bone.Stream1LinkData
             //    {
             //        PositionStreamEntity = st1.Position,
             //        RotationStreamEntity = st1.Rotation,
@@ -374,7 +374,7 @@ namespace Abarabone.Authoring
             //    if( !ist.MoveNext() ) continue;
 
             //    var st2 = ist.Current;
-            //    var linker2 = new BoneStream2LinkData
+            //    var linker2 = new Bone.Stream2LinkData
             //    {
             //        PositionStreamEntity = st2.Position,
             //        RotationStreamEntity = st2.Rotation,

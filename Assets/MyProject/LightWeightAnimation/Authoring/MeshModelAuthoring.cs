@@ -63,8 +63,8 @@ namespace Abarabone.Particle.Aurthoring
 
                 var archetype = em.CreateArchetype(
                     typeof( ModelPrefabNoNeedLinkedEntityGroupTag ),
-                    typeof( DrawInstanceModeLinkData ),
-                    typeof( DrawInstanceTargetWorkData ),
+                    typeof( DrawInstance.ModeLinkData ),
+                    typeof( DrawInstance.TargetWorkData ),
                     typeof( Translation ),
                     typeof( Rotation ),
                     typeof( NonUniformScale )
@@ -73,14 +73,14 @@ namespace Abarabone.Particle.Aurthoring
 
 
                 em.SetComponentData( mainEntity,
-                    new DrawInstanceModeLinkData
+                    new DrawInstance.ModeLinkData
                     //new DrawTransformLinkData
                     {
                         DrawModelEntity = gcs.GetFromModelEntityDictionary( main ),
                     }
                 );
                 em.SetComponentData( mainEntity,
-                    new DrawInstanceTargetWorkData
+                    new DrawInstance.TargetWorkData
                     {
                         DrawInstanceId = -1,
                     }

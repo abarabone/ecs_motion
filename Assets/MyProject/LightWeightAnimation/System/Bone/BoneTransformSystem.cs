@@ -35,7 +35,7 @@ namespace Abarabone.Motion
         {
 
             var boneRelationLinkers = this.GetComponentDataFromEntity<Bone.RelationLinkData>( isReadOnly: true );
-            var boneLocals = this.GetComponentDataFromEntity<BoneLocalValueData>( isReadOnly: true );
+            var boneLocals = this.GetComponentDataFromEntity<Bone.LocalValueData>( isReadOnly: true );
             var bonePositions = this.GetComponentDataFromEntity<Translation>();
             var boneRotations = this.GetComponentDataFromEntity<Rotation>();
             var boneVelocities = this.GetComponentDataFromEntity<PhysicsVelocity>();
@@ -130,7 +130,7 @@ namespace Abarabone.Motion
             inputDeps = new BoneTransformJob
             {
                 BoneRelationLinkers = this.GetComponentDataFromEntity<Bone.RelationLinkData>( isReadOnly: true ),
-                BoneLocals = this.GetComponentDataFromEntity<BoneLocalValueData>( isReadOnly: true ),
+                BoneLocals = this.GetComponentDataFromEntity<Bone.LocalValueData>( isReadOnly: true ),
                 BonePositions = this.GetComponentDataFromEntity<Translation>(),
                 BoneRotations = this.GetComponentDataFromEntity<Rotation>(),
                 BoneVelocities = this.GetComponentDataFromEntity<PhysicsVelocity>(),
@@ -150,7 +150,7 @@ namespace Abarabone.Motion
             [ReadOnly]
             public ComponentDataFromEntity<Bone.RelationLinkData>    BoneRelationLinkers;
             [ReadOnly]
-            public ComponentDataFromEntity<BoneLocalValueData>      BoneLocals;
+            public ComponentDataFromEntity<Bone.LocalValueData>      BoneLocals;
 
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Translation>     BonePositions;

@@ -51,7 +51,7 @@ namespace Abarabone.Character
 
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
-            var mainEntities = this.GetComponentDataFromEntity<BoneMainEntityLinkData>(isReadOnly: true);
+            var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
 
             inputDeps = new HorizontalMoveJob
             {
@@ -76,7 +76,7 @@ namespace Abarabone.Character
 
             [ReadOnly] public PhysicsWorld CollisionWorld;
 
-            [ReadOnly] public ComponentDataFromEntity<BoneMainEntityLinkData> MainEntities;
+            [ReadOnly] public ComponentDataFromEntity<Bone.MainEntityLinkData> MainEntities;
 
 
             public unsafe void Execute(
@@ -149,7 +149,7 @@ namespace Abarabone.Character
                     ref PhysicsVelocity v, ref float3 pos, ref quaternion rot, float dt,
                     float3 origin, float3 gndray, float bodySize, float3 fwddir,
                     Entity ent, CollisionFilter filter,
-                    ComponentDataFromEntity<BoneMainEntityLinkData> mainEntities
+                    ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntities
                 )
             {
 
@@ -187,7 +187,7 @@ namespace Abarabone.Character
                 //( bool isHit, RaycastHit hit) raycast
                     (
                         ref PhysicsWorld cw, float3 origin_, float3 ray_, Entity ent_, CollisionFilter filter_,
-                        ComponentDataFromEntity<BoneMainEntityLinkData> mainEntities_
+                        ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntities_
                     )
                 {
                     var hitInput = new RaycastInput

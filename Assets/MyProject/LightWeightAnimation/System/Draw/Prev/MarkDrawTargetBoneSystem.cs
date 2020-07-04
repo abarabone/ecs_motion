@@ -31,14 +31,14 @@ namespace Abarabone.Draw
             inputDeps = new MarkBoneJob
             {
                 //DrawIndexers = this.GetComponentDataFromEntity<DrawModelIndexData>( isReadOnly: true ),
-                DrawTargets = this.GetComponentDataFromEntity<DrawInstanceTargetWorkData>( isReadOnly: true ),
+                DrawTargets = this.GetComponentDataFromEntity<DrawInstance.TargetWorkData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
 
             //var instanceOffestsOfDrawModel =
             //    this.GetComponentDataFromEntity<DrawModelInstanceOffsetData>( isReadOnly: true );
             //var targetsOfDrawInstance =
-            //    this.GetComponentDataFromEntity<DrawInstanceTargetWorkData>( isReadOnly: true );
+            //    this.GetComponentDataFromEntity<DrawInstance.TargetWorkData>( isReadOnly: true );
 
             //this.Entities
             //    .WithBurst()
@@ -72,7 +72,7 @@ namespace Abarabone.Draw
             //[ReadOnly]
             //public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
             [ReadOnly]
-            public ComponentDataFromEntity<DrawInstanceTargetWorkData> DrawTargets;
+            public ComponentDataFromEntity<DrawInstance.TargetWorkData> DrawTargets;
 
             public void Execute(
                 [ReadOnly] ref DrawTransformLinkData drawLinker,

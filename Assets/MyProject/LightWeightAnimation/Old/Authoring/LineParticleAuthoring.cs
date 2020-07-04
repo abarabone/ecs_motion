@@ -64,13 +64,13 @@ namespace Abarabone.Authoring
                 //em_.AddBuffer<LinkedEntityGroup>( ent );
 
                 em_.AddComponentData( ent,
-                    new DrawInstanceModeLinkData
+                    new DrawInstance.ModeLinkData
                     {
                         DrawModelEntity = drawModelEntity_
                     }
                 );
                 em_.AddComponentData( ent,
-                    new DrawInstanceTargetWorkData
+                    new DrawInstance.TargetWorkData
                     {
                         DrawInstanceId = -1,
                     }

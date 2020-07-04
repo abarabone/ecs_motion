@@ -27,7 +27,7 @@ namespace Abarabone.Draw
 
             inputDeps = new MarkStreamJob
             {
-                DrawInstanceIndexers = this.GetComponentDataFromEntity<DrawInstanceTargetWorkData>( isReadOnly: true ),
+                DrawInstanceIndexers = this.GetComponentDataFromEntity<DrawInstance.TargetWorkData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
 
@@ -41,7 +41,7 @@ namespace Abarabone.Draw
         {
 
             [ReadOnly]
-            public ComponentDataFromEntity<DrawInstanceTargetWorkData> DrawInstanceIndexers;
+            public ComponentDataFromEntity<DrawInstance.TargetWorkData> DrawInstanceIndexers;
 
 
             public void Execute(

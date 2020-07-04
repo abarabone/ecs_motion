@@ -38,7 +38,7 @@ namespace Abarabone.Authoring
 
             var motionClip = this.GetComponent<MotionAuthoring>().MotionClip;//
 
-            //return BoneLvPrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip );
+            //return Bone.LvPrefabCreator.CreatePrefabs( em, streamPrefabs, drawPrefab, motionClip );
             return (new NameAndEntity[] { }, Entity.Null);
         }
     }
@@ -65,7 +65,7 @@ namespace Abarabone.Authoring
             (
                 //typeof( Bone.RelationLinkData ),
                 typeof( DrawTransformLinkData ),
-                typeof( BoneStream0LinkData ),
+                typeof( Bone.Stream0LinkData ),
                 typeof( DrawTransformIndexData ),
                 typeof( DrawTransformTargetWorkData ),
                 typeof( Translation ),
@@ -129,7 +129,7 @@ namespace Abarabone.Authoring
                     .Take( boneLength );
                 var qStreamlinkers =
                     from ents in (qPosStreams, qRotStreams).Zip()
-                    select new BoneStream0LinkData
+                    select new Bone.Stream0LinkData
                     {
                         PositionStreamEntity = ents.x,
                         RotationStreamEntity = ents.y,
@@ -184,15 +184,15 @@ namespace Abarabone.Authoring
                 {
                     switch( lv )
                     {
-                        case 1: em_.AddComponentData( ent, new BoneLv01LinkData { ParentBoneEntity = parent } ); break;
-                        case 2: em_.AddComponentData( ent, new BoneLv02LinkData { ParentBoneEntity = parent } ); break;
-                        case 3: em_.AddComponentData( ent, new BoneLv03LinkData { ParentBoneEntity = parent } ); break;
-                        case 4: em_.AddComponentData( ent, new BoneLv04LinkData { ParentBoneEntity = parent } ); break;
-                        case 5: em_.AddComponentData( ent, new BoneLv05LinkData { ParentBoneEntity = parent } ); break;
-                        case 6: em_.AddComponentData( ent, new BoneLv06LinkData { ParentBoneEntity = parent } ); break;
-                        case 7: em_.AddComponentData( ent, new BoneLv07LinkData { ParentBoneEntity = parent } ); break;
-                        case 8: em_.AddComponentData( ent, new BoneLv08LinkData { ParentBoneEntity = parent } ); break;
-                        case 9: em_.AddComponentData( ent, new BoneLv09LinkData { ParentBoneEntity = parent } ); break;
+                        case 1: em_.AddComponentData( ent, new Bone.Lv01LinkData { ParentBoneEntity = parent } ); break;
+                        case 2: em_.AddComponentData( ent, new Bone.Lv02LinkData { ParentBoneEntity = parent } ); break;
+                        case 3: em_.AddComponentData( ent, new Bone.Lv03LinkData { ParentBoneEntity = parent } ); break;
+                        case 4: em_.AddComponentData( ent, new Bone.Lv04LinkData { ParentBoneEntity = parent } ); break;
+                        case 5: em_.AddComponentData( ent, new Bone.Lv05LinkData { ParentBoneEntity = parent } ); break;
+                        case 6: em_.AddComponentData( ent, new Bone.Lv06LinkData { ParentBoneEntity = parent } ); break;
+                        case 7: em_.AddComponentData( ent, new Bone.Lv07LinkData { ParentBoneEntity = parent } ); break;
+                        case 8: em_.AddComponentData( ent, new Bone.Lv08LinkData { ParentBoneEntity = parent } ); break;
+                        case 9: em_.AddComponentData( ent, new Bone.Lv09LinkData { ParentBoneEntity = parent } ); break;
                     }
                 }
             }

@@ -41,8 +41,8 @@ namespace Abarabone.Draw
                 .WithBurst()
                 .ForEach(
                     (
-                        in DrawInstanceTargetWorkData target,
-                        in DrawInstanceModeLinkData linker,
+                        in DrawInstance.TargetWorkData target,
+                        in DrawInstance.ModeLinkData linker,
                         in Translation pos,
                         in Rotation rot,
                         in NonUniformScale scl

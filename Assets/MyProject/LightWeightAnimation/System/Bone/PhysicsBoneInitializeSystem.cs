@@ -59,7 +59,7 @@ namespace Abarabone.Physics
 
 
         struct PhysicsBoneInitializeJob : IJobForEachWithEntity
-            <BoneInitializeData, /*Translation, Rotation,*/ PhysicsVelocity>
+            <Bone.InitializeData, /*Translation, Rotation,*/ PhysicsVelocity>
         {
 
             public EntityCommandBuffer.Concurrent Commands;
@@ -74,7 +74,7 @@ namespace Abarabone.Physics
 
             public void Execute(
                 Entity entity, int index,
-                [ReadOnly] ref BoneInitializeData init,
+                [ReadOnly] ref Bone.InitializeData init,
                 //ref Translation pos,
                 //ref Rotation rot,
                 ref PhysicsVelocity v
@@ -94,7 +94,7 @@ namespace Abarabone.Physics
                 this.Translations[ entity ] = pos;//
                 this.Rotations[ entity ] = rot;//
 
-                Commands.RemoveComponent<BoneInitializeData>( index, entity );
+                Commands.RemoveComponent<Bone.InitializeData>( index, entity );
             }
         }
     }

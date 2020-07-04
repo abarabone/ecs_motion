@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Physics;
+using System;
 
 namespace Abarabone.Physics
 {
@@ -21,13 +22,13 @@ namespace Abarabone.Physics
         public int NumHits { get; private set; }
         
         Entity self;
-        ComponentDataFromEntity<BoneMainEntityLinkData> mainEntityLinks;
+        ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntityLinks;
         
         T m_ClosestHit;
         public T ClosestHit => m_ClosestHit;
 
         public ClosestHitExcludeSelfCollector
-            ( float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<BoneMainEntityLinkData> mainLinks )
+            ( float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks )
         {
             this.MaxFraction = maxFraction;
             this.m_ClosestHit = default( T );
@@ -61,10 +62,10 @@ namespace Abarabone.Physics
         public int NumHits { get; private set; }
 
         Entity self;
-        ComponentDataFromEntity<BoneMainEntityLinkData> mainEntityLinks;
+        ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntityLinks;
 
         public AnyHitExcludeSelfCollector
-            (float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<BoneMainEntityLinkData> mainLinks)
+            (float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks)
         {
             this.MaxFraction = maxFraction;
             this.self = selfMainEntity;
