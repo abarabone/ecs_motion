@@ -18,7 +18,7 @@ using SphereCollider = Unity.Physics.SphereCollider;
 using Abarabone.Misc;
 using Abarabone.Utilities;
 using Abarabone.SystemGroup;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 
 namespace Abarabone.Character
 {

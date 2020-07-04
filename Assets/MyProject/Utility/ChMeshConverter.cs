@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 using Abarabone.Common.Extension;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 
 namespace Abarabone.Geometry
 {

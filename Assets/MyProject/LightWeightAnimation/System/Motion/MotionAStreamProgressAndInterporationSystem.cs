@@ -12,7 +12,7 @@ using Unity.Mathematics;
 using Abarabone.Authoring;
 using Abarabone.SystemGroup;
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
     
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
@@ -42,17 +42,17 @@ namespace Abarabone.Motion
         /// </summary>
         [BurstCompile]
         struct StreamProgressAndInterporationJob : IJobForEach
-            <StreamCursorData, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
+            <Stream.CursorData, Stream.KeyShiftData, Stream.NearKeysCacheData, Stream.InterpolationData>
         {
 
             public float DeltaTime;
 
 
             public void Execute(
-                ref StreamCursorData timer,
-                ref StreamKeyShiftData shiftInfo,
-                ref StreamNearKeysCacheData nearKeys,
-                [WriteOnly] ref StreamInterpolatedData dst
+                ref Stream.CursorData timer,
+                ref Stream.KeyShiftData shiftInfo,
+                ref Stream.NearKeysCacheData nearKeys,
+                [WriteOnly] ref Stream.InterpolationData dst
             )
             {
                 timer.Cursor.Progress( DeltaTime );
@@ -61,7 +61,7 @@ namespace Abarabone.Motion
 
                 var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( timer.Cursor.CurrentPosition );
 
-                dst.Value = nearKeys.Interpolate( timeProgressNormalized );
+                dst.Interpolation = nearKeys.Interpolate( timeProgressNormalized );
             }
 
         }

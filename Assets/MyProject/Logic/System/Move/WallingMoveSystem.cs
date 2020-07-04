@@ -26,7 +26,7 @@ namespace Abarabone.Character
     using Abarabone.Character;
     using Abarabone.Geometry;
     using Abarabone.Physics;
-    using Abarabone.Motion;
+    using Abarabone.CharacterMotion;
     using Abarabone.Model;
 
 

@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
     
     using Abarabone.Authoring;
@@ -32,7 +32,7 @@ namespace Abarabone.Motion
 
             inputDeps = new StreamToBoneJob
             {
-                StreamValues = this.GetComponentDataFromEntity<StreamInterpolatedData>( isReadOnly: true ),
+                StreamValues = this.GetComponentDataFromEntity<Stream.InterpolationData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
 
@@ -48,7 +48,7 @@ namespace Abarabone.Motion
         {
 
             [ReadOnly]
-            public ComponentDataFromEntity<StreamInterpolatedData> StreamValues;
+            public ComponentDataFromEntity<Stream.InterpolationData> StreamValues;
 
 
             public void Execute(
@@ -62,8 +62,8 @@ namespace Abarabone.Motion
                 //pos.Value = this.StreamValues[ streamLinker.PositionStreamEntity ].Value.As_float3();
                 //rot.Value = this.StreamValues[ streamLinker.RotationStreamEntity ].Value;
 
-                local.Position = this.StreamValues[ streamLinker.PositionStreamEntity ].Value.As_float3();
-                local.Rotation = this.StreamValues[ streamLinker.RotationStreamEntity ].Value;
+                local.Position = this.StreamValues[ streamLinker.PositionStreamEntity ].Interpolation.As_float3();
+                local.Rotation = this.StreamValues[ streamLinker.RotationStreamEntity ].Interpolation;
 
             }
         }

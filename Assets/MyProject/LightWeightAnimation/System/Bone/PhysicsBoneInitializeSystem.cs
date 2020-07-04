@@ -18,7 +18,7 @@ namespace Abarabone.Physics
     using Abarabone.Utilities;
     using Abarabone.Geometry;
     using Abarabone.Character;
-    using Abarabone.Motion;//
+    using Abarabone.CharacterMotion;//
     using Abarabone.Model;
 
 

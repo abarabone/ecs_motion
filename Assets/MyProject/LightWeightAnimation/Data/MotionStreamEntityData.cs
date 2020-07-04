@@ -11,97 +11,99 @@ using Unity.Transforms;
 //using Unity.Rendering;
 using Unity.Properties;
 using Unity.Burst;
-using Abarabone.Geometry;
 using System.Runtime.InteropServices;
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
+    using Abarabone.Geometry;
 
 
-
-    //public struct StreamInitializeTag : IComponentData
-    //{
-    //       public Entity MotionEntity;
-    //       //public int BoneIndex;
-    //       public BlobArray<KeyBlobUnit> Keys;
-    //   }
-
-    //public struct StreamInitialFor1posTag : IComponentData
-    //{}
-
-    public struct StreamDrawTargetData : IComponentData
+    static public partial class Stream
     {
-        public bool IsDrawTarget;
-    }
+        //public struct InitializeTag : IComponentData
+        //{
+        //       public Entity MotionEntity;
+        //       //public int BoneIndex;
+        //       public BlobArray<KeyBlobUnit> Keys;
+        //   }
 
-    public struct StreamRelationData : IComponentData
-    {
-        public int BoneId;
-        public Entity NextStreamEntity;
-    }
+        //public struct InitialFor1posTag : IComponentData
+        //{}
 
-    public struct StreamDrawLinkData : IComponentData
-    {
-        public Entity DrawEntity;
-    }
-    public struct StreamMotionLinkData : IComponentData// MotionB 用
-    {
-        public Entity MotionEntity;
-    }
+        public struct DrawTargetData : IComponentData
+        {
+            public bool IsDrawTarget;
+        }
 
-    /// <summary>
-    /// 最適化用
-    /// </summary>
-    //public struct StreamDirectDrawTargetIndexData : IComponentData
-    //{
-    //    public int DrawInstanceVectorIndex;
-    //}
+        public struct RelationData : IComponentData
+        {
+            public int BoneId;
+            public Entity NextStreamEntity;
+        }
+
+        public struct DrawLinkData : IComponentData
+        {
+            public Entity DrawEntity;
+        }
+        public struct MotionLinkData : IComponentData// MotionB 用
+        {
+            public Entity MotionEntity;
+        }
+
+        /// <summary>
+        /// 最適化用
+        /// </summary>
+        //public struct DirectDrawTargetIndexData : IComponentData
+        //{
+        //    public int DrawInstanceVectorIndex;
+        //}
 
 
-    /// <summary>
-    /// 現在キーの位置と、ストリームデータへの参照を保持する。
-    /// </summary>
-    unsafe public struct StreamKeyShiftData : IComponentData
-    {
-        public KeyBlobUnit* Keys;
-        public int KeyLength;
+        /// <summary>
+        /// 現在キーの位置と、ストリームデータへの参照を保持する。
+        /// </summary>
+        unsafe public struct KeyShiftData : IComponentData
+        {
+            public KeyBlobUnit* Keys;
+            public int KeyLength;
 
-        public int KeyIndex_Next;
-    }
+            public int KeyIndex_Next;
+        }
 
-    /// <summary>
-    /// 時間は deltaTime を加算して進める。
-    /// （スタート時刻と現在時刻を比較する方法だと、速度変化や休止ができないため）
-    /// ※ただし現在時刻法だと、不要な更新をなくせるので、こちらのほうがいい面も多い
-    /// </summary>
-    public struct StreamCursorData : IComponentData
-    {
-        public MotionCursorData Cursor;
-    }
+        /// <summary>
+        /// 時間は deltaTime を加算して進める。
+        /// （スタート時刻と現在時刻を比較する方法だと、速度変化や休止ができないため）
+        /// ※ただし現在時刻法だと、不要な更新をなくせるので、こちらのほうがいい面も多い
+        /// </summary>
+        public struct CursorData : IComponentData
+        {
+            public Motion.CursorData Cursor;
+        }
 
-    /// <summary>
-    /// 現在キー周辺のキーキャッシュデータ。
-    /// キーがシフトしたときのみ、次のキーを読めば済むようにする。
-    /// </summary>
-    public struct StreamNearKeysCacheData : IComponentData
-    {
-        public float Time_From;
-        public float Time_To;
-        public float Time_Next;
+        /// <summary>
+        /// 現在キー周辺のキーキャッシュデータ。
+        /// キーがシフトしたときのみ、次のキーを読めば済むようにする。
+        /// </summary>
+        public struct NearKeysCacheData : IComponentData
+        {
+            public float Time_From;
+            public float Time_To;
+            public float Time_Next;
 
-        // 補間にかけるための現在キー周辺４つのキー
-        public float4 Value_Prev;
-        public float4 Value_From;   // これが現在キー
-        public float4 Value_To;
-        public float4 Value_Next;
-    }
+            // 補間にかけるための現在キー周辺４つのキー
+            public float4 Value_Prev;
+            public float4 Value_From;   // これが現在キー
+            public float4 Value_To;
+            public float4 Value_Next;
+        }
 
-    /// <summary>
-    /// 現在キー周辺のキーと現在時間から保管した計算結果。
-    /// </summary>
-    public struct StreamInterpolatedData : IComponentData
-    {
-        public float4 Value;
+        /// <summary>
+        /// 現在キー周辺のキーと現在時間から保管した計算結果。
+        /// </summary>
+        public struct InterpolationData : IComponentData
+        {
+            public float4 Interpolation;
+        }
     }
 
 
@@ -115,8 +117,8 @@ namespace Abarabone.Motion
         ///// キーバッファをストリーム先頭に初期化する。
         ///// </summary>
         //unsafe static public void InitializeKeys(
-        //    ref this StreamNearKeysCacheData nearKeys,
-        //    ref StreamKeyShiftData shift,
+        //    ref this Stream.NearKeysCacheData nearKeys,
+        //    ref Stream.KeyShiftData shift,
         //    ref StreamTimeProgressData progress,
         //    float timeOffset = 0.0f
         //)
@@ -140,8 +142,8 @@ namespace Abarabone.Motion
         //}
 
         //unsafe static public void InitializeKeysContinuous(
-        //    ref this StreamNearKeysCacheData nearKeys,
-        //    ref StreamKeyShiftData shift,
+        //    ref this Stream.NearKeysCacheData nearKeys,
+        //    ref Stream.KeyShiftData shift,
         //    ref StreamTimeProgressData progress,
         //    float delayTimer = 0.0f// 再検討の余地あり（変な挙動あり）
         //)
@@ -165,8 +167,8 @@ namespace Abarabone.Motion
         /// キーバッファをストリーム先頭に初期化する。
         /// </summary>
         static public unsafe void InitializeKeys(
-            ref this StreamNearKeysCacheData nearKeys,
-            ref StreamKeyShiftData shift
+            ref this Stream.NearKeysCacheData nearKeys,
+            ref Stream.KeyShiftData shift
         )
         {
             var index0 = 0;
@@ -186,8 +188,8 @@ namespace Abarabone.Motion
         }
 
         static public unsafe void InitializeKeysContinuous(
-            ref this StreamNearKeysCacheData nearKeys,
-            ref StreamKeyShiftData shift,
+            ref this Stream.NearKeysCacheData nearKeys,
+            ref Stream.KeyShiftData shift,
             float delayTimer = 0.0f// 再検討の余地あり（変な挙動あり）
         )
         {
@@ -209,9 +211,9 @@ namespace Abarabone.Motion
         /// キーバッファを次のキーに移行する。終端まで来たら、最後のキーのままでいる。
         /// </summary>
         unsafe static public void ShiftKeysIfOverKeyTime(
-            ref this StreamNearKeysCacheData nearKeys,
-            ref StreamKeyShiftData shift,
-            in MotionCursorData cursor
+            ref this Stream.NearKeysCacheData nearKeys,
+            ref Stream.KeyShiftData shift,
+            in Motion.CursorData cursor
         )
         {
             if( cursor.CurrentPosition < nearKeys.Time_To ) return;
@@ -236,9 +238,9 @@ namespace Abarabone.Motion
         /// キーバッファを次のキーに移行する。ループアニメーション対応版。
         /// </summary>
         unsafe static public void ShiftKeysIfOverKeyTimeForLooping(
-            ref this StreamNearKeysCacheData nearKeys,
-            ref StreamKeyShiftData shift,
-            ref MotionCursorData cursor
+            ref this Stream.NearKeysCacheData nearKeys,
+            ref Stream.KeyShiftData shift,
+            ref Motion.CursorData cursor
         )
         {
             //if( cursor.CurrentPosition < nearKeys.Time_To ) return;
@@ -272,12 +274,12 @@ namespace Abarabone.Motion
             return;
 
 
-            float getTimeOffsetOverLength( in MotionCursorData cursor_, bool isEndOfStream_ )
+            float getTimeOffsetOverLength( in Motion.CursorData cursor_, bool isEndOfStream_ )
             {
                 return math.select( 0.0f, cursor_.TotalLength, isEndOfStream_ );
             }
 
-            int getNextKeyIndex( in StreamKeyShiftData shift_, bool isEndOfStream_ )
+            int getNextKeyIndex( in Stream.KeyShiftData shift_, bool isEndOfStream_ )
             {
                 var iKeyLast = shift_.KeyLength - 1;
                 var iKeyNextNext = shift_.KeyIndex_Next + 1;
@@ -295,13 +297,13 @@ namespace Abarabone.Motion
         /// <summary>
         /// 時間を進める。
         /// </summary>
-        static public void Progress( ref this MotionCursorData cursor, float deltaTime )
+        static public void Progress( ref this Motion.CursorData cursor, float deltaTime )
         {
             cursor.CurrentPosition += deltaTime * cursor.Scale;
         }
 
         static public float CaluclateTimeNormalized
-            ( ref this StreamNearKeysCacheData nearKeys, float timeProgress )
+            ( ref this Stream.NearKeysCacheData nearKeys, float timeProgress )
         {
             var progress = timeProgress - nearKeys.Time_From;
             var length = nearKeys.Time_To - nearKeys.Time_From;
@@ -316,7 +318,7 @@ namespace Abarabone.Motion
         /// 補完する。
         /// </summary>
         static public float4 Interpolate
-            ( ref this StreamNearKeysCacheData nearKeys, float normalizedTimeProgress )
+            ( ref this Stream.NearKeysCacheData nearKeys, float normalizedTimeProgress )
         {
 
             //var s = math.sign( math.dot( nearKeys.Value_From, nearKeys.Value_To ) );

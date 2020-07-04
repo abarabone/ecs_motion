@@ -16,7 +16,7 @@
 //using Abarabone.Geometry;
 //using Abarabone.Character;
 
-//namespace Abarabone.Motion
+//namespace Abarabone.CharacterMotion
 //{
 
 //    //[DisableAutoCreation]

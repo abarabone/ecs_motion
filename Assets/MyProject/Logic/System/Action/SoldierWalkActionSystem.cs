@@ -14,14 +14,17 @@ using Unity.Physics.Systems;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-using Abarabone.Misc;
-using Abarabone.Utilities;
-using Abarabone.SystemGroup;
-using Abarabone.Character;
-using Abarabone.Motion;
 
 namespace Abarabone.Character
 {
+
+    using Abarabone.Misc;
+    using Abarabone.Utilities;
+    using Abarabone.SystemGroup;
+    using Abarabone.Character;
+    using Abarabone.CharacterMotion;
+    using Motion = Abarabone.CharacterMotion.Motion;
+
 
     /// <summary>
     /// 歩き時のアクションステート
@@ -50,10 +53,10 @@ namespace Abarabone.Character
             inputDeps = new SoldierWalkActionJob
             {
                 Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
-                MotionInfos = this.GetComponentDataFromEntity<MotionInfoData>( isReadOnly: true ),
+                MotionInfos = this.GetComponentDataFromEntity<Motion.InfoData>( isReadOnly: true ),
                 GroundResults = this.GetComponentDataFromEntity<GroundHitResultData>( isReadOnly: true ),
                 Rotations = this.GetComponentDataFromEntity<Rotation>(),
-                MotionCursors = this.GetComponentDataFromEntity<MotionCursorData>(),
+                MotionCursors = this.GetComponentDataFromEntity<Motion.CursorData>(),
                 MotionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>(),
             }
             .Schedule( this, inputDeps );
@@ -70,14 +73,14 @@ namespace Abarabone.Character
 
             public EntityCommandBuffer.Concurrent Commands;
 
-            [ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
+            [ReadOnly] public ComponentDataFromEntity<Motion.InfoData> MotionInfos;
             [ReadOnly] public ComponentDataFromEntity<GroundHitResultData> GroundResults;
 
             [NativeDisableParallelForRestriction]
             [WriteOnly] public ComponentDataFromEntity<Rotation> Rotations;
 
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<MotionCursorData> MotionCursors;
+            public ComponentDataFromEntity<Motion.CursorData> MotionCursors;
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<MotionBlend2WeightData> MotionWeights;
 
@@ -96,14 +99,14 @@ namespace Abarabone.Character
                 if( acts.IsChangeMotion )
                 {
                     this.Commands.AddComponent( index, linker.MotionEntity,
-                        new MotionInitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10, IsContinuous = true } );
+                        new Motion.InitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10, IsContinuous = true } );
                 }
 
                 if( !GroundResults[linker.PostureEntity].IsGround )
                 {
                     if( motionInfo.MotionIndex != Motion_riku.jump02 )
                         this.Commands.AddComponent( index, linker.MotionEntity,
-                            new MotionInitializeData { MotionIndex = Motion_riku.jump02, DelayTime = 0.1f, IsContinuous = true } );
+                            new Motion.InitializeData { MotionIndex = Motion_riku.jump02, DelayTime = 0.1f, IsContinuous = true } );
                     return;
                 }
 
@@ -111,7 +114,7 @@ namespace Abarabone.Character
                 {
                     if( motionInfo.MotionIndex != Motion_riku.walk_stance )
                         this.Commands.AddComponent( index, linker.MotionEntity,
-                            new MotionInitializeData { MotionIndex = Motion_riku.walk_stance, DelayTime = 0.1f, IsContinuous = true } );
+                            new Motion.InitializeData { MotionIndex = Motion_riku.walk_stance, DelayTime = 0.1f, IsContinuous = true } );
 
                     this.Rotations[ linker.PostureEntity ] =
                         new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
@@ -120,7 +123,7 @@ namespace Abarabone.Character
                 {
                     if( motionInfo.MotionIndex != Motion_riku.stand_stance )
                         this.Commands.AddComponent( index, linker.MotionEntity,
-                            new MotionInitializeData { MotionIndex = Motion_riku.stand_stance, DelayTime = 0.2f, IsContinuous = true } );
+                            new Motion.InitializeData { MotionIndex = Motion_riku.stand_stance, DelayTime = 0.2f, IsContinuous = true } );
 
                     //this.Rotations[ linker.PostureEntity ] =
                     //    new Rotation { Value = acts.HorizontalRotation };

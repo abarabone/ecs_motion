@@ -13,18 +13,18 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-using Abarabone.Utilities;
-using Abarabone.Draw;
-using Abarabone.Character;
-using Abarabone.Motion;
-
 namespace Abarabone.Particle
 {
+    using Abarabone.Utilities;
+    using Abarabone.Draw;
+    using Abarabone.Character;
+    using Abarabone.CharacterMotion;
+
 
     public struct PsylliumEntity :
         ITypedEntity<
             ParticleTag,
-            DrawInstance.ModeLinkData,//DrawTransformLinkData
+            DrawInstance.ModeLinkData,//DrawTransform.LinkData
             DrawInstance.TargetWorkData,
             Translation,
             Rotation
@@ -39,9 +39,9 @@ namespace Abarabone.Particle
     public struct LineParticleNodeEntity :
         ITypedEntity<
             LineParticlePointNodeLinkData,
-            DrawTransformLinkData,
-            DrawTransformIndexData,
-            DrawTransformTargetWorkData,
+            DrawTransform.LinkData,
+            DrawTransform.IndexData,
+            DrawTransform.TargetWorkData,
             Translation
         >
     {

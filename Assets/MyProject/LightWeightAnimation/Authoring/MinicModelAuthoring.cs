@@ -15,7 +15,7 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Draw.Authoring;
     using Abarabone.Common.Extension;
     using Abarabone.Draw;
-    using Abarabone.Motion;
+    using Abarabone.CharacterMotion;
 
     /// <summary>
     /// プライマリエンティティは LinkedEntityGroup のみとする。

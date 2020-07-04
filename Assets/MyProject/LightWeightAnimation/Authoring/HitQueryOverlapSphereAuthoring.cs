@@ -12,7 +12,7 @@ using Unity.Mathematics;
 
 namespace Abarabone.Physics.Authoring
 {
-    using Abarabone.Motion;
+    using Abarabone.CharacterMotion;
     using Abarabone.Character;
     using Abarabone.Utilities;
 

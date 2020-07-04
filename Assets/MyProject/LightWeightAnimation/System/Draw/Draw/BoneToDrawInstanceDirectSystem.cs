@@ -11,7 +11,7 @@ using Unity.Transforms;
 
 
 using Abarabone.Authoring;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.SystemGroup;
 
 namespace Abarabone.Draw

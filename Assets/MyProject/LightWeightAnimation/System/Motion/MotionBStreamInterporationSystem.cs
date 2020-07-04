@@ -12,7 +12,7 @@ using Unity.Mathematics;
 using Abarabone.Authoring;
 using Abarabone.SystemGroup;
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
     
     //[UpdateAfter(typeof())]
@@ -29,7 +29,7 @@ namespace Abarabone.Motion
 
             inputDeps = new StreamInterporationJob
             {
-                MotionCursors = this.GetComponentDataFromEntity<MotionCursorData>( isReadOnly: true ),
+                MotionCursors = this.GetComponentDataFromEntity<Motion.CursorData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
 
@@ -44,17 +44,17 @@ namespace Abarabone.Motion
         /// </summary>
         [BurstCompile]
         struct StreamInterporationJob : IJobForEach
-            <StreamMotionLinkData, StreamKeyShiftData, StreamNearKeysCacheData, StreamInterpolatedData>
+            <Stream.MotionLinkData, Stream.KeyShiftData, Stream.NearKeysCacheData, Stream.InterpolationData>
         {
 
             [ReadOnly]
-            public ComponentDataFromEntity<MotionCursorData> MotionCursors;
+            public ComponentDataFromEntity<Motion.CursorData> MotionCursors;
 
             public void Execute(
-                ref StreamMotionLinkData linker,
-                ref StreamKeyShiftData shiftInfo,
-                ref StreamNearKeysCacheData nearKeys,
-                [WriteOnly] ref StreamInterpolatedData dst
+                ref Stream.MotionLinkData linker,
+                ref Stream.KeyShiftData shiftInfo,
+                ref Stream.NearKeysCacheData nearKeys,
+                [WriteOnly] ref Stream.InterpolationData dst
             )
             {
                 var cursor = this.MotionCursors[ linker.MotionEntity ];
@@ -63,24 +63,24 @@ namespace Abarabone.Motion
 
                 var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( cursor.CurrentPosition );
 
-                dst.Value = nearKeys.Interpolate( timeProgressNormalized );
+                dst.Interpolation = nearKeys.Interpolate( timeProgressNormalized );
             }
 
         }
 
         //[BurstCompile]
         //struct StreamInterporationJob : IJobForEach
-        //    <StreamMotionLinkData, StreamInterpolatedData>
+        //    <Stream.MotionLinkData, Stream.InterpolatedData>
         //{
 
         //    [ReadOnly]
-        //    public ComponentDataFromEntity<MotionCursorData> MotionCursors;
+        //    public ComponentDataFromEntity<Motion.CursorData> MotionCursors;
         //    [ReadOnly]
-        //    public ComponentDataFromEntity<MotionClipData> MotionClips;//
+        //    public ComponentDataFromEntity<Motion.ClipData> MotionClips;//
 
         //    public void Execute(
-        //        ref StreamMotionLinkData linker,
-        //        [WriteOnly] ref StreamInterpolatedData dst
+        //        ref Stream.MotionLinkData linker,
+        //        [WriteOnly] ref Stream.InterpolatedData dst
         //    )
         //    {
         //        var timer = this.MotionCursors[ linker.MotionEntity ].Timer;

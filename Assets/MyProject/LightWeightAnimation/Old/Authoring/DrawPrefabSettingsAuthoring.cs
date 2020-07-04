@@ -11,15 +11,15 @@ using Unity.Linq;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Runtime.InteropServices;
 
-using Abarabone.Geometry;
-using Abarabone.Utilities;
-using Abarabone.Misc;
-using Abarabone.Motion;
-using Abarabone.Draw;
-using Abarabone.Character;
-
 namespace Abarabone.Authoring
 {
+    using Abarabone.Geometry;
+    using Abarabone.Utilities;
+    using Abarabone.Misc;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Draw;
+    using Abarabone.Model;
+
 
     public struct NameAndEntity
     {
@@ -47,11 +47,11 @@ namespace Abarabone.Authoring
 
             
             var drawModelArchetype = em.CreateArchetype(
-                typeof( DrawModelBoneUnitSizeData ),
-                typeof( DrawModelInstanceCounterData ),
-                typeof( DrawModelInstanceOffsetData ),
-                typeof( DrawModelGeometryData ),
-                typeof( DrawModelComputeArgumentsBufferData )
+                typeof( DrawModel.BoneUnitSizeData ),
+                typeof( DrawModel.InstanceCounterData ),
+                typeof( DrawModel.InstanceOffsetData ),
+                typeof( DrawModel.GeometryData ),
+                typeof( DrawModel.ComputeArgumentsBufferData )
             );
             
             this.PrefabEntities = this.PrefabGameObjects
@@ -62,14 +62,14 @@ namespace Abarabone.Authoring
             return;
 
 
-            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType, int boneLength )
+            Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType BoneType, int boneLength )
             {
                 // キャプチャ（暫定）
                 var em_ = em;
                 var drawModelArchetype_ = drawModelArchetype;
                 
                 var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
-                var boneVectorBuffer = sys.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
+                var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
                 setShaderProps_( mat, mesh, boneVectorBuffer, boneLength );
 
                 return createEntityAndInitComponents_( drawModelArchetype_, boneLength );
@@ -94,21 +94,21 @@ namespace Abarabone.Authoring
                     var ent = em.CreateEntity( drawModelArchetype__ );
                     
                     em.SetComponentData( ent,
-                        new DrawModelBoneUnitSizeData
+                        new DrawModel.BoneUnitSizeData
                         {
                             BoneLength = boneLength_,
-                            VectorLengthInBone = (int)boneType,
+                            VectorLengthInBone = (int)BoneType,
                         }
                     );
                     em.SetComponentData( ent,
-                        new DrawModelGeometryData
+                        new DrawModel.GeometryData
                         {
                             Mesh = mesh,
                             Material = mat,
                         }
                     );
                     em.SetComponentData( ent,
-                        new DrawModelComputeArgumentsBufferData
+                        new DrawModel.ComputeArgumentsBufferData
                         {
                             InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
                         }

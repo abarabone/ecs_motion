@@ -11,50 +11,52 @@ using Unity.Transforms;
 //using Unity.Rendering;
 using Unity.Properties;
 using Unity.Burst;
-using Abarabone.Geometry;
 using System.Runtime.InteropServices;
 using System;
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
+    using Abarabone.Geometry;
 	
 
-	public struct MotionInitializeData : IComponentData
-	{
-        public int MotionIndex;
-        public float DelayTime;
-        public float TimeScale;
-        public bool IsLooping;
-        public bool IsContinuous;
-    }
-
-    public struct MotionClipData : IComponentData
+    static public partial class Motion
     {
-        public BlobAssetReference<MotionBlobData> ClipData;
-    }
+        public struct InitializeData : IComponentData
+        {
+            public int MotionIndex;
+            public float DelayTime;
+            public float TimeScale;
+            public bool IsLooping;
+            public bool IsContinuous;
+        }
 
-    public struct MotionInfoData : IComponentData
-	{
-        public int MotionIndex;
-    }
+        public struct ClipData : IComponentData
+        {
+            public BlobAssetReference<MotionBlobData> MotionClipData;
+        }
 
-    public struct MotionStreamLinkData : IComponentData
-    {
-        public Entity PositionStreamTop;
-        public Entity RotationStreamTop;
-    }
+        public struct InfoData : IComponentData
+        {
+            public int MotionIndex;
+        }
 
-    //public struct MotionATag : IComponentData// MotionB と区別するため暫定
-    //{ }
-    public struct MotionCursorData : IComponentData// MotionB 用
-    {
-        public float CurrentPosition;
-        public float TotalLength;
-        public float Scale;
-    }
-    public struct MotionProgressTimerTag : IComponentData// MotionB 用
-    { }
+        public struct StreamLinkData : IComponentData
+        {
+            public Entity PositionStreamTop;
+            public Entity RotationStreamTop;
+        }
 
+        //public struct MotionATag : IComponentData// MotionB と区別するため暫定
+        //{ }
+        public struct CursorData : IComponentData// MotionB 用
+        {
+            public float CurrentPosition;
+            public float TotalLength;
+            public float Scale;
+        }
+        public struct ProgressTimerTag : IComponentData// MotionB 用
+        { }
+    }
 
 
 
@@ -79,8 +81,8 @@ namespace Abarabone.Motion
 
     public ref struct MotionOperator
     {
-        MotionInfoData info;
-        //MotionCursorData cursor;
+        Motion.InfoData info;
+        //Motion.CursorData cursor;
 
         EntityCommandBuffer.Concurrent cmd;
         Entity entity;
@@ -88,8 +90,8 @@ namespace Abarabone.Motion
 
         public MotionOperator(
             EntityCommandBuffer.Concurrent command,
-            ComponentDataFromEntity<MotionInfoData> motionInfos,
-            ComponentDataFromEntity<MotionCursorData> motionCursors,
+            ComponentDataFromEntity<Motion.InfoData> motionInfos,
+            ComponentDataFromEntity<Motion.CursorData> motionCursors,
             Entity motionEntity, int jobIndex
         )
         {
@@ -108,10 +110,10 @@ namespace Abarabone.Motion
         {
             if( this.info.MotionIndex == motionIndex ) return;
 
-            this.cmd.AddComponent( this.jobIndex, this.entity, new MotionProgressTimerTag { } );
+            this.cmd.AddComponent( this.jobIndex, this.entity, new Motion.ProgressTimerTag { } );
 
             this.cmd.AddComponent( this.jobIndex, this.entity,
-                new MotionInitializeData
+                new Motion.InitializeData
                 {
                     MotionIndex = motionIndex,
                     DelayTime = delayTime,
@@ -126,7 +128,7 @@ namespace Abarabone.Motion
         /// </summary>
         public void Stop()
         {
-            this.cmd.RemoveComponent<MotionProgressTimerTag>( this.jobIndex, this.entity );
+            this.cmd.RemoveComponent<Motion.ProgressTimerTag>( this.jobIndex, this.entity );
         }
 
         /// <summary>
@@ -135,7 +137,7 @@ namespace Abarabone.Motion
         public void Change( int motionIndex, bool isContinuous = true )
         {
             cmd.AddComponent( this.jobIndex, this.entity,
-                new MotionInitializeData
+                new Motion.InitializeData
                 {
                     MotionIndex = motionIndex,
                     IsContinuous = isContinuous,
@@ -150,14 +152,14 @@ namespace Abarabone.Motion
         /// モーション初期化セット、disable があれば消す
         /// </summary>
         static public void Start( int entityIndex,
-            ref EntityCommandBuffer.Concurrent cmd, Entity motinEntity, MotionInfoData motionInfo,
+            ref EntityCommandBuffer.Concurrent cmd, Entity motinEntity, Motion.InfoData motionInfo,
             int motionIndex, bool isLooping, float delayTime = 0.0f, bool isContinuous = true
         )
         {
             if( motionInfo.MotionIndex == motionIndex ) return;
 
             cmd.AddComponent( entityIndex, motinEntity,
-                new MotionInitializeData
+                new Motion.InitializeData
                 {
                     MotionIndex = motionIndex,
                     DelayTime = delayTime,
@@ -165,14 +167,14 @@ namespace Abarabone.Motion
                     IsLooping = isLooping,
                 }
             );
-            cmd.AddComponent( entityIndex, motinEntity, new MotionProgressTimerTag { } );
+            cmd.AddComponent( entityIndex, motinEntity, new Motion.ProgressTimerTag { } );
         }
         /// <summary>
         /// モーションとストリームに disable
         /// </summary>
         static public void Stop( int entityIndex, ref EntityCommandBuffer.Concurrent cmd, Entity motionEntity )
         {
-            cmd.RemoveComponent<MotionProgressTimerTag>( entityIndex, motionEntity );
+            cmd.RemoveComponent<Motion.ProgressTimerTag>( entityIndex, motionEntity );
         }
         /// <summary>
         /// 
@@ -182,7 +184,7 @@ namespace Abarabone.Motion
         )
         {
             cmd.AddComponent( entityIndex, motinEntity,
-                new MotionInitializeData
+                new Motion.InitializeData
                 {
                     MotionIndex = motionIndex,
                     IsContinuous = isContinuous,
@@ -211,7 +213,7 @@ namespace Abarabone.Motion
 
 
         static public void InitializeCursor(
-            ref this MotionCursorData motionCursor, ref MotionBlobUnit motionClip,
+            ref this Motion.CursorData motionCursor, ref MotionBlobUnit motionClip,
             float delayTime = 0.0f, float scale = 1.0f
         )
         {

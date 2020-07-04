@@ -12,11 +12,12 @@ using Unity.Mathematics;
 using Abarabone.Geometry;
 using Abarabone.Utilities;
 using Abarabone.Misc;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.Draw;
 using Abarabone.Character;
 using Abarabone.Common.Extension;
 using Abarabone.Particle;
+using Abarabone.Model;
 
 namespace Abarabone.Authoring
 {
@@ -45,7 +46,7 @@ namespace Abarabone.Authoring
 
             em.AddComponentData( ent,
                 new DrawInstance.ModeLinkData
-                //new DrawTransformLinkData
+                //new DrawTransform.LinkData
                 {
                     DrawModelEntity = modelEntity,
                 }

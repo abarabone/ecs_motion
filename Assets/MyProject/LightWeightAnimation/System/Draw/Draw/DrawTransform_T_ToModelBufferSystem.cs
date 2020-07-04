@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 using Abarabone.Authoring;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.SystemGroup;
 
 namespace Abarabone.Draw
@@ -34,7 +34,7 @@ namespace Abarabone.Draw
         protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModelInstanceOffsetData>( isReadOnly: true );
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
 
 
             inputDeps = this.Entities
@@ -43,9 +43,9 @@ namespace Abarabone.Draw
                 .WithBurst()
                 .ForEach(
                     (
-                        in DrawTransformLinkData linkerOfTf,
-                        in DrawTransformIndexData indexerOfTf,
-                        in DrawTransformTargetWorkData targetOfTf,
+                        in DrawTransform.LinkData linkerOfTf,
+                        in DrawTransform.IndexData indexerOfTf,
+                        in DrawTransform.TargetWorkData targetOfTf,
                         in Translation pos
                     ) =>
                     {

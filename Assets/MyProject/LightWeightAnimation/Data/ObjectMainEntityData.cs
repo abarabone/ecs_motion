@@ -13,11 +13,39 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-using Abarabone.Geometry;
-using Abarabone.Utilities;
-
 namespace Abarabone.Character
 {
+    using Abarabone.Geometry;
+    using Abarabone.Utilities;
+
+
+    static public partial class ObjectMain
+    {
+
+        public struct BinderLinkData : IComponentData
+        {
+            public Entity BinderEntity;
+        }
+
+        public struct ObjectMainTag : IComponentData
+        { }
+
+
+
+        // 現行
+        public struct MotionLinkDate : IComponentData
+        {
+            public Entity MotionEntity;
+        }
+        public struct Motion2LinkData : IComponentData
+        {
+            public Entity MotionEntity0;
+            public Entity MotionEntity1;
+        }
+
+    }
+
+
     //廃止予定
     public struct ObjectMainCharacterLinkData : IComponentData
     {
@@ -25,17 +53,6 @@ namespace Abarabone.Character
         //public Entity DrawEntity;
         public Entity MotionEntity;
     }
-
-    public struct ObjectMotionLinkDate : IComponentData
-    {
-        public Entity MotionEntity;
-    }
-    public struct ObjectMotion2LinkData : IComponentData
-    {
-        public Entity MotionEntity0;
-        public Entity MotionEntity1;
-    }
-
 
     // 以下は廃止予定
     public struct CharacterSubMotion1LinkData : IComponentData

@@ -35,8 +35,8 @@ namespace Abarabone.Draw
 
         protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
         {
-            var nativeBuffer = this.GetSingleton<DrawSystemNativeTransformBufferData>().Transforms;
-            var computeBuffer = this.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
+            var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
+            var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
             computeBuffer.SetData( nativeBuffer.AsNativeArray() );
 
             //Debug.Log( "start" );
@@ -49,10 +49,10 @@ namespace Abarabone.Draw
                 .WithoutBurst()
                 .ForEach(
                     (
-                        in DrawModelInstanceCounterData counter,
-                        in DrawModelInstanceOffsetData offset,
-                        in DrawModelComputeArgumentsBufferData shaderArg,
-                        in DrawModelGeometryData geom
+                        in DrawModel.InstanceCounterData counter,
+                        in DrawModel.InstanceOffsetData offset,
+                        in DrawModel.ComputeArgumentsBufferData shaderArg,
+                        in DrawModel.GeometryData geom
                     ) =>
                     {
                         var mesh = geom.Mesh;

@@ -9,7 +9,7 @@ using Unity.Mathematics;
 
 using Abarabone.SystemGroup;
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
     
     [UpdateBefore( typeof( MotionProgressSystem ) )]// MotionB
@@ -31,9 +31,9 @@ namespace Abarabone.Motion
         {
             var commands = this.ecb.CreateCommandBuffer().ToConcurrent();
 
-            var linkers = this.GetComponentDataFromEntity<StreamRelationData>( isReadOnly: true );
-            var shifters = this.GetComponentDataFromEntity<StreamKeyShiftData>();
-            var caches = this.GetComponentDataFromEntity<StreamNearKeysCacheData>();
+            var linkers = this.GetComponentDataFromEntity<Stream.RelationData>( isReadOnly: true );
+            var shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>();
+            var caches = this.GetComponentDataFromEntity<Stream.NearKeysCacheData>();
             
             this.Entities
                 .WithName( "MotionBInitializeSystem" )
@@ -45,14 +45,14 @@ namespace Abarabone.Motion
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref MotionInfoData info,
-                        ref MotionCursorData cursor,
-                        in MotionInitializeData init,
-                        in MotionClipData data,
-                        in MotionStreamLinkData linker
+                        ref Motion.InfoData info,
+                        ref Motion.CursorData cursor,
+                        in Motion.InitializeData init,
+                        in Motion.ClipData data,
+                        in Motion.StreamLinkData linker
                     ) =>
                     {
-                        ref var blob = ref data.ClipData.Value;
+                        ref var blob = ref data.MotionClipData.Value;
                         ref var motionClip = ref blob.Motions[ init.MotionIndex ];
 
                         info.MotionIndex = init.MotionIndex;
@@ -64,7 +64,7 @@ namespace Abarabone.Motion
                         makeEnableSection( entityInQueryIndex, linker.PositionStreamTop );
                         makeEnableSection( entityInQueryIndex, linker.RotationStreamTop );
 
-                        commands.RemoveComponent<MotionInitializeData>( entityInQueryIndex, entity );
+                        commands.RemoveComponent<Motion.InitializeData>( entityInQueryIndex, entity );
                     }
                 )
                 .ScheduleParallel();
@@ -73,7 +73,7 @@ namespace Abarabone.Motion
 
 
             unsafe void initSection
-                ( ref MotionBlobUnit motion, Entity entTop, KeyStreamSection streamSection, in MotionInitializeData init )
+                ( ref MotionBlobUnit motion, Entity entTop, KeyStreamSection streamSection, in Motion.InitializeData init )
             {
                 ref var streams = ref motion.Sections[ (int)streamSection ].Streams;
 
@@ -118,9 +118,9 @@ namespace Abarabone.Motion
         //    inputDeps = new MotionInitializeJob
         //    {
         //        Commands = commandBuffer.ToConcurrent(),
-        //        Linkers  = this.GetComponentDataFromEntity<StreamRelationData>(),
-        //        Shifters = this.GetComponentDataFromEntity<StreamKeyShiftData>(),
-        //        Caches   = this.GetComponentDataFromEntity<StreamNearKeysCacheData>(),
+        //        Linkers  = this.GetComponentDataFromEntity<Stream.RelationData>(),
+        //        Shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>(),
+        //        Caches   = this.GetComponentDataFromEntity<Stream.NearKeysCacheData>(),
 
         //    }
         //    .Schedule( this, inputDeps );
@@ -134,26 +134,26 @@ namespace Abarabone.Motion
 
         ////[BurstCompile]
         //struct MotionInitializeJob : IJobForEachWithEntity
-        //    <MotionInitializeData, MotionStreamLinkData, MotionClipData, MotionInfoData, MotionCursorData>
+        //    <Motion.InitializeData, Motion.StreamLinkData, Motion.ClipData, Motion.InfoData, Motion.CursorData>
         //{
             
         //    public EntityCommandBuffer.Concurrent Commands;
 
         //    [NativeDisableParallelForRestriction][ReadOnly]
-        //    public ComponentDataFromEntity<StreamRelationData>      Linkers;
+        //    public ComponentDataFromEntity<Stream.RelationData>      Linkers;
         //    [NativeDisableParallelForRestriction]
-        //    public ComponentDataFromEntity<StreamKeyShiftData>      Shifters;
+        //    public ComponentDataFromEntity<Stream.KeyShiftData>      Shifters;
         //    [NativeDisableParallelForRestriction]
-        //    public ComponentDataFromEntity<StreamNearKeysCacheData> Caches;
+        //    public ComponentDataFromEntity<Stream.NearKeysCacheData> Caches;
             
 
         //    public void Execute(
         //        Entity entity, int index,
-        //        [ReadOnly] ref MotionInitializeData init,
-        //        [ReadOnly] ref MotionStreamLinkData linker,
-        //        [ReadOnly] ref MotionClipData data,
-        //        ref MotionInfoData info,
-        //        ref MotionCursorData cursor
+        //        [ReadOnly] ref Motion.InitializeData init,
+        //        [ReadOnly] ref Motion.StreamLinkData linker,
+        //        [ReadOnly] ref Motion.ClipData data,
+        //        ref Motion.InfoData info,
+        //        ref Motion.CursorData cursor
         //    )
         //    {
         //        ref var blob = ref data.ClipData.Value;
@@ -168,11 +168,11 @@ namespace Abarabone.Motion
         //        makeEnableSection( index, linker.PositionStreamTop );
         //        makeEnableSection( index, linker.RotationStreamTop );
 
-        //        this.Commands.RemoveComponent<MotionInitializeData>( index, entity );
+        //        this.Commands.RemoveComponent<Motion.InitializeData>( index, entity );
         //    }
 
         //    unsafe void initSection
-        //        ( ref MotionBlobUnit motion, Entity entTop, KeyStreamSection streamSection, ref MotionInitializeData init )
+        //        ( ref MotionBlobUnit motion, Entity entTop, KeyStreamSection streamSection, ref Motion.InitializeData init )
         //    {
         //        ref var streams = ref motion.Sections[(int)streamSection].Streams;
 

@@ -10,7 +10,7 @@ using Unity.Mathematics;
 
 
 using Abarabone.Authoring;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.SystemGroup;
 
 namespace Abarabone.Draw
@@ -36,7 +36,7 @@ namespace Abarabone.Draw
             .Schedule( this, inputDeps );
 
             //var instanceOffestsOfDrawModel =
-            //    this.GetComponentDataFromEntity<DrawModelInstanceOffsetData>( isReadOnly: true );
+            //    this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
             //var targetsOfDrawInstance =
             //    this.GetComponentDataFromEntity<DrawInstance.TargetWorkData>( isReadOnly: true );
 
@@ -66,7 +66,7 @@ namespace Abarabone.Draw
 
 
         [BurstCompile]
-        struct MarkBoneJob : IJobForEach<DrawTransformLinkData, DrawTransformIndexData, DrawTransformTargetWorkData>
+        struct MarkBoneJob : IJobForEach<DrawTransform.LinkData, DrawTransform.IndexData, DrawTransform.TargetWorkData>
         {
 
             //[ReadOnly]
@@ -75,9 +75,9 @@ namespace Abarabone.Draw
             public ComponentDataFromEntity<DrawInstance.TargetWorkData> DrawTargets;
 
             public void Execute(
-                [ReadOnly] ref DrawTransformLinkData drawLinker,
-                [ReadOnly] ref DrawTransformIndexData boneId,
-                ref DrawTransformTargetWorkData boneIndexer
+                [ReadOnly] ref DrawTransform.LinkData drawLinker,
+                [ReadOnly] ref DrawTransform.IndexData boneId,
+                ref DrawTransform.TargetWorkData boneIndexer
             )
             {
 

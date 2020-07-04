@@ -10,8 +10,9 @@ using Unity.Transforms;
 using Abarabone.Geometry;
 using Abarabone.Utilities;
 using Abarabone.Misc;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.Draw;
+using Abarabone.Model;
 
 namespace Abarabone.Authoring
 {

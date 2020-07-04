@@ -14,7 +14,7 @@ using Abarabone.Utilities;
 using Abarabone.Common.Extension;
 
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
 
     //[CustomEditor( typeof( UnityEngine.Object ) )]

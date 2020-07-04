@@ -46,10 +46,10 @@ namespace Abarabone.Particle.Aurthoring
                 var mat = new Material( srcMaterial );
                 var mesh = main.GetComponentInChildren<MeshFilter>().sharedMesh;
 
-                const Draw.BoneType boneType = Draw.BoneType.TR;
+                const BoneType BoneType = BoneType.TR;
                 const int boneLength = 1;
 
-                var modelEntity_ = gcs.CreateDrawModelEntityComponents( main, mesh, mat, boneType, boneLength );
+                var modelEntity_ = gcs.CreateDrawModelEntityComponents( main, mesh, mat, BoneType, boneLength );
             }
 
             void initInstanceEntityComponents_( GameObjectConversionSystem gcs, GameObject main )
@@ -74,7 +74,7 @@ namespace Abarabone.Particle.Aurthoring
 
                 em.SetComponentData( mainEntity,
                     new DrawInstance.ModeLinkData
-                    //new DrawTransformLinkData
+                    //new DrawTransform.LinkData
                     {
                         DrawModelEntity = gcs.GetFromModelEntityDictionary( main ),
                     }

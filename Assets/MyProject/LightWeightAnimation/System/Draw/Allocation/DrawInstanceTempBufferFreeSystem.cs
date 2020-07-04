@@ -12,7 +12,7 @@ using Unity.Collections.LowLevel.Unsafe;
 
 
 using Abarabone.Authoring;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.SystemGroup;
 using Abarabone.Misc;
 
@@ -35,7 +35,7 @@ namespace Abarabone.Draw
 
             this.Entities
                 .ForEach(
-                    ( ref DrawSystemNativeTransformBufferData buf ) =>
+                    ( ref DrawSystem.NativeTransformBufferData buf ) =>
                     {
                         buf.Transforms.Dispose();
                     }

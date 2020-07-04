@@ -10,7 +10,7 @@ using Unity.Mathematics;
 
 
 using Abarabone.Authoring;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.SystemGroup;
 
 namespace Abarabone.Draw
@@ -37,7 +37,7 @@ namespace Abarabone.Draw
 
 
         [BurstCompile]
-        struct MarkStreamJob : IJobForEach<StreamDrawLinkData, StreamDrawTargetData>
+        struct MarkStreamJob : IJobForEach<Stream.DrawLinkData, Stream.DrawTargetData>
         {
 
             [ReadOnly]
@@ -45,8 +45,8 @@ namespace Abarabone.Draw
 
 
             public void Execute(
-                [ReadOnly] ref StreamDrawLinkData drawLinker,
-                ref StreamDrawTargetData targetFlag
+                [ReadOnly] ref Stream.DrawLinkData drawLinker,
+                ref Stream.DrawTargetData targetFlag
             )
             {
 

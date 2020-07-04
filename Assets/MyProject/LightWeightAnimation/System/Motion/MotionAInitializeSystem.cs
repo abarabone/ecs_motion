@@ -9,7 +9,7 @@ using Unity.Mathematics;
 
 using Abarabone.SystemGroup;
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
     
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
@@ -35,10 +35,10 @@ namespace Abarabone.Motion
             inputDeps = new MotionInitializeJob
             {
                 Commands = commandBuffer.ToConcurrent(),
-                Linkers  = this.GetComponentDataFromEntity<StreamRelationData>(),
-                Shifters = this.GetComponentDataFromEntity<StreamKeyShiftData>(),
-                Timers   = this.GetComponentDataFromEntity<StreamCursorData>(),
-                Caches   = this.GetComponentDataFromEntity<StreamNearKeysCacheData>(),
+                Linkers  = this.GetComponentDataFromEntity<Stream.RelationData>(),
+                Shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>(),
+                Timers   = this.GetComponentDataFromEntity<Stream.CursorData>(),
+                Caches   = this.GetComponentDataFromEntity<Stream.NearKeysCacheData>(),
 
             }
             .Schedule( this, inputDeps );
@@ -51,32 +51,32 @@ namespace Abarabone.Motion
 
 
         //[BurstCompile]
-        [ExcludeComponent(typeof(MotionCursorData))]
+        [ExcludeComponent(typeof(Motion.CursorData))]
         struct MotionInitializeJob : IJobForEachWithEntity
-            <MotionInitializeData, MotionStreamLinkData, MotionClipData, MotionInfoData>
+            <Motion.InitializeData, Motion.StreamLinkData, Motion.ClipData, Motion.InfoData>
         {
 
             public EntityCommandBuffer.Concurrent Commands;
 
             [NativeDisableParallelForRestriction][ReadOnly]
-            public ComponentDataFromEntity<StreamRelationData>      Linkers;
+            public ComponentDataFromEntity<Stream.RelationData>      Linkers;
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<StreamKeyShiftData>      Shifters;
+            public ComponentDataFromEntity<Stream.KeyShiftData>      Shifters;
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<StreamNearKeysCacheData> Caches;
+            public ComponentDataFromEntity<Stream.NearKeysCacheData> Caches;
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<StreamCursorData>  Timers;
+            public ComponentDataFromEntity<Stream.CursorData>  Timers;
 
 
             public void Execute(
                 Entity entity, int index,
-                [ReadOnly] ref MotionInitializeData init,
-                [ReadOnly] ref MotionStreamLinkData linker,
-                [ReadOnly] ref MotionClipData data,
-                ref MotionInfoData info
+                [ReadOnly] ref Motion.InitializeData init,
+                [ReadOnly] ref Motion.StreamLinkData linker,
+                [ReadOnly] ref Motion.ClipData data,
+                ref Motion.InfoData info
             )
             {
-                ref var clip = ref data.ClipData.Value;
+                ref var clip = ref data.MotionClipData.Value;
                 ref var motion = ref clip.Motions[ init.MotionIndex ];
 
                 info.MotionIndex = init.MotionIndex;
@@ -84,11 +84,11 @@ namespace Abarabone.Motion
                 initSection( ref motion, linker.PositionStreamTop, KeyStreamSection.positions, ref init );
                 initSection( ref motion, linker.RotationStreamTop, KeyStreamSection.rotations, ref init );
 
-                this.Commands.RemoveComponent<MotionInitializeData>( index, entity );
+                this.Commands.RemoveComponent<Motion.InitializeData>( index, entity );
             }
 
             unsafe void initSection
-                ( ref MotionBlobUnit motionClip, Entity entTop, KeyStreamSection streamSection, ref MotionInitializeData init )
+                ( ref MotionBlobUnit motionClip, Entity entTop, KeyStreamSection streamSection, ref Motion.InitializeData init )
             {
                 ref var streams = ref motionClip.Sections[(int)streamSection].Streams;
 

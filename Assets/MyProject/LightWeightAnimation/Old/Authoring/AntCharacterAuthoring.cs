@@ -10,18 +10,19 @@ using Unity.Linq;
 using Unity.Mathematics;
 using Unity.Physics;
 
-using Abarabone.Geometry;
-using Abarabone.Utilities;
-using Abarabone.Misc;
-using Abarabone.Motion;
-using Abarabone.Draw;
-using Abarabone.Character;
-using Abarabone.Common.Extension;
-
 using Material = UnityEngine.Material;
 
 namespace Abarabone.Authoring
 {
+    using Abarabone.Geometry;
+    using Abarabone.Utilities;
+    using Abarabone.Misc;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Draw;
+    using Abarabone.Character;
+    using Abarabone.Common.Extension;
+    using Abarabone.Model;
+
 
     public class AntCharacterAuthoring : CharacterAuthoring
     {

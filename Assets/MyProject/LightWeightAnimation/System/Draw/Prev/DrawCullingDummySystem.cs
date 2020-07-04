@@ -35,7 +35,7 @@ namespace Abarabone.Draw
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
-            var drawModels = this.GetComponentDataFromEntity<DrawModelInstanceCounterData>();
+            var drawModels = this.GetComponentDataFromEntity<DrawModel.InstanceCounterData>();
 
 
             inputDeps = this.Entities

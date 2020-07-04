@@ -7,15 +7,16 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-using Abarabone.Geometry;
-using Abarabone.Utilities;
-using Abarabone.Misc;
-using Abarabone.Motion;
-using Abarabone.Draw;
-using Abarabone.Common.Extension;
-
 namespace Abarabone.Authoring
 {
+    using Abarabone.Geometry;
+    using Abarabone.Utilities;
+    using Abarabone.Misc;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Draw;
+    using Abarabone.Common.Extension;
+    using Motion = Abarabone.CharacterMotion.Motion;
+
 
     public enum EnMotionType
     {
@@ -108,20 +109,20 @@ namespace Abarabone.Authoring
             static public ComponentType[] Motion = new ComponentType[]
             {
                 //typeof( MotionATag ),// 暫定、MotionB 特別するため
-                typeof( MotionInfoData ),
-                typeof( MotionClipData ),
-                typeof( MotionStreamLinkData ),
-                typeof( MotionInitializeData ),
+                typeof( Motion.InfoData ),
+                typeof( Motion.ClipData ),
+                typeof( Motion.StreamLinkData ),
+                typeof( Motion.InitializeData ),
                 typeof( Prefab )
             };
             static public ComponentType[] Stream = new ComponentType[]
             {
-                typeof( StreamDrawLinkData ),
-                typeof( StreamRelationData ),
-                typeof( StreamKeyShiftData ),
-                typeof( StreamNearKeysCacheData ),
-                typeof( StreamCursorData ),
-                typeof( StreamInterpolatedData ),
+                typeof( Stream.DrawLinkData ),
+                typeof( Stream.RelationData ),
+                typeof( Stream.KeyShiftData ),
+                typeof( Stream.NearKeysCacheData ),
+                typeof( Stream.CursorData ),
+                typeof( Stream.InterpolationData ),
                 typeof( Prefab )
             };
         }
@@ -130,22 +131,22 @@ namespace Abarabone.Authoring
         {
             static public ComponentType[] Motion = new ComponentType[]
             {
-                typeof( MotionInfoData ),
-                typeof( MotionClipData ),
-                typeof( MotionStreamLinkData ),
-                typeof( MotionInitializeData ),
-                typeof( MotionCursorData ),//
-                typeof( MotionProgressTimerTag ),//
+                typeof( Motion.InfoData ),
+                typeof( Motion.ClipData ),
+                typeof( Motion.StreamLinkData ),
+                typeof( Motion.InitializeData ),
+                typeof( Motion.CursorData ),//
+                typeof( Motion.ProgressTimerTag ),//
                 typeof( Prefab ),
             };
             static public ComponentType[] Stream = new ComponentType[]
             {
-                typeof( StreamDrawLinkData ),
-                typeof( StreamRelationData ),
-                typeof( StreamKeyShiftData ),
-                typeof( StreamNearKeysCacheData ),
-                typeof( StreamInterpolatedData ),
-                typeof( StreamMotionLinkData ),//
+                typeof( Stream.DrawLinkData ),
+                typeof( Stream.RelationData ),
+                typeof( Stream.KeyShiftData ),
+                typeof( Stream.NearKeysCacheData ),
+                typeof( Stream.InterpolationData ),
+                typeof( Stream.MotionLinkData ),//
                 typeof( Prefab ),
             };
         }
@@ -153,21 +154,21 @@ namespace Abarabone.Authoring
         {
             static public ComponentType[] Motion = new ComponentType[]
             {
-                typeof( MotionInfoData ),
-                typeof( MotionClipData ),
-                typeof( MotionStreamLinkData ),
-                typeof( MotionInitializeData ),
-                typeof( MotionCursorData ),//
+                typeof( Motion.InfoData ),
+                typeof( Motion.ClipData ),
+                typeof( Motion.StreamLinkData ),
+                typeof( Motion.InitializeData ),
+                typeof( Motion.CursorData ),//
                 typeof( Prefab ),
             };
             static public ComponentType[] Stream = new ComponentType[]
             {
-                typeof( StreamDrawLinkData ),
-                typeof( StreamRelationData ),
-                typeof( StreamKeyShiftData ),
-                typeof( StreamNearKeysCacheData ),
-                typeof( StreamInterpolatedData ),
-                typeof( StreamMotionLinkData ),//
+                typeof( Stream.DrawLinkData ),
+                typeof( Stream.RelationData ),
+                typeof( Stream.KeyShiftData ),
+                typeof( Stream.NearKeysCacheData ),
+                typeof( Stream.InterpolationData ),
+                typeof( Stream.MotionLinkData ),//
                 typeof( Prefab ),
             };
         }
@@ -204,7 +205,7 @@ namespace Abarabone.Authoring
             var rotStreamPrefabs = createStreamOfSectionPrefabs( em, drawPrefab, motionPrefab, enabledBoneIds, streamArchetype );
             
             em.SetComponentData( motionPrefab,
-                new MotionStreamLinkData
+                new Motion.StreamLinkData
                 {
                     PositionStreamTop = posStreamPrefabs[0],
                     RotationStreamTop = rotStreamPrefabs[0],
@@ -223,8 +224,8 @@ namespace Abarabone.Authoring
             var motionBlobData = motionClip.ConvertToBlobData();
 
             var motionEntity = em.CreateEntity( motionArchetype );
-            em.SetComponentData( motionEntity, new MotionClipData { ClipData = motionBlobData } );
-            em.SetComponentData( motionEntity, new MotionInfoData { MotionIndex = 0 } );
+            em.SetComponentData( motionEntity, new Motion.ClipData { MotionClipData = motionBlobData } );
+            em.SetComponentData( motionEntity, new Motion.InfoData { MotionIndex = 0 } );
 
             return motionEntity;
         }
@@ -242,8 +243,8 @@ namespace Abarabone.Authoring
             em.CreateEntity( streamArchetype, streamEntities );
 
             setStreamRelation_( streamEntities, enabledBoneIds );
-            em.SetComponentData( streamEntities, new StreamDrawLinkData { DrawEntity = drawPrefab } );
-            em.SetComponentData( streamEntities, new StreamMotionLinkData { MotionEntity = motionPrefab } );
+            em.SetComponentData( streamEntities, new Stream.DrawLinkData { DrawEntity = drawPrefab } );
+            em.SetComponentData( streamEntities, new Stream.MotionLinkData { MotionEntity = motionPrefab } );
             
             return streamEntities;
             
@@ -259,7 +260,7 @@ namespace Abarabone.Authoring
                     from x in (qNext, enabledIds_).Zip()
                     let next = x.x
                     let id = x.y
-                    select new StreamRelationData
+                    select new Stream.RelationData
                     {
                         NextStreamEntity = next,
                         BoneId = id,

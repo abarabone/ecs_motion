@@ -10,7 +10,7 @@ using Unity.Mathematics;
 
 namespace Abarabone.Draw.Authoring
 {
-    using Motion;
+    using CharacterMotion;
     using Draw;
     using Character;
     using Abarabone.Authoring;
@@ -99,9 +99,9 @@ namespace Abarabone.Draw.Authoring
             {
                 var addtypes = new ComponentTypes
                 (
-                    typeof( DrawTransformLinkData ),
-                    typeof( DrawTransformIndexData ),
-                    typeof( DrawTransformTargetWorkData )
+                    typeof( DrawTransform.LinkData ),
+                    typeof( DrawTransform.IndexData ),
+                    typeof( DrawTransform.TargetWorkData )
                 );
 
                 em.AddComponents( boneEntities_, addtypes );
@@ -115,7 +115,7 @@ namespace Abarabone.Draw.Authoring
 
                 em_.SetComponentData(
                     boneEntities_,
-                    new DrawTransformLinkData
+                    new DrawTransform.LinkData
                     {
                         DrawInstanceEntity = drawInstanceEntity_,
                         DrawModelEntity = drawModelLinker.DrawModelEntity,
@@ -130,7 +130,7 @@ namespace Abarabone.Draw.Authoring
 
                 em_.SetComponentData( boneEntities_,
                     from i in Enumerable.Range( 0, boneLength )
-                    select new DrawTransformIndexData { BoneLength = boneLength, BoneId = i }
+                    select new DrawTransform.IndexData { BoneLength = boneLength, BoneId = i }
                 );
             }
         }
@@ -148,11 +148,11 @@ namespace Abarabone.Draw.Authoring
             var qStreamEntity =
                 from bone in bones
                 from ent in gcs.GetEntities( bone )
-                where em.HasComponent<StreamRelationData>(ent)
+                where em.HasComponent<Stream.RelationData>(ent)
                 select ent
                 ;
 
-            em.AddComponentData( qStreamEntity, new StreamDrawLinkData { DrawEntity = drawInstanceEntity } );
+            em.AddComponentData( qStreamEntity, new Stream.DrawLinkData { DrawEntity = drawInstanceEntity } );
 
         }
 

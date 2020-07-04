@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 using Abarabone.Geometry;
 using Abarabone.Utilities;
 using Abarabone.Misc;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.Draw;
 using Abarabone.Character;
 
@@ -36,14 +36,14 @@ namespace Abarabone.Authoring
             //Debug.Log("aaa");
 
             var em = dstManager;// World.DefaultGameObjectInjectionWorld.EntityManager;
-            em.AddComponentData( entity, new DrawSystemNativeTransformBufferData { } );
+            em.AddComponentData( entity, new DrawSystem.NativeTransformBufferData { } );
 
             //var drawModelArchetype = em.CreateArchetype(
-            //    typeof( DrawModelBoneUnitSizeData ),
-            //    typeof( DrawModelInstanceCounterData ),
-            //    typeof( DrawModelInstanceOffsetData ),
-            //    typeof( DrawModelGeometryData ),
-            //    typeof( DrawModelComputeArgumentsBufferData )
+            //    typeof( DrawModel.BoneUnitSizeData ),
+            //    typeof( DrawModel.InstanceCounterData ),
+            //    typeof( DrawModel.InstanceOffsetData ),
+            //    typeof( DrawModel.GeometryData ),
+            //    typeof( DrawModel.ComputeArgumentsBufferData )
             //);
 
             //initDrawSystemComponents_( em );
@@ -66,16 +66,16 @@ namespace Abarabone.Authoring
             //    var stride = Marshal.SizeOf( typeof( float4 ) );
 
             //    em_.AddComponentData( ent,
-            //        new DrawSystemComputeTransformBufferData
+            //        new DrawSystem.ComputeTransformBufferData
             //        {
             //            Transforms = new ComputeBuffer
             //                ( maxBufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
             //        }
             //    );
-            //    em_.AddComponentData( ent, new DrawSystemNativeTransformBufferData { } );
+            //    em_.AddComponentData( ent, new DrawSystem.NativeTransformBufferData { } );
             //}
 
-            //Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType boneType )
+            //Entity initDrawModelComponents_( Mesh mesh, Material mat, BoneType BoneType )
             //{
             //    // キャプチャ（暫定）
             //    var em_ = em;
@@ -84,7 +84,7 @@ namespace Abarabone.Authoring
 
             //    var drawModelEnt = createEntityAndInitComponents_( drawModelArchetype_ );
 
-            //    var boneVectorBuffer = em_.GetComponentData<DrawSystemComputeTransformBufferData>( sysEnt_ ).Transforms;
+            //    var boneVectorBuffer = em_.GetComponentData<DrawSystem.ComputeTransformBufferData>( sysEnt_ ).Transforms;
             //    setShaderProps_( mat, mesh, boneVectorBuffer );
 
             //    return drawModelEnt;
@@ -101,29 +101,29 @@ namespace Abarabone.Authoring
             //    {
             //        //var drawModelArchetype = em.CreateArchetype(
             //        //    typeof( DrawModelBoneInfoData ),
-            //        //    typeof( DrawModelInstanceCounterData ),
-            //        //    typeof( DrawModelInstanceOffsetData ),
+            //        //    typeof( DrawModel.InstanceCounterData ),
+            //        //    typeof( DrawModel.InstanceOffsetData ),
             //        //    typeof( DrawModelMeshData ),
-            //        //    typeof( DrawModelComputeArgumentsBufferData )
+            //        //    typeof( DrawModel.ComputeArgumentsBufferData )
             //        //);
             //        var ent = em.CreateEntity( drawModelArchetype__ );
 
             //        em.SetComponentData( ent,
-            //            new DrawModelBoneUnitSizeData
+            //            new DrawModel.BoneUnitSizeData
             //            {
             //                BoneLength = mesh.bindposes.Length,// より正確なものに変える
-            //                VectorLengthInBone = (int)boneType,
+            //                VectorLengthInBone = (int)BoneType,
             //            }
             //        );
             //        em.SetComponentData( ent,
-            //            new DrawModelGeometryData
+            //            new DrawModel.GeometryData
             //            {
             //                Mesh = mesh,
             //                Material = mat,
             //            }
             //        );
             //        em.SetComponentData( ent,
-            //            new DrawModelComputeArgumentsBufferData
+            //            new DrawModel.ComputeArgumentsBufferData
             //            {
             //                InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
             //            }

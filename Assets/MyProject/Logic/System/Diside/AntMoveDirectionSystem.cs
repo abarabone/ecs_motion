@@ -21,7 +21,7 @@ using Abarabone.Misc;
 using Abarabone.Utilities;
 using Abarabone.SystemGroup;
 using Abarabone.Character;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 
 namespace Abarabone.Character
 {

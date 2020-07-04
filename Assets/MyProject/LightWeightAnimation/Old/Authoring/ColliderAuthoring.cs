@@ -23,7 +23,7 @@ namespace Abarabone.Authoring
     using Abarabone.Geometry;
     using Abarabone.Utilities;
     using Abarabone.Misc;
-    using Abarabone.Motion;
+    using Abarabone.CharacterMotion;
     using Abarabone.Draw;
     using Abarabone.Character;
     using Abarabone.Common.Extension;

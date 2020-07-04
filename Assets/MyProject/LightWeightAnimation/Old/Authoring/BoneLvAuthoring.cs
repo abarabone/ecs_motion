@@ -16,7 +16,7 @@ namespace Abarabone.Authoring
     using Abarabone.Geometry;
     using Abarabone.Utilities;
     using Abarabone.Misc;
-    using Abarabone.Motion;
+    using Abarabone.CharacterMotion;
     using Abarabone.Draw;
     using Abarabone.Common.Extension;
     using Abarabone.Model;
@@ -51,8 +51,8 @@ namespace Abarabone.Authoring
         (
             em => em.CreateArchetype
             (
-                //typeof( PostureNeedTransformTag ),
-                //typeof( PostureLinkData ),
+                //typeof( Posture.NeedTransformTag ),
+                //typeof( Posture.LinkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Prefab )
@@ -64,10 +64,10 @@ namespace Abarabone.Authoring
             em => em.CreateArchetype
             (
                 //typeof( Bone.RelationLinkData ),
-                typeof( DrawTransformLinkData ),
+                typeof( DrawTransform.LinkData ),
                 typeof( Bone.Stream0LinkData ),
-                typeof( DrawTransformIndexData ),
-                typeof( DrawTransformTargetWorkData ),
+                typeof( DrawTransform.IndexData ),
+                typeof( DrawTransform.TargetWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Prefab )
@@ -111,7 +111,7 @@ namespace Abarabone.Authoring
             {
                 em_.SetComponentData( bonePreafabs_,
                     from x in Enumerable.Range( 0, bonePreafabs_.Length )
-                    select new DrawTransformIndexData { BoneLength = boneLength, BoneId = x }
+                    select new DrawTransform.IndexData { BoneLength = boneLength, BoneId = x }
                 );
             }
 
@@ -146,7 +146,7 @@ namespace Abarabone.Authoring
                 var boneLength = motionClip_.StreamPaths.Length;
 
                 var qDrawLinker = Enumerable
-                    .Repeat( new DrawTransformLinkData { DrawInstanceEntity = drawPrefab_ }, boneLength );
+                    .Repeat( new DrawTransform.LinkData { DrawInstanceEntity = drawPrefab_ }, boneLength );
 
                 em_.SetComponentData( bonePrefabs_, qDrawLinker );
             }

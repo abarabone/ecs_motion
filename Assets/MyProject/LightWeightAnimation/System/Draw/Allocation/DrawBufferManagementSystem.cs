@@ -41,8 +41,8 @@ namespace Abarabone.Draw
             Entity initDrawSystemComponents_( EntityManager em_ )
             {
                 var arch = em_.CreateArchetype(
-                    typeof( DrawSystemComputeTransformBufferData ),
-                    typeof( DrawSystemNativeTransformBufferData )
+                    typeof( DrawSystem.ComputeTransformBufferData ),
+                    typeof( DrawSystem.NativeTransformBufferData )
                 );
                 var ent = em_.CreateEntity( arch );
                 em_.SetName( ent, "draw system" );
@@ -53,7 +53,7 @@ namespace Abarabone.Draw
                 var stride = Marshal.SizeOf( typeof( float4 ) );
 
                 em_.SetComponentData( ent,
-                    new DrawSystemComputeTransformBufferData
+                    new DrawSystem.ComputeTransformBufferData
                     {
                         Transforms = new ComputeBuffer
                             ( maxBufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
@@ -76,7 +76,7 @@ namespace Abarabone.Draw
 
         protected override void OnDestroy()
         {
-            if( !this.HasSingleton<DrawSystemComputeTransformBufferData>() ) return;
+            if( !this.HasSingleton<DrawSystem.ComputeTransformBufferData>() ) return;
 
             disposeTransformComputeBuffer_();
             disposeComputeArgumentsBuffersAllModels_();
@@ -86,16 +86,16 @@ namespace Abarabone.Draw
 
             void disposeTransformComputeBuffer_()
             {
-                var cb = this.GetSingleton<DrawSystemComputeTransformBufferData>();
+                var cb = this.GetSingleton<DrawSystem.ComputeTransformBufferData>();
                 cb.Transforms.Dispose();
             }
 
             void disposeComputeArgumentsBuffersAllModels_()
             {
-                var eq = this.EntityManager.CreateEntityQuery( typeof( DrawModelComputeArgumentsBufferData ) );
+                var eq = this.EntityManager.CreateEntityQuery( typeof( DrawModel.ComputeArgumentsBufferData ) );
                 using( eq )
                 {
-                    var args = eq.ToComponentDataArray<DrawModelComputeArgumentsBufferData>();
+                    var args = eq.ToComponentDataArray<DrawModel.ComputeArgumentsBufferData>();
                     foreach( var arg in args )
                     {
                         arg.InstanceArgumentsBuffer.Dispose();

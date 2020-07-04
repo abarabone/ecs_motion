@@ -14,12 +14,51 @@ using Unity.Transforms;
 using Unity.Properties;
 using Unity.Burst;
 
-using Abarabone.Geometry;
+namespace Abarabone.Draw
+{
+
+
+
+    static public partial class DrawTransform
+    {
+
+        public struct LinkData : IComponentData
+        {
+            public Entity DrawModelEntity;
+            public Entity DrawInstanceEntity;
+        }
+
+        public struct IndexData : IComponentData
+        {
+            public int BoneId;
+            public int BoneLength;
+        }
+
+        public unsafe struct TargetWorkData : IComponentData
+        {
+            public int DrawInstanceId;
+        }
+
+    }
+
+}
+
 
 namespace Abarabone.Model
 {
+
+    public enum BoneType
+    {
+        T = 1,
+        TR = 2,
+        TRS = 3,
+        Matrix = 4,
+    }
+
     static public partial class Bone
     {
+
+
         public struct MainEntityLinkData : IComponentData
         {
             public Entity MainEntity;

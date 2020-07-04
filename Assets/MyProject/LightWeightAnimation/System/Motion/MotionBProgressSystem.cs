@@ -12,7 +12,7 @@ using Unity.Mathematics;
 using Abarabone.Authoring;
 using Abarabone.SystemGroup;
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
 
     /// <summary>
@@ -34,7 +34,7 @@ namespace Abarabone.Motion
                 .WithBurst()
                 .ForEach
                 (
-                    (ref MotionCursorData cursor) =>
+                    (ref Motion.CursorData cursor) =>
                     {
                         progressTimeForLooping( ref cursor );
 
@@ -46,7 +46,7 @@ namespace Abarabone.Motion
             return;
 
 
-            void progressTimeForLooping( ref MotionCursorData cousor )
+            void progressTimeForLooping( ref Motion.CursorData cousor )
             {
                 var isEndOfStream = cousor.CurrentPosition >= cousor.TotalLength;
 
@@ -57,7 +57,7 @@ namespace Abarabone.Motion
                 return;
 
 
-                float getTimeOffsetOverLength( in MotionCursorData cursor_, bool isEndOfStream_ ) =>
+                float getTimeOffsetOverLength( in Motion.CursorData cursor_, bool isEndOfStream_ ) =>
                     math.select( 0.0f, cursor_.TotalLength, isEndOfStream_ );
             }
 
@@ -83,16 +83,16 @@ namespace Abarabone.Motion
         /// <summary>
         /// ストリーム回転 → 補間
         /// </summary>
-        [BurstCompile, RequireComponentTag(typeof(MotionProgressTimerTag))]
+        [BurstCompile, RequireComponentTag(typeof(Motion.ProgressTimerTag))]
         struct MotionProgressJob : IJobForEach
-            <MotionCursorData>
+            <Motion.CursorData>
         {
 
             public float DeltaTime;
 
 
             public void Execute(
-                ref MotionCursorData cursor
+                ref Motion.CursorData cursor
             )
             {
 
@@ -104,7 +104,7 @@ namespace Abarabone.Motion
 
 
             void progressTimeForLooping(
-                ref MotionCursorData cousor
+                ref Motion.CursorData cousor
             )
             {
                 var isEndOfStream = cousor.CurrentPosition >= cousor.TotalLength;
@@ -116,7 +116,7 @@ namespace Abarabone.Motion
                 return;
 
 
-                float getTimeOffsetOverLength( in MotionCursorData cursor_, bool isEndOfStream_ )
+                float getTimeOffsetOverLength( in Motion.CursorData cursor_, bool isEndOfStream_ )
                 {
                     return math.select( 0.0f, cursor_.TotalLength, isEndOfStream_ );
                 }

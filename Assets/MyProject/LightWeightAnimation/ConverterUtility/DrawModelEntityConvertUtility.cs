@@ -10,9 +10,9 @@ using Unity.Mathematics;
 
 namespace Abarabone.Draw.Authoring
 {
-    using Motion;
-    using Draw;
-    using Character;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Draw;
+    using Abarabone.Character;
     using Abarabone.Authoring;
     using Abarabone.Model.Authoring;
 
@@ -20,6 +20,7 @@ namespace Abarabone.Draw.Authoring
     using Abarabone.Misc;
     using Abarabone.Utilities;
     using Abarabone.Geometry;
+    using Abarabone.Model;
 
     static public class DrawModelEntityConvertUtility
     {
@@ -29,7 +30,7 @@ namespace Abarabone.Draw.Authoring
         static public Entity CreateDrawModelEntityComponents
             (
                 this GameObjectConversionSystem gcs, GameObject topGameObject,
-                Mesh mesh, Material mat, BoneType boneType, int boneLength
+                Mesh mesh, Material mat, BoneType BoneType, int boneLength
             )
         {
 
@@ -39,7 +40,7 @@ namespace Abarabone.Draw.Authoring
             setShaderProps_( em, mat, mesh, boneLength );
 
             var drawModelEntity = createDrawModelEntity_( gcs, topGameObject );
-            setEntityComponentValues_( em, drawModelEntity, mat, mesh, boneLength, boneType );
+            setEntityComponentValues_( em, drawModelEntity, mat, mesh, boneLength, BoneType );
 
             return drawModelEntity;
 
@@ -48,7 +49,7 @@ namespace Abarabone.Draw.Authoring
             void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int boneLength_ )
             {
                 var sys = em_.World.GetExistingSystem<DrawBufferManagementSystem>();
-                var boneVectorBuffer = sys.GetSingleton<DrawSystemComputeTransformBufferData>().Transforms;
+                var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
                 mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer );
 
                 mat_.SetInt( "BoneLengthEveryInstance", boneLength_ );
@@ -64,11 +65,11 @@ namespace Abarabone.Draw.Authoring
 
 
                 var drawModelArchetype = em_.CreateArchetype(
-                    typeof( DrawModelBoneUnitSizeData ),
-                    typeof( DrawModelInstanceCounterData ),
-                    typeof( DrawModelInstanceOffsetData ),
-                    typeof( DrawModelGeometryData ),
-                    typeof( DrawModelComputeArgumentsBufferData )
+                    typeof( DrawModel.BoneUnitSizeData ),
+                    typeof( DrawModel.InstanceCounterData ),
+                    typeof( DrawModel.InstanceOffsetData ),
+                    typeof( DrawModel.GeometryData ),
+                    typeof( DrawModel.ComputeArgumentsBufferData )
                 );
                 var ent = em_.CreateEntity( drawModelArchetype );
 
@@ -82,25 +83,25 @@ namespace Abarabone.Draw.Authoring
 
 
             void setEntityComponentValues_
-                ( EntityManager em_, Entity ent_, Material mat_, Mesh mesh_, int boneLength_, BoneType boneType_ )
+                ( EntityManager em_, Entity ent_, Material mat_, Mesh mesh_, int boneLength_, BoneType BoneType_ )
             {
 
                 em_.SetComponentData( ent_,
-                    new DrawModelBoneUnitSizeData
+                    new DrawModel.BoneUnitSizeData
                     {
                         BoneLength = boneLength_,
-                        VectorLengthInBone = (int)boneType_,
+                        VectorLengthInBone = (int)BoneType_,
                     }
                 );
                 em_.SetComponentData( ent_,
-                    new DrawModelGeometryData
+                    new DrawModel.GeometryData
                     {
                         Mesh = mesh_,
                         Material = mat_,
                     }
                 );
                 em_.SetComponentData( ent_,
-                    new DrawModelComputeArgumentsBufferData
+                    new DrawModel.ComputeArgumentsBufferData
                     {
                         InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
                     }

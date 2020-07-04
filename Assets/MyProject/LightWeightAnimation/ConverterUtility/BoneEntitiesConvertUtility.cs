@@ -10,7 +10,7 @@ using Unity.Mathematics;
 
 namespace Abarabone.Model.Authoring
 {
-    using Motion;
+    using CharacterMotion;
     using Draw;
     using Character;
     using Abarabone.Authoring;
@@ -77,8 +77,8 @@ namespace Abarabone.Model.Authoring
 
             var addtypes = new ComponentTypes
             (
-                typeof( PostureNeedTransformTag ),
-                typeof( PostureLinkData ),
+                typeof( Posture.NeedTransformTag ),
+                typeof( Posture.LinkData ),
                 typeof( Translation ),
                 typeof( Rotation )
             );
@@ -107,9 +107,9 @@ namespace Abarabone.Model.Authoring
             {
                 var addtypes = new ComponentTypes
                 (
-                    //typeof( DrawTransformLinkData ),
-                    //typeof( DrawTransformIndexData ),
-                    //typeof( DrawTransformTargetWorkData ),
+                    //typeof( DrawTransform.LinkData ),
+                    //typeof( DrawTransform.IndexData ),
+                    //typeof( DrawTransform.TargetWorkData ),
                     typeof(Bone.RelationLinkData),
                     typeof(Bone.LocalValueData),// 回転と移動をわけたほうがいいか？
                     typeof(Translation),
@@ -168,7 +168,7 @@ namespace Abarabone.Model.Authoring
 
         static void setPostureValue( EntityManager em, Entity postureEntity, Entity boneTopEntity )
         {
-            em.SetComponentData( postureEntity, new PostureLinkData { BoneRelationTop = boneTopEntity } );
+            em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
             em.SetComponentData( postureEntity, new Rotation { Value = quaternion.identity } );
             em.SetComponentData( postureEntity, new Translation { Value = float3.zero } );
         }

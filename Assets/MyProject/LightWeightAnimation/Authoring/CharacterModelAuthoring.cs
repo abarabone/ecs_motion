@@ -70,9 +70,9 @@ namespace Abarabone.Model.Authoring
                 var mat = new Material( srcMaterial );
                 var mesh = DrawModelEntityConvertUtility.CombineAndConvertMesh( srcMeshes, bones_ );
 
-                const Draw.BoneType boneType = Draw.BoneType.TR;
+                const BoneType BoneType = BoneType.TR;
 
-                gcs_.CreateDrawModelEntityComponents( top_, mesh, mat, boneType, bones_.Length );
+                gcs_.CreateDrawModelEntityComponents( top_, mesh, mat, BoneType, bones_.Length );
             }
 
             void initObjectEntity_( GameObjectConversionSystem gcs_, GameObject top_, GameObject main_ )
@@ -84,21 +84,21 @@ namespace Abarabone.Model.Authoring
 
 
                 em_.AddComponentData( binderEntity,
-                    new BinderObjectMainEntityLinkData { MainEntity = mainEntity } );
+                    new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity } );
 
 
                 var addtypes = new ComponentTypes
                 (
-                    typeof(ObjectMainEntityTag),
-                    typeof(ObjectBinderLinkData),
+                    typeof(ObjectMain.ObjectMainTag),
+                    typeof(ObjectMain.BinderLinkData),
                     typeof(ObjectMainCharacterLinkData)
-                    //typeof(ObjectMotionLinkDate)
+                    //typeof(ObjectMain.MotionLinkDate)
                 );
                 em_.AddComponents(mainEntity, addtypes);
 
 
                 em_.SetComponentData( mainEntity,
-                    new ObjectBinderLinkData
+                    new ObjectMain.BinderLinkData
                     {
                         BinderEntity = binderEntity,
                     }

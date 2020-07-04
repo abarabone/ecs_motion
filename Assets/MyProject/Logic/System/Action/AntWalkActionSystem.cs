@@ -14,14 +14,16 @@ using Unity.Physics.Systems;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-using Abarabone.Misc;
-using Abarabone.Utilities;
-using Abarabone.SystemGroup;
-using Abarabone.Character;
-using Abarabone.Motion;
-
 namespace Abarabone.Character
 {
+
+    using Abarabone.Misc;
+    using Abarabone.Utilities;
+    using Abarabone.SystemGroup;
+    using Abarabone.Character;
+    using Abarabone.CharacterMotion;
+    using Motion = Abarabone.CharacterMotion.Motion;
+
 
     /// <summary>
     /// 歩き時のアクションステート
@@ -52,8 +54,8 @@ namespace Abarabone.Character
             {
                 Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
 
-                MotionInfos = this.GetComponentDataFromEntity<MotionInfoData>( isReadOnly: true ),
-                MotionCursors = this.GetComponentDataFromEntity<MotionCursorData>(),
+                MotionInfos = this.GetComponentDataFromEntity<Motion.InfoData>( isReadOnly: true ),
+                MotionCursors = this.GetComponentDataFromEntity<Motion.CursorData>(),
                 MotionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>(),
 
                 WallHitResults = this.GetComponentDataFromEntity<WallHitResultData>( isReadOnly: true ),
@@ -77,9 +79,9 @@ namespace Abarabone.Character
 
             public EntityCommandBuffer.Concurrent Commands;
 
-            [ReadOnly] public ComponentDataFromEntity<MotionInfoData> MotionInfos;
+            [ReadOnly] public ComponentDataFromEntity<Motion.InfoData> MotionInfos;
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<MotionCursorData> MotionCursors;
+            public ComponentDataFromEntity<Motion.CursorData> MotionCursors;
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<MotionBlend2WeightData> MotionWeights;
             

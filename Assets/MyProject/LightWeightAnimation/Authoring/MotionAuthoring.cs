@@ -7,7 +7,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-namespace Abarabone.Motion.Authoring
+namespace Abarabone.CharacterMotion.Authoring
 {
     /// <summary>
     /// Animator と同じオブジェクトに付ける。

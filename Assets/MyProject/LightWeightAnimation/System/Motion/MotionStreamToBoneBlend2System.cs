@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
 
     using Abarabone.Authoring;
@@ -34,7 +34,7 @@ namespace Abarabone.Motion
             inputDeps = new StreamToBoneJob
             {
                 Blends = this.GetComponentDataFromEntity<MotionBlend2WeightData>( isReadOnly: true ),
-                StreamValues = this.GetComponentDataFromEntity<StreamInterpolatedData>( isReadOnly: true ),
+                StreamValues = this.GetComponentDataFromEntity<Stream.InterpolationData>( isReadOnly: true ),
             }
             .Schedule( this, inputDeps );
 
@@ -52,7 +52,7 @@ namespace Abarabone.Motion
             public ComponentDataFromEntity<MotionBlend2WeightData> Blends;
 
             [ReadOnly]
-            public ComponentDataFromEntity<StreamInterpolatedData> StreamValues;
+            public ComponentDataFromEntity<Stream.InterpolationData> StreamValues;
 
 
             public void Execute(
@@ -63,11 +63,11 @@ namespace Abarabone.Motion
             )
             {
 
-                var pos0 = this.StreamValues[ stream0Linker.PositionStreamEntity ].Value.As_float3();
-                var rot0 = this.StreamValues[ stream0Linker.RotationStreamEntity ].Value.As_quaternion();
+                var pos0 = this.StreamValues[ stream0Linker.PositionStreamEntity ].Interpolation.As_float3();
+                var rot0 = this.StreamValues[ stream0Linker.RotationStreamEntity ].Interpolation.As_quaternion();
 
-                var pos1 = this.StreamValues[ stream1Linker.PositionStreamEntity ].Value.As_float3();
-                var rot1 = this.StreamValues[ stream1Linker.RotationStreamEntity ].Value.As_quaternion();
+                var pos1 = this.StreamValues[ stream1Linker.PositionStreamEntity ].Interpolation.As_float3();
+                var rot1 = this.StreamValues[ stream1Linker.RotationStreamEntity ].Interpolation.As_quaternion();
 
                 var blendWeight = this.Blends[ linker.MotionBlendEntity ];
 

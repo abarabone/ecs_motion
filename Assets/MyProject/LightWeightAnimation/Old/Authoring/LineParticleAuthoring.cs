@@ -12,11 +12,12 @@ using Unity.Mathematics;
 using Abarabone.Geometry;
 using Abarabone.Utilities;
 using Abarabone.Misc;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.Draw;
 using Abarabone.Character;
 using Abarabone.Common.Extension;
 using Abarabone.Particle;
+using Abarabone.Model;
 
 namespace Abarabone.Authoring
 {
@@ -101,21 +102,21 @@ namespace Abarabone.Authoring
                 );
 
                 em_.AddComponentData( ent,
-                    new DrawTransformLinkData
+                    new DrawTransform.LinkData
                     {
                         DrawInstanceEntity = drawInstanceEntity_,
                         DrawModelEntity = drawModelEntity_,
                     }
                 );
                 em_.AddComponentData( ent,
-                    new DrawTransformIndexData
+                    new DrawTransform.IndexData
                     {
                         BoneId = nodeId_,
                         BoneLength = pointNodeLength_,
                     }
                 );
                 em_.AddComponentData( ent,
-                    new DrawTransformTargetWorkData
+                    new DrawTransform.TargetWorkData
                     {
                         DrawInstanceId = -1,
                     }

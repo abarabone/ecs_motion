@@ -11,7 +11,7 @@ using Unity.Mathematics;
 
 using Abarabone.Misc;
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
     
 	public struct MotionBlobData

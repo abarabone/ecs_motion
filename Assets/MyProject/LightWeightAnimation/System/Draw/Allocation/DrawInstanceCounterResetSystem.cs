@@ -24,7 +24,7 @@ namespace Abarabone.Draw
         {
             this.Entities
                 .ForEach(
-                    ( ref DrawModelInstanceCounterData counter ) =>
+                    ( ref DrawModel.InstanceCounterData counter ) =>
                     {
                         counter.InstanceCounter = new ThreadSafeCounter<Persistent>(0);
                     }
@@ -36,7 +36,7 @@ namespace Abarabone.Draw
 
             this.Entities
                 .ForEach(
-                    ( ref DrawModelInstanceCounterData counter ) =>
+                    ( ref DrawModel.InstanceCounterData counter ) =>
                     {
                         counter.InstanceCounter.Reset();
                     }
@@ -48,7 +48,7 @@ namespace Abarabone.Draw
         {
             this.Entities
                 .ForEach(
-                    ( ref DrawModelInstanceCounterData counter ) =>
+                    ( ref DrawModel.InstanceCounterData counter ) =>
                     {
                         counter.InstanceCounter.Dispose();
                     }

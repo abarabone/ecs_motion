@@ -12,7 +12,7 @@ using Unity.Collections.LowLevel.Unsafe;
 
 
 using Abarabone.Authoring;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 using Abarabone.SystemGroup;
 using Abarabone.Misc;
 
@@ -38,9 +38,9 @@ namespace Abarabone.Draw
         protected override void OnCreate()
         {
             this.drawQuery = this.GetEntityQuery(
-                ComponentType.ReadOnly<DrawModelInstanceCounterData>(),
-                ComponentType.ReadWrite<DrawModelInstanceOffsetData>(),
-                ComponentType.ReadOnly<DrawModelBoneUnitSizeData>()
+                ComponentType.ReadOnly<DrawModel.InstanceCounterData>(),
+                ComponentType.ReadWrite<DrawModel.InstanceOffsetData>(),
+                ComponentType.ReadOnly<DrawModel.BoneUnitSizeData>()
             );
         }
 
@@ -48,12 +48,12 @@ namespace Abarabone.Draw
 
         protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
         {
-            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystemNativeTransformBufferData>();
-            var drawSysEnt = this.GetSingletonEntity<DrawSystemNativeTransformBufferData>();
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
+            var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
-            var instanceOffsetType = this.GetArchetypeChunkComponentType<DrawModelInstanceOffsetData>();
-            var instanceCounterType = this.GetArchetypeChunkComponentType<DrawModelInstanceCounterData>();// isReadOnly: true );
-            var boneInfoType = this.GetArchetypeChunkComponentType<DrawModelBoneUnitSizeData>();// isReadOnly: true );
+            var instanceOffsetType = this.GetArchetypeChunkComponentType<DrawModel.InstanceOffsetData>();
+            var instanceCounterType = this.GetArchetypeChunkComponentType<DrawModel.InstanceCounterData>();// isReadOnly: true );
+            var boneInfoType = this.GetArchetypeChunkComponentType<DrawModel.BoneUnitSizeData>();// isReadOnly: true );
 
             var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 
@@ -70,7 +70,7 @@ namespace Abarabone.Draw
                             = new SimpleNativeBuffer<float4, Temp>( totalVectorLength );
 
                         nativeBuffers[ drawSysEnt ]
-                            = new DrawSystemNativeTransformBufferData { Transforms = nativeBuffer };
+                            = new DrawSystem.NativeTransformBufferData { Transforms = nativeBuffer };
 
                         calculateVectorOffsetPointersInBuffer_( nativeBuffer.pBuffer );
                     }
@@ -93,7 +93,7 @@ namespace Abarabone.Draw
 
                     for( var j = 0; j < chunk.Count; j++ )
                     {
-                        offsets[ j ] = new DrawModelInstanceOffsetData
+                        offsets[ j ] = new DrawModel.InstanceOffsetData
                         {
                             pVectorOffsetInBuffer = (float4*)sum,
                         };
@@ -120,7 +120,7 @@ namespace Abarabone.Draw
                     {
                         var offset = (int)offsets[ j ].pVectorOffsetInBuffer;
 
-                        offsets[ j ] = new DrawModelInstanceOffsetData
+                        offsets[ j ] = new DrawModel.InstanceOffsetData
                         {
                             pVectorOffsetInBuffer = pBufferStart + offset,
                             voffset = offset,//

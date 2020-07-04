@@ -13,7 +13,7 @@ using Unity.Transforms;
 using Unity.Physics;
 
 
-namespace Abarabone.Motion
+namespace Abarabone.CharacterMotion
 {
 
     using Abarabone.Authoring;
@@ -45,7 +45,7 @@ namespace Abarabone.Motion
 
             this.Entities
                 .WithName( "BoneTransformSystem" )
-                .WithAll<PostureNeedTransformTag>()
+                .WithAll<Posture.NeedTransformTag>()
                 .WithBurst()
                 .WithReadOnly( boneRelationLinkers )
                 .WithReadOnly( boneLocals )
@@ -54,7 +54,7 @@ namespace Abarabone.Motion
                 .WithNativeDisableParallelForRestriction( boneRotations )
                 .WithNativeDisableParallelForRestriction( boneVelocities )
                 .ForEach(
-                    ( in PostureLinkData linker ) =>
+                    ( in Posture.LinkData linker ) =>
                     {
                         for(
                             var ent = linker.BoneRelationTop;
@@ -144,7 +144,7 @@ namespace Abarabone.Motion
 
 
         [BurstCompile]
-        struct BoneTransformJob : IJobForEach<PostureNeedTransformTag, PostureLinkData>
+        struct BoneTransformJob : IJobForEach<Posture.NeedTransformTag, Posture.LinkData>
         {
 
             [ReadOnly]
@@ -164,8 +164,8 @@ namespace Abarabone.Motion
 
 
             public void Execute(
-                [ReadOnly] ref PostureNeedTransformTag tag,
-                [ReadOnly] ref PostureLinkData linker
+                [ReadOnly] ref Posture.NeedTransformTag tag,
+                [ReadOnly] ref Posture.LinkData linker
             )
             {
                 for(

@@ -11,16 +11,17 @@ using Unity.Linq;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Runtime.InteropServices;
 
-using Abarabone.Geometry;
-using Abarabone.Utilities;
-using Abarabone.Misc;
-using Abarabone.Motion;
-using Abarabone.Draw;
-using Abarabone.Character;
-
 namespace Abarabone.Authoring
 {
-    
+    using Abarabone.Geometry;
+    using Abarabone.Utilities;
+    using Abarabone.Misc;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Draw;
+    using Abarabone.Character;
+    using Motion = Abarabone.CharacterMotion.Motion;
+
+
     public class spawn_ch : MonoBehaviour
     {
         
@@ -42,7 +43,7 @@ namespace Abarabone.Authoring
                 var ent = drawSettings.PrefabEntities[ model ];
 
                 var mlinker = em.GetComponentData<ObjectMainCharacterLinkData>( ent );
-                ref var mclip = ref em.GetComponentData<MotionClipData>( mlinker.MotionEntity ).ClipData.Value;
+                ref var mclip = ref em.GetComponentData<Motion.ClipData>( mlinker.MotionEntity ).MotionClipData.Value;
 
                 foreach( var i in Enumerable.Range( 0, this.InstanceCountPerModel ) )
                 {
@@ -50,7 +51,7 @@ namespace Abarabone.Authoring
 
                     var chlinker = em.GetComponentData<ObjectMainCharacterLinkData>( this.ents.Last() );
                     em.SetComponentData( chlinker.PostureEntity, new Translation { Value = this.transform.position.As_float3() + new float3( i * 3, 0, -model * 5 ) } );
-                    em.SetComponentData( chlinker.MotionEntity, new MotionInitializeData { MotionIndex = i % mclip.Motions.Length } );
+                    em.SetComponentData( chlinker.MotionEntity, new Motion.InitializeData { MotionIndex = i % mclip.Motions.Length } );
                 }
             }
 

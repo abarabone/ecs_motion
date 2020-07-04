@@ -16,7 +16,7 @@ namespace Abarabone.Authoring
     using Abarabone.Geometry;
     using Abarabone.Utilities;
     using Abarabone.Misc;
-    using Abarabone.Motion;
+    using Abarabone.CharacterMotion;
     using Abarabone.Draw;
     using Abarabone.Common.Extension;
     using Abarabone.Model;
@@ -112,8 +112,8 @@ namespace Abarabone.Authoring
         (
             em => em.CreateArchetype
             (
-                typeof( PostureNeedTransformTag ),
-                typeof( PostureLinkData ),
+                typeof( Posture.NeedTransformTag ),
+                typeof( Posture.LinkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Prefab )
@@ -125,10 +125,10 @@ namespace Abarabone.Authoring
             em => em.CreateArchetype
             (
                 typeof( Bone.RelationLinkData ),
-                typeof( DrawTransformLinkData ),
+                typeof( DrawTransform.LinkData ),
                 //typeof( Bone.Stream0LinkData ),// 剛体には必要ないので必要な場合に add するようにした　ブレンドの場合には複数必要だし
-                typeof( DrawTransformIndexData ),
-                typeof( DrawTransformTargetWorkData ),
+                typeof( DrawTransform.IndexData ),
+                typeof( DrawTransform.TargetWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Bone.LocalValueData ),// どうしようか
@@ -168,7 +168,7 @@ namespace Abarabone.Authoring
             em.removeBoneRelationLinks( bonePrefabs, qBoneMasks );
             em.addBoneStreamLinkData( mainMotionPrefab, boneNameAndPrefabs, streamPrefabss );
 
-            em.SetComponentData( posturePrefab, new PostureLinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
+            em.SetComponentData( posturePrefab, new Posture.LinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
             em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
             em.SetComponentData( posturePrefab, new Translation { Value = float3.zero } );
 
@@ -182,7 +182,7 @@ namespace Abarabone.Authoring
         {
             em_.SetComponentData(
                 bonePrefabs,
-                new DrawTransformLinkData
+                new DrawTransform.LinkData
                 {
                     DrawInstanceEntity = drawInstancePrefab,
                     DrawModelEntity = em_.GetComponentData<DrawInstance.ModeLinkData>(drawInstancePrefab).DrawModelEntity,
@@ -211,7 +211,7 @@ namespace Abarabone.Authoring
         {
             em_.SetComponentData( bonePreafabs_,
                 from x in Enumerable.Range( 0, bonePreafabs_.Count() )
-                select new DrawTransformIndexData { BoneLength = boneLength, BoneId = x }
+                select new DrawTransform.IndexData { BoneLength = boneLength, BoneId = x }
             );
         }
         

@@ -126,7 +126,7 @@ public class ObjectInitializeSystem : SystemBase
         this.Entities
             .WithNativeDisableParallelForRestriction(translations)
             .ForEach(
-                (Entity ent, int entityInQueryIndex, in ObjectInitializeData init, in BinderObjectMainEntityLinkData link) =>
+                (Entity ent, int entityInQueryIndex, in ObjectInitializeData init, in ObjectBinder.MainEntityLinkData link) =>
                 {
 
                     var pos = new Translation { Value = init.pos };

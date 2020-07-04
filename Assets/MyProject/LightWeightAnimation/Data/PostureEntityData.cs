@@ -16,19 +16,23 @@ using Abarabone.Geometry;
 namespace Abarabone.Character
 {
 	
-    public struct PostureLinkData : IComponentData
+    static public partial class Posture
     {
-        public Entity BoneRelationTop;
+
+        public struct LinkData : IComponentData
+        {
+            public Entity BoneRelationTop;
+        }
+
+        public struct NeedTransformTag : IComponentData
+        { }
+
+        //public struct UniqueIdData : IComponentData
+        //   {
+        //       public int UniqueId;
+        //   }
+
     }
-
-    public struct PostureNeedTransformTag : IComponentData
-    { }
-
-	//public struct PostureUniqueIdData : IComponentData
- //   {
- //       public int UniqueId;
- //   }
-
 
 
     public struct ControlActionUnit

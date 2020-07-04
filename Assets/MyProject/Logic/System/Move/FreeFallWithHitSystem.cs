@@ -29,7 +29,7 @@ namespace Abarabone.Character
     using Abarabone.Model;
 
 
-    using Abarabone.Motion;
+    using Abarabone.CharacterMotion;
 
     /// <summary>
     /// 

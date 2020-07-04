@@ -15,10 +15,10 @@ using Abarabone.Geometry;
 using System.Runtime.InteropServices;
 using System;
 
-using Abarabone.Utilities;
-
 namespace Abarabone.Draw
 {
+    using Abarabone.Utilities;
+
 
     public struct DrawInstanceEntity :
         ITypedEntity<
@@ -32,6 +32,8 @@ namespace Abarabone.Draw
             => new DrawInstanceEntity { Entity = ent };
     }
 
+
+
     static public partial class DrawInstance
     {
 
@@ -43,10 +45,12 @@ namespace Abarabone.Draw
         {
             public Entity DrawModelEntity;
         }
+
         public struct TargetWorkData : IComponentData
         {
             public int DrawInstanceId;   // -1 なら描画しない
         }
+
 
 
         /// <summary>

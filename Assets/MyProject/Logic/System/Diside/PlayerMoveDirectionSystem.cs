@@ -20,7 +20,7 @@ using Abarabone.Misc;
 using Abarabone.Utilities;
 using Abarabone.SystemGroup;
 using Abarabone.Character;
-using Abarabone.Motion;
+using Abarabone.CharacterMotion;
 
 namespace Abarabone.Character
 {
@@ -101,10 +101,10 @@ namespace Abarabone.Character
                         var rRot = math.mul( this.hrot, quaternion.RotateX( this.vangle ) );
 
                         var kb = Keyboard.current;
-                        var l = kb.dKey.isPressed ? 1.0f : 0.0f;
-                        var r = kb.aKey.isPressed ? -1.0f : 0.0f;
-                        var u = kb.wKey.isPressed ? 1.0f : 0.0f;
-                        var d = kb.sKey.isPressed ? -1.0f : 0.0f;
+                        var l = kb.sKey.isPressed ? -1.0f : 0.0f;
+                        var r = kb.fKey.isPressed ? 1.0f : 0.0f;
+                        var u = kb.eKey.isPressed ? 1.0f : 0.0f;
+                        var d = kb.dKey.isPressed ? -1.0f : 0.0f;
                         var ldir = math.mul( this.hrot, new float3( l + r, 0.0f, u + d ) );
                         
                         var jumpForce = kb.spaceKey.wasPressedThisFrame ? 5.0f : 0.0f;
@@ -160,7 +160,7 @@ namespace Abarabone.Character
                 //if( this.Acts.IsChangeMotion )
                 //{
                 //    var motionInfo = this.MotionInfos[ linker.MotionEntity ];
-                //    this.Commands.AddComponent( index, linker.MotionEntity, new MotionInitializeData { MotionIndex = (motionInfo.MotionIndex+1) % 10 } );
+                //    this.Commands.AddComponent( index, linker.MotionEntity, new Motion.InitializeData { MotionIndex = (motionInfo.MotionIndex+1) % 10 } );
                 //}
 
                 handler.ControlAction = this.Acts;
