@@ -18,7 +18,7 @@ namespace Abarabone.Particle.Aurthoring
     /// <summary>
     /// 
     /// </summary>
-    public class MeshModelAuthoring
+    public class PartStructureModelAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 

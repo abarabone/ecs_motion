@@ -25,6 +25,8 @@ namespace Abarabone.Particle.Aurthoring
 
         public Material Material;
 
+        //public bool IsHMesh;
+
 
 
         /// <summary>

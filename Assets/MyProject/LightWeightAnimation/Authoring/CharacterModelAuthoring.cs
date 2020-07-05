@@ -32,7 +32,7 @@ namespace Abarabone.Model.Authoring
         public enum EnBoneType
         {
             reelup_chain,
-            jobs_per_depth,
+            //jobs_per_depth,
         }
 
 
