@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Particle.Aurthoring
+namespace Abarabone.Structure.Aurthoring
 {
     using Model;
     using Draw;
@@ -18,7 +18,7 @@ namespace Abarabone.Particle.Aurthoring
     /// <summary>
     /// 
     /// </summary>
-    public class PartStructureModelAuthoring
+    public class StructureModelAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 

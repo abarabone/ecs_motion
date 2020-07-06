@@ -9,6 +9,8 @@ using Abarabone.Common.Extension;
 
 namespace Abss.Geometry
 {
+	using Abarabone.Structure.Aurthoring;
+
 
 	/// <summary>
 	/// Mesh 要素を格納する。並列処理させた結果を格納し、最後に Mesh を作成するために使用する。
@@ -169,7 +171,7 @@ namespace Abss.Geometry
 		/// Mesh 要素を結合するデリゲートを返す。Structure オブジェクト用。
 		/// </summary>
 		static public Func<MeshElements> BuildStructureWithPalletMeshElements
-			( IEnumerable<StructurePart> parts, Transform tfBase )
+			( IEnumerable<StructurePartAuthoring> parts, Transform tfBase )
 		{
 			var gameObjects = from part in parts select part.gameObject;
 			var mmts = FromObject.QueryMeshMatsTransform_IfHaving( gameObjects ).ToArray();
@@ -185,7 +187,7 @@ namespace Abss.Geometry
 			
 			
 			// 全パーツから、パーツＩＤをすべてクエリする。
-			var partId_PerMesh = ( from x in mmts select x.tf.GetComponent<StructurePart>().PartId ).ToArray();
+			var partId_PerMesh = ( from x in mmts select x.tf.GetComponent<StructurePartAuthoring>().PartId ).ToArray();
 			
 			// サブメッシュ単位で、頂点数を取得。
 			var vertexCount_PerSubmeshPerMesh =
