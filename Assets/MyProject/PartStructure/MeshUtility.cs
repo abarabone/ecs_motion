@@ -5,11 +5,13 @@ using System.Linq;
 using Unity.Linq;
 using System.Threading.Tasks;
 using System;
-using Abarabone.Common.Extension;
 
-namespace Abss.Geometry
+namespace Abarabone.Geometry
 {
+
+	using Abarabone.Common.Extension;
     
+
 	public static class MeshUtility
 	{
 		

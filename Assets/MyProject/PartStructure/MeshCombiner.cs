@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System;
 using Abarabone.Common.Extension;
 
-namespace Abss.Geometry
+namespace Abarabone.Geometry
 {
 	using Abarabone.Structure.Aurthoring;
 

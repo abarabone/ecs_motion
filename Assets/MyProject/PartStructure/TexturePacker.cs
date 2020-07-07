@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using Abarabone.Common.Extension;
 
-namespace Abss.Geometry
+namespace Abarabone.Geometry
 {
+
+	using Abarabone.Common.Extension;
+
+
 	public static class TexturePacker
 	{
 
