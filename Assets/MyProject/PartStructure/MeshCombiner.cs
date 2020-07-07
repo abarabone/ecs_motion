@@ -74,7 +74,7 @@ namespace Abarabone.Geometry
 			return BuildBaseMeshElements( mmts, tfBase, isCombineSubMeshes );
 		}
 
-		static Func<MeshElements> BuildBaseMeshElements
+		static public Func<MeshElements> BuildBaseMeshElements
 			( (Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase, bool isCombineSubMeshes )
 		{
 
@@ -120,7 +120,7 @@ namespace Abarabone.Geometry
 			return BuildUnlitMeshElements( mmts, tfBase, isCombineSubMeshes );
 		}
 
-		static Func<MeshElements> BuildUnlitMeshElements
+		static public Func<MeshElements> BuildUnlitMeshElements
 			( (Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase, bool isCombineSubMeshes )
 		{
 			var f = BuildBaseMeshElements( mmts, tfBase, isCombineSubMeshes );
@@ -148,8 +148,8 @@ namespace Abarabone.Geometry
 
 			return BuildNormalMeshElements( mmts, tfBase, isCombineSubMeshes );
 		}
-		
-		static Func<MeshElements> BuildNormalMeshElements
+
+		static public Func<MeshElements> BuildNormalMeshElements
 			( (Mesh mesh,Material[] mats,Transform tf)[] mmts, Transform tfBase, bool isCombineSubMeshes )
 		{
 			var f = BuildUnlitMeshElements( mmts, tfBase, isCombineSubMeshes );
@@ -178,8 +178,8 @@ namespace Abarabone.Geometry
 
 			return BuildStructureWithPalletMeshElements( mmts, tfBase );
 		}
-		
-		static Func<MeshElements> BuildStructureWithPalletMeshElements
+
+		static public Func<MeshElements> BuildStructureWithPalletMeshElements
 			( (Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase )
 		{
 

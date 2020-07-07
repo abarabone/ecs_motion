@@ -23,12 +23,19 @@ namespace Abarabone.Structure.Aurthoring
     /// 
     /// </summary>
     public class StructureModelAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
 
         public Material Material;
 
+
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            var parts = this.GetComponentsInChildren<StructurePartAuthoring>();
+
+            referencedPrefabs.AddRange( parts.Select(x=>x.gameObject) );
+        }
 
 
         /// <summary>
@@ -37,9 +44,7 @@ namespace Abarabone.Structure.Aurthoring
         public async void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var meshElements = await this.combinePartMeshesAsync();
 
-            this.gameObject.AddComponent<MeshFilter>().mesh = meshElements.CreateMesh();
 
             return;
 
@@ -120,60 +125,7 @@ namespace Abarabone.Structure.Aurthoring
         }
 
 
-        /// <summary>
-        /// パーツが子以下の改装にメッシュを持っていた場合、１つのメッシュとなるように結合する。
-        /// </summary>
-        async Task<MeshElements> combinePartMeshesAsync()
-        {
-
-            // 子孫にメッシュが存在すれば、引っ張ってきて結合。１つのメッシュにする。
-            // （ただしパーツだった場合は、結合対象から除外する）
-            var buildTargets = queryTargets_Recursive_(this.gameObject).Do(x=>Debug.Log(x.name)).ToArray();
-            if (buildTargets.Length == 1) return new MeshElements { };
-
-            var meshElements = await combineChildMeshesAsync_(buildTargets, this.transform);
-
-            return meshElements;
-
-
-            IEnumerable<GameObject> queryTargets_Recursive_(GameObject go_)
-            {
-                var q =
-                    from child in go_.Children()
-                    where child.GetComponent<StructurePartAuthoring>() == null
-                    from x in queryTargets_Recursive_(child)
-                    select x
-                    ;
-                return q.Prepend(go_);
-            }
-
-            async Task<MeshElements> combineChildMeshesAsync_(IEnumerable<GameObject> targets_, Transform tf_)
-            {
-                var combineElementFunc =
-                    MeshCombiner.BuildNormalMeshElements(targets_, tf_, isCombineSubMeshes: true);
-
-                return await Task.Run(combineElementFunc);
-            }
-
-            //void removeOrigineComponents_(IEnumerable<GameObject> targets_)
-            //{
-            //    foreach (var go in targets_)
-            //    {
-            //        go.DestroyComponentIfExists<MeshFilter>();
-            //        go.DestroyComponentIfExists<Renderer>();
-            //    }
-            //}
-
-            //void replaceOrAddComponents_CombinedMeshAndMaterials_(GameObject gameObject_, MeshElements me_)
-            //{
-            //    var mf = gameObject_.GetComponent<MeshFilter>().As() ?? gameObject_.AddComponent<MeshFilter>();
-            //    mf.sharedMesh = me_.CreateMesh();
-
-            //    var mr = gameObject_.GetComponent<MeshRenderer>().As() ?? gameObject_.AddComponent<MeshRenderer>();
-            //    mr.materials = me_.materials;
-            //}
-        }
-
     }
+
 
 }

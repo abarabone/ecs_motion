@@ -151,7 +151,7 @@ namespace Abarabone.CharacterMotion.Authoring
 
             return bones
                 .Select( bone => bone.gameObject )
-                .Do(x=>Debug.Log(x.MakePath()))
+                //.Do(x=>Debug.Log(x.MakePath()))
                 .Where( go => enabledBoneHashSet.Contains( go.MakePath( root ) ) )
                 .ToArray();
         }
