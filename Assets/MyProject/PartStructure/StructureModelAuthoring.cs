@@ -23,7 +23,7 @@ namespace Abarabone.Structure.Aurthoring
     /// 
     /// </summary>
     public class StructureModelAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+        : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
 
@@ -34,7 +34,7 @@ namespace Abarabone.Structure.Aurthoring
         {
             var parts = this.GetComponentsInChildren<StructurePartAuthoring>();
 
-            referencedPrefabs.AddRange( parts.Select(x=>x.gameObject) );
+            referencedPrefabs.AddRange(parts.Select(x => x.gameObject).Select(x=>UnityEditor.PrefabUtility.GetCorrespondingObjectFromOriginalSource(x)) );
         }
 
 
