@@ -9,6 +9,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using System.Threading.Tasks;
 using Unity.Linq;
+using UnityEditor;
 
 namespace Abarabone.Structure.Aurthoring
 {
@@ -18,26 +19,50 @@ namespace Abarabone.Structure.Aurthoring
     using Abarabone.Model.Authoring;
     using Abarabone.Draw.Authoring;
     using Abarabone.Geometry;
+    using Unity.Physics.Authoring;
 
-
-
-
-    public class StructureGroupAuthoring : MonoBehaviour
+    public class StructureGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
         public StructureModelAuthoring[] StructureModelPrefabs;
 
+        public GameObject[] partMasterPrefabs;
+        public Mesh[] CombinedPartMeshes;
 
-        private void Awake()
+
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            referencedPrefabs.AddRange(this.StructureModelPrefabs.Select(x=>x.gameObject));
+        }
+
+        public async void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+        }
+        
+        private async void Awake()
         {
 
-            var q = this.StructureModelPrefabs
+            this.partMasterPrefabs = this.StructureModelPrefabs
                 .SelectMany(st => st.GetComponentsInChildren<StructurePartAuthoring>())
+                .Select(pt => PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject))
+                .Distinct()
+                .Do(x => Debug.Log(x.name))
+                .ToArray();
+
+            var q = this.partMasterPrefabs
+                .Select( ptgo => ptgo.GetComponent<StructurePartAuthoring>() )
                 .Select(pt => pt.CombinePartMeshesAsync());
 
-            Task.WhenAll(q);
+            var meshElementsList = await Task.WhenAll(q);
 
-            Debug.Log("e");
+            this.CombinedPartMeshes = meshElementsList.ToArray();
+
+
+            this.partMasterPrefabs
+                .Select( x => Instantiate(x) )
+                .Do(x => x.AddComponent<PhysicsBodyAuthoring>())
+                .ForEach( x => x.AddComponent<ConvertToEntity>() );
+
 
         }
 
@@ -51,19 +76,17 @@ namespace Abarabone.Structure.Aurthoring
         /// <summary>
         /// パーツが子以下の改装にメッシュを持っていた場合、１つのメッシュとなるように結合する。
         /// </summary>
-        static public async Task<MeshElements> CombinePartMeshesAsync( this StructurePartAuthoring part )
-        //static public MeshElements CombinePartMeshes(StructurePartAuthoring part)
+        static public async Task<Mesh> CombinePartMeshesAsync( this StructurePartAuthoring part )
         {
 
             // 子孫にメッシュが存在すれば、引っ張ってきて結合。１つのメッシュにする。
             // （ただしパーツだった場合は、結合対象から除外する）
             var buildTargets = queryTargets_Recursive_(part.gameObject).ToArray();
-            if (buildTargets.Length == 1) return new MeshElements { };
+            if (buildTargets.Length == 1) return buildTargets.First().GetComponent<MeshFilter>().sharedMesh;
 
             var meshElements_ = await combineChildMeshesAsync_(buildTargets, part.transform);
-            //var meshElements_ = combineChildMeshes_(buildTargets, part.transform);
 
-            return meshElements_;
+            return meshElements_.CreateMesh();
 
 
             IEnumerable<GameObject> queryTargets_Recursive_(GameObject go_)
@@ -84,13 +107,6 @@ namespace Abarabone.Structure.Aurthoring
 
                 return await Task.Run(combineElementFunc).ConfigureAwait(false);
             }
-            //MeshElements combineChildMeshes_(IEnumerable<GameObject> targets_, Transform tf_)
-            //{
-            //    var combineElementFunc =
-            //        MeshCombiner.BuildNormalMeshElements(targets_, tf_, isCombineSubMeshes: true);
-
-            //    return combineElementFunc();
-            //}
         }
     }
 }

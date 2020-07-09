@@ -17,7 +17,7 @@ namespace Abarabone.Structure.Aurthoring
 
 
 
-    public class StructurePartAuthoring : MonoBehaviour//, IConvertGameObjectToEntity
+    public class StructurePartAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
 
@@ -35,6 +35,7 @@ namespace Abarabone.Structure.Aurthoring
             (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
+            Debug.Log(this.name);
 
             //var meshElements = combinePartMeshesAsync_(this).Result;
             //var meshElements = combinePartMeshes_(this);

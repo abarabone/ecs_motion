@@ -23,7 +23,7 @@ namespace Abarabone.Structure.Aurthoring
     /// 
     /// </summary>
     public class StructureModelAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
     {
 
 
