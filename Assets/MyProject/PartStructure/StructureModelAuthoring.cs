@@ -27,7 +27,7 @@ namespace Abarabone.Structure.Aurthoring
     {
 
 
-        public Material Material;
+        public Material MaterialToDraw;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -44,82 +44,72 @@ namespace Abarabone.Structure.Aurthoring
         public async void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
+            var skinnedMeshRenderers = this.GetComponentsInChildren<SkinnedMeshRenderer>();
+            var qMesh = skinnedMeshRenderers.Select(x => x.sharedMesh);
+            var bones = skinnedMeshRenderers.First().bones.Where(x => !x.name.StartsWith("_")).ToArray();
 
+            var top = this.gameObject;
+            var main = top.transform.GetChild(0).gameObject;
 
-            return;
+            createModelEntity_(conversionSystem, top, this.MaterialToDraw, qMesh, bones);
 
-
-            createModelEntity_(conversionSystem, this.gameObject, this.Material);
-
-            initInstanceEntityComponents_(conversionSystem, this.gameObject);
+            initObjectEntity_(conversionSystem, top, main);
 
             return;
 
 
             void createModelEntity_
-                (GameObjectConversionSystem gcs, GameObject main, Material srcMaterial)
+                (
+                    GameObjectConversionSystem gcs_, GameObject top_,
+                    Material srcMaterial, IEnumerable<Mesh> srcMeshes, Transform[] bones_
+                )
             {
                 var mat = new Material(srcMaterial);
-                var mesh = main.GetComponentInChildren<MeshFilter>().sharedMesh;
+                var mesh = DrawModelEntityConvertUtility.CombineAndConvertMesh(srcMeshes, bones_);
 
                 const BoneType BoneType = BoneType.TR;
-                const int boneLength = 1;
 
-                var modelEntity_ = gcs.CreateDrawModelEntityComponents(main, mesh, mat, BoneType, boneLength);
+                gcs_.CreateDrawModelEntityComponents(top_, mesh, mat, BoneType, bones_.Length);
             }
 
-            void initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
+            void initObjectEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
             {
-                dstManager.SetName(entity, $"{this.name}");
+                var em_ = gcs_.DstEntityManager;
 
-                var em = gcs.DstEntityManager;
+                var binderEntity = gcs_.GetPrimaryEntity(top_);
+                var mainEntity = gcs_.GetPrimaryEntity(main_);
 
 
-                var mainEntity = gcs.GetPrimaryEntity(main);
+                em_.AddComponentData(binderEntity,
+                    new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
 
-                var archetype = em.CreateArchetype(
-                    typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                    typeof(DrawInstance.ModeLinkData),
-                    typeof(DrawInstance.TargetWorkData),
-                    typeof(Translation),
-                    typeof(Rotation),
-                    typeof(NonUniformScale)
+
+                var addtypes = new ComponentTypes
+                (
+                    typeof(ObjectMain.ObjectMainTag),
+                    typeof(ObjectMain.BinderLinkData),
+                    typeof(ObjectMainCharacterLinkData)
+                //typeof(ObjectMain.MotionLinkDate)
                 );
-                em.SetArchetype(mainEntity, archetype);
+                em_.AddComponents(mainEntity, addtypes);
 
 
-                em.SetComponentData(mainEntity,
-                    new DrawInstance.ModeLinkData
-                    //new DrawTransform.LinkData
+                em_.SetComponentData(mainEntity,
+                    new ObjectMain.BinderLinkData
                     {
-                        DrawModelEntity = gcs.GetFromModelEntityDictionary(main),
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new DrawInstance.TargetWorkData
-                    {
-                        DrawInstanceId = -1,
+                        BinderEntity = binderEntity,
                     }
                 );
 
-                em.SetComponentData(mainEntity,
-                    new Translation
+                em_.SetComponentData(mainEntity,
+                    new ObjectMainCharacterLinkData
                     {
-                        Value = float3.zero,
+                        PostureEntity = mainEntity,//
                     }
                 );
-                em.SetComponentData(mainEntity,
-                    new Rotation
-                    {
-                        Value = quaternion.identity,
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new NonUniformScale
-                    {
-                        Value = new float3(1.0f, 1.0f, 1.0f),
-                    }
-                ); ;
+
+                em_.SetName(binderEntity, $"{top_.name} binder");
+                em_.SetName(mainEntity, $"{top_.name} main");
             }
 
         }

@@ -28,6 +28,7 @@ namespace Abarabone.Structure.Aurthoring
 
         public GameObject[] partMasterPrefabs;
         public Mesh[] CombinedPartMeshes;
+        public Mesh[] CombinedStructureMeshes;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -37,6 +38,7 @@ namespace Abarabone.Structure.Aurthoring
 
         public async void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            dstManager.DestroyEntity(entity);
         }
         
         private async void Awake()
@@ -53,9 +55,7 @@ namespace Abarabone.Structure.Aurthoring
                 .Select( ptgo => ptgo.GetComponent<StructurePartAuthoring>() )
                 .Select(pt => pt.CombinePartMeshesAsync());
 
-            var meshElementsList = await Task.WhenAll(q);
-
-            this.CombinedPartMeshes = meshElementsList.ToArray();
+            this.CombinedPartMeshes = await q.WhenAll();
 
 
             this.partMasterPrefabs
@@ -63,6 +63,13 @@ namespace Abarabone.Structure.Aurthoring
                 .Do(x => x.AddComponent<PhysicsBodyAuthoring>())
                 .ForEach( x => x.AddComponent<ConvertToEntity>() );
 
+
+            var elements = await this.StructureModelPrefabs
+                .Select( st => st.gameObject.GetComponentsInChildren<MeshFilter>() )
+                .Select( mfs => mfs.Select(mf=>mf.gameObject).CombineChildMeshesAsync(mfs.First().transform) )
+                .WhenAll()
+                ;
+            this.CombinedStructureMeshes = elements.Select(x => x.CreateMesh()).ToArray();
 
         }
 
@@ -72,6 +79,19 @@ namespace Abarabone.Structure.Aurthoring
 
     static class StructureConversionExtension
     {
+
+
+        static public async Task<T[]> WhenAll<T>( this IEnumerable<Task<T>> tasks ) => await Task.WhenAll(tasks);
+
+        static public async Task<MeshElements> CombineChildMeshesAsync( this IEnumerable<GameObject> targets, Transform tf)
+        {
+            var combineElementFunc =
+                MeshCombiner.BuildNormalMeshElements(targets, tf, isCombineSubMeshes: true);
+
+            return await Task.Run(combineElementFunc).ConfigureAwait(false);
+        }
+
+
 
         /// <summary>
         /// パーツが子以下の改装にメッシュを持っていた場合、１つのメッシュとなるように結合する。
