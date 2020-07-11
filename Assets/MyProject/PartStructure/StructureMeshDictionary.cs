@@ -7,28 +7,28 @@ using Unity.Entities.Conversion;
 using Unity.Entities.Hybrid;
 using System.Linq;
 
-namespace Abarabone.Model.Authoring
+namespace Abarabone.Structure.Authoring
 {
 
     /// <summary>
     /// モデルエンティティとゲームオブジェクトを紐づける仕組み。
     /// モデルプレハブはモデルのメインエンティティに紐づけるので、別枠が必要になった。（そもそもインスタンスとリソースは別か）
     /// </summary>
-    public class ModelEntityDictionary : GameObjectConversionSystem
+    public class StructureMeshDictionary : GameObjectConversionSystem
     {
 
         public class Data : IComponentData
         {
-            public Dictionary<GameObject, Entity> ModelDictionary;
+            public Dictionary<GameObject, Mesh> MeshDictionary;
         }
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            var dict = new Dictionary<GameObject, Entity>();
+            var dict = new Dictionary<GameObject, Mesh>();
             this.EntityManager.CreateEntity( typeof( Data ) );
-            this.SetSingleton( new Data { ModelDictionary = dict } );
+            this.SetSingleton( new Data { MeshDictionary = dict } );
         }
 
         protected override void OnUpdate()
@@ -38,21 +38,21 @@ namespace Abarabone.Model.Authoring
         {
             base.OnDestroy();
 
-            this.GetSingleton<Data>().ModelDictionary = null;
+            this.GetSingleton<Data>().MeshDictionary = null;
             this.EntityManager.DestroyEntity( this.GetSingletonEntity<Data>() );
         }
     }
 
 
-    static public class ModelEntityDictionaryExtension
+    static public class StructureMeshDictionaryExtension
     {
-        static public void AddToModelEntityDictionary
-            ( this GameObjectConversionSystem gcs, GameObject topGameObject, Entity entity ) =>
-            gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.Add(topGameObject, entity);
+        static public void AddToStructureMeshDictionary
+            ( this GameObjectConversionSystem gcs, GameObject topGameObject, Mesh mesh ) =>
+            gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary.Add(topGameObject, mesh);
 
-        static public Entity GetFromModelEntityDictionary
+        static public Mesh GetFromStructureMeshDictionary
             (this GameObjectConversionSystem gcs, GameObject topGameObject) =>
-            gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary[topGameObject];
+            gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary[topGameObject];
     }
 
 }
