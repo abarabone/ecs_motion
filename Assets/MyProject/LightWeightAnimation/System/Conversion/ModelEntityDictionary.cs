@@ -38,6 +38,7 @@ namespace Abarabone.Model.Authoring
         {
             base.OnDestroy();
 
+            this.GetSingleton<Data>().ModelDictionary.Clear();
             this.GetSingleton<Data>().ModelDictionary = null;
             this.EntityManager.DestroyEntity( this.GetSingletonEntity<Data>() );
         }

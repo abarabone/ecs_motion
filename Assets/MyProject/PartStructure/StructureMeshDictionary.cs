@@ -25,6 +25,7 @@ namespace Abarabone.Structure.Authoring
         protected override void OnCreate()
         {
             base.OnCreate();
+            Debug.Log("dic on");
 
             var dict = new Dictionary<GameObject, Mesh>();
             this.EntityManager.CreateEntity( typeof( Data ) );
@@ -37,7 +38,9 @@ namespace Abarabone.Structure.Authoring
         protected override void OnDestroy()
         {
             base.OnDestroy();
+            Debug.Log("dic off");
 
+            this.GetSingleton<Data>().MeshDictionary.Clear();
             this.GetSingleton<Data>().MeshDictionary = null;
             this.EntityManager.DestroyEntity( this.GetSingletonEntity<Data>() );
         }
@@ -47,11 +50,17 @@ namespace Abarabone.Structure.Authoring
     static public class StructureMeshDictionaryExtension
     {
         static public void AddToStructureMeshDictionary
-            ( this GameObjectConversionSystem gcs, GameObject topGameObject, Mesh mesh ) =>
+            ( this GameObjectConversionSystem gcs, GameObject topGameObject, Mesh mesh)
+        {
+            Debug.Log("addst");
+            Debug.Log(gcs);
+            Debug.Log(gcs.GetSingleton<StructureMeshDictionary.Data>());
+            Debug.Log(gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary);
             gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary.Add(topGameObject, mesh);
+        }
 
         static public Mesh GetFromStructureMeshDictionary
-            (this GameObjectConversionSystem gcs, GameObject topGameObject) =>
+            ( this GameObjectConversionSystem gcs, GameObject topGameObject ) =>
             gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary[topGameObject];
     }
 
