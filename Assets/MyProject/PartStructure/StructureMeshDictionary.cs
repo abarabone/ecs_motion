@@ -52,10 +52,10 @@ namespace Abarabone.Structure.Authoring
         static public void AddToStructureMeshDictionary
             ( this GameObjectConversionSystem gcs, GameObject topGameObject, Mesh mesh)
         {
-            Debug.Log("addst");
-            Debug.Log(gcs);
-            Debug.Log(gcs.GetSingleton<StructureMeshDictionary.Data>());
-            Debug.Log(gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary);
+            //Debug.Log("addst");
+            //Debug.Log(gcs);
+            //Debug.Log(gcs.GetSingleton<StructureMeshDictionary.Data>());
+            //Debug.Log(gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary);
             gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary.Add(topGameObject, mesh);
         }
 

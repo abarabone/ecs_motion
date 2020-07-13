@@ -33,7 +33,7 @@ namespace Abarabone.Structure.Aurthoring
         //public Mesh[] CombinedPartMeshes;
         //public Mesh[] CombinedStructureMeshes;
         //(GameObject go, Mesh mesh)[] objectAndMeshList;
-        public Mesh[] meshes;
+        (GameObject, Mesh)[] objectsAndMeshes;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -44,19 +44,24 @@ namespace Abarabone.Structure.Aurthoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            //dstManager.DestroyEntity(entity);
+            dstManager.DestroyEntity(entity);
             //Debug.Log("aaa");
             //create(conversionSystem);
+
+            foreach (var (go, mesh) in this.objectsAndMeshes)
+            {
+                conversionSystem.AddToStructureMeshDictionary(go, mesh);
+            }
         }
 
         void Awake()
         {
             Debug.Log("aaa");
-            create(null);
+            create();
         }
 
 
-        private void create(GameObjectConversionSystem gcs)
+        private void create()
         {
 
             var structurePrefabs = this.StructureModelPrefabs
@@ -73,18 +78,17 @@ namespace Abarabone.Structure.Aurthoring
 
             instantiateMasterPrefab_ForConversion_(partMasterPrefabs);
 
-            //combineMeshes_(gcs, structurePrefabs, partMasterPrefabs);
+            combineMeshes_(structurePrefabs, partMasterPrefabs);
 
             return;
 
 
-            async void combineMeshes_
-                (GameObjectConversionSystem gcs_, GameObject[] structurePrefabs_, GameObject[] partMasterPrefabs_ )
+            void combineMeshes_( GameObject[] structurePrefabs_, GameObject[] partMasterPrefabs_ )
             {
 
                 var qPartChildren = 
                     from pt in partMasterPrefabs_
-                    select (pt, children: pt.queryTargets_Recursive_().ToArray())
+                    select (pt, children: pt.QueryPartBodyObjects_Recursive_().ToArray())
                     ;
                 var partChildrens = qPartChildren.ToArray();
 
@@ -103,8 +107,8 @@ namespace Abarabone.Structure.Aurthoring
 
                 var qStructureElement =
                     from st in structurePrefabs_
-                    let mgo = st.GetComponentsInChildren<MeshFilter>().Select(x=>x.gameObject)
-                    let f = mgo.GetCombineChildMeshesFunc(st.transform)
+                    let objects = st.DescendantsAndSelf()//st.GetComponentsInChildren<MeshFilter>().Select(x=>x.gameObject)
+                    let f = objects.GetCombineChildMeshesFunc(st.transform)
                     select Task.Run(f)
                     ;
 
@@ -133,11 +137,8 @@ namespace Abarabone.Structure.Aurthoring
                     .Concat(qPart_single.Select(x=>x.pt));
 
 
-                foreach ( var (go, mesh) in (qObject, meshes).Zip() )
-                {
-                    gcs_.AddToStructureMeshDictionary(go, mesh);
-                }
-                this.meshes = meshes.ToArray();
+                this.objectsAndMeshes = (qObject, meshes).Zip().ToArray();
+
             }
 
             void instantiateMasterPrefab_ForConversion_( IEnumerable<GameObject> partMasterPrefabs_ )
@@ -171,13 +172,15 @@ namespace Abarabone.Structure.Aurthoring
             MeshCombiner.BuildNormalMeshElements(targets, tf, isCombineSubMeshes: true);
 
 
-
-        static public IEnumerable<GameObject> queryTargets_Recursive_(this GameObject go_)
+        /// <summary>
+        /// 
+        /// </summary>
+        static public IEnumerable<GameObject> QueryPartBodyObjects_Recursive_(this GameObject go_)
         {
             var q =
                 from child in go_.Children()
                 where child.GetComponent<StructurePartAuthoring>() == null
-                from x in queryTargets_Recursive_(child)
+                from x in QueryPartBodyObjects_Recursive_(child)
                 select x
                 ;
             return q.Prepend(go_);
@@ -186,42 +189,42 @@ namespace Abarabone.Structure.Aurthoring
 
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        static public Func<MeshElements> GetCombineStructureMeshesFunc(this GameObject structure)
-        {
-            return Enumerable.Repeat( structure, 1 )
-                .GetCombineChildMeshesFunc(structure.transform.GetChild(0))
-                ;
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //static public Func<MeshElements> GetCombineStructureMeshesFunc(this GameObject structure)
+        //{
+        //    return Enumerable.Repeat( structure, 1 )
+        //        .GetCombineChildMeshesFunc(structure.transform.GetChild(0))
+        //        ;
+        //}
 
 
-        /// <summary>
-        /// パーツが子以下の改装にメッシュを持っていた場合、１つのメッシュとなるように結合する。
-        /// </summary>
-        static public Func<MeshElements> GetCombinePartMeshesFunc(this GameObject part)
-        {
+        ///// <summary>
+        ///// パーツが子以下の改装にメッシュを持っていた場合、１つのメッシュとなるように結合する。
+        ///// </summary>
+        //static public Func<MeshElements> GetCombinePartMeshesFunc(this GameObject part)
+        //{
 
-            // 子孫にメッシュが存在すれば、引っ張ってきて結合。１つのメッシュにする。
-            // （ただしパーツだった場合は、結合対象から除外する）
-            var buildTargets = queryTargets_Recursive_(part.gameObject).ToArray();
-            //if (buildTargets.Length == 1) return null;
+        //    // 子孫にメッシュが存在すれば、引っ張ってきて結合。１つのメッシュにする。
+        //    // （ただしパーツだった場合は、結合対象から除外する）
+        //    var buildTargets = queryTargets_Recursive_(part.gameObject).ToArray();
+        //    //if (buildTargets.Length == 1) return null;
 
-            return buildTargets.GetCombineChildMeshesFunc(part.transform);
+        //    return buildTargets.GetCombineChildMeshesFunc(part.transform);
 
 
-            IEnumerable<GameObject> queryTargets_Recursive_(GameObject go_)
-            {
-                var q =
-                    from child in go_.Children()
-                    where child.GetComponent<StructurePartAuthoring>() == null
-                    from x in queryTargets_Recursive_(child)
-                    select x
-                    ;
-                return q.Prepend(go_);
-            }
-        }
+        //    IEnumerable<GameObject> queryTargets_Recursive_(GameObject go_)
+        //    {
+        //        var q =
+        //            from child in go_.Children()
+        //            where child.GetComponent<StructurePartAuthoring>() == null
+        //            from x in queryTargets_Recursive_(child)
+        //            select x
+        //            ;
+        //        return q.Prepend(go_);
+        //    }
+        //}
 
 
     }

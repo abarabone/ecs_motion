@@ -16,6 +16,9 @@ using Abarabone.SystemGroup;
 namespace Abarabone.Draw
 {
 
+    /// <summary>
+    /// TRSだが、現在はTRのみ対応
+    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]

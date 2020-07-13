@@ -17,6 +17,8 @@ namespace Abarabone.Structure.Aurthoring
     using Abarabone.Model.Authoring;
     using Abarabone.Draw.Authoring;
     using Abarabone.Geometry;
+    using Abarabone.Structure.Authoring;
+    using Abarabone.Character;//ObjectMain はここにある、名前変えるべきか？
 
 
     /// <summary>
@@ -48,73 +50,64 @@ namespace Abarabone.Structure.Aurthoring
         public async void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            //var skinnedMeshRenderers = this.GetComponentsInChildren<SkinnedMeshRenderer>();
-            //var qMesh = skinnedMeshRenderers.Select(x => x.sharedMesh);
-            //var bones = skinnedMeshRenderers.First().bones.Where(x => !x.name.StartsWith("_")).ToArray();
+            var top = this.gameObject;
+            var main = top.transform.GetChild(0).gameObject;
 
-            //var top = this.gameObject;
-            //var main = top.transform.GetChild(0).gameObject;
+            createModelEntity_(conversionSystem, top, this.MaterialToDraw);
 
-            //createModelEntity_(conversionSystem, top, this.MaterialToDraw, qMesh, bones);
+            initObjectEntity_(conversionSystem, top, main);
 
-            //initObjectEntity_(conversionSystem, top, main);
-
-            //return;
+            return;
 
 
-            //void createModelEntity_
-            //    (
-            //        GameObjectConversionSystem gcs_, GameObject top_,
-            //        Material srcMaterial, IEnumerable<Mesh> srcMeshes, Transform[] bones_
-            //    )
-            //{
-            //    var mat = new Material(srcMaterial);
-            //    var mesh = DrawModelEntityConvertUtility.CombineAndConvertMesh(srcMeshes, bones_);
+            void createModelEntity_
+                (
+                    GameObjectConversionSystem gcs_, GameObject top_,
+                    Material srcMaterial
+                )
+            {
+                var mat = new Material(srcMaterial);
+                var mesh = gcs_.GetFromStructureMeshDictionary(top_);
 
-            //    const BoneType BoneType = BoneType.TR;
+                const BoneType BoneType = BoneType.TR;
+                const int boneLength = 1;
 
-            //    gcs_.CreateDrawModelEntityComponents(top_, mesh, mat, BoneType, bones_.Length);
-            //}
+                gcs_.CreateDrawModelEntityComponents(top_, mesh, mat, BoneType, boneLength);
+            }
 
-            //void initObjectEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
-            //{
-            //    var em_ = gcs_.DstEntityManager;
+            void initObjectEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
+            {
+                var em_ = gcs_.DstEntityManager;
 
-            //    var binderEntity = gcs_.GetPrimaryEntity(top_);
-            //    var mainEntity = gcs_.GetPrimaryEntity(main_);
-
-
-            //    em_.AddComponentData(binderEntity,
-            //        new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
+                var binderEntity = gcs_.GetPrimaryEntity(top_);
+                var mainEntity = gcs_.GetPrimaryEntity(main_);
 
 
-            //    var addtypes = new ComponentTypes
-            //    (
-            //        typeof(ObjectMain.ObjectMainTag),
-            //        typeof(ObjectMain.BinderLinkData),
-            //        typeof(ObjectMainCharacterLinkData)
-            //    //typeof(ObjectMain.MotionLinkDate)
-            //    );
-            //    em_.AddComponents(mainEntity, addtypes);
+                em_.AddComponentData(binderEntity,
+                    new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
 
 
-            //    em_.SetComponentData(mainEntity,
-            //        new ObjectMain.BinderLinkData
-            //        {
-            //            BinderEntity = binderEntity,
-            //        }
-            //    );
+                var addtypes = new ComponentTypes
+                (
+                    //typeof(Abarabone.Particle.ParticleTag),//暫定
+                    typeof(NonUniformScale),//暫定
+                    typeof(ObjectMain.ObjectMainTag),
+                    typeof(ObjectMain.BinderLinkData)
+                );
+                em_.AddComponents(mainEntity, addtypes);
 
-            //    em_.SetComponentData(mainEntity,
-            //        new ObjectMainCharacterLinkData
-            //        {
-            //            PostureEntity = mainEntity,//
-            //        }
-            //    );
 
-            //    em_.SetName(binderEntity, $"{top_.name} binder");
-            //    em_.SetName(mainEntity, $"{top_.name} main");
-            //}
+                em_.SetComponentData(mainEntity,
+                    new ObjectMain.BinderLinkData
+                    {
+                        BinderEntity = binderEntity,
+                    }
+                );
+
+
+                em_.SetName(binderEntity, $"{top_.name} binder");
+                em_.SetName(mainEntity, $"{top_.name} main");
+            }
 
         }
 
