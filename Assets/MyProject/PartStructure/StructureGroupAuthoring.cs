@@ -34,23 +34,61 @@ namespace Abarabone.Structure.Aurthoring
         //public Mesh[] CombinedStructureMeshes;
         //(GameObject go, Mesh mesh)[] objectAndMeshList;
         (GameObject, Mesh)[] objectsAndMeshes;
+        GameObject[] partMasterPrefabs;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            var structurePrefabs = from x in this.StructureModelPrefabs select x.gameObject;
+            var structurePrefabs = this.StructureModelPrefabs.Select( x => x.gameObject );
             referencedPrefabs.AddRange(structurePrefabs);
         }
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.DestroyEntity(entity);
-            //Debug.Log("aaa");
-            //create(conversionSystem);
 
-            foreach (var (go, mesh) in this.objectsAndMeshes)
+            dstManager.DestroyEntity(entity);
+
+            addToMeshDictionary_(this.objectsAndMeshes);
+
+            stantiateMasterPrefab_ForConversion_(conversionSystem, this.partMasterPrefabs);
+
+            return;
+
+
+            void addToMeshDictionary_((GameObject, Mesh)[] objectsAndMeshes_)
             {
-                conversionSystem.AddToStructureMeshDictionary(go, mesh);
+                foreach (var (go, mesh) in objectsAndMeshes_)
+                {
+                    conversionSystem.AddToStructureMeshDictionary(go, mesh);
+                }
+            }
+
+            void stantiateMasterPrefab_ForConversion_
+                (GameObjectConversionSystem gcs_, IEnumerable<GameObject> partMasterPrefabs_)
+            {
+                foreach( var pt in partMasterPrefabs_.Select(prefab => Instantiate(prefab)) )
+                {
+                    var em = gcs_.DstEntityManager;
+
+                    Debug.Log("pt "+pt.name);
+                    pt.AddComponent<PhysicsBodyAuthoring>();
+
+                    var flag = GameObjectConversionUtility.ConversionFlags.AssignName;
+                    var settings = new GameObjectConversionSettings(em.World, flag, gcs_.BlobAssetStore);
+                    //var ent = GameObjectConversionUtility.ConvertGameObjectHierarchy(pt, settings);
+                    // このコンバートが走るたびに、専用の変換ワールドが作られて消えるみたい、よくないね…
+                    GameObjectConversionUtility.ConvertGameObjectsToEntitiesField
+                        (gcs_, new GameObject[] { pt.gameObject}, out var ents);
+
+                    var addtype = new ComponentTypes
+                    (
+                        typeof(BinderTrimBlankLinkedEntityGroupTag),
+                        typeof(Prefab)
+                    );
+                    em.AddComponents(ents.First(), addtype);
+
+                    Destroy(pt);
+                }
             }
         }
 
@@ -74,9 +112,8 @@ namespace Abarabone.Structure.Aurthoring
                 .Distinct()
                 .Do(x => Debug.Log(x.name))
                 .ToArray();
+            this.partMasterPrefabs = partMasterPrefabs;
 
-
-            instantiateMasterPrefab_ForConversion_(partMasterPrefabs);
 
             combineMeshes_(structurePrefabs, partMasterPrefabs);
 
@@ -107,7 +144,7 @@ namespace Abarabone.Structure.Aurthoring
 
                 var qStructureElement =
                     from st in structurePrefabs_
-                    let objects = st.DescendantsAndSelf()//st.GetComponentsInChildren<MeshFilter>().Select(x=>x.gameObject)
+                    let objects = st.DescendantsAndSelf()
                     let f = objects.GetCombineChildMeshesFunc(st.transform)
                     select Task.Run(f)
                     ;
@@ -141,14 +178,6 @@ namespace Abarabone.Structure.Aurthoring
 
             }
 
-            void instantiateMasterPrefab_ForConversion_( IEnumerable<GameObject> partMasterPrefabs_ )
-            {
-                foreach (var pt in from prefab in partMasterPrefabs_ select Instantiate(prefab))
-                {
-                    pt.AddComponent<PhysicsBodyAuthoring>();
-                    pt.AddComponent<ConvertToEntity>();
-                }
-            }
         }
 
 
@@ -186,110 +215,6 @@ namespace Abarabone.Structure.Aurthoring
             return q.Prepend(go_);
         }
 
-
-
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //static public Func<MeshElements> GetCombineStructureMeshesFunc(this GameObject structure)
-        //{
-        //    return Enumerable.Repeat( structure, 1 )
-        //        .GetCombineChildMeshesFunc(structure.transform.GetChild(0))
-        //        ;
-        //}
-
-
-        ///// <summary>
-        ///// パーツが子以下の改装にメッシュを持っていた場合、１つのメッシュとなるように結合する。
-        ///// </summary>
-        //static public Func<MeshElements> GetCombinePartMeshesFunc(this GameObject part)
-        //{
-
-        //    // 子孫にメッシュが存在すれば、引っ張ってきて結合。１つのメッシュにする。
-        //    // （ただしパーツだった場合は、結合対象から除外する）
-        //    var buildTargets = queryTargets_Recursive_(part.gameObject).ToArray();
-        //    //if (buildTargets.Length == 1) return null;
-
-        //    return buildTargets.GetCombineChildMeshesFunc(part.transform);
-
-
-        //    IEnumerable<GameObject> queryTargets_Recursive_(GameObject go_)
-        //    {
-        //        var q =
-        //            from child in go_.Children()
-        //            where child.GetComponent<StructurePartAuthoring>() == null
-        //            from x in queryTargets_Recursive_(child)
-        //            select x
-        //            ;
-        //        return q.Prepend(go_);
-        //    }
-        //}
-
-
     }
 
-    //static class StructureConversionExtension
-    //{
-
-    //    /// <summary>
-    //    /// 
-    //    /// </summary>
-    //    static public async Task<T[]> WhenAll<T>(this IEnumerable<Task<T>> tasks) =>
-    //        await Task.WhenAll(tasks);
-
-
-
-    //    /// <summary>
-    //    /// パーツが子以下の改装にメッシュを持っていた場合、１つのメッシュとなるように結合する。
-    //    /// </summary>
-    //    static public async Task<Mesh> CombineStructureMeshesAsync( this GameObject structure )
-    //    {
-    //        var element = await structure.GetComponentsInChildren<MeshFilter>()
-    //            .Select(mf => mf.gameObject)
-    //            .combineChildMeshesAsync(structure.transform.GetChild(0))
-    //            ;
-    //        return element.CreateMesh();
-
-    //    }
-
-
-    //    /// <summary>
-    //    /// パーツが子以下の改装にメッシュを持っていた場合、１つのメッシュとなるように結合する。
-    //    /// </summary>
-    //    static public async Task<Mesh> CombinePartMeshesAsync( this GameObject part )
-    //    {
-
-    //        // 子孫にメッシュが存在すれば、引っ張ってきて結合。１つのメッシュにする。
-    //        // （ただしパーツだった場合は、結合対象から除外する）
-    //        var buildTargets = queryTargets_Recursive_(part.gameObject).ToArray();
-    //        if (buildTargets.Length == 1) return buildTargets.First().GetComponent<MeshFilter>().sharedMesh;
-
-    //        var element = await buildTargets.combineChildMeshesAsync(part.transform);
-
-    //        return element.CreateMesh();
-
-
-    //        IEnumerable<GameObject> queryTargets_Recursive_(GameObject go_)
-    //        {
-    //            var q =
-    //                from child in go_.Children()
-    //                where child.GetComponent<StructurePartAuthoring>() == null
-    //                from x in queryTargets_Recursive_(child)
-    //                select x
-    //                ;
-    //            return q.Prepend(go_);
-    //        }
-    //    }
-
-
-    //    static async Task<MeshElements> combineChildMeshesAsync(this IEnumerable<GameObject> targets, Transform tf)
-    //    {
-    //        var combineElementFunc =
-    //            MeshCombiner.BuildNormalMeshElements(targets, tf, isCombineSubMeshes: true);
-
-    //        return await Task.Run(combineElementFunc);
-    //    }
-
-    //}
 }

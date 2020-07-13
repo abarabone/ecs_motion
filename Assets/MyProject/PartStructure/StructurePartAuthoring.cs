@@ -13,11 +13,9 @@ namespace Abarabone.Structure.Aurthoring
     using Abarabone.Draw.Authoring;
 	using Abarabone.Geometry;
 	using Abarabone.Common.Extension;
-    
+    using Unity.Physics.Authoring;
 
-
-
-    public class StructurePartAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class StructurePartAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
     {
 
 
@@ -28,6 +26,15 @@ namespace Abarabone.Structure.Aurthoring
 
 
 
+
+        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        //{
+        //    Debug.Log(this.name+" prefab");
+        //    //var go = Instantiate(this.gameObject);
+        //    //referencedPrefabs.Add(go);
+        //}
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -35,14 +42,12 @@ namespace Abarabone.Structure.Aurthoring
             (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            Debug.Log(this.name);
+            Debug.Log("pt auth "+this.name);
 
-            //var meshElements = combinePartMeshesAsync_(this).Result;
-            //var meshElements = combinePartMeshes_(this);
+            //var go = Instantiate(this.gameObject);
+            //go.AddComponent<PhysicsBodyAuthoring>();
+            //Debug.Log(conversionSystem.GetPrimaryEntity(go));
 
-            //var mesh = meshElements.CreateMesh();
-
-            //createModelEntity_(conversionSystem, this.gameObject, this.Material, mesh);
 
             return;
 

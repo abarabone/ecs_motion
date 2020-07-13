@@ -29,7 +29,7 @@ namespace Abarabone.Draw.Authoring
 
             var em = gcs.DstEntityManager;
 
-            var drawInstanceEntity = createDrawInstanceEntity( gcs, topGameObject, bones.Length );
+            var drawInstanceEntity = createDrawInstanceEntity( gcs, topGameObject );
 
             setBoneComponentValues( gcs, bones, drawInstanceEntity );
 
@@ -41,8 +41,8 @@ namespace Abarabone.Draw.Authoring
         // ----------------------------------------------------------------------------------
 
         
-        static public Entity createDrawInstanceEntity
-            ( GameObjectConversionSystem gcs, GameObject top, int boneLength )
+        static Entity createDrawInstanceEntity
+            ( GameObjectConversionSystem gcs, GameObject top )
         {
             var em = gcs.DstEntityManager;
 

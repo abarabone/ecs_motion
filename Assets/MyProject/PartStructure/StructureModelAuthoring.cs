@@ -20,6 +20,7 @@ namespace Abarabone.Structure.Aurthoring
     using Abarabone.Structure.Authoring;
     using Abarabone.Character;//ObjectMain はここにある、名前変えるべきか？
 
+    using Abarabone.Common.Extension;
 
     /// <summary>
     /// 
@@ -57,6 +58,8 @@ namespace Abarabone.Structure.Aurthoring
 
             initObjectEntity_(conversionSystem, top, main);
 
+            createDrawInstanceEntity_(conversionSystem, top);
+
             return;
 
 
@@ -75,6 +78,42 @@ namespace Abarabone.Structure.Aurthoring
                 gcs_.CreateDrawModelEntityComponents(top_, mesh, mat, BoneType, boneLength);
             }
 
+
+            Entity createDrawInstanceEntity_
+                (GameObjectConversionSystem gcs, GameObject top_)
+            {
+                var em = gcs.DstEntityManager;
+
+
+                var archetype = em.CreateArchetype
+                (
+                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.TargetWorkData)
+                );
+                var ent = gcs.CreateAdditionalEntity(top_, archetype);
+
+                em.SetName(ent, $"{top_.name} draw");
+
+
+                em.SetComponentData(ent,
+                    new DrawInstance.ModeLinkData
+                    {
+                        DrawModelEntity = gcs.GetFromModelEntityDictionary(top_),
+                    }
+                );
+
+                em.SetComponentData(ent,
+                    new DrawInstance.TargetWorkData
+                    {
+                        DrawInstanceId = -1,
+                    }
+                );
+
+
+                return ent;
+            }
+
+
             void initObjectEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
             {
                 var em_ = gcs_.DstEntityManager;
@@ -83,20 +122,32 @@ namespace Abarabone.Structure.Aurthoring
                 var mainEntity = gcs_.GetPrimaryEntity(main_);
 
 
-                em_.AddComponentData(binderEntity,
+                var binderAddtypes = new ComponentTypes
+                (
+                    typeof(BinderTrimBlankLinkedEntityGroupTag),
+                    typeof(ObjectBinder.MainEntityLinkData)
+                );
+                em_.AddComponents(binderEntity, binderAddtypes);
+
+                em_.SetComponentData(binderEntity,
                     new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
 
 
-                var addtypes = new ComponentTypes
+                var mainAddtypes = new ComponentTypes
                 (
                     //typeof(Abarabone.Particle.ParticleTag),//暫定
                     typeof(NonUniformScale),//暫定
                     typeof(ObjectMain.ObjectMainTag),
                     typeof(ObjectMain.BinderLinkData)
                 );
-                em_.AddComponents(mainEntity, addtypes);
+                em_.AddComponents(mainEntity, mainAddtypes);
 
-
+                em_.SetComponentData(mainEntity,
+                    new NonUniformScale
+                    {
+                        Value = new float3(1, 1, 1)
+                    }
+                );
                 em_.SetComponentData(mainEntity,
                     new ObjectMain.BinderLinkData
                     {

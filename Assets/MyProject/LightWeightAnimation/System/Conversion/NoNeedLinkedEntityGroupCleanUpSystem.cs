@@ -11,6 +11,10 @@ using System.Linq;
 namespace Abarabone.Model.Authoring
 {
 
+    /// <summary>
+    /// 単体のエンティティなのに LinkedEntityGroup がついてしまうのを避けたい
+    /// 今のところあとから消すくらししか思いつかない
+    /// </summary>
     //[DisableAutoCreation]
     public class NoNeedLinkedEntityGroupCleanUpSystem : SystemBase
     {

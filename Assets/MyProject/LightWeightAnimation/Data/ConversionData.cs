@@ -17,4 +17,11 @@ namespace Abarabone.Model
     public struct ModelPrefabNoNeedLinkedEntityGroupTag : IComponentData
     { }
 
+
+    /// <summary>
+    /// Prefab しか持っていない子エンティティが不要なら、トリムする。
+    /// </summary>
+    public struct BinderTrimBlankLinkedEntityGroupTag : IComponentData
+    { }
+
 }
