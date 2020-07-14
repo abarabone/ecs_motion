@@ -54,16 +54,12 @@ namespace Abarabone.Draw.Authoring
             );
             var ent = gcs.CreateAdditionalEntity( top, archetype );
             
-            em.SetName(ent, $"{top.name} draw" );
-
-
             em.SetComponentData( ent,
                 new DrawInstance.ModeLinkData
                 {
                     DrawModelEntity = gcs.GetFromModelEntityDictionary( top ),
                 }
             );
-
             em.SetComponentData( ent,
                 new DrawInstance.TargetWorkData
                 {
@@ -72,6 +68,7 @@ namespace Abarabone.Draw.Authoring
             );
 
 
+            em.SetName(ent, $"{top.name} draw" );
             return ent;
         }
 

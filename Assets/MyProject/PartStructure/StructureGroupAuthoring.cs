@@ -75,17 +75,18 @@ namespace Abarabone.Structure.Aurthoring
 
                     var flag = GameObjectConversionUtility.ConversionFlags.AssignName;
                     var settings = new GameObjectConversionSettings(em.World, flag, gcs_.BlobAssetStore);
-                    //var ent = GameObjectConversionUtility.ConvertGameObjectHierarchy(pt, settings);
+                    var ent = GameObjectConversionUtility.ConvertGameObjectHierarchy(pt, settings);
                     // このコンバートが走るたびに、専用の変換ワールドが作られて消えるみたい、よくないね…
-                    GameObjectConversionUtility.ConvertGameObjectsToEntitiesField
-                        (gcs_, new GameObject[] { pt.gameObject}, out var ents);
+                    //GameObjectConversionUtility.ConvertGameObjectsToEntitiesField
+                    //    (gcs_, new GameObject[] { pt.gameObject}, out var ents);
 
                     var addtype = new ComponentTypes
                     (
                         typeof(BinderTrimBlankLinkedEntityGroupTag),
                         typeof(Prefab)
                     );
-                    em.AddComponents(ents.First(), addtype);
+                    em.AddComponents(ent, addtype);
+                    //em.AddComponents(ents.First(), addtype);
 
                     Destroy(pt);
                 }

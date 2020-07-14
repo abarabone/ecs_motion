@@ -52,7 +52,8 @@ namespace Abarabone.Model.Authoring
 
             createModelEntity_( conversionSystem, top, this.MaterialToDraw, qMesh, bones );
 
-            initObjectEntity_( conversionSystem, top, main );
+            initBinderEntity_( conversionSystem, top, main );
+            initMainEntity_(conversionSystem, top, main);
 
             conversionSystem.CreateBoneEntities( main, bones );
 
@@ -75,7 +76,8 @@ namespace Abarabone.Model.Authoring
                 gcs_.CreateDrawModelEntityComponents( top_, mesh, mat, BoneType, bones_.Length );
             }
 
-            void initObjectEntity_( GameObjectConversionSystem gcs_, GameObject top_, GameObject main_ )
+
+            void initBinderEntity_( GameObjectConversionSystem gcs_, GameObject top_, GameObject main_ )
             {
                 var em_ = gcs_.DstEntityManager;
 
@@ -94,16 +96,27 @@ namespace Abarabone.Model.Authoring
                     new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity } );
 
 
+                em_.SetName( binderEntity, $"{top_.name} binder" );
+            }
+
+            void initMainEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
+            {
+                var em_ = gcs_.DstEntityManager;
+
+                var binderEntity = gcs_.GetPrimaryEntity(top_);
+                var mainEntity = gcs_.GetPrimaryEntity(main_);
+
+
                 var mainAddtypes = new ComponentTypes
                 (
                     typeof(ObjectMain.ObjectMainTag),
                     typeof(ObjectMain.BinderLinkData),
                     typeof(ObjectMainCharacterLinkData)
-                    //typeof(ObjectMain.MotionLinkDate)
+                //typeof(ObjectMain.MotionLinkDate)
                 );
                 em_.AddComponents(mainEntity, mainAddtypes);
 
-                em_.SetComponentData( mainEntity,
+                em_.SetComponentData(mainEntity,
                     new ObjectMain.BinderLinkData
                     {
                         BinderEntity = binderEntity,
@@ -116,8 +129,8 @@ namespace Abarabone.Model.Authoring
                     }
                 );
 
-                em_.SetName( binderEntity, $"{top_.name} binder" );
-                em_.SetName( mainEntity, $"{top_.name} main" );
+
+                em_.SetName(mainEntity, $"{top_.name} main");
             }
 
         }

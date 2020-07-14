@@ -55,12 +55,13 @@ namespace Abarabone.Structure.Aurthoring
             var main = top.transform.GetChild(0).gameObject;
 
             createModelEntity_(conversionSystem, top, this.MaterialToDraw);
+            //createDrawInstanceEntity_(conversionSystem, top);
 
-            initObjectEntity_(conversionSystem, top, main);
-
-            createDrawInstanceEntity_(conversionSystem, top);
+            initBinderEntity_(conversionSystem, top, main);
+            initMainEntity_(conversionSystem, top, main);
 
             return;
+
 
 
             void createModelEntity_
@@ -79,6 +80,7 @@ namespace Abarabone.Structure.Aurthoring
             }
 
 
+
             Entity createDrawInstanceEntity_
                 (GameObjectConversionSystem gcs, GameObject top_)
             {
@@ -92,16 +94,12 @@ namespace Abarabone.Structure.Aurthoring
                 );
                 var ent = gcs.CreateAdditionalEntity(top_, archetype);
 
-                em.SetName(ent, $"{top_.name} draw");
-
-
                 em.SetComponentData(ent,
                     new DrawInstance.ModeLinkData
                     {
                         DrawModelEntity = gcs.GetFromModelEntityDictionary(top_),
                     }
                 );
-
                 em.SetComponentData(ent,
                     new DrawInstance.TargetWorkData
                     {
@@ -110,11 +108,12 @@ namespace Abarabone.Structure.Aurthoring
                 );
 
 
+                em.SetName(ent, $"{top_.name} draw");
                 return ent;
             }
 
 
-            void initObjectEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
+            void initBinderEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
             {
                 var em_ = gcs_.DstEntityManager;
 
@@ -133,30 +132,57 @@ namespace Abarabone.Structure.Aurthoring
                     new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
 
 
+                em_.SetName(binderEntity, $"{top_.name} binder");
+            }
+
+            void initMainEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
+            {
+                var em_ = gcs_.DstEntityManager;
+
+                var binderEntity = gcs_.GetPrimaryEntity(top_);
+                var mainEntity = gcs_.GetPrimaryEntity(main_);
+
+
                 var mainAddtypes = new ComponentTypes
                 (
                     //typeof(Abarabone.Particle.ParticleTag),//暫定
-                    typeof(NonUniformScale),//暫定
+                    //typeof(NonUniformScale),//暫定
                     typeof(ObjectMain.ObjectMainTag),
-                    typeof(ObjectMain.BinderLinkData)
+                    typeof(ObjectMain.BinderLinkData),
+                    //typeof(DrawTransform.LinkData),//
+                    //typeof(DrawTransform.IndexData),//
+                    //typeof(DrawTransform.TargetWorkData)//
+                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.TargetWorkData)
                 );
                 em_.AddComponents(mainEntity, mainAddtypes);
 
-                em_.SetComponentData(mainEntity,
-                    new NonUniformScale
-                    {
-                        Value = new float3(1, 1, 1)
-                    }
-                );
+                //em_.SetComponentData(mainEntity,
+                //    new NonUniformScale
+                //    {
+                //        Value = new float3(1, 1, 1)
+                //    }
+                //);
                 em_.SetComponentData(mainEntity,
                     new ObjectMain.BinderLinkData
                     {
                         BinderEntity = binderEntity,
                     }
                 );
+                em_.SetComponentData(mainEntity,
+                    new DrawInstance.ModeLinkData
+                    {
+                        DrawModelEntity = gcs_.GetFromModelEntityDictionary(top_),
+                    }
+                );
+                em_.SetComponentData(mainEntity,
+                    new DrawInstance.TargetWorkData
+                    {
+                        DrawInstanceId = -1,
+                    }
+                );
 
 
-                em_.SetName(binderEntity, $"{top_.name} binder");
                 em_.SetName(mainEntity, $"{top_.name} main");
             }
 
