@@ -47,12 +47,12 @@ namespace Abarabone.Draw
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModeLinkData linker,
                         in Translation pos,
-                        in Rotation rot,
-                        in NonUniformScale scl
+                        in Rotation rot//,
+                        //in NonUniformScale scl
                     ) =>
                     {
 
-                        var i = target.DrawInstanceId * 2;// スケールに対応させる
+                        var i = target.DrawInstanceId * 2;// あとでスケールに対応させる
 
                         var pInstance = offsetsOfDrawModel[linker.DrawModelEntity].pVectorOffsetInBuffer;
                         pInstance[i + 0] = new float4(pos.Value, 1.0f);

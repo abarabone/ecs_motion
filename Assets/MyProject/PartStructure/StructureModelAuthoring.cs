@@ -73,10 +73,10 @@ namespace Abarabone.Structure.Aurthoring
                 var mat = new Material(srcMaterial);
                 var mesh = gcs_.GetFromStructureMeshDictionary(top_);
 
-                const BoneType BoneType = BoneType.TR;
+                const BoneType boneType = BoneType.TR;
                 const int boneLength = 1;
 
-                gcs_.CreateDrawModelEntityComponents(top_, mesh, mat, BoneType, boneLength);
+                gcs_.CreateDrawModelEntityComponents(top_, mesh, mat, boneType, boneLength);
             }
 
 
