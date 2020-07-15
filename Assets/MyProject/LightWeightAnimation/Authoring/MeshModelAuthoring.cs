@@ -14,6 +14,7 @@ namespace Abarabone.Particle.Aurthoring
     using Draw;
     using Model.Authoring;
     using Draw.Authoring;
+    using Abarabone.Geometry;
 
     /// <summary>
     /// 
@@ -63,6 +64,7 @@ namespace Abarabone.Particle.Aurthoring
 
                 var archetype = em.CreateArchetype(
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
+                    typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.ModeLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(Translation),

@@ -13,6 +13,17 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
+namespace Abarabone.Draw
+{
+
+    static public partial class DrawInstance
+    {
+        public struct ParticleTag : IComponentData
+        { }
+    }
+
+}
+
 namespace Abarabone.Particle
 {
     using Abarabone.Utilities;
@@ -23,7 +34,7 @@ namespace Abarabone.Particle
 
     public struct PsylliumEntity :
         ITypedEntity<
-            ParticleTag,
+            DrawInstance.ParticleTag,
             DrawInstance.ModeLinkData,//DrawTransform.LinkData
             DrawInstance.TargetWorkData,
             Translation,
@@ -53,10 +64,6 @@ namespace Abarabone.Particle
 
 
 
-
-
-    public struct ParticleTag : IComponentData
-    { }
 
 
     public struct LineParticlePointNodeLinkData : IComponentData

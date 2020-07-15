@@ -49,6 +49,7 @@ namespace Abarabone.Draw.Authoring
 
             var archetype = em.CreateArchetype
             (
+                typeof( DrawInstance.MeshTag ),
                 typeof( DrawInstance.ModeLinkData ),
                 typeof( DrawInstance.TargetWorkData )
             );

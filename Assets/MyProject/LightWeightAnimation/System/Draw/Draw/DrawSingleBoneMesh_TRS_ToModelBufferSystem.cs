@@ -12,6 +12,7 @@ using Unity.Transforms;
 using Abarabone.Authoring;
 using Abarabone.CharacterMotion;
 using Abarabone.SystemGroup;
+using Abarabone.Geometry;
 
 namespace Abarabone.Draw
 {
@@ -40,8 +41,9 @@ namespace Abarabone.Draw
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
 
             var dependency = this.Entities
-                .WithReadOnly(offsetsOfDrawModel)
                 .WithBurst()
+                .WithReadOnly(offsetsOfDrawModel)
+                .WithAll<DrawInstance.MeshTag>()
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,

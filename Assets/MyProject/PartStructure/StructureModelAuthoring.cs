@@ -52,13 +52,16 @@ namespace Abarabone.Structure.Aurthoring
         {
 
             var top = this.gameObject;
-            var main = top.transform.GetChild(0).gameObject;
+            var objA = top.transform.GetChild(0).gameObject;
+            var objB = top.transform.GetChild(1).gameObject;
+
+
 
             createModelEntity_(conversionSystem, top, this.MaterialToDraw);
             //createDrawInstanceEntity_(conversionSystem, top);
 
-            initBinderEntity_(conversionSystem, top, main);
-            initMainEntity_(conversionSystem, top, main);
+            //initBinderEntity_(conversionSystem, top, main);
+            //initMainEntity_(conversionSystem, top, main);
 
             return;
 

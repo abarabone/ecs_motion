@@ -9,18 +9,19 @@ using Unity.Transforms;
 using Unity.Linq;
 using Unity.Mathematics;
 
-using Abarabone.Geometry;
-using Abarabone.Utilities;
-using Abarabone.Misc;
-using Abarabone.CharacterMotion;
-using Abarabone.Draw;
-using Abarabone.Character;
-using Abarabone.Common.Extension;
-using Abarabone.Particle;
-using Abarabone.Model;
-
 namespace Abarabone.Authoring
 {
+
+    using Abarabone.Geometry;
+    using Abarabone.Utilities;
+    using Abarabone.Misc;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Draw;
+    using Abarabone.Character;
+    using Abarabone.Common.Extension;
+    using Abarabone.Particle;
+    using Abarabone.Model;
+
 
     [DisallowMultipleComponent]
     public class PsylliumAuthoring : DrawPrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
@@ -42,7 +43,7 @@ namespace Abarabone.Authoring
 
             var ent = em.CreateEntity();
             //em.AddComponentData( ent, new Prefab { } );
-            em.AddComponentData( ent, new ParticleTag { } );//
+            em.AddComponentData( ent, new DrawInstance.ParticleTag { } );//
 
             em.AddComponentData( ent,
                 new DrawInstance.ModeLinkData

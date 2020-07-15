@@ -37,6 +37,12 @@ namespace Abarabone.Draw
     static public partial class DrawInstance
     {
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct MeshTag : IComponentData
+        { }
+
 
         /// <summary>
         /// 描画モデルの種類情報

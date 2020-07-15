@@ -65,7 +65,7 @@ namespace Abarabone.Particle.Aurthoring
 
                 var archetype = em.CreateArchetype(
                     typeof( ModelPrefabNoNeedLinkedEntityGroupTag ),
-                    typeof( ParticleTag ),
+                    typeof( DrawInstance.ParticleTag ),
                     typeof( DrawInstance.ModeLinkData ),
                     typeof( DrawInstance.TargetWorkData ),
                     typeof( Translation ),
