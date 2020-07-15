@@ -39,10 +39,10 @@ namespace Abarabone.Draw
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
             computeBuffer.SetData( nativeBuffer.AsNativeArray() );
 
-            //Debug.Log( "start" );
-            //for(var i=0; i<nativeBuffer.length_; i++ )
+            //Debug.Log("start");
+            //for (var i = 0; i < nativeBuffer.length_; i++)
             //{
-            //    Debug.Log( $"{i} {nativeBuffer.pBuffer[i]}" );
+            //    Debug.Log($"{i} {nativeBuffer.pBuffer[i]}");
             //}
 
             this.Entities
