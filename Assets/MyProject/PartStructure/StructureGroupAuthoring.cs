@@ -50,7 +50,7 @@ namespace Abarabone.Structure.Aurthoring
 
             addToMeshDictionary_(this.objectsAndMeshes);
 
-            stantiateMasterPrefab_ForConversion_(conversionSystem, this.partMasterPrefabs);
+            //stantiateMasterPrefab_ForConversion_(conversionSystem, this.partMasterPrefabs);
 
             return;
 
@@ -63,34 +63,34 @@ namespace Abarabone.Structure.Aurthoring
                 }
             }
 
-            void stantiateMasterPrefab_ForConversion_
-                (GameObjectConversionSystem gcs_, IEnumerable<GameObject> partMasterPrefabs_)
-            {
-                foreach( var pt in partMasterPrefabs_.Select(prefab => Instantiate(prefab)) )
-                {
-                    var em = gcs_.DstEntityManager;
+            //void stantiateMasterPrefab_ForConversion_
+            //    (GameObjectConversionSystem gcs_, IEnumerable<GameObject> partMasterPrefabs_)
+            //{
+            //    foreach( var pt in partMasterPrefabs_.Select(prefab => Instantiate(prefab)) )
+            //    {
+            //        var em = gcs_.DstEntityManager;
 
-                    Debug.Log("pt "+pt.name);
-                    pt.AddComponent<PhysicsBodyAuthoring>();
+            //        Debug.Log("pt "+pt.name);
+            //        pt.AddComponent<PhysicsBodyAuthoring>();
 
-                    var flag = GameObjectConversionUtility.ConversionFlags.AssignName;
-                    var settings = new GameObjectConversionSettings(em.World, flag, gcs_.BlobAssetStore);
-                    var ent = GameObjectConversionUtility.ConvertGameObjectHierarchy(pt, settings);
-                    // このコンバートが走るたびに、専用の変換ワールドが作られて消えるみたい、よくないね…
-                    //GameObjectConversionUtility.ConvertGameObjectsToEntitiesField
-                    //    (gcs_, new GameObject[] { pt.gameObject}, out var ents);
+            //        var flag = GameObjectConversionUtility.ConversionFlags.AssignName;
+            //        var settings = new GameObjectConversionSettings(em.World, flag, gcs_.BlobAssetStore);
+            //        var ent = GameObjectConversionUtility.ConvertGameObjectHierarchy(pt, settings);
+            //        // このコンバートが走るたびに、専用の変換ワールドが作られて消えるみたい、よくないね…
+            //        //GameObjectConversionUtility.ConvertGameObjectsToEntitiesField
+            //        //    (gcs_, new GameObject[] { pt.gameObject}, out var ents);
 
-                    var addtype = new ComponentTypes
-                    (
-                        typeof(BinderTrimBlankLinkedEntityGroupTag),
-                        typeof(Prefab)
-                    );
-                    em.AddComponents(ent, addtype);
-                    //em.AddComponents(ents.First(), addtype);
+            //        var addtype = new ComponentTypes
+            //        (
+            //            typeof(BinderTrimBlankLinkedEntityGroupTag),
+            //            typeof(Prefab)
+            //        );
+            //        em.AddComponents(ent, addtype);
+            //        //em.AddComponents(ents.First(), addtype);
 
-                    Destroy(pt);
-                }
-            }
+            //        Destroy(pt);
+            //    }
+            //}
         }
 
         void Awake()
