@@ -21,6 +21,7 @@ namespace Abarabone.Structure.Aurthoring
     using Abarabone.Character;//ObjectMain はここにある、名前変えるべきか？
 
     using Abarabone.Common.Extension;
+    using Abarabone.Structure;
 
     /// <summary>
     /// 
@@ -60,8 +61,11 @@ namespace Abarabone.Structure.Aurthoring
             createModelEntity_(conversionSystem, top, this.MaterialToDraw);
             //createDrawInstanceEntity_(conversionSystem, top);
 
-            initBinderEntity_(conversionSystem, top, objB);
-            initMainEntity_(conversionSystem, top, objB);
+            initBinderEntity_(conversionSystem, top, objA);
+            initMainEntity_(conversionSystem, top, objA);
+
+            setPartLink_(conversionSystem, objA, objB);
+            setPartLocalPosition_(conversionSystem, objA, objB);
 
             return;
 
@@ -192,6 +196,58 @@ namespace Abarabone.Structure.Aurthoring
 
         }
 
+
+        void setPartLink_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
+        {
+
+            var mainEntity = gcs_.GetPrimaryEntity(main_);
+
+
+            var partEntities = partTop_.GetComponentsInChildren<StructurePartAuthoring>()
+                .Select(pt => pt.gameObject)
+                .Select(go => gcs_.GetPrimaryEntity(go))
+                .ToArray();
+
+            var qPartLinkData =
+                from ptent in partEntities.Skip(1).Append(Entity.Null)
+                select new Structure.PartLinkData
+                {
+                    NextEntity = ptent,
+                };
+
+            var em = gcs_.DstEntityManager;
+
+            em.AddComponentData(mainEntity, new Structure.PartLinkData { NextEntity = partEntities.First() });
+
+            em.AddComponentData(partEntities, qPartLinkData);
+
+        }
+
+
+        void setPartLocalPosition_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
+        {
+
+            var mtMain = main_.transform.worldToLocalMatrix;
+
+            var parts = partTop_.GetComponentsInChildren<StructurePartAuthoring>();
+
+            var qPartEntity = parts
+                .Select(pt => pt.gameObject)
+                .Select(go => gcs_.GetPrimaryEntity(go))
+                ;
+            var qPartLocalPosition =
+                from pt in parts
+                select new StructurePart.LocalPositionData
+                {
+                    Translation = mtMain.MultiplyPoint( pt.transform.position ),
+                    Rotation = mtMain.rotation * pt.transform.rotation
+                };
+
+            var em = gcs_.DstEntityManager;
+
+            em.AddComponentData(qPartEntity, qPartLocalPosition);
+
+        }
 
     }
 
