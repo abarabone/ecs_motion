@@ -48,7 +48,7 @@ namespace Abarabone.Draw
                 em_.SetName( ent, "draw system" );
 
 
-                const int maxBufferLength = 1000 * 16 * 2;//
+                const int maxBufferLength = 2000 * 16 * 2;//
 
                 var stride = Marshal.SizeOf( typeof( float4 ) );
 

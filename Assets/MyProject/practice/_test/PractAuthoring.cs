@@ -12,12 +12,6 @@ using Abarabone.Model.Authoring;
 using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 
-public struct SpawnData : IComponentData
-{
-    public Entity ent;
-    public int i;
-}
-
 public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {
 
@@ -40,11 +34,17 @@ public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
         var prefab_ent = conversionSystem.GetPrimaryEntity( this.prefab );
 
-        dstManager.AddComponentData( entity, new SpawnData { ent = prefab_ent, i = this.num } );
+        dstManager.AddComponentData( entity, new SingleSpawnData { ent = prefab_ent, i = this.num } );
         
     }
     
 
+}
+
+public struct SingleSpawnData : IComponentData
+{
+    public Entity ent;
+    public int i;
 }
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
@@ -65,76 +65,18 @@ public class PracSpawnSystem : SystemBase
         var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
         this.Entities
+            .WithBurst()
             .ForEach(
-                (Entity spawnEntity, int entityInQueryIndex, ref SpawnData spawn) =>
+                (Entity spawnEntity, int entityInQueryIndex, ref SingleSpawnData spawn) =>
                 {
                     var ent = cmd.Instantiate(entityInQueryIndex, spawn.ent);
 
                     cmd.AddComponent(entityInQueryIndex, ent,
-                        new ObjectInitializeData {pos = new float3(spawn.i%20,spawn.i/20,0.0f) }
+                        new ObjectInitializeData { pos = new float3(spawn.i % 20, spawn.i / 20, 0.0f) }
                     );
 
-                    if( --spawn.i == 0 )
+                    if (--spawn.i == 0)
                         cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
-                }
-            )
-            .ScheduleParallel();
-    }
-
-}
-
-
-
-public struct ObjectInitializeData : IComponentData
-{
-    public float3 pos;
-}
-
-[UpdateInGroup(typeof(InitializationSystemGroup))]
-public class ObjectInitializeSystem : SystemBase
-{
-
-    EntityCommandBufferSystem cmdSystem;
-
-
-    protected override void OnCreate()
-    {
-        this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-    }
-
-
-    protected override void OnUpdate()
-    {
-        var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
-
-        this.Entities
-            .ForEach(
-                (Entity ent, int entityInQueryIndex, ref Translation pos, in ObjectInitializeData init) =>
-                {
-
-                    pos.Value = init.pos;
-
-                    cmd.RemoveComponent<ObjectInitializeData>(entityInQueryIndex, ent);
-
-                }
-            )
-            .ScheduleParallel();
-
-
-        var translations = this.GetComponentDataFromEntity<Translation>();
-
-        this.Entities
-            .WithNativeDisableParallelForRestriction(translations)
-            .ForEach(
-                (Entity ent, int entityInQueryIndex, in ObjectInitializeData init, in ObjectBinder.MainEntityLinkData link) =>
-                {
-
-                    var pos = new Translation { Value = init.pos };
-
-                    translations[link.MainEntity] = pos;
-
-                    cmd.RemoveComponent<ObjectInitializeData>(entityInQueryIndex, ent);
-
                 }
             )
             .ScheduleParallel();
