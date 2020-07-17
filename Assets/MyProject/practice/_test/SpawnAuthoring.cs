@@ -76,7 +76,8 @@ public class SpawnSystem : SystemBase
         var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
         this.Entities
-            .WithBurst()
+            .WithoutBurst()
+            //.WithBurst()
             .ForEach(
                 (Entity spawnEntity, int entityInQueryIndex, ref SpawnData spawn) =>
                 {
@@ -144,6 +145,7 @@ public class ObjectInitializeSystem : SystemBase
         var translations = this.GetComponentDataFromEntity<Translation>();
 
         this.Entities
+            .WithBurst()
             .WithNativeDisableParallelForRestriction(translations)
             .ForEach(
                 (Entity ent, int entityInQueryIndex, in ObjectInitializeData init, in ObjectBinder.MainEntityLinkData link) =>

@@ -65,7 +65,8 @@ public class PracSpawnSystem : SystemBase
         var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
         this.Entities
-            .WithBurst()
+            .WithoutBurst()
+            //.WithBurst()
             .ForEach(
                 (Entity spawnEntity, int entityInQueryIndex, ref SingleSpawnData spawn) =>
                 {
