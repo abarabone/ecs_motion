@@ -12,7 +12,7 @@ using Abarabone.SystemGroup;
 namespace Abarabone.CharacterMotion
 {
     
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ))]
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
     public class MotionInitializeSystem : JobComponentSystem
     {

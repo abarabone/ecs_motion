@@ -25,7 +25,7 @@ namespace Abarabone.CharacterMotion
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ))]
     [UpdateAfter(typeof( StreamToBoneSystem ) )]
     public class BoneTransformSystem : SystemBase//JobComponentSystem
     {

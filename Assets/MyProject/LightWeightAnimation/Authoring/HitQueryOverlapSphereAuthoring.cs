@@ -56,7 +56,7 @@ namespace Abarabone.Physics.Authoring
                 if (em_.HasComponent<Translation>(mainEntity_)) return mainEntity_;
 
                 return conversionSystem.GetEntities(mainObject_)
-                    .Do(x => Debug.Log($"{em_.GetName(x)} - {mainObject_.name}"))
+                    .Do(x => Debug.Log($"{em_.GetName_(x)} - {mainObject_.name}"))
                     .First(x => em_.HasComponent<Translation>(x));
             }
         }

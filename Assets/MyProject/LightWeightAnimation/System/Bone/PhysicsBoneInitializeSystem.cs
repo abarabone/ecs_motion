@@ -25,7 +25,7 @@ namespace Abarabone.Physics
     //[DisableAutoCreation]
     //[UpdateInGroup( typeof( BonePhysicsSystemGroup ) )]
     [UpdateBefore( typeof( MotionStreamProgressAndInterporationSystem ) )]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ) )]
     public class PhysicsBoneInitializeSystem : JobComponentSystem
     {
 

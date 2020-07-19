@@ -45,7 +45,7 @@ namespace Abarabone.Draw
                     typeof( DrawSystem.NativeTransformBufferData )
                 );
                 var ent = em_.CreateEntity( arch );
-                em_.SetName( ent, "draw system" );
+                em_.SetName_( ent, "draw system" );
 
 
                 const int maxBufferLength = 2000 * 16 * 2;//

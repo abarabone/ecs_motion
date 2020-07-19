@@ -6,7 +6,7 @@ using System.Linq;
 using Unity.Linq;
 using Unity.Entities;
 
-namespace Abarabone.Structure.Aurthoring
+namespace Abarabone.Structure.Authoring
 {
 
     using Abarabone.Model;
@@ -23,7 +23,7 @@ namespace Abarabone.Structure.Aurthoring
 
         public Material Material;
 
-
+        public GameObject MasterPrefab;
 
 
 

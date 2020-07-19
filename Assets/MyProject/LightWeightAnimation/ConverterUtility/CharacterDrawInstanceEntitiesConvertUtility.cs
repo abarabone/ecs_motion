@@ -69,7 +69,7 @@ namespace Abarabone.Draw.Authoring
             );
 
 
-            em.SetName(ent, $"{top.name} draw" );
+            em.SetName_(ent, $"{top.name} draw" );
             return ent;
         }
 

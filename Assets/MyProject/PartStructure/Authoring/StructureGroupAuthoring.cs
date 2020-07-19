@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Unity.Linq;
 using UnityEditor;
 
-namespace Abarabone.Structure.Aurthoring
+namespace Abarabone.Structure.Authoring
 {
 
     using Abarabone.Model;
@@ -27,12 +27,12 @@ namespace Abarabone.Structure.Aurthoring
     public class StructureGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
+        //public bool IsCombineMesh = true;
+        //public bool IsPackTexture = true;
+
+
         public StructureModelAuthoring[] StructureModelPrefabs;
 
-        //public GameObject[] partMasterPrefabs;
-        //public Mesh[] CombinedPartMeshes;
-        //public Mesh[] CombinedStructureMeshes;
-        //(GameObject go, Mesh mesh)[] objectAndMeshList;
         (GameObject, Mesh)[] objectsAndMeshes;
         GameObject[] partMasterPrefabs;
 
@@ -109,7 +109,8 @@ namespace Abarabone.Structure.Aurthoring
 
             var partMasterPrefabs = this.StructureModelPrefabs
                 .SelectMany(st => st.GetComponentsInChildren<StructurePartAuthoring>())
-                .Select(pt => PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject))
+                //.Select(pt => PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject))
+                .Select(pt => pt.MasterPrefab)
                 .Distinct()
                 .Do(x => Debug.Log(x.name))
                 .ToArray();

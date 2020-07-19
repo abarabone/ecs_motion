@@ -19,7 +19,7 @@ namespace Abarabone.CharacterMotion
     /// ストリーム回転 → 補間
     /// </summary>
     //[UpdateAfter(typeof())]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
     public class MotionProgressSystem : SystemBase//JobComponentSystem
     {
 

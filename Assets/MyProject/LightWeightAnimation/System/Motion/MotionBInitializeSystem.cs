@@ -13,7 +13,7 @@ namespace Abarabone.CharacterMotion
 {
     
     [UpdateBefore( typeof( MotionProgressSystem ) )]// MotionB
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ))]
     public class MotionBInitializeSystem : SystemBase//JobComponentSystem
     {
 

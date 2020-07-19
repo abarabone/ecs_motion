@@ -48,6 +48,7 @@ public struct SingleSpawnData : IComponentData
 }
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateAfter(typeof(ObjectInitializeSystem))]
 public class PracSpawnSystem : SystemBase
 {
 
@@ -65,8 +66,8 @@ public class PracSpawnSystem : SystemBase
         var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
         this.Entities
-            .WithoutBurst()
-            //.WithBurst()
+            //.WithoutBurst()
+            .WithBurst()
             .ForEach(
                 (Entity spawnEntity, int entityInQueryIndex, ref SingleSpawnData spawn) =>
                 {
@@ -81,6 +82,9 @@ public class PracSpawnSystem : SystemBase
                 }
             )
             .ScheduleParallel();
+
+        // Make sure that the ECB system knows about our job
+        this.cmdSystem.AddJobHandleForProducer(this.Dependency);
     }
 
 }

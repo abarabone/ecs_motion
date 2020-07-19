@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using System.Threading.Tasks;
 using Unity.Linq;
 
-namespace Abarabone.Structure.Aurthoring
+namespace Abarabone.Structure.Authoring
 {
     using Abarabone.Model;
     using Abarabone.Draw;
@@ -36,13 +36,15 @@ namespace Abarabone.Structure.Aurthoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            var parts = this.GetComponentsInChildren<StructurePartAuthoring>();
+            //var parts = this.GetComponentsInChildren<StructurePartAuthoring>();
 
-            var qMasterPrefab = parts
-                .Select(x => x.gameObject)
-                .Select(x => UnityEditor.PrefabUtility.GetCorrespondingObjectFromOriginalSource(x));
+            //var qMasterPrefab = parts
+            //    .Select(x => x.gameObject)
+            ////    .Select(x => UnityEditor.PrefabUtility.GetCorrespondingObjectFromOriginalSource(x))
+            //    .Select(x => x.MasterPrefab)
+            //    .Distinct();
 
-            referencedPrefabs.AddRange( qMasterPrefab );
+            //referencedPrefabs.AddRange( qMasterPrefab );
         }
 
 
@@ -115,7 +117,7 @@ namespace Abarabone.Structure.Aurthoring
             //    );
 
 
-            //    em.SetName(ent, $"{top_.name} draw");
+            //    em.SetName_(ent, $"{top_.name} draw");
             //    return ent;
             //}
 
@@ -139,7 +141,7 @@ namespace Abarabone.Structure.Aurthoring
                     new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
 
 
-                em_.SetName(binderEntity, $"{top_.name} binder");
+                em_.SetName_(binderEntity, $"{top_.name} binder");
             }
 
             void initMainEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
@@ -191,7 +193,7 @@ namespace Abarabone.Structure.Aurthoring
                 );
 
 
-                em_.SetName(mainEntity, $"{top_.name} main");
+                em_.SetName_(mainEntity, $"{top_.name} main");
             }
 
         }

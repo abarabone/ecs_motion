@@ -23,7 +23,7 @@ namespace Abarabone.Model.Authoring
                 (Entity ent, Transform c) =>
                 {
                     Debug.Log( this.EntityManager.HasComponent<Transform>( ent ) );
-                    Debug.Log(this.EntityManager.GetName(ent));
+                    Debug.Log(this.EntityManager.GetName_(ent));
                     this.EntityManager.RemoveComponent<Transform>( ent );
                 }
             );

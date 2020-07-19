@@ -25,6 +25,7 @@ namespace Abarabone.Draw
 
 
     //[DisableAutoCreation]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
     public class TransformStructurePartsSystem : SystemBase
     {
 
@@ -66,7 +67,7 @@ namespace Abarabone.Draw
 
                     }
                 )
-                .Schedule();
+                .ScheduleParallel();
 
         }
 

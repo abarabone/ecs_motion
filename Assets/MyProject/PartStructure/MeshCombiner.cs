@@ -9,8 +9,6 @@ using Abarabone.Common.Extension;
 
 namespace Abarabone.Geometry
 {
-	using Abarabone.Structure.Aurthoring;
-
 
 	/// <summary>
 	/// Mesh 要素を格納する。並列処理させた結果を格納し、最後に Mesh を作成するために使用する。
@@ -60,7 +58,7 @@ namespace Abarabone.Geometry
 	/// メッシュを各要素ごとに結合する。
 	/// 
 	/// </summary>
-	public static class MeshCombiner
+	public static partial class MeshCombiner
 	{
 
 		/// <summary>
@@ -166,55 +164,13 @@ namespace Abarabone.Geometry
 			};
 		}
 
-		
-		/// <summary>
-		/// Mesh 要素を結合するデリゲートを返す。Structure オブジェクト用。
-		/// </summary>
-		static public Func<MeshElements> BuildStructureWithPalletMeshElements
-			( IEnumerable<StructurePartAuthoring> parts, Transform tfBase )
-		{
-			var gameObjects = from part in parts select part.gameObject;
-			var mmts = FromObject.QueryMeshMatsTransform_IfHaving( gameObjects ).ToArray();
-
-			return BuildStructureWithPalletMeshElements( mmts, tfBase );
-		}
-
-		static public Func<MeshElements> BuildStructureWithPalletMeshElements
-			( (Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase )
-		{
-
-			var f = BuildNormalMeshElements( mmts, tfBase, isCombineSubMeshes:true );
-			
-			
-			// 全パーツから、パーツＩＤをすべてクエリする。
-			var partId_PerMesh = ( from x in mmts select x.tf.GetComponent<StructurePartAuthoring>().PartId ).ToArray();
-			
-			// サブメッシュ単位で、頂点数を取得。
-			var vertexCount_PerSubmeshPerMesh =
-				( from x in mmts select x.mesh ).To(PerSubMeshPerMesh.QueryVertexCount).ToArrayRecursive2();
-			
-
-			return () =>
-			{
-				var me = f();
-				
-				var materials_PerMesh = ( from x in mmts select x.mats );
-				var materialsCombined = me.materials;
-				me.Color32s = ConvertUtility.ToColor32Array
-					( vertexCount_PerSubmeshPerMesh, partId_PerMesh, materials_PerMesh, materialsCombined );
-
-				return me;
-			};
-			
-		}
-		
 	}
 	
 	/// <summary>
 	/// メッシュ要素（頂点、ＵＶ、インデックスなど別々）ごとのコンバートを行い、配列につめて返す。
 	/// 関数の引数はすべて Unity オブジェクトではないため、このクラスの全関数はサブスレッドで処理できる。
 	/// </summary>
-	static class ConvertUtility
+	static public class ConvertUtility
 	{
 		
 		/// <summary>

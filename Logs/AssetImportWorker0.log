@@ -1,0 +1,244 @@
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-abarabone"
+Entitlement-based licensing initiated
+[LicensingClient] Licenses updated successfully
+
+LICENSE SYSTEM [2020718 17:10:16] Next license update check is after 2020-07-18T16:33:01
+
+Built from '2020.1/staging' branch; Version is '2020.1.0b13 (3682d55b6e87) revision 3572437'; Using compiler version '192227905'; Build Type 'Release'
+OS: 'Windows 10  (10.0.0) 64bit' Language: 'ja' Physical Memory: 14265 MB
+[Licensing::Module] Serial number assigned to: "F4-PTKJ-W3XA-UNNK-J8P2-XXXX"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 0
+
+ COMMAND LINE ARGUMENTS:
+C:\Users\abarabone\Desktop\projects\2020.1.0b13\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker0
+-projectPath
+C:/Users/abarabone/Desktop/projects/abarabone/ecs011
+-logFile
+Logs/AssetImportWorker0.log
+-srvPort
+53608
+Successfully changed project path to: C:/Users/abarabone/Desktop/projects/abarabone/ecs011
+C:/Users/abarabone/Desktop/projects/abarabone/ecs011
+Using Asset Import Pipeline V2.
+Refreshing native plugins compatible for Editor in 173.30 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2020.1.0b13 (3682d55b6e87)
+[Subsystems] Discovering subsystems at path C:/Users/abarabone/Desktop/projects/2020.1.0b13/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/abarabone/Desktop/projects/abarabone/ecs011/Assets
+GfxDevice: creating device client; threaded=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: AMD Radeon(TM) RX Vega 11 Graphics (ID=0x15dd)
+    Vendor:   
+    VRAM:     7132 MB
+    Driver:   26.20.12028.2
+Initialize mono
+Mono path[0] = 'C:/Users/abarabone/Desktop/projects/2020.1.0b13/Editor/Data/Managed'
+Mono path[1] = 'C:/Users/abarabone/Desktop/projects/2020.1.0b13/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
+Mono config path = 'C:/Users/abarabone/Desktop/projects/2020.1.0b13/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56180
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Users/abarabone/Desktop/projects/2020.1.0b13/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.002513 seconds.
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 55.36 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.711 seconds
+Registering precompiled user dll's ...
+Registered in 0.319853 seconds.
+Platform modules already initialized, skipping
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\projects\abarabone\ecs011\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 67.62 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  3.574 seconds
+Platform modules already initialized, skipping
+========================================================================
+Worker process is ready to serve import requests
+Refreshing native plugins compatible for Editor in 0.52 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 3307 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 158.2 MB.
+System memory in use after: 158.3 MB.
+
+Unloading 24 unused Assets to reduce memory usage. Loaded Objects now: 3727.
+Total: 5.031400 ms (FindLiveObjects: 0.665000 ms CreateObjectMapping: 0.258100 ms MarkObjects: 4.066000 ms  DeleteObjects: 0.038900 ms)
+
+========================================================================
+Received Import Request.
+  path: Assets/SceneDependencyCache/2e21b2204c37e3064d78b5e65a231584.sceneWithBuildSettings
+  artifactKey: Guid(2e21b2204c37e3064d78b5e65a231584) Importer(2089858483,52bed625d08a7023a15481c3fbd73797)
+Start importing Assets/SceneDependencyCache/2e21b2204c37e3064d78b5e65a231584.sceneWithBuildSettings using Guid(2e21b2204c37e3064d78b5e65a231584) Importer(2089858483,52bed625d08a7023a15481c3fbd73797) Diagnostics callstack to track who triggered the sub-import:
+0x00007FF7F88D7486 (Unity) ImporterAssetResolver::ResolveAsset
+0x00007FF7F890E563 (Unity) ResolveArtifactV2
+0x00007FF7F89087FB (Unity) MetaDataPathFromGUIDV2
+0x00007FF7F8873307 (Unity) AssetDatabase::MetaDataPathFromGUID
+0x00007FF7F812D1AF (Unity) CollectAllDependencies
+0x00007FF7F8F2DC55 (Unity) AssetDatabaseBindings::GetDependencies
+0x00007FF7F8F04CB3 (Unity) AssetDatabase_CUSTOM_GetDependencies
+0x000002420DAD4ABD (Mono JIT Code) (wrapper managed-to-native) UnityEditor.AssetDatabase:GetDependencies (string[],bool)
+0x000002420DAD49F3 (Mono JIT Code) UnityEditor.AssetDatabase:GetDependencies (string,bool)
+0x000002420DAD4943 (Mono JIT Code) UnityEditor.AssetDatabase:GetDependencies (string)
+0x000002420DAD207B (Mono JIT Code) [SubSceneImporter.cs:99] Unity.Scenes.Editor.SubSceneImporter:OnImportAsset (UnityEditor.Experimental.AssetImporters.AssetImportContext) 
+0x000002420DAD1D39 (Mono JIT Code) UnityEditor.Experimental.AssetImporters.ScriptedImporter:GenerateAssetData (UnityEditor.Experimental.AssetImporters.AssetImportContext)
+0x000002420DAD1DEB (Mono JIT Code) (wrapper runtime-invoke) <Module>:runtime_invoke_void__this___object (object,intptr,intptr,intptr)
+0x00007FFA47B0D860 (mono-2.0-bdwgc) [mini-runtime.c:2809] mono_jit_runtime_invoke 
+0x00007FFA47A928E2 (mono-2.0-bdwgc) [object.c:2921] do_runtime_invoke 
+0x00007FFA47A9B93F (mono-2.0-bdwgc) [object.c:2968] mono_runtime_invoke 
+0x00007FF7F73EFA94 (Unity) scripting_method_invoke
+0x00007FF7F73E95FB (Unity) ScriptingInvocation::Invoke
+0x00007FF7F89EDC52 (Unity) ScriptedImporter::GenerateAssetData
+0x00007FF7F897F18A (Unity) ImportToObjects
+0x00007FF7F897E4D7 (Unity) AssetImportWorker::Import
+0x00007FF7F8915D3B (Unity) `AssetImportWorkerClient::HandleMessage'::`2'::<lambda_1>::operator()
+0x00007FF7F89A5628 (Unity) asio::detail::completion_handler<core::mutable_function<void __cdecl(void)> >::do_complete
+0x00007FF7F89A7699 (Unity) asio::detail::win_iocp_io_service::do_one
+0x00007FF7F89AA91E (Unity) asio::io_service::run
+0x00007FF7F890EAB2 (Unity) RunAssetImportWorkerClientV2
+0x00007FF7F890EB00 (Unity) RunAssetImporterV2
+0x00007FF7F7FD5651 (Unity) Application::InitializeProject
+0x00007FF7F87DF32B (Unity) WinMain
+0x00007FF7FA438946 (Unity) __scrt_common_main_seh
+0x00007FFA93167BD4 (KERNEL32) BaseThreadInitThunk
+0x00007FFA933CCE51 (ntdll) RtlUserThreadStart
+
+Requesting import of Guid(a2b8261ea4ff7bd4eb910ddf85e706ba) Importer(-1,00000000000000000000000000000000), Assets/MyProject/LightWeightAnimation/Resource/Prefab/Plane.prefab from editor
+Resuming Guid(a2b8261ea4ff7bd4eb910ddf85e706ba) Importer(-1,00000000000000000000000000000000) -> 3cbf72dabd719e78f6404a9c70c253a7 
+Assertion failed on expression: 'state.state == kUpToDate'
+UnityEditor.AssetDatabase:GetDependencies(String[], Boolean)
+UnityEditor.AssetDatabase:GetDependencies(String, Boolean)
+UnityEditor.AssetDatabase:GetDependencies(String)
+Unity.Scenes.Editor.SubSceneImporter:OnImportAsset(AssetImportContext) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Scenes.Editor\SubSceneImporter.cs:99)
+UnityEditor.Experimental.AssetImporters.ScriptedImporter:GenerateAssetData(AssetImportContext)
+
+[C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/ImporterAssetResolver.cpp line 57] 
+(Filename: Library/PackageCache/com.unity.entities@0.11.1-preview.4/Unity.Scenes.Editor/SubSceneImporter.cs Line: 99)
+
+Assertion failed on expression: 'state.targetHash == result'
+UnityEditor.AssetDatabase:GetDependencies(String[], Boolean)
+UnityEditor.AssetDatabase:GetDependencies(String, Boolean)
+UnityEditor.AssetDatabase:GetDependencies(String)
+Unity.Scenes.Editor.SubSceneImporter:OnImportAsset(AssetImportContext) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Scenes.Editor\SubSceneImporter.cs:99)
+UnityEditor.Experimental.AssetImporters.ScriptedImporter:GenerateAssetData(AssetImportContext)
+
+[C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/ImporterAssetResolver.cpp line 58] 
+(Filename: Library/PackageCache/com.unity.entities@0.11.1-preview.4/Unity.Scenes.Editor/SubSceneImporter.cs Line: 99)
+
+Assertion failed on expression: 'ins.second || ins.first->second == targetHash || (ins.first->second == CircularDependencyHash() && !targetHash.IsValid()) || GetPathFromAssetGuidV2(key.GetGUID()).ends_with(".cs")'
+UnityEditor.AssetDatabase:GetDependencies(String[], Boolean)
+UnityEditor.AssetDatabase:GetDependencies(String, Boolean)
+UnityEditor.AssetDatabase:GetDependencies(String)
+Unity.Scenes.Editor.SubSceneImporter:OnImportAsset(AssetImportContext) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Scenes.Editor\SubSceneImporter.cs:99)
+UnityEditor.Experimental.AssetImporters.ScriptedImporter:GenerateAssetData(AssetImportContext)
+
+[C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/AssetResolveTracker.cpp line 27] 
+(Filename: Library/PackageCache/com.unity.entities@0.11.1-preview.4/Unity.Scenes.Editor/SubSceneImporter.cs Line: 99)
+
+Opening scene 'Assets/Scenes/parts/New Sub Scene.unity additively'
+Assertion failed on expression: 'ins.second || ins.first->second == targetHash || (ins.first->second == CircularDependencyHash() && !targetHash.IsValid()) || GetPathFromAssetGuidV2(key.GetGUID()).ends_with(".cs")' 
+(Filename: C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/AssetResolveTracker.cpp Line: 27)
+
+Assertion failed on expression: 'ins.second || ins.first->second == targetHash || (ins.first->second == CircularDependencyHash() && !targetHash.IsValid()) || GetPathFromAssetGuidV2(key.GetGUID()).ends_with(".cs")' 
+(Filename: C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/AssetResolveTracker.cpp Line: 27)
+
+Assertion failed on expression: 'ins.second || ins.first->second == targetHash || (ins.first->second == CircularDependencyHash() && !targetHash.IsValid()) || GetPathFromAssetGuidV2(key.GetGUID()).ends_with(".cs")' 
+(Filename: C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/AssetResolveTracker.cpp Line: 27)
+
+Assertion failed on expression: 'ins.second || ins.first->second == targetHash || (ins.first->second == CircularDependencyHash() && !targetHash.IsValid()) || GetPathFromAssetGuidV2(key.GetGUID()).ends_with(".cs")' 
+(Filename: C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/AssetResolveTracker.cpp Line: 27)
+
+Assertion failed on expression: 'ins.second || ins.first->second == targetHash || (ins.first->second == CircularDependencyHash() && !targetHash.IsValid()) || GetPathFromAssetGuidV2(key.GetGUID()).ends_with(".cs")' 
+(Filename: C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/AssetResolveTracker.cpp Line: 27)
+
+Assertion failed on expression: 'ins.second || ins.first->second == targetHash || (ins.first->second == CircularDependencyHash() && !targetHash.IsValid()) || GetPathFromAssetGuidV2(key.GetGUID()).ends_with(".cs")' 
+(Filename: C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/AssetResolveTracker.cpp Line: 27)
+
+Assertion failed on expression: 'ins.second || ins.first->second == targetHash || (ins.first->second == CircularDependencyHash() && !targetHash.IsValid()) || GetPathFromAssetGuidV2(key.GetGUID()).ends_with(".cs")' 
+(Filename: C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/AssetResolveTracker.cpp Line: 27)
+
+Assertion failed on expression: 'ins.second || ins.first->second == targetHash || (ins.first->second == CircularDependencyHash() && !targetHash.IsValid()) || GetPathFromAssetGuidV2(key.GetGUID()).ends_with(".cs")' 
+(Filename: C:\buildslave\unity\build\Modules/AssetDatabase/Editor/V2/AssetResolveTracker.cpp Line: 27)
+
+Loaded scene 'Assets/Scenes/parts/New Sub Scene.unity'
+	Deserialize:            19.992 ms
+	Integration:            1.502 ms
+	Integration of assets:  6.515 ms
+	Thread Wait Time:       9.527 ms
+	Total Operation Time:   37.537 ms
+dic on
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Abarabone.Structure.Authoring.StructureMeshDictionary:OnCreate() (at Assets\MyProject\PartStructure\StructureMeshDictionary.cs:28)
+Unity.Entities.ComponentSystemBase:CreateInstance(World) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\ComponentSystemBase.cs:425)
+Unity.Entities.World:AddSystem_OnCreate_Internal(ComponentSystemBase) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\World.cs:578)
+Unity.Entities.World:CreateSystemInternal(Type) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\World.cs:523)
+Unity.Entities.World:GetOrCreateSystem(Type) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\World.cs:642)
+Unity.Entities.GameObjectConversionUtility:AddSystemAndLogException(World, ComponentSystemGroup, Type) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\GameObjectConversionUtility.cs:328)
+Unity.Entities.GameObjectConversionUtility:AddConversionSystems(World, IEnumerable`1, Boolean) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\GameObjectConversionUtility.cs:279)
+Unity.Entities.GameObjectConversionUtility:CreateConversionWorld(GameObjectConversionSettings) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\GameObjectConversionUtility.cs:48)
+Unity.Entities.GameObjectConversionUtility:ConvertScene(Scene, GameObjectConversionSettings) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\GameObjectConversionUtility.cs:250)
+Unity.Scenes.Editor.EditorEntityScenes:ConvertAndWriteEntityScene(Scene, GameObjectConversionSettings, List`1) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Scenes.Editor\EditorEntityScenes.cs:170)
+Unity.Scenes.Editor.SubSceneImporter:OnImportAsset(AssetImportContext) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Scenes.Editor\SubSceneImporter.cs:120)
+UnityEditor.Experimental.AssetImporters.ScriptedImporter:GenerateAssetData(AssetImportContext)
+ 
+(Filename: Assets/MyProject/PartStructure/StructureMeshDictionary.cs Line: 28)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at Unity.Entities.ComponentSystemBaseManagedComponentExtensions.GetSingleton[T] (Unity.Entities.ComponentSystemBase sys) [0x00006] in C:\Users\abarabone\Desktop\projects\abarabone\ecs011\Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\ComponentSystemBase.cs:975 
+  at Abarabone.Draw.Authoring.DrawModelEntityConvertUtility.<CreateDrawModelEntityComponents>g__setShaderProps_|0_0 (Unity.Entities.EntityManager em_, UnityEngine.Material mat_, UnityEngine.Mesh mesh_, System.Int32 boneLength_) [0x0000c] in C:\Users\abarabone\Desktop\projects\abarabone\ecs011\Assets\MyProject\LightWeightAnimation\ConverterUtility\DrawModelEntityConvertUtility.cs:52 
+  at Abarabone.Draw.Authoring.DrawModelEntityConvertUtility.CreateDrawModelEntityComponents (GameObjectConversionSystem gcs, UnityEngine.GameObject topGameObject, UnityEngine.Mesh mesh, UnityEngine.Material mat, Abarabone.Model.BoneType BoneType, System.Int32 boneLength) [0x00013] in C:\Users\abarabone\Desktop\projects\abarabone\ecs011\Assets\MyProject\LightWeightAnimation\ConverterUtility\DrawModelEntityConvertUtility.cs:40 
+  at Abarabone.Particle.Aurthoring.MeshModelAuthoring.<Convert>g__createModelEntity_|1_0 (GameObjectConversionSystem gcs, UnityEngine.GameObject main, UnityEngine.Material srcMaterial) [0x00013] in C:\Users\abarabone\Desktop\projects\abarabone\ecs011\Assets\MyProject\LightWeightAnimation\Authoring\MeshModelAuthoring.cs:53 
+  at Abarabone.Particle.Aurthoring.MeshModelAuthoring.Convert (Unity.Entities.Entity entity, Unity.Entities.EntityManager dstManager, GameObjectConversionSystem conversionSystem) [0x00018] in C:\Users\abarabone\Desktop\projects\abarabone\ecs011\Assets\MyProject\LightWeightAnimation\Authoring\MeshModelAuthoring.cs:37 
+  at Unity.Entities.Conversion.ConvertGameObjectToEntitySystem.Convert (UnityEngine.Transform transform, System.Collections.Generic.List`1[T] convertibles) [0x0004b] in C:\Users\abarabone\Desktop\projects\abarabone\ecs011\Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\ConvertGameObjectToEntitySystem.cs:43 
+UnityEngine.DebugLogHandler:Internal_LogException(Exception, Object)
+UnityEngine.DebugLogHandler:LogException(Exception, Object)
+Unity.Entities.Conversion.JournalingUnityLogger:LogException(Exception, Object) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\JournalingUnityLogger.cs:50)
+UnityEngine.Logger:LogException(Exception, Object)
+UnityEngine.Debug:LogException(Exception, Object)
+Unity.Debug:LogException(Exception, Object) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\Stubs\Unity\Debug.cs:29)
+Unity.Entities.Conversion.ConvertGameObjectToEntitySystem:Convert(Transform, List`1) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\ConvertGameObjectToEntitySystem.cs:48)
+Unity.Entities.Conversion.<>c__DisplayClass1_0:<OnUpdate>b__0(Transform) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\ConvertGameObjectToEntitySystem.cs:56)
+Unity.Entities.EntityQueryBuilder:ForEach(F_C`1) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\EntityQueryBuilder_ForEach.gen.cs:229)
+Unity.Entities.Conversion.ConvertGameObjectToEntitySystem:OnUpdate() (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\ConvertGameObjectToEntitySystem.cs:56)
+Unity.Entities.ComponentSystem:Update() (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\ComponentSystem.cs:109)
+Unity.Entities.ComponentSystemGroup:UpdateAllSystems() (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\ComponentSystemGroup.cs:445)
+Unity.Entities.ComponentSystemGroup:OnUpdate() (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\ComponentSystemGroup.cs:398)
+Unity.Entities.ComponentSystem:Update() (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\ComponentSystem.cs:109)
+Unity.Entities.GameObjectConversionUtility:Convert(World) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\GameObjectConversionUtility.cs:146)
+Unity.Entities.GameObjectConversionUtility:ConvertScene(Scene, GameObjectConversionSettings) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\GameObjectConversionUtility.cs:256)
+Unity.Scenes.Editor.EditorEntityScenes:ConvertAndWriteEntityScene(Scene, GameObjectConversionSettings, List`1) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Scenes.Editor\EditorEntityScenes.cs:170)
+Unity.Scenes.Editor.SubSceneImporter:OnImportAsset(AssetImportContext) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Scenes.Editor\SubSceneImporter.cs:120)
+UnityEditor.Experimental.AssetImporters.ScriptedImporter:GenerateAssetData(AssetImportContext)
+ 
+(Filename: Library/PackageCache/com.unity.entities@0.11.1-preview.4/Unity.Entities/ComponentSystemBase.cs Line: 975)
+
+dic off
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Abarabone.Structure.Authoring.StructureMeshDictionary:OnDestroy() (at Assets\MyProject\PartStructure\StructureMeshDictionary.cs:41)
+Unity.Entities.ComponentSystemBase:OnDestroy_Internal() (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\ComponentSystemBase.cs:505)
+Unity.Entities.World:DestroyAllSystemsAndLogException() (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\World.cs:716)
+Unity.Entities.World:Dispose() (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities\World.cs:445)
+Unity.Entities.GameObjectConversionUtility:ConvertScene(Scene, GameObjectConversionSettings) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Entities.Hybrid\GameObjectConversion\GameObjectConversionUtility.cs:261)
+Unity.Scenes.Editor.EditorEntityScenes:ConvertAndWriteEntityScene(Scene, GameObjectConversionSettings, List`1) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Scenes.Editor\EditorEntityScenes.cs:170)
+Unity.Scenes.Editor.SubSceneImporter:OnImportAsset(AssetImportContext) (at Library\PackageCache\com.unity.entities@0.11.1-preview.4\Unity.Scenes.Editor\SubSceneImporter.cs:120)
+UnityEditor.Experimental.AssetImporters.ScriptedImporter:GenerateAssetData(AssetImportContext)
+ 
+(Filename: Assets/MyProject/PartStructure/StructureMeshDictionary.cs Line: 41)
+
+ -> (target hash: '2e60ff5b34c49c0b684cd6a7c595fd0b') in 3.760007 seconds
+  Import took 3.767101 seconds .
+

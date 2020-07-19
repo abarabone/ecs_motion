@@ -96,7 +96,7 @@ namespace Abarabone.Model.Authoring
                     new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity } );
 
 
-                em_.SetName( binderEntity, $"{top_.name} binder" );
+                em_.SetName_( binderEntity, $"{top_.name} binder" );
             }
 
             void initMainEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
@@ -130,7 +130,7 @@ namespace Abarabone.Model.Authoring
                 );
 
 
-                em_.SetName(mainEntity, $"{top_.name} main");
+                em_.SetName_(mainEntity, $"{top_.name} main");
             }
 
         }

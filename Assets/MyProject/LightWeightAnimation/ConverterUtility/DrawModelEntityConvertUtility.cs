@@ -76,7 +76,7 @@ namespace Abarabone.Draw.Authoring
                 gcs.AddToModelEntityDictionary(top_, ent);
 
 
-                em_.SetName( ent, $"{top_.name} model" );
+                em_.SetName_( ent, $"{top_.name} model" );
 
                 return ent;
             }

@@ -55,7 +55,7 @@ namespace Abarabone.Particle.Aurthoring
 
             void initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
             {
-                dstManager.SetName(entity, $"{this.name}");
+                dstManager.SetName_(entity, $"{this.name}");
 
                 var em = gcs.DstEntityManager;
 

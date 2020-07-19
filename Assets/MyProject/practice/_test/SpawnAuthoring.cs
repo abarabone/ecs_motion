@@ -59,6 +59,7 @@ public struct SpawnData : IComponentData
 }
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateAfter(typeof(ObjectInitializeSystem))]
 public class SpawnSystem : SystemBase
 {
 
@@ -76,8 +77,8 @@ public class SpawnSystem : SystemBase
         var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
         this.Entities
-            .WithoutBurst()
-            //.WithBurst()
+            //.WithoutBurst()
+            .WithBurst()
             .ForEach(
                 (Entity spawnEntity, int entityInQueryIndex, ref SpawnData spawn) =>
                 {
@@ -90,15 +91,18 @@ public class SpawnSystem : SystemBase
                     cmd.AddComponent(entityInQueryIndex, ent,
                         new ObjectInitializeData
                         {
-                            pos = spawn.pos + new float3(i%l.x * s.x, i/l.x%l.y * s.y, i/(l.x*l.y) * s.z)
+                            pos = spawn.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z)
                         }
                     );
 
-                    if( ++spawn.i >= l.x * l.y * l.z )
+                    if (++spawn.i >= l.x * l.y * l.z)
                         cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
                 }
             )
             .ScheduleParallel();
+
+        // Make sure that the ECB system knows about our job
+        this.cmdSystem.AddJobHandleForProducer(this.Dependency);
     }
 
 }
@@ -128,6 +132,7 @@ public class ObjectInitializeSystem : SystemBase
         var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
         this.Entities
+            //.WithoutBurst()
             .WithBurst()
             .ForEach(
                 (Entity ent, int entityInQueryIndex, ref Translation pos, in ObjectInitializeData init) =>
@@ -142,9 +147,12 @@ public class ObjectInitializeSystem : SystemBase
             .ScheduleParallel();
 
 
+        //var cmd2 = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+
         var translations = this.GetComponentDataFromEntity<Translation>();
 
         this.Entities
+            //.WithoutBurst()
             .WithBurst()
             .WithNativeDisableParallelForRestriction(translations)
             .ForEach(
@@ -160,6 +168,9 @@ public class ObjectInitializeSystem : SystemBase
                 }
             )
             .ScheduleParallel();
+
+        // Make sure that the ECB system knows about our job
+        this.cmdSystem.AddJobHandleForProducer(this.Dependency);
     }
 
 }

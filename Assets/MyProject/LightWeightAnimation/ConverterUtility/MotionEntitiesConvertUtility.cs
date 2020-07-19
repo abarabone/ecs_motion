@@ -177,7 +177,7 @@ namespace Abarabone.CharacterMotion.Authoring
             var motionArchetype = em.CreateArchetype( motionTypes );
             var motionEntity = gcs.CreateAdditionalEntity( motionMain, motionArchetype );
 
-            em.SetName( motionEntity, $"{motionMain.name} motion" );
+            em.SetName_( motionEntity, $"{motionMain.name} motion" );
 
             return motionEntity;
         }
@@ -237,7 +237,7 @@ namespace Abarabone.CharacterMotion.Authoring
             var streamArchetype = em.CreateArchetype( streamTypes );
             var streamEntities = enabledBoneObjects
                 .Select( boneObject => gcs.CreateAdditionalEntity( boneObject, streamArchetype ) )
-                .Do( ent => em.SetName(ent, $"{em.GetName(ent)} stream") )
+                .Do( ent => em.SetName_(ent, $"{em.GetName_(ent)} stream") )
                 .ToArray();
 
             return streamEntities;

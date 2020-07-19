@@ -35,7 +35,7 @@ namespace Abarabone.Model.Authoring
                 {
                     var buf = em.GetBuffer<LinkedEntityGroup>(ent);
 
-                    Debug.Log("enum in trim "+em.GetName(ent));
+                    Debug.Log("enum in trim "+em.GetName_(ent));
                     foreach (var link in buf)
                     {
                         if (em.GetComponentCount(link.Value) == 1 && em.HasComponent<Prefab>(link.Value))

@@ -23,6 +23,23 @@ namespace Abarabone.Draw
     static public partial class Structure
     {
 
+        public struct PartAlivedData : IComponentData
+        {
+            public uint4 alived000to127;
+            public uint4 alived128to255;
+            public uint4 alived256to383;
+            public uint4 alived384to511;
+
+            public void SetTrunOn( uint id )
+            {
+
+            }
+            public void SetTurnOff( uint id )
+            {
+
+            }
+        }
+
         public struct PartLinkData : IComponentData
         {
             public Entity NextEntity;

@@ -23,7 +23,7 @@ namespace Abarabone.CharacterMotion
 
     //[DisableAutoCreation]
     [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ) )]
     public class StreamToBoneBlend2System : JobComponentSystem
     {
 

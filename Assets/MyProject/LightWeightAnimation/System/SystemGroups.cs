@@ -67,7 +67,18 @@ namespace Abarabone.SystemGroup
             //{ }
 
 
-            namespace Motion
+            namespace MonolithicBoneTransform
+            {
+
+                [UpdateInGroup(typeof(PresentationSystemGroup))]
+                //[DisableAutoCreation]
+                [UpdateAfter(typeof(DrawPrevSystemGroup))]
+                public class MonolithicBoneTransformSystemGroup : ComponentSystemGroup
+                { }
+
+            }
+
+            namespace MotionBoneTransform
             {
 
                 [UpdateInGroup( typeof( PresentationSystemGroup ) )]
@@ -81,7 +92,8 @@ namespace Abarabone.SystemGroup
 
             [UpdateInGroup( typeof( PresentationSystemGroup ) )]
             //[DisableAutoCreation]
-            [UpdateAfter( typeof( Motion.MotionSystemGroup ) )]
+            [UpdateAfter(typeof(MotionBoneTransform.MotionSystemGroup))]
+            [UpdateAfter(typeof(MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
             public class DrawSystemGroup : ComponentSystemGroup
             { }
 

@@ -22,7 +22,7 @@ namespace Abarabone.CharacterMotion
 
 
     [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.Motion.MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ) )]
     public class StreamToBoneSystem : JobComponentSystem
     {
 
