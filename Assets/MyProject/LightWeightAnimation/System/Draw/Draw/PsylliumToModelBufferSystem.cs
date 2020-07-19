@@ -19,7 +19,10 @@ using Abarabone.Particle;
 namespace Abarabone.Draw
 {
 
-    [DisableAutoCreation]
+    /// <summary>
+    /// 物理をつけたパーティクル用　暫定でのこしてある
+    /// </summary>
+    //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
     [UpdateBefore( typeof( BeginDrawCsBarier ) )]
@@ -50,6 +53,7 @@ namespace Abarabone.Draw
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModeLinkData linker,
+                        in Particle.AdditionalData additional,
                         in Translation pos,
                         in Rotation rot
                     ) =>
@@ -57,9 +61,12 @@ namespace Abarabone.Draw
 
                         var i = target.DrawInstanceId * 2;
 
+                        var size = additional.Radius;
+                        var color = math.asfloat(additional.Color.ToUint());
+
                         var pInstance = offsetsOfDrawModel[ linker.DrawModelEntity ].pVectorOffsetInBuffer;
-                        pInstance[ i + 0 ] = new float4( pos.Value, 1.0f );
-                        pInstance[ i + 1 ] = math.forward( rot.Value ).As_float4()*2;
+                        pInstance[ i + 0 ] = new float4( pos.Value, size );
+                        pInstance[ i + 1 ] = new float4(pos.Value + math.forward( rot.Value )*2, color );
 
                     }
                 )

@@ -25,6 +25,8 @@ namespace Abarabone.Particle.Aurthoring
 
         public Material Material;
 
+        public float DefaultRadius;
+
         //public bool IsHMesh;
 
 
@@ -69,8 +71,9 @@ namespace Abarabone.Particle.Aurthoring
                     typeof( DrawInstance.ModeLinkData ),
                     typeof( DrawInstance.TargetWorkData ),
                     typeof( Particle.AdditionalData ),
-                    typeof( Translation ),
-                    typeof( Rotation )
+                    typeof( Particle.TranslationPtoPData )
+                    //typeof( Translation ),
+                    //typeof( Rotation )
                 );
                 em.SetArchetype( mainEntity, archetype );
 
@@ -92,22 +95,22 @@ namespace Abarabone.Particle.Aurthoring
                     new Particle.AdditionalData
                     {
                         Color = this.Material.color,
-                        Size = 1.0f,
+                        Radius = this.DefaultRadius,
                     }
                 );
 
-                em.SetComponentData( mainEntity,
-                    new Translation
-                    {
-                        Value = float3.zero,
-                    }
-                );
-                em.SetComponentData( mainEntity,
-                    new Rotation
-                    {
-                        Value = quaternion.identity,
-                    }
-                );
+                //em.SetComponentData( mainEntity,
+                //    new Translation
+                //    {
+                //        Value = float3.zero,
+                //    }
+                //);
+                //em.SetComponentData( mainEntity,
+                //    new Rotation
+                //    {
+                //        Value = quaternion.identity,
+                //    }
+                //);
             }
 
         }
@@ -115,8 +118,8 @@ namespace Abarabone.Particle.Aurthoring
         Mesh createMesh()
         {
 
-            float height = 1.0f;
-            float width = 1.0f;
+            float height = 0.5f;// 1.0f;
+            float width = 0.5f;// 1.0f;
             float radius = width;
 
             Mesh mesh = new Mesh();

@@ -55,27 +55,28 @@
             {
                 v2f o;
 
-				int ivec = BoneVectorOffset + i * 2;
-				float4 buf0 = BoneVectorBuffer[ivec + 0];
-				float4 buf1 = BoneVectorBuffer[ivec + 1];
+				const int ivec = BoneVectorOffset + i * 2;
+				const float4 buf0 = BoneVectorBuffer[ivec + 0];
+				const float4 buf1 = BoneVectorBuffer[ivec + 1];
 
-                uint c = asuint(buf1.w);
-                const fixed4 color = float4(c.xxxx >> uint4(24, 16, 8, 0) & 255) / 255.;
+                const fixed4 color = float4(asuint(buf1.w).xxxx >> uint4(24, 16, 8, 0) & 255) / 255.;
                 float size = buf0.w;
 
-				float4 lvt = v.vertex;
-				float4 wpos0 = float4(buf0.xyz, 1.0f);
-				float4 wpos1 = float4(buf1.xyz, 1.0f);
-				float4 wpos = wpos0;//BoneVectorBuffer[ivec + (lvt.y+1)/2];
+				const float4 lvt = v.vertex;
+                const int iofs = lvt.y + 0.5f;
+				//const float3 wpos0 = buf0.xyz;
+				//const float3 wpos1 = buf1.xyz;
+				const float3 wpos0 = BoneVectorBuffer[ivec + (0+iofs)].xyz;
+				const float3 wpos1 = BoneVectorBuffer[ivec + (1-iofs)].xyz;
 
-				float3 eye = wpos.xyz - _WorldSpaceCameraPos;
-				float3 up = wpos1 - wpos0;
-				float3 side = normalize(cross(up, eye)) * size;
-				float3 edgeface = normalize(cross(eye, side)) * size;
+				const float3 eye = wpos0 - _WorldSpaceCameraPos;
+				const float3 up = buf1.xyz - buf0.xyz;//wpos1 - wpos0;//
+				const float3 side = normalize(cross(up, eye));// * size;
+				const float3 edgeface = normalize(cross(eye, side));// * size;
 
-				//float4 wvt = float4((wpos.xyz + side * lvt.xxx + edgeface * lvt.zzz) * size, 1);
-				float4x4 mt = float4x4(float4(side, 0), float4(up, 0), float4(edgeface, 0), wpos);
-				float4 wvt = mul(lvt, mt);
+				const float4 wvt = float4(wpos0.xyz + (side * lvt.xxx + edgeface * lvt.zzz) * size, 1);
+				//const float4x4 mt = float4x4(float4(side, 0), float4(up, 0), float4(edgeface, 0), wpos0);
+				//const float4 wvt = mul(lvt, mt);
 
                 o.vertex = mul(UNITY_MATRIX_VP, wvt);
                 o.uv = v.uv;

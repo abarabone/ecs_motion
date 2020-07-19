@@ -47,21 +47,24 @@ namespace Abarabone.Draw
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.ParticleTag>()
                 .WithNone<DrawInstance.MeshTag>()
+                .WithNone<Translation, Rotation>()// 物理パーティクルは除外
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModeLinkData linker,
                         in Particle.AdditionalData additional,
-                        in Translation pos,
-                        in Rotation rot
+                        in Particle.TranslationPtoPData pos
                     ) =>
                     {
 
                         var i = target.DrawInstanceId * 2;
 
+                        var size = additional.Radius;
+                        var color = math.asfloat(additional.Color.ToUint());
+
                         var pInstance = offsetsOfDrawModel[ linker.DrawModelEntity ].pVectorOffsetInBuffer;
-                        pInstance[ i + 0 ] = new float4( pos.Value, additional.Size );
-                        pInstance[ i + 1 ] = new float4( pos.Value + math.forward(rot.Value)*2, math.asfloat(additional.Color.ToUint()) );
+                        pInstance[ i + 0 ] = new float4( pos.Start, size );
+                        pInstance[ i + 1 ] = new float4( pos.End, color );
 
                     }
                 )

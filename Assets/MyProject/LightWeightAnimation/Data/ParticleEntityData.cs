@@ -71,10 +71,17 @@ namespace Abarabone.Particle
         public LineParticleNodeEntity NextNodeEntity;
     }
 
+
+    public struct TranslationPtoPData : IComponentData
+    {
+        public float3 Start;
+        public float3 End;
+    }
+
     public struct AdditionalData : IComponentData
     {
         public Color32 Color;
-        public float Size;
+        public float Radius;
     }
 
     static public class ParticleExtension
