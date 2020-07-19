@@ -24,6 +24,9 @@ namespace Abarabone.Model.Authoring
     public class MinicModelAuthoring : CharacterModelAuthoring, IConvertGameObjectToEntity
     {
 
+        public GameObject BeamPrefab;
+
+
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             base.Convert(entity, dstManager, conversionSystem);

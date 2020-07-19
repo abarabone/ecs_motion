@@ -71,7 +71,16 @@ namespace Abarabone.Particle
         public LineParticleNodeEntity NextNodeEntity;
     }
 
+    public struct AdditionalData : IComponentData
+    {
+        public Color32 Color;
+        public float Size;
+    }
 
+    static public class ParticleExtension
+    {
+        static public uint ToUint(this Color32 c) => (uint)( c.r << 24 | c.g << 16 | c.b << 8 | c.a << 0 );
+    }
 
 
 }

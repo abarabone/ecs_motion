@@ -68,6 +68,7 @@ namespace Abarabone.Particle.Aurthoring
                     typeof( DrawInstance.ParticleTag ),
                     typeof( DrawInstance.ModeLinkData ),
                     typeof( DrawInstance.TargetWorkData ),
+                    typeof( Particle.AdditionalData ),
                     typeof( Translation ),
                     typeof( Rotation )
                 );
@@ -85,6 +86,13 @@ namespace Abarabone.Particle.Aurthoring
                     new DrawInstance.TargetWorkData
                     {
                         DrawInstanceId = -1,
+                    }
+                );
+                em.SetComponentData( mainEntity,
+                    new Particle.AdditionalData
+                    {
+                        Color = this.Material.color,
+                        Size = 1.0f,
                     }
                 );
 

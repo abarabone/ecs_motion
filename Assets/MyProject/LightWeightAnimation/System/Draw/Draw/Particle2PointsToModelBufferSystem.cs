@@ -15,6 +15,7 @@ using Abarabone.SystemGroup;
 using Abarabone.Geometry;
 using Abarabone.Character;
 using Abarabone.Particle;
+using System;
 
 namespace Abarabone.Draw
 {
@@ -23,7 +24,7 @@ namespace Abarabone.Draw
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
     [UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    public class PsylliumToDrawModelBufferSystem : JobComponentSystem
+    public class Particle2PointsToModelBufferSystem : JobComponentSystem
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -50,6 +51,7 @@ namespace Abarabone.Draw
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModeLinkData linker,
+                        in Particle.AdditionalData additional,
                         in Translation pos,
                         in Rotation rot
                     ) =>
@@ -58,8 +60,8 @@ namespace Abarabone.Draw
                         var i = target.DrawInstanceId * 2;
 
                         var pInstance = offsetsOfDrawModel[ linker.DrawModelEntity ].pVectorOffsetInBuffer;
-                        pInstance[ i + 0 ] = new float4( pos.Value, 1.0f );
-                        pInstance[ i + 1 ] = math.forward( rot.Value ).As_float4()*2;
+                        pInstance[ i + 0 ] = new float4( pos.Value, additional.Size );
+                        pInstance[ i + 1 ] = new float4( pos.Value + math.forward(rot.Value)*2, math.asfloat(additional.Color.ToUint()) );
 
                     }
                 )

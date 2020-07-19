@@ -1,4 +1,4 @@
-﻿Shader "Custom/Psyllium3"
+﻿Shader "Custom/Psyllium ptop"
 {
     Properties
     {
@@ -39,6 +39,7 @@
                 float2 uv : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
+				fixed4 color : VERTEX_COLOR;
             };
 
 			StructuredBuffer<float4> BoneVectorBuffer;
@@ -55,22 +56,31 @@
                 v2f o;
 
 				int ivec = BoneVectorOffset + i * 2;
+				float4 buf0 = BoneVectorBuffer[ivec + 0];
+				float4 buf1 = BoneVectorBuffer[ivec + 1];
 
-				half4 lvt = v.vertex;
-				half4 wpos0 = BoneVectorBuffer[ivec + 0];
-				half4 wpos1 = BoneVectorBuffer[ivec + 1];
-				half4 wpos = BoneVectorBuffer[ivec + (lvt.y+1)/2];
+                uint c = asuint(buf1.w);
+                const fixed4 color = float4(c.xxxx >> uint4(24, 16, 8, 0) & 255) / 255.;
+                float size = buf0.w;
 
-				half3 eye = wpos0.xyz - _WorldSpaceCameraPos;
-				half3 up = normalize(wpos1 - wpos0);
-				half3 side = normalize(cross(up, eye));
-				half3 edgeface = normalize(cross(eye, side));
+				float4 lvt = v.vertex;
+				float4 wpos0 = float4(buf0.xyz, 1.0f);
+				float4 wpos1 = float4(buf1.xyz, 1.0f);
+				float4 wpos = wpos0;//BoneVectorBuffer[ivec + (lvt.y+1)/2];
 
-				half4 wvt = half4(wpos.xyz + side * lvt.xxx + edgeface * lvt.zzz, 1);
+				float3 eye = wpos.xyz - _WorldSpaceCameraPos;
+				float3 up = wpos1 - wpos0;
+				float3 side = normalize(cross(up, eye)) * size;
+				float3 edgeface = normalize(cross(eye, side)) * size;
 
-                o.vertex = mul(UNITY_MATRIX_VP, wvt );
+				//float4 wvt = float4((wpos.xyz + side * lvt.xxx + edgeface * lvt.zzz) * size, 1);
+				float4x4 mt = float4x4(float4(side, 0), float4(up, 0), float4(edgeface, 0), wpos);
+				float4 wvt = mul(lvt, mt);
+
+                o.vertex = mul(UNITY_MATRIX_VP, wvt);
                 o.uv = v.uv;
-                UNITY_TRANSFER_FOG(o,o.vertex);
+                o.color = color * 6.;
+                UNITY_TRANSFER_FOG(o, o.vertex);
 
                 return o;
             }
@@ -79,8 +89,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-                col.rgb *= _Color;
-                col.rgb *= 6.;
+                col.rgb *= i.color;
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
