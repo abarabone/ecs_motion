@@ -16,6 +16,7 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Draw;
     using Abarabone.CharacterMotion;
+    using Abarabone.Arms;
 
     /// <summary>
     /// プライマリエンティティは LinkedEntityGroup のみとする。
@@ -24,21 +25,16 @@ namespace Abarabone.Model.Authoring
     public class MinicModelAuthoring : CharacterModelAuthoring, IConvertGameObjectToEntity
     {
 
-        public GameObject BeamPrefab;
-
 
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             base.Convert(entity, dstManager, conversionSystem);
 
 
-
             var top = this.gameObject;
             var main = top.transform.GetChild(0).gameObject;
 
             initMain_(conversionSystem, main);
-
-            initWapon_(conversionSystem, main);
 
             return;
 
@@ -62,19 +58,6 @@ namespace Abarabone.Model.Authoring
                 em.AddComponents(mainEntity, types);
             }
 
-            void initWapon_( GameObjectConversionSystem gcs_, GameObject main_)
-            {
-                var em = gcs_.DstEntityManager;
-
-                var sword = this.transform.Find("wapon").gameObject;
-                var ent = conversionSystem.GetPrimaryEntity(sword);
-
-                var types = new ComponentTypes
-                (
-
-                );
-                em.AddComponents(ent, types);
-            }
         }
 
     }

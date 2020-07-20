@@ -19,6 +19,11 @@ namespace Abarabone.Character
 {
 
 
+    public struct MoveHandlingData : IComponentData
+    {
+        public ControlActionUnit ControlAction;
+    }
+
     public struct ControlActionUnit
     {
         public float3 MoveDirection;
@@ -33,11 +38,6 @@ namespace Abarabone.Character
         public bool IsChangeMotion;
 
         public float3 Up;
-    }
-
-    public struct MoveHandlingData : IComponentData
-    {
-        public ControlActionUnit ControlAction;
     }
 
 
