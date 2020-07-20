@@ -71,9 +71,9 @@ namespace Abarabone.Particle.Aurthoring
                     typeof( DrawInstance.ModeLinkData ),
                     typeof( DrawInstance.TargetWorkData ),
                     typeof( Particle.AdditionalData ),
-                    typeof( Particle.TranslationPtoPData )
-                    //typeof( Translation ),
-                    //typeof( Rotation )
+                    typeof( Particle.TranslationPtoPData ),
+                    typeof(Translation),
+                    typeof(Rotation)
                 );
                 em.SetArchetype( mainEntity, archetype );
 
@@ -95,22 +95,22 @@ namespace Abarabone.Particle.Aurthoring
                     new Particle.AdditionalData
                     {
                         Color = this.Material.color,
-                        Radius = this.DefaultRadius,
+                        Size = this.DefaultRadius,
                     }
                 );
 
-                //em.SetComponentData( mainEntity,
-                //    new Translation
-                //    {
-                //        Value = float3.zero,
-                //    }
-                //);
-                //em.SetComponentData( mainEntity,
-                //    new Rotation
-                //    {
-                //        Value = quaternion.identity,
-                //    }
-                //);
+                em.SetComponentData(mainEntity,
+                    new Translation
+                    {
+                        Value = float3.zero,
+                    }
+                );
+                em.SetComponentData(mainEntity,
+                    new Rotation
+                    {
+                        Value = quaternion.identity,
+                    }
+                );
             }
 
         }

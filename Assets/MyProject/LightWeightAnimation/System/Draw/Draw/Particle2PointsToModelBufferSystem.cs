@@ -59,7 +59,7 @@ namespace Abarabone.Draw
 
                         var i = target.DrawInstanceId * 2;
 
-                        var size = additional.Radius;
+                        var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());
 
                         var pInstance = offsetsOfDrawModel[ linker.DrawModelEntity ].pVectorOffsetInBuffer;

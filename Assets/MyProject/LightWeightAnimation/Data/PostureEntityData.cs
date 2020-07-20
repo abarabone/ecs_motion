@@ -34,26 +34,4 @@ namespace Abarabone.Character
 
     }
 
-
-    public struct ControlActionUnit
-    {
-        public float3 MoveDirection;
-
-        public quaternion LookRotation;
-        public quaternion HorizontalRotation;
-        public float VerticalAngle;
-
-        public float3 LookDirection => math.forward( this.LookRotation );
-
-        public float JumpForce;
-        public bool IsChangeMotion;
-
-        public float3 Up;
-    }
-
-    public struct MoveHandlingData : IComponentData
-    {
-        public ControlActionUnit ControlAction;
-    }
-
 }

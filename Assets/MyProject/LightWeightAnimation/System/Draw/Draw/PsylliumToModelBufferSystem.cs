@@ -61,12 +61,12 @@ namespace Abarabone.Draw
 
                         var i = target.DrawInstanceId * 2;
 
-                        var size = additional.Radius;
+                        var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());
 
                         var pInstance = offsetsOfDrawModel[ linker.DrawModelEntity ].pVectorOffsetInBuffer;
                         pInstance[ i + 0 ] = new float4( pos.Value, size );
-                        pInstance[ i + 1 ] = new float4(pos.Value + math.forward( rot.Value )*2, color );
+                        pInstance[ i + 1 ] = new float4( pos.Value + math.forward( rot.Value ), color );
 
                     }
                 )

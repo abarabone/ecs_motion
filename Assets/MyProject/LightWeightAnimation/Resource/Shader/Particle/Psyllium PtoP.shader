@@ -67,14 +67,14 @@
 				//const float3 wpos0 = buf0.xyz;
 				//const float3 wpos1 = buf1.xyz;
 				const float3 wpos0 = BoneVectorBuffer[ivec + (0+iofs)].xyz;
-				const float3 wpos1 = BoneVectorBuffer[ivec + (1-iofs)].xyz;
+				//const float3 wpos1 = BoneVectorBuffer[ivec + (1-iofs)].xyz;
 
-				const float3 eye = wpos0 - _WorldSpaceCameraPos;
-				const float3 up = buf1.xyz - buf0.xyz;//wpos1 - wpos0;//
+				const float3 eye =  normalize(wpos0 - _WorldSpaceCameraPos);
+				const float3 up =  normalize(buf1.xyz - buf0.xyz);//
 				const float3 side = normalize(cross(up, eye));// * size;
 				const float3 edgeface = normalize(cross(eye, side));// * size;
 
-				const float4 wvt = float4(wpos0.xyz + (side * lvt.xxx + edgeface * lvt.zzz) * size, 1);
+				const float4 wvt = float4(wpos0 + (side * lvt.xxx + edgeface * lvt.zzz) * size, 1);
 				//const float4x4 mt = float4x4(float4(side, 0), float4(up, 0), float4(edgeface, 0), wpos0);
 				//const float4 wvt = mul(lvt, mt);
 

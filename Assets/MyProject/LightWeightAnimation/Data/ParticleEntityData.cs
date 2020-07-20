@@ -81,7 +81,7 @@ namespace Abarabone.Particle
     public struct AdditionalData : IComponentData
     {
         public Color32 Color;
-        public float Radius;
+        public float Size;
     }
 
     static public class ParticleExtension
