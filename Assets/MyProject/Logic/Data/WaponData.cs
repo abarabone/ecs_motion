@@ -25,8 +25,6 @@ namespace Abarabone.Arms
             public Entity BulletEntity;
         }
 
-        public struct BeamTag : IComponentData
-        { }
         public struct BeamUnitData : IComponentData
         {
             public Entity PsylliumPrefab;
@@ -36,6 +34,14 @@ namespace Abarabone.Arms
 
             public float3 MuzzlePositionLocal;
         }
+    }
+
+    
+    static public partial class Bullet
+    {
+
+        public struct BeamTag : IComponentData
+        { }
 
         public struct BulletData : IComponentData
         {

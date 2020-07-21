@@ -11,17 +11,18 @@ using Unity.Linq;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Runtime.InteropServices;
 
-using Abarabone.Geometry;
-using Abarabone.Utilities;
-using Abarabone.Misc;
-using Abarabone.CharacterMotion;
-using Abarabone.Draw;
-using Abarabone.Character;
-using Abarabone.Common.Extension;
-using Abarabone.Particle;
-
 namespace Abarabone.Authoring
 {
+
+    using Abarabone.Geometry;
+    using Abarabone.Utilities;
+    using Abarabone.Misc;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Draw;
+    using Abarabone.Character;
+    using Abarabone.Common.Extension;
+    using Abarabone.Particle;
+
 
     public class line_spawn : MonoBehaviour
     {
@@ -65,7 +66,7 @@ namespace Abarabone.Authoring
                 }
 
                 LineParticleNodeEntity getNext_( LineParticleNodeEntity ent_ ) =>
-                    em.GetComponentData<LineParticlePointNodeLinkData>( ent_.Entity ).NextNodeEntity;
+                    em.GetComponentData<Particle.LineParticlePointNodeLinkData>( ent_.Entity ).NextNodeEntity;
             }
 
         }

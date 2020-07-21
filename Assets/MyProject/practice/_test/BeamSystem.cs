@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using Abarabone.Character;
 using Abarabone.Draw;
 
+[DisableAutoCreation]
 //[UpdateInGroup(typeof(InitializationSystemGroup))]
 //[UpdateAfter(typeof(ObjectInitializeSystem))]
 public class BeamSystem : SystemBase

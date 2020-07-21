@@ -49,7 +49,7 @@ namespace Abarabone.Particle
 
     public struct LineParticleNodeEntity :
         ITypedEntity<
-            LineParticlePointNodeLinkData,
+            Particle.LineParticlePointNodeLinkData,
             DrawTransform.LinkData,
             DrawTransform.IndexData,
             DrawTransform.TargetWorkData,
@@ -64,29 +64,29 @@ namespace Abarabone.Particle
 
 
 
-
-
-    public struct LineParticlePointNodeLinkData : IComponentData
+    static public partial class Particle
     {
-        public LineParticleNodeEntity NextNodeEntity;
-    }
+
+        public struct LineParticlePointNodeLinkData : IComponentData
+        {
+            public LineParticleNodeEntity NextNodeEntity;
+        }
 
 
-    public struct TranslationPtoPData : IComponentData
-    {
-        public float3 Start;
-        public float3 End;
-    }
+        public struct TranslationPtoPData : IComponentData
+        {
+            public float3 Start;
+            public float3 End;
+        }
 
-    public struct AdditionalData : IComponentData
-    {
-        public Color32 Color;
-        public float Size;
-    }
+        public struct AdditionalData : IComponentData
+        {
+            public Color32 Color;
+            public float Size;
+        }
 
-    static public class ParticleExtension
-    {
-        static public uint ToUint(this Color32 c) => (uint)( c.r << 24 | c.g << 16 | c.b << 8 | c.a << 0 );
+        static public uint ToUint(this Color32 c) => (uint)(c.r << 24 | c.g << 16 | c.b << 8 | c.a << 0);
+
     }
 
 

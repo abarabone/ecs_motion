@@ -50,24 +50,42 @@ namespace Abarabone.Model.Authoring
             {
                 var em = gcs_.DstEntityManager;
 
+
+                var mainEntity = gcs_.GetPrimaryEntity(main_);
+
+                var beamPrefab = gcs_.GetPrimaryEntity(beam_);
+                //var beemTypes = new ComponentTypes
+                //(
+                //    typeof(Bullet.BeamTag),
+                //    typeof(Bullet.BulletData)
+                //);
+                //em.AddComponents(beamPrefab, beemTypes);
+
+
                 var ent = conversionSystem.GetPrimaryEntity(wapon_);
 
                 var types = new ComponentTypes
                 (
-                    typeof(Wapon.BeamTag),
-                    typeof(Wapon.BeamUnitData),
-                    typeof(Wapon.BulletData)
+                    typeof(Wapon.BeamUnitData)
                 );
                 em.AddComponents(ent, types);
 
                 em.SetComponentData(ent,
                     new Wapon.BeamUnitData
                     {
-                        MainEntity = gcs_.GetPrimaryEntity(main_),
-                        PsylliumPrefab = gcs_.GetPrimaryEntity(beam_),
+                        MainEntity = mainEntity,
+                        PsylliumPrefab = beamPrefab,
                         MuzzlePositionLocal = new float3(0, 0, 1.0f),
                     }
                 );
+
+                return;
+
+
+                //Entity getAndInitBeamPrefab_()
+                //{
+
+                //}
             }
         }
 

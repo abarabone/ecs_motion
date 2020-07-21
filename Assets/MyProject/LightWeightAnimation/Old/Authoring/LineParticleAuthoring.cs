@@ -9,18 +9,20 @@ using Unity.Transforms;
 using Unity.Linq;
 using Unity.Mathematics;
 
-using Abarabone.Geometry;
-using Abarabone.Utilities;
-using Abarabone.Misc;
-using Abarabone.CharacterMotion;
-using Abarabone.Draw;
-using Abarabone.Character;
-using Abarabone.Common.Extension;
-using Abarabone.Particle;
-using Abarabone.Model;
-
 namespace Abarabone.Authoring
 {
+
+    using Abarabone.Geometry;
+    using Abarabone.Utilities;
+    using Abarabone.Misc;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Draw;
+    using Abarabone.Character;
+    using Abarabone.Common.Extension;
+    using Abarabone.Particle;
+    using Abarabone.Model;
+    using Abarabone.Particle;
+
 
     [DisallowMultipleComponent]
     public class LineParticleAuthoring : DrawPrefabSettingsAuthoring.ConvertToMainCustomPrefabEntityBehaviour
@@ -78,7 +80,7 @@ namespace Abarabone.Authoring
                 );
 
                 em_.AddComponentData( ent,
-                    new LineParticlePointNodeLinkData
+                    new Particle.LineParticlePointNodeLinkData
                     {
                         NextNodeEntity = Entity.Null,
                     }
@@ -95,7 +97,7 @@ namespace Abarabone.Authoring
                 em_.AddComponentData( ent, new Prefab { } );
 
                 em_.AddComponentData( ent,
-                    new LineParticlePointNodeLinkData
+                    new Particle.LineParticlePointNodeLinkData
                     {
                         NextNodeEntity = Entity.Null,
                     }
@@ -139,7 +141,7 @@ namespace Abarabone.Authoring
 
                 void setLink_( Entity current_, Entity next_ )
                 {
-                    var linker = em_.GetComponentData<LineParticlePointNodeLinkData>( current_ );
+                    var linker = em_.GetComponentData<Particle.LineParticlePointNodeLinkData>( current_ );
                     linker.NextNodeEntity = next_;
                     em_.SetComponentData( current_, linker );
                 }

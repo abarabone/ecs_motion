@@ -9,16 +9,18 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-using Abarabone.Authoring;
-using Abarabone.CharacterMotion;
-using Abarabone.SystemGroup;
-using Abarabone.Geometry;
-using Abarabone.Character;
-using Abarabone.Particle;
 using System;
 
 namespace Abarabone.Draw
 {
+
+    using Abarabone.Authoring;
+    using Abarabone.CharacterMotion;
+    using Abarabone.SystemGroup;
+    using Abarabone.Geometry;
+    using Abarabone.Character;
+    using Abarabone.Particle;
+
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]

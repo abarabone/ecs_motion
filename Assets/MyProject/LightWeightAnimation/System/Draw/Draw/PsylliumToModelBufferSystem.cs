@@ -9,15 +9,16 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-using Abarabone.Authoring;
-using Abarabone.CharacterMotion;
-using Abarabone.SystemGroup;
-using Abarabone.Geometry;
-using Abarabone.Character;
-using Abarabone.Particle;
-
 namespace Abarabone.Draw
 {
+
+    using Abarabone.Authoring;
+    using Abarabone.CharacterMotion;
+    using Abarabone.SystemGroup;
+    using Abarabone.Geometry;
+    using Abarabone.Character;
+    using Abarabone.Particle;
+
 
     /// <summary>
     /// 物理をつけたパーティクル用　暫定でのこしてある
