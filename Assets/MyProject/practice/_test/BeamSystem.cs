@@ -6,12 +6,15 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Transforms;
 using Unity.Mathematics;
-
-using Abarabone.Model;
-using Abarabone.Model.Authoring;
 using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 
+using Abarabone.Model;
+using Abarabone.Model.Authoring;
+using Abarabone.Arms;
+using System.Runtime.InteropServices;
+using Abarabone.Character;
+using Abarabone.Draw;
 
 //[UpdateInGroup(typeof(InitializationSystemGroup))]
 //[UpdateAfter(typeof(ObjectInitializeSystem))]
@@ -31,21 +34,17 @@ public class BeamSystem : SystemBase
     {
         var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
+        var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+
         this.Entities
             //.WithoutBurst()
             .WithBurst()
             .ForEach(
-                (Entity spawnEntity, int entityInQueryIndex, ref SingleSpawnData spawn) =>
+                (Entity fireEntity, int entityInQueryIndex, ref Wapon.BeamUnitData beamUnit) =>
                 {
-                    var ent = cmd.Instantiate(entityInQueryIndex, spawn.ent);
+                    var ent = cmd.Instantiate(entityInQueryIndex, beamUnit.PsylliumPrefab);
 
-                    cmd.AddComponent(entityInQueryIndex, ent,
-                        new ObjectInitializeData { pos = new float3(spawn.i % 20, spawn.i / 20, 0.0f) }
-                        //new ObjectInitializeData { pos = new float3(0,2,0) }
-                    );
 
-                    if (--spawn.i == 0)
-                        cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
                 }
             )
             .ScheduleParallel();

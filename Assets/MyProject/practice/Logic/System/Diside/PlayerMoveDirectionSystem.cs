@@ -79,6 +79,7 @@ namespace Abarabone.Character
                             VerticalAngle = this.vangle,
                             JumpForce = jumpForce,
                             IsChangeMotion = gp.rightShoulder.wasPressedThisFrame,
+                            IsShooting = gp.rightTrigger.isPressed
                         };
                     };
                     return;
@@ -117,6 +118,7 @@ namespace Abarabone.Character
                             VerticalAngle = this.vangle,
                             JumpForce = jumpForce,
                             IsChangeMotion = ms.rightButton.wasPressedThisFrame,
+                            IsShooting = ms.leftButton.isPressed,
                         };
                     };
                     return;

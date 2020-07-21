@@ -54,7 +54,9 @@ namespace Abarabone.Model.Authoring
 
                 var types = new ComponentTypes
                 (
-                    typeof(Wapon.BeamUnitData)
+                    typeof(Wapon.BeamTag),
+                    typeof(Wapon.BeamUnitData),
+                    typeof(Wapon.BulletData)
                 );
                 em.AddComponents(ent, types);
 

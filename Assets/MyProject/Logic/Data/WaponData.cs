@@ -25,12 +25,22 @@ namespace Abarabone.Arms
             public Entity BulletEntity;
         }
 
+        public struct BeamTag : IComponentData
+        { }
         public struct BeamUnitData : IComponentData
         {
-            public Entity MainEntity;
             public Entity PsylliumPrefab;
 
+            public Entity MainEntity;
+            public Entity BeamInstanceEntity;
+
             public float3 MuzzlePositionLocal;
+        }
+
+        public struct BulletData : IComponentData
+        {
+
+            public float LifeTime;
         }
 
     }
