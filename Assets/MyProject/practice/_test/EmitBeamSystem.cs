@@ -21,6 +21,7 @@ namespace Abarabone.Character
     using Abarabone.Character;
     using Abarabone.Particle;
     using Abarabone.SystemGroup;
+    using Abarabone.Geometry;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
@@ -42,47 +43,13 @@ namespace Abarabone.Character
 
 
             var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
-            var bullets = this.GetComponentDataFromEntity<Bullet.BulletData>();
-            var ptops = this.GetComponentDataFromEntity<Particle.TranslationPtoPData>();
+            var tfcam = Camera.main.transform;
+            var campos = tfcam.position.As_float3();
+            var camrot = new quaternion( tfcam.rotation.As_float4() );
 
-
-            //this.Entities
-            //    .WithBurst()
-            //    .WithReadOnly(handles)
-            //    .WithNativeDisableParallelForRestriction(bullets)
-            //    .WithNativeDisableParallelForRestriction(ptops)
-            //    .ForEach(
-            //        (
-            //            Entity fireEntity, int entityInQueryIndex,
-            //            ref Wapon.BeamUnitData beamUnit,
-            //            in Rotation rot,
-            //            in Translation pos
-            //        ) =>
-            //        {
-            //            var handle = handles[beamUnit.MainEntity];
-            //            if (handle.ControlAction.IsShooting)
-            //            {
-            //                if (beamUnit.BeamInstanceEntity == Entity.Null)
-            //                {
-            //                    return;
-            //                }
-
-            //                var bulletent = beamUnit.BeamInstanceEntity;
-
-            //                bullets[bulletent] = new Bullet.BulletData
-            //                {
-            //                    LifeTime = 0.3f,
-            //                };
-            //                ptops[bulletent] = new Particle.TranslationPtoPData
-            //                {
-            //                    Start = pos.Value,
-            //                    End = math.mul(rot.Value, pos.Value + beamUnit.MuzzlePositionLocal),
-            //                };
-            //            }
-            //        }
-            //    )
-            //    .ScheduleParallel();
 
             this.Entities
                 .WithBurst()
@@ -90,26 +57,24 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Wapon.BeamUnitData beamUnit
+                        ref Wapon.BeamUnitData beamUnit,
+                        in Rotation rot,
+                        in Translation pos
                     ) =>
                     {
                         var handle = handles[beamUnit.MainEntity];
                         if (handle.ControlAction.IsShooting)
                         {
-                            if (beamUnit.BeamInstanceEntity == Entity.Null)
-                            {
-                                //beamUnit.BeamInstanceEntity =
-                                //    cmd.Instantiate(entityInQueryIndex, beamUnit.PsylliumPrefab);
-                                emit_(entityInQueryIndex, ref beamUnit);
-                            }
-                        }
-                        else
-                        {
-                            if (beamUnit.BeamInstanceEntity != Entity.Null)
-                            {
-                                cmd.DestroyEntity(entityInQueryIndex, beamUnit.BeamInstanceEntity);
-                                beamUnit.BeamInstanceEntity = Entity.Null;
-                            }
+
+                            var ent = cmd.Instantiate(entityInQueryIndex, beamUnit.PsylliumPrefab);
+
+                            cmd.SetComponent(entityInQueryIndex, ent,
+                                new Particle.TranslationPtoPData
+                                {
+                                    Start = math.mul(rot.Value, beamUnit.MuzzlePositionLocal) + pos.Value,
+                                    End = campos + math.forward(camrot) * 100.0f,
+                                }
+                            );
                         }
                     }
                 )
@@ -117,20 +82,6 @@ namespace Abarabone.Character
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
-
-            return;
-
-
-            void emit_(int entityInQueryIndex_, ref Wapon.BeamUnitData beamUnit_)
-            {
-
-                var ent = cmd.Instantiate(entityInQueryIndex_, beamUnit_.PsylliumPrefab);
-
-                cmd.AddComponent(entityInQueryIndex_, ent, new Bullet.BeamTag { });
-                cmd.AddComponent(entityInQueryIndex_, ent, new Bullet.BulletData { });
-
-                beamUnit_.BeamInstanceEntity = ent;
-            }
 
         }
 

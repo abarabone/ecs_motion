@@ -10,7 +10,8 @@
     {
 		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
-		Blend SrcAlpha One
+		//Blend SrcAlpha One
+        Blend Zero SrcColor
 		Lighting Off ZWrite Off Fog
 		{
 			Mode Off
@@ -19,7 +20,7 @@
         {
             CGPROGRAM
 
-			#pragma target 5.0
+			//#pragma target 5.0
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile_instancing

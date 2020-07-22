@@ -15,8 +15,11 @@ using Abarabone.Arms;
 using System.Runtime.InteropServices;
 using Abarabone.Character;
 using Abarabone.Draw;
+using Abarabone.Particle;
+using UnityEngine.Assertions.Must;
+using Unity.Physics;
 
-[DisableAutoCreation]
+//[DisableAutoCreation]
 //[UpdateInGroup(typeof(InitializationSystemGroup))]
 //[UpdateAfter(typeof(ObjectInitializeSystem))]
 public class BeamSystem : SystemBase
@@ -35,17 +38,33 @@ public class BeamSystem : SystemBase
     {
         var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
-        var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+
+        //var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+
+        var deltaTime = this.Time.DeltaTime;
+
 
         this.Entities
             //.WithoutBurst()
             .WithBurst()
+            .WithAll<Bullet.BeamTag>()
             .ForEach(
-                (Entity fireEntity, int entityInQueryIndex, ref Wapon.BeamUnitData beamUnit) =>
+                (
+                    Entity entity, int entityInQueryIndex,
+                    ref Bullet.BulletData beam,
+                    ref Particle.AdditionalData additional
+                ) =>
                 {
-                    var ent = cmd.Instantiate(entityInQueryIndex, beamUnit.PsylliumPrefab);
 
+                    beam.LifeTime -= deltaTime;
 
+                    var dc = math.max(beam.LifeTime, 0.0f) * beam.InvTotalTime;
+                    additional.Color = additional.Color.ApplyAlpha(dc);//(additional.Color.to_float4() * dc).ToColor32();
+
+                    if ( beam.LifeTime <= 0.0f )
+                    {
+                        cmd.DestroyEntity(entityInQueryIndex, entity);
+                    }
                 }
             )
             .ScheduleParallel();
@@ -55,3 +74,20 @@ public class BeamSystem : SystemBase
     }
 
 }
+
+
+static public class ColorExtension
+{
+    static public int4 to_int4( this Color32 color ) => new int4(color.r, color.g, color.b, color.a);
+    static public Color32 ToColor32(this int4 color) => new Color32((byte)color.x, (byte)color.y, (byte)color.z, (byte)color.w);
+
+    static public float4 to_float4( this Color32 color ) => new float4(color.r, color.g, color.b, color.a);
+    static public Color32 ToColor32(this float4 color) => new Color32((byte)color.x, (byte)color.y, (byte)color.z, (byte)color.w);
+
+    static public Color32 ApplyAlpha( this Color32 color, float newAlpha )
+    {
+        color.a = (byte)(newAlpha * 255);
+        return color;
+    }
+}
+
