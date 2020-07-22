@@ -54,12 +54,6 @@ namespace Abarabone.Model.Authoring
                 var mainEntity = gcs_.GetPrimaryEntity(main_);
 
                 var beamPrefab = gcs_.GetPrimaryEntity(beam_);
-                //var beemTypes = new ComponentTypes
-                //(
-                //    typeof(Bullet.BeamTag),
-                //    typeof(Bullet.BulletData)
-                //);
-                //em.AddComponents(beamPrefab, beemTypes);
 
 
                 var ent = conversionSystem.GetPrimaryEntity(wapon_);
@@ -75,17 +69,9 @@ namespace Abarabone.Model.Authoring
                     {
                         MainEntity = mainEntity,
                         PsylliumPrefab = beamPrefab,
-                        MuzzlePositionLocal = new float3(0, 0, 1.0f),
+                        MuzzlePositionLocal = new float3(0,0,0.1f),//new float3(0, 0, 1.0f),
                     }
                 );
-
-                return;
-
-
-                //Entity getAndInitBeamPrefab_()
-                //{
-
-                //}
             }
         }
 

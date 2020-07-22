@@ -10,8 +10,7 @@
     {
 		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
-		//Blend SrcAlpha One
-        Blend Zero SrcColor
+		Blend SrcAlpha One
 		Lighting Off ZWrite Off Fog
 		{
 			Mode Off
@@ -81,7 +80,7 @@
 
                 o.vertex = mul(UNITY_MATRIX_VP, wvt);
                 o.uv = v.uv;
-                o.color = color * 6.;
+                o.color = color * 3;//6;
                 UNITY_TRANSFER_FOG(o, o.vertex);
 
                 return o;
@@ -91,7 +90,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-                col.rgb *= i.color;
+                col.rgba *= i.color;
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
