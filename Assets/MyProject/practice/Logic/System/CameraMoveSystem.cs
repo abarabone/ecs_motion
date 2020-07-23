@@ -40,7 +40,11 @@ namespace Abarabone.Character
 
         protected override void OnUpdate()
         {
+
             var tfCam = Camera.main.transform;
+
+            var campos = this.GetSingleton<CharacterFollowCameraPositionData>();
+
 
             this.Entities.With( this.eq )
                 .ForEach(
@@ -50,35 +54,22 @@ namespace Abarabone.Character
                         ref var acts = ref handler.ControlAction;
 
 
+                        var forwardpos = campos.lookForwardPosition;
+                        var downpos = campos.lookDownPosition - campos.lookForwardPosition;
+                        var uppos = campos.lookUpPosition - campos.lookForwardPosition;
+                        var rotcenter = campos.RotationCenter;
+
+                        var vdeg = math.degrees(acts.VerticalAngle);
+                        const float invDeg = 1.0f / 90.0f;
+                        var rate_forwardToDown = math.max(vdeg, 0.0f) * invDeg;
+                        var rate_forwardToUp = -math.min(vdeg, 0.0f) * invDeg;
+                        var camOffset = forwardpos + downpos * rate_forwardToDown + uppos * rate_forwardToUp;
+
+                        tfCam.position = pos.Value +
+                            math.mul(acts.HorizontalRotation, rotcenter) + math.mul(acts.LookRotation, camOffset);
+
                         tfCam.rotation = acts.LookRotation;
 
-
-                        //var cam_lookup = new float3(0.0f, 0.4f, -2.5f);
-                        //var cam_lookdown = new float3(0.0f, 0.4f, -4.0f);
-                        //var rot_center = new float3(0.0f, 0.8f, 0.0f);
-
-                        var cam_lookup = new float3(0.0f, 0.8f, -3.0f);
-                        var cam_lookdown = new float3(0.0f, 0.8f, -1.0f);
-                        var rot_center = new float3(0.0f, 0.8f, 0.0f);
-
-                        Debug.Log(math.degrees(acts.VerticalAngle));
-                        var rateUpToDown = math.min(0.0f, acts.VerticalAngle) / math.radians(90.0f);
-                        var camOffset = math.lerp( cam_lookup, cam_lookdown, rateUpToDown );
-
-                        tfCam.position = pos.Value + rot_center + math.mul(acts.LookRotation, camOffset);
-
-                        //var camz = 2.5f + math.min( 0.0f, acts.VerticalAngle ) / math.radians( 90.0f ) * 1.5f;
-                        //var camOffset = new float3( 0.0f, 0.4f, -camz );
-
-                        //tfCam.position =
-                        //    pos.Value + new float3( 0.0f, 0.8f, 0.0f ) + math.mul( acts.LookRotation, camOffset );
-
-
-                        //var camz = 2.5f - math.abs(acts.VerticalAngle) / math.radians(90.0f) * 1.5f;
-                        //var camOffset = new float3(0.0f, 0.4f, -camz);
-
-                        //tfCam.position =
-                        //    pos.Value + new float3(0.0f, 0.8f - 0.43f, 0.0f) + math.mul(acts.LookRotation, camOffset);
                     }
                 );
 
