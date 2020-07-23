@@ -57,10 +57,11 @@ namespace Abarabone.Character
                         //var cam_lookdown = new float3(0.0f, 0.4f, -4.0f);
                         //var rot_center = new float3(0.0f, 0.8f, 0.0f);
 
-                        var cam_lookup = new float3(0.0f, 0.0f, -3.0f);
-                        var cam_lookdown = new float3(0.0f, 0.0f, -2.0f);
+                        var cam_lookup = new float3(0.0f, 0.8f, -3.0f);
+                        var cam_lookdown = new float3(0.0f, 0.8f, -1.0f);
                         var rot_center = new float3(0.0f, 0.8f, 0.0f);
 
+                        Debug.Log(math.degrees(acts.VerticalAngle));
                         var rateUpToDown = math.min(0.0f, acts.VerticalAngle) / math.radians(90.0f);
                         var camOffset = math.lerp( cam_lookup, cam_lookdown, rateUpToDown );
 

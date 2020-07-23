@@ -26,7 +26,7 @@ namespace Abarabone.Model.Authoring
     public class BeamBulletAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
-
+        public float RangeDistance;
         public float LifeTime;
 
         public Color32 BulletColor;
@@ -58,6 +58,7 @@ namespace Abarabone.Model.Authoring
                 em.SetComponentData(bulletEntity,
                     new Bullet.BulletData
                     {
+                        RangeDistance = this.RangeDistance,
                         LifeTime = this.LifeTime,
                         InvTotalTime = 1.0f / this.LifeTime,
                     }

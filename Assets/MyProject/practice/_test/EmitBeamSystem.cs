@@ -46,6 +46,8 @@ namespace Abarabone.Character
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
+            var bullets = this.GetComponentDataFromEntity<Bullet.BulletData>(isReadOnly: true);
+
             var tfcam = Camera.main.transform;
             var campos = tfcam.position.As_float3();
             var camrot = new quaternion( tfcam.rotation.As_float4() );
@@ -54,6 +56,7 @@ namespace Abarabone.Character
             this.Entities
                 .WithBurst()
                 .WithReadOnly(handles)
+                .WithReadOnly(bullets)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
@@ -65,6 +68,7 @@ namespace Abarabone.Character
                         var handle = handles[beamUnit.MainEntity];
                         if (handle.ControlAction.IsShooting)
                         {
+                            var bulletData = bullets[beamUnit.PsylliumPrefab];
 
                             var ent = cmd.Instantiate(entityInQueryIndex, beamUnit.PsylliumPrefab);
 
@@ -72,7 +76,7 @@ namespace Abarabone.Character
                                 new Particle.TranslationPtoPData
                                 {
                                     Start = math.mul(rot.Value, beamUnit.MuzzlePositionLocal) + pos.Value,
-                                    End = campos + math.forward(camrot) * 100.0f,
+                                    End = campos + math.forward(camrot) * bulletData.RangeDistance,
                                 }
                             );
                         }
