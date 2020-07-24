@@ -15,7 +15,7 @@ using Abarabone.Geometry;
 using System.Runtime.InteropServices;
 using System;
 
-namespace Abarabone.Draw
+namespace Abarabone.Structure
 {
     using Abarabone.Utilities;
 
