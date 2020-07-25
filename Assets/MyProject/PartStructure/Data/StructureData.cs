@@ -23,21 +23,18 @@ namespace Abarabone.Structure
     static public partial class Structure
     {
 
-        public struct PartAlivedData : IComponentData
+        /// <summary>
+        /// 破壊したパーツのビットフラグがオンになる
+        /// 生存がオンでないのは直感的ではないかもだが、初期化がゼロで済むし、パーツがない部分も「壊れていない」で済ませられるため
+        /// </summary>
+        public unsafe struct PartDestractionData : IComponentData
         {
-            public uint4 alived000to127;
-            public uint4 alived128to255;
-            public uint4 alived256to383;
-            public uint4 alived384to511;
+            public fixed uint Destractions[512 / 32];
 
-            public void SetTrunOn( uint id )
-            {
+            public void SetDestroyed( int id ) => this.Destractions[id >> 5] |= (uint)(1 << id);
+            public void SetAlive( int id ) => this.Destractions[id >> 5] &= ~(uint)(1 << id);
 
-            }
-            public void SetTurnOff( uint id )
-            {
-
-            }
+            public uint IsDestroyed(int id) => (uint)( this.Destractions[id >> 5] & ~(1 << id) );
         }
 
         public struct PartLinkData : IComponentData
@@ -52,6 +49,13 @@ namespace Abarabone.Structure
 
     static public partial class StructurePart
     {
+
+        public struct PartData : IComponentData
+        {
+            public int PartId;
+
+            public float Life;
+        }
 
         public struct LocalPositionData : IComponentData
         {

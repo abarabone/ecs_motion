@@ -154,16 +154,20 @@ namespace Abarabone.Structure.Authoring
 
                 var mainAddtypes = new ComponentTypes
                 (
-                    typeof(DrawInstance.MeshTag),
-                    //typeof(Abarabone.Particle.ParticleTag),//暫定
-                    //typeof(NonUniformScale),//暫定
-                    typeof(ObjectMain.ObjectMainTag),
-                    typeof(ObjectMain.BinderLinkData),
-                    //typeof(DrawTransform.LinkData),//
-                    //typeof(DrawTransform.IndexData),//
-                    //typeof(DrawTransform.TargetWorkData)//
-                    typeof(DrawInstance.ModeLinkData),
-                    typeof(DrawInstance.TargetWorkData)
+                    new ComponentType[]
+                    {
+                        typeof(DrawInstance.MeshTag),
+                        //typeof(Abarabone.Particle.ParticleTag),//暫定
+                        //typeof(NonUniformScale),//暫定
+                        typeof(ObjectMain.ObjectMainTag),
+                        typeof(ObjectMain.BinderLinkData),
+                        //typeof(DrawTransform.LinkData),//
+                        //typeof(DrawTransform.IndexData),//
+                        //typeof(DrawTransform.TargetWorkData)//
+                        typeof(DrawInstance.ModeLinkData),
+                        typeof(DrawInstance.TargetWorkData),
+                        typeof(Structure.PartDestractionData),
+                    }
                 );
                 em_.AddComponents(mainEntity, mainAddtypes);
 
@@ -192,7 +196,6 @@ namespace Abarabone.Structure.Authoring
                     }
                 );
 
-
                 em_.SetName_(mainEntity, $"{top_.name} main");
             }
 
@@ -218,9 +221,7 @@ namespace Abarabone.Structure.Authoring
                 };
 
             var em = gcs_.DstEntityManager;
-
             em.AddComponentData(mainEntity, new Structure.PartLinkData { NextEntity = partEntities.First() });
-
             em.AddComponentData(partEntities, qPartLinkData);
 
         }
@@ -246,10 +247,10 @@ namespace Abarabone.Structure.Authoring
                 };
 
             var em = gcs_.DstEntityManager;
-
             em.AddComponentData(qPartEntity, qPartLocalPosition);
 
         }
+
 
     }
 

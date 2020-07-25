@@ -36,8 +36,9 @@ namespace Abarabone.Structure
 
     public struct StructurePartHitMessage
     {
-        public uint PartId;
-        public float3 HitPosition;
+        public int PartId;
+        public float3 Position;
+        public float3 Normale;
     }
 
 
@@ -68,26 +69,20 @@ namespace Abarabone.Structure
                 .ForEach(
                     (
                         Entity stent,
-                        ref Structure.PartAlivedData alive
+                        ref Structure.PartDestractionData alive
                     ) =>
                     {
-                        var partAliveFlags = new Structure.PartAlivedData { };
-
-
                         var isSuccess = msgs.TryGetFirstValue(stent, out var hitMsg, out var iterator);
                         
                         while(isSuccess)
                         {
 
 
-                            partAliveFlags.SetTrunOn(hitMsg.PartId);
+                            alive.SetDestroyed(hitMsg.PartId);
 
 
                             isSuccess = msgs.TryGetNextValue(out hitMsg, ref iterator);
                         }
-
-
-                        alive = partAliveFlags;
                     }
                 )
                 .ScheduleParallel();

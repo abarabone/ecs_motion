@@ -71,16 +71,52 @@ public static class ConstCreator {
     Debug.Log (enumName + "の作成が完了しました");
   }
 
-  //=================================================================================
-  //Enum生成
-  //=================================================================================
+    //=================================================================================
+    //Enum生成
+    //=================================================================================
 
-  /// <summary>
-  /// Enumを生成する
-  /// </summary>
-  //public static void Create(string enumName, List<string>itemNameList, string exportPath,  string summary = "", string nameSpace = "", bool isFlags = false){
-  public static void Create
-    (string enumName, IEnumerable<string>itemNameList, string exportPath,  string summary = "", string nameSpace = "", bool isFlags = false)
+    /// <summary>
+    /// Enumを生成する
+    /// </summary>
+    //public static void Create(string enumName, List<string>itemNameList, string exportPath,  string summary = "", string nameSpace = "", bool isFlags = false){
+    public static void Create
+      (string enumName, IEnumerable<string> itemNameList, string exportPath, string summary = "", string nameSpace = "", bool isFlags = false)
+    {
+        //初期化
+        Init(nameSpace, summary, isFlags, enumName);
+
+        //定数名の最大長を取得し、空白数を決定(イコールが並ぶように)
+        int nameLengthMax = 0;
+        if (itemNameList.Any())
+        {
+            nameLengthMax = itemNameList.Select(x => x.Length).Max();
+        }
+
+        //各項目を設定
+        foreach (var (itemName, i) in itemNameList.Select((x,i) => (x,i)))
+        {
+            _code += $"{_tab}public const int {itemName} = ";
+
+            if (isFlags)
+            {
+                _code += " 1 << " + i.ToString() + ";\n";
+            }
+            else
+            {
+                _code += " " + i.ToString() + ";\n";
+            }
+        }
+
+        //書き出し
+        Export(exportPath, nameSpace, enumName);
+    }
+
+    /// <summary>
+    /// Enumを生成する
+    /// </summary>
+    //public static void Create(string enumName, List<string>itemNameList, string exportPath,  string summary = "", string nameSpace = "", bool isFlags = false){
+    public static void Create
+    (string enumName, IEnumerable<(string name, int i)>itemNameList, string exportPath,  string summary = "", string nameSpace = "", bool isFlags = false)
   {
     //初期化
     Init(nameSpace, summary, isFlags, enumName);
@@ -88,11 +124,11 @@ public static class ConstCreator {
     //定数名の最大長を取得し、空白数を決定(イコールが並ぶように)
     int nameLengthMax = 0;
     if(itemNameList.Any()){
-      nameLengthMax = itemNameList.Select (name => name.Length).Max ();
+      nameLengthMax = itemNameList.Select (x => x.name.Length).Max ();
     }
 
     //各項目を設定
-    foreach( var (i, itemName) in itemNameList.Select( (x,i) => (i,x) ) )
+    foreach( var (itemName, i) in itemNameList )
     {
       _code += $"{_tab}public const int {itemName} = ";
 
