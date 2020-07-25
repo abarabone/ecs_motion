@@ -22,8 +22,16 @@ namespace Abarabone.Draw
     using Abarabone.Utilities;
     using Abarabone.SystemGroup;
     using Abarabone.Character;
+    using Abarabone.Structure;
 
 
+    /// <summary>
+    /// 構造物のパーツ位置をセットする。
+    /// ただし、SleepTag があれば除外する。
+    /// パーツは１つ１つがエンティティであり、コライダを親に追随させるためには、位置のコピーが必要。
+    /// １つのコライダとする方法なら必要ないが、破壊時にコライダを再生成する必要があるため、個別エンティティとした。
+    /// スリープオンオフを楽にするために、パーツからの位置プルではなく、親からのプッシュとした。
+    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
     public class TransformStructurePartsSystem : SystemBase

@@ -46,38 +46,54 @@ namespace Abarabone.Structure
     public class StructurePartHitMessageApplySystem : SystemBase
     {
 
+        StructurePartHitMessageHolderAllocationSystem messageSystem;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            this.messageSystem = this.World.GetExistingSystem<StructurePartHitMessageHolderAllocationSystem>();
+        }
+
         protected override void OnUpdate()
         {
 
-            var poss = this.GetComponentDataFromEntity<Translation>();
-            var rots = this.GetComponentDataFromEntity<Rotation>();
-            var links = this.GetComponentDataFromEntity<Structure.PartLinkData>(isReadOnly: true);
-            var locals = this.GetComponentDataFromEntity<StructurePart.LocalPositionData>(isReadOnly: true);
+            var msgs = this.messageSystem.MsgHolder;
+            
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(msgs)
+                //.WithDeallocateOnJobCompletion(msgs)
+                .ForEach(
+                    (
+                        Entity stent,
+                        ref Structure.PartAlivedData alive
+                    ) =>
+                    {
+                        var partAliveFlags = new Structure.PartAlivedData { };
 
 
-            //this.Entities
-            //    .WithBurst()
-            //    .ForEach(
-            //        (
+                        var isSuccess = msgs.TryGetFirstValue(stent, out var hitMsg, out var iterator);
                         
-            //        ) =>
-            //        {
-
-            //        }
-            //    )
-            //    .ScheduleParallel();
+                        while(isSuccess)
+                        {
 
 
+                            partAliveFlags.SetTrunOn(hitMsg.PartId);
+
+
+                            isSuccess = msgs.TryGetNextValue(out hitMsg, ref iterator);
+                        }
+
+
+                        alive = partAliveFlags;
+                    }
+                )
+                .ScheduleParallel();
 
         }
 
-        public struct j : IJobNativeMultiHashMapVisitKeyMutableValue<Entity, StructurePartHitMessage>
-        {
-            public void ExecuteNext(Entity key, ref StructurePartHitMessage value)
-            {
-
-            }
-        }
     }
 
 

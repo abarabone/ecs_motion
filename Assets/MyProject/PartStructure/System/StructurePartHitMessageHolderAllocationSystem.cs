@@ -31,14 +31,25 @@ namespace Abarabone.Structure
     {
 
 
-        public NativeMultiHashMap<Entity, StructurePartHitMessage> MsgHolder;
+        public NativeMultiHashMap<Entity, StructurePartHitMessage> MsgHolder
+             = new NativeMultiHashMap<Entity, StructurePartHitMessage>(100, Allocator.Persistent);
 
 
         protected override void OnUpdate()
         {
 
-            this.MsgHolder = new NativeMultiHashMap<Entity, StructurePartHitMessage>(100, Allocator.TempJob);
+            //this.MsgHolder = new NativeMultiHashMap<Entity, StructurePartHitMessage>(100, Allocator.TempJob);
+            this.MsgHolder.Clear();
 
+        }
+
+
+
+        protected override void OnDestroy()
+        {
+            if(this.MsgHolder.IsCreated) this.MsgHolder.Dispose();
+
+            base.OnDestroy();
         }
 
     }
