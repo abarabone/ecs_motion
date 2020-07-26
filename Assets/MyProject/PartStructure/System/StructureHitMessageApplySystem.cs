@@ -27,16 +27,17 @@ namespace Abarabone.Structure
     using Abarabone.Character;
 
 
-    public class StructurePartHitHolder
+    //public class StructurePartHitHolder
+    //{
+
+    //}
+
+
+
+    public struct StructureHitMessage
     {
-
-    }
-
-
-
-    public struct StructurePartHitMessage
-    {
-        public int PartId;
+        //public int PartId;
+        public Entity PartEntity;
         public float3 Position;
         public float3 Normale;
     }
@@ -44,31 +45,40 @@ namespace Abarabone.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
-    public class StructurePartHitMessageApplySystem : SystemBase
+    public class StructureHitMessageApplySystem : SystemBase
     {
 
-        StructurePartHitMessageHolderAllocationSystem messageSystem;
+        StructureHitMessageHolderAllocationSystem messageSystem;
+
+        EntityCommandBufferSystem cmdSystem;
+
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.messageSystem = this.World.GetExistingSystem<StructurePartHitMessageHolderAllocationSystem>();
+            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+
+            this.messageSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
         }
 
         protected override void OnUpdate()
         {
+            var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
             var msgs = this.messageSystem.MsgHolder;
-            
+
+            var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+
 
             this.Entities
                 .WithBurst()
                 .WithReadOnly(msgs)
+                .WithReadOnly(parts)
                 //.WithDeallocateOnJobCompletion(msgs)
                 .ForEach(
                     (
-                        Entity stent,
+                        Entity stent, int entityInQueryIndex,
                         ref Structure.PartDestractionData alive
                     ) =>
                     {
@@ -77,8 +87,12 @@ namespace Abarabone.Structure
                         while(isSuccess)
                         {
 
+                            var partData = parts[hitMsg.PartEntity];
 
-                            alive.SetDestroyed(hitMsg.PartId);
+
+                            alive.SetDestroyed(partData.PartId);
+
+                            cmd.DestroyEntity(entityInQueryIndex, hitMsg.PartEntity);
 
 
                             isSuccess = msgs.TryGetNextValue(out hitMsg, ref iterator);
@@ -87,6 +101,8 @@ namespace Abarabone.Structure
                 )
                 .ScheduleParallel();
 
+            // Make sure that the ECB system knows about our job
+            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
     }

@@ -68,6 +68,8 @@ public class SpawnSystem : SystemBase
 
     protected override void OnCreate()
     {
+        base.OnCreate();
+
         this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
     }
 
@@ -123,6 +125,8 @@ public class ObjectInitializeSystem : SystemBase
 
     protected override void OnCreate()
     {
+        base.OnCreate();
+
         this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
     }
 

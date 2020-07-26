@@ -51,6 +51,8 @@ namespace Abarabone.Arms
 
         protected override void OnCreate()
         {
+            base.OnCreate();
+
             this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
         }
 
@@ -79,10 +81,10 @@ namespace Abarabone.Arms
 
                         beam.LifeTime -= deltaTime;
 
-                        var dc = math.max(beam.LifeTime, 0.0f) * beam.InvTotalTime;
-                        additional.Color = additional.Color.ApplyAlpha(dc);//(additional.Color.to_float4() * dc).ToColor32();
+                        var transparency = math.max(beam.LifeTime, 0.0f) * beam.InvTotalTime;
+                        additional.Color = additional.Color.ApplyAlpha(transparency);//(additional.Color.to_float4() * dc).ToColor32();
 
-                    if (beam.LifeTime <= 0.0f)
+                        if (beam.LifeTime <= 0.0f)
                         {
                             cmd.DestroyEntity(entityInQueryIndex, entity);
                         }

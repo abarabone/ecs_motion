@@ -27,12 +27,12 @@ namespace Abarabone.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
-    public class StructurePartHitMessageHolderAllocationSystem : SystemBase
+    public class StructureHitMessageHolderAllocationSystem : SystemBase
     {
 
 
-        public NativeMultiHashMap<Entity, StructurePartHitMessage> MsgHolder
-             = new NativeMultiHashMap<Entity, StructurePartHitMessage>(100, Allocator.Persistent);
+        public NativeMultiHashMap<Entity, StructureHitMessage> MsgHolder
+             = new NativeMultiHashMap<Entity, StructureHitMessage>(100, Allocator.Persistent);
 
 
         protected override void OnUpdate()

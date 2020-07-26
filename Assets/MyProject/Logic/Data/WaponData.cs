@@ -45,6 +45,8 @@ namespace Abarabone.Arms
 
         public struct BulletData : IComponentData
         {
+            public Entity MainEnity;
+
             //public float3 Forward;
             public float RangeDistance;
 

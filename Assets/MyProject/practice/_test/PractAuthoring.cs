@@ -57,6 +57,8 @@ public class PracSpawnSystem : SystemBase
 
     protected override void OnCreate()
     {
+        base.OnCreate();
+
         this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
     }
 

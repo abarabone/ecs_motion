@@ -50,7 +50,8 @@ namespace Abarabone.Arms
             public bool isHit;
             public float3 posision;
             public float3 normal;
-            public Entity entity;
+            public Entity hitEntity;
+            public Entity mainEntity;
         }
 
 
@@ -83,7 +84,7 @@ namespace Abarabone.Arms
             {
                 Start = start,
                 End = end,
-                Filter = filter,
+                Filter = CollisionFilter.Default,//filter,
             };
             var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(distance, selfMainEntity, links);
             var isHit = cw.CastRay(hitInput, ref collector);
@@ -94,7 +95,8 @@ namespace Abarabone.Arms
                 isHit = isHit,
                 posision = collector.ClosestHit.Position,
                 normal = collector.ClosestHit.SurfaceNormal,
-                entity = collector.ClosestHit.Entity,
+                hitEntity = collector.ClosestHit.Entity,
+                mainEntity = collector.TargetMainEntity,
             };
         }
 

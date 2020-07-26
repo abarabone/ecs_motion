@@ -19,7 +19,7 @@ namespace Abarabone.Structure.Authoring
     {
 
 
-        public int PartId;
+        //public int PartId;
 
         public Material Material;
 
