@@ -1,4 +1,4 @@
-﻿static public class PhysicsCategoryNamesIndices
+﻿static public class PhysicsCategoryNamesId
 {
 		public const int bg_field =  0;
 		public const int ch_detail =  1;

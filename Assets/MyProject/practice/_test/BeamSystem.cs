@@ -116,35 +116,5 @@ namespace Abarabone.Arms
         }
     }
 
-
-    static public class BulletHitUtility
-    {
-
-
-        static public void BulletHitRay(PhysicsWorld pw, Entity bulletEntity, float3 start, float3 end)
-        {
-
-            //var a = new NativeList<DistanceHit>( Allocator.Temp );
-
-            //var filter = new CollisionFilter
-            //{
-            //    BelongsTo = .
-            //    CollidesWith = ,
-            //};
-            //var hitInput = new RaycastInput
-            //{
-            //    Start = start,
-            //    End = end,
-            //    Filter = filter,
-            //};
-            //var collector = new AnyHitExcludeSelfCollector<DistanceHit>(, bulletEntity, );
-            //var isHit = this.CollisionWorld.CalculateDistance(hitInput, ref collector);
-
-            //pw.CastRay()
-
-        }
-
-    }
-
 }
 
