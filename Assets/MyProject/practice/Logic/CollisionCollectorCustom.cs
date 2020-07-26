@@ -21,7 +21,8 @@ namespace Abarabone.Physics
         public float MaxFraction { get; private set; }
         public int NumHits { get; private set; }
         
-        Entity self;
+        public Entity SelfMainEntity;
+        public Entity TargetMainEntity;
         ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntityLinks;
         
         T m_ClosestHit;
@@ -32,7 +33,8 @@ namespace Abarabone.Physics
         {
             this.MaxFraction = maxFraction;
             this.m_ClosestHit = default( T );
-            this.self = selfMainEntity;
+            this.SelfMainEntity = selfMainEntity;
+            this.TargetMainEntity = Entity.Null;
             this.NumHits = 0;
             this.mainEntityLinks = mainLinks;
         }
@@ -42,8 +44,9 @@ namespace Abarabone.Physics
             var ent = this.mainEntityLinks.Exists(hit.Entity)
                 ? this.mainEntityLinks[hit.Entity].MainEntity
                 : hit.Entity;
-            if( ent == this.self ) return false;
+            if( ent == this.SelfMainEntity ) return false;
 
+            this.TargetMainEntity = ent;
             //if( hit.Fraction >= m_ClosestHit.Fraction ) return false;
             this.MaxFraction = hit.Fraction;
             this.m_ClosestHit = hit;
@@ -61,14 +64,16 @@ namespace Abarabone.Physics
         public float MaxFraction { get; }
         public int NumHits { get; private set; }
 
-        Entity self;
+        public Entity SelfMainEntity;
+        public Entity TargetMainEntity;
         ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntityLinks;
 
         public AnyHitExcludeSelfCollector
             (float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks)
         {
             this.MaxFraction = maxFraction;
-            this.self = selfMainEntity;
+            this.SelfMainEntity = selfMainEntity;
+            this.TargetMainEntity = Entity.Null;
             this.NumHits = 0;
             this.mainEntityLinks = mainLinks;
         }
@@ -78,8 +83,9 @@ namespace Abarabone.Physics
             var ent = this.mainEntityLinks.Exists(hit.Entity)
                 ? this.mainEntityLinks[hit.Entity].MainEntity
                 : hit.Entity;
-            if (ent == this.self) return false;
+            if (ent == this.SelfMainEntity) return false;
 
+            this.TargetMainEntity = ent;
             this.NumHits = 1;
             return true;
         }

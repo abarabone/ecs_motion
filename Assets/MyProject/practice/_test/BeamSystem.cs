@@ -45,8 +45,6 @@ namespace Abarabone.Arms
     public class BeamSystem : SystemBase
     {
 
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
-
 
         EntityCommandBufferSystem cmdSystem;
 
@@ -54,8 +52,6 @@ namespace Abarabone.Arms
         protected override void OnCreate()
         {
             this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-
-            this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
         }
 
 

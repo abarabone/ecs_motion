@@ -54,26 +54,22 @@ namespace Abarabone.Arms
         }
 
 
-
         static public BulletHit BulletHitRay
             (
                 ref this CollisionWorld cw,
-                Entity bulletEntity, float3 start, float3 end, float distance,
+                Entity selfMainEntity, float3 start, DirectionAndLength dir,
                 ComponentDataFromEntity<Bone.MainEntityLinkData> links
             )
         {
+            var end = start + dir.Direction * dir.Length;
 
-            var dir = (end - start) / distance;
-            var dirlen = new DirectionAndLength { Direction = dir, Length = distance };
-
-            return cw.BulletHitRay(bulletEntity, start, dirlen, links);
-            
+            return cw.BulletHitRay(selfMainEntity, start, end, dir.Length, links);
         }
 
         static public BulletHit BulletHitRay
             (
                 ref this CollisionWorld cw,
-                Entity bulletEntity, float3 start, DirectionAndLength dir,
+                Entity selfMainEntity, float3 start, float3 end, float distance,
                 ComponentDataFromEntity<Bone.MainEntityLinkData> links
             )
         {
@@ -86,10 +82,10 @@ namespace Abarabone.Arms
             var hitInput = new RaycastInput
             {
                 Start = start,
-                End = start + dir.Direction * dir.Length,
+                End = end,
                 Filter = filter,
             };
-            var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(dir.Length, bulletEntity, links);
+            var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(distance, selfMainEntity, links);
             var isHit = cw.CastRay(hitInput, ref collector);
 
 
@@ -99,7 +95,7 @@ namespace Abarabone.Arms
                 posision = collector.ClosestHit.Position,
                 normal = collector.ClosestHit.SurfaceNormal,
                 entity = collector.ClosestHit.Entity,
-            }
+            };
         }
 
     }

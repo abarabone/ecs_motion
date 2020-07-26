@@ -10,9 +10,9 @@ using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine.XR;
+using Unity.Physics.Systems;
 
-
-namespace Abarabone.Character
+namespace Abarabone.Arms
 {
 
     using Abarabone.Model;
@@ -28,23 +28,28 @@ namespace Abarabone.Character
     public class EmitBeamSystem : SystemBase
     {
 
+        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
+
         EntityCommandBufferSystem cmdSystem;
 
 
         protected override void OnCreate()
         {
             this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+
+            this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
         }
 
 
         protected override void OnUpdate()
         {
             var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+            var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
 
 
             var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
-            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
-            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            //var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            //var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             var bullets = this.GetComponentDataFromEntity<Bullet.BulletData>(isReadOnly: true);
 
@@ -68,11 +73,13 @@ namespace Abarabone.Character
                         var handle = handles[beamUnit.MainEntity];
                         if (handle.ControlAction.IsShooting)
                         {
+                            var hit = cw.BulletHitRay(
+
                             var bulletData = bullets[beamUnit.PsylliumPrefab];
 
-                            var ent = cmd.Instantiate(entityInQueryIndex, beamUnit.PsylliumPrefab);
+                            var newBeamEntity = cmd.Instantiate(entityInQueryIndex, beamUnit.PsylliumPrefab);
 
-                            cmd.SetComponent(entityInQueryIndex, ent,
+                            cmd.SetComponent(entityInQueryIndex, newBeamEntity,
                                 new Particle.TranslationPtoPData
                                 {
                                     Start = math.mul(rot.Value, beamUnit.MuzzlePositionLocal) + pos.Value,
