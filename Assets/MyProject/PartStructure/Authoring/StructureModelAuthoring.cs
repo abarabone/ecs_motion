@@ -22,6 +22,7 @@ namespace Abarabone.Structure.Authoring
 
     using Abarabone.Common.Extension;
     using Abarabone.Structure;
+    using Unity.Entities.UniversalDelegates;
 
     /// <summary>
     /// 
@@ -58,7 +59,7 @@ namespace Abarabone.Structure.Authoring
             var objA = top.transform.GetChild(0).gameObject;
             var objB = top.transform.GetChild(1).gameObject;
 
-
+            // A と B をパーツを含むかでより分けるようにする、できればパーツがあるものをまとめる
 
             createModelEntity_(conversionSystem, top, this.MaterialToDraw);
             //createDrawInstanceEntity_(conversionSystem, top);
@@ -68,6 +69,7 @@ namespace Abarabone.Structure.Authoring
 
             setPartLink_(conversionSystem, objA, objB);
             setPartLocalPosition_(conversionSystem, objA, objB);
+            setPartId_(conversionSystem, objB);
 
             return;
 
@@ -251,6 +253,27 @@ namespace Abarabone.Structure.Authoring
 
         }
 
+
+        void setPartId_(GameObjectConversionSystem gcs_, GameObject partTop_)
+        {
+
+            var parts = partTop_.GetComponentsInChildren<StructurePartAuthoring>();
+
+            var qPartEntity = parts
+                .Select(pt => pt.gameObject)
+                .Select(go => gcs_.GetPrimaryEntity(go))
+                ;
+            var qPartLocalPosition =
+                from i in Enumerable.Range(0, parts.Length)
+                select new StructurePart.PartData
+                {
+                    PartId = i,
+                };
+
+            var em = gcs_.DstEntityManager;
+            em.AddComponentData(qPartEntity, qPartLocalPosition);
+
+        }
 
     }
 

@@ -39,8 +39,9 @@ namespace Abarabone.Geometry.Editor
 			
 			
 			// 全パーツから、パーツＩＤをすべてクエリする。
-			var partId_PerMesh = ( from x in mmts select x.tf.GetComponent<StructurePartAuthoring>().PartId ).ToArray();
-			
+			//var partId_PerMesh = ( from x in mmts select x.tf.GetComponent<StructurePartAuthoring>().PartId ).ToArray();
+			var partId_PerMesh = Enumerable.Range(0, mmts.Length).ToArray();
+
 			// サブメッシュ単位で、頂点数を取得。
 			var vertexCount_PerSubmeshPerMesh =
 				( from x in mmts select x.mesh ).To(PerSubMeshPerMesh.QueryVertexCount).ToArrayRecursive2();

@@ -19,7 +19,9 @@ namespace Abarabone.Structure.Authoring
     {
 
 
-        //public int PartId;
+        [HideInInspector]
+        public int PartId;
+        //public int Life;
 
         public Material Material;
 
@@ -48,22 +50,38 @@ namespace Abarabone.Structure.Authoring
             //go.AddComponent<PhysicsBodyAuthoring>();
             //Debug.Log(conversionSystem.GetPrimaryEntity(go));
 
+            //initPartData_(conversionSystem, this.gameObject, this.PartId);
 
             return;
 
 
 
             void createModelEntity_
-                (GameObjectConversionSystem gcs, GameObject main, Material srcMaterial, Mesh mesh_)
+                (GameObjectConversionSystem gcs, GameObject part, Material srcMaterial, Mesh mesh_)
             {
                 var mat = new Material(srcMaterial);
 
                 const BoneType BoneType = BoneType.TR;
                 const int boneLength = 1;
 
-                var modelEntity_ = gcs.CreateDrawModelEntityComponents(main, mesh_, mat, BoneType, boneLength);
+                var modelEntity_ = gcs.CreateDrawModelEntityComponents(part, mesh_, mat, BoneType, boneLength);
             }
 
+            //void initPartData_
+            //    (GameObjectConversionSystem gcs, GameObject part, int partId)
+            //{
+            //    var em = gcs.DstEntityManager;
+
+            //    var ent = gcs.GetPrimaryEntity(part);
+
+            //    em.AddComponentData(ent,
+            //        new StructurePart.PartData
+            //        {
+            //            //PartId = partId,
+            //            //Life = 
+            //        }
+            //    );
+            //}
 
         }
 
