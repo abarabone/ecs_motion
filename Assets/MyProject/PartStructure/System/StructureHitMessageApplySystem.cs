@@ -66,9 +66,12 @@ namespace Abarabone.Structure
         {
             var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
-            var msgs = this.messageSystem.MsgHolder;
-
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+
+
+            var msgs = this.messageSystem.MsgHolder;
+            msgs.
+
 
 
             this.Entities
