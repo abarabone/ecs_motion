@@ -53,6 +53,12 @@ namespace Abarabone.Arms
         }
 
 
+        struct PtoPUnit
+        {
+            public float3 start;
+            public float3 end;
+        }
+
         protected override void OnUpdate()
         {
             var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
@@ -98,9 +104,10 @@ namespace Abarabone.Arms
 
                             postMessageToHitTarget_(structureHitHolder, hit, parts);
 
-                            var (start, end) = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
+                            //var (start, end) = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
+                            var ptop = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
 
-                            instantiateBullet_(ref cmd, i, prefab, start, end);
+                            instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
                         }
                     }
                 )
@@ -144,13 +151,14 @@ namespace Abarabone.Arms
                             Position = hit.posision,
                             Normale = hit.normal,
                             PartEntity = hit.hitEntity,
-                            //PartId = parts_[hit.hitEntity].PartId,
+                            PartId = parts_[hit.hitEntity].PartId,
                         }
                     );
                 }
             }
 
-            (float3 start, float3 end) calcBeamPosision_
+            //(float3 start, float3 end) calcBeamPosision_
+            PtoPUnit calcBeamPosision_
                 (
                     Wapon.BeamUnitData beamUnit,
                     Rotation mainrot, Translation mainpos, BulletHitUtility.BulletHit hit,
@@ -160,12 +168,14 @@ namespace Abarabone.Arms
 
                 var beamStart = math.mul(mainrot.Value, beamUnit.MuzzlePositionLocal) + mainpos.Value;
 
-                if (hit.isHit) return (beamStart, hit.posision);
+                //if (hit.isHit) return (beamStart, hit.posision);
+                if (hit.isHit) return new PtoPUnit { start = beamStart, end = hit.posision };
 
 
                 var beamEnd = sightPos + math.forward(sightRot) * bulletData.RangeDistance;
 
-                return (beamStart, beamEnd);
+                //return (beamStart, beamEnd);
+                return new PtoPUnit { start = beamStart, end = beamEnd };
             }
 
             void instantiateBullet_

@@ -29,7 +29,9 @@ namespace Abarabone.Structure
         /// </summary>
         public unsafe struct PartDestractionData : IComponentData
         {
+
             public fixed uint Destractions[512 / 32];
+
 
             public void SetDestroyed( int id ) => this.Destractions[id >> 5] |= (uint)(1 << id);
             public void SetAlive( int id ) => this.Destractions[id >> 5] &= ~(uint)(1 << id);

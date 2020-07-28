@@ -25,6 +25,7 @@ namespace Abarabone.Structure
     using Abarabone.Utilities;
     using Abarabone.SystemGroup;
     using Abarabone.Character;
+    using System.Security.Cryptography;
 
 
     //public class StructurePartHitHolder
@@ -36,7 +37,7 @@ namespace Abarabone.Structure
 
     public struct StructureHitMessage
     {
-        //public int PartId;
+        public int PartId;
         public Entity PartEntity;
         public float3 Position;
         public float3 Normale;
@@ -68,44 +69,77 @@ namespace Abarabone.Structure
 
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
+            var destractions = this.GetComponentDataFromEntity<Structure.PartDestractionData>();
+
 
             var msgs = this.messageSystem.MsgHolder;
-            msgs.
+
+            this.Dependency = new StructureHitApplyJob
+            {
+                Destractions = destractions,
+                Cmd = cmd,
+            }
+            .Schedule(msgs, 0, this.Dependency);
 
 
-
-            this.Entities
-                .WithBurst()
-                .WithReadOnly(msgs)
-                .WithReadOnly(parts)
-                //.WithDeallocateOnJobCompletion(msgs)
-                .ForEach(
-                    (
-                        Entity stent, int entityInQueryIndex,
-                        ref Structure.PartDestractionData alive
-                    ) =>
-                    {
-                        var isSuccess = msgs.TryGetFirstValue(stent, out var hitMsg, out var iterator);
+            //this.Entities
+            //    .WithBurst()
+            //    .WithReadOnly(msgs)
+            //    .WithReadOnly(parts)
+            //    //.WithDeallocateOnJobCompletion(msgs)
+            //    .ForEach(
+            //        (
+            //            Entity stent, int entityInQueryIndex,
+            //            ref Structure.PartDestractionData alive
+            //        ) =>
+            //        {
+            //            var isSuccess = msgs.TryGetFirstValue(stent, out var hitMsg, out var iterator);
                         
-                        while(isSuccess)
-                        {
+            //            while(isSuccess)
+            //            {
 
-                            var partData = parts[hitMsg.PartEntity];
-
-
-                            alive.SetDestroyed(partData.PartId);
-
-                            cmd.DestroyEntity(entityInQueryIndex, hitMsg.PartEntity);
+            //                var partData = parts[hitMsg.PartEntity];
 
 
-                            isSuccess = msgs.TryGetNextValue(out hitMsg, ref iterator);
-                        }
-                    }
-                )
-                .ScheduleParallel();
+            //                alive.SetDestroyed(partData.PartId);
+
+            //                cmd.DestroyEntity(entityInQueryIndex, hitMsg.PartEntity);
+
+
+            //                isSuccess = msgs.TryGetNextValue(out hitMsg, ref iterator);
+            //            }
+            //        }
+            //    )
+            //    .ScheduleParallel();
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
+        }
+
+
+        struct StructureHitApplyJob : IJobNativeMultiHashMapVisitKeyMutableValue<Entity, StructureHitMessage>
+        {
+
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<Structure.PartDestractionData> Destractions;
+
+            //[ReadOnly]
+            public EntityCommandBuffer.Concurrent Cmd;
+
+
+            public void ExecuteNext(int uniqueIndex, Entity key, ref StructureHitMessage value)
+            {
+
+                var destraction = this.Destractions[key];
+
+                destraction.SetDestroyed(value.PartId);
+
+                this.Destractions[key] = destraction;
+
+
+                this.Cmd.DestroyEntity(uniqueIndex, value.PartEntity);
+
+            }
         }
 
     }
@@ -121,7 +155,7 @@ namespace Abarabone.Structure
         where TKey : struct, IEquatable<TKey>
         where TValue : struct
     {
-        void ExecuteNext(TKey key, ref TValue value);
+        void ExecuteNext(int uniqueIndex, TKey key, ref TValue value);
     }
 
     public static class JobNativeMultiHashMapVisitKeyMutableValue
@@ -170,6 +204,8 @@ namespace Abarabone.Structure
                     int jobIndex
                 )
             {
+                var uniqueIndex = 0;
+
                 while (true)
                 {
                     int begin;
@@ -194,7 +230,7 @@ namespace Abarabone.Structure
                         {
                             var key = UnsafeUtility.ReadArrayElement<TKey>(keys, entryIndex);
 
-                            producer.JobData.ExecuteNext(key, ref UnsafeUtilityEx.ArrayElementAsRef<TValue>(values, entryIndex));
+                            producer.JobData.ExecuteNext(uniqueIndex++, key, ref UnsafeUtilityEx.ArrayElementAsRef<TValue>(values, entryIndex));
 
                             entryIndex = nextPtrs[entryIndex];
                         }

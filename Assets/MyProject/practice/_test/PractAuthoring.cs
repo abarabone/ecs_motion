@@ -19,7 +19,7 @@ public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
     public int num;
 
-    Entity prefabEntity;
+    //Entity prefabEntity;
 
 
     void IDeclareReferencedPrefabs.DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )

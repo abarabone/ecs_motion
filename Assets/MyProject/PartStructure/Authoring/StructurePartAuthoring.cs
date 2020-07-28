@@ -19,8 +19,8 @@ namespace Abarabone.Structure.Authoring
     {
 
 
-        [HideInInspector]
-        public int PartId;
+        //[HideInInspector]
+        //public int PartId;
         //public int Life;
 
         public Material Material;
@@ -46,10 +46,14 @@ namespace Abarabone.Structure.Authoring
 
             Debug.Log("pt auth "+this.name);
 
+            var top = this.gameObject.Ancestors().Do(x=>Debug.Log(x.name)).OfType<StructureModelAuthoring>().First();
+            var objA = top.transform.GetChild(0).gameObject;
+
             //var go = Instantiate(this.gameObject);
             //go.AddComponent<PhysicsBodyAuthoring>();
             //Debug.Log(conversionSystem.GetPrimaryEntity(go));
 
+            setMainLink_(conversionSystem, objA, this.gameObject);
             //initPartData_(conversionSystem, this.gameObject, this.PartId);
 
             return;
@@ -65,6 +69,21 @@ namespace Abarabone.Structure.Authoring
                 const int boneLength = 1;
 
                 var modelEntity_ = gcs.CreateDrawModelEntityComponents(part, mesh_, mat, BoneType, boneLength);
+            }
+
+            void setMainLink_(GameObjectConversionSystem gcs, GameObject main, GameObject part)
+            {
+                var em = gcs.DstEntityManager;
+
+                var partent = gcs.GetPrimaryEntity(part);
+                var mainent = gcs.GetPrimaryEntity(main);
+
+                em.AddComponentData(partent,
+                    new Bone.MainEntityLinkData
+                    {
+                        MainEntity = mainent,
+                    }
+                );
             }
 
             //void initPartData_
