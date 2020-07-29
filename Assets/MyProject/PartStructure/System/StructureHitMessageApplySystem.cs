@@ -124,7 +124,6 @@ namespace Abarabone.Structure
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Structure.PartDestractionData> Destractions;
 
-            [ReadOnly]
             public EntityCommandBuffer.Concurrent Cmd;
 
 

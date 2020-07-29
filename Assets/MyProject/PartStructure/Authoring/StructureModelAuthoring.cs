@@ -67,7 +67,7 @@ namespace Abarabone.Structure.Authoring
             initBinderEntity_(conversionSystem, top, objA);
             initMainEntity_(conversionSystem, top, objA);
 
-            setPartLink_(conversionSystem, objA, objB);
+            //setPartLink_(conversionSystem, objA, objB);
             setPartLocalPosition_(conversionSystem, objA, objB);
             setPartId_(conversionSystem, objB);
 
@@ -204,29 +204,29 @@ namespace Abarabone.Structure.Authoring
         }
 
 
-        void setPartLink_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
-        {
+        //void setPartLink_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
+        //{
 
-            var mainEntity = gcs_.GetPrimaryEntity(main_);
+        //    var mainEntity = gcs_.GetPrimaryEntity(main_);
 
 
-            var partEntities = partTop_.GetComponentsInChildren<StructurePartAuthoring>()
-                .Select(pt => pt.gameObject)
-                .Select(go => gcs_.GetPrimaryEntity(go))
-                .ToArray();
+        //    var partEntities = partTop_.GetComponentsInChildren<StructurePartAuthoring>()
+        //        .Select(pt => pt.gameObject)
+        //        .Select(go => gcs_.GetPrimaryEntity(go))
+        //        .ToArray();
 
-            var qPartLinkData =
-                from ptent in partEntities.Skip(1).Append(Entity.Null)
-                select new Structure.PartLinkData
-                {
-                    NextEntity = ptent,
-                };
+        //    var qPartLinkData =
+        //        from ptent in partEntities.Skip(1).Append(Entity.Null)
+        //        select new Structure.PartLinkData
+        //        {
+        //            NextEntity = ptent,
+        //        };
 
-            var em = gcs_.DstEntityManager;
-            em.AddComponentData(mainEntity, new Structure.PartLinkData { NextEntity = partEntities.First() });
-            em.AddComponentData(partEntities, qPartLinkData);
+        //    var em = gcs_.DstEntityManager;
+        //    em.AddComponentData(mainEntity, new Structure.PartLinkData { NextEntity = partEntities.First() });
+        //    em.AddComponentData(partEntities, qPartLinkData);
 
-        }
+        //}
 
 
         void setPartLocalPosition_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)

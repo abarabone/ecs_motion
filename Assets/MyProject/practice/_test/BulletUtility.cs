@@ -77,8 +77,8 @@ namespace Abarabone.Arms
 
             var filter = new CollisionFilter
             {
-                BelongsTo = CatFlag.datail,
-                CollidesWith = CatFlag.bg_field | CatFlag.ch_detail,
+                BelongsTo = CatFlag.datail | CatFlag.ch_detail,
+                CollidesWith = CatFlag.bg_field | CatFlag.ch_detail | CatFlag.datail | CatFlag.field,
             };
             var hitInput = new RaycastInput
             {

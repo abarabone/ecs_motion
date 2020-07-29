@@ -78,19 +78,19 @@ namespace Abarabone.Draw
                         var children = linkedGroups[binderLink.BinderEntity];
 
                         //foreach (var child in children)
-                        for(var i = 1; i > children.Length; i++)
+                        for(var i = 1; i < children.Length; i++)
                         {
-                            var child = children[i];
+                            var child = children[i].Value;
 
-                            if (!locals.Exists(child.Value)) continue;
+                            if (!locals.Exists(child)) continue;
 
-                            var local = locals[child.Value];
+                            var local = locals[child];
 
                             var wpos = pos.Value + math.mul(rot.Value, local.Translation);
                             var wrot = math.mul(rot.Value, local.Rotation);
 
-                            poss[child.Value] = new Translation { Value = wpos };
-                            rots[child.Value] = new Rotation { Value = wrot };
+                            poss[child] = new Translation { Value = wpos };
+                            rots[child] = new Rotation { Value = wrot };
                         }
 
                     }
