@@ -117,13 +117,14 @@ namespace Abarabone.Structure
         }
 
 
+        [BurstCompile]
         struct StructureHitApplyJob : IJobNativeMultiHashMapVisitKeyMutableValue<Entity, StructureHitMessage>
         {
 
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Structure.PartDestractionData> Destractions;
 
-            //[ReadOnly]
+            [ReadOnly]
             public EntityCommandBuffer.Concurrent Cmd;
 
 

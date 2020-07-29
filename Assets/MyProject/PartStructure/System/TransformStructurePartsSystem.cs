@@ -39,10 +39,10 @@ namespace Abarabone.Draw
 
         protected override void OnUpdate()
         {
-
+            var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>();
             var rots = this.GetComponentDataFromEntity<Rotation>();
-            var links = this.GetComponentDataFromEntity<Structure.PartLinkData>(isReadOnly: true);
+            //var links = this.GetComponentDataFromEntity<Structure.PartLinkData>(isReadOnly: true);
             var locals = this.GetComponentDataFromEntity<StructurePart.LocalPositionData>(isReadOnly: true);
 
 
@@ -50,27 +50,47 @@ namespace Abarabone.Draw
                 .WithBurst()
                 .WithAll<ObjectMain.ObjectMainTag>()
                 .WithNone<Structure.SleepingTag>()
+                .WithReadOnly(linkedGroups)
                 .WithNativeDisableParallelForRestriction(poss)
                 .WithNativeDisableParallelForRestriction(rots)
                 .WithReadOnly(locals)
-                .WithReadOnly(links)
+                //.WithReadOnly(links)
                 .ForEach(
                     (
-                        in Structure.PartLinkData link,
+                        in ObjectMain.BinderLinkData binderLink,
+                        //in Structure.PartLinkData link,
                         in Translation pos,
                         in Rotation rot
                     ) =>
                     {
-                        
-                        for( var ptent = link.NextEntity; ptent != Entity.Null; ptent = links[ptent].NextEntity )
+
+                        //for( var ptent = link.NextEntity; ptent != Entity.Null; ptent = links[ptent].NextEntity )
+                        //{
+                        //    var local = locals[ptent];
+
+                        //    var wpos = pos.Value + math.mul(rot.Value, local.Translation);
+                        //    var wrot = math.mul(rot.Value, local.Rotation);
+
+                        //    poss[ptent] = new Translation { Value = wpos };
+                        //    rots[ptent] = new Rotation { Value = wrot };
+                        //}
+
+                        var children = linkedGroups[binderLink.BinderEntity];
+
+                        //foreach (var child in children)
+                        for(var i = 1; i > children.Length; i++)
                         {
-                            var local = locals[ptent];
+                            var child = children[i];
+
+                            if (!locals.Exists(child.Value)) continue;
+
+                            var local = locals[child.Value];
 
                             var wpos = pos.Value + math.mul(rot.Value, local.Translation);
                             var wrot = math.mul(rot.Value, local.Rotation);
 
-                            poss[ptent] = new Translation { Value = wpos };
-                            rots[ptent] = new Rotation { Value = wrot };
+                            poss[child.Value] = new Translation { Value = wpos };
+                            rots[child.Value] = new Rotation { Value = wrot };
                         }
 
                     }

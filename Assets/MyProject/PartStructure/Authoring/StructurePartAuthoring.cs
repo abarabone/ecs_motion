@@ -46,7 +46,7 @@ namespace Abarabone.Structure.Authoring
 
             Debug.Log("pt auth "+this.name);
 
-            var top = this.gameObject.Ancestors().Do(x=>Debug.Log(x.name)).OfType<StructureModelAuthoring>().First();
+            var top = this.gameObject.Ancestors().Do(x=>Debug.Log(x.name)).First( go => go.GetComponent<StructureModelAuthoring>() );
             var objA = top.transform.GetChild(0).gameObject;
 
             //var go = Instantiate(this.gameObject);
