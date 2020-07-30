@@ -38,9 +38,9 @@ namespace Abarabone.Draw
 
 
             inputDeps = this.Entities
+                .WithBurst()
                 .WithNone<NonUniformScale, Rotation>()
                 .WithReadOnly( offsetsOfDrawModel )
-                .WithBurst()
                 .ForEach(
                     (
                         in DrawTransform.LinkData linkerOfTf,
@@ -49,10 +49,13 @@ namespace Abarabone.Draw
                         in Translation pos
                     ) =>
                     {
-                        var bondOffset = targetOfTf.DrawInstanceId * indexerOfTf.BoneLength + indexerOfTf.BoneId;
-                        var i = bondOffset;
+                        var offsetInfo = offsetsOfDrawModel[linkerOfTf.DrawModelEntity];
 
-                        var pInstance = offsetsOfDrawModel[ linkerOfTf.DrawModelEntity ].pVectorOffsetInBuffer;
+                        const int vectorLengthInBone = 1;
+                        var bondOffset = targetOfTf.DrawInstanceId * indexerOfTf.BoneLength + indexerOfTf.BoneId;
+                        var i = bondOffset * vectorLengthInBone + offsetInfo.VectorOffsetPerInstance;
+
+                        var pInstance = offsetInfo.pVectorOffsetPerModelInBuffer;
                         pInstance[ i ] = new float4( pos.Value, 1.0f );
                     }
                 )

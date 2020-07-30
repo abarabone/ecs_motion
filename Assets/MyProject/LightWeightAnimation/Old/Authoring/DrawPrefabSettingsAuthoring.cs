@@ -47,7 +47,7 @@ namespace Abarabone.Authoring
 
             
             var drawModelArchetype = em.CreateArchetype(
-                typeof( DrawModel.BoneUnitSizeData ),
+                typeof( DrawModel.BoneVectorSettingData ),
                 typeof( DrawModel.InstanceCounterData ),
                 typeof( DrawModel.InstanceOffsetData ),
                 typeof( DrawModel.GeometryData ),
@@ -94,7 +94,7 @@ namespace Abarabone.Authoring
                     var ent = em.CreateEntity( drawModelArchetype__ );
                     
                     em.SetComponentData( ent,
-                        new DrawModel.BoneUnitSizeData
+                        new DrawModel.BoneVectorSettingData
                         {
                             BoneLength = boneLength_,
                             VectorLengthInBone = (int)BoneType,

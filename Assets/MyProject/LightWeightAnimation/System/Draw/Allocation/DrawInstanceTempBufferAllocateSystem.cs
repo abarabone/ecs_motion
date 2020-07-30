@@ -40,7 +40,7 @@ namespace Abarabone.Draw
             this.drawQuery = this.GetEntityQuery(
                 ComponentType.ReadOnly<DrawModel.InstanceCounterData>(),
                 ComponentType.ReadWrite<DrawModel.InstanceOffsetData>(),
-                ComponentType.ReadOnly<DrawModel.BoneUnitSizeData>()
+                ComponentType.ReadOnly<DrawModel.BoneVectorSettingData>()
             );
         }
 
@@ -53,7 +53,7 @@ namespace Abarabone.Draw
 
             var instanceOffsetType = this.GetArchetypeChunkComponentType<DrawModel.InstanceOffsetData>();
             var instanceCounterType = this.GetArchetypeChunkComponentType<DrawModel.InstanceCounterData>();// isReadOnly: true );
-            var boneInfoType = this.GetArchetypeChunkComponentType<DrawModel.BoneUnitSizeData>();// isReadOnly: true );
+            var boneInfoType = this.GetArchetypeChunkComponentType<DrawModel.BoneVectorSettingData>();// isReadOnly: true );
 
             var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 
@@ -95,7 +95,7 @@ namespace Abarabone.Draw
                     {
                         offsets[ j ] = new DrawModel.InstanceOffsetData
                         {
-                            pVectorOffsetInBuffer = (float4*)sum,
+                            pVectorOffsetPerModelInBuffer = (float4*)sum,
                         };
 
                         var instanceCount = counters[ j ].InstanceCounter.Count;
@@ -118,12 +118,12 @@ namespace Abarabone.Draw
 
                     for( var j = 0; j < chunk.Count; j++ )
                     {
-                        var offset = (int)offsets[ j ].pVectorOffsetInBuffer;
+                        var offset = (int)offsets[ j ].pVectorOffsetPerModelInBuffer;
 
                         offsets[ j ] = new DrawModel.InstanceOffsetData
                         {
-                            pVectorOffsetInBuffer = pBufferStart + offset,
-                            voffset = offset,//
+                            pVectorOffsetPerModelInBuffer = pBufferStart + offset,
+                            voffset = offset,//デバッグ表示用
                         };
                     }
                 }

@@ -86,8 +86,9 @@ namespace Abarabone.Structure.Authoring
 
                 const BoneType boneType = BoneType.TR;
                 const int boneLength = 1;
+                const int vectorOffsetPerInstance = 4;
 
-                gcs_.CreateDrawModelEntityComponents(top_, mesh, mat, boneType, boneLength);
+                gcs_.CreateDrawModelEntityComponents(top_, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
             }
 
 

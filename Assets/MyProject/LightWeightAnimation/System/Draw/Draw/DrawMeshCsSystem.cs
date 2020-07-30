@@ -59,7 +59,7 @@ namespace Abarabone.Draw
                         var mat = geom.Material;
                         var args = shaderArg.InstanceArgumentsBuffer;
                         
-                        var vectorOffset = offset.pVectorOffsetInBuffer - nativeBuffer.pBuffer;
+                        var vectorOffset = offset.pVectorOffsetPerModelInBuffer - nativeBuffer.pBuffer;
                         mat.SetInt( "BoneVectorOffset", (int)vectorOffset );
                         //mat.SetInt( "BoneLengthEveryInstance", mesh.bindposes.Length );
                         //mat.SetBuffer( "BoneVectorBuffer", computeBuffer );

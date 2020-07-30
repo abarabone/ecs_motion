@@ -30,7 +30,7 @@ namespace Abarabone.Draw.Authoring
         static public Entity CreateDrawModelEntityComponents
             (
                 this GameObjectConversionSystem gcs, GameObject topGameObject,
-                Mesh mesh, Material mat, BoneType BoneType, int boneLength
+                Mesh mesh, Material mat, BoneType BoneType, int boneLength, int instanceDataVectorLength = 0
             )
         {
 
@@ -40,7 +40,7 @@ namespace Abarabone.Draw.Authoring
             setShaderProps_( em, mat, mesh, boneLength );
 
             var drawModelEntity = createDrawModelEntity_( gcs, topGameObject );
-            setEntityComponentValues_( em, drawModelEntity, mat, mesh, boneLength, BoneType );
+            setEntityComponentValues_( em, drawModelEntity, mat, mesh, boneLength, BoneType, instanceDataVectorLength );
 
             return drawModelEntity;
 
@@ -65,7 +65,7 @@ namespace Abarabone.Draw.Authoring
 
 
                 var drawModelArchetype = em_.CreateArchetype(
-                    typeof( DrawModel.BoneUnitSizeData ),
+                    typeof( DrawModel.BoneVectorSettingData ),
                     typeof( DrawModel.InstanceCounterData ),
                     typeof( DrawModel.InstanceOffsetData ),
                     typeof( DrawModel.GeometryData ),
@@ -83,11 +83,11 @@ namespace Abarabone.Draw.Authoring
 
 
             void setEntityComponentValues_
-                ( EntityManager em_, Entity ent_, Material mat_, Mesh mesh_, int boneLength_, BoneType BoneType_ )
+                ( EntityManager em_, Entity ent_, Material mat_, Mesh mesh_, int boneLength_, BoneType BoneType_, int instanceDataVectorLength_ )
             {
 
                 em_.SetComponentData( ent_,
-                    new DrawModel.BoneUnitSizeData
+                    new DrawModel.BoneVectorSettingData
                     {
                         BoneLength = boneLength_,
                         VectorLengthInBone = (int)BoneType_,
@@ -104,6 +104,12 @@ namespace Abarabone.Draw.Authoring
                     new DrawModel.ComputeArgumentsBufferData
                     {
                         InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
+                    }
+                );
+                em_.SetComponentData(ent_,
+                    new DrawModel.InstanceOffsetData
+                    {
+                        VectorOffsetPerInstance = instanceDataVectorLength_,
                     }
                 );
 

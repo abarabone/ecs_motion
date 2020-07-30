@@ -32,7 +32,7 @@ namespace Abarabone.Draw
         //    public Entity BufferEntity;
         //}
 
-        public struct BoneUnitSizeData : IComponentData
+        public struct BoneVectorSettingData : IComponentData
         {
             public int VectorLengthInBone;
             public int BoneLength;
@@ -44,8 +44,9 @@ namespace Abarabone.Draw
         }
         public unsafe struct InstanceOffsetData : IComponentData
         {
-            public float4* pVectorOffsetInBuffer;
-            public int voffset;//
+            public float4* pVectorOffsetPerModelInBuffer;
+            public int voffset;//デバッグ表示用
+            public int VectorOffsetPerInstance;
         }
 
         public class ComputeArgumentsBufferData : IComponentData
