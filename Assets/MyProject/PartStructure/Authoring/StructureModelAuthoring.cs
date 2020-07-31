@@ -172,7 +172,7 @@ namespace Abarabone.Structure.Authoring
                         //typeof(DrawTransform.TargetWorkData)//
                         typeof(DrawInstance.ModeLinkData),
                         typeof(DrawInstance.TargetWorkData),
-                        typeof(Structure.PartDestractionData),
+                        typeof(Structure.PartDestructionData),
                     }
                 );
                 em_.AddComponents(mainEntity, mainAddtypes);

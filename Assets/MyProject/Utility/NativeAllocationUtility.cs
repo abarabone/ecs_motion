@@ -110,8 +110,9 @@ namespace Abarabone.Misc
 		public NativeListConcurrent( ref NativeList<T> origin )
 		{
 			var pListData		= NativeListUnsafeUtility.GetInternalListDataPtrUnchecked( ref origin );
-			ref var listData	= ref Unsafe.AsRef<NativeListData>( pListData );
-
+			//ref var listData	= ref Unsafe.AsRef<NativeListData>( pListData );
+			ref var listData	= ref UnsafeUtility.AsRef<NativeListData>( pListData );
+            
 			pElements	= listData.buffer;
 			pLength		= (int*)UnsafeUtility.AddressOf( ref listData.length );
 		}
@@ -171,7 +172,7 @@ namespace Abarabone.Misc
 		public ref T Element( int segmentIndex, int elementIndex )
 		{
 			var pPool = pool.GetUnsafePtr();
-			return ref UnsafeUtilityEx.ArrayElementAsRef<T>( pPool, segmentIndex * lengthInSegment + elementIndex );
+			return ref UnsafeUtility.ArrayElementAsRef<T>( pPool, segmentIndex * lengthInSegment + elementIndex );
 		}
 
 		//public SegmentalNativeArrayWriteOnly<T> ToWriteOnly()

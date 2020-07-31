@@ -76,7 +76,7 @@ public class SpawnSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+        var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
         this.Entities
             //.WithoutBurst()
@@ -133,7 +133,7 @@ public class ObjectInitializeSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+        var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
         this.Entities
             //.WithoutBurst()

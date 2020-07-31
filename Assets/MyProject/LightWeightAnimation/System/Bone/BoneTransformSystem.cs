@@ -75,8 +75,8 @@ namespace Abarabone.CharacterMotion
                             var pos = math.mul( prot, lpos ) + ppos;
                             var rot = math.mul( prot, lrot );
 
-                            var mass = boneMasses.Exists( ent ) ? boneMasses[ ent ].InverseMass : 0.0f;
-                            if( mass != 0.0f && boneVelocities.Exists( ent ) )
+                            var mass = boneMasses.HasComponent( ent ) ? boneMasses[ ent ].InverseMass : 0.0f;
+                            if( mass != 0.0f && boneVelocities.HasComponent( ent ) )
                                 { }//setVelocity_( ent, pos, rot );
                             else
                                 setPosAndRot_( ent, pos, rot );
@@ -187,7 +187,7 @@ namespace Abarabone.CharacterMotion
                     var pos = math.mul( prot, lpos ) + ppos;
                     var rot = math.mul( prot, lrot );
 
-                    if( this.BoneVelocities.Exists( ent ) )
+                    if( this.BoneVelocities.HasComponent( ent ) )
                         { }//this.setVelocity( ent, pos, rot );
                     else
                         this.setPosAndRot( ent, pos, rot );

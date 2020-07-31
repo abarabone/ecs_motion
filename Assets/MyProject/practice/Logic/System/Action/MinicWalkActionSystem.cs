@@ -51,7 +51,7 @@ namespace Abarabone.Character
 
             inputDeps = new MinicWalkActionJob
             {
-                Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
+                Commands = this.ecb.CreateCommandBuffer().AsParallelWriter(),
                 MotionInfos = this.GetComponentDataFromEntity<Motion.InfoData>( isReadOnly: true ),
                 GroundResults = this.GetComponentDataFromEntity<GroundHitResultData>( isReadOnly: true ),
                 Rotations = this.GetComponentDataFromEntity<Rotation>(),
@@ -70,7 +70,7 @@ namespace Abarabone.Character
             <MinicWalkActionState, MoveHandlingData, ObjectMainCharacterLinkData>
         {
 
-            public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.ParallelWriter Commands;
 
             [ReadOnly] public ComponentDataFromEntity<Motion.InfoData> MotionInfos;
             [ReadOnly] public ComponentDataFromEntity<GroundHitResultData> GroundResults;

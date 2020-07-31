@@ -34,7 +34,7 @@ namespace Abarabone.CharacterMotion
 
             inputDeps = new MotionInitializeJob
             {
-                Commands = commandBuffer.ToConcurrent(),
+                Commands = commandBuffer.AsParallelWriter(),
                 Linkers  = this.GetComponentDataFromEntity<Stream.RelationData>(),
                 Shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>(),
                 Timers   = this.GetComponentDataFromEntity<Stream.CursorData>(),
@@ -56,7 +56,7 @@ namespace Abarabone.CharacterMotion
             <Motion.InitializeData, Motion.StreamLinkData, Motion.ClipData, Motion.InfoData>
         {
 
-            public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.ParallelWriter Commands;
 
             [NativeDisableParallelForRestriction][ReadOnly]
             public ComponentDataFromEntity<Stream.RelationData>      Linkers;

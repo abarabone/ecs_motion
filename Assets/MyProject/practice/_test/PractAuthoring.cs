@@ -65,7 +65,7 @@ public class PracSpawnSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+        var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
         this.Entities
             //.WithoutBurst()

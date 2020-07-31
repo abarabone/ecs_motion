@@ -18,13 +18,13 @@ namespace Abarabone.Misc
         where T : unmanaged, IComponentData
     {
 
-        ArchetypeChunkComponentType<T> ctype;
+        ComponentTypeHandle<T> ctype;
         NativeArray<ArchetypeChunk> chunks;
 
 
         public EnumerableComponentData( JobComponentSystem sys, EntityQuery query, bool isReadOnly )
         {
-            this.ctype = sys.GetArchetypeChunkComponentType<T>( isReadOnly );
+            this.ctype = sys.GetComponentTypeHandle<T>( isReadOnly );
             this.chunks = query.CreateArchetypeChunkArray(Allocator.TempJob);// Allocator.Temp );
         }
 
@@ -42,7 +42,7 @@ namespace Abarabone.Misc
 
         public struct ComponentDataEnumerator
         {
-            ArchetypeChunkComponentType<T> ctype;
+            ComponentTypeHandle<T> ctype;
 
             NativeArray<ArchetypeChunk> chunks;
             NativeArray<ArchetypeChunk>.Enumerator chunkEnumerator;
@@ -52,7 +52,7 @@ namespace Abarabone.Misc
 
 
             public ComponentDataEnumerator
-                ( NativeArray<ArchetypeChunk> chunks, ArchetypeChunkComponentType<T> ctype )
+                ( NativeArray<ArchetypeChunk> chunks, ComponentTypeHandle<T> ctype )
             {
                 this.ctype = ctype;
                 this.chunks = chunks;

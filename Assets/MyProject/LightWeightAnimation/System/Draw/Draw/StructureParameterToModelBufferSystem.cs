@@ -47,7 +47,7 @@ namespace Abarabone.Draw
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModeLinkData linker,
-                        in Structure.PartDestractionData destraction
+                        in Structure.PartDestructionData destruction
                     ) =>
                     {
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntity];
@@ -55,7 +55,7 @@ namespace Abarabone.Draw
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
                         var i = target.DrawInstanceId * (2 + offsetInfo.VectorOffsetPerInstance);
                         var size = offsetInfo.VectorOffsetPerInstance * sizeof(float4);
-                        fixed (void* pSrc = destraction.Destractions)
+                        fixed (void* pSrc = destruction.Destructions)
                         {
                             UnsafeUtility.MemCpy(pModel + i, pSrc, size);
                         }

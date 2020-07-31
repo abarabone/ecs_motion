@@ -45,7 +45,7 @@ namespace Abarabone.Physics
 
             inputDeps = new PhysicsBoneInitializeJob
             {
-                Commands = commandBuffer.ToConcurrent(),
+                Commands = commandBuffer.AsParallelWriter(),
                 Translations = this.GetComponentDataFromEntity<Translation>(),// isReadOnly: true ),
                 Rotations = this.GetComponentDataFromEntity<Rotation>(),// isReadOnly: true ),
 
@@ -62,7 +62,7 @@ namespace Abarabone.Physics
             <Bone.InitializeData, /*Translation, Rotation,*/ PhysicsVelocity>
         {
 
-            public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.ParallelWriter Commands;
 
             [NativeDisableParallelForRestriction]
             //[ReadOnly]

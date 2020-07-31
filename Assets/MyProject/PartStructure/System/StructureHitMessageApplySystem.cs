@@ -28,12 +28,6 @@ namespace Abarabone.Structure
     using System.Security.Cryptography;
 
 
-    //public class StructurePartHitHolder
-    //{
-
-    //}
-
-
 
     public struct StructureHitMessage
     {
@@ -46,7 +40,7 @@ namespace Abarabone.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
-    [UpdateAfter(typeof(StructureHitMessageHolderAllocationSystem))]
+    //[UpdateAfter(typeof(StructureHitMessageHolderAllocationSystem))]
     public class StructureHitMessageApplySystem : SystemBase
     {
 
@@ -66,52 +60,21 @@ namespace Abarabone.Structure
 
         protected override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
-            var destractions = this.GetComponentDataFromEntity<Structure.PartDestractionData>();
+            var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
 
 
             var msgs = this.messageSystem.MsgHolder;
 
             this.Dependency = new StructureHitApplyJob
             {
-                Destractions = destractions,
+                Destructions = destructions,
                 Cmd = cmd,
             }
             .Schedule(msgs, 0, this.Dependency);
-
-
-            //this.Entities
-            //    .WithBurst()
-            //    .WithReadOnly(msgs)
-            //    .WithReadOnly(parts)
-            //    //.WithDeallocateOnJobCompletion(msgs)
-            //    .ForEach(
-            //        (
-            //            Entity stent, int entityInQueryIndex,
-            //            ref Structure.PartDestractionData alive
-            //        ) =>
-            //        {
-            //            var isSuccess = msgs.TryGetFirstValue(stent, out var hitMsg, out var iterator);
-                        
-            //            while(isSuccess)
-            //            {
-
-            //                var partData = parts[hitMsg.PartEntity];
-
-
-            //                alive.SetDestroyed(partData.PartId);
-
-            //                cmd.DestroyEntity(entityInQueryIndex, hitMsg.PartEntity);
-
-
-            //                isSuccess = msgs.TryGetNextValue(out hitMsg, ref iterator);
-            //            }
-            //        }
-            //    )
-            //    .ScheduleParallel();
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
@@ -123,22 +86,29 @@ namespace Abarabone.Structure
         {
 
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Structure.PartDestractionData> Destractions;
+            public ComponentDataFromEntity<Structure.PartDestructionData> Destructions;
 
-            public EntityCommandBuffer.Concurrent Cmd;
+            public EntityCommandBuffer.ParallelWriter Cmd;
 
 
             public void ExecuteNext(int uniqueIndex, Entity key, ref StructureHitMessage value)
             {
 
-                var destraction = this.Destractions[key];
+                var destruction = this.Destructions[key];
 
-                destraction.SetDestroyed(value.PartId);
+                destruction.SetDestroyed(value.PartId);
 
-                this.Destractions[key] = destraction;
+                addComponents(value.PartEntity);
+
+                this.Destructions[key] = destruction;
 
 
                 this.Cmd.DestroyEntity(uniqueIndex, value.PartEntity);
+
+            }
+
+            void addComponents(Entity part)
+            {
 
             }
         }
@@ -231,7 +201,7 @@ namespace Abarabone.Structure
                         {
                             var key = UnsafeUtility.ReadArrayElement<TKey>(keys, entryIndex);
 
-                            producer.JobData.ExecuteNext(uniqueIndex++, key, ref UnsafeUtilityEx.ArrayElementAsRef<TValue>(values, entryIndex));
+                            producer.JobData.ExecuteNext(uniqueIndex++, key, ref UnsafeUtility.ArrayElementAsRef<TValue>(values, entryIndex));
 
                             entryIndex = nextPtrs[entryIndex];
                         }

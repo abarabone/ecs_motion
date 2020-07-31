@@ -41,7 +41,7 @@ namespace Abarabone.Physics
 
         public bool AddHit( T hit )
         {
-            var ent = this.mainEntityLinks.Exists(hit.Entity)
+            var ent = this.mainEntityLinks.HasComponent(hit.Entity)
                 ? this.mainEntityLinks[hit.Entity].MainEntity
                 : hit.Entity;
             if( ent == this.SelfMainEntity ) return false;
@@ -80,7 +80,7 @@ namespace Abarabone.Physics
 
         public bool AddHit( T hit )
         {
-            var ent = this.mainEntityLinks.Exists(hit.Entity)
+            var ent = this.mainEntityLinks.HasComponent(hit.Entity)
                 ? this.mainEntityLinks[hit.Entity].MainEntity
                 : hit.Entity;
             if (ent == this.SelfMainEntity) return false;

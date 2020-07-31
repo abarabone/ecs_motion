@@ -51,9 +51,9 @@ namespace Abarabone.Draw
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
-            var instanceOffsetType = this.GetArchetypeChunkComponentType<DrawModel.InstanceOffsetData>();
-            var instanceCounterType = this.GetArchetypeChunkComponentType<DrawModel.InstanceCounterData>();// isReadOnly: true );
-            var boneInfoType = this.GetArchetypeChunkComponentType<DrawModel.BoneVectorSettingData>();// isReadOnly: true );
+            var instanceOffsetType = this.GetComponentTypeHandle<DrawModel.InstanceOffsetData>();
+            var instanceCounterType = this.GetComponentTypeHandle<DrawModel.InstanceCounterData>();// isReadOnly: true );
+            var boneInfoType = this.GetComponentTypeHandle<DrawModel.BoneVectorSettingData>();// isReadOnly: true );
 
             var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 

@@ -52,7 +52,7 @@ namespace Abarabone.Character
 
             inputDeps = new SoldierWalkActionJob
             {
-                Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
+                Commands = this.ecb.CreateCommandBuffer().AsParallelWriter(),
                 MotionInfos = this.GetComponentDataFromEntity<Motion.InfoData>( isReadOnly: true ),
                 GroundResults = this.GetComponentDataFromEntity<GroundHitResultData>( isReadOnly: true ),
                 Rotations = this.GetComponentDataFromEntity<Rotation>(),
@@ -71,7 +71,7 @@ namespace Abarabone.Character
             <SoldierWalkActionState, MoveHandlingData, ObjectMainCharacterLinkData>
         {
 
-            public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.ParallelWriter Commands;
 
             [ReadOnly] public ComponentDataFromEntity<Motion.InfoData> MotionInfos;
             [ReadOnly] public ComponentDataFromEntity<GroundHitResultData> GroundResults;

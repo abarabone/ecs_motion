@@ -29,7 +29,7 @@ namespace Abarabone.CharacterMotion
 
         protected override void OnUpdate()
         {
-            var commands = this.ecb.CreateCommandBuffer().ToConcurrent();
+            var commands = this.ecb.CreateCommandBuffer().AsParallelWriter();
 
             var linkers = this.GetComponentDataFromEntity<Stream.RelationData>( isReadOnly: true );
             var shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>();

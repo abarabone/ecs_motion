@@ -44,8 +44,8 @@ namespace Abarabone.Draw
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>();
             var rots = this.GetComponentDataFromEntity<Rotation>();
-            //var links = this.GetComponentDataFromEntity<Structure.PartLinkData>(isReadOnly: true);
             var locals = this.GetComponentDataFromEntity<StructurePart.LocalPositionData>(isReadOnly: true);
+            var destructeds = this.GetComponentDataFromEntity<StructurePart.DestructedTag>(isReadOnly: true);
 
 
             this.Entities
@@ -53,38 +53,26 @@ namespace Abarabone.Draw
                 .WithAll<Structure.StructureMainTag, ObjectMain.ObjectMainTag>()
                 .WithNone<Structure.SleepingTag>()
                 .WithReadOnly(linkedGroups)
+                .WithReadOnly(destructeds)
                 .WithNativeDisableParallelForRestriction(poss)
                 .WithNativeDisableParallelForRestriction(rots)
                 .WithReadOnly(locals)
-                //.WithReadOnly(links)
                 .ForEach(
                     (
                         in ObjectMain.BinderLinkData binderLink,
-                        //in Structure.PartLinkData link,
                         in Translation pos,
                         in Rotation rot
                     ) =>
                     {
-
-                        //for( var ptent = link.NextEntity; ptent != Entity.Null; ptent = links[ptent].NextEntity )
-                        //{
-                        //    var local = locals[ptent];
-
-                        //    var wpos = pos.Value + math.mul(rot.Value, local.Translation);
-                        //    var wrot = math.mul(rot.Value, local.Rotation);
-
-                        //    poss[ptent] = new Translation { Value = wpos };
-                        //    rots[ptent] = new Rotation { Value = wrot };
-                        //}
-
                         var children = linkedGroups[binderLink.BinderEntity];
 
                         //foreach (var child in children)
-                        for(var i = 1; i < children.Length; i++)
+                        for(var i = 2; i < children.Length; i++)
                         {
                             var child = children[i].Value;
 
-                            if (!locals.Exists(child)) continue;
+                            if (destructeds.HasComponent(child)) continue;
+                            if (!locals.HasComponent(child)) continue;
 
                             var local = locals[child];
 

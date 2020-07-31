@@ -52,7 +52,7 @@ namespace Abarabone.Character
 
             inputDeps = new AntWalkActionJob
             {
-                Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
+                Commands = this.ecb.CreateCommandBuffer().AsParallelWriter(),
 
                 MotionInfos = this.GetComponentDataFromEntity<Motion.InfoData>( isReadOnly: true ),
                 MotionCursors = this.GetComponentDataFromEntity<Motion.CursorData>(),
@@ -77,7 +77,7 @@ namespace Abarabone.Character
             <AntWalkActionState, MoveHandlingData, ObjectMainCharacterLinkData>
         {
 
-            public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.ParallelWriter Commands;
 
             [ReadOnly] public ComponentDataFromEntity<Motion.InfoData> MotionInfos;
             [NativeDisableParallelForRestriction]

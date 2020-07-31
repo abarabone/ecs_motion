@@ -55,7 +55,7 @@ namespace Abarabone.Character
             //return inputDeps;
             inputDeps = new SwitchWallingAndFreeFallWithHitJob
             {
-                Commands = this.ecb.CreateCommandBuffer().ToConcurrent(),
+                Commands = this.ecb.CreateCommandBuffer().AsParallelWriter(),
                 WallHitResults = this.GetComponentDataFromEntity<WallHitResultData>( isReadOnly : true ),
             }
             .Schedule( this, inputDeps );
@@ -70,7 +70,7 @@ namespace Abarabone.Character
             <WallHunggingData, PhysicsGravityFactor>
         {
 
-            public EntityCommandBuffer.Concurrent Commands;
+            public EntityCommandBuffer.ParallelWriter Commands;
 
             [ReadOnly]
             public ComponentDataFromEntity<WallHitResultData> WallHitResults;
@@ -83,7 +83,7 @@ namespace Abarabone.Character
             )
             {
 
-                var isFreeFalling = this.WallHitResults.Exists( entity );
+                var isFreeFalling = this.WallHitResults.HasComponent( entity );
                 
 
                 if( isFreeFalling )

@@ -84,12 +84,12 @@ namespace Abarabone.CharacterMotion
         Motion.InfoData info;
         //Motion.CursorData cursor;
 
-        EntityCommandBuffer.Concurrent cmd;
+        EntityCommandBuffer.ParallelWriter cmd;
         Entity entity;
         int jobIndex;
 
         public MotionOperator(
-            EntityCommandBuffer.Concurrent command,
+            EntityCommandBuffer.ParallelWriter command,
             ComponentDataFromEntity<Motion.InfoData> motionInfos,
             ComponentDataFromEntity<Motion.CursorData> motionCursors,
             Entity motionEntity, int jobIndex
@@ -152,7 +152,7 @@ namespace Abarabone.CharacterMotion
         /// モーション初期化セット、disable があれば消す
         /// </summary>
         static public void Start( int entityIndex,
-            ref EntityCommandBuffer.Concurrent cmd, Entity motinEntity, Motion.InfoData motionInfo,
+            ref EntityCommandBuffer.ParallelWriter cmd, Entity motinEntity, Motion.InfoData motionInfo,
             int motionIndex, bool isLooping, float delayTime = 0.0f, bool isContinuous = true
         )
         {
@@ -172,7 +172,7 @@ namespace Abarabone.CharacterMotion
         /// <summary>
         /// モーションとストリームに disable
         /// </summary>
-        static public void Stop( int entityIndex, ref EntityCommandBuffer.Concurrent cmd, Entity motionEntity )
+        static public void Stop( int entityIndex, ref EntityCommandBuffer.ParallelWriter cmd, Entity motionEntity )
         {
             cmd.RemoveComponent<Motion.ProgressTimerTag>( entityIndex, motionEntity );
         }
@@ -180,7 +180,7 @@ namespace Abarabone.CharacterMotion
         /// 
         /// </summary>
         static public void Change( int entityIndex,
-            ref EntityCommandBuffer.Concurrent cmd, Entity motinEntity, int motionIndex, bool isContinuous = true
+            ref EntityCommandBuffer.ParallelWriter cmd, Entity motinEntity, int motionIndex, bool isContinuous = true
         )
         {
             cmd.AddComponent( entityIndex, motinEntity,

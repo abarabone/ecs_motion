@@ -61,7 +61,7 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
 
@@ -143,7 +143,7 @@ namespace Abarabone.Arms
             {
                 if (!hit.isHit) return;
 
-                if(parts_.Exists(hit.hitEntity))
+                if(parts_.HasComponent(hit.hitEntity))
                 {
                     structureHitHolder.Add(hit.mainEntity,
                         new StructureHitMessage
@@ -180,7 +180,7 @@ namespace Abarabone.Arms
 
             void instantiateBullet_
                 (
-                    ref EntityCommandBuffer.Concurrent cmd_, int i, Entity bulletPrefab,
+                    ref EntityCommandBuffer.ParallelWriter cmd_, int i, Entity bulletPrefab,
                     float3 start, float3 end
                 )
             {

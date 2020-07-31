@@ -60,7 +60,7 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
 
             //var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
