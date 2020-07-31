@@ -101,8 +101,8 @@ Shader "Custom/SkinnedMesh_1bone_nolit_cs"
 				//UNITY_SETUP_INSTANCE_ID(v);
 
 				//int i = getInstanceId;
-				int ibone = i * BoneLengthEveryInstance + v.boneIndex.x;
-				int ivec = BoneVectorOffset + ibone * 2;
+				int vector_base = BoneVectorOffset + i * BoneLengthEveryInstance * 2;
+				int ivec =  + vector_base + v.boneIndex.x * 2;
 
 				float4 wpos = BoneVectorBuffer[ivec + 0];
 				float4 wrot = BoneVectorBuffer[ivec + 1];

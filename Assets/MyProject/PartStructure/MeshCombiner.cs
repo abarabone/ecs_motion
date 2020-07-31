@@ -47,7 +47,7 @@ namespace Abarabone.Geometry
 					mesh.SetTriangles( x.idxs, submesh:x.i, calculateBounds:true );
 				}
 			}
-			if(this.Color32s != null) this.Color32s.ForEach(x=>Debug.Log($"cm {x}"));
+			//if(this.Color32s != null) this.Color32s.ForEach(x=>Debug.Log($"cm {x}"));
 			//if( this.Normals != null ) mesh.RecalculateNormals();//
 			mesh.RecalculateBounds();
 			return mesh;
@@ -246,9 +246,10 @@ namespace Abarabone.Geometry
 					a:	(byte)xy.pidx.bitIndex
 				);
 
-			return qPidPallet_PerVtx.Do(x=>Debug.Log(x)).ToArray();
-			
-			
+			//return qPidPallet_PerVtx.Do(x=>Debug.Log(x)).ToArray();
+			return qPidPallet_PerVtx.ToArray();
+
+
 			/// <summary>
 			/// パーツＩＤをすべての頂点ごとにクエリする。
 			/// パーツＩＤは、各パーツに設定された partid から取得する。

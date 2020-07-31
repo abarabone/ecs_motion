@@ -56,11 +56,12 @@ namespace Abarabone.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntity];
 
-                        var i = target.DrawInstanceId * 2 + offsetInfo.VectorOffsetPerInstance;// あとでスケールに対応させる
+                        var lengthOfInstance = 2 + offsetInfo.VectorOffsetPerInstance;// あとでスケールに対応させる
+                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorOffsetPerInstance;
 
-                        var pInstance = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pInstance[i + 0] = new float4(pos.Value, 1.0f);
-                        pInstance[i + 1] = rot.Value.value;
+                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        pModel[i + 0] = new float4(pos.Value, 1.0f);
+                        pModel[i + 1] = rot.Value.value;
 
                     }
                 )

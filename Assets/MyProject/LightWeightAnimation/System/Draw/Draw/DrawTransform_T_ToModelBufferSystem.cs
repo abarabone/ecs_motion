@@ -52,11 +52,12 @@ namespace Abarabone.Draw
                         var offsetInfo = offsetsOfDrawModel[linkerOfTf.DrawModelEntity];
 
                         const int vectorLengthInBone = 1;
-                        var bondOffset = targetOfTf.DrawInstanceId * indexerOfTf.BoneLength + indexerOfTf.BoneId;
-                        var i = bondOffset * vectorLengthInBone + offsetInfo.VectorOffsetPerInstance;
+                        var lengthOfInstance = vectorLengthInBone * indexerOfTf.BoneLength + offsetInfo.VectorOffsetPerInstance;
+                        var boneOffset = targetOfTf.DrawInstanceId * lengthOfInstance;
+                        var i = boneOffset + vectorLengthInBone * indexerOfTf.BoneId + offsetInfo.VectorOffsetPerInstance;
 
-                        var pInstance = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pInstance[ i ] = new float4( pos.Value, 1.0f );
+                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        pModel[ i ] = new float4( pos.Value, 1.0f );
                     }
                 )
                 .Schedule( inputDeps );
