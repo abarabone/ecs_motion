@@ -1,5 +1,5 @@
 
-Shader "Custom/mesh_nolit_cs"
+Shader "Custom/structure_nolit_cs"
 {
 	
 	Properties
@@ -49,7 +49,6 @@ Shader "Custom/mesh_nolit_cs"
 				float4	vertex	: POSITION;
 				float3	normal	: NORMAL;
 				float2	uv		: TEXCOORD0;
-				fixed4	part_index : COLOR;
 			};
 			
 			struct v2f
@@ -76,32 +75,15 @@ Shader "Custom/mesh_nolit_cs"
 
 				return float4( rv, 0.0f );
 			}
-
-			
-
-			static const uint4 element_mask_table[] =
-			{
-				{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}
-			};
-			
-			uint get_part_bit(int iInstance, fixed2 part_id)
-			{
-				const int offset = part_id.w >> 2;
-				const int elemnt = (part_id.w & 0x3);
-				const int bitmask = 1 << part_id.z;
-				
-				const uint4 xyzw = asuint(BoneVectorBuffer[i_instance + offset]);
-				const uint  = dot(xyzw, element_mask_table[element]);
-				return element & bitmask;
-			}
 			
 
 			v2f vert(appdata v , uint i : SV_InstanceID )
 			{
 				v2f o;
-
-				int ibone = i;// * 2;//BoneLengthEveryInstance;
-				int ivec = BoneVectorOffset + ibone * 2;
+				
+				const int vector_offset_per_instance = 4;
+				int ibone = i;
+				int ivec = BoneVectorOffset + ibone * 2 + vector_offset_per_instance;
 
 				float4 wpos = BoneVectorBuffer[ivec + 0];
 				float4 wrot = BoneVectorBuffer[ivec + 1];

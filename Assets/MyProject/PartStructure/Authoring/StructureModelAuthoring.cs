@@ -23,6 +23,8 @@ namespace Abarabone.Structure.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Structure;
     using Unity.Entities.UniversalDelegates;
+    using Unity.Properties;
+    using System.CodeDom;
 
     /// <summary>
     /// 
@@ -159,6 +161,7 @@ namespace Abarabone.Structure.Authoring
                 (
                     new ComponentType[]
                     {
+                        typeof(Structure.StructureMainTag),
                         typeof(DrawInstance.MeshTag),
                         //typeof(Abarabone.Particle.ParticleTag),//暫定
                         //typeof(NonUniformScale),//暫定

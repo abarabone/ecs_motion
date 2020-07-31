@@ -45,7 +45,8 @@ namespace Abarabone.Structure
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
+    [UpdateAfter(typeof(StructureHitMessageHolderAllocationSystem))]
     public class StructureHitMessageApplySystem : SystemBase
     {
 

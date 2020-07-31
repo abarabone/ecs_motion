@@ -41,7 +41,8 @@ namespace Abarabone.Arms
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(ObjectInitializeSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
+    //[UpdateAfter(typeof())]
     public class BeamSystem : SystemBase
     {
 

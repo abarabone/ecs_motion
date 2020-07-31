@@ -41,6 +41,11 @@ namespace Abarabone.Structure
     static public partial class Structure
     {
 
+        public struct StructureMainTag : IComponentData
+        { }
+
+
+
         /// <summary>
         /// 破壊したパーツのビットフラグがオンになる
         /// 生存がオンでないのは直感的ではないかもだが、初期化がゼロで済むし、パーツがない部分も「壊れていない」で済ませられるため

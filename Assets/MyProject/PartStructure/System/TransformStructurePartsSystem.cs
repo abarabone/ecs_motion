@@ -33,7 +33,9 @@ namespace Abarabone.Draw
     /// スリープオンオフを楽にするために、パーツからの位置プルではなく、親からのプッシュとした。
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    //[UpdateAfter(typeof())]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
     public class TransformStructurePartsSystem : SystemBase
     {
 
@@ -48,7 +50,7 @@ namespace Abarabone.Draw
 
             this.Entities
                 .WithBurst()
-                .WithAll<ObjectMain.ObjectMainTag>()
+                .WithAll<Structure.StructureMainTag, ObjectMain.ObjectMainTag>()
                 .WithNone<Structure.SleepingTag>()
                 .WithReadOnly(linkedGroups)
                 .WithNativeDisableParallelForRestriction(poss)

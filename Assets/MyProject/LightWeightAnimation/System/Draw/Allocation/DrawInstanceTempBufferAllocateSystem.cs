@@ -93,13 +93,16 @@ namespace Abarabone.Draw
 
                     for( var j = 0; j < chunk.Count; j++ )
                     {
+                        var instanceOffset = offsets[j].VectorOffsetPerInstance;
+
                         offsets[ j ] = new DrawModel.InstanceOffsetData
                         {
-                            pVectorOffsetPerModelInBuffer = (float4*)sum,
+                            VectorOffsetPerModel = sum,
+                            VectorOffsetPerInstance = instanceOffset,
                         };
 
                         var instanceCount = counters[ j ].InstanceCounter.Count;
-                        var instanceVectorSize = infos[ j ].BoneLength * infos[ j ].VectorLengthInBone;
+                        var instanceVectorSize = infos[ j ].BoneLength * infos[ j ].VectorLengthInBone + instanceOffset;
                         var modelBufferSize = instanceCount * instanceVectorSize;
 
                         sum += modelBufferSize;
@@ -118,13 +121,11 @@ namespace Abarabone.Draw
 
                     for( var j = 0; j < chunk.Count; j++ )
                     {
-                        var offset = (int)offsets[ j ].pVectorOffsetPerModelInBuffer;
+                        var offset = offsets[ j ];
 
-                        offsets[ j ] = new DrawModel.InstanceOffsetData
-                        {
-                            pVectorOffsetPerModelInBuffer = pBufferStart + offset,
-                            voffset = offset,//デバッグ表示用
-                        };
+                        offset.pVectorOffsetPerModelInBuffer = pBufferStart + offset.VectorOffsetPerModel;
+
+                        offsets[j] = offset;
                     }
                 }
             }
