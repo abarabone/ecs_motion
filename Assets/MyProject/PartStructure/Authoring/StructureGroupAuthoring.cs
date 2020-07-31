@@ -200,7 +200,7 @@ namespace Abarabone.Structure.Authoring
         /// </summary>
         static public Func<MeshElements> GetCombineChildMeshesFunc
             (this IEnumerable<GameObject> targets, Transform tf) =>
-            MeshCombiner.BuildNormalMeshElements(targets, tf, isCombineSubMeshes: true);
+            MeshCombiner.BuildStructureWithPalletMeshElements(targets, tf);
 
 
         /// <summary>

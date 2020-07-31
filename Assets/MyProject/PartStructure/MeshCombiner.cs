@@ -47,7 +47,7 @@ namespace Abarabone.Geometry
 					mesh.SetTriangles( x.idxs, submesh:x.i, calculateBounds:true );
 				}
 			}
-
+			if(this.Color32s != null) this.Color32s.ForEach(x=>Debug.Log($"cm {x}"));
 			//if( this.Normals != null ) mesh.RecalculateNormals();//
 			mesh.RecalculateBounds();
 			return mesh;
@@ -237,16 +237,16 @@ namespace Abarabone.Geometry
 
 			// パーツＩＤとパレットＩＤを頂点カラーに落とし込む。
 			var qPidPallet_PerVtx =
-				from xy in (qPid_PerVtx, qPallets_PerVtx).Zip( (x,y)=>(pid:x, pallet:y) )
+				from xy in (qPid_PerVtx, qPallets_PerVtx).Zip( (x,y)=>(pidx:x, pallet:y) )
 				select new Color32
 				(
-					r:	(byte)xy.pid.int4Index, 
-					g:	(byte)xy.pid.memberIndex, 
-					b:	(byte)xy.pid.bitIndex, 
-					a:	(byte)xy.pallet
+					r:	0,
+					g:	(byte)xy.pallet,
+					b:	(byte)xy.pidx.elementIndex, 
+					a:	(byte)xy.pidx.bitIndex
 				);
 
-			return qPidPallet_PerVtx.ToArray();
+			return qPidPallet_PerVtx.Do(x=>Debug.Log(x)).ToArray();
 			
 			
 			/// <summary>
@@ -254,7 +254,7 @@ namespace Abarabone.Geometry
 			/// パーツＩＤは、各パーツに設定された partid から取得する。
 			/// </summary>
 			IEnumerable<(int int4Index, int memberIndex, int bitIndex)>
-				queryPartIdx_PerVtx_( IEnumerable<int> vtxCount_PerMesh_, IEnumerable<int> partId_PerMesh_ )
+				queryPartIdx_PerVtx__( IEnumerable<int> vtxCount_PerMesh_, IEnumerable<int> partId_PerMesh_ )
 			{
 				var qPidEveryParts =
 					from pid in partId_PerMesh_
@@ -276,7 +276,25 @@ namespace Abarabone.Geometry
 
 				return qPidEveryVertices;
 			}
-			
+			IEnumerable<(int elementIndex, int bitIndex)>
+				queryPartIdx_PerVtx_(IEnumerable<int> vtxCount_PerMesh_, IEnumerable<int> partId_PerMesh_)
+			{
+				var qPidEveryParts =
+					from pid in partId_PerMesh_
+					select (
+						elementIndex:	pid >> 5,
+						bitIndex:		pid & 31
+					);
+
+				var qPidEveryVertices =
+					from xy in (vtxCount_PerMesh_, qPidEveryParts).Zip((x, y) => (vtxCount: x, pidx: y))
+					from pidsEveryVtxs in Enumerable.Repeat<(int, int)>(xy.pidx, xy.vtxCount)
+					select pidsEveryVtxs
+					;
+
+				return qPidEveryVertices;
+			}
+
 			/// <summary>
 			/// パレットＩＤをすべての頂点ごとにクエリする。
 			/// パレットＩＤは、各サブメッシュに対応する、結合後マテリアルのインデックスを取得する。

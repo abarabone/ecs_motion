@@ -49,6 +49,7 @@ Shader "Custom/structure_nolit_cs"
 				float4	vertex	: POSITION;
 				float3	normal	: NORMAL;
 				float2	uv		: TEXCOORD0;
+				fixed4	part_index : COLOR;
 			};
 			
 			struct v2f
@@ -76,25 +77,45 @@ Shader "Custom/structure_nolit_cs"
 				return float4( rv, 0.0f );
 			}
 			
+			
 
+			static const uint4 element_mask_table[] =
+			{
+				{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}
+			};
+			
+			uint get_part_bit(int i_instance, uint2 part_id)
+			{
+				const int ioffset = part_id.x >> 2;
+				const int ielement = part_id.x & 0x3;
+				const uint bitmask = 1 << part_id.y;
+				
+				const uint4 xyzw = asuint(BoneVectorBuffer[i_instance + ioffset]);
+				const uint element = asuint(BoneVectorBuffer[i_instance].x);//dot(xyzw, element_mask_table[ielement]);
+				return element & bitmask;
+			}
+			
 			v2f vert(appdata v , uint i : SV_InstanceID )
 			{
 				v2f o;
 				
 				const int vector_offset_per_instance = 4;
-				int ibone = i;
-				int ivec = BoneVectorOffset + ibone * 2 + vector_offset_per_instance;
+				const int ibone = i;
+				const int i_vector_base = BoneVectorOffset + ibone * 2;
+				const int ivec = i_vector_base + vector_offset_per_instance;
 
-				float4 wpos = BoneVectorBuffer[ivec + 0];
-				float4 wrot = BoneVectorBuffer[ivec + 1];
+				const float4 wpos = BoneVectorBuffer[ivec + 0];
+				const float4 wrot = BoneVectorBuffer[ivec + 1];
 
-				float4	lvt = v.vertex;
-				float4	rvt = rot( lvt, wrot );
-				float4	tvt = rvt + wpos;
-				float4	wvt = mul(UNITY_MATRIX_VP, float4(tvt.xyz, 1.0f));
-				//float4	wvt = UnityObjectToClipPos(tvt);
+				const float4	lvt = v.vertex;
+				const float4	rvt = rot( lvt, wrot );
+				const float4	tvt = rvt + wpos;
+				const float4	wvt = mul(UNITY_MATRIX_VP, float4(tvt.xyz, 1.0f));
+				//const float4	wvt = UnityObjectToClipPos(tvt);
 
-				o.vertex = wvt;
+				const float alival = get_part_bit(i_vector_base, v.part_index.ba * 255) == 0 ? 1 : 0;
+
+				o.vertex = wvt * alival;
 				o.uv = v.uv;
 				o.color = float4(1,1,1,1);
 

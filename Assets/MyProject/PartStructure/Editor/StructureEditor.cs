@@ -17,6 +17,8 @@ namespace Abarabone.Structure.Authoring
             //元のInspector部分を表示
             base.OnInspectorGUI();
 
+            GUILayout.BeginHorizontal();
+
             //ボタンを表示
             if (GUILayout.Button("set master prefab link on part"))
             {
@@ -36,6 +38,26 @@ namespace Abarabone.Structure.Authoring
 
                 AssetDatabase.SaveAssets();
             }
+
+
+            if (GUILayout.Button("disribute part id"))
+            {
+                var parts = this.targets
+                    .OfType<MonoBehaviour>()
+                    .SelectMany(s => s.GetComponentsInChildren<StructurePartAuthoring>())
+                ;
+
+                foreach (var x in parts.Select( (pt, i) => (pt, i) ))
+                {
+                    x.pt.PartId = x.i;
+
+                    EditorUtility.SetDirty(x.pt);
+                }
+
+                AssetDatabase.SaveAssets();
+            }
+
+            GUILayout.EndHorizontal();
         }
     }
 }

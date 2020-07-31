@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System;
 using Abarabone.Common.Extension;
 
-namespace Abarabone.Geometry.Editor
+namespace Abarabone.Geometry//.Editor
 {
 	using Abarabone.Geometry;
 	using Abarabone.Structure.Authoring;
@@ -16,7 +16,7 @@ namespace Abarabone.Geometry.Editor
 	/// メッシュを各要素ごとに結合する。
 	/// 
 	/// </summary>
-	public static class MeshCombiner_Structure
+	public static partial class MeshCombiner//_Structure
 	{
 
 		/// <summary>
@@ -32,15 +32,32 @@ namespace Abarabone.Geometry.Editor
 		}
 
 		static public Func<MeshElements> BuildStructureWithPalletMeshElements
+			(IEnumerable<GameObject> children, Transform tfBase)
+		{
+			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(children).ToArray();
+
+			return BuildStructureWithPalletMeshElements(mmts, tfBase);
+		}
+
+		static public Func<MeshElements> BuildStructureWithPalletMeshElements
 			( (Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase )
 		{
 
 			var f = MeshCombiner.BuildNormalMeshElements( mmts, tfBase, isCombineSubMeshes:true );
-			
-			
+
+
 			// 全パーツから、パーツＩＤをすべてクエリする。
-			//var partId_PerMesh = ( from x in mmts select x.tf.GetComponent<StructurePartAuthoring>().PartId ).ToArray();
-			var partId_PerMesh = Enumerable.Range(0, mmts.Length).ToArray();
+			var qPartId_PerMesh =
+				from mmt in mmts
+				select mmt.tf.gameObject
+					.AncestorsAndSelf()
+					.Select(x => x.GetComponent<StructurePartAuthoring>())
+					.First(x => x != null)
+					.PartId
+				;
+            var partId_PerMesh = qPartId_PerMesh.ToArray();
+			//var partId_PerMesh = qPartId_PerMesh.Do(x => Debug.Log(x)).ToArray();
+
 
 			// サブメッシュ単位で、頂点数を取得。
 			var vertexCount_PerSubmeshPerMesh =

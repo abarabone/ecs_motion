@@ -19,8 +19,7 @@ namespace Abarabone.Structure.Authoring
     {
 
 
-        //[HideInInspector]
-        //public int PartId;
+        public int PartId;
         //public int Life;
 
         public Material Material;
@@ -54,7 +53,7 @@ namespace Abarabone.Structure.Authoring
             //Debug.Log(conversionSystem.GetPrimaryEntity(go));
 
             setMainLink_(conversionSystem, objA, this.gameObject);
-            //initPartData_(conversionSystem, this.gameObject, this.PartId);
+            initPartData_(conversionSystem, this.gameObject, this.PartId);
 
             return;
 
@@ -86,21 +85,21 @@ namespace Abarabone.Structure.Authoring
                 );
             }
 
-            //void initPartData_
-            //    (GameObjectConversionSystem gcs, GameObject part, int partId)
-            //{
-            //    var em = gcs.DstEntityManager;
+            void initPartData_
+                (GameObjectConversionSystem gcs, GameObject part, int partId)
+            {
+                var em = gcs.DstEntityManager;
 
-            //    var ent = gcs.GetPrimaryEntity(part);
+                var ent = gcs.GetPrimaryEntity(part);
 
-            //    em.AddComponentData(ent,
-            //        new StructurePart.PartData
-            //        {
-            //            //PartId = partId,
-            //            //Life = 
-            //        }
-            //    );
-            //}
+                em.AddComponentData(ent,
+                    new StructurePart.PartData
+                    {
+                        PartId = partId,
+                        //Life = 
+                    }
+                );
+            }
 
         }
 

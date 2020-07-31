@@ -63,6 +63,7 @@ namespace Abarabone.Draw
                         mat.SetInt( "BoneVectorOffset", (int)vectorOffset );
                         //mat.SetInt( "BoneLengthEveryInstance", mesh.bindposes.Length );
                         //mat.SetBuffer( "BoneVectorBuffer", computeBuffer );
+                        //Debug.Log($"{mesh.name} {(*(uint4*)offset.pVectorOffsetPerModelInBuffer)}");
 
                         var instanceCount = counter.InstanceCounter.Count;
                         var argparams = new IndirectArgumentsForInstancing( mesh, instanceCount );

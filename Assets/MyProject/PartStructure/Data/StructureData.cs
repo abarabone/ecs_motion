@@ -50,11 +50,17 @@ namespace Abarabone.Structure
         /// 破壊したパーツのビットフラグがオンになる
         /// 生存がオンでないのは直感的ではないかもだが、初期化がゼロで済むし、パーツがない部分も「壊れていない」で済ませられるため
         /// </summary>
+        [StructLayout(LayoutKind.Explicit)]
         public unsafe struct PartDestractionData : IComponentData
         {
 
+            [FieldOffset(0)]
             public fixed uint Destractions[512 / 32];
 
+            [FieldOffset(0)]  public uint4 _values0;
+            [FieldOffset(16)] public uint4 _values1;
+            [FieldOffset(32)] public uint4 _values2;
+            [FieldOffset(48)] public uint4 _values3;
 
             public void SetDestroyed( int id ) => this.Destractions[id >> 5] |= (uint)(1 << id);
             public void SetAlive( int id ) => this.Destractions[id >> 5] &= ~(uint)(1 << id);
