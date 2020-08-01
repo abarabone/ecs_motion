@@ -94,8 +94,24 @@ namespace Abarabone.Structure
             public quaternion Rotation;
         }
 
-        public struct DestructedTag : IComponentData
-        { }
+        public struct DebrisPrefabData : IComponentData
+        {
+            public Entity DebrisPrefab;
+
+        }
+
+        //public struct DestructedTag : IComponentData
+        //{ }
+
+    }
+
+    static public partial class StructurePartDebris
+    {
+
+        public struct Data : IComponentData
+        {
+            public float LifeTime;
+        }
 
     }
 

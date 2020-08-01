@@ -73,7 +73,7 @@ namespace Abarabone.Arms
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 
-            // 以下は暫定
+            // カメラは暫定
             var tfcam = Camera.main.transform;
             var campos = tfcam.position.As_float3();
             var camrot = new quaternion( tfcam.rotation.As_float4() );

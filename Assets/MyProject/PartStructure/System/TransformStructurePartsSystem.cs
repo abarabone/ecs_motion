@@ -45,7 +45,7 @@ namespace Abarabone.Draw
             var poss = this.GetComponentDataFromEntity<Translation>();
             var rots = this.GetComponentDataFromEntity<Rotation>();
             var locals = this.GetComponentDataFromEntity<StructurePart.LocalPositionData>(isReadOnly: true);
-            var destructeds = this.GetComponentDataFromEntity<StructurePart.DestructedTag>(isReadOnly: true);
+            //var destructeds = this.GetComponentDataFromEntity<StructurePart.DestructedTag>(isReadOnly: true);
 
 
             this.Entities
@@ -53,7 +53,7 @@ namespace Abarabone.Draw
                 .WithAll<Structure.StructureMainTag, ObjectMain.ObjectMainTag>()
                 .WithNone<Structure.SleepingTag>()
                 .WithReadOnly(linkedGroups)
-                .WithReadOnly(destructeds)
+                //.WithReadOnly(destructeds)
                 .WithNativeDisableParallelForRestriction(poss)
                 .WithNativeDisableParallelForRestriction(rots)
                 .WithReadOnly(locals)
@@ -71,7 +71,7 @@ namespace Abarabone.Draw
                         {
                             var child = children[i].Value;
 
-                            if (destructeds.HasComponent(child)) continue;
+                            //if (destructeds.HasComponent(child)) continue;
                             if (!locals.HasComponent(child)) continue;
 
                             var local = locals[child];

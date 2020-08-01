@@ -34,7 +34,7 @@ namespace Abarabone.Structure.Authoring
         public StructureModelAuthoring[] StructureModelPrefabs;
 
         (GameObject, Mesh)[] objectsAndMeshes;
-        GameObject[] partMasterPrefabs;
+        //GameObject[] partMasterPrefabs;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -114,7 +114,7 @@ namespace Abarabone.Structure.Authoring
                 .Distinct()
                 .Do(x => Debug.Log(x.name))
                 .ToArray();
-            this.partMasterPrefabs = partMasterPrefabs;
+            //this.partMasterPrefabs = partMasterPrefabs;
 
 
             combineMeshes_(structurePrefabs, partMasterPrefabs);
