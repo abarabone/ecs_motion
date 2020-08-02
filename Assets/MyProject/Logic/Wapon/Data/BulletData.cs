@@ -22,6 +22,9 @@ namespace Abarabone.Arms
         public struct BeamTag : IComponentData
         { }
 
+        public struct SolidTag : IComponentData
+        { }
+
         public struct BulletData : IComponentData
         {
             public Entity MainEnity;
@@ -31,6 +34,23 @@ namespace Abarabone.Arms
 
             public float LifeTime;
             public float InvTotalTime;
+        }
+
+        public struct Data : IComponentData
+        {
+            public Entity MainEnity;
+
+            //public float3 Forward;
+            public float RangeDistance;
+        }
+        public struct LifeTimeData : IComponentData
+        {
+            public float LifeTime;
+            public float InvTotalTime;
+        }
+        public struct PrevPositionData : IComponentData
+        {
+            public float3 PrevPosition;
         }
 
     }

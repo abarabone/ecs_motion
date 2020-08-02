@@ -19,6 +19,15 @@ namespace Abarabone.Arms
     static public partial class Wapon
     {
 
+        public struct BulletEmittingData : IComponentData
+        {
+            public Entity BulletEntity;
+
+            public Entity MainEntity;
+            public float3 MuzzlePositionLocal;
+        }
+
+
         public struct BulletEmitterData : IComponentData
         {
             public Entity BulletEntity;
@@ -31,7 +40,6 @@ namespace Abarabone.Arms
             public Entity BeamPrefab;
 
             public Entity MainEntity;
-            public Entity BeamInstanceEntity;
 
             public float3 MuzzlePositionLocal;
         }
