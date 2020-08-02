@@ -20,7 +20,7 @@ namespace Abarabone.Structure.Authoring
     using Unity.Transforms;
 
     using Material = UnityEngine.Material;
-
+    using Unity.Physics.Authoring;
 
     public class StructurePartAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
     {
@@ -52,7 +52,7 @@ namespace Abarabone.Structure.Authoring
 
             Debug.Log("pt auth "+this.name);
 
-            var top = this.gameObject.Ancestors().Do(x=>Debug.Log(x.name)).First( go => go.GetComponent<StructureModelAuthoring>() );
+            var top = this.gameObject.Ancestors().First( go => go.GetComponent<StructureModelAuthoring>() );
             var objA = top.transform.GetChild(0).gameObject;
 
             //var go = Instantiate(this.gameObject);
@@ -153,6 +153,18 @@ namespace Abarabone.Structure.Authoring
                     new DrawInstance.TargetWorkData
                     {
                         DrawInstanceId = -1,
+                    }
+                );
+                //var mass = part_.GetComponent<PhysicsBodyAuthoring>().CustomMassDistribution;
+                //var mass = em_.GetComponentData<PhysicsCollider>(gcs_.GetPrimaryEntity(part_)).MassProperties;
+                em_.SetComponentData(prefabEnt,
+                    //PhysicsMass.CreateDynamic( mass, 1.0f )
+                    PhysicsMass.CreateDynamic(MassProperties.UnitSphere, 1.0f)
+                );
+                em_.SetComponentData(prefabEnt,
+                    new PhysicsGravityFactor
+                    {
+                        Value = 1.0f,
                     }
                 );
 

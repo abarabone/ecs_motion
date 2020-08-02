@@ -25,13 +25,10 @@ namespace Abarabone.Arms
     using Unity.Physics;
     using Abarabone.Structure;
 
-    using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
-    using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
-
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
-    public class EmitBeamSystem : SystemBase
+    public class EmitBulletSystem : SystemBase
     {
 
         BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
@@ -88,7 +85,7 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Wapon.BeamUnitData beamUnit,
+                        ref Wapon.BeamEmitterData beamUnit,
                         in Rotation rot,
                         in Translation pos
                     ) =>
@@ -97,15 +94,8 @@ namespace Abarabone.Arms
                         if (handle.ControlAction.IsShooting)
                         {
                             var i = entityInQueryIndex;
-                            var prefab = beamUnit.PsylliumPrefab;
-                            var bulletData = bullets[beamUnit.PsylliumPrefab];
-
-                            var hit = hitTest_(beamUnit.MainEntity, camrot, campos, bulletData, ref cw, mainLinks);
-
-                            postMessageToHitTarget_(structureHitHolder, hit, parts);
-
-                            //var (start, end) = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
-                            var ptop = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
+                            var prefab = beamUnit.BeamPrefab;
+                            var bulletData = bullets[beamUnit.BeamPrefab];
 
                             instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
                         }
@@ -118,65 +108,6 @@ namespace Abarabone.Arms
 
             return;
 
-
-            BulletHitUtility.BulletHit hitTest_
-                (
-                    Entity mainEntity, quaternion sightRot, float3 sightPos,
-                    Bullet.BulletData bulletData,
-                    ref CollisionWorld cw_,
-                    ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks_
-                )
-            {
-                var hitStart = sightPos;
-                var hitEnd = sightPos + math.forward(sightRot) * bulletData.RangeDistance;
-                var distance = bulletData.RangeDistance;
-
-                return cw_.BulletHitRay(mainEntity, hitStart, hitEnd, distance, mainLinks_);
-            }
-
-            void postMessageToHitTarget_
-                (
-                    StructureHitHolder.ParallelWriter structureHitHolder_,
-                    BulletHitUtility.BulletHit hit,
-                    ComponentDataFromEntity<StructurePart.PartData> parts_
-                )
-            {
-                if (!hit.isHit) return;
-
-                if(parts_.HasComponent(hit.hitEntity))
-                {
-                    structureHitHolder.Add(hit.mainEntity,
-                        new StructureHitMessage
-                        {
-                            Position = hit.posision,
-                            Normale = hit.normal,
-                            PartEntity = hit.hitEntity,
-                            PartId = parts_[hit.hitEntity].PartId,
-                        }
-                    );
-                }
-            }
-
-            //(float3 start, float3 end) calcBeamPosision_
-            PtoPUnit calcBeamPosision_
-                (
-                    Wapon.BeamUnitData beamUnit,
-                    Rotation mainrot, Translation mainpos, BulletHitUtility.BulletHit hit,
-                    quaternion sightRot, float3 sightPos, Bullet.BulletData bulletData
-                )
-            {
-
-                var beamStart = math.mul(mainrot.Value, beamUnit.MuzzlePositionLocal) + mainpos.Value;
-
-                //if (hit.isHit) return (beamStart, hit.posision);
-                if (hit.isHit) return new PtoPUnit { start = beamStart, end = hit.posision };
-
-
-                var beamEnd = sightPos + math.forward(sightRot) * bulletData.RangeDistance;
-
-                //return (beamStart, beamEnd);
-                return new PtoPUnit { start = beamStart, end = beamEnd };
-            }
 
             void instantiateBullet_
                 (

@@ -67,7 +67,6 @@ namespace Abarabone.Structure
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
-            var masses = this.GetComponentDataFromEntity<PhysicsMass>(isReadOnly: true);
 
 
             var msgs = this.messageSystem.MsgHolder;
@@ -79,7 +78,6 @@ namespace Abarabone.Structure
                 Prefabs = prefabs,
                 Rotations = rots,
                 Positions = poss,
-                Masses = masses,
             }
             .Schedule(msgs, 0, this.Dependency);
 
@@ -104,8 +102,6 @@ namespace Abarabone.Structure
             public ComponentDataFromEntity<Rotation> Rotations;
             [ReadOnly]
             public ComponentDataFromEntity<Translation> Positions;
-            [ReadOnly]
-            public ComponentDataFromEntity<PhysicsMass> Masses;
 
 
             public void ExecuteNext(int uniqueIndex, Entity key, ref StructureHitMessage value)
@@ -121,7 +117,6 @@ namespace Abarabone.Structure
                 var prefab = this.Prefabs[value.PartEntity].DebrisPrefab;
                 var rot = this.Rotations[value.PartEntity];
                 var pos = this.Positions[value.PartEntity];
-                //var mass = this.Masses[value.PartEntity];
                 addComponents(this.Cmd, uniqueIndex, prefab, rot, pos);
 
                 this.Cmd.DestroyEntity(uniqueIndex, value.PartEntity);
@@ -132,15 +127,13 @@ namespace Abarabone.Structure
                 void addComponents
                     (
                         EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity debrisPrefab_,
-                        Rotation rot_, Translation pos_, PhysicsMass mass_
+                        Rotation rot_, Translation pos_
                     )
                 {
 
                     var ent = cmd_.Instantiate(uniqueIndex_, debrisPrefab_);
-                    cmd_.SetComponent(uniqueIndex_, ent, new PhysicsGravityFactor { Value = 1.0f });
-                    cmd_.SetComponent(uniqueIndex_, ent, mass_);
-                    //cmd_.SetComponent(uniqueIndex_, ent, rot_);
-                    //cmd_.SetComponent(uniqueIndex_, ent, pos_);
+                    cmd_.SetComponent(uniqueIndex_, ent, rot_);
+                    cmd_.SetComponent(uniqueIndex_, ent, pos_);
 
                 }
             }

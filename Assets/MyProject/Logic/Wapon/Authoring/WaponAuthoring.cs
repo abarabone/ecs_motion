@@ -60,15 +60,15 @@ namespace Abarabone.Model.Authoring
 
                 var types = new ComponentTypes
                 (
-                    typeof(Wapon.BeamUnitData)
+                    typeof(Wapon.BeamEmitterData)
                 );
                 em.AddComponents(ent, types);
 
                 em.SetComponentData(ent,
-                    new Wapon.BeamUnitData
+                    new Wapon.BeamEmitterData
                     {
                         MainEntity = mainEntity,
-                        PsylliumPrefab = beamPrefab,
+                        BeamPrefab = beamPrefab,
                         MuzzlePositionLocal = new float3(0,0,0.1f),//new float3(0, 0, 1.0f),
                     }
                 );

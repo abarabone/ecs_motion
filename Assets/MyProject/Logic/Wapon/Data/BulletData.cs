@@ -16,27 +16,6 @@ using Unity.Physics;
 namespace Abarabone.Arms
 {
 
-    static public partial class Wapon
-    {
-
-        public struct FireUnitData : IComponentData
-        {
-            public Entity MainEntity;
-            public Entity BulletEntity;
-        }
-
-        public struct BeamUnitData : IComponentData
-        {
-            public Entity PsylliumPrefab;
-
-            public Entity MainEntity;
-            public Entity BeamInstanceEntity;
-
-            public float3 MuzzlePositionLocal;
-        }
-    }
-
-    
     static public partial class Bullet
     {
 
@@ -55,6 +34,5 @@ namespace Abarabone.Arms
         }
 
     }
-
 
 }
