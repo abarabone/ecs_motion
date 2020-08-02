@@ -24,6 +24,7 @@ namespace Abarabone.Arms
     using Abarabone.Geometry;
     using Unity.Physics;
     using Abarabone.Structure;
+    using UnityEngine.Rendering;
 
 
     //[DisableAutoCreation]
@@ -66,7 +67,7 @@ namespace Abarabone.Arms
             var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
 
-            var bullets = this.GetComponentDataFromEntity<Bullet.BulletData>(isReadOnly: true);
+            var bullets = this.GetComponentDataFromEntity<Bullet.Data>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 
@@ -85,19 +86,50 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Wapon.BeamEmitterData beamUnit,
+                        ref Wapon.BulletEmittingData emitter,
                         in Rotation rot,
                         in Translation pos
                     ) =>
                     {
-                        var handle = handles[beamUnit.MainEntity];
+
+                        var handle = handles[emitter.MainEntity];
                         if (!handle.ControlAction.IsShooting) return;
 
-                        var i = entityInQueryIndex;
-                        var prefab = beamUnit.BeamPrefab;
-                        var bulletData = bullets[beamUnit.BeamPrefab];
 
-                        instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
+                        var bulletData = bullets[emitter.BulletPrefab];
+
+
+                        var newBullet = cmd.Instantiate(entityInQueryIndex, emitter.BulletPrefab);
+
+                        if (bulletData.IsCameraSight)
+                        {
+                            var dir = math.forward(camrot);
+                            var start = campos + dir * new float3(0.0f, 0.0f, 1.0f);
+                            var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
+
+                            cmd.SetComponent(entityInQueryIndex, newBullet, ptop);
+                            cmd.SetComponent(entityInQueryIndex, newBullet,
+                                new Bullet.DirectionData
+                                {
+                                    Direction = dir,
+                                }
+                            );
+                        }
+                        else
+                        {
+                            var dir = math.forward(rot.Value);
+                            var start = pos.Value + dir * emitter.MuzzlePositionLocal;
+                            var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
+
+                            cmd.SetComponent(entityInQueryIndex, newBullet, ptop);
+                            cmd.SetComponent(entityInQueryIndex, newBullet,
+                                new Bullet.DirectionData
+                                {
+                                    Direction = dir,
+                                }
+                            );
+                        }
+
                     }
                 )
                 .ScheduleParallel();
@@ -105,25 +137,6 @@ namespace Abarabone.Arms
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
 
-            return;
-
-
-            void instantiateBullet_
-                (
-                    ref EntityCommandBuffer.ParallelWriter cmd_, int i, Entity bulletPrefab,
-                    float3 start, float3 end
-                )
-            {
-                var newBeamEntity = cmd_.Instantiate(i, bulletPrefab);
-
-                cmd_.SetComponent(i, newBeamEntity,
-                    new Particle.TranslationPtoPData
-                    {
-                        Start = start,
-                        End = end,
-                    }
-                );
-            }
         }
 
     }

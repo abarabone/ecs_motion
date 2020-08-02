@@ -100,20 +100,5 @@ namespace Abarabone.Arms
     }
 
 
-    static public class ColorExtension
-    {
-        static public int4 to_int4(this Color32 color) => new int4(color.r, color.g, color.b, color.a);
-        static public Color32 ToColor32(this int4 color) => new Color32((byte)color.x, (byte)color.y, (byte)color.z, (byte)color.w);
-
-        static public float4 to_float4(this Color32 color) => new float4(color.r, color.g, color.b, color.a);
-        static public Color32 ToColor32(this float4 color) => new Color32((byte)color.x, (byte)color.y, (byte)color.z, (byte)color.w);
-
-        static public Color32 ApplyAlpha(this Color32 color, float newAlpha)
-        {
-            color.a = (byte)(newAlpha * 255);
-            return color;
-        }
-    }
-
 }
 

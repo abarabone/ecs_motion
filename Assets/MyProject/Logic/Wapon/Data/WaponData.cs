@@ -21,7 +21,7 @@ namespace Abarabone.Arms
 
         public struct BulletEmittingData : IComponentData
         {
-            public Entity BulletEntity;
+            public Entity BulletPrefab;
 
             public Entity MainEntity;
             public float3 MuzzlePositionLocal;

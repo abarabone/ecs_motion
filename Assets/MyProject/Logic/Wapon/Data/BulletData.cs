@@ -38,9 +38,9 @@ namespace Abarabone.Arms
 
         public struct Data : IComponentData
         {
-            public Entity MainEnity;
+            public Entity MainEntity;
 
-            //public float3 Forward;
+            public bool IsCameraSight;
             public float RangeDistance;
         }
         public struct LifeTimeData : IComponentData
@@ -48,9 +48,9 @@ namespace Abarabone.Arms
             public float LifeTime;
             public float InvTotalTime;
         }
-        public struct PrevPositionData : IComponentData
+        public struct DirectionData : IComponentData
         {
-            public float3 PrevPosition;
+            public float3 Direction;
         }
 
     }

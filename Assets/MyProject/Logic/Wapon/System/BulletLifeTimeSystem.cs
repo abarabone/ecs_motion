@@ -8,9 +8,15 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEngine.XR;
+
+using System.Runtime.InteropServices;
+using UnityEngine.Assertions.Must;
+using Unity.Physics;
+using Unity.Physics;
 using Unity.Physics.Systems;
+using UnityEngine.InputSystem;
+using UnityEngine.Assertions;
+
 
 namespace Abarabone.Arms
 {
@@ -19,26 +25,29 @@ namespace Abarabone.Arms
     using Abarabone.Model.Authoring;
     using Abarabone.Arms;
     using Abarabone.Character;
+    using Abarabone.Draw;
     using Abarabone.Particle;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Misc;
+    using Abarabone.Utilities;
+    using Abarabone.Physics;
     using Abarabone.SystemGroup;
-    using Abarabone.Geometry;
-    using Unity.Physics;
-    using Abarabone.Structure;
 
-    using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
-    using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
-
+    using Collider = Unity.Physics.Collider;
+    using SphereCollider = Unity.Physics.SphereCollider;
+    using RaycastHit = Unity.Physics.RaycastHit;
+    using Unity.Physics.Authoring;
 
     //[DisableAutoCreation]
+    //[UpdateInGroup(typeof(InitializationSystemGroup))]
+    //[UpdateAfter(typeof(ObjectInitializeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
+    //[UpdateAfter(typeof())]
     public class BulletLifeTimeSystem : SystemBase
     {
 
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
 
         EntityCommandBufferSystem cmdSystem;
-
-        StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
 
 
         protected override void OnCreate()
@@ -46,68 +55,34 @@ namespace Abarabone.Arms
             base.OnCreate();
 
             this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-
-            this.buildPhysicsWorldSystem = this.World.GetExistingSystem<BuildPhysicsWorld>();
-
-            this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
         }
 
-
-        struct PtoPUnit
-        {
-            public float3 start;
-            public float3 end;
-        }
 
         protected override void OnUpdate()
         {
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
-            var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
-            var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
 
-
-            var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
-            var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
-
-            var bullets = this.GetComponentDataFromEntity<Bullet.BulletData>(isReadOnly: true);
-            var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
-
-
-            // カメラは暫定
-            var tfcam = Camera.main.transform;
-            var campos = tfcam.position.As_float3();
-            var camrot = new quaternion(tfcam.rotation.As_float4());
+            var deltaTime = this.Time.DeltaTime;
 
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(handles)
-                .WithReadOnly(bullets)
-                .WithReadOnly(mainLinks)
-                .WithReadOnly(parts)
                 .ForEach(
                     (
-                        Entity fireEntity, int entityInQueryIndex,
-                        ref Wapon.BeamEmitterData emitter,
-                        in Rotation rot,
-                        in Translation pos
+                        Entity entity, int entityInQueryIndex,
+                        ref Bullet.LifeTimeData timer,
+                        ref Particle.AdditionalData additional
                     ) =>
                     {
-                        var handle = handles[emitter.MainEntity];
-                        if (handle.ControlAction.IsShooting)
+
+                        timer.LifeTime -= deltaTime;
+
+                        var transparency = math.max(timer.LifeTime, 0.0f) * timer.InvTotalTime;
+                        additional.Color = additional.Color.ApplyAlpha(transparency);
+
+                        if (timer.LifeTime <= 0.0f)
                         {
-                            var i = entityInQueryIndex;
-                            var prefab = emitter.BeamPrefab;
-                            var bulletData = bullets[emitter.BeamPrefab];
-
-                            var hit = hitTest_(emitter.MainEntity, camrot, campos, bulletData, ref cw, mainLinks);
-
-                            postMessageToHitTarget_(structureHitHolder, hit, parts);
-
-                            //var (start, end) = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
-                            var ptop = calcBeamPosision_(emitter, rot, pos, hit, camrot, campos, bulletData);
-
-                            instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
+                            cmd.DestroyEntity(entityInQueryIndex, entity);
                         }
                     }
                 )
@@ -115,88 +90,10 @@ namespace Abarabone.Arms
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
-
-            return;
-
-
-            BulletHitUtility.BulletHit hitTest_
-                (
-                    Entity mainEntity, quaternion sightRot, float3 sightPos,
-                    Bullet.BulletData bulletData,
-                    ref CollisionWorld cw_,
-                    ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks_
-                )
-            {
-                var sightDir = math.forward(sightRot);
-                var hitStart = sightPos + sightDir * 1.0f;
-                var hitEnd = sightPos + sightDir * bulletData.RangeDistance;
-                var distance = bulletData.RangeDistance;
-
-                return cw_.BulletHitRay(mainEntity, hitStart, hitEnd, distance, mainLinks_);
-            }
-
-            void postMessageToHitTarget_
-                (
-                    StructureHitHolder.ParallelWriter structureHitHolder_,
-                    BulletHitUtility.BulletHit hit,
-                    ComponentDataFromEntity<StructurePart.PartData> parts_
-                )
-            {
-                if (!hit.isHit) return;
-
-                if (parts_.HasComponent(hit.hitEntity))
-                {
-                    structureHitHolder.Add(hit.mainEntity,
-                        new StructureHitMessage
-                        {
-                            Position = hit.posision,
-                            Normale = hit.normal,
-                            PartEntity = hit.hitEntity,
-                            PartId = parts_[hit.hitEntity].PartId,
-                        }
-                    );
-                }
-            }
-
-            //(float3 start, float3 end) calcBeamPosision_
-            PtoPUnit calcBeamPosision_
-                (
-                    Wapon.BeamEmitterData beamUnit,
-                    Rotation mainrot, Translation mainpos, BulletHitUtility.BulletHit hit,
-                    quaternion sightRot, float3 sightPos, Bullet.BulletData bulletData
-                )
-            {
-
-                var beamStart = math.mul(mainrot.Value, beamUnit.MuzzlePositionLocal) + mainpos.Value;
-
-                //if (hit.isHit) return (beamStart, hit.posision);
-                if (hit.isHit) return new PtoPUnit { start = beamStart, end = hit.posision };
-
-
-                var beamEnd = sightPos + math.forward(sightRot) * bulletData.RangeDistance;
-
-                //return (beamStart, beamEnd);
-                return new PtoPUnit { start = beamStart, end = beamEnd };
-            }
-
-            void instantiateBullet_
-                (
-                    ref EntityCommandBuffer.ParallelWriter cmd_, int i, Entity bulletPrefab,
-                    float3 start, float3 end
-                )
-            {
-                var newBeamEntity = cmd_.Instantiate(i, bulletPrefab);
-
-                cmd_.SetComponent(i, newBeamEntity,
-                    new Particle.TranslationPtoPData
-                    {
-                        Start = start,
-                        End = end,
-                    }
-                );
-            }
         }
 
     }
 
+
 }
+

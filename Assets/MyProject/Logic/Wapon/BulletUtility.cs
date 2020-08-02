@@ -32,7 +32,7 @@ namespace Abarabone.Arms
     using Abarabone.Utilities;
     using Abarabone.Physics;
     using Abarabone.SystemGroup;
-    using Abarabone.Model;
+    using Abarabone.Structure;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;
@@ -41,6 +41,37 @@ namespace Abarabone.Arms
 
     using CatId = PhysicsCategoryNamesId;
     using CatFlag = PhysicsCategoryNamesFlag;
+
+    using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
+
+
+
+
+    static public class Bulletss
+    {
+
+        static public void InstantiateBullet
+            (
+                this ref EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
+                Entity bulletPrefab, float3 start, float3 end
+            )
+        {
+            var newBeamEntity = cmd.Instantiate(uniqueIndex, bulletPrefab);
+
+            cmd.SetComponent(uniqueIndex, newBeamEntity,
+                new Particle.TranslationPtoPData
+                {
+                    Start = start,
+                    End = end,
+                }
+            );
+        }
+
+    }
+
+
+
+
 
     static public class BulletHitUtility
     {
@@ -100,7 +131,49 @@ namespace Abarabone.Arms
             };
         }
 
+
+        static public void postMessageToHitTarget
+            (
+                this BulletHitUtility.BulletHit hit,
+                StructureHitHolder.ParallelWriter structureHitHolder,
+                ComponentDataFromEntity<StructurePart.PartData> parts
+            )
+        {
+
+            if (!hit.isHit) return;
+
+
+            if (parts.HasComponent(hit.hitEntity))
+            {
+                structureHitHolder.Add(hit.mainEntity,
+                    new StructureHitMessage
+                    {
+                        Position = hit.posision,
+                        Normale = hit.normal,
+                        PartEntity = hit.hitEntity,
+                        PartId = parts[hit.hitEntity].PartId,
+                    }
+                );
+            }
+
+        }
+
     }
 
+
+    static public class ColorExtension
+    {
+        static public int4 to_int4(this Color32 color) => new int4(color.r, color.g, color.b, color.a);
+        static public Color32 ToColor32(this int4 color) => new Color32((byte)color.x, (byte)color.y, (byte)color.z, (byte)color.w);
+
+        static public float4 to_float4(this Color32 color) => new float4(color.r, color.g, color.b, color.a);
+        static public Color32 ToColor32(this float4 color) => new Color32((byte)color.x, (byte)color.y, (byte)color.z, (byte)color.w);
+
+        static public Color32 ApplyAlpha(this Color32 color, float newAlpha)
+        {
+            color.a = (byte)(newAlpha * 255);
+            return color;
+        }
+    }
 }
 

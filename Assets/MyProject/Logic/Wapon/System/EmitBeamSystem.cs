@@ -10,6 +10,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine.XR;
+    using Unity.Physics;
 using Unity.Physics.Systems;
 
 namespace Abarabone.Arms
@@ -22,7 +23,6 @@ namespace Abarabone.Arms
     using Abarabone.Particle;
     using Abarabone.SystemGroup;
     using Abarabone.Geometry;
-    using Unity.Physics;
     using Abarabone.Structure;
 
     using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
