@@ -68,6 +68,8 @@ namespace Abarabone.Arms
 
             var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             //var bullets = this.GetComponentDataFromEntity<Bullet.Data>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
@@ -84,32 +86,36 @@ namespace Abarabone.Arms
                 .WithReadOnly(handles)
                 //.WithReadOnly(bullets)
                 .WithReadOnly(mainLinks)
+                .WithReadOnly(rots)
+                .WithReadOnly(poss)
                 .WithReadOnly(parts)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         ref Wapon.BulletEmittingData emitter,
                         in Bullet.Data bulletData,
-                        in Rotation rot,
-                        in Translation pos
+                        in Bullet.DistanceData dist
                     ) =>
                     {
                         var handle = handles[emitter.MainEntity];
-                        if (handle.ControlAction.IsShooting)
-                        {
-                            var i = entityInQueryIndex;
-                            var prefab = emitter.BulletPrefab;
-                            //var bulletData = bullets[emitter.BulletPrefab];
+                        if (!handle.ControlAction.IsShooting) return;
 
-                            var hit = hitTest_(emitter.MainEntity, camrot, campos, bulletData, ref cw, mainLinks);
 
-                            postMessageToHitTarget_(structureHitHolder, hit, parts);
+                        var i = entityInQueryIndex;
+                        var prefab = emitter.BulletPrefab;
+                        //var bulletData = bullets[emitter.BulletPrefab];
+                        var rot = rots[emitter.MuzzleBodyEntity];
+                        var pos = poss[emitter.MuzzleBodyEntity];
 
-                            //var (start, end) = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
-                            var ptop = calcBeamPosision_(emitter, rot, pos, hit, camrot, campos, bulletData);
+                        var hit = hitTest_(emitter.MainEntity, camrot, campos, dist, ref cw, mainLinks);
 
-                            instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
-                        }
+                        postMessageToHitTarget_(structureHitHolder, hit, parts);
+
+                        //var (start, end) = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
+                        var ptop = calcBeamPosision_(emitter, rot, pos, hit, camrot, campos, dist);
+
+                        instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
+                        
                     }
                 )
                 .ScheduleParallel();
@@ -123,15 +129,15 @@ namespace Abarabone.Arms
             BulletHitUtility.BulletHit hitTest_
                 (
                     Entity mainEntity, quaternion sightRot, float3 sightPos,
-                    Bullet.Data bulletData,
+                    Bullet.DistanceData dist,
                     ref CollisionWorld cw_,
                     ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks_
                 )
             {
                 var sightDir = math.forward(sightRot);
                 var hitStart = sightPos + sightDir * 1.0f;
-                var hitEnd = sightPos + sightDir * bulletData.RangeDistance;
-                var distance = bulletData.RangeDistance;
+                var hitEnd = sightPos + sightDir * dist.RestRangeDistance;
+                var distance = dist.RestRangeDistance;
 
                 return cw_.BulletHitRay(mainEntity, hitStart, hitEnd, distance, mainLinks_);
             }
@@ -164,7 +170,7 @@ namespace Abarabone.Arms
                 (
                     Wapon.BulletEmittingData beamUnit,
                     Rotation mainrot, Translation mainpos, BulletHitUtility.BulletHit hit,
-                    quaternion sightRot, float3 sightPos, Bullet.Data bulletData
+                    quaternion sightRot, float3 sightPos, Bullet.DistanceData dist
                 )
             {
 
@@ -174,7 +180,7 @@ namespace Abarabone.Arms
                 if (hit.isHit) return new PtoPUnit { start = beamStart, end = hit.posision };
 
 
-                var beamEnd = sightPos + math.forward(sightRot) * bulletData.RangeDistance;
+                var beamEnd = sightPos + math.forward(sightRot) * dist.RestRangeDistance;
 
                 //return (beamStart, beamEnd);
                 return new PtoPUnit { start = beamStart, end = beamEnd };

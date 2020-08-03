@@ -53,6 +53,7 @@ namespace Abarabone.Arms.Authoring
                 (
                     typeof(Bullet.Data),
                     typeof(Bullet.DirectionData),
+                    typeof(Bullet.DistanceData),
                     typeof(Bullet.LifeTimeData)
                 );
                 em.AddComponents(bulletEntity, beemTypes);
@@ -60,8 +61,14 @@ namespace Abarabone.Arms.Authoring
                 em.SetComponentData(bulletEntity,
                     new Bullet.Data
                     {
-                        RangeDistance = this.RangeDistance,
-                        Speed = this.BulletSpeed,
+                        BulletSpeed = this.BulletSpeed,
+                        RangeDistanceFactor = this.RangeDistance,
+                    }
+                );
+                em.SetComponentData(bulletEntity,
+                    new Bullet.DistanceData
+                    {
+                        RestRangeDistance = this.RangeDistance,
                     }
                 );
                 em.SetComponentData(bulletEntity,

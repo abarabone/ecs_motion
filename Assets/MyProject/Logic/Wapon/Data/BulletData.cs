@@ -19,11 +19,11 @@ namespace Abarabone.Arms
     static public partial class Bullet
     {
 
-        public struct BeamTag : IComponentData
-        { }
+        //public struct BeamTag : IComponentData
+        //{ }
 
-        public struct SolidTag : IComponentData
-        { }
+        //public struct SolidTag : IComponentData
+        //{ }
 
         //public struct BulletData : IComponentData
         //{
@@ -40,18 +40,24 @@ namespace Abarabone.Arms
         {
             public Entity MainEntity;
 
-            public bool IsCameraSight;
-            public float RangeDistance;
-            public float Speed;
+            public float RangeDistanceFactor;
+            public float BulletSpeed;
         }
+
+        public struct DirectionData : IComponentData
+        {
+            public float3 Direction;
+        }
+
+        public struct DistanceData : IComponentData
+        {
+            public float RestRangeDistance;
+        }
+
         public struct LifeTimeData : IComponentData
         {
             public float LifeTime;
             public float InvTotalTime;
-        }
-        public struct DirectionData : IComponentData
-        {
-            public float3 Direction;
         }
 
     }

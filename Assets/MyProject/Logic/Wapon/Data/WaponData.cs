@@ -22,9 +22,24 @@ namespace Abarabone.Arms
         public struct BulletEmittingData : IComponentData
         {
             public Entity BulletPrefab;
-
             public Entity MainEntity;
+
+            public Entity MuzzleBodyEntity;
             public float3 MuzzlePositionLocal;
+
+            public float EmittingInterval;
+            public float DirectionAccuracy;
+            public int NumEmitMultiple;
+            public float RangeDistanceFactor;// 切り替え時に弾丸のと計算確定しようかと思ったが、わかりにくいのでやめた
+        }
+
+        public struct SightModeData : IComponentData
+        {
+            public bool IsCameraSight;
+        }
+        public struct EmittingStateData : IComponentData
+        {
+            public float RestEmittingInterval;
         }
 
 

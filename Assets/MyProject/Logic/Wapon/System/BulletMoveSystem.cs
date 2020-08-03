@@ -59,14 +59,19 @@ namespace Abarabone.Arms
                     (
                         Entity entity, int entityInQueryIndex,
                         ref Particle.TranslationPtoPData ptop,
+                        ref Bullet.DistanceData dist,
                         in Bullet.Data bullet,
                         in Bullet.DirectionData dir
                     ) =>
                     {
 
+                        var d = bullet.BulletSpeed * deltaTime;
+
                         ptop.Start = ptop.End;
 
-                        ptop.End += dir.Direction * bullet.Speed * deltaTime;
+                        ptop.End += dir.Direction * d;
+
+                        dist.RestRangeDistance -= d;
 
                     }
                 )

@@ -29,6 +29,7 @@ namespace Abarabone.Arms.Authoring
 
         public BeamBulletAuthoring BeamPrefab;
 
+        public GameObject MuzzleObject;
         public float3 MuzzleLocalPosition;
 
 
@@ -44,18 +45,24 @@ namespace Abarabone.Arms.Authoring
             var top = this.gameObject.Ancestors().First(go => go.GetComponent<CharacterModelAuthoring>());
             var main = top.transform.GetChild(0).gameObject;
 
-            initWapon_(conversionSystem, main, this.gameObject, this.BeamPrefab.gameObject);
+            initWapon_(conversionSystem, main, this.gameObject, this.MuzzleObject, this.BeamPrefab.gameObject);
 
             return;
 
 
-            void initWapon_(GameObjectConversionSystem gcs_, GameObject main_, GameObject wapon_, GameObject beam_)
+            void initWapon_
+                (
+                    GameObjectConversionSystem gcs_,
+                    GameObject main_, GameObject wapon_, GameObject muzzle_, GameObject beam_
+                )
             {
                 var em = gcs_.DstEntityManager;
 
+                var beamBullet = beam_.GetComponent<BeamBulletAuthoring>();
 
                 var mainEntity = gcs_.GetPrimaryEntity(main_);
                 var beamPrefab = gcs_.GetPrimaryEntity(beam_);
+                var muzzleEntity = gcs_.GetPrimaryEntity(muzzle_);
 
 
                 var ent = conversionSystem.GetPrimaryEntity(wapon_);
@@ -64,8 +71,7 @@ namespace Abarabone.Arms.Authoring
                 (
                     typeof(Wapon.BulletEmittingData),
                     typeof(Bullet.Data),
-                    typeof(Rotation),
-                    typeof(Translation)
+                    typeof(Bullet.DistanceData)
                 );
                 em.AddComponents(ent, types);
 
@@ -74,6 +80,7 @@ namespace Abarabone.Arms.Authoring
                     {
                         MainEntity = mainEntity,
                         BulletPrefab = beamPrefab,
+                        MuzzleBodyEntity = muzzleEntity,
                         MuzzlePositionLocal = this.MuzzleLocalPosition,
                     }
                 );
@@ -81,7 +88,13 @@ namespace Abarabone.Arms.Authoring
                     new Bullet.Data
                     {
                         MainEntity = mainEntity,
-                        RangeDistance = beam_.GetComponent<BeamBulletAuthoring>().RangeDistance,
+                        RangeDistanceFactor = beamBullet.RangeDistance,
+                    }
+                );
+                em.SetComponentData(ent,
+                    new Bullet.DistanceData
+                    {
+                        RestRangeDistance = 1.0f,
                     }
                 );
             }

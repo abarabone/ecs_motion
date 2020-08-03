@@ -61,6 +61,8 @@ namespace Abarabone.Arms
 
             var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
             //var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             var bullets = this.GetComponentDataFromEntity<Bullet.Data>(isReadOnly: true);
             //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
@@ -72,27 +74,39 @@ namespace Abarabone.Arms
             var camrot = new quaternion( tfcam.rotation.As_float4() );
 
 
+            var deltaTime = this.Time.DeltaTime;
+
+
             this.Entities
                 .WithBurst()
                 .WithNone<Bullet.Data>()
                 .WithReadOnly(handles)
                 //.WithReadOnly(mainLinks)
+                .WithReadOnly(rots)
+                .WithReadOnly(poss)
                 .WithReadOnly(bullets)
                 //.WithReadOnly(parts)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         ref Wapon.BulletEmittingData emitter,
-                        in Rotation rot,
-                        in Translation pos
+                        ref Wapon.EmittingStateData state
                     ) =>
                     {
+
+                        state.RestEmittingInterval -= deltaTime;
+                        if (state.RestEmittingInterval > 0.0f) return;
+
+                        state.RestEmittingInterval = emitter.EmittingInterval;
+
 
                         var handle = handles[emitter.MainEntity];
                         if (!handle.ControlAction.IsShooting) return;
 
 
                         var bulletData = bullets[emitter.BulletPrefab];
+                        var rot = rots[emitter.MuzzleBodyEntity];
+                        var pos = poss[emitter.MuzzleBodyEntity];
 
 
                         var newBullet = cmd.Instantiate(entityInQueryIndex, emitter.BulletPrefab);
@@ -101,7 +115,7 @@ namespace Abarabone.Arms
                         //var start = pos.Value + dir * emitter.MuzzlePositionLocal;
                         //var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
                         var dir = math.forward(camrot);
-                        var start = campos + dir * new float3(0.0f, 0.0f, 1.0f);
+                        var start = campos + dir * 1.0f;
                         var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
 
                         cmd.SetComponent(entityInQueryIndex, newBullet, ptop);
@@ -109,6 +123,12 @@ namespace Abarabone.Arms
                             new Bullet.DirectionData
                             {
                                 Direction = dir,
+                            }
+                        );
+                        cmd.SetComponent(entityInQueryIndex, newBullet,
+                            new Bullet.DistanceData
+                            {
+                                RestRangeDistance = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor,
                             }
                         );
 

@@ -70,8 +70,9 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
+                        ref Particle.AdditionalData additional,
                         ref Bullet.LifeTimeData timer,
-                        ref Particle.AdditionalData additional
+                        in Bullet.DistanceData dist
                     ) =>
                     {
 
@@ -80,7 +81,7 @@ namespace Abarabone.Arms
                         var transparency = math.max(timer.LifeTime, 0.0f) * timer.InvTotalTime;
                         additional.Color = additional.Color.ApplyAlpha(transparency);
 
-                        if (timer.LifeTime <= 0.0f)
+                        if (timer.LifeTime <= 0.0f | dist.RestRangeDistance <= 0.0f)
                         {
                             cmd.DestroyEntity(entityInQueryIndex, entity);
                         }

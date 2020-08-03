@@ -29,9 +29,14 @@ namespace Abarabone.Arms.Authoring
 
         public ShotBulletAuthoring BulletPrefab;
 
-        public int NumFireMultiple;
-        public float Interval;
-        public float Accuracy;
+        public GameObject MuzzleObject;
+        public float3 MuzzleLocalPosition;
+
+        public int NumEmitMultiple;
+        public float EmittingInterval;
+        public float DirectionAccuracy;
+        public float RangeDistanceFactor;// 弾丸のと掛け合わせて射程とする
+
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
@@ -45,18 +50,23 @@ namespace Abarabone.Arms.Authoring
             var top = this.gameObject.Ancestors().First(go => go.GetComponent<CharacterModelAuthoring>());
             var main = top.transform.GetChild(0).gameObject;
 
-            initWapon_(conversionSystem, main, this.gameObject, this.BulletPrefab.gameObject);
+            initWapon_(conversionSystem, main, this.gameObject, this.MuzzleObject, this.BulletPrefab.gameObject);
 
             return;
 
 
-            void initWapon_(GameObjectConversionSystem gcs_, GameObject main_, GameObject wapon_, GameObject beam_)
+            void initWapon_
+                (
+                    GameObjectConversionSystem gcs_,
+                    GameObject main_, GameObject wapon_, GameObject muzzle_, GameObject beam_
+                )
             {
                 var em = gcs_.DstEntityManager;
 
 
                 var mainEntity = gcs_.GetPrimaryEntity(main_);
                 var beamPrefab = gcs_.GetPrimaryEntity(beam_);
+                var muzzleEntity = gcs_.GetPrimaryEntity(muzzle_);
 
 
                 var ent = conversionSystem.GetPrimaryEntity(wapon_);
@@ -64,17 +74,28 @@ namespace Abarabone.Arms.Authoring
                 var types = new ComponentTypes
                 (
                     typeof(Wapon.BulletEmittingData),
-                    typeof(Rotation),
-                    typeof(Translation)
+                    typeof(Wapon.EmittingStateData),
+                    typeof(Wapon.SightModeData)
                 );
                 em.AddComponents(ent, types);
 
                 em.SetComponentData(ent,
                     new Wapon.BulletEmittingData
                     {
-                        MainEntity = mainEntity,
                         BulletPrefab = beamPrefab,
-                        MuzzlePositionLocal = new float3(0,0,0.1f),//new float3(0, 0, 1.0f),
+                        MainEntity = mainEntity,
+                        MuzzleBodyEntity = muzzleEntity,
+                        MuzzlePositionLocal = this.MuzzleLocalPosition,
+                        EmittingInterval = this.EmittingInterval,
+                        NumEmitMultiple = this.NumEmitMultiple,
+                        DirectionAccuracy = this.DirectionAccuracy,
+                        RangeDistanceFactor = this.RangeDistanceFactor,
+                    }
+                );
+                em.SetComponentData(ent,
+                    new Wapon.EmittingStateData
+                    {
+                        RestEmittingInterval = this.EmittingInterval,
                     }
                 );
             }

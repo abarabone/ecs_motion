@@ -68,11 +68,12 @@ namespace Abarabone.Arms
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         in Particle.TranslationPtoPData ptop,
-                        in Bullet.Data bullet
+                        in Bullet.Data bullet,
+                        in Bullet.DistanceData dist
                     ) =>
                     {
                         var hit = cw.BulletHitRay
-                            (bullet.MainEntity, ptop.Start, ptop.End, bullet.RangeDistance, mainLinks);
+                            (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
 
                         hit.postMessageToHitTarget(structureHitHolder, parts);
                     }
