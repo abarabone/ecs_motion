@@ -32,8 +32,6 @@ namespace Abarabone.Arms
     public class EmitBulletSystem : SystemBase
     {
 
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
-
         EntityCommandBufferSystem cmdSystem;
 
         StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
@@ -44,8 +42,6 @@ namespace Abarabone.Arms
             base.OnCreate();
 
             this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-
-            this.buildPhysicsWorldSystem = this.World.GetExistingSystem<BuildPhysicsWorld>();
 
             this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
         }
@@ -60,15 +56,14 @@ namespace Abarabone.Arms
         protected override void OnUpdate()
         {
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
-            var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
 
 
             var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
-            var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            //var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
 
             var bullets = this.GetComponentDataFromEntity<Bullet.Data>(isReadOnly: true);
-            var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+            //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 
             // カメラは暫定
@@ -79,10 +74,11 @@ namespace Abarabone.Arms
 
             this.Entities
                 .WithBurst()
+                .WithNone<Bullet.Data>()
                 .WithReadOnly(handles)
+                //.WithReadOnly(mainLinks)
                 .WithReadOnly(bullets)
-                .WithReadOnly(mainLinks)
-                .WithReadOnly(parts)
+                //.WithReadOnly(parts)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
@@ -101,34 +97,20 @@ namespace Abarabone.Arms
 
                         var newBullet = cmd.Instantiate(entityInQueryIndex, emitter.BulletPrefab);
 
-                        if (bulletData.IsCameraSight)
-                        {
-                            var dir = math.forward(camrot);
-                            var start = campos + dir * new float3(0.0f, 0.0f, 1.0f);
-                            var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
+                        //var dir = math.forward(rot.Value);
+                        //var start = pos.Value + dir * emitter.MuzzlePositionLocal;
+                        //var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
+                        var dir = math.forward(camrot);
+                        var start = campos + dir * new float3(0.0f, 0.0f, 1.0f);
+                        var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
 
-                            cmd.SetComponent(entityInQueryIndex, newBullet, ptop);
-                            cmd.SetComponent(entityInQueryIndex, newBullet,
-                                new Bullet.DirectionData
-                                {
-                                    Direction = dir,
-                                }
-                            );
-                        }
-                        else
-                        {
-                            var dir = math.forward(rot.Value);
-                            var start = pos.Value + dir * emitter.MuzzlePositionLocal;
-                            var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
-
-                            cmd.SetComponent(entityInQueryIndex, newBullet, ptop);
-                            cmd.SetComponent(entityInQueryIndex, newBullet,
-                                new Bullet.DirectionData
-                                {
-                                    Direction = dir,
-                                }
-                            );
-                        }
+                        cmd.SetComponent(entityInQueryIndex, newBullet, ptop);
+                        cmd.SetComponent(entityInQueryIndex, newBullet,
+                            new Bullet.DirectionData
+                            {
+                                Direction = dir,
+                            }
+                        );
 
                     }
                 )

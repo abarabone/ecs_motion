@@ -110,7 +110,7 @@ namespace Abarabone.Character
 
                 if( acts.IsChangeMotion )
                 {
-                    MotionOp.Start( jobIndex, ref this.Commands, linker.MotionEntity, motionInfo, Motion_minic.slash01HL, true, 0.1f );
+                    MotionOp.Start( jobIndex, ref this.Commands, linker.MotionEntity, motionInfo, Motion_minic.slash01VU, false, 0.1f );
                     state.Phase = 1;
                     return;
                 }

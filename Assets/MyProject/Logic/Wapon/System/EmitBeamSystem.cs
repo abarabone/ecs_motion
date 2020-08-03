@@ -69,7 +69,7 @@ namespace Abarabone.Arms
             var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
 
-            var bullets = this.GetComponentDataFromEntity<Bullet.BulletData>(isReadOnly: true);
+            //var bullets = this.GetComponentDataFromEntity<Bullet.Data>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 
@@ -82,13 +82,14 @@ namespace Abarabone.Arms
             this.Entities
                 .WithBurst()
                 .WithReadOnly(handles)
-                .WithReadOnly(bullets)
+                //.WithReadOnly(bullets)
                 .WithReadOnly(mainLinks)
                 .WithReadOnly(parts)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Wapon.BeamEmitterData emitter,
+                        ref Wapon.BulletEmittingData emitter,
+                        in Bullet.Data bulletData,
                         in Rotation rot,
                         in Translation pos
                     ) =>
@@ -97,8 +98,8 @@ namespace Abarabone.Arms
                         if (handle.ControlAction.IsShooting)
                         {
                             var i = entityInQueryIndex;
-                            var prefab = emitter.BeamPrefab;
-                            var bulletData = bullets[emitter.BeamPrefab];
+                            var prefab = emitter.BulletPrefab;
+                            //var bulletData = bullets[emitter.BulletPrefab];
 
                             var hit = hitTest_(emitter.MainEntity, camrot, campos, bulletData, ref cw, mainLinks);
 
@@ -122,7 +123,7 @@ namespace Abarabone.Arms
             BulletHitUtility.BulletHit hitTest_
                 (
                     Entity mainEntity, quaternion sightRot, float3 sightPos,
-                    Bullet.BulletData bulletData,
+                    Bullet.Data bulletData,
                     ref CollisionWorld cw_,
                     ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks_
                 )
@@ -161,9 +162,9 @@ namespace Abarabone.Arms
             //(float3 start, float3 end) calcBeamPosision_
             PtoPUnit calcBeamPosision_
                 (
-                    Wapon.BeamEmitterData beamUnit,
+                    Wapon.BulletEmittingData beamUnit,
                     Rotation mainrot, Translation mainpos, BulletHitUtility.BulletHit hit,
-                    quaternion sightRot, float3 sightPos, Bullet.BulletData bulletData
+                    quaternion sightRot, float3 sightPos, Bullet.Data bulletData
                 )
             {
 

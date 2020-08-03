@@ -35,9 +35,8 @@ namespace Abarabone.Arms
     public class BuletHitSystem : SystemBase
     {
 
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
 
-        EntityCommandBufferSystem cmdSystem;
+        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
 
         StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
 
@@ -46,25 +45,16 @@ namespace Abarabone.Arms
         {
             base.OnCreate();
 
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-
             this.buildPhysicsWorldSystem = this.World.GetExistingSystem<BuildPhysicsWorld>();
 
             this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
         }
 
 
-        struct PtoPUnit
-        {
-            public float3 start;
-            public float3 end;
-        }
-
         protected override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
-            var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
+            var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
 
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
@@ -88,9 +78,6 @@ namespace Abarabone.Arms
                     }
                 )
                 .ScheduleParallel();
-
-            // Make sure that the ECB system knows about our job
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
 
         }
 

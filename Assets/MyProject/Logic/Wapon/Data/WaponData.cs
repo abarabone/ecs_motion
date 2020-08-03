@@ -28,21 +28,21 @@ namespace Abarabone.Arms
         }
 
 
-        public struct BulletEmitterData : IComponentData
-        {
-            public Entity BulletEntity;
+        //public struct BulletEmitterData : IComponentData
+        //{
+        //    public Entity BulletEntity;
 
-            public Entity MainEntity;
-        }
+        //    public Entity MainEntity;
+        //}
 
-        public struct BeamEmitterData : IComponentData
-        {
-            public Entity BeamPrefab;
+        //public struct BeamEmitterData : IComponentData
+        //{
+        //    public Entity BeamPrefab;
 
-            public Entity MainEntity;
+        //    public Entity MainEntity;
 
-            public float3 MuzzlePositionLocal;
-        }
+        //    public float3 MuzzlePositionLocal;
+        //}
     }
 
 }

@@ -25,16 +25,16 @@ namespace Abarabone.Arms
         public struct SolidTag : IComponentData
         { }
 
-        public struct BulletData : IComponentData
-        {
-            public Entity MainEnity;
+        //public struct BulletData : IComponentData
+        //{
+        //    public Entity MainEnity;
 
-            //public float3 Forward;
-            public float RangeDistance;
+        //    //public float3 Forward;
+        //    public float RangeDistance;
 
-            public float LifeTime;
-            public float InvTotalTime;
-        }
+        //    public float LifeTime;
+        //    public float InvTotalTime;
+        //}
 
         public struct Data : IComponentData
         {
@@ -42,6 +42,7 @@ namespace Abarabone.Arms
 
             public bool IsCameraSight;
             public float RangeDistance;
+            public float Speed;
         }
         public struct LifeTimeData : IComponentData
         {

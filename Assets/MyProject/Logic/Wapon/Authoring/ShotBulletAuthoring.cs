@@ -23,7 +23,7 @@ namespace Abarabone.Arms.Authoring
     /// <summary>
     /// 
     /// </summary>
-    public class BeamBulletAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class ShotBulletAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         public float RangeDistance;
@@ -31,6 +31,7 @@ namespace Abarabone.Arms.Authoring
 
         public Color32 BulletColor;
         public float BulletSize;
+        public float BulletSpeed;
 
 
 
@@ -50,10 +51,19 @@ namespace Abarabone.Arms.Authoring
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
                 var beemTypes = new ComponentTypes
                 (
+                    typeof(Bullet.Data),
+                    typeof(Bullet.DirectionData),
                     typeof(Bullet.LifeTimeData)
                 );
                 em.AddComponents(bulletEntity, beemTypes);
 
+                em.SetComponentData(bulletEntity,
+                    new Bullet.Data
+                    {
+                        RangeDistance = this.RangeDistance,
+                        Speed = this.BulletSpeed,
+                    }
+                );
                 em.SetComponentData(bulletEntity,
                     new Bullet.LifeTimeData
                     {
