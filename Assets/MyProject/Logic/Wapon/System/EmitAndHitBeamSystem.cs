@@ -31,7 +31,7 @@ namespace Abarabone.Arms
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
-    public class EmitBeamSystem : SystemBase
+    public class EmitAndHitBeamSystem : SystemBase
     {
 
         BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
@@ -93,8 +93,7 @@ namespace Abarabone.Arms
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         ref Wapon.BulletEmittingData emitter,
-                        in Bullet.Data bulletData,
-                        in Bullet.DistanceData dist
+                        in Bullet.Data bulletData
                     ) =>
                     {
                         var handle = handles[emitter.MainEntity];
@@ -106,13 +105,14 @@ namespace Abarabone.Arms
                         //var bulletData = bullets[emitter.BulletPrefab];
                         var rot = rots[emitter.MuzzleBodyEntity];
                         var pos = poss[emitter.MuzzleBodyEntity];
+                        var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
-                        var hit = hitTest_(emitter.MainEntity, camrot, campos, dist, ref cw, mainLinks);
+                        var hit = hitTest_(emitter.MainEntity, camrot, campos, range, ref cw, mainLinks);
 
                         postMessageToHitTarget_(structureHitHolder, hit, parts);
 
                         //var (start, end) = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
-                        var ptop = calcBeamPosision_(emitter, rot, pos, hit, camrot, campos, dist);
+                        var ptop = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
 
                         instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
                         
@@ -128,18 +128,16 @@ namespace Abarabone.Arms
 
             BulletHitUtility.BulletHit hitTest_
                 (
-                    Entity mainEntity, quaternion sightRot, float3 sightPos,
-                    Bullet.DistanceData dist,
+                    Entity mainEntity, quaternion sightRot, float3 sightPos, float range,
                     ref CollisionWorld cw_,
                     ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks_
                 )
             {
                 var sightDir = math.forward(sightRot);
                 var hitStart = sightPos + sightDir * 1.0f;
-                var hitEnd = sightPos + sightDir * dist.RestRangeDistance;
-                var distance = dist.RestRangeDistance;
+                var hitEnd = sightPos + sightDir * range;
 
-                return cw_.BulletHitRay(mainEntity, hitStart, hitEnd, distance, mainLinks_);
+                return cw_.BulletHitRay(mainEntity, hitStart, hitEnd, range, mainLinks_);
             }
 
             void postMessageToHitTarget_
@@ -168,19 +166,19 @@ namespace Abarabone.Arms
             //(float3 start, float3 end) calcBeamPosision_
             PtoPUnit calcBeamPosision_
                 (
-                    Wapon.BulletEmittingData beamUnit,
+                    float3 muzzlePositionLocal, float range,
                     Rotation mainrot, Translation mainpos, BulletHitUtility.BulletHit hit,
-                    quaternion sightRot, float3 sightPos, Bullet.DistanceData dist
+                    quaternion sightRot, float3 sightPos
                 )
             {
 
-                var beamStart = math.mul(mainrot.Value, beamUnit.MuzzlePositionLocal) + mainpos.Value;
+                var beamStart = math.mul(mainrot.Value, muzzlePositionLocal) + mainpos.Value;
 
                 //if (hit.isHit) return (beamStart, hit.posision);
                 if (hit.isHit) return new PtoPUnit { start = beamStart, end = hit.posision };
 
 
-                var beamEnd = sightPos + math.forward(sightRot) * dist.RestRangeDistance;
+                var beamEnd = sightPos + math.forward(sightRot) * range;
 
                 //return (beamStart, beamEnd);
                 return new PtoPUnit { start = beamStart, end = beamEnd };

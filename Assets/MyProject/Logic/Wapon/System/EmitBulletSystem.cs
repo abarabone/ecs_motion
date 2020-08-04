@@ -115,7 +115,7 @@ namespace Abarabone.Arms
                         //var start = pos.Value + dir * emitter.MuzzlePositionLocal;
                         //var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
                         var dir = math.forward(camrot);
-                        var start = campos + dir * 1.0f;
+                        var start = campos + dir * 0.5f;
                         var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
 
                         cmd.SetComponent(entityInQueryIndex, newBullet, ptop);

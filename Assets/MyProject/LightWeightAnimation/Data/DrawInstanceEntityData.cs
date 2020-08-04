@@ -57,6 +57,15 @@ namespace Abarabone.Draw
             public int DrawInstanceId;   // -1 なら描画しない
         }
 
+        public struct ModelLinkLod2Data : IComponentData
+        {
+            public Entity DrawModelEntity0;
+            public Entity DrawModelEntity1;
+            public float Distance0;
+            public float Distance1;
+        }
+
+
 
 
         /// <summary>

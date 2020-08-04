@@ -82,6 +82,7 @@ namespace Abarabone.Arms.Authoring
                         BulletPrefab = beamPrefab,
                         MuzzleBodyEntity = muzzleEntity,
                         MuzzlePositionLocal = this.MuzzleLocalPosition,
+                        RangeDistanceFactor = 1.0f,
                     }
                 );
                 em.SetComponentData(ent,
@@ -89,12 +90,6 @@ namespace Abarabone.Arms.Authoring
                     {
                         MainEntity = mainEntity,
                         RangeDistanceFactor = beamBullet.RangeDistance,
-                    }
-                );
-                em.SetComponentData(ent,
-                    new Bullet.DistanceData
-                    {
-                        RestRangeDistance = 1.0f,
                     }
                 );
             }

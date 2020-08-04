@@ -50,7 +50,9 @@ namespace Abarabone.Arms.Authoring
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
                 var beemTypes = new ComponentTypes
                 (
-                    typeof(Bullet.LifeTimeData)
+                    typeof(Bullet.LifeTimeData),
+                    typeof(Bullet.DistanceData),
+                    typeof(Bullet.DirectionData)
                 );
                 em.AddComponents(bulletEntity, beemTypes);
 
@@ -66,6 +68,12 @@ namespace Abarabone.Arms.Authoring
                     {
                         Color = this.BulletColor,
                         Size = this.BulletSize,
+                    }
+                );
+                em.SetComponentData(bulletEntity,
+                    new Bullet.DistanceData
+                    {
+                        RestRangeDistance = this.RangeDistance,
                     }
                 );
             }

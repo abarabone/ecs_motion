@@ -32,7 +32,7 @@ namespace Abarabone.Arms
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateAfter(typeof(BulletMoveSystem))]
-    public class BuletHitSystem : SystemBase
+    public class BulletHitSystem : SystemBase
     {
 
 
