@@ -19,17 +19,18 @@ namespace Abarabone.Draw.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Misc;
     using Abarabone.Utilities;
+    using Unity.Linq;
 
     static public class CharacterDrawInstanceEntitiesConvertUtility
     {
 
         static public void CreateDrawInstanceEntities
-            ( this GameObjectConversionSystem gcs, GameObject topGameObject, Transform[] bones )
+            ( this GameObjectConversionSystem gcs, GameObject top, GameObject main, Transform[] bones )
         {
 
             var em = gcs.DstEntityManager;
 
-            var drawInstanceEntity = createDrawInstanceEntity( gcs, topGameObject );
+            var drawInstanceEntity = createDrawInstanceEntity( gcs, top, main );
 
             setBoneComponentValues( gcs, bones, drawInstanceEntity );
 
@@ -42,7 +43,7 @@ namespace Abarabone.Draw.Authoring
 
         
         static Entity createDrawInstanceEntity
-            ( GameObjectConversionSystem gcs, GameObject top )
+            ( GameObjectConversionSystem gcs, GameObject top, GameObject main )
         {
             var em = gcs.DstEntityManager;
 
@@ -51,6 +52,7 @@ namespace Abarabone.Draw.Authoring
             (
                 typeof( DrawInstance.MeshTag ),
                 typeof( DrawInstance.ModeLinkData ),
+                typeof( DrawInstance.PostureLinkData ),
                 typeof( DrawInstance.TargetWorkData )
             );
             var ent = gcs.CreateAdditionalEntity( top, archetype );
@@ -59,6 +61,12 @@ namespace Abarabone.Draw.Authoring
                 new DrawInstance.ModeLinkData
                 {
                     DrawModelEntity = gcs.GetFromModelEntityDictionary( top ),
+                }
+            );
+            em.SetComponentData(ent,
+                new DrawInstance.PostureLinkData
+                {
+                    PostureEntity = gcs.GetPrimaryEntity(main),
                 }
             );
             em.SetComponentData( ent,

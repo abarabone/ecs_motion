@@ -22,9 +22,10 @@ namespace Abarabone.Geometry
         public float4 left;
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ViewFrustum(Camera cam)
         {
-            var mt = cam.projectionMatrix;
+            var mt = cam.projectionMatrix * cam.worldToCameraMatrix;
             var m0 = mt.GetRow(0);
             var m1 = mt.GetRow(1);
             var m3 = mt.GetRow(3);
@@ -35,7 +36,8 @@ namespace Abarabone.Geometry
         }
 
 
-        public bool IsInside(AABB bbox)//, Rotation rot, Translation pos, NonUniformScale sca)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsInside(AABB bbox, Rotation rot, Translation pos)//, NonUniformScale sca)
         {
             
             var ud = inside_distance_(bbox, this.up);
@@ -48,27 +50,39 @@ namespace Abarabone.Geometry
             return math.all(areInside);
 
 
-            float inside_distance_(AABB bbox_, float4 pl)
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            float inside_distance_(AABB localBbox_, float4 pl)
             {
-                var p_or_n = math.sign(pl.xyz);
-                var pn = p_or_n * bbox_.Extents + bbox_.Center;
+                var ir = math.inverse(rot.Value);
+                var t = pos.Value;
 
-                return math.dot(pl, new float4(pn, 1.0f));
+                var n = math.mul(ir, pl.xyz);
+                var d = pl.w + math.dot(pl.xyz, t);
+
+
+                var c = localBbox_.Center;
+                var e = localBbox_.Extents;
+
+                var l = c + e * math.sign(n);
+
+
+                return math.dot(l, n) + d;
             }
         }
     }
 
     public struct ViewFrustumSoa
     {
-        float4_soa4 plane;
+        float4_soa4 plane4;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ViewFrustumSoa(Camera cam)
         {
             var vf = new ViewFrustum(cam);
 
             var pl = new float4x4(vf.up, vf.down, vf.left, vf.right);
             var tpl = math.transpose(pl);
-            this.plane = new float4_soa4
+            this.plane4 = new float4_soa4
             {
                 x = tpl.c0,
                 y = tpl.c1,
@@ -77,9 +91,10 @@ namespace Abarabone.Geometry
             };
         }
 
-        public bool4 IsInside(AABB bbox, Rotation rot, Translation pos, NonUniformScale scl)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsInside(AABB localBbox, Rotation rot, Translation pos, NonUniformScale scl)
         {
-            var pl = this.plane;
+            var pl = this.plane4;
 
             var ir = math.inverse(rot.Value).value.ExpandToSoa4();
             var t = pos.Value.ExpandToSoa4();
@@ -88,19 +103,44 @@ namespace Abarabone.Geometry
             var d = pl.w + dot(pl.xyz, t);
 
 
-            var c = bbox.Center.ExpandToSoa4();
-            var es = (bbox.Extents * scl.Value).ExpandToSoa4();
+            var c = localBbox.Center.ExpandToSoa4();
+            var es = (localBbox.Extents * scl.Value).ExpandToSoa4();
 
-            var p = new float3_soa4()
+            var l = new float3_soa4()
             {
                 x = c.x + es.x * math.sign(n.x),
                 y = c.y + es.y * math.sign(n.y),
                 z = c.z + es.z * math.sign(n.z),
             };
             
-            return dot(p, n) + d >= 0.0f;
+            return math.all( dot(l, n) + d >= 0.0f );
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsInside(AABB localBbox, Rotation rot, Translation pos)
+        {
+            var pl = this.plane4;
+
+            var ir = math.inverse(rot.Value).value.ExpandToSoa4();
+            var t = pos.Value.ExpandToSoa4();
+
+            var n = rotate(ir, pl.xyz);
+            var d = pl.w + dot(pl.xyz, t);
+
+
+            var c = localBbox.Center.ExpandToSoa4();
+            var e = localBbox.Extents.ExpandToSoa4();
+
+            var l = new float3_soa4()
+            {
+                x = c.x + e.x * math.sign(n.x),
+                y = c.y + e.y * math.sign(n.y),
+                z = c.z + e.z * math.sign(n.z),
+            };
+
+            return math.all(dot(l, n) + d >= 0.0f);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         float3_soa4 rotate(float4_soa4 q, float3_soa4 v)
         {
             var qv = cross(q.xyz, v);
@@ -113,12 +153,13 @@ namespace Abarabone.Geometry
             var qt = cross(q.xyz, t);
             var o = new float3_soa4
             {
-                x = q.w * t.x + qt.x,
-                y = q.w * t.y + qt.y,
-                z = q.w * t.z + qt.z,
+                x = v.x + q.w * t.x + qt.x,
+                y = v.y + q.w * t.y + qt.y,
+                z = v.z + q.w * t.z + qt.z,
             };
             return o;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         float3_soa4 cross(float3_soa4 l, float3_soa4 r) =>
             new float3_soa4
             {
@@ -126,6 +167,7 @@ namespace Abarabone.Geometry
                 y = l.z * r.x - l.x * r.z,
                 z = l.x * r.y - l.y * r.x,
             };
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         float4 dot(float3_soa4 l, float3_soa4 r) =>
             l.x * r.x + l.y * r.y + l.z * r.z;
     }
@@ -154,6 +196,7 @@ namespace Abarabone.Geometry
 
     static class ViewCullingExtension
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public float3_soa4 ExpandToSoa4(this float3 src) =>
             new float3_soa4
             {
@@ -161,6 +204,7 @@ namespace Abarabone.Geometry
                 y = src.yyyy,
                 z = src.zzzz,
             };
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public float4_soa4 ExpandToSoa4(this float4 src) =>
             new float4_soa4
             {

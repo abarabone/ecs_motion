@@ -49,6 +49,9 @@ namespace Abarabone.Draw
                         in Translation pos
                     ) =>
                     {
+                        if (targetOfTf.DrawInstanceId == -1) return;
+
+
                         var offsetInfo = offsetsOfDrawModel[linkerOfTf.DrawModelEntity];
 
                         const int vectorLengthInBone = 1;

@@ -58,6 +58,9 @@ namespace Abarabone.Draw
                         in Particle.TranslationPtoPData pos
                     ) =>
                     {
+                        if (target.DrawInstanceId == -1) return;
+
+
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntity];
 
                         var lengthOfInstance = 2 + offsetInfo.VectorOffsetPerInstance;

@@ -48,7 +48,7 @@ namespace Abarabone.Model.Authoring
             var bones = skinnedMeshRenderers.First().bones.Where( x => !x.name.StartsWith( "_" ) ).ToArray();
 
             var top = this.gameObject;
-            var main = top.transform.GetChild(0).gameObject;
+            var main = top.Children().First();
 
             createModelEntity_( conversionSystem, top, this.MaterialToDraw, qMesh, bones );
 
@@ -57,7 +57,7 @@ namespace Abarabone.Model.Authoring
 
             conversionSystem.CreateBoneEntities( main, bones );
 
-            conversionSystem.CreateDrawInstanceEntities( top, bones );
+            conversionSystem.CreateDrawInstanceEntities( top, main, bones );
 
             return;
 

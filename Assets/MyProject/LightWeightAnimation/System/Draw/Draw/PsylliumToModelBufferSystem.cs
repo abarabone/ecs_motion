@@ -59,6 +59,8 @@ namespace Abarabone.Draw
                         in Rotation rot
                     ) =>
                     {
+                        if (target.DrawInstanceId == -1) return;
+
 
                         var i = target.DrawInstanceId * 2;
 

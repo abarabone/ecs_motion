@@ -53,6 +53,8 @@ namespace Abarabone.Draw
                         //in NonUniformScale scl
                     ) =>
                     {
+                        if (target.DrawInstanceId == -1) return;
+
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntity];
 

@@ -21,6 +21,10 @@ namespace Abarabone.Draw.Authoring
     using Abarabone.Utilities;
     using Abarabone.Geometry;
     using Abarabone.Model;
+    using Unity.Physics;
+
+    using Material = UnityEngine.Material;
+
 
     static public class DrawModelEntityConvertUtility
     {
@@ -30,17 +34,18 @@ namespace Abarabone.Draw.Authoring
         static public Entity CreateDrawModelEntityComponents
             (
                 this GameObjectConversionSystem gcs, GameObject topGameObject,
-                Mesh mesh, Material mat, BoneType BoneType, int boneLength, int instanceDataVectorLength = 0
+                Mesh mesh, Material mat,
+                BoneType BoneType, int boneLength, int instanceDataVectorLength = 0
             )
         {
-
 
             var em = gcs.DstEntityManager;
 
             setShaderProps_( em, mat, mesh, boneLength );
 
             var drawModelEntity = createDrawModelEntity_( gcs, topGameObject );
-            setEntityComponentValues_( em, drawModelEntity, mat, mesh, boneLength, BoneType, instanceDataVectorLength );
+            initInfomationData_( em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength );
+            initResourceData_(em, drawModelEntity, mat, mesh);
 
             return drawModelEntity;
 
@@ -68,6 +73,7 @@ namespace Abarabone.Draw.Authoring
                     typeof( DrawModel.BoneVectorSettingData ),
                     typeof( DrawModel.InstanceCounterData ),
                     typeof( DrawModel.InstanceOffsetData ),
+                    typeof( DrawModel.BoundingBoxData ),
                     typeof( DrawModel.GeometryData ),
                     typeof( DrawModel.ComputeArgumentsBufferData )
                 );
@@ -82,17 +88,42 @@ namespace Abarabone.Draw.Authoring
             }
 
 
-            void setEntityComponentValues_
-                ( EntityManager em_, Entity ent_, Material mat_, Mesh mesh_, int boneLength_, BoneType BoneType_, int instanceDataVectorLength_ )
+            void initInfomationData_
+                (
+                    EntityManager em_, Entity ent_,
+                    Bounds bbox_, int boneLength_, BoneType BoneType_, int instanceDataVectorLength_
+                )
             {
 
-                em_.SetComponentData( ent_,
+                em_.SetComponentData(ent_,
                     new DrawModel.BoneVectorSettingData
                     {
                         BoneLength = boneLength_,
                         VectorLengthInBone = (int)BoneType_,
                     }
                 );
+                em_.SetComponentData(ent_,
+                    new DrawModel.BoundingBoxData
+                    {
+                        localBbox = new AABB
+                        {
+                            Center = (float3)bbox_.center,// + meshpos_,
+                            Extents = (float3)bbox_.extents,
+                        }
+                    }
+                );
+                em_.SetComponentData(ent_,
+                    new DrawModel.InstanceOffsetData
+                    {
+                        VectorOffsetPerInstance = instanceDataVectorLength_,
+                    }
+                );
+            }
+
+            void initResourceData_
+                ( EntityManager em_, Entity ent_, Material mat_, Mesh mesh_ )
+            {
+
                 em_.SetComponentData( ent_,
                     new DrawModel.GeometryData
                     {
@@ -104,12 +135,6 @@ namespace Abarabone.Draw.Authoring
                     new DrawModel.ComputeArgumentsBufferData
                     {
                         InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
-                    }
-                );
-                em_.SetComponentData(ent_,
-                    new DrawModel.InstanceOffsetData
-                    {
-                        VectorOffsetPerInstance = instanceDataVectorLength_,
                     }
                 );
 

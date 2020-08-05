@@ -27,6 +27,9 @@ namespace Abarabone.Draw
 
     static public partial class DrawModel
     {
+
+        // struct ----------------
+
         //public struct BufferLinkerData : IComponentData
         //{
         //    public Entity BufferEntity;
@@ -48,6 +51,14 @@ namespace Abarabone.Draw
             public int VectorOffsetPerModel;
             public int VectorOffsetPerInstance;
         }
+
+        public struct BoundingBoxData : IComponentData
+        {
+            public AABB localBbox;
+        }
+
+
+        // class object -------------
 
         public class ComputeArgumentsBufferData : IComponentData
         {

@@ -55,6 +55,8 @@ namespace Abarabone.Draw
                         in DrawModel.GeometryData geom
                     ) =>
                     {
+                        if (counter.InstanceCounter.Count == 0) return;
+
                         var mesh = geom.Mesh;
                         var mat = geom.Material;
                         var args = shaderArg.InstanceArgumentsBuffer;

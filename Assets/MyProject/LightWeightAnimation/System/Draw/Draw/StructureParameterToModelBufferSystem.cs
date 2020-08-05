@@ -50,6 +50,9 @@ namespace Abarabone.Draw
                         in Structure.PartDestructionData destruction
                     ) =>
                     {
+                        if (target.DrawInstanceId == -1) return;
+
+
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntity];
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
