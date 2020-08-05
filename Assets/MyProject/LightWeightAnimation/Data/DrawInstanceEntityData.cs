@@ -51,6 +51,11 @@ namespace Abarabone.Draw
         {
             public Entity DrawModelEntity;
         }
+        public struct PostureLinkData : IComponentData
+        {
+            public Entity PostureEntity;
+        }
+
 
         public struct TargetWorkData : IComponentData
         {

@@ -7,14 +7,15 @@ using Unity.Jobs;
 using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
-
-
-using Abarabone.Authoring;
-using Abarabone.Misc;
-using Abarabone.SystemGroup;
+using Unity.Transforms;
 
 namespace Abarabone.Draw
 {
+    using Abarabone.Authoring;
+    using Abarabone.Misc;
+    using Abarabone.SystemGroup;
+    using Abarabone.Geometry;
+    
 
     [UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
@@ -29,21 +30,35 @@ namespace Abarabone.Draw
         protected override void OnStartRunning()
         {
             this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
+            this.c = Camera.main;//
         }
 
-        
+        Camera c;//
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
             var drawModels = this.GetComponentDataFromEntity<DrawModel.InstanceCounterData>();
+
+            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            var scls = this.GetComponentDataFromEntity<NonUniformScale>(isReadOnly: true);
+
+
+            var cam = this.c;// Camera.main;
+            var viewFrustum = new ViewFrustumSoa(cam);
 
 
             inputDeps = this.Entities
                 .WithBurst( FloatMode.Fast, FloatPrecision.Standard )
                 .WithNativeDisableParallelForRestriction( drawModels )
                 .ForEach(
-                    ( ref DrawInstance.TargetWorkData target, in DrawInstance.ModeLinkData linker ) =>
+                        (
+                            ref DrawInstance.TargetWorkData target,
+                            in DrawInstance.ModeLinkData linker
+                        ) =>
                     {
+
+                        var rot = rots[linker.];
 
                         var drawModelData = drawModels[ linker.DrawModelEntity ];
 
