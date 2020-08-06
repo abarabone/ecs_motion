@@ -25,7 +25,7 @@ namespace Abarabone.Draw
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
     //[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
-    [UpdateAfter(typeof(DrawCullingDummySystem))]
+    [UpdateAfter(typeof(DrawCullingSystem))]
     public class DrawInstanceTempBufferAllocateSystem : JobComponentSystem
     {
 

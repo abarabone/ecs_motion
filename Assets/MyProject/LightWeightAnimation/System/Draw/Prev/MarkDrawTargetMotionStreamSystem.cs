@@ -17,7 +17,7 @@ namespace Abarabone.Draw
 {
 
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
-    [UpdateAfter( typeof( DrawCullingDummySystem ) )]
+    [UpdateAfter( typeof( DrawCullingSystem ) )]
     public class MarkDrawTargetMotionStreamSystem : JobComponentSystem
     {
 

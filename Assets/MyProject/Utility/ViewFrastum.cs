@@ -7,6 +7,7 @@ using Unity.Physics;
 using UnityEngine;
 using Unity.Transforms;
 using System.Runtime.CompilerServices;
+using UnityEditor;
 
 namespace Abarabone.Geometry
 {
@@ -92,31 +93,35 @@ namespace Abarabone.Geometry
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsInside(AABB localBbox, Rotation rot, Translation pos, NonUniformScale scl)
+        public bool IsInside(AABB bbox)
         {
-            var pl = this.plane4;
+            var n = this.plane4.xyz;
+            var d = this.plane4.w;
 
-            var ir = math.inverse(rot.Value).value.ExpandToSoa4();
-            var t = pos.Value.ExpandToSoa4();
-
-            var n = rotate(ir, pl.xyz);
-            var d = pl.w + dot(pl.xyz, t);
-
-
-            var c = localBbox.Center.ExpandToSoa4();
-            var es = (localBbox.Extents * scl.Value).ExpandToSoa4();
+            var c = bbox.Center.ExpandToSoa4();
+            var e = bbox.Extents.ExpandToSoa4();
 
             var l = new float3_soa4()
             {
-                x = c.x + es.x * math.sign(n.x),
-                y = c.y + es.y * math.sign(n.y),
-                z = c.z + es.z * math.sign(n.z),
+                x = c.x + e.x * math.sign(n.x),
+                y = c.y + e.y * math.sign(n.y),
+                z = c.z + e.z * math.sign(n.z),
             };
-            
-            return math.all( dot(l, n) + d >= 0.0f );
+
+            return math.all(dot(l, n) + d >= 0.0f);
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsInside(AABB localBbox, Rotation rot, Translation pos)
+        public bool IsInside(AABB localBbox, Rotation rot, Translation pos, NonUniformScale scl) =>
+            isInside<Scaling>(localBbox, rot, pos, scl);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsInside(AABB localBbox, Rotation rot, Translation pos) =>
+            isInside<NoScaling>(localBbox, rot, pos, new NonUniformScale());
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        bool isInside<TScaling>(AABB localBbox, Rotation rot, Translation pos, NonUniformScale scl)
+            where TScaling : IScaling, new()
         {
             var pl = this.plane4;
 
@@ -128,7 +133,7 @@ namespace Abarabone.Geometry
 
 
             var c = localBbox.Center.ExpandToSoa4();
-            var e = localBbox.Extents.ExpandToSoa4();
+            var e = localBbox.Extents.SmartScaling<TScaling>(scl).ExpandToSoa4();
 
             var l = new float3_soa4()
             {
@@ -213,5 +218,29 @@ namespace Abarabone.Geometry
                 z = src.zzzz,
                 w = src.wwww,
             };
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public float3 SmartScaling<TScaling>(this float3 value, NonUniformScale scl)
+            where TScaling : IScaling, new()
+        {
+            return new TScaling().SmartScaling(value, scl);
+        }
     }
+
+    interface IScaling
+    {
+        float3 SmartScaling(float3 value, NonUniformScale scl);
+    }
+    struct Scaling : IScaling
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float3 SmartScaling(float3 value, NonUniformScale scl) => value * scl.Value;
+    }
+    struct NoScaling : IScaling
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float3 SmartScaling(float3 value, NonUniformScale scl) => value;
+    }
+
 }

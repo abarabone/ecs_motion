@@ -15,13 +15,14 @@ namespace Abarabone.Draw
     using Abarabone.Misc;
     using Abarabone.SystemGroup;
     using Abarabone.Geometry;
+    using Abarabone.Particle;
     
 
     [UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
     [UpdateBefore( typeof( MarkDrawTargetMotionStreamSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
-    public class DrawCullingDummySystem : SystemBase
+    public class DrawCullingSystem : SystemBase
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -50,6 +51,7 @@ namespace Abarabone.Draw
 
 
             var dependsTRbone = this.Entities
+                .WithName("DrawCullingCharacterSystem")
                 .WithBurst( FloatMode.Fast, FloatPrecision.Standard )
                 .WithNativeDisableParallelForRestriction( drawModels )
                 .WithReadOnly(bboxes)
@@ -70,11 +72,11 @@ namespace Abarabone.Draw
 
                         var isHit = viewFrustum.IsInside(bbox.localBbox, rot, pos);
 
-                        //if (!isHit)
-                        //{
-                        //    target.DrawInstanceId = -1;
-                        //    return;
-                        //}
+                        if (!isHit)
+                        {
+                            target.DrawInstanceId = -1;
+                            return;
+                        }
 
 
                         var drawModelData = drawModels[ modellink.DrawModelEntity ];
@@ -87,10 +89,12 @@ namespace Abarabone.Draw
 
 
             var dependsTR = this.Entities
+                .WithName("DrawCullingMeshTRSystem")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithReadOnly(bboxes)
                 .WithNone<NonUniformScale>()
+                .WithNone<Particle.TranslationPtoPData>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach(
                         (
@@ -122,28 +126,33 @@ namespace Abarabone.Draw
 
 
             var dependsParticle = this.Entities
+                .WithName("DrawCullingPtopParticleSystem")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
-                .WithReadOnly(bboxes)
-                .WithNone<Rotation, Translation, NonUniformScale>()
+                //.WithNone<Rotation, Translation, NonUniformScale>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach(
                         (
                             ref DrawInstance.TargetWorkData target,
                             in DrawInstance.ModeLinkData modellink,
-                            in Particle.Particle.TranslationPtoPData ptop
+                            in Particle.TranslationPtoPData ptop,
+                            in Particle.AdditionalData additional
                         ) =>
                         {
 
-                            var bbox = bboxes[modellink.DrawModelEntity];
+                            var bbox = new AABB
+                            {
+                                Center = (ptop.Start + ptop.End) * 0.5f,
+                                Extents = math.abs(ptop.End - ptop.Start) * 0.5f + additional.Size,
+                            };
 
-                            //var isHit = viewFrustum.IsInside(bbox.localBbox, rot, pos);
+                            var isHit = viewFrustum.IsInside(bbox);
 
-                            //if (!isHit)
-                            //{
-                            //    target.DrawInstanceId = -1;
-                            //    return;
-                            //}
+                            if (!isHit)
+                            {
+                                target.DrawInstanceId = -1;
+                                return;
+                            }
 
 
                             var drawModelData = drawModels[modellink.DrawModelEntity];
@@ -155,7 +164,7 @@ namespace Abarabone.Draw
                 .ScheduleParallel(this.Dependency);
 
 
-            this.Dependency = JobHandle.CombineDependencies(dependsTRbone, dependsTR);
+            this.Dependency = JobHandle.CombineDependencies(dependsTRbone, dependsTR, dependsParticle);
 
             this.presentationBarier.AddJobHandleForProducer( this.Dependency );
         }

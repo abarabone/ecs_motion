@@ -15,7 +15,7 @@ using Abarabone.SystemGroup;
 namespace Abarabone.Draw
 {
 
-    [UpdateBefore( typeof( DrawCullingDummySystem ) )]
+    [UpdateBefore( typeof( DrawCullingSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     public class DrawInstanceCounterResetSystem : ComponentSystem
     {

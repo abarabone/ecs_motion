@@ -20,7 +20,7 @@ namespace Abarabone.Draw
     /// 描画対象ボーンのマークを兼ね、モデル内描画位置をセットする。
     /// </summary>
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
-    [UpdateAfter( typeof( DrawCullingDummySystem ) )]
+    [UpdateAfter( typeof( DrawCullingSystem ) )]
     public class MarkDrawTargetBoneSystem : JobComponentSystem
     {
 

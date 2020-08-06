@@ -122,6 +122,7 @@ namespace Abarabone.Structure.Authoring
 
                 var types = em_.CreateArchetype
                 (
+                    typeof(StructurePartDebris.Data),
                     typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.ModeLinkData),
                     typeof(DrawInstance.TargetWorkData),
@@ -136,6 +137,13 @@ namespace Abarabone.Structure.Authoring
                 //var prefabEnt = gcs_.CreateAdditionalEntity(part_, types);
                 var prefabEnt = em_.CreateEntity(types);
 
+
+                em_.SetComponentData(prefabEnt,
+                    new StructurePartDebris.Data
+                    {
+                        LifeTime = 5.0f,
+                    }
+                );
 
                 //em_.SetComponentData(mainEntity,
                 //    new NonUniformScale
@@ -155,6 +163,7 @@ namespace Abarabone.Structure.Authoring
                         DrawInstanceId = -1,
                     }
                 );
+
                 //var mass = part_.GetComponent<PhysicsBodyAuthoring>().CustomMassDistribution;
                 //var mass = em_.GetComponentData<PhysicsCollider>(gcs_.GetPrimaryEntity(part_)).MassProperties;
                 em_.SetComponentData(prefabEnt,
