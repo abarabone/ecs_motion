@@ -34,7 +34,7 @@ namespace Abarabone.Arms.Authoring
 
         public int NumEmitMultiple;
         public float EmittingInterval;
-        public float DirectionAccuracy;
+        public float DirectionAccuracyDegree;
         public float RangeDistanceFactor;// 弾丸のと掛け合わせて射程とする
 
 
@@ -88,14 +88,14 @@ namespace Abarabone.Arms.Authoring
                         MuzzlePositionLocal = this.MuzzleLocalPosition,
                         EmittingInterval = this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,
-                        DirectionAccuracy = this.DirectionAccuracy,
+                        AccuracyRad = math.radians(this.DirectionAccuracyDegree),
                         RangeDistanceFactor = this.RangeDistanceFactor,
                     }
                 );
                 em.SetComponentData(ent,
                     new Wapon.EmittingStateData
                     {
-                        RestEmittingInterval = this.EmittingInterval,
+                        NextEmitableTime = this.EmittingInterval,
                     }
                 );
             }

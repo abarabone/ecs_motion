@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
 using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.Physics;
 using UnityEngine;
 using Unity.Transforms;
-using System.Runtime.CompilerServices;
 using UnityEditor;
 
 namespace Abarabone.Geometry

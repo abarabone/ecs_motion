@@ -28,7 +28,7 @@ namespace Abarabone.Arms
             public float3 MuzzlePositionLocal;
 
             public float EmittingInterval;
-            public float DirectionAccuracy;
+            public float AccuracyRad;
             public int NumEmitMultiple;
             public float RangeDistanceFactor;// 切り替え時に弾丸のと計算確定しようかと思ったが、わかりにくいのでやめた
         }
@@ -39,7 +39,7 @@ namespace Abarabone.Arms
         }
         public struct EmittingStateData : IComponentData
         {
-            public float RestEmittingInterval;
+            public float NextEmitableTime;
         }
 
 

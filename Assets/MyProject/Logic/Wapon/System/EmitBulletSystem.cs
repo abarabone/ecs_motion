@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
@@ -25,6 +26,8 @@ namespace Abarabone.Arms
     using Unity.Physics;
     using Abarabone.Structure;
     using UnityEngine.Rendering;
+
+    using Random = Unity.Mathematics.Random;
 
 
     //[DisableAutoCreation]
@@ -75,6 +78,7 @@ namespace Abarabone.Arms
 
 
             var deltaTime = this.Time.DeltaTime;
+            var currentTime = this.Time.ElapsedTime;
 
 
             this.Entities
@@ -89,15 +93,16 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Wapon.BulletEmittingData emitter,
-                        ref Wapon.EmittingStateData state
+                        ref Wapon.EmittingStateData state,
+                        in Wapon.BulletEmittingData emitter
                     ) =>
                     {
+                        var rnd = Random.CreateFromIndex((uint)math.asuint(deltaTime));
 
-                        state.RestEmittingInterval -= deltaTime;
-                        if (state.RestEmittingInterval > 0.0f) return;
 
-                        state.RestEmittingInterval = emitter.EmittingInterval;
+                        if (currentTime > state.NextEmitableTime) return;
+
+                        state.NextEmitableTime = (float)currentTime + emitter.EmittingInterval;
 
 
                         var handle = handles[emitter.MainEntity];
@@ -108,36 +113,82 @@ namespace Abarabone.Arms
                         var rot = rots[emitter.MuzzleBodyEntity];
                         var pos = poss[emitter.MuzzleBodyEntity];
 
-
-                        var newBullet = cmd.Instantiate(entityInQueryIndex, emitter.BulletPrefab);
-
-                        //var dir = math.forward(rot.Value);
-                        //var start = pos.Value + dir * emitter.MuzzlePositionLocal;
-                        //var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
-                        var dir = math.forward(camrot);
-                        var start = campos + dir * 0.5f;
-                        var ptop = new Particle.TranslationPtoPData { Start = start, End = start };
-
-                        cmd.SetComponent(entityInQueryIndex, newBullet, ptop);
-                        cmd.SetComponent(entityInQueryIndex, newBullet,
-                            new Bullet.DirectionData
-                            {
-                                Direction = dir,
-                            }
-                        );
-                        cmd.SetComponent(entityInQueryIndex, newBullet,
-                            new Bullet.DistanceData
-                            {
-                                RestRangeDistance = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor,
-                            }
-                        );
-
+                        for (var i=0; i<emitter.NumEmitMultiple; i++)
+                        {
+                            var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
+                            var bulletDir = calcBulletDirection_(camrot, bulletPos, ref rnd, emitter.AccuracyRad);
+                            emit_(cmd, entityInQueryIndex, emitter.BulletPrefab, bulletPos, bulletDir, emitter.RangeDistanceFactor, bulletData.RangeDistanceFactor);
+                        }
                     }
                 )
                 .ScheduleParallel();
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
+
+        }
+
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static float3 calcBulletDirection_
+            (
+                quaternion dirrot, float3 start, ref Random rnd, float accuracyRad
+            )
+        {
+
+            var yrad = rnd.NextFloat(accuracyRad);
+            var zrad = rnd.NextFloat(2.0f * math.PI);
+            var bulletDir = math.mul(dirrot, math.forward(quaternion.EulerYZX(0.0f, yrad, zrad)));
+
+            return bulletDir;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static float3 calcBulletPosition_
+            (
+                quaternion camrot, float3 campos, 
+                in Wapon.BulletEmittingData emitter, in Bullet.Data bulletData
+            )
+        {
+
+            //var muzzleDir = math.forward(rot.Value);
+            //var start = pos.Value + muzzleDir * emitter.MuzzlePositionLocal;
+            var muzzleDir = math.forward(camrot);
+            var pos = campos + muzzleDir * 0.5f;
+
+            return pos;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void emit_
+            (
+                EntityCommandBuffer.ParallelWriter cmd, int entityInQueryIndex, Entity bulletPrefab,
+                float3 bulletPosition, float3 bulletDirection, float emitterRangeFactor, float bulletRangeFactor
+            )
+        {
+
+            var newBullet = cmd.Instantiate(entityInQueryIndex, bulletPrefab);
+
+            cmd.SetComponent(entityInQueryIndex, newBullet,
+                new Particle.TranslationPtoPData
+                {
+                    Start = bulletPosition,
+                    End = bulletPosition
+                }
+            );
+            cmd.SetComponent(entityInQueryIndex, newBullet,
+                new Bullet.DirectionData
+                {
+                    Direction = bulletDirection,
+                }
+            );
+            cmd.SetComponent(entityInQueryIndex, newBullet,
+                new Bullet.DistanceData
+                {
+                    RestRangeDistance = emitterRangeFactor * bulletRangeFactor,
+                }
+            );
 
         }
 
