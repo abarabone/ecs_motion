@@ -93,21 +93,20 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Wapon.EmittingStateData state,
-                        in Wapon.BulletEmittingData emitter
+                        ref EmitUnit.EmittingStateData state,
+                        in EmitUnit.BulletEmittingData emitter
                     ) =>
                     {
-                        var rnd = Random.CreateFromIndex((uint)math.asuint(deltaTime));
-
-
-                        if (currentTime > state.NextEmitableTime) return;
-
-                        state.NextEmitableTime = (float)currentTime + emitter.EmittingInterval;
-
 
                         var handle = handles[emitter.MainEntity];
                         if (!handle.ControlAction.IsShooting) return;
 
+
+                        if (currentTime < state.NextEmitableTime) return;
+                        state.NextEmitableTime = currentTime + emitter.EmittingInterval;
+
+
+                        var rnd = Random.CreateFromIndex((uint)math.asuint(deltaTime));
 
                         var bulletData = bullets[emitter.BulletPrefab];
                         var rot = rots[emitter.MuzzleBodyEntity];
@@ -148,7 +147,7 @@ namespace Abarabone.Arms
         static float3 calcBulletPosition_
             (
                 quaternion camrot, float3 campos, 
-                in Wapon.BulletEmittingData emitter, in Bullet.Data bulletData
+                in EmitUnit.BulletEmittingData emitter, in Bullet.Data bulletData
             )
         {
 

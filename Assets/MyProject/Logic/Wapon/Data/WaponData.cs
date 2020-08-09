@@ -19,45 +19,12 @@ namespace Abarabone.Arms
     static public partial class Wapon
     {
 
-        public struct BulletEmittingData : IComponentData
+        public struct Unit2HolderData : IComponentData
         {
-            public Entity BulletPrefab;
-            public Entity MainEntity;
-
-            public Entity MuzzleBodyEntity;
-            public float3 MuzzlePositionLocal;
-
-            public float EmittingInterval;
-            public float AccuracyRad;
-            public int NumEmitMultiple;
-            public float RangeDistanceFactor;// 切り替え時に弾丸のと計算確定しようかと思ったが、わかりにくいのでやめた
+            public Entity UnitEntity0;
+            public Entity UnitEntity1;
         }
 
-        public struct SightModeData : IComponentData
-        {
-            public bool IsCameraSight;
-        }
-        public struct EmittingStateData : IComponentData
-        {
-            public float NextEmitableTime;
-        }
-
-
-        //public struct BulletEmitterData : IComponentData
-        //{
-        //    public Entity BulletEntity;
-
-        //    public Entity MainEntity;
-        //}
-
-        //public struct BeamEmitterData : IComponentData
-        //{
-        //    public Entity BeamPrefab;
-
-        //    public Entity MainEntity;
-
-        //    public float3 MuzzlePositionLocal;
-        //}
     }
 
 }

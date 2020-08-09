@@ -92,7 +92,7 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Wapon.BulletEmittingData emitter,
+                        ref EmitUnit.BulletEmittingData emitter,
                         in Bullet.Data bulletData
                     ) =>
                     {
