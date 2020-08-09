@@ -19,28 +19,33 @@ namespace Abarabone.Arms
     static public partial class WaponSelector
     {
 
-        public struct InitializeData : IComponentData
+        public struct ToggleModeTag : IComponentData
+        { }
+
+
+        public interface IWaponEntityHolder
         {
-            public Entity CharacterMainEntity;
-            public Entity MuzzleEntity;
-            public Entity 
-            public Entity WaponEntity0;
-            public Entity WaponEntity1;
-            public Entity WaponEntity2;
+            Entity GetWaponEntity { get; }
         }
-
-
-        public struct Toggle2Data : IComponentData
+        public struct WaponEntity0 : IComponentData, IWaponEntityHolder
         {
-            public Entity WaponEntity0;
-            public Entity WaponEntity1;
+            public Entity WaponEntity;
+            public Entity GetWaponEntity { get => this.WaponEntity; }
         }
-
-        public struct Toggle3Data : IComponentData
+        public struct WaponEntity1 : IComponentData, IWaponEntityHolder
         {
-            public Entity WaponEntity0;
-            public Entity WaponEntity1;
-            public Entity WaponEntity2;
+            public Entity WaponEntity;
+            public Entity GetWaponEntity { get => this.WaponEntity; }
+        }
+        public struct WaponEntity2 : IComponentData, IWaponEntityHolder
+        {
+            public Entity WaponEntity;
+            public Entity GetWaponEntity { get => this.WaponEntity; }
+        }
+        public struct WaponEntity3 : IComponentData, IWaponEntityHolder
+        {
+            public Entity WaponEntity;
+            public Entity GetWaponEntity { get => this.WaponEntity; }
         }
 
     }

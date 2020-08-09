@@ -58,6 +58,7 @@ namespace Abarabone.Model.Authoring
                 em.AddComponents(mainEntity, types);
             }
 
+
         }
 
     }

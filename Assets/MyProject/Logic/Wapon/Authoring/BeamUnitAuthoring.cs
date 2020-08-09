@@ -86,7 +86,6 @@ namespace Abarabone.Arms.Authoring
                     {
                         //MainEntity = mainEntity,
                         RangeDistanceFactor = beamBullet.RangeDistance,
-                        BulletSpeed = 0.0f,
                     }
                 );
             }

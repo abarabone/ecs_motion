@@ -80,7 +80,8 @@ namespace Abarabone.Arms.Authoring
                     {
                         BulletPrefab = beamPrefab,
                         //MainEntity = mainEntity,
-                        //MuzzlePositionLocal = this.MuzzleLocalPosition,
+                        //MuzzleBodyEntity = muzzleEntity,
+                        MuzzlePositionLocal = this.MuzzleLocalPosition,
                         EmittingInterval = this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,
                         AccuracyRad = math.radians(this.DirectionAccuracyDegree),
