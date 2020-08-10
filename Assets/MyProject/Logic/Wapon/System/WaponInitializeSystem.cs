@@ -10,6 +10,7 @@ using Unity.Mathematics;
 using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.CompilerServices;
 using UnityEngine.XR;
 using Unity.Physics;
 using Unity.Physics.Systems;
@@ -56,21 +57,23 @@ namespace Abarabone.Arms
                         in Wapon.InitializeData init
                     ) =>
                     {
+                        var main = init.CharacterMainEntity;
+                        var muzzle = init.MuzzleBodyEntity;
 
                         var prefab0 = init.Prefabs.FunctionUnitPrefab0;
-                        createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab0, 0);
+                        createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab0, 0, main, muzzle);
 
                         var prefab1 = init.Prefabs.FunctionUnitPrefab1;
                         if(prefab1 != Entity.Null)
-                            createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab1, 1);
+                            createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab1, 1, main, muzzle);
 
                         var prefab2 = init.Prefabs.FunctionUnitPrefab2;
                         if (prefab2 != Entity.Null)
-                            createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab2, 2);
+                            createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab2, 2, main, muzzle);
 
                         var prefab3 = init.Prefabs.FunctionUnitPrefab3;
                         if (prefab3 != Entity.Null)
-                            createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab3, 3);
+                            createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab3, 3, main, muzzle);
 
                     }
                 )
@@ -81,17 +84,26 @@ namespace Abarabone.Arms
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void createFunctionUnitInstance_
-            (EntityCommandBuffer.ParallelWriter cmd_, int uniqueId_, Entity prefab_, int carryId_)
+            (EntityCommandBuffer.ParallelWriter cmd_, int uniqueId_, Entity prefab_, int carryId_, Entity main_, Entity muzzle_)
         {
             var instance = cmd_.Instantiate(uniqueId_, prefab_);
+
             cmd_.SetComponent(uniqueId_, prefab_,
                 new FunctionUnit.WaponCarryIdData
                 {
                     WaponCarryId = carryId_,
                 }
             );
+            cmd_.SetComponent(uniqueId_, prefab_,
+                new FunctionUnit.OwnerLinkData
+                {
+                    MainEntity = main_,
+                    MuzzleBodyEntity = muzzle_,
+                }
+            );
+
         }
 
     }

@@ -38,17 +38,17 @@ namespace Abarabone.Arms.Authoring
 
             var waponSelectorEntity = conversionSystem.CreateAdditionalEntity(this.gameObject);
 
-            dstManager.AddComponentData(waponSelectorEntity,
+            var types = new ComponentTypes
+            (
+                typeof(WaponSelector.CharacterMainLink),
+                typeof(WaponSelector.ToggleModeData)
+            );
+            dstManager.AddComponents(waponSelectorEntity, types);
+
+            dstManager.SetComponentData(waponSelectorEntity,
                 new WaponSelector.CharacterMainLink
                 {
                     CharacterMainEntity = conversionSystem.GetPrimaryEntity(main),
-                }
-            );
-            dstManager.AddComponentData(waponSelectorEntity,
-                new WaponSelector.ToggleModeData
-                {
-                    CurrentWaponCarryId = 0,
-                    WaponCarryLength = 0,
                 }
             );
 

@@ -30,6 +30,19 @@ namespace Abarabone.Arms
             public int CurrentWaponCarryId;
             public int WaponCarryLength;
         }
+        //public struct ToggleIdPowerOf2Mask : IComponentData
+        //{
+        //    public int CarryIdMask;
+        //}
+
+        //public struct WaponPrefabsData : IComponentData
+        //{
+        //    public Entity WaponEntity0;
+        //    public Entity WaponEntity1;
+        //    public Entity WaponEntity2;
+        //    public Entity WaponEntity3;
+        //}
+
 
         //public struct ToggleModeTag : IComponentData
         //{ }

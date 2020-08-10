@@ -34,38 +34,30 @@ namespace Abarabone.Arms
     public class WaponSwitchingSystem : SystemBase
     {
 
-        EntityCommandBufferSystem cmdSystem;
-
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-        }
 
         protected override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
-
 
             this.Entities
                 .WithBurst()
                 .ForEach(
                     (
                         int entityInQueryIndex,
-                        in Wapon.InitializeData init
+                        ref WaponSelector.ToggleModeData selector
                     ) =>
                     {
 
-                        cmd.Instantiate(init.Prefabs.FunctionUnitPrefab0);
+                        var currentId = (selector.CurrentWaponCarryId + 1) % selector.WaponCarryLength;
 
+
+
+
+
+                        selector.CurrentWaponCarryId = currentId;
                     }
                 )
                 .ScheduleParallel();
 
-
-            // Make sure that the ECB system knows about our job
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
     }

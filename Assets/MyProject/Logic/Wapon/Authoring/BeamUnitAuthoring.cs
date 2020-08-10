@@ -65,8 +65,9 @@ namespace Abarabone.Arms.Authoring
                 (
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                     typeof(FunctionUnit.BulletEmittingData),
-                    typeof(Bullet.SpecData) // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
-                    //typeof(Bullet.DistanceData) // 同上
+                    typeof(Bullet.SpecData), // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
+                    //typeof(Bullet.DistanceData), // 同上
+                    typeof(FunctionUnit.UnitChainLinkData)
                 );
                 em.AddComponents(ent, types);
 

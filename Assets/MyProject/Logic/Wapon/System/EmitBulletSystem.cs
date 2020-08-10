@@ -28,6 +28,7 @@ namespace Abarabone.Arms
     using UnityEngine.Rendering;
 
     using Random = Unity.Mathematics.Random;
+    using System;
 
 
     //[DisableAutoCreation]
@@ -94,11 +95,12 @@ namespace Abarabone.Arms
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         ref FunctionUnit.EmittingStateData state,
-                        in FunctionUnit.BulletEmittingData emitter
+                        in FunctionUnit.BulletEmittingData emitter,
+                        in FunctionUnit.OwnerLinkData link
                     ) =>
                     {
 
-                        var handle = handles[emitter.MainEntity];
+                        var handle = handles[link.MainEntity];
                         if (!handle.ControlAction.IsShooting) return;
 
 
@@ -109,14 +111,17 @@ namespace Abarabone.Arms
                         var rnd = Random.CreateFromIndex((uint)math.asuint(deltaTime));
 
                         var bulletData = bullets[emitter.BulletPrefab];
-                        var rot = rots[emitter.MuzzleBodyEntity];
-                        var pos = poss[emitter.MuzzleBodyEntity];
+                        var rot = rots[link.MuzzleBodyEntity];
+                        var pos = poss[link.MuzzleBodyEntity];
+
+                        var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
+                        var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
                         for (var i=0; i<emitter.NumEmitMultiple; i++)
                         {
-                            var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
                             var bulletDir = calcBulletDirection_(camrot, bulletPos, ref rnd, emitter.AccuracyRad);
-                            emit_(cmd, entityInQueryIndex, emitter.BulletPrefab, bulletPos, bulletDir, emitter.RangeDistanceFactor, bulletData.RangeDistanceFactor);
+
+                            emit_(cmd, entityInQueryIndex, emitter.BulletPrefab, bulletPos, bulletDir, range );
                         }
                     }
                 )
@@ -163,7 +168,7 @@ namespace Abarabone.Arms
         static void emit_
             (
                 EntityCommandBuffer.ParallelWriter cmd, int entityInQueryIndex, Entity bulletPrefab,
-                float3 bulletPosition, float3 bulletDirection, float emitterRangeFactor, float bulletRangeFactor
+                float3 bulletPosition, float3 bulletDirection, float range
             )
         {
 
@@ -185,7 +190,7 @@ namespace Abarabone.Arms
             cmd.SetComponent(entityInQueryIndex, newBullet,
                 new Bullet.DistanceData
                 {
-                    RestRangeDistance = emitterRangeFactor * bulletRangeFactor,
+                    RestRangeDistance = range,
                 }
             );
 

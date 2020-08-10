@@ -9,8 +9,9 @@ using Unity.Mathematics;
 using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.CompilerServices;
 using UnityEngine.XR;
-    using Unity.Physics;
+using Unity.Physics;
 using Unity.Physics.Systems;
 
 namespace Abarabone.Arms
@@ -93,21 +94,22 @@ namespace Abarabone.Arms
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         in FunctionUnit.BulletEmittingData emitter,
+                        in FunctionUnit.OwnerLinkData link,
                         in Bullet.SpecData bulletData
                     ) =>
                     {
-                        var handle = handles[emitter.MainEntity];
+                        var handle = handles[link.MainEntity];
                         if (!handle.ControlAction.IsShooting) return;
 
 
                         var i = entityInQueryIndex;
                         var prefab = emitter.BulletPrefab;
                         //var bulletData = bullets[emitter.BulletPrefab];
-                        var rot = rots[emitter.MuzzleBodyEntity];
-                        var pos = poss[emitter.MuzzleBodyEntity];
+                        var rot = rots[link.MuzzleBodyEntity];
+                        var pos = poss[link.MuzzleBodyEntity];
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
-                        var hit = hitTest_(emitter.MainEntity, camrot, campos, range, ref cw, mainLinks);
+                        var hit = hitTest_(link.MainEntity, camrot, campos, range, ref cw, mainLinks);
 
                         postMessageToHitTarget_(structureHitHolder, hit, parts);
 
@@ -126,82 +128,86 @@ namespace Abarabone.Arms
             return;
 
 
-            BulletHitUtility.BulletHit hitTest_
-                (
-                    Entity mainEntity, quaternion sightRot, float3 sightPos, float range,
-                    ref CollisionWorld cw_,
-                    ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks_
-                )
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static BulletHitUtility.BulletHit hitTest_
+            (
+                Entity mainEntity, quaternion sightRot, float3 sightPos, float range,
+                ref CollisionWorld cw_,
+                ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks_
+            )
+        {
+            var sightDir = math.forward(sightRot);
+            var hitStart = sightPos + sightDir * 1.0f;
+            var hitEnd = sightPos + sightDir * range;
+
+            return cw_.BulletHitRay(mainEntity, hitStart, hitEnd, range, mainLinks_);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void postMessageToHitTarget_
+            (
+                StructureHitHolder.ParallelWriter structureHitHolder_,
+                BulletHitUtility.BulletHit hit,
+                ComponentDataFromEntity<StructurePart.PartData> parts_
+            )
+        {
+            if (!hit.isHit) return;
+
+            if (parts_.HasComponent(hit.hitEntity))
             {
-                var sightDir = math.forward(sightRot);
-                var hitStart = sightPos + sightDir * 1.0f;
-                var hitEnd = sightPos + sightDir * range;
-
-                return cw_.BulletHitRay(mainEntity, hitStart, hitEnd, range, mainLinks_);
-            }
-
-            void postMessageToHitTarget_
-                (
-                    StructureHitHolder.ParallelWriter structureHitHolder_,
-                    BulletHitUtility.BulletHit hit,
-                    ComponentDataFromEntity<StructurePart.PartData> parts_
-                )
-            {
-                if (!hit.isHit) return;
-
-                if(parts_.HasComponent(hit.hitEntity))
-                {
-                    structureHitHolder.Add(hit.mainEntity,
-                        new StructureHitMessage
-                        {
-                            Position = hit.posision,
-                            Normale = hit.normal,
-                            PartEntity = hit.hitEntity,
-                            PartId = parts_[hit.hitEntity].PartId,
-                        }
-                    );
-                }
-            }
-
-            //(float3 start, float3 end) calcBeamPosision_
-            PtoPUnit calcBeamPosision_
-                (
-                    float3 muzzlePositionLocal, float range,
-                    Rotation mainrot, Translation mainpos, BulletHitUtility.BulletHit hit,
-                    quaternion sightRot, float3 sightPos
-                )
-            {
-
-                var beamStart = math.mul(mainrot.Value, muzzlePositionLocal) + mainpos.Value;
-
-                //if (hit.isHit) return (beamStart, hit.posision);
-                if (hit.isHit) return new PtoPUnit { start = beamStart, end = hit.posision };
-
-
-                var beamEnd = sightPos + math.forward(sightRot) * range;
-
-                //return (beamStart, beamEnd);
-                return new PtoPUnit { start = beamStart, end = beamEnd };
-            }
-
-            void instantiateBullet_
-                (
-                    ref EntityCommandBuffer.ParallelWriter cmd_, int i, Entity bulletPrefab,
-                    float3 start, float3 end
-                )
-            {
-                var newBeamEntity = cmd_.Instantiate(i, bulletPrefab);
-
-                cmd_.SetComponent(i, newBeamEntity,
-                    new Particle.TranslationPtoPData
+                structureHitHolder_.Add(hit.mainEntity,
+                    new StructureHitMessage
                     {
-                        Start = start,
-                        End = end,
+                        Position = hit.posision,
+                        Normale = hit.normal,
+                        PartEntity = hit.hitEntity,
+                        PartId = parts_[hit.hitEntity].PartId,
                     }
                 );
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //(float3 start, float3 end) calcBeamPosision_
+        static PtoPUnit calcBeamPosision_
+            (
+                float3 muzzlePositionLocal, float range,
+                Rotation mainrot, Translation mainpos, BulletHitUtility.BulletHit hit,
+                quaternion sightRot, float3 sightPos
+            )
+        {
+
+            var beamStart = math.mul(mainrot.Value, muzzlePositionLocal) + mainpos.Value;
+
+            //if (hit.isHit) return (beamStart, hit.posision);
+            if (hit.isHit) return new PtoPUnit { start = beamStart, end = hit.posision };
+
+
+            var beamEnd = sightPos + math.forward(sightRot) * range;
+
+            //return (beamStart, beamEnd);
+            return new PtoPUnit { start = beamStart, end = beamEnd };
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void instantiateBullet_
+            (
+                ref EntityCommandBuffer.ParallelWriter cmd_, int i, Entity bulletPrefab,
+                float3 start, float3 end
+            )
+        {
+            var newBeamEntity = cmd_.Instantiate(i, bulletPrefab);
+
+            cmd_.SetComponent(i, newBeamEntity,
+                new Particle.TranslationPtoPData
+                {
+                    Start = start,
+                    End = end,
+                }
+            );
+        }
     }
 
 }

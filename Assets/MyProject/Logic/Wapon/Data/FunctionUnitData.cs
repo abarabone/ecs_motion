@@ -23,13 +23,24 @@ namespace Abarabone.Arms
         {
             public int WaponCarryId;
         }
+        public struct SelectorLinkData : IComponentData
+        {
+            public Entity SelectorEntity;
+        }
+        public struct UnitChainLinkData : IComponentData
+        {
+            public Entity NextUnitEntity;
+        }
 
+        public struct OwnerLinkData : IComponentData
+        {
+            public Entity MainEntity;
+            public Entity MuzzleBodyEntity;
+        }
         public struct BulletEmittingData : IComponentData
         {
             public Entity BulletPrefab;
-            public Entity MainEntity;
 
-            public Entity MuzzleBodyEntity;
             public float3 MuzzlePositionLocal;
 
             public float EmittingInterval;
