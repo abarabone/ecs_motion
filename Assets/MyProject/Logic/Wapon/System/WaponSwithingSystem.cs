@@ -31,7 +31,7 @@ namespace Abarabone.Arms
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
-    public class WaponInitializeSystem : SystemBase
+    public class WaponSwitchingSystem : SystemBase
     {
 
         EntityCommandBufferSystem cmdSystem;
@@ -48,17 +48,25 @@ namespace Abarabone.Arms
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
 
-            //this.Entities
-            //    .ForEach(
-            //        (
-            //            in WaponSelector.
-            //        ) =>
-            //        {
+            this.Entities
+                .WithBurst()
+                .WithAll<WaponSelector.ToggleModeTag>()
+                .ForEach(
+                    (
+                        in WaponSelector.WaponPrefab0 prefab0,
+                        in WaponSelector.WaponPrefab1 prefab1
+                    ) =>
+                    {
 
-            //}
-            //    )
-            //    ;
 
+
+                    }
+                )
+                .ScheduleParallel();
+
+
+            // Make sure that the ECB system knows about our job
+            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
     }
@@ -81,9 +89,9 @@ namespace Abarabone.Arms
             var newWaponEntity = cmd.Instantiate(uniqueIndex, newWaponPrefab);
 
             cmd.SetComponent(uniqueIndex, selectorEntity,
-                new WaponSelector.WaponEntity0
+                new WaponSelector.WaponPrefab0
                 {
-                    WaponEntity = newWaponEntity,
+                    WaponPrefab = newWaponEntity,
                 }
             );
 
@@ -104,9 +112,9 @@ namespace Abarabone.Arms
             cmd.DestroyEntity(uniqueIndex, wapon.GetWaponEntity);
 
             cmd.SetComponent(uniqueIndex, selectorEntity,
-                new WaponSelector.WaponEntity0
+                new WaponSelector.WaponPrefab0
                 {
-                    WaponEntity = Entity.Null,
+                    WaponPrefab = Entity.Null,
                 }
             );
 

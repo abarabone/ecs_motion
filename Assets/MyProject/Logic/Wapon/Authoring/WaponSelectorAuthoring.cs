@@ -27,27 +27,44 @@ namespace Abarabone.Arms.Authoring
 
         public WaponAuthoring[] Wapons;
 
+        public GameObject Muzzle;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var qWapon = this.Wapons
+            //var top = this.GetComponentInParent<CharacterModelAuthoring>();// プレハブだとできない（ children はできるのに）
+            var top = this.gameObject.Ancestors().First(go => go.GetComponent<CharacterModelAuthoring>());
+            var main = top.transform.GetChild(0).gameObject;
+
+
+            var waponSelectorEntity = conversionSystem.CreateAdditionalEntity(this.gameObject);
+
+            dstManager.AddComponentData(waponSelectorEntity,
+                new WaponSelector.CharacterMainLink
+                {
+                    CharacterMainEntity = conversionSystem.GetPrimaryEntity(main),
+                }
+            );
+
+            dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.ToggleModeTag { } );
+
+            var waponEnities = this.Wapons
+                .Where(x => x != null)
                 .Take(4)
                 .Select(w => conversionSystem.GetPrimaryEntity(w))
-                .Select(wapon => enumWapon_(wapon))
-                .ForEach(holder => dstManager.AddComponentData(entity, holder));
+                .ToArray();
 
-            return;
+            if (waponEnities.Length >= 1)
+                dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab0 { WaponPrefab = waponEnities[0] });
+            if (waponEnities.Length >= 2)
+                dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab1 { WaponPrefab = waponEnities[1] });
+            if (waponEnities.Length >= 3)
+                dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab2 { WaponPrefab = waponEnities[2] });
+            if (waponEnities.Length >= 4)
+                dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab3 { WaponPrefab = waponEnities[3] });
 
 
-            IEnumerable<WaponSelector.IWaponEntityHolder> enumWapon_(Entity ent)
-            {
-                yield return new WaponSelector.WaponEntity0 { WaponEntity = ent };
-                yield return new WaponSelector.WaponEntity1 { WaponEntity = ent };
-                yield return new WaponSelector.WaponEntity2 { WaponEntity = ent };
-                yield return new WaponSelector.WaponEntity3 { WaponEntity = ent };
-            }
         }
 
     }

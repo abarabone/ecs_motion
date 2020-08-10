@@ -19,34 +19,46 @@ namespace Abarabone.Arms
     static public partial class WaponSelector
     {
 
-        public struct ToggleModeTag : IComponentData
-        { }
+        public struct CharacterMainLink : IComponentData
+        {
+            public Entity CharacterMainEntity;
+        }
 
 
-        public interface IWaponEntityHolder
+        public struct ToggleModeData : IComponentData
         {
-            Entity GetWaponEntity { get; }
+            public int CurrentWaponId;
+            public int WaponLength;
         }
-        public struct WaponEntity0 : IComponentData, IWaponEntityHolder
-        {
-            public Entity WaponEntity;
-            public Entity GetWaponEntity { get => this.WaponEntity; }
-        }
-        public struct WaponEntity1 : IComponentData, IWaponEntityHolder
-        {
-            public Entity WaponEntity;
-            public Entity GetWaponEntity { get => this.WaponEntity; }
-        }
-        public struct WaponEntity2 : IComponentData, IWaponEntityHolder
-        {
-            public Entity WaponEntity;
-            public Entity GetWaponEntity { get => this.WaponEntity; }
-        }
-        public struct WaponEntity3 : IComponentData, IWaponEntityHolder
-        {
-            public Entity WaponEntity;
-            public Entity GetWaponEntity { get => this.WaponEntity; }
-        }
+
+        //public struct ToggleModeTag : IComponentData
+        //{ }
+
+
+        //public interface IWaponEntityHolder
+        //{
+        //    Entity GetWaponEntity { get; }
+        //}
+        //public struct WaponPrefab0 : IComponentData, IWaponEntityHolder
+        //{
+        //    public Entity WaponPrefab;
+        //    public Entity GetWaponEntity { get => this.WaponPrefab; }
+        //}
+        //public struct WaponPrefab1 : IComponentData, IWaponEntityHolder
+        //{
+        //    public Entity WaponPrefab;
+        //    public Entity GetWaponEntity { get => this.WaponPrefab; }
+        //}
+        //public struct WaponPrefab2 : IComponentData, IWaponEntityHolder
+        //{
+        //    public Entity WaponPrefab;
+        //    public Entity GetWaponEntity { get => this.WaponPrefab; }
+        //}
+        //public struct WaponPrefab3 : IComponentData, IWaponEntityHolder
+        //{
+        //    public Entity WaponPrefab;
+        //    public Entity GetWaponEntity { get => this.WaponPrefab; }
+        //}
 
     }
 

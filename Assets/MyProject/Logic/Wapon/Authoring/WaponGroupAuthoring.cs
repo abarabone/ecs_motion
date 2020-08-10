@@ -20,7 +20,7 @@ namespace Abarabone.Arms.Authoring
     using Abarabone.CharacterMotion;
     using Abarabone.Arms;
 
-    public class WaponGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs
+    public class WaponGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
 
@@ -44,6 +44,7 @@ namespace Abarabone.Arms.Authoring
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
+            dstManager.DestroyEntity(entity);
 
         }
     }

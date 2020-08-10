@@ -75,6 +75,16 @@ namespace Abarabone.Arms.Authoring
 
                 switch (units.Length)
                 {
+                    case 1:
+
+                        dstManager.AddComponentData(entity,
+                            new Wapon.Unit1HolderData
+                            {
+                                UnitEntity0 = units[0],
+                            }
+                        );
+
+                        break;
                     case 2:
 
                         dstManager.AddComponentData(entity,

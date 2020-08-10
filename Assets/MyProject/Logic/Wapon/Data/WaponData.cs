@@ -19,11 +19,31 @@ namespace Abarabone.Arms
     static public partial class Wapon
     {
 
-        public struct Unit2HolderData : IComponentData
+        public struct InitializeData : IComponentData
         {
-            public Entity UnitEntity0;
-            public Entity UnitEntity1;
+            public int Id;
+            public UnitPrefabsData prefabs;
         }
+
+        public struct UnitPrefabsData : IComponentData
+        {
+            public Entity UnitPrefab0;
+            public Entity UnitPrefab1;
+            public Entity UnitPrefab2;
+            public Entity UnitPrefab3;
+        }
+
+
+        //public struct Unit1HolderData : IComponentData
+        //{
+        //    public Entity UnitEntity0;
+        //}
+
+        //public struct Unit2HolderData : IComponentData
+        //{
+        //    public Entity UnitEntity0;
+        //    public Entity UnitEntity1;
+        //}
 
     }
 
