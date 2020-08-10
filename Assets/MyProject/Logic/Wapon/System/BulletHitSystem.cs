@@ -68,7 +68,7 @@ namespace Abarabone.Arms
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         in Particle.TranslationPtoPData ptop,
-                        in Bullet.Data bullet,
+                        in Bullet.SpecData bullet,
                         in Bullet.DistanceData dist
                     ) =>
                     {

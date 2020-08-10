@@ -92,8 +92,8 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref EmitUnit.BulletEmittingData emitter,
-                        in Bullet.Data bulletData
+                        in FunctionUnit.BulletEmittingData emitter,
+                        in Bullet.SpecData bulletData
                     ) =>
                     {
                         var handle = handles[emitter.MainEntity];

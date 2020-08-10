@@ -16,8 +16,13 @@ using Unity.Physics;
 namespace Abarabone.Arms
 {
 
-    static public partial class EmitUnit
+    static public partial class FunctionUnit
     {
+
+        public struct WaponCarryIdData : IComponentData
+        {
+            public int WaponCarryId;
+        }
 
         public struct BulletEmittingData : IComponentData
         {

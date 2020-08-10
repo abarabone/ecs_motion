@@ -21,14 +21,18 @@ namespace Abarabone.Arms.Authoring
     using Unity.Physics.Authoring;
     using Abarabone.Model;
 
+    /// <summary>
+    /// WaponEntity はインスタンス化しない。
+    /// FunctionUnit をインスタンス化するためのリファレンスでしかない。
+    /// </summary>
     public class WaponAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
-        public class EmitUnitAuthoring : MonoBehaviour
+        public class FunctionUnitAuthoring : MonoBehaviour
         { }
 
 
-        public EmitUnitAuthoring[] EmitUnits;
+        public FunctionUnitAuthoring[] EmitUnits;
 
 
 
@@ -46,59 +50,44 @@ namespace Abarabone.Arms.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            initWapon_(conversionSystem, entity);
+            addWaponComponents_(conversionSystem, entity);
 
-            initEmitUnit_(conversionSystem, entity);
+            initFunctionUnit_(conversionSystem, entity);
 
             return;
 
 
-            void initWapon_(GameObjectConversionSystem gcs_, Entity wapon_)
+            void addWaponComponents_(GameObjectConversionSystem gcs_, Entity wapon_)
             {
                 var em = gcs_.DstEntityManager;
 
                 var addtypes = new ComponentTypes
                 (
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
+                    typeof(Wapon.FunctionUnitPrefabsData),
                     typeof(Rotation),
                     typeof(Translation)
                 );
                 em.AddComponents(wapon_, addtypes);
             }
 
-            void initEmitUnit_(GameObjectConversionSystem gcs_, Entity wapon_)
+            void initFunctionUnit_(GameObjectConversionSystem gcs_, Entity wapon_)
             {
                 var units = this.EmitUnits
                     .Where(x => x != null)
                     .Select(x => conversionSystem.GetPrimaryEntity(x))
                     .ToArray();
 
-                switch (units.Length)
-                {
-                    case 1:
+                var prefabs = new Wapon.FunctionUnitPrefabsData { };
 
-                        dstManager.AddComponentData(entity,
-                            new Wapon.Unit1HolderData
-                            {
-                                UnitEntity0 = units[0],
-                            }
-                        );
+                if (units.Length >= 1) prefabs.FunctionUnitPrefab0 = units[0];
+                if (units.Length >= 2) prefabs.FunctionUnitPrefab0 = units[1];
+                if (units.Length >= 3) prefabs.FunctionUnitPrefab0 = units[2];
+                if (units.Length >= 4) prefabs.FunctionUnitPrefab0 = units[3];
 
-                        break;
-                    case 2:
-
-                        dstManager.AddComponentData(entity,
-                            new Wapon.Unit2HolderData
-                            {
-                                UnitEntity0 = units[0],
-                                UnitEntity1 = units[1],
-                            }
-                        );
-
-                        break;
-                }
+                dstManager.SetComponentData(wapon_, prefabs);
             }
-            
+
         }
     }
 

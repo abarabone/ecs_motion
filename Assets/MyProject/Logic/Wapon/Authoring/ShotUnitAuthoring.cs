@@ -25,7 +25,7 @@ namespace Abarabone.Arms.Authoring
     /// プライマリエンティティは LinkedEntityGroup のみとする。
     /// その１つ下に、ＦＢＸのキャラクターを置く。それがメインエンティティとなる。
     /// </summary>
-    public class ShotUnitAuthoring : WaponAuthoring.EmitUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class ShotUnitAuthoring : WaponAuthoring.FunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public ShotBulletAuthoring BulletPrefab;
@@ -69,14 +69,14 @@ namespace Abarabone.Arms.Authoring
                 var types = new ComponentTypes
                 (
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                    typeof(EmitUnit.BulletEmittingData),
-                    typeof(EmitUnit.EmittingStateData),
-                    typeof(EmitUnit.SightModeData)
+                    typeof(FunctionUnit.BulletEmittingData),
+                    typeof(FunctionUnit.EmittingStateData),
+                    typeof(FunctionUnit.SightModeData)
                 );
                 em.AddComponents(ent, types);
 
                 em.SetComponentData(ent,
-                    new EmitUnit.BulletEmittingData
+                    new FunctionUnit.BulletEmittingData
                     {
                         BulletPrefab = beamPrefab,
                         //MainEntity = mainEntity,
@@ -89,7 +89,7 @@ namespace Abarabone.Arms.Authoring
                     }
                 );
                 em.SetComponentData(ent,
-                    new EmitUnit.EmittingStateData
+                    new FunctionUnit.EmittingStateData
                     {
                         NextEmitableTime = this.EmittingInterval,
                     }

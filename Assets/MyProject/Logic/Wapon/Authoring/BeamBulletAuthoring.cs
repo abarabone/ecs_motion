@@ -26,7 +26,7 @@ namespace Abarabone.Arms.Authoring
     public class BeamBulletAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
-        public float RangeDistance;
+        public float RangeDistance;// 瞬時に着弾するので、射出時に決定する。そのため、弾丸には不要。
         public float LifeTime;
 
         public Color32 BulletColor;

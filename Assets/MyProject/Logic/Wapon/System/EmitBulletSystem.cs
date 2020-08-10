@@ -67,7 +67,7 @@ namespace Abarabone.Arms
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
-            var bullets = this.GetComponentDataFromEntity<Bullet.Data>(isReadOnly: true);
+            var bullets = this.GetComponentDataFromEntity<Bullet.SpecData>(isReadOnly: true);
             //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 
@@ -83,7 +83,7 @@ namespace Abarabone.Arms
 
             this.Entities
                 .WithBurst()
-                .WithNone<Bullet.Data>()
+                .WithNone<Bullet.SpecData>()
                 .WithReadOnly(handles)
                 //.WithReadOnly(mainLinks)
                 .WithReadOnly(rots)
@@ -93,8 +93,8 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref EmitUnit.EmittingStateData state,
-                        in EmitUnit.BulletEmittingData emitter
+                        ref FunctionUnit.EmittingStateData state,
+                        in FunctionUnit.BulletEmittingData emitter
                     ) =>
                     {
 
@@ -147,7 +147,7 @@ namespace Abarabone.Arms
         static float3 calcBulletPosition_
             (
                 quaternion camrot, float3 campos, 
-                in EmitUnit.BulletEmittingData emitter, in Bullet.Data bulletData
+                in FunctionUnit.BulletEmittingData emitter, in Bullet.SpecData bulletData
             )
         {
 

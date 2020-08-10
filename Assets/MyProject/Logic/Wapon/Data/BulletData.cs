@@ -36,7 +36,7 @@ namespace Abarabone.Arms
         //    public float InvTotalTime;
         //}
 
-        public struct Data : IComponentData
+        public struct SpecData : IComponentData
         {
             public Entity MainEntity;
 

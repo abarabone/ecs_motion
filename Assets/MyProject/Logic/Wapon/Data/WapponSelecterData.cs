@@ -27,8 +27,8 @@ namespace Abarabone.Arms
 
         public struct ToggleModeData : IComponentData
         {
-            public int CurrentWaponId;
-            public int WaponLength;
+            public int CurrentWaponCarryId;
+            public int WaponCarryLength;
         }
 
         //public struct ToggleModeTag : IComponentData

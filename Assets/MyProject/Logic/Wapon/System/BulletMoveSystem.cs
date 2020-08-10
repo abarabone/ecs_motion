@@ -60,7 +60,7 @@ namespace Abarabone.Arms
                         Entity entity, int entityInQueryIndex,
                         ref Particle.TranslationPtoPData ptop,
                         ref Bullet.DistanceData dist,
-                        in Bullet.Data bullet,
+                        in Bullet.SpecData bullet,
                         in Bullet.DirectionData dir
                     ) =>
                     {

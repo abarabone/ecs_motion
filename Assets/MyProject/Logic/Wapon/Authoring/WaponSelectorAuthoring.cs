@@ -25,9 +25,7 @@ namespace Abarabone.Arms.Authoring
     {
 
 
-        public WaponAuthoring[] Wapons;
-
-        public GameObject Muzzle;
+        public GameObject WaponLocator;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -46,23 +44,30 @@ namespace Abarabone.Arms.Authoring
                     CharacterMainEntity = conversionSystem.GetPrimaryEntity(main),
                 }
             );
+            dstManager.AddComponentData(waponSelectorEntity,
+                new WaponSelector.ToggleModeData
+                {
+                    CurrentWaponCarryId = 0,
+                    WaponCarryLength = 0,
+                }
+            );
 
-            dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.ToggleModeTag { } );
+            //dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.ToggleModeTag { } );
 
-            var waponEnities = this.Wapons
-                .Where(x => x != null)
-                .Take(4)
-                .Select(w => conversionSystem.GetPrimaryEntity(w))
-                .ToArray();
+            //var waponEnities = this.Wapons
+            //    .Where(x => x != null)
+            //    .Take(4)
+            //    .Select(w => conversionSystem.GetPrimaryEntity(w))
+            //    .ToArray();
 
-            if (waponEnities.Length >= 1)
-                dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab0 { WaponPrefab = waponEnities[0] });
-            if (waponEnities.Length >= 2)
-                dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab1 { WaponPrefab = waponEnities[1] });
-            if (waponEnities.Length >= 3)
-                dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab2 { WaponPrefab = waponEnities[2] });
-            if (waponEnities.Length >= 4)
-                dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab3 { WaponPrefab = waponEnities[3] });
+            //if (waponEnities.Length >= 1)
+            //    dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab0 { WaponPrefab = waponEnities[0] });
+            //if (waponEnities.Length >= 2)
+            //    dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab1 { WaponPrefab = waponEnities[1] });
+            //if (waponEnities.Length >= 3)
+            //    dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab2 { WaponPrefab = waponEnities[2] });
+            //if (waponEnities.Length >= 4)
+            //    dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponPrefab3 { WaponPrefab = waponEnities[3] });
 
 
         }

@@ -21,16 +21,19 @@ namespace Abarabone.Arms
 
         public struct InitializeData : IComponentData
         {
-            public int Id;
-            public UnitPrefabsData prefabs;
+            public int CarryId;
+            public FunctionUnitPrefabsData Prefabs;
+
+            public Entity CharacterMainEntity;
+            public Entity MuzzleBodyEntity;
         }
 
-        public struct UnitPrefabsData : IComponentData
+        public struct FunctionUnitPrefabsData : IComponentData
         {
-            public Entity UnitPrefab0;
-            public Entity UnitPrefab1;
-            public Entity UnitPrefab2;
-            public Entity UnitPrefab3;
+            public Entity FunctionUnitPrefab0;
+            public Entity FunctionUnitPrefab1;
+            public Entity FunctionUnitPrefab2;
+            public Entity FunctionUnitPrefab3;
         }
 
 

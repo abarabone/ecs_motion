@@ -25,7 +25,7 @@ namespace Abarabone.Arms.Authoring
     /// プライマリエンティティは LinkedEntityGroup のみとする。
     /// その１つ下に、ＦＢＸのキャラクターを置く。それがメインエンティティとなる。
     /// </summary>
-    public class BeamUnitAuthoring : WaponAuthoring.EmitUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class BeamUnitAuthoring : WaponAuthoring.FunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public BeamBulletAuthoring BeamPrefab;
@@ -56,7 +56,6 @@ namespace Abarabone.Arms.Authoring
                 var em = gcs_.DstEntityManager;
 
                 var beamBullet = beam_.GetComponent<BeamBulletAuthoring>();
-
                 var beamPrefab = gcs_.GetPrimaryEntity(beam_);
 
 
@@ -65,14 +64,14 @@ namespace Abarabone.Arms.Authoring
                 var types = new ComponentTypes
                 (
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                    typeof(EmitUnit.BulletEmittingData),
-                    typeof(Bullet.Data),
-                    typeof(Bullet.DistanceData)
+                    typeof(FunctionUnit.BulletEmittingData),
+                    typeof(Bullet.SpecData) // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
+                    //typeof(Bullet.DistanceData) // 同上
                 );
                 em.AddComponents(ent, types);
 
                 em.SetComponentData(ent,
-                    new EmitUnit.BulletEmittingData
+                    new FunctionUnit.BulletEmittingData
                     {
                         BulletPrefab = beamPrefab,
                         //MainEntity = mainEntity,
@@ -82,7 +81,7 @@ namespace Abarabone.Arms.Authoring
                     }
                 );
                 em.SetComponentData(ent,
-                    new Bullet.Data
+                    new Bullet.SpecData
                     {
                         //MainEntity = mainEntity,
                         RangeDistanceFactor = beamBullet.RangeDistance,

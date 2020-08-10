@@ -51,7 +51,7 @@ namespace Abarabone.Arms.Authoring
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
                 var beemTypes = new ComponentTypes
                 (
-                    typeof(Bullet.Data),
+                    typeof(Bullet.SpecData),
                     typeof(Bullet.DirectionData),
                     typeof(Bullet.DistanceData),
                     typeof(Bullet.LifeTimeData)
@@ -59,7 +59,7 @@ namespace Abarabone.Arms.Authoring
                 em.AddComponents(bulletEntity, beemTypes);
 
                 em.SetComponentData(bulletEntity,
-                    new Bullet.Data
+                    new Bullet.SpecData
                     {
                         BulletSpeed = this.BulletSpeed,
                         RangeDistanceFactor = this.RangeDistance,
