@@ -69,7 +69,7 @@ namespace Abarabone.Arms.Authoring
             foreach (var w in this.Wapons.Where(x => x != null))
             {
                 dstManager.AddComponentData(waponSelectorEntity,
-                    new WaponSelector.CreateNewWaponData
+                    new WaponMessage.CreateMsgData
                     {
                         WaponPrefab = conversionSystem.GetPrimaryEntity(w),
                         WaponSelectorEntity = waponSelectorEntity,

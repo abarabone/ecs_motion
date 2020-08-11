@@ -49,17 +49,18 @@ namespace Abarabone.Arms
 
 
             var selectorDependency = this.Entities
+                .WithName("WaponSelectorInitializeSystem")
                 .WithBurst()
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
                         ref WaponSelector.ToggleModeData selector,
                         in WaponSelector.LinkData link,
-                        in WaponSelector.CreateNewWaponData init
+                        in WaponMessage.CreateMsgData msg
                     ) =>
                     {
 
-                        var newWapon = cmd.Instantiate(entityInQueryIndex, init.WaponPrefab);
+                        var newWapon = cmd.Instantiate(entityInQueryIndex, msg.WaponPrefab);
 
                         cmd.AddComponent(entityInQueryIndex, newWapon,  
                             new FunctionUnitWithWapon.InitializeData
@@ -84,6 +85,7 @@ namespace Abarabone.Arms
 
 
             var unitDependency = this.Entities
+                .WithName("WaponFunctionInitializeSystem")
                 .WithBurst()
                 .ForEach(
                     (

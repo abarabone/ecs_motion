@@ -18,6 +18,19 @@ using System.Runtime.InteropServices;
 namespace Abarabone.Arms
 {
 
+    static public partial class WaponMessage
+    {
+
+        public struct CreateMsgData : IComponentData
+        {
+            public Entity WaponSelectorEntity;
+            public Entity WaponPrefab;
+        }
+
+    }
+
+
+
     static public partial class WaponHolder
     {
 
@@ -71,12 +84,6 @@ namespace Abarabone.Arms
             public int WaponCarryLength;
         }
 
-
-        public struct CreateNewWaponData : IComponentData
-        {
-            public Entity WaponSelectorEntity;
-            public Entity WaponPrefab;
-        }
 
         //public struct ToggleIdPowerOf2Mask : IComponentData
         //{
