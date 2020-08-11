@@ -32,80 +32,98 @@ namespace Abarabone.Arms.Authoring
         { }
 
 
-        //public FunctionUnitAuthoring[] EmitUnits;
+        public FunctionUnitAuthoring UnitForMainTrigger;
+        public FunctionUnitAuthoring UnitForSubTrigger;
 
 
 
 
         //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         //{
-        //    var units = this.EmitUnits
-        //        .Where(x => x != null)
+        //    var qUnit = this.GetComponentsInChildren<FunctionUnitAuthoring>()
+        //        //.Take(4)// とりあえず４つまでとする
         //        .Select(x => x.gameObject);
 
-        //    referencedPrefabs.AddRange(units);
+        //    referencedPrefabs.AddRange(qUnit);
         //}
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var units = this.GetComponentsInChildren<FunctionUnitAuthoring>()
-                //.Take(4)// とりあえず４つまでとする
-                .Select(x => x.gameObject)
-                .Select(x => conversionSystem.GetPrimaryEntity(x))
-                .ToArray();
+            //var units = this.GetComponentsInChildren<FunctionUnitAuthoring>()
+            //    //.Take(4)// とりあえず４つまでとする
+            //    .Select(x => x.gameObject)
+            //    .Select(x => conversionSystem.GetPrimaryEntity(x))
+            //    .ToArray();
 
             //addWaponComponents_(conversionSystem, entity);
 
             //initFunctionUnit_(conversionSystem, entity, units);
 
-            setFunctionChainLink_(conversionSystem, entity, units);
+            //setFunctionChainLink_(conversionSystem, entity, units);
+
+            addTriggerType_(conversionSystem, this.UnitForMainTrigger, FunctionUnitWithWapon.TriggerType.main);
+            addTriggerType_(conversionSystem, this.UnitForSubTrigger, FunctionUnitWithWapon.TriggerType.sub);
 
             return;
 
 
-            void addWaponComponents_(GameObjectConversionSystem gcs_, Entity wapon_)
+            void addTriggerType_
+                (GameObjectConversionSystem gcs_, FunctionUnitAuthoring unit, FunctionUnitWithWapon.TriggerType type)
             {
-                var em = gcs_.DstEntityManager;
+                if (unit == null) return;
 
-                var addtypes = new ComponentTypes
-                (
-                    //typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                    typeof(Wapon.FunctionUnitPrefabsData)
+                var ent = conversionSystem.GetPrimaryEntity(unit);
+                dstManager.AddComponentData(ent,
+                    new FunctionUnitWithWapon.TriggerTypeData
+                    {
+                        Type = type,
+                    }
                 );
-                em.AddComponents(wapon_, addtypes);
             }
 
-            void initFunctionUnit_(GameObjectConversionSystem gcs_, Entity wapon_, Entity[] units_)
-            {
-                var em = gcs_.DstEntityManager;
+            //void addWaponComponents_(GameObjectConversionSystem gcs_, Entity wapon_)
+            //{
+            //    var em = gcs_.DstEntityManager;
 
-                var prefabs = new Wapon.FunctionUnitPrefabsData { };
+            //    var addtypes = new ComponentTypes
+            //    (
+            //        //typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
+            //        typeof(Wapon.FunctionUnitPrefabsData)
+            //    );
+            //    em.AddComponents(wapon_, addtypes);
+            //}
 
-                if (units.Length >= 1) prefabs.FunctionUnitPrefab0 = units_[0];
-                if (units.Length >= 2) prefabs.FunctionUnitPrefab0 = units_[1];
-                if (units.Length >= 3) prefabs.FunctionUnitPrefab0 = units_[2];
-                if (units.Length >= 4) prefabs.FunctionUnitPrefab0 = units_[3];
+            //void initFunctionUnit_(GameObjectConversionSystem gcs_, Entity wapon_, Entity[] units_)
+            //{
+            //    var em = gcs_.DstEntityManager;
 
-                dstManager.SetComponentData(wapon_, prefabs);
-            }
+            //    var prefabs = new Wapon.FunctionUnitPrefabsData { };
 
-            void setFunctionChainLink_(GameObjectConversionSystem gcs_, Entity wapon_, Entity[] units_)
-            {
-                var em = gcs_.DstEntityManager;
+            //    if (units.Length >= 1) prefabs.FunctionUnitPrefab0 = units_[0];
+            //    if (units.Length >= 2) prefabs.FunctionUnitPrefab0 = units_[1];
+            //    if (units.Length >= 3) prefabs.FunctionUnitPrefab0 = units_[2];
+            //    if (units.Length >= 4) prefabs.FunctionUnitPrefab0 = units_[3];
 
-                var nexts = units_.Skip(1).Append(Entity.Null);
-                foreach( var (unit, next) in (units, nexts).Zip())
-                {
-                    em.SetComponentData(unit,
-                        new FunctionUnit.UnitChainLinkData
-                        {
-                            NextUnitEntity = next,
-                        }
-                    );
-                }
-            }
+            //    dstManager.SetComponentData(wapon_, prefabs);
+            //}
+
+            //void setFunctionChainLink_(GameObjectConversionSystem gcs_, Entity wapon_, Entity[] units_)
+            //{
+            //    var em = gcs_.DstEntityManager;
+
+            //    var nexts = units_.Skip(1).Append(Entity.Null);
+            //    foreach( var (unit, next) in (units, nexts).Zip())
+            //    {
+            //        em.AddComponentData(unit,
+            //            new FunctionUnit.UnitChainLinkData
+            //            {
+            //                NextUnitEntity = next,
+            //            }
+            //        );
+            //    }
+            //}
 
         }
     }

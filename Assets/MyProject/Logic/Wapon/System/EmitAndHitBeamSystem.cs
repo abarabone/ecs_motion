@@ -67,12 +67,10 @@ namespace Abarabone.Arms
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
 
 
-            var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
-            //var bullets = this.GetComponentDataFromEntity<Bullet.Data>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 
@@ -84,8 +82,6 @@ namespace Abarabone.Arms
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(handles)
-                //.WithReadOnly(bullets)
                 .WithReadOnly(mainLinks)
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
@@ -94,26 +90,25 @@ namespace Abarabone.Arms
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         in FunctionUnit.BulletEmittingData emitter,
+                        in FunctionUnit.TriggerData trigger,
                         in FunctionUnit.OwnerLinkData link,
                         in Bullet.SpecData bulletData
                     ) =>
                     {
-                        var handle = handles[link.MainEntity];
-                        if (!handle.ControlAction.IsShooting) return;
+                        if (!trigger.IsTriggered) return;
 
 
                         var i = entityInQueryIndex;
                         var prefab = emitter.BulletPrefab;
-                        //var bulletData = bullets[emitter.BulletPrefab];
                         var rot = rots[link.MuzzleBodyEntity];
                         var pos = poss[link.MuzzleBodyEntity];
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
-                        var hit = hitTest_(link.MainEntity, camrot, campos, range, ref cw, mainLinks);
+                        var hit = hitTest_(link.OwnerMainEntity, camrot, campos, range, ref cw, mainLinks);
 
                         postMessageToHitTarget_(structureHitHolder, hit, parts);
 
-                        //var (start, end) = calcBeamPosision_(beamUnit, rot, pos, hit, camrot, campos, bulletData);
+                        //var (start, end) = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
                         var ptop = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
 
                         instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);

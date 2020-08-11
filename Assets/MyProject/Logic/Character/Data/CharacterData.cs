@@ -37,6 +37,8 @@ namespace Abarabone.Character
         public float JumpForce;
         public bool IsChangeMotion;
         public bool IsShooting;
+        public bool IsTriggerdSub;
+        public bool IsChangingWapon;
 
         public float3 Up;
     }

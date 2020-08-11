@@ -63,13 +63,10 @@ namespace Abarabone.Arms
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
 
 
-            var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
-            //var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             var bullets = this.GetComponentDataFromEntity<Bullet.SpecData>(isReadOnly: true);
-            //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 
             // カメラは暫定
@@ -85,23 +82,19 @@ namespace Abarabone.Arms
             this.Entities
                 .WithBurst()
                 .WithNone<Bullet.SpecData>()
-                .WithReadOnly(handles)
-                //.WithReadOnly(mainLinks)
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
                 .WithReadOnly(bullets)
-                //.WithReadOnly(parts)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         ref FunctionUnit.EmittingStateData state,
+                        in FunctionUnit.TriggerData trigger,
                         in FunctionUnit.BulletEmittingData emitter,
                         in FunctionUnit.OwnerLinkData link
                     ) =>
                     {
-
-                        var handle = handles[link.MainEntity];
-                        if (!handle.ControlAction.IsShooting) return;
+                        if (!trigger.IsTriggered) return;
 
 
                         if (currentTime < state.NextEmitableTime) return;

@@ -27,6 +27,7 @@ namespace Abarabone.Arms
     using Abarabone.Structure;
 
     using Random = Unity.Mathematics.Random;
+    using TMPro;
 
 
     //[DisableAutoCreation]
@@ -38,22 +39,26 @@ namespace Abarabone.Arms
         protected override void OnUpdate()
         {
 
+            //var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
+            //var wapons = this.GetComponentDataFromEntity<Wapon.UnitsHolderData>(isReadOnly: true);
+
+
             this.Entities
                 .WithBurst()
+                //.WithReadOnly(wapons)
                 .ForEach(
                     (
                         int entityInQueryIndex,
-                        ref WaponSelector.ToggleModeData selector
+                        ref WaponSelector.ToggleModeData selector,
+                        in WaponSelector.LinkData link
                     ) =>
                     {
 
                         var currentId = (selector.CurrentWaponCarryId + 1) % selector.WaponCarryLength;
 
-
-
-
-
                         selector.CurrentWaponCarryId = currentId;
+
+
                     }
                 )
                 .ScheduleParallel();

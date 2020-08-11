@@ -16,7 +16,7 @@ using Unity.Physics;
 namespace Abarabone.Arms
 {
 
-    static public partial class FunctionUnit
+    static public partial class FunctionUnitWithWapon
     {
 
         public struct WaponCarryIdData : IComponentData
@@ -27,15 +27,46 @@ namespace Abarabone.Arms
         {
             public Entity SelectorEntity;
         }
-        public struct UnitChainLinkData : IComponentData
+        //public struct UnitChainLinkData : IComponentData
+        //{
+        //    public Entity NextUnitEntity;
+        //}
+
+        public struct TriggerTypeData : IComponentData
         {
-            public Entity NextUnitEntity;
+            public TriggerType Type;
         }
+        public enum TriggerType
+        {
+            main,
+            sub
+        }
+
+        public struct InitializeData : IComponentData
+        {
+            public Entity OwnerMainEntity;
+            public Entity MuzzleBodyEntity;
+        }
+    }
+
+    static public partial class FunctionUnitWithDirect
+    {
+
+    }
+
+    /// <summary>
+    /// 兵士はユニットを武器にまとめて所持する。
+    /// 敵はユニット単位で武器を使用する。
+    /// ユニットは「機能をトリガーすること」と「反射間隔／リロードの制御」以外は行わない。
+    /// 他はユニットを管理する側の役目。
+    /// </summary>
+    static public partial class FunctionUnit
+    {
 
         public struct OwnerLinkData : IComponentData
         {
-            public Entity MainEntity;
-            public Entity MuzzleBodyEntity;
+            public Entity OwnerMainEntity;       // 当たり判定で自身を除外する、トリガー判定、など
+            public Entity MuzzleBodyEntity; // 射出の向きやエフェクトの位置のため
         }
         public struct BulletEmittingData : IComponentData
         {
@@ -47,6 +78,11 @@ namespace Abarabone.Arms
             public float AccuracyRad;
             public int NumEmitMultiple;
             public float RangeDistanceFactor;// 切り替え時に弾丸のと計算確定しようかと思ったが、わかりにくいのでやめた
+        }
+
+        public struct TriggerData : IComponentData
+        {
+            public bool IsTriggered;
         }
 
         public struct SightModeData : IComponentData

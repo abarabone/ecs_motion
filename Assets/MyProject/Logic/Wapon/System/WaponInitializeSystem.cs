@@ -10,7 +10,6 @@ using Unity.Mathematics;
 using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.CompilerServices;
 using UnityEngine.XR;
 using Unity.Physics;
 using Unity.Physics.Systems;
@@ -49,61 +48,65 @@ namespace Abarabone.Arms
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
 
-            this.Entities
+            var selectorDependency = this.Entities
                 .WithBurst()
                 .ForEach(
                     (
-                        int entityInQueryIndex,
-                        in Wapon.InitializeData init
+                        Entity entity, int entityInQueryIndex,
+                        ref WaponSelector.ToggleModeData selector,
+                        in WaponSelector.LinkData link,
+                        in WaponSelector.CreateNewWaponData init
                     ) =>
                     {
-                        var main = init.CharacterMainEntity;
-                        var muzzle = init.MuzzleBodyEntity;
 
-                        var prefab0 = init.Prefabs.FunctionUnitPrefab0;
-                        createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab0, 0, main, muzzle);
+                        var newWapon = cmd.Instantiate(entityInQueryIndex, init.WaponPrefab);
 
-                        var prefab1 = init.Prefabs.FunctionUnitPrefab1;
-                        if(prefab1 != Entity.Null)
-                            createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab1, 1, main, muzzle);
+                        cmd.AddComponent(entityInQueryIndex, newWapon,  
+                            new FunctionUnitWithWapon.InitializeData
+                            {
+                                OwnerMainEntity = link.OwnerMainEntity,
+                                MuzzleBodyEntity = link.muzzleBodyEntity,
+                            }
+                        );
 
-                        var prefab2 = init.Prefabs.FunctionUnitPrefab2;
-                        if (prefab2 != Entity.Null)
-                            createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab2, 2, main, muzzle);
 
-                        var prefab3 = init.Prefabs.FunctionUnitPrefab3;
-                        if (prefab3 != Entity.Null)
-                            createFunctionUnitInstance_(cmd, entityInQueryIndex, prefab3, 3, main, muzzle);
+                        if (selector.WaponCarryLength == 0)
+                        {
+                            cmd.RemoveComponent<Disabled>(entityInQueryIndex, entity);
+                        }
+                        selector.WaponCarryLength++;
 
+
+                        cmd.RemoveComponent<WaponSelector.CreateNewWaponData>(entityInQueryIndex, entity);
                     }
                 )
-                .ScheduleParallel();
+                .ScheduleParallel(this.Dependency);
 
+
+            var unitDependency = this.Entities
+                .WithBurst()
+                .ForEach(
+                    (
+                        Entity entity, int entityInQueryIndex,
+                        ref FunctionUnit.OwnerLinkData ownerlink,
+                        in FunctionUnitWithWapon.InitializeData init
+                    ) =>
+                    {
+
+                        ownerlink.OwnerMainEntity = init.OwnerMainEntity;
+                        ownerlink.MuzzleBodyEntity = init.MuzzleBodyEntity;
+
+
+                        cmd.RemoveComponent<FunctionUnitWithWapon.InitializeData>(entityInQueryIndex, entity);
+                    }
+                )
+                .ScheduleParallel(this.Dependency);
+
+
+            this.Dependency = JobHandle.CombineDependencies(selectorDependency, unitDependency);
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void createFunctionUnitInstance_
-            (EntityCommandBuffer.ParallelWriter cmd_, int uniqueId_, Entity prefab_, int carryId_, Entity main_, Entity muzzle_)
-        {
-            var instance = cmd_.Instantiate(uniqueId_, prefab_);
-
-            cmd_.SetComponent(uniqueId_, prefab_,
-                new FunctionUnit.WaponCarryIdData
-                {
-                    WaponCarryId = carryId_,
-                }
-            );
-            cmd_.SetComponent(uniqueId_, prefab_,
-                new FunctionUnit.OwnerLinkData
-                {
-                    MainEntity = main_,
-                    MuzzleBodyEntity = muzzle_,
-                }
-            );
-
         }
 
     }

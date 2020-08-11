@@ -67,13 +67,15 @@ namespace Abarabone.Arms.Authoring
                 var ent = conversionSystem.GetPrimaryEntity(emitter_);
 
                 var types = new ComponentTypes
-                (
+                (new ComponentType[] {
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                     typeof(FunctionUnit.BulletEmittingData),
                     typeof(FunctionUnit.EmittingStateData),
                     typeof(FunctionUnit.SightModeData),
-                    typeof(FunctionUnit.UnitChainLinkData)
-                );
+                    typeof(FunctionUnit.TriggerData),
+                    typeof(FunctionUnit.OwnerLinkData)
+                    //typeof(FunctionUnit.UnitChainLinkData)
+                });
                 em.AddComponents(ent, types);
 
                 em.SetComponentData(ent,

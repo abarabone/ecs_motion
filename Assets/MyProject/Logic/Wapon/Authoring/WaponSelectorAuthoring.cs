@@ -25,7 +25,8 @@ namespace Abarabone.Arms.Authoring
     {
 
 
-        public GameObject WaponLocator;
+        public WaponAuthoring[] Wapons;
+
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -36,23 +37,46 @@ namespace Abarabone.Arms.Authoring
             var main = top.transform.GetChild(0).gameObject;
 
 
+
             var waponSelectorEntity = conversionSystem.CreateAdditionalEntity(this.gameObject);
+            dstManager.SetName_(waponSelectorEntity, $"{main.name} wapon selector");
 
             var types = new ComponentTypes
             (
-                typeof(WaponSelector.CharacterMainLink),
-                typeof(WaponSelector.ToggleModeData)
+                typeof(WaponSelector.LinkData),
+                typeof(WaponSelector.ToggleModeData),
+                typeof(Disabled)// 何も持っていない状態用
             );
             dstManager.AddComponents(waponSelectorEntity, types);
 
             dstManager.SetComponentData(waponSelectorEntity,
-                new WaponSelector.CharacterMainLink
+                new WaponSelector.LinkData
                 {
-                    CharacterMainEntity = conversionSystem.GetPrimaryEntity(main),
+                    OwnerMainEntity = conversionSystem.GetPrimaryEntity(main),
+                    muzzleBodyEntity = entity,
+                }
+            );
+            dstManager.SetComponentData(waponSelectorEntity,
+                new WaponSelector.ToggleModeData
+                {
+                    CurrentWaponCarryId = 0,
+                    WaponCarryLength = 0,
                 }
             );
 
-            //dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.ToggleModeTag { } );
+
+
+            foreach (var w in this.Wapons.Where(x => x != null))
+            {
+                dstManager.AddComponentData(waponSelectorEntity,
+                    new WaponSelector.CreateNewWaponData
+                    {
+                        WaponPrefab = conversionSystem.GetPrimaryEntity(w),
+                        WaponSelectorEntity = waponSelectorEntity,
+                    }
+                );
+            }
+
 
             //var waponEnities = this.Wapons
             //    .Where(x => x != null)
