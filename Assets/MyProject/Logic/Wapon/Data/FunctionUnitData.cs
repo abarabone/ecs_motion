@@ -44,6 +44,8 @@ namespace Abarabone.Arms
 
         public struct InitializeData : IComponentData
         {
+            public int WaponCarryId;
+            public Entity SelectorEntity;
             public Entity OwnerMainEntity;
             public Entity MuzzleBodyEntity;
         }

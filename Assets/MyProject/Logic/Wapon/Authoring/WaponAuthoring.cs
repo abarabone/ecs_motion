@@ -51,11 +51,10 @@ namespace Abarabone.Arms.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            //var units = this.GetComponentsInChildren<FunctionUnitAuthoring>()
-            //    //.Take(4)// とりあえず４つまでとする
-            //    .Select(x => x.gameObject)
-            //    .Select(x => conversionSystem.GetPrimaryEntity(x))
-            //    .ToArray();
+            var units = this.GetComponentsInChildren<FunctionUnitAuthoring>()
+                .Select(x => x.gameObject)
+                .Select(x => conversionSystem.GetPrimaryEntity(x))
+                .ToArray();
 
             //addWaponComponents_(conversionSystem, entity);
 
@@ -66,6 +65,8 @@ namespace Abarabone.Arms.Authoring
             addTriggerType_(conversionSystem, this.UnitForMainTrigger, FunctionUnitWithWapon.TriggerType.main);
             addTriggerType_(conversionSystem, this.UnitForSubTrigger, FunctionUnitWithWapon.TriggerType.sub);
 
+            addWaponSelectorAndCarryIdData_(conversionSystem, units);
+
             return;
 
 
@@ -74,13 +75,26 @@ namespace Abarabone.Arms.Authoring
             {
                 if (unit == null) return;
 
+                var em = gcs_.DstEntityManager;
+
+
                 var ent = conversionSystem.GetPrimaryEntity(unit);
-                dstManager.AddComponentData(ent,
+
+                em.AddComponentData(ent,
                     new FunctionUnitWithWapon.TriggerTypeData
                     {
                         Type = type,
                     }
                 );
+            }
+
+            void addWaponSelectorAndCarryIdData_
+                (GameObjectConversionSystem gcs_, Entity[] units_)
+            {
+                var em = gcs_.DstEntityManager;
+
+                em.AddComponentData(units_, new FunctionUnitWithWapon.WaponCarryIdData { });
+                em.AddComponentData(units_, new FunctionUnitWithWapon.SelectorLinkData { });
             }
 
             //void addWaponComponents_(GameObjectConversionSystem gcs_, Entity wapon_)

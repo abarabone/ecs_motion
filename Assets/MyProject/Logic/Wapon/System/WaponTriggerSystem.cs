@@ -32,8 +32,10 @@ namespace Abarabone.Arms
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
+    //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(WaponSwitchingSystem))]
+    [UpdateAfter(typeof(PlayerMoveDirectionSystem))]//
     public class WaponTriggerSystem : SystemBase
     {
 
@@ -46,9 +48,9 @@ namespace Abarabone.Arms
             this.Entities
                 .WithBurst()
                 .WithReadOnly(handles)
+                .WithReadOnly(selectors)
                 .ForEach(
                     (
-                        Entity fireEntity, int entityInQueryIndex,
                         ref FunctionUnit.TriggerData trigger,
                         in FunctionUnitWithWapon.WaponCarryIdData carryid,
                         in FunctionUnitWithWapon.TriggerTypeData triggerType,
@@ -56,7 +58,7 @@ namespace Abarabone.Arms
                         in FunctionUnit.OwnerLinkData mainLink
                     ) =>
                     {
-
+                        if (selectorLink.SelectorEntity == Entity.Null) return;//
                         var selector = selectors[selectorLink.SelectorEntity];
                         if (selector.CurrentWaponCarryId != carryid.WaponCarryId) return;
 

@@ -45,59 +45,98 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
+            var cmd1 = this.cmdSystem.CreateCommandBuffer();
+
+            var selectors = this.GetComponentDataFromEntity<WaponSelector.ToggleModeData>();
+            var links = this.GetComponentDataFromEntity<WaponSelector.LinkData>(isReadOnly: true);
 
             var selectorDependency = this.Entities
                 .WithName("WaponSelectorInitializeSystem")
                 .WithBurst()
+                //.WithNativeDisableParallelForRestriction(toggles)
                 .ForEach(
                     (
-                        Entity entity, int entityInQueryIndex,
-                        ref WaponSelector.ToggleModeData selector,
-                        in WaponSelector.LinkData link,
+                        Entity entity,
                         in WaponMessage.CreateMsgData msg
                     ) =>
                     {
+                        var selector = selectors[msg.WaponSelectorEntity];
+                        var link = links[msg.WaponSelectorEntity];
 
-                        var newWapon = cmd.Instantiate(entityInQueryIndex, msg.WaponPrefab);
 
-                        cmd.AddComponent(entityInQueryIndex, newWapon,  
+                        var newWapon = cmd1.Instantiate(msg.WaponPrefab);
+
+                        cmd1.AddComponent(newWapon,
                             new FunctionUnitWithWapon.InitializeData
                             {
+                                WaponCarryId = msg.WaponCarryId,
                                 OwnerMainEntity = link.OwnerMainEntity,
                                 MuzzleBodyEntity = link.muzzleBodyEntity,
+                                SelectorEntity = msg.WaponSelectorEntity,
                             }
                         );
 
 
                         if (selector.WaponCarryLength == 0)
                         {
-                            cmd.RemoveComponent<Disabled>(entityInQueryIndex, entity);
+                            cmd1.RemoveComponent<Disabled>(entity);
                         }
                         selector.WaponCarryLength++;
+                        selectors[msg.WaponSelectorEntity] = selector;
 
 
-                        cmd.RemoveComponent<WaponSelector.CreateNewWaponData>(entityInQueryIndex, entity);
+                        cmd1.DestroyEntity(entity);
+                        cmd1.RemoveComponent<Disabled>(msg.WaponSelectorEntity);
                     }
                 )
-                .ScheduleParallel(this.Dependency);
+                .Schedule(this.Dependency);
 
+
+            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+
+            var ownerLinks = this.GetComponentDataFromEntity<FunctionUnit.OwnerLinkData>();
+            var ids = this.GetComponentDataFromEntity<FunctionUnitWithWapon.WaponCarryIdData>();
+            var selectorLinks = this.GetComponentDataFromEntity<FunctionUnitWithWapon.SelectorLinkData>();
 
             var unitDependency = this.Entities
                 .WithName("WaponFunctionInitializeSystem")
                 .WithBurst()
+                .WithNativeDisableParallelForRestriction(ownerLinks)
+                .WithNativeDisableParallelForRestriction(ids)
+                .WithNativeDisableParallelForRestriction(selectorLinks)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref FunctionUnit.OwnerLinkData ownerlink,
+                        in DynamicBuffer<LinkedEntityGroup> entlinks,
                         in FunctionUnitWithWapon.InitializeData init
                     ) =>
                     {
 
-                        ownerlink.OwnerMainEntity = init.OwnerMainEntity;
-                        ownerlink.MuzzleBodyEntity = init.MuzzleBodyEntity;
+                        for(var i=0; i<entlinks.Length; i++)
+                        {
+                            var unit = entlinks[i].Value;
+                            if (!ownerLinks.HasComponent(unit)) continue;
 
+                            var ownerlink = new FunctionUnit.OwnerLinkData
+                            {
+                                OwnerMainEntity = init.OwnerMainEntity,
+                                MuzzleBodyEntity = init.MuzzleBodyEntity,
+                            };
+                            ownerLinks[unit] = ownerlink;
+
+                            var id = new FunctionUnitWithWapon.WaponCarryIdData
+                            {
+                                WaponCarryId = init.WaponCarryId,
+                            };
+                            ids[unit] = id;
+
+                            var selectorLink = new FunctionUnitWithWapon.SelectorLinkData
+                            {
+                                SelectorEntity = init.SelectorEntity,
+                            };
+                            selectorLinks[unit] = selectorLink;
+                        }
 
                         cmd.RemoveComponent<FunctionUnitWithWapon.InitializeData>(entityInQueryIndex, entity);
                     }

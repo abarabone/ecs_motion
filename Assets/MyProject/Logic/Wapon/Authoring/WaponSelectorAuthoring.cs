@@ -66,11 +66,16 @@ namespace Abarabone.Arms.Authoring
 
 
 
-            foreach (var w in this.Wapons.Where(x => x != null))
+            var qWapon = this.Wapons
+                .Where(x => x != null)
+                .Select((x, i) => (x, i));
+            foreach (var (w, i) in qWapon)
             {
-                dstManager.AddComponentData(waponSelectorEntity,
+                var msg = dstManager.CreateEntity();
+                dstManager.AddComponentData(msg,
                     new WaponMessage.CreateMsgData
                     {
+                        WaponCarryId = i,
                         WaponPrefab = conversionSystem.GetPrimaryEntity(w),
                         WaponSelectorEntity = waponSelectorEntity,
                     }

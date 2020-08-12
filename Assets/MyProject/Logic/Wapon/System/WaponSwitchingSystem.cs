@@ -28,10 +28,12 @@ namespace Abarabone.Arms
 
     using Random = Unity.Mathematics.Random;
     using TMPro;
+    using System.Net;
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
+    //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class WaponSwitchingSystem : SystemBase
     {
 
@@ -39,13 +41,11 @@ namespace Abarabone.Arms
         protected override void OnUpdate()
         {
 
-            //var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
-            //var wapons = this.GetComponentDataFromEntity<Wapon.UnitsHolderData>(isReadOnly: true);
-
+            var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
-                //.WithReadOnly(wapons)
+                .WithReadOnly(handles)
                 .ForEach(
                     (
                         int entityInQueryIndex,
@@ -54,10 +54,12 @@ namespace Abarabone.Arms
                     ) =>
                     {
 
+                        if (!handles[link.OwnerMainEntity].ControlAction.IsChangingWapon) return;
+
+
                         var currentId = (selector.CurrentWaponCarryId + 1) % selector.WaponCarryLength;
 
                         selector.CurrentWaponCarryId = currentId;
-
 
                     }
                 )

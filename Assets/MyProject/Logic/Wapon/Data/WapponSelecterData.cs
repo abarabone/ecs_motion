@@ -23,6 +23,7 @@ namespace Abarabone.Arms
 
         public struct CreateMsgData : IComponentData
         {
+            public int WaponCarryId;
             public Entity WaponSelectorEntity;
             public Entity WaponPrefab;
         }
