@@ -58,7 +58,8 @@ namespace Abarabone.Arms
                         in FunctionUnit.OwnerLinkData mainLink
                     ) =>
                     {
-                        if (selectorLink.SelectorEntity == Entity.Null) return;//
+                        if (selectorLink.SelectorEntity == Entity.Null) return;
+
                         var selector = selectors[selectorLink.SelectorEntity];
                         if (selector.CurrentWaponCarryId != carryid.WaponCarryId) return;
 

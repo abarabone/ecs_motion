@@ -45,7 +45,8 @@ namespace Abarabone.Arms.Authoring
             (
                 typeof(WaponSelector.LinkData),
                 typeof(WaponSelector.ToggleModeData),
-                typeof(Disabled)// 何も持っていない状態用
+                typeof(WaponSelector.WaponLink0)
+                //typeof(Disabled)// 何も持っていない状態用
             );
             dstManager.AddComponents(waponSelectorEntity, types);
 
@@ -64,23 +65,25 @@ namespace Abarabone.Arms.Authoring
                 }
             );
 
+            if (this.Wapons.Length >= 2) dstManager.AddChunkComponentData<WaponSelector.WaponLink1>(waponSelectorEntity);
+            if (this.Wapons.Length >= 3) dstManager.AddChunkComponentData<WaponSelector.WaponLink2>(waponSelectorEntity);
+            if (this.Wapons.Length >= 4) dstManager.AddChunkComponentData<WaponSelector.WaponLink3>(waponSelectorEntity);
 
 
-            var qWapon = this.Wapons
-                .Where(x => x != null)
-                .Select((x, i) => (x, i));
-            foreach (var (w, i) in qWapon)
+
+            if (this.Wapons.Length > 0)
             {
-                var msg = dstManager.CreateEntity();
-                dstManager.AddComponentData(msg,
-                    new WaponMessage.CreateMsgData
-                    {
-                        WaponCarryId = i,
-                        WaponPrefab = conversionSystem.GetPrimaryEntity(w),
-                        WaponSelectorEntity = waponSelectorEntity,
-                    }
-                );
+                var msg = new WaponMessage.ReplaceWapon4MsgData
+                {
+                    NumPeplace = math.min(this.Wapons.Where(x => x != null).Count(), 4),
+                    WaponPrefab0 = this.Wapons.Length >= 1 ? conversionSystem.GetPrimaryEntity(this.Wapons[0]) : Entity.Null,
+                    WaponPrefab1 = this.Wapons.Length >= 2 ? conversionSystem.GetPrimaryEntity(this.Wapons[1]) : Entity.Null,
+                    WaponPrefab2 = this.Wapons.Length >= 3 ? conversionSystem.GetPrimaryEntity(this.Wapons[2]) : Entity.Null,
+                    WaponPrefab3 = this.Wapons.Length >= 4 ? conversionSystem.GetPrimaryEntity(this.Wapons[3]) : Entity.Null,
+                };
+                dstManager.AddComponentData(waponSelectorEntity, msg);
             }
+
 
 
             //var waponEnities = this.Wapons

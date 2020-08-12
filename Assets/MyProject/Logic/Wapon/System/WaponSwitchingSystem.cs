@@ -53,6 +53,7 @@ namespace Abarabone.Arms
                         in WaponSelector.LinkData link
                     ) =>
                     {
+                        if (selector.WaponCarryLength == 0) return;
 
                         if (!handles[link.OwnerMainEntity].ControlAction.IsChangingWapon) return;
 
