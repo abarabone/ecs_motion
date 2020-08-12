@@ -42,15 +42,17 @@ namespace Abarabone.Arms
         {
 
             var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+            var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
 
             this.Entities
                 .WithBurst()
                 .WithReadOnly(handles)
                 .ForEach(
                     (
-                        int entityInQueryIndex,
+                        Entity entity, int entityInQueryIndex,
                         ref WaponSelector.ToggleModeData selector,
-                        in WaponSelector.LinkData link
+                        in WaponSelector.LinkData link,
+                        in WaponSelector.WaponLink0 wapon0
                     ) =>
                     {
                         if (selector.WaponCarryLength == 0) return;
@@ -58,9 +60,9 @@ namespace Abarabone.Arms
                         if (!handles[link.OwnerMainEntity].ControlAction.IsChangingWapon) return;
 
 
-                        var currentId = (selector.CurrentWaponCarryId + 1) % selector.WaponCarryLength;
+                        var newCurrentId = (selector.CurrentWaponCarryId + 1) % selector.WaponCarryLength;
 
-                        selector.CurrentWaponCarryId = currentId;
+                        selector.CurrentWaponCarryId = newCurrentId;
 
                     }
                 )

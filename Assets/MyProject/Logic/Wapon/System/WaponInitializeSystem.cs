@@ -113,12 +113,21 @@ namespace Abarabone.Arms
             var ids = this.GetComponentDataFromEntity<FunctionUnitWithWapon.WaponCarryIdData>();
             var selectorLinks = this.GetComponentDataFromEntity<FunctionUnitWithWapon.SelectorLinkData>();
 
+            var wapons0w = this.GetComponentDataFromEntity<WaponSelector.WaponLink0>();
+            var wapons1w = this.GetComponentDataFromEntity<WaponSelector.WaponLink1>();
+            var wapons2w = this.GetComponentDataFromEntity<WaponSelector.WaponLink2>();
+            var wapons3w = this.GetComponentDataFromEntity<WaponSelector.WaponLink3>();
+
             var unitDependency = this.Entities
                 .WithName("WaponInitializeFunctionSystem")
                 .WithBurst()
                 .WithNativeDisableParallelForRestriction(ownerLinks)
                 .WithNativeDisableParallelForRestriction(ids)
                 .WithNativeDisableParallelForRestriction(selectorLinks)
+                .WithNativeDisableParallelForRestriction(wapons0w)
+                .WithNativeDisableParallelForRestriction(wapons1w)
+                .WithNativeDisableParallelForRestriction(wapons2w)
+                .WithNativeDisableParallelForRestriction(wapons3w)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -137,22 +146,30 @@ namespace Abarabone.Arms
                                 OwnerMainEntity = init.OwnerMainEntity,
                                 MuzzleBodyEntity = init.MuzzleBodyEntity,
                             };
-                            ownerLinks[unit] = ownerlink;
-
                             var id = new FunctionUnitWithWapon.WaponCarryIdData
                             {
                                 WaponCarryId = init.WaponCarryId,
                             };
-                            ids[unit] = id;
-
                             var selectorLink = new FunctionUnitWithWapon.SelectorLinkData
                             {
                                 SelectorEntity = init.SelectorEntity,
                             };
+
+                            ownerLinks[unit] = ownerlink;
+                            ids[unit] = id;
                             selectorLinks[unit] = selectorLink;
                         }
 
                         cmd.RemoveComponent<FunctionUnitWithWapon.InitializeData>(entityInQueryIndex, entity);
+
+
+                        switch(init.WaponCarryId)
+                        {
+                            case 0: wapons0w[init.SelectorEntity] = new WaponSelector.WaponLink0 { WaponEntity = entity }; break;
+                            case 1: wapons1w[init.SelectorEntity] = new WaponSelector.WaponLink1 { WaponEntity = entity }; break;
+                            case 2: wapons2w[init.SelectorEntity] = new WaponSelector.WaponLink2 { WaponEntity = entity }; break;
+                            case 3: wapons3w[init.SelectorEntity] = new WaponSelector.WaponLink3 { WaponEntity = entity }; break;
+                        }
                     }
                 )
                 .ScheduleParallel(this.Dependency);
