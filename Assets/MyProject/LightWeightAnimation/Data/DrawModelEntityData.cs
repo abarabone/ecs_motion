@@ -59,6 +59,7 @@ namespace Abarabone.Draw
 
 
         // class object -------------
+        // ジョブからは使えないので、基本的には DrawMesh() 関連で使用
 
         public class ComputeArgumentsBufferData : IComponentData
         {

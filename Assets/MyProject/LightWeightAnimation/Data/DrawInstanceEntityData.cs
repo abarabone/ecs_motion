@@ -73,23 +73,23 @@ namespace Abarabone.Draw
 
 
 
-        /// <summary>
-        /// カリング用オブジェクトＡＡＢＢ
-        /// </summary>
-        public struct TargetAabb : IComponentData
-        {
-            public float4 min;
-            public float4 max;
-        }
+        ///// <summary>
+        ///// カリング用オブジェクトＡＡＢＢ
+        ///// </summary>
+        //public struct TargetAabb : IComponentData
+        //{
+        //    public float4 min;
+        //    public float4 max;
+        //}
 
-        /// <summary>
-        /// カリング用オブジェクト球データ
-        /// </summary>
-        public struct TargetSphere : IComponentData
-        {
-            public float center;
-            public float radius;
-        }
+        ///// <summary>
+        ///// カリング用オブジェクト球データ
+        ///// </summary>
+        //public struct TargetSphere : IComponentData
+        //{
+        //    public float center;
+        //    public float radius;
+        //}
 
 
 
