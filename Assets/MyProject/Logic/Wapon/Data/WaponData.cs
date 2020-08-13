@@ -19,6 +19,9 @@ namespace Abarabone.Arms
     static public partial class Wapon
     {
 
+        public struct WaponTag : IComponentData
+        { }
+
 
         //public struct UnitTopLinkData : IComponentData
         //{

@@ -60,8 +60,9 @@ namespace Abarabone.Arms
                     {
                         if (selectorLink.SelectorEntity == Entity.Null) return;
 
+
                         var selector = selectors[selectorLink.SelectorEntity];
-                        if (selector.CurrentWaponCarryId != carryid.WaponCarryId) return;
+                        var isCurrentUsing = (selector.CurrentWaponCarryId == carryid.WaponCarryId);
 
 
                         var handle = handles[mainLink.OwnerMainEntity];
@@ -70,12 +71,12 @@ namespace Abarabone.Arms
                         {
                             case FunctionUnitWithWapon.TriggerType.main:
 
-                                trigger.IsTriggered = handle.ControlAction.IsShooting;
+                                trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsShooting;
 
                                 break;
                             case FunctionUnitWithWapon.TriggerType.sub:
 
-                                trigger.IsTriggered = handle.ControlAction.IsTriggerdSub;
+                                trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsTriggerdSub;
 
                                 break;
                         }

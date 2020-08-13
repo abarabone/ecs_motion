@@ -27,6 +27,7 @@ namespace Abarabone.Structure
     using Abarabone.Character;
     using System.Security.Cryptography;
     using UnityEngine.Video;
+    using System.Runtime.CompilerServices;
 
     public struct StructureHitMessage
     {
@@ -109,6 +110,7 @@ namespace Abarabone.Structure
 
                 var destruction = this.Destructions[key];
 
+                // 複数の子パーツから１つの親構造物のフラグを立てることがあるので、並列化の際に注意が必要
                 destruction.SetDestroyed(value.PartId);
 
                 this.Destructions[key] = destruction;
@@ -117,29 +119,35 @@ namespace Abarabone.Structure
                 var prefab = this.Prefabs[value.PartEntity].DebrisPrefab;
                 var rot = this.Rotations[value.PartEntity];
                 var pos = this.Positions[value.PartEntity];
-                addComponents(this.Cmd, uniqueIndex, prefab, rot, pos);
+                createDebris_(this.Cmd, uniqueIndex, prefab, rot, pos);
 
-                this.Cmd.DestroyEntity(uniqueIndex, value.PartEntity);
+                destroyPart_(this.Cmd, uniqueIndex, value.PartEntity);
 
-                return;
-
-
-                void addComponents
-                    (
-                        EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity debrisPrefab_,
-                        Rotation rot_, Translation pos_
-                    )
-                {
-
-                    var ent = cmd_.Instantiate(uniqueIndex_, debrisPrefab_);
-                    cmd_.SetComponent(uniqueIndex_, ent, rot_);
-                    cmd_.SetComponent(uniqueIndex_, ent, pos_);
-
-                }
             }
 
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void createDebris_
+            (
+                EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity debrisPrefab_,
+                Rotation rot_, Translation pos_
+            )
+        {
+
+            var ent = cmd_.Instantiate(uniqueIndex_, debrisPrefab_);
+            cmd_.SetComponent(uniqueIndex_, ent, rot_);
+            cmd_.SetComponent(uniqueIndex_, ent, pos_);
+
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void destroyPart_
+            (EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity part_)
+        {
+            cmd_.DestroyEntity(uniqueIndex_, part_);
+        }
     }
 
 

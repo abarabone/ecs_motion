@@ -65,9 +65,9 @@ namespace Abarabone.Arms.Authoring
                 }
             );
 
-            if (this.Wapons.Length >= 2) dstManager.AddChunkComponentData<WaponSelector.WaponLink1>(waponSelectorEntity);
-            if (this.Wapons.Length >= 3) dstManager.AddChunkComponentData<WaponSelector.WaponLink2>(waponSelectorEntity);
-            if (this.Wapons.Length >= 4) dstManager.AddChunkComponentData<WaponSelector.WaponLink3>(waponSelectorEntity);
+            if (this.Wapons.Length >= 2) dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponLink1 { });
+            if (this.Wapons.Length >= 3) dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponLink2 { });
+            if (this.Wapons.Length >= 4) dstManager.AddComponentData(waponSelectorEntity, new WaponSelector.WaponLink3 { });
 
 
 

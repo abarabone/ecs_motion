@@ -112,29 +112,21 @@ namespace Abarabone.Arms
         //{ }
 
 
-        public interface IWaponEntityHolder
-        {
-            Entity GetWaponEntity { get; }
-        }
-        public struct WaponLink0 : IComponentData, IWaponEntityHolder
+        public struct WaponLink0 : IComponentData
         {
             public Entity WaponEntity;
-            public Entity GetWaponEntity { get => this.WaponEntity; }
         }
-        public struct WaponLink1 : IComponentData, IWaponEntityHolder
+        public struct WaponLink1 : IComponentData
         {
             public Entity WaponEntity;
-            public Entity GetWaponEntity { get => this.WaponEntity; }
         }
-        public struct WaponLink2 : IComponentData, IWaponEntityHolder
+        public struct WaponLink2 : IComponentData
         {
             public Entity WaponEntity;
-            public Entity GetWaponEntity { get => this.WaponEntity; }
         }
-        public struct WaponLink3 : IComponentData, IWaponEntityHolder
+        public struct WaponLink3 : IComponentData
         {
             public Entity WaponEntity;
-            public Entity GetWaponEntity { get => this.WaponEntity; }
         }
 
     }
