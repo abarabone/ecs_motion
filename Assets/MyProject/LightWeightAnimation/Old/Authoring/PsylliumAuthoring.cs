@@ -49,7 +49,7 @@ namespace Abarabone.Authoring
                 new DrawInstance.ModeLinkData
                 //new DrawTransform.LinkData
                 {
-                    DrawModelEntity = modelEntity,
+                    DrawModelEntityCurrent = modelEntity,
                 }
             );
             em.AddComponentData( ent,

@@ -34,7 +34,7 @@ namespace Abarabone.Arms
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    [UpdateAfter(typeof(WaponSwitchingSystem))]
+    [UpdateAfter(typeof(WaponSelectorSystem))]
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]//
     public class WaponTriggerSystem : SystemBase
     {

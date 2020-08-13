@@ -49,7 +49,7 @@ namespace Abarabone.Draw
         /// </summary>
         public struct ModeLinkData : IComponentData
         {
-            public Entity DrawModelEntity;
+            public Entity DrawModelEntityCurrent;
         }
         public struct PostureLinkData : IComponentData
         {
@@ -62,12 +62,12 @@ namespace Abarabone.Draw
             public int DrawInstanceId;   // -1 なら描画しない
         }
 
-        public struct ModelLinkLod2Data : IComponentData
+        public struct ModelLod2LinkData : IComponentData
         {
             public Entity DrawModelEntity0;
             public Entity DrawModelEntity1;
-            public float Distance0;
-            public float Distance1;
+            public float SqrDistance0;
+            public float SqrDistance1;
         }
 
 

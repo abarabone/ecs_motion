@@ -112,7 +112,7 @@ namespace Abarabone.Authoring
             em.SetComponentData( ent,
                 new DrawInstance.ModeLinkData
                 {
-                    DrawModelEntity = modelEntity,
+                    DrawModelEntityCurrent = modelEntity,
                 }
             );
 

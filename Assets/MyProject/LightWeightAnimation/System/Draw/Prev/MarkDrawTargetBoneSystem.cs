@@ -21,73 +21,64 @@ namespace Abarabone.Draw
     /// </summary>
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
     [UpdateAfter( typeof( DrawCullingSystem ) )]
-    public class MarkDrawTargetBoneSystem : JobComponentSystem
+    public class MarkDrawTargetBoneSystem : SystemBase
     {
 
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        protected override void OnUpdate()
         {
 
-            inputDeps = new MarkBoneJob
-            {
-                //DrawIndexers = this.GetComponentDataFromEntity<DrawModelIndexData>( isReadOnly: true ),
-                DrawTargets = this.GetComponentDataFromEntity<DrawInstance.TargetWorkData>( isReadOnly: true ),
-            }
-            .Schedule( this, inputDeps );
+            var targets = this.GetComponentDataFromEntity<DrawInstance.TargetWorkData>(isReadOnly: true);
 
-            //var instanceOffestsOfDrawModel =
-            //    this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
-            //var targetsOfDrawInstance =
-            //    this.GetComponentDataFromEntity<DrawInstance.TargetWorkData>( isReadOnly: true );
-
+            ////var withoutLod = this.Entities
             //this.Entities
             //    .WithBurst()
-            //    .WithReadOnly(instanceOffestsOfDrawModel)
-            //    .WithReadOnly(targetsOfDrawInstance)
+            //    .WithNone<DrawTransform.WithLodTag>()
+            //    .WithReadOnly(targets)
             //    .ForEach(
             //        (
-            //            ref BoneDrawTargetIndexWorkData indexOfBone,
-            //            in BoneDrawLinkData drawLinkerOfBone,
-            //            in BoneIndexData boneIdOfBone
+            //            ref DrawTransform.TargetWorkData boneIndexer,
+            //            in DrawTransform.LinkData drawLinker,
+            //            in DrawTransform.IndexData boneId
             //        ) =>
             //        {
 
-            //            var drawTarget = targetsOfDrawInstance[ drawLinkerOfBone.DrawEntity ];
+            //            var drawTarget = targets[drawLinker.DrawInstanceEntity];
 
-            //            var a = instanceOffestsOfDrawModel[]
-
-            //            indexOfBone.pBoneInBuffer = 
+            //            boneIndexer.DrawInstanceId = drawTarget.DrawInstanceId;
 
             //        }
-            //    );
+            //    )
+            //    .ScheduleParallel();
 
-            return inputDeps;
+
+            var models = this.GetComponentDataFromEntity<DrawInstance.ModeLinkData>(isReadOnly: true);
+
+            this.Entities
+            //var withLod = this.Entities
+                .WithBurst()
+                //.WithAll<DrawTransform.WithLodTag>()
+                .WithReadOnly(models)
+                .WithReadOnly(targets)
+                .ForEach(
+                    (
+                        ref DrawTransform.TargetWorkData boneIndexer,
+                        ref DrawTransform.LinkData drawLinker,
+                        in DrawTransform.IndexData boneId
+                    ) =>
+                    {
+
+                        var drawTarget = targets[drawLinker.DrawInstanceEntity];
+
+                        boneIndexer.DrawInstanceId = drawTarget.DrawInstanceId;
+
+
+                        drawLinker.DrawModelEntityCurrent = models[drawLinker.DrawInstanceEntity].DrawModelEntityCurrent;
+                    }
+                )
+                .ScheduleParallel();
         }
 
-
-        [BurstCompile]
-        struct MarkBoneJob : IJobForEach<DrawTransform.LinkData, DrawTransform.IndexData, DrawTransform.TargetWorkData>
-        {
-
-            //[ReadOnly]
-            //public ComponentDataFromEntity<DrawModelIndexData> DrawIndexers;
-            [ReadOnly]
-            public ComponentDataFromEntity<DrawInstance.TargetWorkData> DrawTargets;
-
-            public void Execute(
-                [ReadOnly] ref DrawTransform.LinkData drawLinker,
-                [ReadOnly] ref DrawTransform.IndexData boneId,
-                ref DrawTransform.TargetWorkData boneIndexer
-            )
-            {
-
-                //var drawIndexer = this.DrawIndexers[ drawLinker.DrawEntity ];
-                var drawTarget = this.DrawTargets[ drawLinker.DrawInstanceEntity ];
-
-                boneIndexer.DrawInstanceId = drawTarget.DrawInstanceId;
-
-            }
-        }
         
     }
 

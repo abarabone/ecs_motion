@@ -185,7 +185,7 @@ namespace Abarabone.Authoring
                 new DrawTransform.LinkData
                 {
                     DrawInstanceEntity = drawInstancePrefab,
-                    DrawModelEntity = em_.GetComponentData<DrawInstance.ModeLinkData>(drawInstancePrefab).DrawModelEntity,
+                    DrawModelEntityCurrent = em_.GetComponentData<DrawInstance.ModeLinkData>(drawInstancePrefab).DrawModelEntityCurrent,
                 }
             );
         }

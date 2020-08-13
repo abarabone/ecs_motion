@@ -60,7 +60,7 @@ namespace Abarabone.Draw.Authoring
             em.SetComponentData( ent,
                 new DrawInstance.ModeLinkData
                 {
-                    DrawModelEntity = gcs.GetFromModelEntityDictionary( top ),
+                    DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary( top ),
                 }
             );
             em.SetComponentData(ent,
@@ -124,7 +124,7 @@ namespace Abarabone.Draw.Authoring
                     new DrawTransform.LinkData
                     {
                         DrawInstanceEntity = drawInstanceEntity_,
-                        DrawModelEntity = drawModelLinker.DrawModelEntity,
+                        DrawModelEntityCurrent = drawModelLinker.DrawModelEntityCurrent,
                     }
                 );
             }

@@ -52,7 +52,7 @@ namespace Abarabone.Draw
                         if (targetOfTf.DrawInstanceId == -1) return;
 
 
-                        var offsetInfo = offsetsOfDrawModel[linkerOfTf.DrawModelEntity];
+                        var offsetInfo = offsetsOfDrawModel[linkerOfTf.DrawModelEntityCurrent];
 
                         const int vectorLengthInBone = 1;
                         var lengthOfInstance = vectorLengthInBone * indexerOfTf.BoneLength + offsetInfo.VectorOffsetPerInstance;

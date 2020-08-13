@@ -154,7 +154,7 @@ namespace Abarabone.Structure.Authoring
                 em_.SetComponentData(prefabEnt,
                     new DrawInstance.ModeLinkData
                     {
-                        DrawModelEntity = gcs_.GetFromModelEntityDictionary(master_),
+                        DrawModelEntityCurrent = gcs_.GetFromModelEntityDictionary(master_),
                     }
                 );
                 em_.SetComponentData(prefabEnt,

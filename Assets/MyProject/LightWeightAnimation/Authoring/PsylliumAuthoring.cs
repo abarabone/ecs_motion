@@ -82,7 +82,7 @@ namespace Abarabone.Particle.Aurthoring
                     new DrawInstance.ModeLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntity = gcs.GetFromModelEntityDictionary( main ),
+                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary( main ),
                     }
                 );
                 em.SetComponentData( mainEntity,

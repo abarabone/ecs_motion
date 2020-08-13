@@ -65,8 +65,14 @@ namespace Abarabone.Draw
                             in DrawInstance.PostureLinkData posturelink
                         ) =>
                     {
+                        if (modellink.DrawModelEntityCurrent == Entity.Null)
+                        {
+                            target.DrawInstanceId = -1;
+                            return;
+                        }
 
-                        var bbox = bboxes[modellink.DrawModelEntity];
+
+                        var bbox = bboxes[modellink.DrawModelEntityCurrent];
                         var rot = rots[posturelink.PostureEntity];
                         var pos = poss[posturelink.PostureEntity];
 
@@ -79,7 +85,7 @@ namespace Abarabone.Draw
                         }
 
 
-                        var drawModelData = drawModels[ modellink.DrawModelEntity ];
+                        var drawModelData = drawModels[ modellink.DrawModelEntityCurrent ];
 
                         target.DrawInstanceId = drawModelData.InstanceCounter.GetSerial();
 
@@ -104,8 +110,14 @@ namespace Abarabone.Draw
                             in Translation pos
                         ) =>
                         {
+                            if (modellink.DrawModelEntityCurrent == Entity.Null)
+                            {
+                                target.DrawInstanceId = -1;
+                                return;
+                            }
 
-                            var bbox = bboxes[modellink.DrawModelEntity];
+
+                            var bbox = bboxes[modellink.DrawModelEntityCurrent];
 
                             var isHit = viewFrustum.IsInside(bbox.localBbox, rot, pos);
 
@@ -116,7 +128,7 @@ namespace Abarabone.Draw
                             }
 
 
-                            var drawModelData = drawModels[modellink.DrawModelEntity];
+                            var drawModelData = drawModels[modellink.DrawModelEntityCurrent];
 
                             target.DrawInstanceId = drawModelData.InstanceCounter.GetSerial();
 
@@ -139,6 +151,12 @@ namespace Abarabone.Draw
                             in Particle.AdditionalData additional
                         ) =>
                         {
+                            if (modellink.DrawModelEntityCurrent == Entity.Null)
+                            {
+                                target.DrawInstanceId = -1;
+                                return;
+                            }
+
 
                             var bbox = new AABB
                             {
@@ -155,7 +173,7 @@ namespace Abarabone.Draw
                             }
 
 
-                            var drawModelData = drawModels[modellink.DrawModelEntity];
+                            var drawModelData = drawModels[modellink.DrawModelEntityCurrent];
 
                             target.DrawInstanceId = drawModelData.InstanceCounter.GetSerial();
 

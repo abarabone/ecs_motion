@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -26,6 +27,7 @@ namespace Abarabone.Particle.Aurthoring
 
         public Material Material;
 
+        public GameObject[] LodOptionalMeshTops;
 
 
         /// <summary>
@@ -78,7 +80,7 @@ namespace Abarabone.Particle.Aurthoring
                     new DrawInstance.ModeLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntity = gcs.GetFromModelEntityDictionary(main),
+                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(main),
                     }
                 );
                 em.SetComponentData(mainEntity,
@@ -111,6 +113,11 @@ namespace Abarabone.Particle.Aurthoring
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public Mesh GetOrCombineMesh(GameObject top_)
+        {
+
+        }
     }
 
 }

@@ -22,9 +22,12 @@ namespace Abarabone.Draw
     static public partial class DrawTransform
     {
 
+        //public struct WithLodTag : IComponentData
+        //{ }
+
         public struct LinkData : IComponentData
         {
-            public Entity DrawModelEntity;
+            public Entity DrawModelEntityCurrent;
             public Entity DrawInstanceEntity;
         }
 
