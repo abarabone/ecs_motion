@@ -52,8 +52,12 @@ namespace Abarabone.Model.Authoring
             gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.Add(topGameObject, entity);
 
         static public Entity GetFromModelEntityDictionary
-            (this GameObjectConversionSystem gcs, GameObject topGameObject) =>
-            gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary[topGameObject];
+            (this GameObjectConversionSystem gcs, GameObject topGameObject)
+        {
+            gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.TryGetValue(topGameObject, out var entity);
+
+            return entity;
+        }
 
         static public bool IsExistsInModelEntityDictionary
             (this GameObjectConversionSystem gcs, GameObject topGameObject) =>

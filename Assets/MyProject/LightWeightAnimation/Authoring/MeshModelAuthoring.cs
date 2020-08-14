@@ -61,17 +61,39 @@ namespace Abarabone.Particle.Aurthoring
                 const BoneType BoneType = BoneType.TR;
                 const int boneLength = 1;
 
-
-                if (this.LodOptionalMeshTops.Length >= 1)
-                {
-                    var mesh = gcs.GetFromStructureMeshDictionary(this.LodOptionalMeshTops[0].objectTop);
-                    if(mesh == null) mesh = 
-                }
                 gcs.CreateDrawModelEntityComponents(main, mesh, mat, BoneType, boneLength);
-                
             }
 
-            void initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
+            Mesh[] getMeshesToCreateModelEntity_
+                (GameObjectConversionSystem gcs, GameObject main, GameObject[] lods)
+            {
+                var meshes_ = new List<Mesh>(2);
+                if (lods.Length >= 1) meshes_.Add(gcs.GetFromStructureMeshDictionary(lods[0]));
+                if (lods.Length >= 2) meshes_.Add(gcs.GetFromStructureMeshDictionary(lods[1]));
+                if (lods.Length == 0) meshes_.Add(gcs.GetFromStructureMeshDictionary(main));
+
+                var meshes = meshes_
+                    .Where(x => x != null)
+                    .ToArray();
+
+                if (meshes.Length > 0) return meshes;
+
+
+                var lodCombineFuncs = this.GetMeshCombineFuncs();
+                if(lodCombineFuncs.Count() > )
+            }
+
+            Entity GetModel_()
+            {
+                this.LodOptionalMeshTops
+                    .Select( x => x.objectTop )
+                    .Where( x => x != null )
+                    .DefaultIfEmpty( this.GetComponentInChildren<MeshFilter>().gameObject )
+
+                    
+            }
+
+            void initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main, GameObject geomTop)
             {
                 dstManager.SetName_(entity, $"{this.name}");
 
@@ -96,7 +118,7 @@ namespace Abarabone.Particle.Aurthoring
                     new DrawInstance.ModeLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(main),
+                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(geomTop),
                     }
                 );
                 em.SetComponentData(mainEntity,
@@ -128,6 +150,25 @@ namespace Abarabone.Particle.Aurthoring
 
         }
 
+        void addLodComponentToDrawInstance_(GameObjectConversionSystem gcs_, GameObject main_, ObjectAndDistance[] lods_)
+        {
+            if (lods_.Length == 0) return;
+
+            var lod0_ = lods_[0].objectTop ?? main_;
+            var lod1_ = lods_[1].objectTop ?? main_;
+
+            var em = gcs_.DstEntityManager;
+
+            em.AddComponentData(
+            new DrawInstance.ModelLod2LinkData
+            {
+                DrawModelEntity0 = gcs_.GetFromModelEntityDictionary(lod0_),
+                DrawModelEntity1 = gcs_.GetFromModelEntityDictionary(lod1_),
+                SqrDistance0 = lods_[0].distance,
+                SqrDistance1 = lods_[1].distance,
+            };
+        }
+
 
         /// <summary>
         /// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
@@ -136,7 +177,7 @@ namespace Abarabone.Particle.Aurthoring
         /// この関数では返さない。
         /// とりあえず現状はＬＯＤ２つまで。
         /// </summary>
-        public IEnumerable<Func<MeshElements>> GetMeshCombineFuncs()
+        public Func<MeshElements>[] GetMeshCombineFuncs()
         {
             var qResult = Enumerable.Empty<Func<MeshElements>>();
 
@@ -146,7 +187,7 @@ namespace Abarabone.Particle.Aurthoring
                 .Select(x => x.objectTop)
                 .ToArray();
 
-            if (lods.Length == 0) return qResult;
+            if (lods.Length == 0) return qResult.ToArray();
 
 
             var combineFunc0 = (lods.Length >= 1)
@@ -160,7 +201,8 @@ namespace Abarabone.Particle.Aurthoring
             return qResult
                 .Append(combineFunc0)
                 .Append(combineFunc1)
-                .Where(x => x != null);
+                .Where(x => x != null)
+                .ToArray();
         }
     }
 
