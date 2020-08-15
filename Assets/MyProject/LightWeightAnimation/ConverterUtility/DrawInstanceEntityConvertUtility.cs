@@ -47,20 +47,20 @@ namespace Abarabone.Draw.Authoring
         /// ・ＬＯＤ枠が確保されていて、ＬＯＤ登録が Nothing の場合は、
         /// 　オブジェクトトップから見つかった最初のメッシュを無加工で採用する。
         /// </summary>
-        static public Mesh[] GetMeshesToCreateModelEntity
+        static public (GameObject go, Mesh mesh)[] GetMeshesToCreateModelEntity
             (
                 this GameObjectConversionSystem gcs_,
                 GameObject main_, GameObject[] lods_,
-                Func<Func<MeshElements>[]> getMeshCombineFuncs
+                Func<(GameObject, Func<MeshElements>)[]> getMeshCombineFuncs
             )
         {
-            var preBakedMeshes = new List<Mesh>(2);
-            if (lods_.Length >= 1) preBakedMeshes.Add(gcs_.GetFromStructureMeshDictionary(lods_[0]));
-            if (lods_.Length >= 2) preBakedMeshes.Add(gcs_.GetFromStructureMeshDictionary(lods_[1]));
-            if (lods_.Length == 0) preBakedMeshes.Add(gcs_.GetFromStructureMeshDictionary(main_));
+            var preBakedMeshes = new List<(GameObject go, Mesh mesh)>(2);
+            if (lods_.Length >= 1) (lods_[0], gcs_.GetFromStructureMeshDictionary(lods_[0])).AddTo(preBakedMeshes);
+            if (lods_.Length >= 2) (lods_[1], gcs_.GetFromStructureMeshDictionary(lods_[1])).AddTo(preBakedMeshes);
+            if (lods_.Length == 0) (main_, gcs_.GetFromStructureMeshDictionary(main_)).AddTo(preBakedMeshes);
 
             var vailedMeshes = preBakedMeshes
-                .Where(x => x != null)
+                .Where(x => x.mesh != null)
                 .ToArray();
 
             if (vailedMeshes.Length > 0) return vailedMeshes;
@@ -81,6 +81,7 @@ namespace Abarabone.Draw.Authoring
                 .Append(main_.GetComponentInChildren<MeshFilter>().sharedMesh)
                 .ToArray();
         }
+        static void AddTo(this (GameObject, Mesh) x, List<(GameObject, Mesh)> list) => list.Add(x);
 
 
         /// <summary>

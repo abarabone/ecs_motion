@@ -54,23 +54,24 @@ namespace Abarabone.Particle.Aurthoring
                 var lods = LodOptionalMeshTops.Select(x => x.objectTop).ToArray();
                 var meshes = gcs.GetMeshesToCreateModelEntity(main, lods, this.GetMeshCombineFuncs);
 
-                foreach(var mesh in meshes)
+                foreach(var (go, mesh) in meshes)
                 {
-                    createModelEntity_(gcs, main, srcMaterial, mesh);
+                    Debug.Log($"{}");
+                    createModelEntity_(gcs, go, srcMaterial, mesh);
                 }
 
                 return;
 
 
                 void createModelEntity_
-                    (GameObjectConversionSystem gcs_, GameObject main_, Material srcMaterial_, Mesh mesh_)
+                    (GameObjectConversionSystem gcs_, GameObject top_, Material srcMaterial_, Mesh mesh_)
                 {
                     var mat = new Material(srcMaterial_);
 
                     const BoneType BoneType = BoneType.TR;
                     const int boneLength = 1;
 
-                    gcs_.CreateDrawModelEntityComponents(main_, mesh_, mat, BoneType, boneLength);
+                    gcs_.CreateDrawModelEntityComponents(top_, mesh_, mat, BoneType, boneLength);
                 }
 
             }
@@ -144,9 +145,9 @@ namespace Abarabone.Particle.Aurthoring
         /// この関数では返さない。
         /// とりあえず現状はＬＯＤ２つまで。
         /// </summary>
-        public Func<MeshElements>[] GetMeshCombineFuncs()
+        public (GameObject, Func<MeshElements>)[] GetMeshCombineFuncs()
         {
-            var qResult = Enumerable.Empty<Func<MeshElements>>();
+            var qResult = Enumerable.Empty<(GameObject, Func<MeshElements>)>();
 
 
             var lods = this.LodOptionalMeshTops
@@ -158,17 +159,18 @@ namespace Abarabone.Particle.Aurthoring
 
 
             var combineFunc0 = (lods.Length >= 1)
-                ? MeshCombiner.BuildNormalMeshElements(lods[0].ChildrenAndSelf(), lods[0].transform)
-                : null;
+                ? (lods[0], MeshCombiner.BuildNormalMeshElements(lods[0].ChildrenAndSelf(), lods[0].transform))
+                : (null, null);
 
             var combineFunc1 = (lods.Length >= 2)
-                ? MeshCombiner.BuildNormalMeshElements(lods[1].ChildrenAndSelf(), lods[1].transform)
-                : null;
+                ? (lods[1], MeshCombiner.BuildNormalMeshElements(lods[1].ChildrenAndSelf(), lods[1].transform))
+                : (null, null);
 
             return qResult
                 .Append(combineFunc0)
                 .Append(combineFunc1)
-                .Where(x => x != null)
+                .Select(x => (go:x.Item1, f:x.Item2))
+                .Where(x => x.f != null)
                 .ToArray();
         }
     }
