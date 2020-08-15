@@ -8,16 +8,15 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
+using Unity.Linq;
 
 namespace Abarabone.Particle.Aurthoring
 {
-    using Model;
-    using Draw;
-    using Model.Authoring;
-    using Draw.Authoring;
+    using Abarabone.Model;
+    using Abarabone.Draw;
+    using Abarabone.Model.Authoring;
+    using Abarabone.Draw.Authoring;
     using Abarabone.Geometry;
-    using Unity.Linq;
-    using Abarabone.Structure.Authoring;
 
     /// <summary>
     /// 
@@ -31,12 +30,6 @@ namespace Abarabone.Particle.Aurthoring
 
         [SerializeField]
         public ObjectAndDistance[] LodOptionalMeshTops;
-        [Serializable]
-        public class ObjectAndDistance
-        {
-            public GameObject objectTop;
-            public float distance;
-        }
 
 
         /// <summary>
@@ -45,55 +38,44 @@ namespace Abarabone.Particle.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            createModelEntity_(conversionSystem, this.gameObject, this.Material);
+            createModelEntities_(conversionSystem, this.gameObject, this.Material, this.LodOptionalMeshTops);
 
-            initInstanceEntityComponents_(conversionSystem, this.gameObject);
+            var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
+
+            conversionSystem.AddLodComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.LodOptionalMeshTops);
 
             return;
 
 
-            void createModelEntity_
-                (GameObjectConversionSystem gcs, GameObject main, Material srcMaterial)
+            void createModelEntities_
+                (GameObjectConversionSystem gcs, GameObject main, Material srcMaterial, ObjectAndDistance[] lodOpts)
             {
-                var mat = new Material(srcMaterial);
-                var mesh = main.GetComponentInChildren<MeshFilter>().sharedMesh;
 
-                const BoneType BoneType = BoneType.TR;
-                const int boneLength = 1;
+                var lods = LodOptionalMeshTops.Select(x => x.objectTop).ToArray();
+                var meshes = gcs.GetMeshesToCreateModelEntity(main, lods, this.GetMeshCombineFuncs);
 
-                gcs.CreateDrawModelEntityComponents(main, mesh, mat, BoneType, boneLength);
+                foreach(var mesh in meshes)
+                {
+                    createModelEntity_(gcs, main, srcMaterial, mesh);
+                }
+
+                return;
+
+
+                void createModelEntity_
+                    (GameObjectConversionSystem gcs_, GameObject main_, Material srcMaterial_, Mesh mesh_)
+                {
+                    var mat = new Material(srcMaterial_);
+
+                    const BoneType BoneType = BoneType.TR;
+                    const int boneLength = 1;
+
+                    gcs_.CreateDrawModelEntityComponents(main_, mesh_, mat, BoneType, boneLength);
+                }
+
             }
 
-            Mesh[] getMeshesToCreateModelEntity_
-                (GameObjectConversionSystem gcs, GameObject main, GameObject[] lods)
-            {
-                var meshes_ = new List<Mesh>(2);
-                if (lods.Length >= 1) meshes_.Add(gcs.GetFromStructureMeshDictionary(lods[0]));
-                if (lods.Length >= 2) meshes_.Add(gcs.GetFromStructureMeshDictionary(lods[1]));
-                if (lods.Length == 0) meshes_.Add(gcs.GetFromStructureMeshDictionary(main));
-
-                var meshes = meshes_
-                    .Where(x => x != null)
-                    .ToArray();
-
-                if (meshes.Length > 0) return meshes;
-
-
-                var lodCombineFuncs = this.GetMeshCombineFuncs();
-                if(lodCombineFuncs.Count() > )
-            }
-
-            Entity GetModel_()
-            {
-                this.LodOptionalMeshTops
-                    .Select( x => x.objectTop )
-                    .Where( x => x != null )
-                    .DefaultIfEmpty( this.GetComponentInChildren<MeshFilter>().gameObject )
-
-                    
-            }
-
-            void initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main, GameObject geomTop)
+            Entity initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main, ObjectAndDistance[] lodOpts)
             {
                 dstManager.SetName_(entity, $"{this.name}");
 
@@ -104,6 +86,7 @@ namespace Abarabone.Particle.Aurthoring
 
                 var archetype = em.CreateArchetype(
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
+                    typeof(BinderTrimBlankLinkedEntityGroupTag),
                     typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.ModeLinkData),
                     typeof(DrawInstance.TargetWorkData),
@@ -118,7 +101,7 @@ namespace Abarabone.Particle.Aurthoring
                     new DrawInstance.ModeLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(geomTop),
+                        DrawModelEntityCurrent = gcs.GetDrawModelEntity(main, lodOpts),
                     }
                 );
                 em.SetComponentData(mainEntity,
@@ -145,29 +128,13 @@ namespace Abarabone.Particle.Aurthoring
                     {
                         Value = new float3(1.0f, 1.0f, 1.0f),
                     }
-                ); ;
+                );
+
+                return mainEntity;
             }
 
         }
 
-        void addLodComponentToDrawInstance_(GameObjectConversionSystem gcs_, GameObject main_, ObjectAndDistance[] lods_)
-        {
-            if (lods_.Length == 0) return;
-
-            var lod0_ = lods_[0].objectTop ?? main_;
-            var lod1_ = lods_[1].objectTop ?? main_;
-
-            var em = gcs_.DstEntityManager;
-
-            em.AddComponentData(
-            new DrawInstance.ModelLod2LinkData
-            {
-                DrawModelEntity0 = gcs_.GetFromModelEntityDictionary(lod0_),
-                DrawModelEntity1 = gcs_.GetFromModelEntityDictionary(lod1_),
-                SqrDistance0 = lods_[0].distance,
-                SqrDistance1 = lods_[1].distance,
-            };
-        }
 
 
         /// <summary>
@@ -183,8 +150,8 @@ namespace Abarabone.Particle.Aurthoring
 
 
             var lods = this.LodOptionalMeshTops
-                .Where(x => x != null)
                 .Select(x => x.objectTop)
+                .Where(x => x != null)
                 .ToArray();
 
             if (lods.Length == 0) return qResult.ToArray();

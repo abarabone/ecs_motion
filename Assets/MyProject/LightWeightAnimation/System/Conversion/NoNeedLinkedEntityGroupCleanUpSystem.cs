@@ -16,6 +16,7 @@ namespace Abarabone.Model.Authoring
     /// 今のところあとから消すくらししか思いつかない
     /// </summary>
     //[DisableAutoCreation]
+    [UpdateAfter(typeof(TrimBlankEntityFromLinkedEntityGroupSystem))]
     public class NoNeedLinkedEntityGroupCleanUpSystem : SystemBase
     {
         protected override void OnStartRunning()

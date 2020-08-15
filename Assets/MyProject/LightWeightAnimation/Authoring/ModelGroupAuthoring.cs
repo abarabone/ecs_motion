@@ -9,8 +9,9 @@ using Unity.Transforms;
 
 namespace Abarabone.Model.Authoring
 {
-    using Draw;
-    using Utilities;
+    using Abarabone.Geometry;
+    using Abarabone.Draw;
+    using Abarabone.Utilities;
 
 
     /// <summary>
