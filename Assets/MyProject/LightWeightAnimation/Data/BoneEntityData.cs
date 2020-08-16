@@ -27,20 +27,26 @@ namespace Abarabone.Draw
 
         public struct LinkData : IComponentData
         {
-            public Entity DrawModelEntityCurrent;
+            //public Entity DrawModelEntityCurrent;
             public Entity DrawInstanceEntity;
         }
 
-        public struct IndexData : IComponentData
+        public unsafe struct IndexData : IComponentData
         {
             public int BoneId;
             public int BoneLength;
+            public int VectorLengthInBone;
         }
 
-        public unsafe struct TargetWorkData : IComponentData
+        public unsafe struct VectorBufferData : IComponentData
         {
-            public int DrawInstanceId;
+            public float4* pVectorPerBoneInBuffer;
         }
+
+        //public unsafe struct TargetWorkData : IComponentData
+        //{
+        //    public int DrawInstanceId;
+        //}
 
     }
 

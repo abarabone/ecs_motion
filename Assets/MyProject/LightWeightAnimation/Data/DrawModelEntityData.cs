@@ -47,7 +47,7 @@ namespace Abarabone.Draw
         }
         public unsafe struct InstanceOffsetData : IComponentData
         {
-            public float4* pVectorOffsetPerModelInBuffer;
+            public float4* pVectorPerModelInBuffer;
             public int VectorOffsetPerModel;
             public int VectorOffsetPerInstance;
         }

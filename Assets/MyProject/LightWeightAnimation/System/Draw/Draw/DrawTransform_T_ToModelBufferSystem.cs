@@ -33,7 +33,7 @@ namespace Abarabone.Draw
 
         protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
         {
-
+            
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
 
 
@@ -43,7 +43,7 @@ namespace Abarabone.Draw
                 .WithReadOnly( offsetsOfDrawModel )
                 .ForEach(
                     (
-                        in DrawTransform.LinkData linkerOfTf,
+                        //in DrawTransform.LinkData linkerOfTf,
                         in DrawTransform.IndexData indexerOfTf,
                         in DrawTransform.TargetWorkData targetOfTf,
                         in Translation pos
@@ -52,7 +52,7 @@ namespace Abarabone.Draw
                         if (targetOfTf.DrawInstanceId == -1) return;
 
 
-                        var offsetInfo = offsetsOfDrawModel[linkerOfTf.DrawModelEntityCurrent];
+                        //var offsetInfo = offsetsOfDrawModel[linkerOfTf.DrawModelEntityCurrent];
 
                         const int vectorLengthInBone = 1;
                         var lengthOfInstance = vectorLengthInBone * indexerOfTf.BoneLength + offsetInfo.VectorOffsetPerInstance;

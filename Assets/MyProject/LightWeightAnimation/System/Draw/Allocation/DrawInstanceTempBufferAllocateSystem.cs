@@ -123,7 +123,7 @@ namespace Abarabone.Draw
                     {
                         var offset = offsets[ j ];
 
-                        offset.pVectorOffsetPerModelInBuffer = pBufferStart + offset.VectorOffsetPerModel;
+                        offset.pVectorPerModelInBuffer = pBufferStart + offset.VectorOffsetPerModel;
 
                         offsets[j] = offset;
                     }

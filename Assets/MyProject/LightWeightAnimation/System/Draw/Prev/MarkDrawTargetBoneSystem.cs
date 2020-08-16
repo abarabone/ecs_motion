@@ -25,7 +25,7 @@ namespace Abarabone.Draw
     {
 
 
-        protected override void OnUpdate()
+        protected override unsafe void OnUpdate()
         {
 
             var targets = this.GetComponentDataFromEntity<DrawInstance.TargetWorkData>(isReadOnly: true);
@@ -52,28 +52,37 @@ namespace Abarabone.Draw
             //    .ScheduleParallel();
 
 
-            var models = this.GetComponentDataFromEntity<DrawInstance.ModeLinkData>(isReadOnly: true);
+            var modelLinks = this.GetComponentDataFromEntity<DrawInstance.ModeLinkData>(isReadOnly: true);
+            var offsets = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
 
             this.Entities
             //var withLod = this.Entities
                 .WithBurst()
                 //.WithAll<DrawTransform.WithLodTag>()
-                .WithReadOnly(models)
+                .WithReadOnly(modelLinks)
                 .WithReadOnly(targets)
                 .ForEach(
                     (
-                        ref DrawTransform.TargetWorkData boneIndexer,
-                        ref DrawTransform.LinkData drawLinker,
-                        in DrawTransform.IndexData boneId
+                        //ref DrawTransform.TargetWorkData boneIndexer,
+                        ref DrawTransform.VectorBufferData buffer,
+                        in DrawTransform.LinkData drawLinker,
+                        in DrawTransform.IndexData boneInfo
                     ) =>
                     {
 
                         var drawTarget = targets[drawLinker.DrawInstanceEntity];
 
-                        boneIndexer.DrawInstanceId = drawTarget.DrawInstanceId;
+                        var currentModelEntity = modelLinks[drawLinker.DrawInstanceEntity].DrawModelEntityCurrent;
+                        var offset = offsets[currentModelEntity];
 
 
-                        drawLinker.DrawModelEntityCurrent = models[drawLinker.DrawInstanceEntity].DrawModelEntityCurrent;
+                        var vectorLengthOfInstance = boneInfo.VectorLengthInBone * boneInfo.BoneLength + offset.VectorOffsetPerInstance;
+                        var vectorOffsetOfInstance = drawTarget.DrawInstanceId * vectorLengthOfInstance;
+
+                        var i = vectorOffsetOfInstance + boneInfo.VectorLengthInBone * boneInfo.BoneId + offset.VectorOffsetPerInstance;
+
+
+                        buffer.pVectorPerBoneInBuffer = offset.pVectorPerModelInBuffer + i;
                     }
                 )
                 .ScheduleParallel();

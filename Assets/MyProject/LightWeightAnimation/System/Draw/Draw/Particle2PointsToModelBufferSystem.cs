@@ -61,7 +61,7 @@ namespace Abarabone.Draw
                         if (target.DrawInstanceId == -1) return;
 
 
-                        var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
+                        //var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
                         var lengthOfInstance = 2 + offsetInfo.VectorOffsetPerInstance;
                         var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorOffsetPerInstance;

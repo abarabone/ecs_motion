@@ -55,7 +55,7 @@ namespace Abarabone.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        var pModel = offsetInfo.pVectorPerModelInBuffer;
                         var i = target.DrawInstanceId * (2 + offsetInfo.VectorOffsetPerInstance);
                         var size = offsetInfo.VectorOffsetPerInstance * sizeof(float4);
                         fixed (void* pSrc = destruction.Destructions)
