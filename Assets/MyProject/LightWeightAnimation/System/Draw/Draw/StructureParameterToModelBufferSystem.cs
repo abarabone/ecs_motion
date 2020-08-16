@@ -37,7 +37,7 @@ namespace Abarabone.Draw
         protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorBufferData>( isReadOnly: true );
 
 
             inputDeps = this.Entities
@@ -56,8 +56,8 @@ namespace Abarabone.Draw
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
                         var pModel = offsetInfo.pVectorPerModelInBuffer;
-                        var i = target.DrawInstanceId * (2 + offsetInfo.VectorOffsetPerInstance);
-                        var size = offsetInfo.VectorOffsetPerInstance * sizeof(float4);
+                        var i = target.DrawInstanceId * (2 + offsetInfo.VectorLengthOfInstanceAdditionalData);
+                        var size = offsetInfo.VectorLengthOfInstanceAdditionalData * sizeof(float4);
                         fixed (void* pSrc = destruction.Destructions)
                         {
                             UnsafeUtility.MemCpy(pModel + i, pSrc, size);

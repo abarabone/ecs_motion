@@ -39,7 +39,7 @@ namespace Abarabone.Draw
         {
             this.drawQuery = this.GetEntityQuery(
                 ComponentType.ReadOnly<DrawModel.InstanceCounterData>(),
-                ComponentType.ReadWrite<DrawModel.InstanceOffsetData>(),
+                ComponentType.ReadWrite<DrawModel.VectorBufferData>(),
                 ComponentType.ReadOnly<DrawModel.BoneVectorSettingData>()
             );
         }
@@ -51,7 +51,7 @@ namespace Abarabone.Draw
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
-            var instanceOffsetType = this.GetComponentTypeHandle<DrawModel.InstanceOffsetData>();
+            var instanceOffsetType = this.GetComponentTypeHandle<DrawModel.VectorBufferData>();
             var instanceCounterType = this.GetComponentTypeHandle<DrawModel.InstanceCounterData>();// isReadOnly: true );
             var boneInfoType = this.GetComponentTypeHandle<DrawModel.BoneVectorSettingData>();// isReadOnly: true );
 
@@ -93,12 +93,12 @@ namespace Abarabone.Draw
 
                     for( var j = 0; j < chunk.Count; j++ )
                     {
-                        var instanceOffset = offsets[j].VectorOffsetPerInstance;
+                        var instanceOffset = offsets[j].VectorLengthOfInstanceAdditionalData;
 
-                        offsets[ j ] = new DrawModel.InstanceOffsetData
+                        offsets[ j ] = new DrawModel.VectorBufferData
                         {
                             VectorOffsetPerModel = sum,
-                            VectorOffsetPerInstance = instanceOffset,
+                            VectorLengthOfInstanceAdditionalData = instanceOffset,
                         };
 
                         var instanceCount = counters[ j ].InstanceCounter.Count;

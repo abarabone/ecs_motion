@@ -107,9 +107,6 @@ namespace Abarabone.Model.Authoring
             {
                 var addtypes = new ComponentTypes
                 (
-                    //typeof( DrawTransform.LinkData ),
-                    //typeof( DrawTransform.IndexData ),
-                    //typeof( DrawTransform.TargetWorkData ),
                     typeof(Bone.RelationLinkData),
                     typeof(Bone.LocalValueData),// 回転と移動をわけたほうがいいか？
                     typeof(Translation),

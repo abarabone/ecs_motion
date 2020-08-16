@@ -38,7 +38,7 @@ namespace Abarabone.Draw
         protected unsafe override void OnUpdate()
         {
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorBufferData>( isReadOnly: true );
 
             var dependency = this.Entities
                 .WithBurst()
@@ -58,8 +58,8 @@ namespace Abarabone.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var lengthOfInstance = 2 + offsetInfo.VectorOffsetPerInstance;// あとでスケールに対応させる
-                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorOffsetPerInstance;
+                        var lengthOfInstance = 2 + offsetInfo.VectorLengthOfInstanceAdditionalData;// あとでスケールに対応させる
+                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorLengthOfInstanceAdditionalData;
 
                         var pModel = offsetInfo.pVectorPerModelInBuffer;
                         pModel[i + 0] = new float4(pos.Value, 1.0f);

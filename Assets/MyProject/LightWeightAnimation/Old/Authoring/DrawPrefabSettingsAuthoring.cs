@@ -49,7 +49,7 @@ namespace Abarabone.Authoring
             var drawModelArchetype = em.CreateArchetype(
                 typeof( DrawModel.BoneVectorSettingData ),
                 typeof( DrawModel.InstanceCounterData ),
-                typeof( DrawModel.InstanceOffsetData ),
+                typeof( DrawModel.VectorBufferData ),
                 typeof( DrawModel.GeometryData ),
                 typeof( DrawModel.ComputeArgumentsBufferData )
             );

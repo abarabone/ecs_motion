@@ -34,33 +34,22 @@ namespace Abarabone.Draw
         protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
         {
             
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
-
-
             inputDeps = this.Entities
                 .WithBurst()
                 .WithNone<NonUniformScale, Rotation>()
-                .WithReadOnly( offsetsOfDrawModel )
                 .ForEach(
                     (
-                        //in DrawTransform.LinkData linkerOfTf,
-                        in DrawTransform.IndexData indexerOfTf,
-                        in DrawTransform.TargetWorkData targetOfTf,
+                        in DrawTransform.VectorBufferData buffer,
                         in Translation pos
                     ) =>
                     {
-                        if (targetOfTf.DrawInstanceId == -1) return;
+
+                        if (buffer.pVectorPerBoneInBuffer == null) return;
 
 
-                        //var offsetInfo = offsetsOfDrawModel[linkerOfTf.DrawModelEntityCurrent];
+                        var p = buffer.pVectorPerBoneInBuffer;
+                        p[0] = new float4(pos.Value, 1.0f);
 
-                        const int vectorLengthInBone = 1;
-                        var lengthOfInstance = vectorLengthInBone * indexerOfTf.BoneLength + offsetInfo.VectorOffsetPerInstance;
-                        var boneOffset = targetOfTf.DrawInstanceId * lengthOfInstance;
-                        var i = boneOffset + vectorLengthInBone * indexerOfTf.BoneId + offsetInfo.VectorOffsetPerInstance;
-
-                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[ i ] = new float4( pos.Value, 1.0f );
                     }
                 )
                 .Schedule( inputDeps );

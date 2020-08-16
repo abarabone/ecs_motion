@@ -35,7 +35,8 @@ namespace Abarabone.Draw
         {
             public int BoneId;
             public int BoneLength;
-            public int VectorLengthInBone;
+            //public int VectorLengthInBone;
+            public int VectorBufferOffsetOfBone;
         }
 
         public unsafe struct VectorBufferData : IComponentData

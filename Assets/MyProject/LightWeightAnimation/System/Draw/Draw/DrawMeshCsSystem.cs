@@ -50,7 +50,7 @@ namespace Abarabone.Draw
                 .ForEach(
                     (
                         in DrawModel.InstanceCounterData counter,
-                        in DrawModel.InstanceOffsetData offset,
+                        in DrawModel.VectorBufferData offset,
                         in DrawModel.ComputeArgumentsBufferData shaderArg,
                         in DrawModel.GeometryData geom
                     ) =>

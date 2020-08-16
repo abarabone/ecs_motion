@@ -20,19 +20,23 @@ namespace Abarabone.Draw.Authoring
     using Abarabone.Misc;
     using Abarabone.Utilities;
     using Unity.Linq;
+    using Abarabone.Model;
 
     static public class CharacterDrawInstanceEntitiesConvertUtility
     {
 
         static public void CreateDrawInstanceEntities
-            ( this GameObjectConversionSystem gcs, GameObject top, GameObject main, Transform[] bones )
+            (
+                this GameObjectConversionSystem gcs, GameObject top, GameObject main,
+                Transform[] bones, BoneType boneType, int instanceDataVectorLength = 0
+            )
         {
 
             var em = gcs.DstEntityManager;
 
             var drawInstanceEntity = createDrawInstanceEntity( gcs, top, main );
 
-            setBoneComponentValues( gcs, bones, drawInstanceEntity );
+            setBoneComponentValues( gcs, bones, drawInstanceEntity, boneType, instanceDataVectorLength );
 
             setStreamComponentValues( gcs, bones, drawInstanceEntity );
 
@@ -85,7 +89,7 @@ namespace Abarabone.Draw.Authoring
         static void setBoneComponentValues
             (
                 GameObjectConversionSystem gcs,
-                Transform[] bones, Entity drawInstanceEntity
+                Transform[] bones, Entity drawInstanceEntity, BoneType boneType, int instanceDataVectorLength
             )
         {
             var em = gcs.DstEntityManager;
@@ -96,7 +100,7 @@ namespace Abarabone.Draw.Authoring
 
             addComponents_( em, boneEntities );
             setDrawComponet_( em, boneEntities, drawInstanceEntity );
-            setBoneId_( em, boneEntities );
+            setBoneId_( em, boneEntities, (int)boneType, instanceDataVectorLength );
 
             return;
 
@@ -106,8 +110,7 @@ namespace Abarabone.Draw.Authoring
                 var addtypes = new ComponentTypes
                 (
                     typeof( DrawTransform.LinkData ),
-                    typeof( DrawTransform.IndexData ),
-                    typeof( DrawTransform.TargetWorkData )
+                    typeof( DrawTransform.IndexData )
                 );
 
                 em.AddComponents( boneEntities_, addtypes );
@@ -117,26 +120,28 @@ namespace Abarabone.Draw.Authoring
             void setDrawComponet_
                 ( EntityManager em_, IEnumerable<Entity> boneEntities_, Entity drawInstanceEntity_ )
             {
-                var drawModelLinker = em_.GetComponentData<DrawInstance.ModeLinkData>( drawInstanceEntity_ );
-
                 em_.SetComponentData(
                     boneEntities_,
                     new DrawTransform.LinkData
                     {
                         DrawInstanceEntity = drawInstanceEntity_,
-                        DrawModelEntityCurrent = drawModelLinker.DrawModelEntityCurrent,
                     }
                 );
             }
 
             void setBoneId_
-                ( EntityManager em_, IEnumerable<Entity> boneEntities_ )
+                ( EntityManager em_, IEnumerable<Entity> boneEntities_, int vectorLengthInBone_, int instanceDataVectorLength_ )
             {
                 var boneLength = boneEntities_.Count();
 
                 em_.SetComponentData( boneEntities_,
                     from i in Enumerable.Range( 0, boneLength )
-                    select new DrawTransform.IndexData { BoneLength = boneLength, BoneId = i }
+                    select new DrawTransform.IndexData
+                    {
+                        BoneId = i,
+                        BoneLength = boneLength,
+                        VectorBufferOffsetOfBone = vectorLengthInBone_ * i + instanceDataVectorLength_,
+                    }
                 );
             }
         }

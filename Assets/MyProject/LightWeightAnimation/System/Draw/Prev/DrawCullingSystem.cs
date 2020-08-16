@@ -76,7 +76,7 @@ namespace Abarabone.Draw
                         var rot = rots[posturelink.PostureEntity];
                         var pos = poss[posturelink.PostureEntity];
 
-                        var isHit = viewFrustum.IsInside(bbox.localBbox, rot, pos);
+                        var isHit = viewFrustum.IsInside(bbox.LocalBbox, rot, pos);
 
                         if (!isHit)
                         {
@@ -119,7 +119,7 @@ namespace Abarabone.Draw
 
                             var bbox = bboxes[modellink.DrawModelEntityCurrent];
 
-                            var isHit = viewFrustum.IsInside(bbox.localBbox, rot, pos);
+                            var isHit = viewFrustum.IsInside(bbox.LocalBbox, rot, pos);
 
                             if (!isHit)
                             {

@@ -72,7 +72,7 @@ namespace Abarabone.Draw.Authoring
                 var drawModelArchetype = em_.CreateArchetype(
                     typeof( DrawModel.BoneVectorSettingData ),
                     typeof( DrawModel.InstanceCounterData ),
-                    typeof( DrawModel.InstanceOffsetData ),
+                    typeof( DrawModel.VectorBufferData ),
                     typeof( DrawModel.BoundingBoxData ),
                     typeof( DrawModel.GeometryData ),
                     typeof( DrawModel.ComputeArgumentsBufferData )
@@ -105,7 +105,7 @@ namespace Abarabone.Draw.Authoring
                 em_.SetComponentData(ent_,
                     new DrawModel.BoundingBoxData
                     {
-                        localBbox = new AABB
+                        LocalBbox = new AABB
                         {
                             Center = (float3)bbox_.center,// + meshpos_,
                             Extents = (float3)bbox_.extents,
@@ -113,9 +113,10 @@ namespace Abarabone.Draw.Authoring
                     }
                 );
                 em_.SetComponentData(ent_,
-                    new DrawModel.InstanceOffsetData
+                    new DrawModel.VectorBufferData
                     {
-                        VectorOffsetPerInstance = instanceDataVectorLength_,
+                        VectorLengthOfInstanceAdditionalData = instanceDataVectorLength_,
+                        VecotrLengthPerInstance = (int)BoneType_ * boneLength_ + instanceDataVectorLength_,
                     }
                 );
             }

@@ -45,16 +45,17 @@ namespace Abarabone.Draw
         {
             public ThreadSafeCounter<Persistent> InstanceCounter;
         }
-        public unsafe struct InstanceOffsetData : IComponentData
+        public unsafe struct VectorBufferData : IComponentData
         {
             public float4* pVectorPerModelInBuffer;
-            public int VectorOffsetPerModel;
-            public int VectorOffsetPerInstance;
+            public int VectorOffsetPerModel;// いらないかも？
+            public int VectorLengthOfInstanceAdditionalData;
+            public int VecotrLengthPerInstance;
         }
 
         public struct BoundingBoxData : IComponentData
         {
-            public AABB localBbox;
+            public AABB LocalBbox;
         }
 
 
