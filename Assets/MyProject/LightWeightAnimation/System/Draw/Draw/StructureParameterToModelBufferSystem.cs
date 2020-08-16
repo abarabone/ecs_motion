@@ -37,12 +37,14 @@ namespace Abarabone.Draw
         protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorBufferData>( isReadOnly: true );
+            var modelBuffers = this.GetComponentDataFromEntity<DrawModel.VectorBufferData>(isReadOnly: true);
+            var vectorLengths = this.GetComponentDataFromEntity<DrawModel.VectorLengthData>(isReadOnly: true);
 
 
             inputDeps = this.Entities
                 .WithBurst()
-                .WithReadOnly( offsetsOfDrawModel )
+                .WithReadOnly( modelBuffers )
+                .WithReadOnly( vectorLengths )
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,
@@ -53,11 +55,12 @@ namespace Abarabone.Draw
                         if (target.DrawInstanceId == -1) return;
 
 
-                        var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
+                        var modelBuffer = modelBuffers[linker.DrawModelEntityCurrent];
+                        var vcLength = vectorLengths[linker.DrawModelEntityCurrent];
 
-                        var pModel = offsetInfo.pVectorPerModelInBuffer;
-                        var i = target.DrawInstanceId * (2 + offsetInfo.VectorLengthOfInstanceAdditionalData);
-                        var size = offsetInfo.VectorLengthOfInstanceAdditionalData * sizeof(float4);
+                        var pModel = modelBuffer.pVectorPerModelInBuffer;
+                        var i = target.DrawInstanceId * (2 + vcLength.VectorLengthOfInstanceAdditionalData);
+                        var size = vcLength.VectorLengthOfInstanceAdditionalData * sizeof(float4);
                         fixed (void* pSrc = destruction.Destructions)
                         {
                             UnsafeUtility.MemCpy(pModel + i, pSrc, size);

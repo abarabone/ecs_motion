@@ -40,13 +40,14 @@ namespace Abarabone.Draw
         protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
         {
 
-            //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorBufferData>( isReadOnly: true );
+            var modelBuffers = this.GetComponentDataFromEntity<DrawModel.VectorBufferData>(isReadOnly: true);
+            var vectorLengths = this.GetComponentDataFromEntity<DrawModel.VectorLengthData>(isReadOnly: true);
 
             inputDeps = this.Entities
                 //.WithoutBurst()
                 .WithBurst()
-                .WithReadOnly(offsetsOfDrawModel)
+                .WithReadOnly(modelBuffers)
+                .WithReadOnly(vectorLengths)
                 .WithAll<DrawInstance.ParticleTag>()
                 .WithNone<DrawInstance.MeshTag>()
                 .WithNone<Translation, Rotation>()// 物理パーティクルは除外
@@ -61,15 +62,17 @@ namespace Abarabone.Draw
                         if (target.DrawInstanceId == -1) return;
 
 
-                        var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
+                        var modelBuffer = modelBuffers[linker.DrawModelEntityCurrent];
+                        var vcLength = vectorLengths[linker.DrawModelEntityCurrent];
 
-                        var lengthOfInstance = 2 + offsetInfo.VectorLengthOfInstanceAdditionalData;
-                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorLengthOfInstanceAdditionalData;
+                        const int vectorLengthInBone = 2;
+                        var lengthOfInstance = vectorLengthInBone + vcLength.VectorLengthOfInstanceAdditionalData;
+                        var i = target.DrawInstanceId * lengthOfInstance + vcLength.VectorLengthOfInstanceAdditionalData;
 
                         var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());
 
-                        var pModel = offsetInfo.pVectorPerModelInBuffer;
+                        var pModel = modelBuffer.pVectorPerModelInBuffer;
                         pModel[ i + 0 ] = new float4( pos.Start, size );
                         pModel[ i + 1 ] = new float4( pos.End, color );
 

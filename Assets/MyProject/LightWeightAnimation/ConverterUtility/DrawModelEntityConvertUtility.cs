@@ -120,6 +120,7 @@ namespace Abarabone.Draw.Authoring
                         VecotrLengthPerInstance = (int)boneType_ * boneLength_ + instanceDataVectorLength_,
                     }
                 );
+                Debug.Log($"{boneType_} {boneLength_} {instanceDataVectorLength_}");
             }
 
             void initResourceData_

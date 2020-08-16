@@ -51,9 +51,10 @@ namespace Abarabone.Draw
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
-            var instanceOffsetType = this.GetComponentTypeHandle<DrawModel.VectorBufferData>();
+            var modelBufferType = this.GetComponentTypeHandle<DrawModel.VectorBufferData>();
+            var modelVectorLengthType = this.GetComponentTypeHandle<DrawModel.VectorLengthData>(isReadOnly: true);
             var instanceCounterType = this.GetComponentTypeHandle<DrawModel.InstanceCounterData>();// isReadOnly: true );
-            var boneInfoType = this.GetComponentTypeHandle<DrawModel.BoneVectorSettingData>();// isReadOnly: true );
+            //var boneInfoType = this.GetComponentTypeHandle<DrawModel.BoneVectorSettingData>();// isReadOnly: true );
 
             var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 
@@ -87,25 +88,25 @@ namespace Abarabone.Draw
                 for( var i = 0; i < chunks.Length; i++ )
                 {
                     var chunk = chunks[ i ];
-                    var offsets = chunk.GetNativeArray( instanceOffsetType );
-                    var counters = chunk.GetNativeArray( instanceCounterType );
-                    var infos = chunk.GetNativeArray( boneInfoType );
+                    var buffers = chunk.GetNativeArray(modelBufferType);
+                    var vcLengths = chunk.GetNativeArray(modelVectorLengthType);
+                    var counters = chunk.GetNativeArray(instanceCounterType);
+                    //var infos = chunk.GetNativeArray( boneInfoType );
 
-                    for( var j = 0; j < chunk.Count; j++ )
+                    for ( var j = 0; j < chunk.Count; j++ )
                     {
-                        var instanceOffset = offsets[j].VectorLengthOfInstanceAdditionalData;
+                        //var instanceOffset = vcLengths[j].VectorLengthOfInstanceAdditionalData;
 
-                        offsets[ j ] = new DrawModel.VectorBufferData
+                        buffers[ j ] = new DrawModel.VectorBufferData
                         {
                             VectorOffsetPerModel = sum,
-                            VectorLengthOfInstanceAdditionalData = instanceOffset,
                         };
 
                         var instanceCount = counters[ j ].InstanceCounter.Count;
-                        var instanceVectorSize = infos[ j ].BoneLength * infos[ j ].VectorLengthInBone + instanceOffset;
-                        var modelBufferSize = instanceCount * instanceVectorSize;
+                        var instanceVectorLength = vcLengths[ j ].VecotrLengthPerInstance;//infos[ j ].BoneLength * infos[ j ].VectorLengthInBone + instanceOffset;
+                        var modelBufferLength = instanceCount * instanceVectorLength;
 
-                        sum += modelBufferSize;
+                        sum += modelBufferLength;
                     }
                 }
 
@@ -117,15 +118,15 @@ namespace Abarabone.Draw
                 for( var i = 0; i < chunks.Length; i++ )
                 {
                     var chunk = chunks[ i ];
-                    var offsets = chunk.GetNativeArray( instanceOffsetType );
+                    var buffers = chunk.GetNativeArray(modelBufferType);
 
-                    for( var j = 0; j < chunk.Count; j++ )
+                    for ( var j = 0; j < chunk.Count; j++ )
                     {
-                        var offset = offsets[ j ];
+                        var buffer = buffers[ j ];
 
-                        offset.pVectorPerModelInBuffer = pBufferStart + offset.VectorOffsetPerModel;
+                        buffer.pVectorPerModelInBuffer = pBufferStart + buffer.VectorOffsetPerModel;
 
-                        offsets[j] = offset;
+                        buffers[ j ] = buffer;
                     }
                 }
             }

@@ -20,7 +20,7 @@ namespace Abarabone.Draw
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
     [UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    public class DrawTransform_TR_ToModelBufferSystem : JobComponentSystem
+    public class DrawTransform_TR_ToModelBufferSystem : SystemBase//JobComponentSystem
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -31,10 +31,11 @@ namespace Abarabone.Draw
         }
 
 
-        protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
+        //protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
+        protected unsafe override void OnUpdate()
         {
 
-            inputDeps = this.Entities
+            this.Entities
                 .WithBurst()
                 .WithNone<NonUniformScale>()
                 .ForEach(
@@ -49,16 +50,17 @@ namespace Abarabone.Draw
 
 
                         var p = buffer.pVectorPerBoneInBuffer;
-                        p[ 0 ] = new float4( pos.Value, 1.0f );
-                        p[ 1 ] = rot.Value.value;
+                        p[0] = new float4(pos.Value, 1.0f);
+                        p[1] = rot.Value.value;
 
                     }
                 )
-                .Schedule( inputDeps );
+                //.Schedule();
+                .ScheduleParallel();
 
 
-            this.presentationBarier.AddJobHandleForProducer( inputDeps );
-            return inputDeps;
+            this.presentationBarier.AddJobHandleForProducer( this.Dependency );
+            //return inputDeps;
         }
 
 

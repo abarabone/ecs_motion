@@ -38,11 +38,13 @@ namespace Abarabone.Draw
         protected unsafe override void OnUpdate()
         {
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorBufferData>( isReadOnly: true );
+            var modelBuffers = this.GetComponentDataFromEntity<DrawModel.VectorBufferData>( isReadOnly: true );
+            var vectorLengths = this.GetComponentDataFromEntity<DrawModel.VectorLengthData>(isReadOnly: true);
 
             var dependency = this.Entities
                 .WithBurst()
-                .WithReadOnly(offsetsOfDrawModel)
+                .WithReadOnly(modelBuffers)
+                .WithReadOnly(vectorLengths)
                 .WithAll<DrawInstance.MeshTag>()
                 .ForEach(
                     (
@@ -56,10 +58,12 @@ namespace Abarabone.Draw
                         if (target.DrawInstanceId == -1) return;
 
 
-                        var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
+                        var offsetInfo = modelBuffers[linker.DrawModelEntityCurrent];
+                        var vcLength = vectorLengths[linker.DrawModelEntityCurrent];
 
-                        var lengthOfInstance = 2 + offsetInfo.VectorLengthOfInstanceAdditionalData;// あとでスケールに対応させる
-                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorLengthOfInstanceAdditionalData;
+                        const int vectorLengthInBone = 2;
+                        var lengthOfInstance = vectorLengthInBone + vcLength.VectorLengthOfInstanceAdditionalData;// あとでスケールに対応させる
+                        var i = target.DrawInstanceId * lengthOfInstance + vcLength.VectorLengthOfInstanceAdditionalData;
 
                         var pModel = offsetInfo.pVectorPerModelInBuffer;
                         pModel[i + 0] = new float4(pos.Value, 1.0f);

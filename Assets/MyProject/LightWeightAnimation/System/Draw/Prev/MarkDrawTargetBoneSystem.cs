@@ -12,6 +12,7 @@ using Unity.Mathematics;
 using Abarabone.Authoring;
 using Abarabone.CharacterMotion;
 using Abarabone.SystemGroup;
+using Abarabone.Model;
 
 namespace Abarabone.Draw
 {
@@ -54,6 +55,7 @@ namespace Abarabone.Draw
 
             var modelLinks = this.GetComponentDataFromEntity<DrawInstance.ModeLinkData>(isReadOnly: true);
             var modelBuffers = this.GetComponentDataFromEntity<DrawModel.VectorBufferData>(isReadOnly: true);
+            var vectorLengths = this.GetComponentDataFromEntity<DrawModel.VectorLengthData>(isReadOnly: true);
 
             this.Entities
             //var withLod = this.Entities
@@ -61,9 +63,11 @@ namespace Abarabone.Draw
                 //.WithAll<DrawTransform.WithLodTag>()
                 .WithReadOnly(modelLinks)
                 .WithReadOnly(targets)
+                .WithReadOnly(modelBuffers)
+                .WithReadOnly(vectorLengths)
                 .ForEach(
-                    (Unity.Entities.UniversalDelegates.RII<DrawTransform.VectorBufferData, DrawTransform.LinkData, DrawTransform.IndexData>)((
-                        //ref DrawTransform.TargetWorkData boneIndexer,
+                    //(Unity.Entities.UniversalDelegates.RII<DrawTransform.VectorBufferData, DrawTransform.LinkData, DrawTransform.IndexData>)(
+                    (
                         ref DrawTransform.VectorBufferData buffer,
                         in DrawTransform.LinkData drawLinker,
                         in DrawTransform.IndexData boneInfo
@@ -79,15 +83,17 @@ namespace Abarabone.Draw
                         }
 
                         var currentModelEntity = modelLinks[drawLinker.DrawInstanceEntity].DrawModelEntityCurrent;
+                        var vcLength = vectorLengths[currentModelEntity];
                         var modelBuffer = modelBuffers[currentModelEntity];
 
-                        var vectorOffsetOfInstance = drawTarget.DrawInstanceId * modelBuffer.VecotrLengthPerInstance;
+                        var vectorOffsetOfInstance = drawTarget.DrawInstanceId * vcLength.VecotrLengthPerInstance;
                         var vectorOffsetOfBone = boneInfo.VectorBufferOffsetOfBone;
                         var i = vectorOffsetOfInstance + vectorOffsetOfBone;
 
                         buffer.pVectorPerBoneInBuffer = modelBuffer.pVectorPerModelInBuffer + i;
-                    })
+                    }
                 )
+                //.Schedule();
                 .ScheduleParallel();
         }
 
