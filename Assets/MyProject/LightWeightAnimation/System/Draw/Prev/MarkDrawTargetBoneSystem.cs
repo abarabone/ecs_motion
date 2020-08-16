@@ -22,6 +22,7 @@ namespace Abarabone.Draw
     /// </summary>
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
     [UpdateAfter( typeof( DrawCullingSystem ) )]
+    [UpdateAfter(typeof(DrawInstanceTempBufferAllocateSystem))]//
     public class MarkDrawTargetBoneSystem : SystemBase
     {
 
@@ -66,7 +67,6 @@ namespace Abarabone.Draw
                 .WithReadOnly(modelBuffers)
                 .WithReadOnly(vectorLengths)
                 .ForEach(
-                    //(Unity.Entities.UniversalDelegates.RII<DrawTransform.VectorBufferData, DrawTransform.LinkData, DrawTransform.IndexData>)(
                     (
                         ref DrawTransform.VectorBufferData buffer,
                         in DrawTransform.LinkData drawLinker,
@@ -79,6 +79,7 @@ namespace Abarabone.Draw
                         if (drawTarget.DrawInstanceId == -1)
                         {
                             buffer.pVectorPerBoneInBuffer = null;
+                            buffer._pVectorPerBoneInBuffer = (int)buffer.pVectorPerBoneInBuffer;
                             return;
                         }
 
@@ -91,6 +92,7 @@ namespace Abarabone.Draw
                         var i = vectorOffsetOfInstance + vectorOffsetOfBone;
 
                         buffer.pVectorPerBoneInBuffer = modelBuffer.pVectorPerModelInBuffer + i;
+                        buffer._pVectorPerBoneInBuffer = (int)buffer.pVectorPerBoneInBuffer;
                     }
                 )
                 //.Schedule();

@@ -37,7 +37,7 @@ namespace Abarabone.Draw
         {
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
-            computeBuffer.SetData( nativeBuffer.AsNativeArray(), 0, 0, nativeBuffer.length_ );
+            computeBuffer.SetData(nativeBuffer.AsNativeArray(), 0, 0, nativeBuffer.length_ );
 
             //Debug.Log("start");
             //for (var i = 0; i < nativeBuffer.length_; i++)

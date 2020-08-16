@@ -42,6 +42,7 @@ namespace Abarabone.Draw
         public unsafe struct VectorBufferData : IComponentData
         {
             public float4* pVectorPerBoneInBuffer;
+            public int _pVectorPerBoneInBuffer;
         }
 
         //public unsafe struct TargetWorkData : IComponentData
