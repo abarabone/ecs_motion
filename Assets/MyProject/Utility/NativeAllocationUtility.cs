@@ -24,9 +24,12 @@ namespace Abarabone.Misc
 	{
 		public Allocator Label { get => Allocator.Temp; }
 	}
-	// TempJob は別の仕組みを作るので使用しない
-	
-	
+	public struct TempJob : IAllocatorLabel
+	{
+		public Allocator Label { get => Allocator.TempJob; }
+	}
+
+
 
 	public static class NativeArrayExtension
 	{
