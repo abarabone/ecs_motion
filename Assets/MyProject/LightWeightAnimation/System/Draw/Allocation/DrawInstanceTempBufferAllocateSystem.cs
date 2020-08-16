@@ -67,7 +67,7 @@ namespace Abarabone.Draw
                         var totalVectorLength = sumAndSetVectorOffsets_();
 
                         var nativeBuffer
-                            = new SimpleNativeBuffer<float4, Temp>( totalVectorLength );
+                            = new SimpleNativeBuffer<float4, TempJob>( totalVectorLength );
 
                         nativeBuffers[ drawSysEnt ]
                             = new DrawSystem.NativeTransformBufferData { Transforms = nativeBuffer };
