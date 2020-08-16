@@ -128,7 +128,7 @@ namespace Abarabone.Authoring
                 typeof( DrawTransform.LinkData ),
                 //typeof( Bone.Stream0LinkData ),// 剛体には必要ないので必要な場合に add するようにした　ブレンドの場合には複数必要だし
                 typeof( DrawTransform.IndexData ),
-                typeof( DrawTransform.TargetWorkData ),
+                //typeof( DrawTransform.TargetWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Bone.LocalValueData ),// どうしようか
@@ -185,7 +185,7 @@ namespace Abarabone.Authoring
                 new DrawTransform.LinkData
                 {
                     DrawInstanceEntity = drawInstancePrefab,
-                    DrawModelEntityCurrent = em_.GetComponentData<DrawInstance.ModeLinkData>(drawInstancePrefab).DrawModelEntityCurrent,
+                    //DrawModelEntityCurrent = em_.GetComponentData<DrawInstance.ModeLinkData>(drawInstancePrefab).DrawModelEntityCurrent,
                 }
             );
         }

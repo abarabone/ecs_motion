@@ -110,7 +110,8 @@ namespace Abarabone.Draw.Authoring
                 var addtypes = new ComponentTypes
                 (
                     typeof( DrawTransform.LinkData ),
-                    typeof( DrawTransform.IndexData )
+                    typeof( DrawTransform.IndexData ),
+                    typeof(DrawTransform.VectorBufferData)
                 );
 
                 em.AddComponents( boneEntities_, addtypes );

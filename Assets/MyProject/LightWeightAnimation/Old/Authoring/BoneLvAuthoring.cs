@@ -67,7 +67,7 @@ namespace Abarabone.Authoring
                 typeof( DrawTransform.LinkData ),
                 typeof( Bone.Stream0LinkData ),
                 typeof( DrawTransform.IndexData ),
-                typeof( DrawTransform.TargetWorkData ),
+                //typeof( DrawTransform.TargetWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Prefab )

@@ -49,6 +49,9 @@ namespace Abarabone.Draw
         {
             public float4* pVectorPerModelInBuffer;
             public int VectorOffsetPerModel;// いらないかも？
+        }
+        public struct VectorLengthData : IComponentData
+        {
             public int VectorLengthOfInstanceAdditionalData;
             public int VecotrLengthPerInstance;
         }

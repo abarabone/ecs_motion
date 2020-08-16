@@ -57,7 +57,7 @@ namespace Abarabone.Model.Authoring
 
             conversionSystem.CreateBoneEntities( main, bones );
 
-            conversionSystem.CreateDrawInstanceEntities( top, main, bones );
+            conversionSystem.CreateDrawInstanceEntities( top, main, bones, BoneType.TR, 0 );
 
             return;
 

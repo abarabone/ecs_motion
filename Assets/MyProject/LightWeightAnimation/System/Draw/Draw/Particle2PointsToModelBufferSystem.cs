@@ -61,15 +61,15 @@ namespace Abarabone.Draw
                         if (target.DrawInstanceId == -1) return;
 
 
-                        //var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
+                        var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var lengthOfInstance = 2 + offsetInfo.VectorOffsetPerInstance;
-                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorOffsetPerInstance;
+                        var lengthOfInstance = 2 + offsetInfo.VectorLengthOfInstanceAdditionalData;
+                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorLengthOfInstanceAdditionalData;
 
                         var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());
 
-                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        var pModel = offsetInfo.pVectorPerModelInBuffer;
                         pModel[ i + 0 ] = new float4( pos.Start, size );
                         pModel[ i + 1 ] = new float4( pos.End, color );
 

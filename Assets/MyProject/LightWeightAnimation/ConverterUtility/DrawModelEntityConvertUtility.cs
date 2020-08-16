@@ -24,7 +24,7 @@ namespace Abarabone.Draw.Authoring
     using Unity.Physics;
 
     using Material = UnityEngine.Material;
-
+    using System.CodeDom;
 
     static public class DrawModelEntityConvertUtility
     {
@@ -35,7 +35,7 @@ namespace Abarabone.Draw.Authoring
             (
                 this GameObjectConversionSystem gcs, GameObject topGameObject,
                 Mesh mesh, Material mat,
-                BoneType BoneType, int boneLength, int instanceDataVectorLength = 0
+                BoneType boneType, int boneLength, int instanceDataVectorLength = 0
             )
         {
 
@@ -44,7 +44,7 @@ namespace Abarabone.Draw.Authoring
             setShaderProps_( em, mat, mesh, boneLength );
 
             var drawModelEntity = createDrawModelEntity_( gcs, topGameObject );
-            initInfomationData_( em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength );
+            initInfomationData_( em, drawModelEntity, mesh.bounds, boneLength, boneType, instanceDataVectorLength );
             initResourceData_(em, drawModelEntity, mat, mesh);
 
             return drawModelEntity;
@@ -73,6 +73,7 @@ namespace Abarabone.Draw.Authoring
                     typeof( DrawModel.BoneVectorSettingData ),
                     typeof( DrawModel.InstanceCounterData ),
                     typeof( DrawModel.VectorBufferData ),
+                    typeof( DrawModel.VectorLengthData ),
                     typeof( DrawModel.BoundingBoxData ),
                     typeof( DrawModel.GeometryData ),
                     typeof( DrawModel.ComputeArgumentsBufferData )
@@ -91,7 +92,7 @@ namespace Abarabone.Draw.Authoring
             void initInfomationData_
                 (
                     EntityManager em_, Entity ent_,
-                    Bounds bbox_, int boneLength_, BoneType BoneType_, int instanceDataVectorLength_
+                    Bounds bbox_, int boneLength_, BoneType boneType_, int instanceDataVectorLength_
                 )
             {
 
@@ -99,7 +100,7 @@ namespace Abarabone.Draw.Authoring
                     new DrawModel.BoneVectorSettingData
                     {
                         BoneLength = boneLength_,
-                        VectorLengthInBone = (int)BoneType_,
+                        VectorLengthInBone = (int)boneType_,
                     }
                 );
                 em_.SetComponentData(ent_,
@@ -113,10 +114,10 @@ namespace Abarabone.Draw.Authoring
                     }
                 );
                 em_.SetComponentData(ent_,
-                    new DrawModel.VectorBufferData
+                    new DrawModel.VectorLengthData
                     {
                         VectorLengthOfInstanceAdditionalData = instanceDataVectorLength_,
-                        VecotrLengthPerInstance = (int)BoneType_ * boneLength_ + instanceDataVectorLength_,
+                        VecotrLengthPerInstance = (int)boneType_ * boneLength_ + instanceDataVectorLength_,
                     }
                 );
             }

@@ -52,7 +52,7 @@ namespace Abarabone.Particle
             Particle.LineParticlePointNodeLinkData,
             DrawTransform.LinkData,
             DrawTransform.IndexData,
-            DrawTransform.TargetWorkData,
+            //DrawTransform.TargetWorkData,
             Translation
         >
     {
