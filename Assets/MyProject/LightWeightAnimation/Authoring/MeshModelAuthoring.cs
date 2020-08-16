@@ -17,6 +17,7 @@ namespace Abarabone.Particle.Aurthoring
     using Abarabone.Model.Authoring;
     using Abarabone.Draw.Authoring;
     using Abarabone.Geometry;
+    using Abarabone.Structure.Authoring;
 
     /// <summary>
     /// 
@@ -42,7 +43,7 @@ namespace Abarabone.Particle.Aurthoring
 
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
 
-            conversionSystem.AddLodComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.LodOptionalMeshTops);
+            conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.LodOptionalMeshTops);
 
             return;
 
@@ -52,11 +53,12 @@ namespace Abarabone.Particle.Aurthoring
             {
 
                 var lods = LodOptionalMeshTops.Select(x => x.objectTop).ToArray();
-                var meshes = gcs.GetMeshesToCreateModelEntity(main, lods, this.GetMeshCombineFuncs);
+                var objsForModel = gcs.BuildMeshesForModelEntity(main, lods, this.GetMeshCombineFuncPerObjects);
 
-                foreach(var (go, mesh) in meshes)
+                foreach(var go in objsForModel)
                 {
-                    Debug.Log($"{}");
+                    Debug.Log($"{go.name} model ent");
+                    var mesh = gcs.GetFromStructureMeshDictionary(go);
                     createModelEntity_(gcs, go, srcMaterial, mesh);
                 }
 
@@ -141,36 +143,23 @@ namespace Abarabone.Particle.Aurthoring
         /// <summary>
         /// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
         /// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」のみを対象とする。
-        /// ＬＯＤに未登録の場合は、ルートから検索して最初に発見したメッシュを、加工せずに採用するため、
-        /// この関数では返さない。
-        /// とりあえず現状はＬＯＤ２つまで。
+        /// デフォルトメッシュは結合対象にはならない。
+        /// またＬＯＤに null を登録した場合は、ルートから検索して最初に発見したメッシュを
+        /// 加工せずに採用するため、この関数では配列に null を格納して返される。
+        /// 返される要素数は、 LodOptionalMeshTops.Length と同じ。
         /// </summary>
-        public (GameObject, Func<MeshElements>)[] GetMeshCombineFuncs()
+        public Func<MeshElements>[] GetMeshCombineFuncPerObjects()
         {
-            var qResult = Enumerable.Empty<(GameObject, Func<MeshElements>)>();
+            var qResult = Enumerable.Empty<Func<MeshElements>>();
 
+            if (this.LodOptionalMeshTops.Length == 0) return qResult.ToArray();
 
-            var lods = this.LodOptionalMeshTops
+            return this.LodOptionalMeshTops
                 .Select(x => x.objectTop)
-                .Where(x => x != null)
-                .ToArray();
-
-            if (lods.Length == 0) return qResult.ToArray();
-
-
-            var combineFunc0 = (lods.Length >= 1)
-                ? (lods[0], MeshCombiner.BuildNormalMeshElements(lods[0].ChildrenAndSelf(), lods[0].transform))
-                : (null, null);
-
-            var combineFunc1 = (lods.Length >= 2)
-                ? (lods[1], MeshCombiner.BuildNormalMeshElements(lods[1].ChildrenAndSelf(), lods[1].transform))
-                : (null, null);
-
-            return qResult
-                .Append(combineFunc0)
-                .Append(combineFunc1)
-                .Select(x => (go:x.Item1, f:x.Item2))
-                .Where(x => x.f != null)
+                .Select(lod => lod != null
+                   ? MeshCombiner.BuildNormalMeshElements(lod.ChildrenAndSelf(), this.transform)
+                   : null
+                )
                 .ToArray();
         }
     }

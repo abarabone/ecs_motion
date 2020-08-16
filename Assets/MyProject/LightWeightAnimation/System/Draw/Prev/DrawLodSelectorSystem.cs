@@ -16,8 +16,9 @@ namespace Abarabone.Draw
     using Abarabone.SystemGroup;
     using Abarabone.Geometry;
     using Abarabone.Particle;
+    using System.Runtime.CompilerServices;
 
-
+    //[DisableAutoCreation]
     [UpdateBefore(typeof(DrawCullingSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     public class DrawLodSelectorSystem : SystemBase
@@ -28,11 +29,13 @@ namespace Abarabone.Draw
 
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
-            var campos = Camera.current.transform.position;
+            var campos = Camera.main.transform.position.As_float3();
 
-            this.Entities
+            
+            var postureDependency = this.Entities
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithReadOnly(poss)
+                .WithNone<Translation>()
                 .ForEach(
                         (
                             ref DrawInstance.ModeLinkData modelLink,
@@ -43,33 +46,65 @@ namespace Abarabone.Draw
 
                             var pos = poss[posturelink.PostureEntity];
 
-                            var distsq = math.distancesq(pos.Value, campos);
-
-
-                            if (lodLink.SqrDistance0 <= distsq)
-                            {
-                                modelLink.DrawModelEntityCurrent = lodLink.DrawModelEntity0;
-
-                                return;
-                            }
-
-
-                            if (lodLink.SqrDistance1 <= distsq)
-                            {
-                                modelLink.DrawModelEntityCurrent = lodLink.DrawModelEntity1;
-
-                                return;
-                            }
-
-
-                            modelLink.DrawModelEntityCurrent = Entity.Null;
+                            modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink);
 
                         }
                 )
-                .ScheduleParallel();
+                .ScheduleParallel(this.Dependency);
+
+            
+            var translationDependency = this.Entities
+                .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
+                .ForEach(
+                        (
+                            ref DrawInstance.ModeLinkData modelLink,
+                            in DrawInstance.ModelLod2LinkData lodLink,
+                            in Translation pos
+                        ) =>
+                        {
+
+                            modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink);
+
+                        }
+                )
+                .ScheduleParallel(this.Dependency);
+
+
+            this.Dependency = JobHandle.CombineDependencies(postureDependency, translationDependency);
 
         }
 
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static Entity selectModel_
+            (
+                float3 targetpos_, float3 campos_,
+                DrawInstance.ModelLod2LinkData lodLink_
+            )
+        {
+
+            var distsq = math.distancesq(targetpos_, campos_);
+
+
+            if (lodLink_.SqrDistance0 >= distsq)
+            {
+                return lodLink_.DrawModelEntity0;
+            }
+
+
+            if (lodLink_.SqrDistance1 >= distsq)
+            {
+                return lodLink_.DrawModelEntity1;
+            }
+
+
+            // no draw
+            {
+                return Entity.Null;
+            }
+
+        }
     }
 
 }

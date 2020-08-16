@@ -62,11 +62,20 @@ namespace Abarabone.Structure.Authoring
         static public Mesh GetFromStructureMeshDictionary
             ( this GameObjectConversionSystem gcs, GameObject topGameObject )
         {
-            var isExits = gcs.GetSingleton<StructureMeshDictionary.Data>()
-                .MeshDictionary.TryGetValue(topGameObject, out var mesh);
+            var isExits = gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary
+                .TryGetValue(topGameObject, out var mesh);
 
             return mesh;
         }
+
+
+        static public bool IsExistingInStructureMeshDictionary
+            (this GameObjectConversionSystem gcs, GameObject topGameObject)
+        {
+            return gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary
+                .ContainsKey(topGameObject);
+        }
+        
     }
 
 }

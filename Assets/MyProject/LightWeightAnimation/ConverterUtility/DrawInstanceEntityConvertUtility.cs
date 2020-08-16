@@ -47,41 +47,41 @@ namespace Abarabone.Draw.Authoring
         /// ・ＬＯＤ枠が確保されていて、ＬＯＤ登録が Nothing の場合は、
         /// 　オブジェクトトップから見つかった最初のメッシュを無加工で採用する。
         /// </summary>
-        static public (GameObject go, Mesh mesh)[] GetMeshesToCreateModelEntity
+        static public GameObject[] BuildMeshesForModelEntity
             (
                 this GameObjectConversionSystem gcs_,
                 GameObject main_, GameObject[] lods_,
-                Func<(GameObject, Func<MeshElements>)[]> getMeshCombineFuncs
+                Func<Func<MeshElements>[]> getMeshCombineFuncs
             )
         {
-            var preBakedMeshes = new List<(GameObject go, Mesh mesh)>(2);
-            if (lods_.Length >= 1) (lods_[0], gcs_.GetFromStructureMeshDictionary(lods_[0])).AddTo(preBakedMeshes);
-            if (lods_.Length >= 2) (lods_[1], gcs_.GetFromStructureMeshDictionary(lods_[1])).AddTo(preBakedMeshes);
-            if (lods_.Length == 0) (main_, gcs_.GetFromStructureMeshDictionary(main_)).AddTo(preBakedMeshes);
+            var result = new List<GameObject>(lods_.Length);
 
-            var vailedMeshes = preBakedMeshes
-                .Where(x => x.mesh != null)
-                .ToArray();
+            if(lods_.Length == 0 || lods_.Where(x => x == null).Any())
+            {
+                if(!gcs_.IsExistingInStructureMeshDictionary(main_))
+                {
+                    var mesh = main_.GetComponentInChildren<MeshFilter>().sharedMesh;
+                    gcs_.AddToStructureMeshDictionary(main_, mesh);
+                }
 
-            if (vailedMeshes.Length > 0) return vailedMeshes;
+                result.Add(main_);
+            }
 
+            var meshfuncs = getMeshCombineFuncs();
 
-            var lodCombineFuncs = getMeshCombineFuncs();
+            foreach(var (lod, f) in (lods_, meshfuncs).Zip().Where(x => x.x != null))
+            {
+                if (!gcs_.IsExistingInStructureMeshDictionary(lod))
+                {
+                    var mesh = f().CreateMesh();
+                    gcs_.AddToStructureMeshDictionary(lod, mesh);
+                }
 
-            var qBakedMesh = lodCombineFuncs
-                .Select(x => x().CreateMesh());
+                result.Add(lod);
+            }
 
-            var isNoNeedDefaultMesh =
-                lodCombineFuncs.Length != 0
-                &&
-                lodCombineFuncs.Length == lods_.Length;
-            if (isNoNeedDefaultMesh) return qBakedMesh.ToArray();
-
-            return qBakedMesh
-                .Append(main_.GetComponentInChildren<MeshFilter>().sharedMesh)
-                .ToArray();
+            return result.ToArray();
         }
-        static void AddTo(this (GameObject, Mesh) x, List<(GameObject, Mesh)> list) => list.Add(x);
 
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Abarabone.Draw.Authoring
             )
         {
             var model = gcs_.GetFromModelEntityDictionary(main_);
-            if (model != null) return model;
+            if (model != Entity.Null) return model;
 
             return lods_
                 .Select(x => x.objectTop)
@@ -113,16 +113,16 @@ namespace Abarabone.Draw.Authoring
         /// ・ＬＯＤ枠が確保されていて、ＬＯＤ登録が Nothing の場合は、
         /// 　オブジェクトトップから見つかった最初のメッシュを無加工で採用する。
         /// </summary>
-        static public void AddLodComponentToDrawInstanceEntity
+        static public void AddLod2ComponentToDrawInstanceEntity
             (
                 this GameObjectConversionSystem gcs_,
                 Entity drawInstance_, GameObject main_, ObjectAndDistance[] lods_
             )
         {
-            if (lods_.Length == 0) return;
+            if (lods_.Length != 2) return;
 
-            var lod0_ = (lods_.Length >= 1 ? lods_[0].objectTop : null) ?? main_;
-            var lod1_ = (lods_.Length >= 2 ? lods_[1].objectTop : null) ?? main_;
+            var lod0_ = lods_[0].objectTop ?? main_;
+            var lod1_ = lods_[1].objectTop ?? main_;
 
             var em = gcs_.DstEntityManager;
 
@@ -131,8 +131,8 @@ namespace Abarabone.Draw.Authoring
                 {
                     DrawModelEntity0 = gcs_.GetFromModelEntityDictionary(lod0_),
                     DrawModelEntity1 = gcs_.GetFromModelEntityDictionary(lod1_),
-                    SqrDistance0 = lods_[0].distance,
-                    SqrDistance1 = lods_[1].distance,
+                    SqrDistance0 = lods_[0].distance * lods_[0].distance,
+                    SqrDistance1 = lods_[1].distance * lods_[1].distance,
                 }
             );
         }

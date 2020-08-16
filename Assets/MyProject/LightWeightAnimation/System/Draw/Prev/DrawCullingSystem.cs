@@ -99,7 +99,7 @@ namespace Abarabone.Draw
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithReadOnly(bboxes)
-                .WithNone<NonUniformScale>()
+                //.WithNone<NonUniformScale>()
                 .WithNone<Particle.TranslationPtoPData>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach(
