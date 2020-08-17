@@ -75,6 +75,8 @@ namespace Abarabone.Draw
 
                         drawLinker.DrawModelEntityCurrent = models[drawLinker.DrawInstanceEntity].DrawModelEntityCurrent;
                     }
+                    // ここでボーン書き込み位置を計算してしまうことも可能だが、そうすると DrawInstanceTempBufferAllocateSystem に依存する。
+                    // ジョブの並列度が下がるので、ここでは最低限のことだけ行う。
                 )
                 .ScheduleParallel();
         }

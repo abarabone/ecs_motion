@@ -19,22 +19,20 @@ namespace Abarabone.Draw
     
 
     [UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
-    [UpdateBefore( typeof( MarkDrawTargetBoneSystem ) )]
-    [UpdateBefore( typeof( MarkDrawTargetMotionStreamSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     public class DrawCullingSystem : SystemBase
     {
 
-        BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
+        //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
 
-        protected override void OnStartRunning()
-        {
-            this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
-            this.c = Camera.main;//
-        }
+        //protected override void OnStartRunning()
+        //{
+        //    this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
+        //    this.c = Camera.main;//
+        //}
 
-        Camera c;//
+        //Camera c;//
         protected override void OnUpdate()
         {
 
@@ -46,7 +44,7 @@ namespace Abarabone.Draw
             var scls = this.GetComponentDataFromEntity<NonUniformScale>(isReadOnly: true);
 
 
-            var cam = this.c;// Camera.main;
+            var cam = Camera.main;
             var viewFrustum = new ViewFrustumSoa(cam);
 
 
@@ -184,7 +182,7 @@ namespace Abarabone.Draw
 
             this.Dependency = JobHandle.CombineDependencies(dependsTRbone, dependsTR, dependsParticle);
 
-            this.presentationBarier.AddJobHandleForProducer( this.Dependency );
+            //this.presentationBarier.AddJobHandleForProducer( this.Dependency );
         }
 
     }
