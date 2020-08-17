@@ -19,13 +19,13 @@ namespace Abarabone.Character
     static public partial class Posture
     {
 
-        public struct LinkData : IComponentData
-        {
-            public Entity BoneRelationTop;
-        }
+        //public struct LinkData : IComponentData
+        //{
+        //    public Entity BoneRelationTop;
+        //}
 
-        public struct NeedTransformTag : IComponentData
-        { }
+        //public struct NeedTransformTag : IComponentData
+        //{ }
 
         //public struct UniqueIdData : IComponentData
         //   {

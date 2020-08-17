@@ -37,10 +37,10 @@ namespace Abarabone.Draw
             public int BoneLength;
         }
 
-        public unsafe struct TargetWorkData : IComponentData
-        {
-            public int DrawInstanceId;
-        }
+        //public unsafe struct TargetWorkData : IComponentData
+        //{
+        //    public int DrawInstanceId;
+        //}
 
     }
 
@@ -55,7 +55,7 @@ namespace Abarabone.Model
         T = 1,
         TR = 2,
         TRS = 3,
-        Matrix = 4,
+        Matrix4x3 = 3,
     }
 
     static public partial class Bone

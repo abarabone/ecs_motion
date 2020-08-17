@@ -22,6 +22,7 @@ namespace Abarabone.CharacterMotion
     using Abarabone.Geometry;
     using Abarabone.Character;
     using Abarabone.Model;
+    using Abarabone.Draw;
 
 
     //[DisableAutoCreation]
@@ -45,7 +46,6 @@ namespace Abarabone.CharacterMotion
 
             this.Entities
                 .WithName( "BoneTransformSystem" )
-                .WithAll<Posture.NeedTransformTag>()
                 .WithBurst()
                 .WithReadOnly( boneRelationLinkers )
                 .WithReadOnly( boneLocals )
@@ -54,8 +54,14 @@ namespace Abarabone.CharacterMotion
                 .WithNativeDisableParallelForRestriction( boneRotations )
                 .WithNativeDisableParallelForRestriction( boneVelocities )
                 .ForEach(
-                    ( in Posture.LinkData linker ) =>
+                        (
+                            in DrawInstance.BoneLinkData linker,
+                            in DrawInstance.TargetWorkData target
+                        ) =>
                     {
+
+                        if (target.DrawInstanceId == -1) return;
+
                         for(
                             var ent = linker.BoneRelationTop;
                             ent != Entity.Null;
@@ -124,110 +130,110 @@ namespace Abarabone.CharacterMotion
 
 
 
-        protected JobHandle OnUpdate( JobHandle inputDeps )
-        {
+        //protected JobHandle OnUpdate( JobHandle inputDeps )
+        //{
 
-            inputDeps = new BoneTransformJob
-            {
-                BoneRelationLinkers = this.GetComponentDataFromEntity<Bone.RelationLinkData>( isReadOnly: true ),
-                BoneLocals = this.GetComponentDataFromEntity<Bone.LocalValueData>( isReadOnly: true ),
-                BonePositions = this.GetComponentDataFromEntity<Translation>(),
-                BoneRotations = this.GetComponentDataFromEntity<Rotation>(),
-                BoneVelocities = this.GetComponentDataFromEntity<PhysicsVelocity>(),
-                DeltaTime = UnityEngine.Time.deltaTime,//Time.DeltaTime,
-            }
-            .Schedule( this, inputDeps );
-
-
-            return inputDeps;
-        }
+        //    inputDeps = new BoneTransformJob
+        //    {
+        //        BoneRelationLinkers = this.GetComponentDataFromEntity<Bone.RelationLinkData>( isReadOnly: true ),
+        //        BoneLocals = this.GetComponentDataFromEntity<Bone.LocalValueData>( isReadOnly: true ),
+        //        BonePositions = this.GetComponentDataFromEntity<Translation>(),
+        //        BoneRotations = this.GetComponentDataFromEntity<Rotation>(),
+        //        BoneVelocities = this.GetComponentDataFromEntity<PhysicsVelocity>(),
+        //        DeltaTime = UnityEngine.Time.deltaTime,//Time.DeltaTime,
+        //    }
+        //    .Schedule( this, inputDeps );
 
 
-        [BurstCompile]
-        struct BoneTransformJob : IJobForEach<Posture.NeedTransformTag, Posture.LinkData>
-        {
-
-            [ReadOnly]
-            public ComponentDataFromEntity<Bone.RelationLinkData>    BoneRelationLinkers;
-            [ReadOnly]
-            public ComponentDataFromEntity<Bone.LocalValueData>      BoneLocals;
-
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Translation>     BonePositions;
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Rotation>        BoneRotations;
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<PhysicsVelocity> BoneVelocities;
-
-            [ReadOnly]
-            public float DeltaTime;
+        //    return inputDeps;
+        //}
 
 
-            public void Execute(
-                [ReadOnly] ref Posture.NeedTransformTag tag,
-                [ReadOnly] ref Posture.LinkData linker
-            )
-            {
-                for(
-                    var ent = linker.BoneRelationTop;
-                    ent != Entity.Null;
-                    ent = this.BoneRelationLinkers[ent].NextBoneEntity
-                )
-                {
-                    var parent = this.BoneRelationLinkers[ ent ].ParentBoneEntity;
+        //[BurstCompile]
+        //struct BoneTransformJob : IJobForEach<Posture.NeedTransformTag, Posture.LinkData>
+        //{
 
-                    var ppos = this.BonePositions[ parent ].Value;
-                    var prot = this.BoneRotations[ parent ].Value;
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<Bone.RelationLinkData>    BoneRelationLinkers;
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<Bone.LocalValueData>      BoneLocals;
 
-                    //var lpos = this.BonePositions[ ent ].Value;
-                    //var lrot = this.BoneRotations[ ent ].Value;
-                    var lpos = this.BoneLocals[ ent ].Position;
-                    var lrot = this.BoneLocals[ ent ].Rotation;
+        //    [NativeDisableParallelForRestriction]
+        //    public ComponentDataFromEntity<Translation>     BonePositions;
+        //    [NativeDisableParallelForRestriction]
+        //    public ComponentDataFromEntity<Rotation>        BoneRotations;
+        //    [NativeDisableParallelForRestriction]
+        //    public ComponentDataFromEntity<PhysicsVelocity> BoneVelocities;
 
-                    var pos = math.mul( prot, lpos ) + ppos;
-                    var rot = math.mul( prot, lrot );
+        //    [ReadOnly]
+        //    public float DeltaTime;
 
-                    if( this.BoneVelocities.HasComponent( ent ) )
-                        { }//this.setVelocity( ent, pos, rot );
-                    else
-                        this.setPosAndRot( ent, pos, rot );
-                }
-            }
 
-            [MethodImpl( MethodImplOptions.AggressiveInlining )]
-            void setPosAndRot( Entity ent, float3 pos, quaternion rot )
-            {
-                this.BonePositions[ ent ] = new Translation { Value = pos };
-                this.BoneRotations[ ent ] = new Rotation { Value = rot };
-            }
+        //    public void Execute(
+        //        [ReadOnly] ref Posture.NeedTransformTag tag,
+        //        [ReadOnly] ref Posture.LinkData linker
+        //    )
+        //    {
+        //        for(
+        //            var ent = linker.BoneRelationTop;
+        //            ent != Entity.Null;
+        //            ent = this.BoneRelationLinkers[ent].NextBoneEntity
+        //        )
+        //        {
+        //            var parent = this.BoneRelationLinkers[ ent ].ParentBoneEntity;
 
-            [MethodImpl( MethodImplOptions.AggressiveInlining )]
-            void setVelocity( Entity ent, float3 pos, quaternion rot )
-            {
-                var rcdt = math.rcp( this.DeltaTime );
+        //            var ppos = this.BonePositions[ parent ].Value;
+        //            var prot = this.BoneRotations[ parent ].Value;
 
-                var v = this.BoneVelocities[ ent ];
+        //            //var lpos = this.BonePositions[ ent ].Value;
+        //            //var lrot = this.BoneRotations[ ent ].Value;
+        //            var lpos = this.BoneLocals[ ent ].Position;
+        //            var lrot = this.BoneLocals[ ent ].Rotation;
 
-                v.Linear = ( pos - this.BonePositions[ ent ].Value ) * rcdt;
+        //            var pos = math.mul( prot, lpos ) + ppos;
+        //            var rot = math.mul( prot, lrot );
 
-                //var invprev = math.inverse( this.BoneRotations[ ent ].Value );
-                //var drot = math.mul( invprev, rot );
-                //var angle = math.acos(drot.value.w);
-                //var sin = math.sin( angle );
-                //var axis = drot.value.As_float3() * math.rcp(sin);
+        //            if( this.BoneVelocities.HasComponent( ent ) )
+        //                { }//this.setVelocity( ent, pos, rot );
+        //            else
+        //                this.setPosAndRot( ent, pos, rot );
+        //        }
+        //    }
 
-                var invprev = math.inverse( this.BoneRotations[ ent ].Value );
-                var drot = math.mul( invprev, rot );
-                var axis = drot.value.As_float3();
-                var angle = math.lengthsq( drot );
+        //    [MethodImpl( MethodImplOptions.AggressiveInlining )]
+        //    void setPosAndRot( Entity ent, float3 pos, quaternion rot )
+        //    {
+        //        this.BonePositions[ ent ] = new Translation { Value = pos };
+        //        this.BoneRotations[ ent ] = new Rotation { Value = rot };
+        //    }
 
-                v.Angular = axis * ( angle * rcdt );
+        //    [MethodImpl( MethodImplOptions.AggressiveInlining )]
+        //    void setVelocity( Entity ent, float3 pos, quaternion rot )
+        //    {
+        //        var rcdt = math.rcp( this.DeltaTime );
 
-                this.BoneVelocities[ ent ] = v;
+        //        var v = this.BoneVelocities[ ent ];
 
-                //this.setPosAndRot( ent, pos, rot );//
-            }
-        }
+        //        v.Linear = ( pos - this.BonePositions[ ent ].Value ) * rcdt;
+
+        //        //var invprev = math.inverse( this.BoneRotations[ ent ].Value );
+        //        //var drot = math.mul( invprev, rot );
+        //        //var angle = math.acos(drot.value.w);
+        //        //var sin = math.sin( angle );
+        //        //var axis = drot.value.As_float3() * math.rcp(sin);
+
+        //        var invprev = math.inverse( this.BoneRotations[ ent ].Value );
+        //        var drot = math.mul( invprev, rot );
+        //        var axis = drot.value.As_float3();
+        //        var angle = math.lengthsq( drot );
+
+        //        v.Angular = axis * ( angle * rcdt );
+
+        //        this.BoneVelocities[ ent ] = v;
+
+        //        //this.setPosAndRot( ent, pos, rot );//
+        //    }
+        //}
     }
     
 }

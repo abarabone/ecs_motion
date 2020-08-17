@@ -19,54 +19,77 @@ namespace Abarabone.CharacterMotion
     [UpdateAfter(typeof(MotionProgressSystem))]//MotionB
     [UpdateBefore(typeof(StreamToBoneSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
-    public class MotionStreamInterporationSystem : JobComponentSystem
+    public class MotionStreamInterporationSystem : SystemBase
     {
 
-        
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+
+        protected override void OnUpdate()
         {
 
+            var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>(isReadOnly: true);
+            var motionCurrings = this.GetComponentDataFromEntity<Motion.DrawCurringData>(isReadOnly: true);
 
-            inputDeps = new StreamInterporationJob
-            {
-                MotionCursors = this.GetComponentDataFromEntity<Motion.CursorData>( isReadOnly: true ),
-            }
-            .Schedule( this, inputDeps );
+            this.Entities
+                .WithReadOnly(motionCursors)
+                .WithReadOnly(motionCurrings)
+                .ForEach(
+                    (
+                        ref Stream.DrawTargetData drawtarget,
+                        ref Stream.KeyShiftData shiftInfo,
+                        ref Stream.NearKeysCacheData nearKeys,
+                        ref Stream.InterpolationData dst,
+                        in Stream.MotionLinkData linker
+                    ) =>
+                    {
+
+                        drawtarget.IsDrawTarget = motionCurrings[linker.MotionEntity].IsDrawTarget;
+                        
+                        if (!drawtarget.IsDrawTarget) return;
 
 
-            return inputDeps;
+                        var cursor = motionCursors[linker.MotionEntity];
+
+                        nearKeys.ShiftKeysIfOverKeyTimeForLooping(ref shiftInfo, ref cursor);
+
+                        var timeProgressNormalized = nearKeys.CaluclateTimeNormalized(cursor.CurrentPosition);
+
+                        dst.Interpolation = nearKeys.Interpolate(timeProgressNormalized);
+                    }
+                )
+                .ScheduleParallel();
+
         }
 
 
 
-        /// <summary>
-        /// ストリーム回転 → 補間
-        /// </summary>
-        [BurstCompile]
-        struct StreamInterporationJob : IJobForEach
-            <Stream.MotionLinkData, Stream.KeyShiftData, Stream.NearKeysCacheData, Stream.InterpolationData>
-        {
+        ///// <summary>
+        ///// ストリーム回転 → 補間
+        ///// </summary>
+        //[BurstCompile]
+        //struct StreamInterporationJob : IJobForEach
+        //    <Stream.MotionLinkData, Stream.KeyShiftData, Stream.NearKeysCacheData, Stream.InterpolationData>
+        //{
 
-            [ReadOnly]
-            public ComponentDataFromEntity<Motion.CursorData> MotionCursors;
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<Motion.CursorData> MotionCursors;
 
-            public void Execute(
-                ref Stream.MotionLinkData linker,
-                ref Stream.KeyShiftData shiftInfo,
-                ref Stream.NearKeysCacheData nearKeys,
-                [WriteOnly] ref Stream.InterpolationData dst
-            )
-            {
-                var cursor = this.MotionCursors[ linker.MotionEntity ];
+        //    public void Execute(
+        //        ref Stream.MotionLinkData linker,
+        //        ref Stream.KeyShiftData shiftInfo,
+        //        ref Stream.NearKeysCacheData nearKeys,
+        //        [WriteOnly] ref Stream.InterpolationData dst
+        //    )
+        //    {
+        //        var cursor = this.MotionCursors[ linker.MotionEntity ];
 
-                nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref cursor );
+        //        nearKeys.ShiftKeysIfOverKeyTimeForLooping( ref shiftInfo, ref cursor );
 
-                var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( cursor.CurrentPosition );
+        //        var timeProgressNormalized = nearKeys.CaluclateTimeNormalized( cursor.CurrentPosition );
 
-                dst.Interpolation = nearKeys.Interpolate( timeProgressNormalized );
-            }
+        //        dst.Interpolation = nearKeys.Interpolate( timeProgressNormalized );
+        //    }
 
-        }
+        //}
 
         //[BurstCompile]
         //struct StreamInterporationJob : IJobForEach

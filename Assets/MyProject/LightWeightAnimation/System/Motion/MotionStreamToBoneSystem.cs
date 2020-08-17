@@ -23,50 +23,63 @@ namespace Abarabone.CharacterMotion
 
     [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ) )]
-    public class StreamToBoneSystem : JobComponentSystem
+    public class StreamToBoneSystem : SystemBase
     {
 
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        protected override void OnUpdate()
         {
 
-            inputDeps = new StreamToBoneJob
-            {
-                StreamValues = this.GetComponentDataFromEntity<Stream.InterpolationData>( isReadOnly: true ),
-            }
-            .Schedule( this, inputDeps );
+            var streamValues = this.GetComponentDataFromEntity<Stream.InterpolationData>(isReadOnly: true);
 
-            return inputDeps;
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(streamValues)
+                .ForEach(
+                    (
+                        ref Bone.LocalValueData local,
+                        in Bone.Stream0LinkData streamLinker
+                    ) =>
+                    {
+                        // カリングができないな…考えないと
+
+                        local.Position = streamValues[streamLinker.PositionStreamEntity].Interpolation.As_float3();
+                        local.Rotation = streamValues[streamLinker.RotationStreamEntity].Interpolation;
+
+                    }
+                )
+                .ScheduleParallel();
+
         }
 
 
 
-        [BurstCompile, ExcludeComponent( typeof( Bone.Stream1LinkData ), typeof( Bone.Stream2LinkData ) )]
-        public struct StreamToBoneJob : IJobForEach
-            //<BoneStreamLinkData, Translation, Rotation>
-            <Bone.Stream0LinkData, Bone.LocalValueData>
-        {
+        //[BurstCompile, ExcludeComponent( typeof( Bone.Stream1LinkData ), typeof( Bone.Stream2LinkData ) )]
+        //public struct StreamToBoneJob : IJobForEach
+        //    //<BoneStreamLinkData, Translation, Rotation>
+        //    <Bone.Stream0LinkData, Bone.LocalValueData>
+        //{
 
-            [ReadOnly]
-            public ComponentDataFromEntity<Stream.InterpolationData> StreamValues;
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<Stream.InterpolationData> StreamValues;
 
 
-            public void Execute(
-                [ReadOnly]  ref Bone.Stream0LinkData streamLinker,
-                //[WriteOnly] ref Translation pos,
-                //[WriteOnly] ref Rotation rot
-                [WriteOnly] ref Bone.LocalValueData local
-            )
-            {
+        //    public void Execute(
+        //        [ReadOnly]  ref Bone.Stream0LinkData streamLinker,
+        //        //[WriteOnly] ref Translation pos,
+        //        //[WriteOnly] ref Rotation rot
+        //        [WriteOnly] ref Bone.LocalValueData local
+        //    )
+        //    {
 
-                //pos.Value = this.StreamValues[ streamLinker.PositionStreamEntity ].Value.As_float3();
-                //rot.Value = this.StreamValues[ streamLinker.RotationStreamEntity ].Value;
+        //        //pos.Value = this.StreamValues[ streamLinker.PositionStreamEntity ].Value.As_float3();
+        //        //rot.Value = this.StreamValues[ streamLinker.RotationStreamEntity ].Value;
 
-                local.Position = this.StreamValues[ streamLinker.PositionStreamEntity ].Interpolation.As_float3();
-                local.Rotation = this.StreamValues[ streamLinker.RotationStreamEntity ].Interpolation;
+        //        local.Position = this.StreamValues[ streamLinker.PositionStreamEntity ].Interpolation.As_float3();
+        //        local.Rotation = this.StreamValues[ streamLinker.RotationStreamEntity ].Interpolation;
 
-            }
-        }
+        //    }
+        //}
 
     }
 

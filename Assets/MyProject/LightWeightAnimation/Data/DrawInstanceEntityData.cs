@@ -55,6 +55,11 @@ namespace Abarabone.Draw
         {
             public Entity PostureEntity;
         }
+        public struct BoneLinkData : IComponentData
+        {
+            public Entity BoneRelationTop;
+        }
+
 
 
         public struct TargetWorkData : IComponentData

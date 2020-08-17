@@ -35,6 +35,12 @@ namespace Abarabone.CharacterMotion
             public BlobAssetReference<MotionBlobData> MotionClipData;
         }
 
+        public struct DrawCurringData : IComponentData
+        {
+            public bool IsDrawTarget;
+            public Entity DrawInstanceEntity;
+        }
+
         public struct InfoData : IComponentData
         {
             public int MotionIndex;
