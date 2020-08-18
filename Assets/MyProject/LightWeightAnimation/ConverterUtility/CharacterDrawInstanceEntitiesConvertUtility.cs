@@ -13,7 +13,7 @@ namespace Abarabone.Draw.Authoring
     using CharacterMotion;
     using Draw;
     using Character;
-    using Abarabone.Authoring;
+    using Abarabone.CharacterMotion.Authoring;
     using Abarabone.Model.Authoring;
 
     using Abarabone.Common.Extension;
@@ -35,6 +35,8 @@ namespace Abarabone.Draw.Authoring
             setBoneComponentValues( gcs, bones, drawInstanceEntity );
 
             setStreamComponentValues( gcs, bones, drawInstanceEntity );
+
+            setMotionComponentValues(gcs, top, drawInstanceEntity);
 
         }
 
@@ -146,6 +148,32 @@ namespace Abarabone.Draw.Authoring
                     select new DrawTransform.IndexData { BoneLength = boneLength, BoneId = i }
                 );
             }
+        }
+
+
+        static void setMotionComponentValues
+            (
+                GameObjectConversionSystem gcs,
+                GameObject top, Entity drawInstanceEntity
+            )
+        {
+
+            var em = gcs.DstEntityManager;
+
+            var qMotionEntity =
+                from ma in top.GetComponentsInChildren<MotionAuthoring>().Do(x => Debug.Log($"dm {x.name}"))
+                from ent in gcs.GetEntities(top).Do(x=>Debug.Log($"dm {em.GetName_(x)}"))
+                where em.HasComponent<Motion.DrawCullingData>(ent)
+                select ent
+                ;
+
+            em.SetComponentData( qMotionEntity,
+                new Motion.DrawCullingData
+                {
+                    DrawInstanceEntity = drawInstanceEntity,
+                }
+            );
+            
         }
 
 
