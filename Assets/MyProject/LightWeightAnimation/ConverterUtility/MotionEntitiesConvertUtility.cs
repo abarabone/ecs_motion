@@ -44,6 +44,7 @@ namespace Abarabone.CharacterMotion.Authoring
                 typeof( Motion.ClipData ),
                 typeof( Motion.StreamLinkData ),
                 typeof( Motion.InitializeData ),
+                typeof( Motion.DrawCullingData )
         };
         static public ComponentType[] Stream = new ComponentType[]
         {
@@ -53,6 +54,7 @@ namespace Abarabone.CharacterMotion.Authoring
                 typeof( Stream.NearKeysCacheData ),
                 typeof( Stream.CursorData ),
                 typeof( Stream.InterpolationData ),
+                typeof( Stream.DrawTargetData )
         };
     }
 
@@ -65,7 +67,8 @@ namespace Abarabone.CharacterMotion.Authoring
                 typeof( Motion.StreamLinkData ),
                 typeof( Motion.InitializeData ),
                 typeof( Motion.CursorData ),//
-                typeof( Motion.ProgressTimerTag )//
+                typeof( Motion.ProgressTimerTag ),//
+                typeof( Motion.DrawCullingData )
         };
         static public ComponentType[] Stream = new ComponentType[]
         {
@@ -74,7 +77,8 @@ namespace Abarabone.CharacterMotion.Authoring
                 typeof( Stream.KeyShiftData ),
                 typeof( Stream.NearKeysCacheData ),
                 typeof( Stream.InterpolationData ),
-                typeof( Stream.MotionLinkData )//
+                typeof( Stream.MotionLinkData ),//
+                typeof( Stream.DrawTargetData )
         };
     }
     static public class ArchetypeBd
@@ -85,7 +89,8 @@ namespace Abarabone.CharacterMotion.Authoring
                 typeof( Motion.ClipData ),
                 typeof( Motion.StreamLinkData ),
                 typeof( Motion.InitializeData ),
-                typeof( Motion.CursorData )//
+                typeof( Motion.CursorData ),//
+                typeof( Motion.DrawCullingData )
         };
         static public ComponentType[] Stream = new ComponentType[]
         {
@@ -94,7 +99,8 @@ namespace Abarabone.CharacterMotion.Authoring
                 typeof( Stream.KeyShiftData ),
                 typeof( Stream.NearKeysCacheData ),
                 typeof( Stream.InterpolationData ),
-                typeof( Stream.MotionLinkData )//
+                typeof( Stream.MotionLinkData ),//
+                typeof( Stream.DrawTargetData )
         };
     }
 

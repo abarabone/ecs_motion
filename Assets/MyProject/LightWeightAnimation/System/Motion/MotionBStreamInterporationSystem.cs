@@ -27,9 +27,11 @@ namespace Abarabone.CharacterMotion
         {
 
             var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>(isReadOnly: true);
-            var motionCurrings = this.GetComponentDataFromEntity<Motion.DrawCurringData>(isReadOnly: true);
+            var motionCurrings = this.GetComponentDataFromEntity<Motion.DrawCullingData>(isReadOnly: true);
 
-            this.Entities
+            var streamDeps = this.Entities
+                .WithName("standard")
+                .WithBurst()
                 .WithReadOnly(motionCursors)
                 .WithReadOnly(motionCurrings)
                 .ForEach(
@@ -41,9 +43,37 @@ namespace Abarabone.CharacterMotion
                         in Stream.MotionLinkData linker
                     ) =>
                     {
-
                         drawtarget.IsDrawTarget = motionCurrings[linker.MotionEntity].IsDrawTarget;
-                        
+
+
+                        var cursor = motionCursors[linker.MotionEntity];
+
+                        nearKeys.ShiftKeysIfOverKeyTimeForLooping(ref shiftInfo, ref cursor);
+
+                        var timeProgressNormalized = nearKeys.CaluclateTimeNormalized(cursor.CurrentPosition);
+
+                        dst.Interpolation = nearKeys.Interpolate(timeProgressNormalized);
+                    }
+                )
+                .ScheduleParallel(this.Dependency);
+
+            var streamSleepOnCullingDeps = this.Entities
+                .WithName("SleepOnCulling")
+                .WithBurst()
+                .WithReadOnly(motionCursors)
+                .WithReadOnly(motionCurrings)
+                .WithAll<Motion.SleepOnDrawCullingTag>()
+                .ForEach(
+                    (
+                        ref Stream.DrawTargetData drawtarget,
+                        ref Stream.KeyShiftData shiftInfo,
+                        ref Stream.NearKeysCacheData nearKeys,
+                        ref Stream.InterpolationData dst,
+                        in Stream.MotionLinkData linker
+                    ) =>
+                    {
+                        drawtarget.IsDrawTarget = motionCurrings[linker.MotionEntity].IsDrawTarget;
+
                         if (!drawtarget.IsDrawTarget) return;
 
 
@@ -56,8 +86,9 @@ namespace Abarabone.CharacterMotion
                         dst.Interpolation = nearKeys.Interpolate(timeProgressNormalized);
                     }
                 )
-                .ScheduleParallel();
+                .ScheduleParallel(this.Dependency);
 
+            this.Dependency = JobHandle.CombineDependencies(streamDeps, streamSleepOnCullingDeps);
         }
 
 

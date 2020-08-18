@@ -35,30 +35,28 @@ namespace Abarabone.Draw
         {
 
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
-            var drawTargets = this.GetComponentDataFromEntity<DrawInstance.TargetWorkData>(isReadOnly: true);
 
             inputDeps = this.Entities
                 .WithBurst()
                 .WithNone<NonUniformScale, Rotation>()
                 .WithReadOnly(offsetsOfDrawModel)
-                .WithReadOnly(drawTargets)
                 .ForEach(
                     (
-                        in DrawTransform.LinkData linkerOfTf,
-                        in DrawTransform.IndexData indexerOfTf,
+                        in DrawTransform.LinkData linker,
+                        in DrawTransform.IndexData indexer,
+                        in DrawTransform.TargetWorkData target,
                         in Translation pos
                     ) =>
                     {
-                        var drawtarget = drawTargets[linkerOfTf.DrawInstanceEntity];
-                        if (drawtarget.DrawInstanceId == -1) return;
+                        if (target.DrawInstanceId == -1) return;
 
 
-                        var offsetInfo = offsetsOfDrawModel[linkerOfTf.DrawModelEntityCurrent];
+                        var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
                         const int vectorLengthInBone = 1;
-                        var lengthOfInstance = vectorLengthInBone * indexerOfTf.BoneLength + offsetInfo.VectorOffsetPerInstance;
-                        var boneOffset = drawtarget.DrawInstanceId * lengthOfInstance;
-                        var i = boneOffset + vectorLengthInBone * indexerOfTf.BoneId + offsetInfo.VectorOffsetPerInstance;
+                        var lengthOfInstance = vectorLengthInBone * indexer.BoneLength + offsetInfo.VectorOffsetPerInstance;
+                        var boneOffset = target.DrawInstanceId * lengthOfInstance;
+                        var i = boneOffset + vectorLengthInBone * indexer.BoneId + offsetInfo.VectorOffsetPerInstance;
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
                         pModel[ i ] = new float4( pos.Value, 1.0f );

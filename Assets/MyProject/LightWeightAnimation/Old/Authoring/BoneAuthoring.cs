@@ -112,8 +112,8 @@ namespace Abarabone.Authoring
         (
             em => em.CreateArchetype
             (
-                typeof( Posture.NeedTransformTag ),
-                typeof( Posture.LinkData ),
+                //typeof( Posture.NeedTransformTag ),
+                //typeof( Posture.LinkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Prefab )
@@ -168,7 +168,7 @@ namespace Abarabone.Authoring
             em.removeBoneRelationLinks( bonePrefabs, qBoneMasks );
             em.addBoneStreamLinkData( mainMotionPrefab, boneNameAndPrefabs, streamPrefabss );
 
-            em.SetComponentData( posturePrefab, new Posture.LinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
+            //em.SetComponentData( posturePrefab, new Posture.LinkData { BoneRelationTop = bonePrefabs[ 0 ] } );
             em.SetComponentData( posturePrefab, new Rotation { Value = quaternion.identity } );
             em.SetComponentData( posturePrefab, new Translation { Value = float3.zero } );
 

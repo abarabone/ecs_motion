@@ -77,6 +77,7 @@ namespace Abarabone.Draw
                     }
                     // ここでボーン書き込み位置を計算してしまうことも可能だが、そうすると DrawInstanceTempBufferAllocateSystem に依存する。
                     // ジョブの並列度が下がるので、ここでは最低限のことだけ行う。
+                    // また、描画時にやるようにすればこのシステムは不要になるが、ボーン関係のシステム用にここでやっておく
                 )
                 .ScheduleParallel();
         }

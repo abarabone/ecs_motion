@@ -29,7 +29,7 @@ namespace Abarabone.CharacterMotion
 
             var deltaTime = this.Time.DeltaTime;
 
-            this.Entities
+            var motionDeps = this.Entities
                 .WithName( "MotionProgressSystem" )
                 .WithBurst()
                 .ForEach
@@ -41,8 +41,26 @@ namespace Abarabone.CharacterMotion
                         cursor.Progress( deltaTime );
                     }
                 )
-                .ScheduleParallel();
+                .ScheduleParallel(this.Dependency);
 
+            var motionCullDeps = this.Entities
+                .WithName("MotionCullingProgressSystem")
+                .WithBurst()
+                .ForEach
+                (
+                    (ref Motion.CursorData cursor, in Motion.DrawCullingData cull) =>
+                    {
+                        if (!cull.IsDrawTarget) return;
+
+
+                        progressTimeForLooping(ref cursor);
+
+                        cursor.Progress(deltaTime);
+                    }
+                )
+                .ScheduleParallel(this.Dependency);
+
+            this.Dependency = JobHandle.CombineDependencies(motionDeps, motionCullDeps);
             return;
 
 

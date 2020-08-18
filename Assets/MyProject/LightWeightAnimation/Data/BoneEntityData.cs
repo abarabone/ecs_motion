@@ -37,10 +37,10 @@ namespace Abarabone.Draw
             public int BoneLength;
         }
 
-        //public unsafe struct TargetWorkData : IComponentData
-        //{
-        //    public int DrawInstanceId;
-        //}
+        public unsafe struct TargetWorkData : IComponentData
+        {
+            public int DrawInstanceId;
+        }
 
     }
 

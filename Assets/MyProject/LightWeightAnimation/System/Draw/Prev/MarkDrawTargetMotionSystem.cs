@@ -31,7 +31,7 @@ namespace Abarabone.Draw
                 .WithReadOnly(targets)
                 .ForEach(
                     (
-                        ref Motion.DrawCurringData curring
+                        ref Motion.DrawCullingData curring
                     ) =>
                     {
 

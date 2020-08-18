@@ -19,7 +19,7 @@ namespace Abarabone.CharacterMotion
     using Abarabone.Geometry;
     using Abarabone.Character;
     using Abarabone.Model;
-
+    using Abarabone.Draw;
 
     [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ) )]
@@ -38,10 +38,12 @@ namespace Abarabone.CharacterMotion
                 .ForEach(
                     (
                         ref Bone.LocalValueData local,
-                        in Bone.Stream0LinkData streamLinker
+                        in Bone.Stream0LinkData streamLinker,
+                        in DrawTransform.TargetWorkData target
                     ) =>
                     {
-                        // カリングができないな…考えないと
+                        if (target.DrawInstanceId == -1) return;
+
 
                         local.Position = streamValues[streamLinker.PositionStreamEntity].Interpolation.As_float3();
                         local.Rotation = streamValues[streamLinker.RotationStreamEntity].Interpolation;

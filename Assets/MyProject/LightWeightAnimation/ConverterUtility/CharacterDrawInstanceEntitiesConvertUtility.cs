@@ -30,7 +30,7 @@ namespace Abarabone.Draw.Authoring
 
             var em = gcs.DstEntityManager;
 
-            var drawInstanceEntity = createDrawInstanceEntity( gcs, top, main );
+            var drawInstanceEntity = createDrawInstanceEntity( gcs, top, main, bones );
 
             setBoneComponentValues( gcs, bones, drawInstanceEntity );
 
@@ -43,7 +43,7 @@ namespace Abarabone.Draw.Authoring
 
         
         static Entity createDrawInstanceEntity
-            ( GameObjectConversionSystem gcs, GameObject top, GameObject main )
+            ( GameObjectConversionSystem gcs, GameObject top, GameObject main, Transform[] bones )
         {
             var em = gcs.DstEntityManager;
 
@@ -53,7 +53,8 @@ namespace Abarabone.Draw.Authoring
                 typeof( DrawInstance.MeshTag ),
                 typeof( DrawInstance.ModeLinkData ),
                 typeof( DrawInstance.PostureLinkData ),
-                typeof( DrawInstance.TargetWorkData )
+                typeof( DrawInstance.TargetWorkData ),
+                typeof( DrawInstance.BoneLinkData )
             );
             var ent = gcs.CreateAdditionalEntity( top, archetype );
             
@@ -73,6 +74,12 @@ namespace Abarabone.Draw.Authoring
                 new DrawInstance.TargetWorkData
                 {
                     DrawInstanceId = -1,
+                }
+            );
+            em.SetComponentData(ent,
+                new DrawInstance.BoneLinkData
+                {
+                    BoneRelationTop = gcs.GetPrimaryEntity(bones.First()),
                 }
             );
 

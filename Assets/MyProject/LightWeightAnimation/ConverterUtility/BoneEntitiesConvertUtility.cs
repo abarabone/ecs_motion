@@ -77,8 +77,8 @@ namespace Abarabone.Model.Authoring
 
             var addtypes = new ComponentTypes
             (
-                typeof( Posture.NeedTransformTag ),
-                typeof( Posture.LinkData ),
+                //typeof( Posture.NeedTransformTag ),
+                //typeof( Posture.LinkData ),
                 typeof( Translation ),
                 typeof( Rotation )
             );
@@ -168,7 +168,7 @@ namespace Abarabone.Model.Authoring
 
         static void setPostureValue( EntityManager em, Entity postureEntity, Entity boneTopEntity )
         {
-            em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
+            //em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
             em.SetComponentData( postureEntity, new Rotation { Value = quaternion.identity } );
             em.SetComponentData( postureEntity, new Translation { Value = float3.zero } );
         }

@@ -30,12 +30,17 @@ namespace Abarabone.CharacterMotion
             public bool IsContinuous;
         }
 
+
         public struct ClipData : IComponentData
         {
             public BlobAssetReference<MotionBlobData> MotionClipData;
         }
 
-        public struct DrawCurringData : IComponentData
+
+        public struct SleepOnDrawCullingTag : IComponentData
+        { }
+
+        public struct DrawCullingData : IComponentData
         {
             public bool IsDrawTarget;
             public Entity DrawInstanceEntity;
