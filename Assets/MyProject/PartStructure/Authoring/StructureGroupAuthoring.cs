@@ -59,7 +59,7 @@ namespace Abarabone.Structure.Authoring
             {
                 foreach (var (go, mesh) in objectsAndMeshes_)
                 {
-                    conversionSystem.AddToStructureMeshDictionary(go, mesh);
+                    conversionSystem.AddToMeshDictionary(go, mesh);
                 }
             }
 
@@ -147,7 +147,7 @@ namespace Abarabone.Structure.Authoring
                 var qStructureElement =
                     from st in structurePrefabs_
                     let objects = st.DescendantsAndSelf()
-                    let f = objects.GetCombineChildMeshesFunc(st.transform)
+                    let f = objects.GetCombineStructureMeshesFunc(st.transform)
                     select Task.Run(f)
                     ;
 
@@ -200,7 +200,12 @@ namespace Abarabone.Structure.Authoring
         /// </summary>
         static public Func<MeshElements> GetCombineChildMeshesFunc
             (this IEnumerable<GameObject> targets, Transform tf) =>
+            MeshCombiner.BuildNormalMeshElements(targets, tf);
+
+        static public Func<MeshElements> GetCombineStructureMeshesFunc
+            (this IEnumerable<GameObject> targets, Transform tf) =>
             MeshCombiner.BuildStructureWithPalletMeshElements(targets, tf);
+
 
 
         /// <summary>

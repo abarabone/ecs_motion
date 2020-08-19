@@ -58,10 +58,10 @@ namespace Abarabone.Draw.Authoring
 
             if(lods_.Length == 0 || lods_.Where(x => x == null).Any())
             {
-                if(!gcs_.IsExistingInStructureMeshDictionary(main_))
+                if(!gcs_.IsExistingInMeshDictionary(main_))
                 {
                     var mesh = main_.GetComponentInChildren<MeshFilter>().sharedMesh;
-                    gcs_.AddToStructureMeshDictionary(main_, mesh);
+                    gcs_.AddToMeshDictionary(main_, mesh);
                 }
 
                 result.Add(main_);
@@ -71,10 +71,10 @@ namespace Abarabone.Draw.Authoring
 
             foreach(var (lod, f) in (lods_, meshfuncs).Zip().Where(x => x.x != null))
             {
-                if (!gcs_.IsExistingInStructureMeshDictionary(lod))
+                if (!gcs_.IsExistingInMeshDictionary(lod))
                 {
                     var mesh = f().CreateMesh();
-                    gcs_.AddToStructureMeshDictionary(lod, mesh);
+                    gcs_.AddToMeshDictionary(lod, mesh);
                 }
 
                 result.Add(lod);

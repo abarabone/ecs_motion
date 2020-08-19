@@ -39,8 +39,7 @@ namespace Abarabone.Structure
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
-    //[UpdateAfter(typeof(StructureHitMessageHolderAllocationSystem))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class StructureHitMessageApplySystem : SystemBase
     {
 

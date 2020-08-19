@@ -36,6 +36,11 @@ namespace Abarabone.Structure.Authoring
 
         public Material MaterialToDraw;
 
+        public ObjectAndDistance NearMeshObject;
+        public ObjectAndDistance FarMeshObject;
+
+
+
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
@@ -63,7 +68,7 @@ namespace Abarabone.Structure.Authoring
 
             // A と B をパーツを含むかでより分けるようにする、できればパーツがあるものをまとめる
 
-            createModelEntity_(conversionSystem, top, this.MaterialToDraw);
+            createModelEntities_(conversionSystem, top, this.MaterialToDraw, this.NearMeshObject, this.FarMeshObject);
             //createDrawInstanceEntity_(conversionSystem, top);
 
             initBinderEntity_(conversionSystem, top, objA);
@@ -77,22 +82,36 @@ namespace Abarabone.Structure.Authoring
 
 
 
-            void createModelEntity_
+            void createModelEntities_
                 (
-                    GameObjectConversionSystem gcs_, GameObject top_,
-                    Material srcMaterial
+                    GameObjectConversionSystem gcs_, GameObject top_, Material srcMaterial_,
+                    ObjectAndDistance near_, ObjectAndDistance far_
                 )
             {
-                var mat = new Material(srcMaterial);
-                var mesh = gcs_.GetFromStructureMeshDictionary(top_);
 
-                const BoneType boneType = BoneType.TR;
-                const int boneLength = 1;
-                const int vectorOffsetPerInstance = 4;
+                var nearmesh = gcs_.GetFromMeshDictionary(near_.objectTop);
+                createModelEntity_(nearmesh);
 
-                gcs_.CreateDrawModelEntityComponents(top_, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
+                var farmesh = far_.objectTop.GetComponentInChildren<MeshFilter>().sharedMesh;
+                //var farmesh = gcs_.GetFromMeshDictionary(far_.objectTop);
+                createModelEntity_(farmesh);
+
+                return;
+
+
+                void createModelEntity_(Mesh mesh_)
+                {
+                    var mat = new Material(srcMaterial_);
+
+                    const BoneType boneType = BoneType.TR;
+                    const int boneLength = 1;
+                    const int vectorOffsetPerInstance = 4;
+
+                    gcs_.CreateDrawModelEntityComponents
+                        (top_, mesh_, mat, boneType, boneLength, vectorOffsetPerInstance);
+                }
+
             }
-
 
 
             //Entity createDrawInstanceEntity_
@@ -274,6 +293,8 @@ namespace Abarabone.Structure.Authoring
         //    em.AddComponentData(qPartEntity, qPartData);
 
         //}
+
+
 
     }
 

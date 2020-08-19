@@ -49,31 +49,32 @@ namespace Abarabone.Particle.Aurthoring
 
 
             void createModelEntities_
-                (GameObjectConversionSystem gcs, GameObject main, Material srcMaterial, ObjectAndDistance[] lodOpts)
+                (GameObjectConversionSystem gcs, GameObject top, Material srcMaterial, ObjectAndDistance[] lodOpts)
             {
 
                 var lods = LodOptionalMeshTops.Select(x => x.objectTop).ToArray();
-                var objsForModel = gcs.BuildMeshesForModelEntity(main, lods, this.GetMeshCombineFuncPerObjects);
+                var objsForModel = gcs.BuildMeshesForModelEntity(top, lods, this.GetMeshCombineFuncPerObjects);
 
                 foreach(var go in objsForModel)
                 {
                     Debug.Log($"{go.name} model ent");
-                    var mesh = gcs.GetFromStructureMeshDictionary(go);
-                    createModelEntity_(gcs, go, srcMaterial, mesh);
+
+                    var mesh = gcs.GetFromMeshDictionary(go);
+
+                    createModelEntity_(mesh);
                 }
 
                 return;
 
 
-                void createModelEntity_
-                    (GameObjectConversionSystem gcs_, GameObject top_, Material srcMaterial_, Mesh mesh_)
+                void createModelEntity_(Mesh mesh_)
                 {
-                    var mat = new Material(srcMaterial_);
+                    var mat = new Material(srcMaterial);
 
                     const BoneType BoneType = BoneType.TR;
                     const int boneLength = 1;
 
-                    gcs_.CreateDrawModelEntityComponents(top_, mesh_, mat, BoneType, boneLength);
+                    gcs.CreateDrawModelEntityComponents(top, mesh_, mat, BoneType, boneLength);
                 }
 
             }

@@ -41,7 +41,7 @@ namespace Abarabone.Arms
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(ObjectInitializeSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     //[UpdateAfter(typeof())]
     public class BulletLifeTimeSystem : SystemBase
     {

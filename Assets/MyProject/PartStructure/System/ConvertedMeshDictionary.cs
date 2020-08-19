@@ -7,14 +7,14 @@ using Unity.Entities.Conversion;
 using Unity.Entities.Hybrid;
 using System.Linq;
 
-namespace Abarabone.Structure.Authoring
+namespace Abarabone.Draw.Authoring
 {
 
     /// <summary>
     /// モデルエンティティとゲームオブジェクトを紐づける仕組み。
-    /// モデルプレハブはモデルのメインエンティティに紐づけるので、別枠が必要になった。（そもそもインスタンスとリソースは別か）
+    /// モデルプレハブはモデルのトップエンティティに紐づけるので、別枠が必要になった。（そもそもインスタンスとリソースは別か）
     /// </summary>
-    public class StructureMeshDictionary : GameObjectConversionSystem
+    public class ConvertedMeshDictionary : GameObjectConversionSystem
     {
 
         public class Data : IComponentData
@@ -47,32 +47,32 @@ namespace Abarabone.Structure.Authoring
     }
 
 
-    static public class StructureMeshDictionaryExtension
+    static public class ConvertedMeshDictionaryExtension
     {
-        static public void AddToStructureMeshDictionary
+        static public void AddToMeshDictionary
             ( this GameObjectConversionSystem gcs, GameObject topGameObject, Mesh mesh)
         {
             //Debug.Log("addst");
             //Debug.Log(gcs);
             //Debug.Log(gcs.GetSingleton<StructureMeshDictionary.Data>());
             //Debug.Log(gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary);
-            gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary.Add(topGameObject, mesh);
+            gcs.GetSingleton<ConvertedMeshDictionary.Data>().MeshDictionary.Add(topGameObject, mesh);
         }
 
-        static public Mesh GetFromStructureMeshDictionary
+        static public Mesh GetFromMeshDictionary
             ( this GameObjectConversionSystem gcs, GameObject topGameObject )
         {
-            var isExits = gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary
+            var isExits = gcs.GetSingleton<ConvertedMeshDictionary.Data>().MeshDictionary
                 .TryGetValue(topGameObject, out var mesh);
 
             return mesh;
         }
 
 
-        static public bool IsExistingInStructureMeshDictionary
+        static public bool IsExistingInMeshDictionary
             (this GameObjectConversionSystem gcs, GameObject topGameObject)
         {
-            return gcs.GetSingleton<StructureMeshDictionary.Data>().MeshDictionary
+            return gcs.GetSingleton<ConvertedMeshDictionary.Data>().MeshDictionary
                 .ContainsKey(topGameObject);
         }
         

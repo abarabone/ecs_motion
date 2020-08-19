@@ -33,7 +33,6 @@ namespace Abarabone.Arms
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    [UpdateBefore(typeof(StructureHitMessageApplySystem))]
     public class EmitAndHitBeamSystem : SystemBase
     {
 

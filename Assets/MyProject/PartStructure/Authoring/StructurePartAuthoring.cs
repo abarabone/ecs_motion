@@ -107,7 +107,7 @@ namespace Abarabone.Structure.Authoring
                 if (gcs_.IsExistsInModelEntityDictionary(master_)) return;
 
                 var mat = new Material(srcMaterial_);
-                var mesh = conversionSystem.GetFromStructureMeshDictionary(this.MasterPrefab);
+                var mesh = conversionSystem.GetFromMeshDictionary(this.MasterPrefab);
 
                 const BoneType BoneType = BoneType.TR;// あとでＳもつける
                 const int boneLength = 1;
