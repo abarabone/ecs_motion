@@ -33,6 +33,7 @@ namespace Abarabone.Draw
 
             
             var postureDependency = this.Entities
+                .WithName("Posture")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithReadOnly(poss)
                 .WithNone<Translation>()
@@ -54,6 +55,7 @@ namespace Abarabone.Draw
 
             
             var translationDependency = this.Entities
+                .WithName("SingleEntity")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .ForEach(
                         (

@@ -18,7 +18,8 @@ namespace Abarabone.CharacterMotion.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Character;
     using Abarabone.Model;
-
+    using Unity.Linq;
+    using Abarabone.Model.Authoring;
 
     public enum EnMotionType
     {
@@ -147,6 +148,8 @@ namespace Abarabone.CharacterMotion.Authoring
             setBoneStreamLinks( gcs, posStreamEntities, rotStreamEntities, enabledBoneObjects );
 
             setLinkForObjectEntity(gcs, motionMain, motionEntity);
+
+            setDrawLink(gcs, motionEntity, motionMain);
         }
 
 
@@ -312,6 +315,39 @@ namespace Abarabone.CharacterMotion.Authoring
 
             em.AddComponentData( qBoneEntity, qStreamLink );
         }
+
+
+
+        // ほんとうは draw instance でやりたい
+        //static void setMotionComponentValues
+        static void setDrawLink
+            (
+                GameObjectConversionSystem gcs, Entity motionEntity,
+                GameObject motionMain
+            )
+        {
+
+            var em = gcs.DstEntityManager;
+
+            var top = motionMain
+                .AncestorsAndSelf().Where(go => go.GetComponent<ModelGroupAuthoring.ModelAuthoringBase>())
+                .First();
+                
+            var qDrawEntity =
+                from ent in gcs.GetEntities(top)
+                where em.HasComponent<DrawInstance.BoneLinkData>(ent)
+                select ent
+                ;
+
+            em.SetComponentData( motionEntity,
+                new Motion.DrawCullingData
+                {
+                    DrawInstanceEntity = qDrawEntity.First(),
+                }
+            );
+
+        }
+
     }
 }
 

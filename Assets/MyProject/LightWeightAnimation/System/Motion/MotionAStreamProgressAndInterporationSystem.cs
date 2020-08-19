@@ -15,6 +15,7 @@ using Abarabone.SystemGroup;
 namespace Abarabone.CharacterMotion
 {
     
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ))]
     //[UpdateAfter(typeof())]
     public class MotionStreamProgressAndInterporationSystem : JobComponentSystem
@@ -25,11 +26,11 @@ namespace Abarabone.CharacterMotion
         {
 
 
-            inputDeps = new StreamProgressAndInterporationJob
-            {
-                DeltaTime = UnityEngine.Time.deltaTime,//Time.DeltaTime,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new StreamProgressAndInterporationJob
+            //{
+            //    DeltaTime = UnityEngine.Time.deltaTime,//Time.DeltaTime,
+            //}
+            //.Schedule( this, inputDeps );
 
 
             return inputDeps;

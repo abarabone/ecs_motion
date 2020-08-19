@@ -12,6 +12,7 @@ using Abarabone.SystemGroup;
 namespace Abarabone.CharacterMotion
 {
     
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ))]
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
     public class MotionInitializeSystem : JobComponentSystem
@@ -32,17 +33,17 @@ namespace Abarabone.CharacterMotion
             var commandBuffer = this.ecb.CreateCommandBuffer();
 
 
-            inputDeps = new MotionInitializeJob
-            {
-                Commands = commandBuffer.AsParallelWriter(),
-                Linkers  = this.GetComponentDataFromEntity<Stream.RelationData>(),
-                Shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>(),
-                Timers   = this.GetComponentDataFromEntity<Stream.CursorData>(),
-                Caches   = this.GetComponentDataFromEntity<Stream.NearKeysCacheData>(),
+            //inputDeps = new MotionInitializeJob
+            //{
+            //    Commands = commandBuffer.AsParallelWriter(),
+            //    Linkers  = this.GetComponentDataFromEntity<Stream.RelationData>(),
+            //    Shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>(),
+            //    Timers   = this.GetComponentDataFromEntity<Stream.CursorData>(),
+            //    Caches   = this.GetComponentDataFromEntity<Stream.NearKeysCacheData>(),
 
-            }
-            .Schedule( this, inputDeps );
-            this.ecb.AddJobHandleForProducer( inputDeps );
+            //}
+            //.Schedule( this, inputDeps );
+            //this.ecb.AddJobHandleForProducer( inputDeps );
 
 
             return inputDeps;

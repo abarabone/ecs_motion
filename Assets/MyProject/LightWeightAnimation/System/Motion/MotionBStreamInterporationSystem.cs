@@ -34,6 +34,7 @@ namespace Abarabone.CharacterMotion
                 .WithBurst()
                 .WithReadOnly(motionCursors)
                 .WithReadOnly(motionCurrings)
+                .WithNone<Motion.SleepOnDrawCullingTag>()
                 .ForEach(
                     (
                         ref Stream.DrawTargetData drawtarget,

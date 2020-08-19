@@ -31,12 +31,12 @@ namespace Abarabone.CharacterMotion
         protected override JobHandle OnUpdate( JobHandle inputDeps )
         {
 
-            inputDeps = new StreamToBoneJob
-            {
-                Blends = this.GetComponentDataFromEntity<MotionBlend2WeightData>( isReadOnly: true ),
-                StreamValues = this.GetComponentDataFromEntity<Stream.InterpolationData>( isReadOnly: true ),
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new StreamToBoneJob
+            //{
+            //    Blends = this.GetComponentDataFromEntity<MotionBlend2WeightData>( isReadOnly: true ),
+            //    StreamValues = this.GetComponentDataFromEntity<Stream.InterpolationData>( isReadOnly: true ),
+            //}
+            //.Schedule( this, inputDeps );
 
             return inputDeps;
         }

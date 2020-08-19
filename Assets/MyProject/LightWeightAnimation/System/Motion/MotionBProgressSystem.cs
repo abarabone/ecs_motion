@@ -11,6 +11,7 @@ using Unity.Mathematics;
 
 using Abarabone.Authoring;
 using Abarabone.SystemGroup;
+using Abarabone.Draw;
 
 namespace Abarabone.CharacterMotion
 {
@@ -32,6 +33,7 @@ namespace Abarabone.CharacterMotion
             var motionDeps = this.Entities
                 .WithName( "MotionProgressSystem" )
                 .WithBurst()
+                .WithNone<Motion.DrawCullingData>()
                 .ForEach
                 (
                     (ref Motion.CursorData cursor) =>
@@ -82,65 +84,65 @@ namespace Abarabone.CharacterMotion
         }
 
 
-        protected JobHandle OnUpdate( JobHandle inputDeps )
-        {
+        //protected JobHandle OnUpdate( JobHandle inputDeps )
+        //{
 
 
-            inputDeps = new MotionProgressJob
-            {
-                DeltaTime = UnityEngine.Time.deltaTime,//Time.DeltaTime,
-            }
-            .Schedule( this, inputDeps );
+        //    inputDeps = new MotionProgressJob
+        //    {
+        //        DeltaTime = UnityEngine.Time.deltaTime,//Time.DeltaTime,
+        //    }
+        //    .Schedule( this, inputDeps );
 
 
-            return inputDeps;
-        }
+        //    return inputDeps;
+        //}
 
 
 
-        /// <summary>
-        /// ストリーム回転 → 補間
-        /// </summary>
-        [BurstCompile, RequireComponentTag(typeof(Motion.ProgressTimerTag))]
-        struct MotionProgressJob : IJobForEach
-            <Motion.CursorData>
-        {
+        ///// <summary>
+        ///// ストリーム回転 → 補間
+        ///// </summary>
+        //[BurstCompile, RequireComponentTag(typeof(Motion.ProgressTimerTag))]
+        //struct MotionProgressJob : IJobForEach
+        //    <Motion.CursorData>
+        //{
 
-            public float DeltaTime;
-
-
-            public void Execute(
-                ref Motion.CursorData cursor
-            )
-            {
-
-                progressTimeForLooping( ref cursor );
-
-                cursor.Progress( this.DeltaTime );
-
-            }
+        //    public float DeltaTime;
 
 
-            void progressTimeForLooping(
-                ref Motion.CursorData cousor
-            )
-            {
-                var isEndOfStream = cousor.CurrentPosition >= cousor.TotalLength;
+        //    public void Execute(
+        //        ref Motion.CursorData cursor
+        //    )
+        //    {
 
-                var timeOffset = getTimeOffsetOverLength( in cousor, isEndOfStream );
+        //        progressTimeForLooping( ref cursor );
 
-                cousor.CurrentPosition -= timeOffset;
+        //        cursor.Progress( this.DeltaTime );
 
-                return;
+        //    }
 
 
-                float getTimeOffsetOverLength( in Motion.CursorData cursor_, bool isEndOfStream_ )
-                {
-                    return math.select( 0.0f, cursor_.TotalLength, isEndOfStream_ );
-                }
-            }
+        //    void progressTimeForLooping(
+        //        ref Motion.CursorData cousor
+        //    )
+        //    {
+        //        var isEndOfStream = cousor.CurrentPosition >= cousor.TotalLength;
 
-        }
+        //        var timeOffset = getTimeOffsetOverLength( in cousor, isEndOfStream );
+
+        //        cousor.CurrentPosition -= timeOffset;
+
+        //        return;
+
+
+        //        float getTimeOffsetOverLength( in Motion.CursorData cursor_, bool isEndOfStream_ )
+        //        {
+        //            return math.select( 0.0f, cursor_.TotalLength, isEndOfStream_ );
+        //        }
+        //    }
+
+        //}
     }
 
 }

@@ -36,7 +36,7 @@ namespace Abarabone.Draw.Authoring
 
             setStreamComponentValues( gcs, bones, drawInstanceEntity );
 
-            setMotionComponentValues(gcs, top, drawInstanceEntity);
+            //setMotionComponentValues(gcs, top, drawInstanceEntity);
 
         }
 
@@ -151,30 +151,31 @@ namespace Abarabone.Draw.Authoring
         }
 
 
-        static void setMotionComponentValues
-            (
-                GameObjectConversionSystem gcs,
-                GameObject top, Entity drawInstanceEntity
-            )
-        {
+        // ほんとはここでやりたいけど、motion entity を取る方法がわからない
+        //static void setMotionComponentValues
+        //    (
+        //        GameObjectConversionSystem gcs,
+        //        GameObject top, Entity drawInstanceEntity
+        //    )
+        //{
 
-            var em = gcs.DstEntityManager;
+        //    var em = gcs.DstEntityManager;
 
-            var qMotionEntity =
-                from ma in top.GetComponentsInChildren<MotionAuthoring>().Do(x => Debug.Log($"dm {x.name}"))
-                from ent in gcs.GetEntities(top).Do(x=>Debug.Log($"dm {em.GetName_(x)}"))
-                where em.HasComponent<Motion.DrawCullingData>(ent)
-                select ent
-                ;
+        //    var qMotionEntity =
+        //        from ma in top.GetComponentsInChildren<MotionAuthoring>().Do(x => Debug.Log($"dm {x.name}"))
+        //        from ent in gcs.GetEntities(top).Do(x=>Debug.Log($"dm {em.GetName_(x)}"))
+        //        where em.HasComponent<Motion.DrawCullingData>(ent)
+        //        select ent
+        //        ;
 
-            em.SetComponentData( qMotionEntity,
-                new Motion.DrawCullingData
-                {
-                    DrawInstanceEntity = drawInstanceEntity,
-                }
-            );
+        //    em.SetComponentData( qMotionEntity,
+        //        new Motion.DrawCullingData
+        //        {
+        //            DrawInstanceEntity = drawInstanceEntity,
+        //        }
+        //    );
             
-        }
+        //}
 
 
         static void setStreamComponentValues
