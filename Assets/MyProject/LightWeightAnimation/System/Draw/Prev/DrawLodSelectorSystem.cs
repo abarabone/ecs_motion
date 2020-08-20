@@ -47,7 +47,7 @@ namespace Abarabone.Draw
 
                             var pos = poss[posturelink.PostureEntity];
 
-                            modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink);
+                            modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink, modelLink);
 
                         }
                 )
@@ -65,7 +65,7 @@ namespace Abarabone.Draw
                         ) =>
                         {
 
-                            modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink);
+                            modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink, modelLink);
 
                         }
                 )
@@ -86,18 +86,53 @@ namespace Abarabone.Draw
             )
         {
 
-            var distsq = math.distancesq(targetpos_, campos_);
+            var distsqr = math.distancesq(targetpos_, campos_);
 
 
-            if (lodLink_.SqrDistance0 >= distsq)
+            if (lodLink_.LimitDistanceSqrNear >= distsqr)
             {
-                return lodLink_.DrawModelEntity0;
+                return lodLink_.DrawModelEntityNear;
             }
 
 
-            if (lodLink_.SqrDistance1 >= distsq)
+            if (lodLink_.LimitDistanceSqrFar >= distsqr)
             {
-                return lodLink_.DrawModelEntity1;
+                return lodLink_.DrawModelEntityFar;
+            }
+
+
+            // no draw
+            {
+                return Entity.Null;
+            }
+
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static Entity selectModel_
+            (
+                float3 targetpos_, float3 campos_,
+                DrawInstance.ModelLod2LinkData lodLink_, DrawInstance.ModeLinkData modelLink_
+            )
+        {
+
+            var distsqr = math.distancesq(targetpos_, campos_);
+
+
+            var isCurrentNear = lodLink_.DrawModelEntityNear == modelLink_.DrawModelEntityCurrent;
+
+            var limitDistanceSqrNear =
+                math.select(lodLink_.LimitDistanceSqrRecoveryNear, lodLink_.LimitDistanceSqrNear, isCurrentNear);
+
+            if (limitDistanceSqrNear >= distsqr)
+            {
+                return lodLink_.DrawModelEntityNear;
+            }
+
+
+            if (lodLink_.LimitDistanceSqrFar >= distsqr)
+            {
+                return lodLink_.DrawModelEntityFar;
             }
 
 

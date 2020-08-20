@@ -61,20 +61,20 @@ namespace Abarabone.Particle.Aurthoring
 
                     var mesh = gcs.GetFromMeshDictionary(go);
 
-                    createModelEntity_(mesh);
+                    createModelEntity_(go, mesh);
                 }
 
                 return;
 
 
-                void createModelEntity_(Mesh mesh_)
+                void createModelEntity_(GameObject go, Mesh mesh_)
                 {
                     var mat = new Material(srcMaterial);
 
                     const BoneType BoneType = BoneType.TR;
                     const int boneLength = 1;
 
-                    gcs.CreateDrawModelEntityComponents(top, mesh_, mat, BoneType, boneLength);
+                    gcs.CreateDrawModelEntityComponents(go, mesh_, mat, BoneType, boneLength);
                 }
 
             }

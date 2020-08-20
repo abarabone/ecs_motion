@@ -69,10 +69,11 @@ namespace Abarabone.Draw
 
         public struct ModelLod2LinkData : IComponentData
         {
-            public Entity DrawModelEntity0;
-            public Entity DrawModelEntity1;
-            public float SqrDistance0;
-            public float SqrDistance1;
+            public Entity DrawModelEntityNear;
+            public Entity DrawModelEntityFar;
+            public float LimitDistanceSqrNear;
+            public float LimitDistanceSqrFar;
+            public float LimitDistanceSqrRecoveryNear;
         }
 
 

@@ -32,6 +32,7 @@ namespace Abarabone.Draw.Authoring
     {
         public GameObject objectTop;
         public float distance;
+        public float distance_recovery;
     }
 
     static public class DrawInstanceEntityConvertUtility
@@ -129,10 +130,11 @@ namespace Abarabone.Draw.Authoring
             em.AddComponentData(drawInstance_,
                 new DrawInstance.ModelLod2LinkData
                 {
-                    DrawModelEntity0 = gcs_.GetFromModelEntityDictionary(lod0_),
-                    DrawModelEntity1 = gcs_.GetFromModelEntityDictionary(lod1_),
-                    SqrDistance0 = lods_[0].distance * lods_[0].distance,
-                    SqrDistance1 = lods_[1].distance * lods_[1].distance,
+                    DrawModelEntityNear = gcs_.GetFromModelEntityDictionary(lod0_),
+                    DrawModelEntityFar = gcs_.GetFromModelEntityDictionary(lod1_),
+                    LimitDistanceSqrNear = lods_[0].distance * lods_[0].distance,
+                    LimitDistanceSqrFar = lods_[1].distance * lods_[1].distance,
+                    LimitDistanceSqrRecoveryNear = lods_[0].distance_recovery * lods_[0].distance_recovery,
                 }
             );
         }
