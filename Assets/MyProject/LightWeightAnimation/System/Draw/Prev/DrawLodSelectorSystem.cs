@@ -82,36 +82,6 @@ namespace Abarabone.Draw
         static Entity selectModel_
             (
                 float3 targetpos_, float3 campos_,
-                DrawInstance.ModelLod2LinkData lodLink_
-            )
-        {
-
-            var distsqr = math.distancesq(targetpos_, campos_);
-
-
-            if (lodLink_.LimitDistanceSqrNear >= distsqr)
-            {
-                return lodLink_.DrawModelEntityNear;
-            }
-
-
-            if (lodLink_.LimitDistanceSqrFar >= distsqr)
-            {
-                return lodLink_.DrawModelEntityFar;
-            }
-
-
-            // no draw
-            {
-                return Entity.Null;
-            }
-
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static Entity selectModel_
-            (
-                float3 targetpos_, float3 campos_,
                 DrawInstance.ModelLod2LinkData lodLink_, DrawInstance.ModeLinkData modelLink_
             )
         {
@@ -122,7 +92,7 @@ namespace Abarabone.Draw
             var isCurrentNear = lodLink_.DrawModelEntityNear == modelLink_.DrawModelEntityCurrent;
 
             var limitDistanceSqrNear =
-                math.select(lodLink_.LimitDistanceSqrRecoveryNear, lodLink_.LimitDistanceSqrNear, isCurrentNear);
+                math.select(lodLink_.LimitDistanceSqrNear, lodLink_.MarginDistanceSqrNear, isCurrentNear);
 
             if (limitDistanceSqrNear >= distsqr)
             {
@@ -130,17 +100,18 @@ namespace Abarabone.Draw
             }
 
 
-            if (lodLink_.LimitDistanceSqrFar >= distsqr)
+            var isCurrentFar = lodLink_.DrawModelEntityFar == modelLink_.DrawModelEntityCurrent;
+
+            var limitDistanceSqrFar =
+                math.select(lodLink_.LimitDistanceSqrFar, lodLink_.MarginDistanceSqrFar, isCurrentFar);
+
+            if (limitDistanceSqrFar >= distsqr)
             {
                 return lodLink_.DrawModelEntityFar;
             }
 
 
-            // no draw
-            {
-                return Entity.Null;
-            }
-
+            return Entity.Null;
         }
     }
 

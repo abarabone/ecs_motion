@@ -73,7 +73,15 @@ namespace Abarabone.Draw
             public Entity DrawModelEntityFar;
             public float LimitDistanceSqrNear;
             public float LimitDistanceSqrFar;
-            public float LimitDistanceSqrRecoveryNear;
+            public float MarginDistanceSqrNear;
+            public float MarginDistanceSqrFar;
+        }
+
+        public struct ModelLod1LinkData : IComponentData
+        {
+            public Entity DrawModelEntityNear;
+            public float LimitDistanceSqrNear;
+            public float MarginDistanceSqrNear;
         }
 
 

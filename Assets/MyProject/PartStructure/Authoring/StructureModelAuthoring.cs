@@ -90,16 +90,20 @@ namespace Abarabone.Structure.Authoring
             {
 
                 var nearmesh = gcs_.GetFromMeshDictionary(near_.objectTop);
-                createModelEntity_(nearmesh);
+                createModelEntity_(near_.objectTop, nearmesh);
 
-                var farmesh = far_.objectTop.GetComponentInChildren<MeshFilter>().sharedMesh;
-                //var farmesh = gcs_.GetFromMeshDictionary(far_.objectTop);
-                createModelEntity_(farmesh);
+                var farmesh = gcs_.GetFromMeshDictionary(far_.objectTop);
+                if(farmesh == null)
+                {
+                    var farmesh_ = far_.objectTop.GetComponentInChildren<MeshFilter>().sharedMesh;
+                    Debug.Log($"st far {far_.objectTop.name} {farmesh_}");
+                    createModelEntity_(far_.objectTop, farmesh_);
+                }
 
                 return;
 
 
-                void createModelEntity_(Mesh mesh_)
+                void createModelEntity_(GameObject go_, Mesh mesh_)
                 {
                     var mat = new Material(srcMaterial_);
 
@@ -108,7 +112,7 @@ namespace Abarabone.Structure.Authoring
                     const int vectorOffsetPerInstance = 4;
 
                     gcs_.CreateDrawModelEntityComponents
-                        (top_, mesh_, mat, boneType, boneLength, vectorOffsetPerInstance);
+                        (go_, mesh_, mat, boneType, boneLength, vectorOffsetPerInstance);
                 }
 
             }

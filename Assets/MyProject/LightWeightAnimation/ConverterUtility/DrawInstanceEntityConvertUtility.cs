@@ -31,8 +31,8 @@ namespace Abarabone.Draw.Authoring
     public struct ObjectAndDistance
     {
         public GameObject objectTop;
-        public float distance;
-        public float distance_recovery;
+        public float LimitDistance;
+        public float Margin;
     }
 
     static public class DrawInstanceEntityConvertUtility
@@ -132,11 +132,17 @@ namespace Abarabone.Draw.Authoring
                 {
                     DrawModelEntityNear = gcs_.GetFromModelEntityDictionary(lod0_),
                     DrawModelEntityFar = gcs_.GetFromModelEntityDictionary(lod1_),
-                    LimitDistanceSqrNear = lods_[0].distance * lods_[0].distance,
-                    LimitDistanceSqrFar = lods_[1].distance * lods_[1].distance,
-                    LimitDistanceSqrRecoveryNear = lods_[0].distance_recovery * lods_[0].distance_recovery,
+                    LimitDistanceSqrNear = sqr_(lods_[0].LimitDistance),
+                    LimitDistanceSqrFar = sqr_(lods_[1].LimitDistance),
+                    MarginDistanceSqrNear = sqr_(lods_[0].LimitDistance + lods_[0].Margin),
+                    MarginDistanceSqrFar = sqr_(lods_[1].LimitDistance + lods_[1].Margin),
                 }
             );
+            
+            return;
+
+
+            float sqr_(float d_) => d_ * d_;
         }
 
     }

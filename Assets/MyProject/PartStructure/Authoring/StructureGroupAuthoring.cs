@@ -103,8 +103,14 @@ namespace Abarabone.Structure.Authoring
         private void create()
         {
 
-            var structurePrefabs = this.StructureModelPrefabs
-                .Select(st => st.gameObject)
+            var strictireFarPrefabs = this.StructureModelPrefabs
+                .Select(st => st.FarMeshObject.objectTop)
+                .Do(x => Debug.Log($"st gr far {x.name}"))
+                .ToArray();
+
+            var structureNearPrefabs = this.StructureModelPrefabs
+                .Select(st => st.NearMeshObject.objectTop)
+                .Do(x => Debug.Log($"st gr near {x.name}"))
                 .ToArray();
 
             var partMasterPrefabs = this.StructureModelPrefabs
@@ -112,12 +118,12 @@ namespace Abarabone.Structure.Authoring
                 //.Select(pt => PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject))
                 .Select(pt => pt.MasterPrefab)
                 .Distinct()
-                .Do(x => Debug.Log(x.name))
+                .Do(x => Debug.Log($"st gr part {x.name}"))
                 .ToArray();
             //this.partMasterPrefabs = partMasterPrefabs;
 
 
-            combineMeshes_(structurePrefabs, partMasterPrefabs);
+            combineMeshes_(structureNearPrefabs, partMasterPrefabs);
 
             return;
 
