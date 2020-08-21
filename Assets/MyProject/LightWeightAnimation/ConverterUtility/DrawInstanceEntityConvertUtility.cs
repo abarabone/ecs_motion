@@ -117,13 +117,13 @@ namespace Abarabone.Draw.Authoring
         static public void AddLod2ComponentToDrawInstanceEntity
             (
                 this GameObjectConversionSystem gcs_,
-                Entity drawInstance_, GameObject main_, ObjectAndDistance[] lods_
+                Entity drawInstance_, GameObject top_, ObjectAndDistance[] lods_
             )
         {
             if (lods_.Length != 2) return;
 
-            var lod0_ = lods_[0].objectTop ?? main_;
-            var lod1_ = lods_[1].objectTop ?? main_;
+            var lod0_ = lods_[0].objectTop ?? top_;
+            var lod1_ = lods_[1].objectTop ?? top_;
 
             var em = gcs_.DstEntityManager;
 

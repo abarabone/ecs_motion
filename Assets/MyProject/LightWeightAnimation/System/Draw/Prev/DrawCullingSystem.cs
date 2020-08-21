@@ -49,7 +49,7 @@ namespace Abarabone.Draw
 
 
             var dependsTRbone = this.Entities
-                .WithName("DrawCullingCharacterSystem")
+                .WithName("Character")
                 .WithBurst( FloatMode.Fast, FloatPrecision.Standard )
                 .WithNativeDisableParallelForRestriction( drawModels )
                 .WithReadOnly(bboxes)
@@ -93,7 +93,7 @@ namespace Abarabone.Draw
 
 
             var dependsTR = this.Entities
-                .WithName("DrawCullingMeshTRSystem")
+                .WithName("MeshTRS")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithReadOnly(bboxes)
@@ -136,7 +136,7 @@ namespace Abarabone.Draw
 
 
             var dependsParticle = this.Entities
-                .WithName("DrawCullingPtopParticleSystem")
+                .WithName("PtopParticle")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
                 //.WithNone<Rotation, Translation, NonUniformScale>()

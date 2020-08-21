@@ -63,20 +63,24 @@ namespace Abarabone.Structure.Authoring
         {
 
             var top = this.gameObject;
-            var objA = top.transform.GetChild(0).gameObject;
-            var objB = top.transform.GetChild(1).gameObject;
+            var far = this.FarMeshObject.objectTop;//top.transform.GetChild(0).gameObject;
+            var near = this.NearMeshObject.objectTop;//top.transform.GetChild(1).gameObject;
 
             // A と B をパーツを含むかでより分けるようにする、できればパーツがあるものをまとめる
 
             createModelEntities_(conversionSystem, top, this.MaterialToDraw, this.NearMeshObject, this.FarMeshObject);
             //createDrawInstanceEntity_(conversionSystem, top);
 
-            initBinderEntity_(conversionSystem, top, objA);
-            initMainEntity_(conversionSystem, top, objA);
+            initBinderEntity_(conversionSystem, top, far);
+            initMainEntity_(conversionSystem, top, far);
 
             //setPartLink_(conversionSystem, objA, objB);
-            setPartLocalPosition_(conversionSystem, objA, objB);
+            setPartLocalPosition_(conversionSystem, far, near);
             //setPartId_(conversionSystem, objB);
+
+            var draw = conversionSystem.GetPrimaryEntity(far);
+            var lods = new ObjectAndDistance[] { this.NearMeshObject, this.FarMeshObject };
+            conversionSystem.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
 
             return;
 
@@ -95,7 +99,7 @@ namespace Abarabone.Structure.Authoring
                 var farmesh = gcs_.GetFromMeshDictionary(far_.objectTop);
                 if(farmesh == null)
                 {
-                    var farmesh_ = far_.objectTop.GetComponentInChildren<MeshFilter>().sharedMesh;
+                    var farmesh_ = MeshCombiner.BuildNormalMeshElements(far_.objectTop.Children(), far_.objectTop.transform)().CreateMesh();
                     Debug.Log($"st far {far_.objectTop.name} {farmesh_}");
                     createModelEntity_(far_.objectTop, farmesh_);
                 }
