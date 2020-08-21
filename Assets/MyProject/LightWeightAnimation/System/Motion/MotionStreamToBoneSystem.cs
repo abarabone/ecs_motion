@@ -39,7 +39,7 @@ namespace Abarabone.CharacterMotion
                     (
                         ref Bone.LocalValueData local,
                         in Bone.Stream0LinkData streamLinker,
-                        in DrawTransform.TargetWorkData target
+                        in BoneDraw.TargetWorkData target
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;

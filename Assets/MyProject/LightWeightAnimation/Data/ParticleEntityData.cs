@@ -50,9 +50,9 @@ namespace Abarabone.Particle
     public struct LineParticleNodeEntity :
         ITypedEntity<
             Particle.LineParticlePointNodeLinkData,
-            DrawTransform.LinkData,
-            DrawTransform.IndexData,
-            DrawTransform.TargetWorkData,
+            BoneDraw.LinkData,
+            BoneDraw.IndexData,
+            BoneDraw.TargetWorkData,
             Translation
         >
     {

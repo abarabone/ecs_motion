@@ -62,9 +62,9 @@ namespace Abarabone.Draw
                 .WithReadOnly(targets)
                 .ForEach(
                     (
-                        ref DrawTransform.TargetWorkData boneIndexer,
-                        ref DrawTransform.LinkData drawLinker,
-                        in DrawTransform.IndexData boneId
+                        ref BoneDraw.TargetWorkData boneIndexer,
+                        ref BoneDraw.LinkData drawLinker,
+                        in BoneDraw.IndexData boneId
                     ) =>
                     {
 

@@ -125,10 +125,10 @@ namespace Abarabone.Authoring
             em => em.CreateArchetype
             (
                 typeof( Bone.RelationLinkData ),
-                typeof( DrawTransform.LinkData ),
+                typeof( BoneDraw.LinkData ),
                 //typeof( Bone.Stream0LinkData ),// 剛体には必要ないので必要な場合に add するようにした　ブレンドの場合には複数必要だし
-                typeof( DrawTransform.IndexData ),
-                typeof( DrawTransform.TargetWorkData ),
+                typeof( BoneDraw.IndexData ),
+                typeof( BoneDraw.TargetWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Bone.LocalValueData ),// どうしようか
@@ -182,7 +182,7 @@ namespace Abarabone.Authoring
         {
             em_.SetComponentData(
                 bonePrefabs,
-                new DrawTransform.LinkData
+                new BoneDraw.LinkData
                 {
                     DrawInstanceEntity = drawInstancePrefab,
                     DrawModelEntityCurrent = em_.GetComponentData<DrawInstance.ModeLinkData>(drawInstancePrefab).DrawModelEntityCurrent,
@@ -211,7 +211,7 @@ namespace Abarabone.Authoring
         {
             em_.SetComponentData( bonePreafabs_,
                 from x in Enumerable.Range( 0, bonePreafabs_.Count() )
-                select new DrawTransform.IndexData { BoneLength = boneLength, BoneId = x }
+                select new BoneDraw.IndexData { BoneLength = boneLength, BoneId = x }
             );
         }
         

@@ -64,10 +64,10 @@ namespace Abarabone.Authoring
             em => em.CreateArchetype
             (
                 //typeof( Bone.RelationLinkData ),
-                typeof( DrawTransform.LinkData ),
+                typeof( BoneDraw.LinkData ),
                 typeof( Bone.Stream0LinkData ),
-                typeof( DrawTransform.IndexData ),
-                typeof( DrawTransform.TargetWorkData ),
+                typeof( BoneDraw.IndexData ),
+                typeof( BoneDraw.TargetWorkData ),
                 typeof( Translation ),
                 typeof( Rotation ),
                 typeof( Prefab )
@@ -111,7 +111,7 @@ namespace Abarabone.Authoring
             {
                 em_.SetComponentData( bonePreafabs_,
                     from x in Enumerable.Range( 0, bonePreafabs_.Length )
-                    select new DrawTransform.IndexData { BoneLength = boneLength, BoneId = x }
+                    select new BoneDraw.IndexData { BoneLength = boneLength, BoneId = x }
                 );
             }
 
@@ -146,7 +146,7 @@ namespace Abarabone.Authoring
                 var boneLength = motionClip_.StreamPaths.Length;
 
                 var qDrawLinker = Enumerable
-                    .Repeat( new DrawTransform.LinkData { DrawInstanceEntity = drawPrefab_ }, boneLength );
+                    .Repeat( new BoneDraw.LinkData { DrawInstanceEntity = drawPrefab_ }, boneLength );
 
                 em_.SetComponentData( bonePrefabs_, qDrawLinker );
             }

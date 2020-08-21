@@ -19,7 +19,7 @@ namespace Abarabone.Draw
 
 
 
-    static public partial class DrawTransform
+    static public partial class BoneDraw
     {
 
         //public struct WithLodTag : IComponentData

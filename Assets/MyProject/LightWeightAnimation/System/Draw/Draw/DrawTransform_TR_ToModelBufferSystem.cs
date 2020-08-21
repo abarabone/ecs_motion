@@ -42,9 +42,9 @@ namespace Abarabone.Draw
                 .WithReadOnly( offsetsOfDrawModel )
                 .ForEach(
                     (
-                        in DrawTransform.LinkData linker,
-                        in DrawTransform.IndexData indexer,
-                        in DrawTransform.TargetWorkData target,
+                        in BoneDraw.LinkData linker,
+                        in BoneDraw.IndexData indexer,
+                        in BoneDraw.TargetWorkData target,
                         in Translation pos,
                         in Rotation rot
                     ) =>

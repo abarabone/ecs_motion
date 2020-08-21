@@ -104,21 +104,21 @@ namespace Abarabone.Authoring
                 );
 
                 em_.AddComponentData( ent,
-                    new DrawTransform.LinkData
+                    new BoneDraw.LinkData
                     {
                         DrawInstanceEntity = drawInstanceEntity_,
                         DrawModelEntityCurrent = drawModelEntity_,
                     }
                 );
                 em_.AddComponentData( ent,
-                    new DrawTransform.IndexData
+                    new BoneDraw.IndexData
                     {
                         BoneId = nodeId_,
                         BoneLength = pointNodeLength_,
                     }
                 );
                 em_.AddComponentData( ent,
-                    new DrawTransform.TargetWorkData
+                    new BoneDraw.TargetWorkData
                     {
                         DrawInstanceId = -1,
                     }

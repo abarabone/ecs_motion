@@ -114,9 +114,9 @@ namespace Abarabone.Draw.Authoring
             {
                 var addtypes = new ComponentTypes
                 (
-                    typeof( DrawTransform.LinkData ),
-                    typeof( DrawTransform.IndexData ),
-                    typeof( DrawTransform.TargetWorkData )
+                    typeof( BoneDraw.LinkData ),
+                    typeof( BoneDraw.IndexData ),
+                    typeof( BoneDraw.TargetWorkData )
                 );
 
                 em.AddComponents( boneEntities_, addtypes );
@@ -130,7 +130,7 @@ namespace Abarabone.Draw.Authoring
 
                 em_.SetComponentData(
                     boneEntities_,
-                    new DrawTransform.LinkData
+                    new BoneDraw.LinkData
                     {
                         DrawInstanceEntity = drawInstanceEntity_,
                         DrawModelEntityCurrent = drawModelLinker.DrawModelEntityCurrent,
@@ -145,7 +145,7 @@ namespace Abarabone.Draw.Authoring
 
                 em_.SetComponentData( boneEntities_,
                     from i in Enumerable.Range( 0, boneLength )
-                    select new DrawTransform.IndexData { BoneLength = boneLength, BoneId = i }
+                    select new BoneDraw.IndexData { BoneLength = boneLength, BoneId = i }
                 );
             }
         }
