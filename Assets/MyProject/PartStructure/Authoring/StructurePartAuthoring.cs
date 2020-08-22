@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Unity.Linq;
 using Unity.Entities;
+using System;
 
 namespace Abarabone.Structure.Authoring
 {
@@ -18,6 +19,7 @@ namespace Abarabone.Structure.Authoring
     using Abarabone.Structure;
     using Unity.Physics;
     using Unity.Transforms;
+    using Abarabone.Geometry;
 
     using Material = UnityEngine.Material;
     using Unity.Physics.Authoring;
@@ -193,5 +195,29 @@ namespace Abarabone.Structure.Authoring
         }
 
 
+        public (Func<MeshElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
+        {
+
+            var qChild = queryPartBodyObjects_Recursive_(this.gameObject);
+
+            var isSingle = qChild.SingleOrDefault() != null;
+
+            var f = !isSingle ? MeshCombiner.BuildNormalMeshElements(qChild, this.transform) : null;
+            var mesh = isSingle ? qChild.First().GetComponent<MeshFilter>().sharedMesh : null;
+
+            return (f, mesh);
+
+
+            IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go_)
+            {
+                var q =
+                    from child in go_.Children()
+                    where child.GetComponent<StructurePartAuthoring>() == null
+                    from x in queryPartBodyObjects_Recursive_(child)
+                    select x
+                    ;
+                return q.Prepend(go_);
+            }
+        }
     }
 }

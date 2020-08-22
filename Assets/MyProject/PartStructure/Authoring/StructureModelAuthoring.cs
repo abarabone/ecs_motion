@@ -94,15 +94,19 @@ namespace Abarabone.Structure.Authoring
             {
 
                 var nearmesh = gcs_.GetFromMeshDictionary(near_.objectTop);
+                {
+
+                }
                 createModelEntity_(near_.objectTop, nearmesh);
 
                 var farmesh = gcs_.GetFromMeshDictionary(far_.objectTop);
                 if(farmesh == null)
                 {
-                    var farmesh_ = MeshCombiner.BuildNormalMeshElements(far_.objectTop.Children(), far_.objectTop.transform)().CreateMesh();
-                    Debug.Log($"st far {far_.objectTop.name} {farmesh_}");
-                    createModelEntity_(far_.objectTop, farmesh_);
+                    farmesh = MeshCombiner.BuildNormalMeshElements(far_.objectTop.Children(), far_.objectTop.transform)()
+                        .CreateMesh();
+                    Debug.Log($"st far {far_.objectTop.name} {farmesh}");
                 }
+                createModelEntity_(far_.objectTop, farmesh);
 
                 return;
 
@@ -303,7 +307,35 @@ namespace Abarabone.Structure.Authoring
         //}
 
 
+        public (Func<MeshElements> f, Mesh mesh) GetFarMeshAndFunc()
+        {
+            var far = this.FarMeshObject.objectTop;
 
+            var qChild = far
+                .DescendantsAndSelf()
+                .Where(child => child.GetComponent<MeshFilter>() != null);
+
+            var isFarSingle = qChild.SingleOrDefault() != null && isSameTransform_(qChild.First(), far);
+            var f = !isFarSingle ? MeshCombiner.BuildNormalMeshElements(qChild, far.transform) : null;
+            var mesh = isFarSingle ? qChild.First().GetComponent<MeshFilter>().sharedMesh : null;
+
+            return (f, mesh);
+
+
+            bool isSameTransform_(GameObject target_, GameObject top_) =>
+                (target_.transform.localToWorldMatrix * top_.transform.worldToLocalMatrix).isIdentity;
+        }
+
+        public Func<MeshElements> GetNearMeshFunc()
+        {
+            var near = this.NearMeshObject.objectTop;
+
+            var objects = near.DescendantsAndSelf();
+
+            var f = MeshCombiner.BuildStructureWithPalletMeshElements(objects, near.transform);
+            
+            return f;
+        }
     }
 
 
