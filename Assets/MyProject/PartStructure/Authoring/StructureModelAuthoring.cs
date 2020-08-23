@@ -34,7 +34,8 @@ namespace Abarabone.Structure.Authoring
     {
 
 
-        public Material MaterialToDraw;
+        public Material NearMaterialToDraw;
+        public Material FarMaterialToDraw;
 
         public ObjectAndDistance NearMeshObject;
         public ObjectAndDistance FarMeshObject;
@@ -68,7 +69,9 @@ namespace Abarabone.Structure.Authoring
 
             // A と B をパーツを含むかでより分けるようにする、できればパーツがあるものをまとめる
 
-            createModelEntities_(conversionSystem, top, this.MaterialToDraw, this.NearMeshObject, this.FarMeshObject);
+            //createModelEntities_(conversionSystem, top, this.MaterialToDraw, this.NearMeshObject, this.FarMeshObject);
+            createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
+            createModelEntity_(conversionSystem, far, this.FarMaterialToDraw, this.GetFarMeshAndFunc);
             //createDrawInstanceEntity_(conversionSystem, top);
 
             initBinderEntity_(conversionSystem, top, far);
@@ -86,44 +89,85 @@ namespace Abarabone.Structure.Authoring
 
 
 
-            void createModelEntities_
+            void createModelEntity_
                 (
-                    GameObjectConversionSystem gcs_, GameObject top_, Material srcMaterial_,
-                    ObjectAndDistance near_, ObjectAndDistance far_
+                    GameObjectConversionSystem gcs_, GameObject go_, Material srcMaterial_,
+                    Func<(GameObject go, Func<MeshElements> f, Mesh mesh)> meshCreateFunc_
                 )
             {
+                if (gcs_.IsExistsInModelEntityDictionary(go_)) return;
 
-                var nearmesh = gcs_.GetFromMeshDictionary(near_.objectTop);
+                var mesh = gcs_.GetFromMeshDictionary(go_);
+                if(mesh == null)
                 {
-
-                }
-                createModelEntity_(near_.objectTop, nearmesh);
-
-                var farmesh = gcs_.GetFromMeshDictionary(far_.objectTop);
-                if(farmesh == null)
-                {
-                    farmesh = MeshCombiner.BuildNormalMeshElements(far_.objectTop.Children(), far_.objectTop.transform)()
-                        .CreateMesh();
-                    Debug.Log($"st far {far_.objectTop.name} {farmesh}");
-                }
-                createModelEntity_(far_.objectTop, farmesh);
-
-                return;
-
-
-                void createModelEntity_(GameObject go_, Mesh mesh_)
-                {
-                    var mat = new Material(srcMaterial_);
-
-                    const BoneType boneType = BoneType.TR;
-                    const int boneLength = 1;
-                    const int vectorOffsetPerInstance = 4;
-
-                    gcs_.CreateDrawModelEntityComponents
-                        (go_, mesh_, mat, boneType, boneLength, vectorOffsetPerInstance);
+                    var x = meshCreateFunc_();
+                    mesh = x.mesh ?? x.f().CreateMesh();
+                    Debug.Log($"st model {go_.name} - {mesh.name}");
+                    gcs_.AddToMeshDictionary(go_, mesh);
                 }
 
+                var mat = new Material(srcMaterial_);
+
+                const BoneType boneType = BoneType.TR;
+                const int boneLength = 1;
+                const int vectorOffsetPerInstance = 4;
+
+                gcs_.CreateDrawModelEntityComponents
+                    (go_, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
             }
+
+            //void createModelEntities_
+            //    (
+            //        GameObjectConversionSystem gcs_, GameObject top_, Material srcMaterial_,
+            //        ObjectAndDistance near_, ObjectAndDistance far_
+            //    )
+            //{
+
+            //    if (gcs_.IsExistsInModelEntityDictionary(near_.objectTop)) return;
+
+            //    var nearmesh = gcs_.GetFromMeshDictionary(near_.objectTop);
+            //    {
+            //        var x = this.GetNearMeshFunc();
+            //        nearmesh = x.mesh ?? x.f().CreateMesh();
+            //        Debug.Log($"st far {near_.objectTop.name} {nearmesh}");
+            //    }
+            //    createModelEntity_(near_.objectTop, nearmesh);
+
+            //    var farmesh = gcs_.GetFromMeshDictionary(far_.objectTop);
+            //    if(farmesh == null)
+            //    {
+            //        var x = this.GetFarMeshAndFunc();
+            //        farmesh = x.mesh ?? x.f().CreateMesh();
+            //        Debug.Log($"st far {far_.objectTop.name} {farmesh}");
+            //    }
+            //    createModelEntity_(far_.objectTop, farmesh);
+
+            //    return;
+
+
+            //    void createModelEntity_(GameObject go_, Mesh mesh_)
+            //    {
+            //        if (gcs_.IsExistsInModelEntityDictionary(go_)) return;
+
+            //        var mesh = gcs_.GetFromMeshDictionary(near_.objectTop);
+            //        if
+            //        {
+            //            var x = this.GetNearMeshFunc();
+            //            nearmesh = x.mesh ?? x.f().CreateMesh();
+            //            Debug.Log($"st far {near_.objectTop.name} {nearmesh}");
+            //        }
+
+            //        var mat = new Material(srcMaterial_);
+
+            //        const BoneType boneType = BoneType.TR;
+            //        const int boneLength = 1;
+            //        const int vectorOffsetPerInstance = 4;
+
+            //        gcs_.CreateDrawModelEntityComponents
+            //            (go_, mesh_, mat, boneType, boneLength, vectorOffsetPerInstance);
+            //    }
+
+            //}
 
 
             //Entity createDrawInstanceEntity_
@@ -317,10 +361,11 @@ namespace Abarabone.Structure.Authoring
                 .ToArray();
 
             var isFarSingle = chilren.Length == 1 && isSameTransform_(chilren.First(), far);
-            Debug.Log($"{far.name} {chilren.Length} {isFarSingle}");
+
             var f = !isFarSingle ? MeshCombiner.BuildNormalMeshElements(chilren, far.transform) : null;
             var mesh = isFarSingle ? chilren.First().GetComponent<MeshFilter>().sharedMesh : null;
 
+            Debug.Log($"far {far.name} {chilren.Length} {isFarSingle}");
             return (far, f, mesh);
 
 
@@ -335,7 +380,8 @@ namespace Abarabone.Structure.Authoring
             var objects = near.DescendantsAndSelf();
 
             var f = MeshCombiner.BuildStructureWithPalletMeshElements(objects, near.transform);
-            
+
+            Debug.Log($"near {near.name}");
             return (near, f, null);
         }
     }

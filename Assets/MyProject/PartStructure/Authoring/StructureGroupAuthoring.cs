@@ -59,6 +59,7 @@ namespace Abarabone.Structure.Authoring
             {
                 foreach (var (go, mesh) in objectsAndMeshes_)
                 {
+                    Debug.Log($"to dict {go.name} - {mesh.name}");
                     conversionSystem.AddToMeshDictionary(go, mesh);
                 }
             }
@@ -96,7 +97,8 @@ namespace Abarabone.Structure.Authoring
         void Awake()
         {
             Debug.Log("aaa");
-            create();
+            create_();
+            Debug.Log("bbb");
         }
 
 
@@ -128,46 +130,53 @@ namespace Abarabone.Structure.Authoring
             return;
 
 
-            void combineMeshes_( GameObject[] farPrefabs_, GameObject[] nearPrefabs_, GameObject[] partMasterPrefabs_ )
-            {
+            void combineMeshes_(GameObject[] farPrefabs_, GameObject[] nearPrefabs_, GameObject[] partMasterPrefabs_)
+            { }
+        }
+        void create_()
+        {
 
-                var qNear =
-                    from st in this.StructureModelPrefabs
-                    select st.GetNearMeshFunc()
-                    ;
-                var qFar =
-                    from st in this.StructureModelPrefabs
-                    select st.GetFarMeshAndFunc()
-                    ;
-                var qPart =
-                    from st in this.StructureModelPrefabs
-                    from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
+            var qNear =
+                from st in this.StructureModelPrefabs.Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
+                select st.GetNearMeshFunc()
+                ;
+            var qFar =
+                from st in this.StructureModelPrefabs.Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
+                select st.GetFarMeshAndFunc()
+                ;
+            var qPartAll =
+                from st in this.StructureModelPrefabs
+                from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
+                select pt
+                ;
+            var qPartDistinct =
+                    from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
                     select pt.GetPartsMeshesAndFuncs()
                     ;
 
-                var qGoTask = Enumerable.Empty<(GameObject go, Task<MeshElements> t)>()
-                    .Concat(qNear.Select(x => (x.go, t: Task.Run(x.f))))
-                    .Concat(qFar.Select(x => (x.go, t: Task.Run(x.f))))
-                    .Concat(qPart.Select(x => (x.go, t: Task.Run(x.f))))
-                    .Where(x => x.t != null);
-                var qGoMesh = Enumerable.Empty<(GameObject go, Mesh mesh)>()
-                    .Concat(qNear.Select(x => (x.go, x.mesh)))
-                    .Concat(qFar.Select(x => (x.go, x.mesh)))
-                    .Concat(qPart.Select(x => (x.go, x.mesh)))
-                    .Where(x => x.mesh != null);
-                var qMesh = qGoTask
-                    .Select(x => x.t)
-                    .WhenAll()
-                    .Result
-                    .Select(elm => elm.CreateMesh())
-                    .Zip(qGoTask, (x,y)=>(y.go, mesh:x))
-                    .Concat(qGoMesh)
-                    ;
-                    
-                this.objectsAndMeshes = qMesh.ToArray();
-            }
+            var xs = qNear.Concat(qFar).Concat(qPartDistinct).ToArray();
 
+            var qGoTask = xs
+                .Where(x => x.f != null)
+                .Select(x => (x.go, t: Task.Run(x.f)));
+
+            var qGoMesh = xs
+                .Where(x => x.mesh != null)
+                .Select(x => (x.go, x.mesh));
+
+            var qGoMeshFromTask = qGoTask
+                .Select(x => x.t)
+                .WhenAll()
+                .Result
+                .Select(x => x.CreateMesh())
+                .Zip(qGoTask, (x, y) => (y.go, mesh: x));
+
+
+            this.objectsAndMeshes = qGoMesh.Concat(qGoMeshFromTask)
+                .ToArray();
         }
+
+
 
 
     }

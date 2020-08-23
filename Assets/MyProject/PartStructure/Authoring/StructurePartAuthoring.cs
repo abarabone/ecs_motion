@@ -198,7 +198,7 @@ namespace Abarabone.Structure.Authoring
         public (GameObject go, Func<MeshElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
         {
 
-            var part = this.gameObject;
+            var part = this.MasterPrefab;
             var children = queryPartBodyObjects_Recursive_(part).ToArray();
 
             var isSingle = children.Length == 1;
