@@ -307,26 +307,28 @@ namespace Abarabone.Structure.Authoring
         //}
 
 
-        public (Func<MeshElements> f, Mesh mesh) GetFarMeshAndFunc()
+        public (GameObject go, Func<MeshElements> f, Mesh mesh) GetFarMeshAndFunc()
         {
             var far = this.FarMeshObject.objectTop;
 
-            var qChild = far
+            var chilren = far
                 .DescendantsAndSelf()
-                .Where(child => child.GetComponent<MeshFilter>() != null);
+                .Where(child => child.GetComponent<MeshFilter>() != null)
+                .ToArray();
 
-            var isFarSingle = qChild.SingleOrDefault() != null && isSameTransform_(qChild.First(), far);
-            var f = !isFarSingle ? MeshCombiner.BuildNormalMeshElements(qChild, far.transform) : null;
-            var mesh = isFarSingle ? qChild.First().GetComponent<MeshFilter>().sharedMesh : null;
+            var isFarSingle = chilren.Length == 1 && isSameTransform_(chilren.First(), far);
+            Debug.Log($"{far.name} {chilren.Length} {isFarSingle}");
+            var f = !isFarSingle ? MeshCombiner.BuildNormalMeshElements(chilren, far.transform) : null;
+            var mesh = isFarSingle ? chilren.First().GetComponent<MeshFilter>().sharedMesh : null;
 
-            return (f, mesh);
+            return (far, f, mesh);
 
 
             bool isSameTransform_(GameObject target_, GameObject top_) =>
                 (target_.transform.localToWorldMatrix * top_.transform.worldToLocalMatrix).isIdentity;
         }
 
-        public Func<MeshElements> GetNearMeshFunc()
+        public (GameObject go, Func<MeshElements> f, Mesh mesh) GetNearMeshFunc()
         {
             var near = this.NearMeshObject.objectTop;
 
@@ -334,7 +336,7 @@ namespace Abarabone.Structure.Authoring
 
             var f = MeshCombiner.BuildStructureWithPalletMeshElements(objects, near.transform);
             
-            return f;
+            return (near, f, null);
         }
     }
 

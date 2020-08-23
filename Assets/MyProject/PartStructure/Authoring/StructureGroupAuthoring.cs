@@ -131,132 +131,40 @@ namespace Abarabone.Structure.Authoring
             void combineMeshes_( GameObject[] farPrefabs_, GameObject[] nearPrefabs_, GameObject[] partMasterPrefabs_ )
             {
 
-                var q =
+                var qNear =
                     from st in this.StructureModelPrefabs
-                    let nearf = st.GetNearMeshFunc()
-                    let far = st.GetFarMeshAndFunc()
-                    let parts =
-                        from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
-                        select pt.GetPartsMeshesAndFuncs()
-                    let tasks = Enumerable.Empty<Task<MeshElements>>().Append(Task.Run(far.f)).Append(Task.Run(nearf)).Concat(parts.Select(pt=>Task.Run(pt.f)))
-                    let meshes = Enumerable.Empty<Mesh>().Append(far.mesh).Concat(parts.Select(pt=>pt.mesh))
-                    select
-                        Enumerable.Empty<Task<MeshElements>>()
-                            .Concat(far.sele)
-                            .Concat(qNearElement)
-                            .Concat(qPartElement_multi)
-                            .WhenAll()
-                            .Result
-                            .Select(elm => elm.CreateMesh())
-                            .Concat(qFarMesh_single)
-                            .Concat(qPartMesh_single)
+                    select st.GetNearMeshFunc()
+                    ;
+                var qFar =
+                    from st in this.StructureModelPrefabs
+                    select st.GetFarMeshAndFunc()
+                    ;
+                var qPart =
+                    from st in this.StructureModelPrefabs
+                    from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
+                    select pt.GetPartsMeshesAndFuncs()
+                    ;
+
+                var qGoTask = Enumerable.Empty<(GameObject go, Task<MeshElements> t)>()
+                    .Concat(qNear.Select(x => (x.go, t: Task.Run(x.f))))
+                    .Concat(qFar.Select(x => (x.go, t: Task.Run(x.f))))
+                    .Concat(qPart.Select(x => (x.go, t: Task.Run(x.f))))
+                    .Where(x => x.t != null);
+                var qGoMesh = Enumerable.Empty<(GameObject go, Mesh mesh)>()
+                    .Concat(qNear.Select(x => (x.go, x.mesh)))
+                    .Concat(qFar.Select(x => (x.go, x.mesh)))
+                    .Concat(qPart.Select(x => (x.go, x.mesh)))
+                    .Where(x => x.mesh != null);
+                var qMesh = qGoTask
+                    .Select(x => x.t)
+                    .WhenAll()
+                    .Result
+                    .Select(elm => elm.CreateMesh())
+                    .Zip(qGoTask, (x,y)=>(y.go, mesh:x))
+                    .Concat(qGoMesh)
                     ;
                     
-
-
-
-
-                var qObject = nearPrefabs_
-                    .Concat(qPart_multi)
-                    .Concat(qPart_single);
-
-                this.objectsAndMeshes = (qObject, meshes).Zip().ToArray();
-
-                return;
-
-
-                IEnumerable<Task<MeshElements>> queryNear_(GameObject[] nears_)
-                {
-
-                    var qNearElement_ =
-                        from x in nears_
-                        let objects = x.DescendantsAndSelf()
-                        let f = MeshCombiner.BuildStructureWithPalletMeshElements(objects, x.transform)
-                        select Task.Run(f)
-                        ;
-
-                    return qNearElement_;
-                }
-
-                (
-                    IEnumerable<Task<MeshElements>>, IEnumerable<Mesh>,
-                    IEnumerable<GameObject>, IEnumerable<GameObject>
-                )
-                    queryFar_(GameObject[] fars_)
-                {
-
-                    var qFarChildren =
-                        from x in fars_
-                        let children = x.DescendantsAndSelf().Where(child => child.GetComponent<MeshFilter>() != null)
-                        select children.ToArray()
-                        ;
-                    var farChildren = qFarChildren;
-
-                    var q =
-                        from x in farChildren
-                        where x.SingleOrDefault() != null
-                        select x
-                        ;
-                    var isFarSingle = farChildren.Length == 1 && farChildren.First() == qFarChildren.First();
-                    var qFar_multi = !isFarSingle ? farChildren : Enumerable.Empty<GameObject>();
-                    var qFar_single = isFarSingle ? farChildren : Enumerable.Empty<GameObject>();
-
-                    var qFarElement_multi_ =
-                        from x in qFar_multi
-                        let objects = x.DescendantsAndSelf()
-                        let f = MeshCombiner.BuildNormalMeshElements(objects, x.transform)
-                        select Task.Run(f)
-                        ;
-                    var qFarMesh_single_ =
-                        from x in qFar_single
-                        let mesh = x.GetComponent<MeshFilter>().sharedMesh
-                        select mesh
-                        ;
-
-                    return (qFarElement_multi_, qFarMesh_single_);
-                }
-
-                (
-                    IEnumerable<Task<MeshElements>>, IEnumerable<Mesh>,
-                    IEnumerable<GameObject>, IEnumerable<GameObject>
-                )
-                    queryPart_(GameObject[] parts_)
-                {
-
-                    var qPartChildren =
-                        from pt in parts_
-                        select (pt, children: pt.QueryPartBodyObjects_Recursive_().ToArray())
-                        ;
-                    var partChildrens = qPartChildren.ToArray();
-
-                    var qPartAndChildren_multi_ =
-                        from x in partChildrens
-                        where x.children.Length > 1
-                        select x
-                        ;
-                    var qPartAndChildren_single_ =
-                        from x in partChildrens
-                        where x.children.Length == 1
-                        select x
-                        ;
-
-                    var qPartElement_multi_ =
-                        from x in qPartAndChildren_multi_
-                        let f = MeshCombiner.BuildNormalMeshElements(x.children, x.pt.transform)
-                        select Task.Run(f)
-                        ;
-                    var qPartMesh_single_ =
-                        from x in qPartAndChildren_single_
-                        let mesh = x.children.First().GetComponent<MeshFilter>().sharedMesh
-                        select mesh
-                        ;
-                    
-                    var qPart_multi_ = qPartAndChildren_multi_.Select(x => x.pt);
-                    var qPart_single_ = qPartAndChildren_single_.Select(x => x.pt);
-
-                    return (qPartElement_multi_, qPartMesh_single_, qPart_multi_, qPart_single_);
-                }
-
+                this.objectsAndMeshes = qMesh.ToArray();
             }
 
         }

@@ -195,17 +195,17 @@ namespace Abarabone.Structure.Authoring
         }
 
 
-        public (Func<MeshElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
+        public (GameObject go, Func<MeshElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
         {
 
-            var qChild = queryPartBodyObjects_Recursive_(this.gameObject);
+            var part = this.gameObject;
+            var children = queryPartBodyObjects_Recursive_(part).ToArray();
 
-            var isSingle = qChild.SingleOrDefault() != null;
+            var isSingle = children.Length == 1;
+            var f = !isSingle ? MeshCombiner.BuildNormalMeshElements(children, this.transform) : null;
+            var mesh = isSingle ? children.First().GetComponent<MeshFilter>().sharedMesh : null;
 
-            var f = !isSingle ? MeshCombiner.BuildNormalMeshElements(qChild, this.transform) : null;
-            var mesh = isSingle ? qChild.First().GetComponent<MeshFilter>().sharedMesh : null;
-
-            return (f, mesh);
+            return (part, f, mesh);
 
 
             IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go_)
