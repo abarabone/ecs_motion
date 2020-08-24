@@ -33,7 +33,7 @@ namespace Abarabone.Model.Authoring
         public enum EnBoneType
         {
             reelup_chain,
-            //jobs_per_depth,
+            jobs_per_depth,
         }
 
 
@@ -56,7 +56,10 @@ namespace Abarabone.Model.Authoring
             initBinderEntity_( conversionSystem, top, main );
             initMainEntity_(conversionSystem, top, main);
 
-            conversionSystem.CreateBoneEntities( main, bones );
+            if(this.Mode == EnBoneType.reelup_chain)
+                conversionSystem.CreateBoneEntitiesChain(main, bones);
+            if(this.Mode == EnBoneType.jobs_per_depth)
+                conversionSystem.CreateBoneEntitiesLeveled(main, bones);
 
             conversionSystem.CreateDrawInstanceEntities( top, main, bones );
 

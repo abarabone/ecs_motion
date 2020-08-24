@@ -87,6 +87,7 @@ namespace Abarabone.Structure.Authoring
                 select pt.GetPartsMeshesAndFuncs()
                 ;
 
+
             var xs = qNear.Concat(qFar).Concat(qPartDistinct).ToArray();
 
             var qGoTask = xs

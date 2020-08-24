@@ -37,37 +37,52 @@ namespace Abarabone.Model.Authoring
     static public class BoneEntitiesConvertUtility
     {
 
-        static public void CreateBoneEntities
+
+        static public void CreateBoneEntitiesChain
             ( this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones )
         {
-
             var em = gcs.DstEntityManager;
 
             var postureEntity = addComponentsPostureEntity( gcs, mainGameObject );
-            var boneEntities = addComponentsBoneEntities( gcs, bones );
+            var boneEntities = addComponentsBoneEntities( gcs, bones, addtypeComponentsChain_());
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
             setPostureValue(em, postureEntity, boneEntities.First() );
 
             var paths = queryBonePath_( bones, mainGameObject ).ToArray();
-            setBoneRelationLinks(em, postureEntity, boneEntities, paths );
-
-            return;
-
-
-            IEnumerable<string> queryBonePath_(IEnumerable<Transform> bones_, GameObject main_)
-            {
-                return
-                    from bone in bones_
-                    where !bone.name.StartsWith("_")
-                    select bone.gameObject.MakePath(main_)
-                    ;
-            }
+            setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
         }
 
 
+        static public void CreateBoneEntitiesLeveled
+            (this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones)
+        {
+            var em = gcs.DstEntityManager;
+
+            var postureEntity = addComponentsPostureEntity(gcs, mainGameObject);
+            var boneEntities = addComponentsBoneEntities(gcs, bones, addtypeComponentsLeveled_());
+
+            addMainEntityLinkForCollider(gcs, mainGameObject, bones);
+
+            setPostureValue(em, postureEntity, boneEntities.First());
+
+            var paths = queryBonePath_(bones, mainGameObject).ToArray();
+            setBoneRelationLinksLeveled(em, postureEntity, boneEntities, paths);
+        }
+
+
+
         // ----------------------------------------------------------------------------------
+
+        static IEnumerable<string> queryBonePath_(IEnumerable<Transform> bones_, GameObject main_)
+        {
+            return
+                from bone in bones_
+                where !bone.name.StartsWith("_")
+                select bone.gameObject.MakePath(main_)
+                ;
+        }
 
 
         static Entity addComponentsPostureEntity
@@ -93,33 +108,42 @@ namespace Abarabone.Model.Authoring
         /// physics もそれをあてにするようなので、ボーンもそれに乗っかろうと思う。
         /// </summary>
         static Entity[] addComponentsBoneEntities
-            ( GameObjectConversionSystem gcs, Transform[] bones )
+            ( GameObjectConversionSystem gcs, Transform[] bones, ComponentTypes addtypes )
         {
             var em = gcs.DstEntityManager;
 
             return bones
                 .Select( bone => gcs.TryGetPrimaryEntity( bone ) )
                 //.Select( existsEnt => existsEnt != Entity.Null ? addComponents_(existsEnt) : create_() )
-                .Do( ent => addComponents_(ent) )
+                .Do( ent => em.AddComponents(ent, addtypes) )
                 .ToArray();
-
-            Entity addComponents_( Entity exists_ )
-            {
-                var addtypes = new ComponentTypes
-                (
-                    //typeof( DrawTransform.LinkData ),
-                    //typeof( DrawTransform.IndexData ),
-                    //typeof( DrawTransform.TargetWorkData ),
-                    typeof(Bone.RelationLinkData),
-                    typeof(Bone.LocalValueData),// 回転と移動をわけたほうがいいか？
-                    typeof(Translation),
-                    typeof(Rotation)
-                );
-                em.AddComponents(exists_, addtypes);
-
-                return exists_;
-            }
         }
+        static ComponentTypes addtypeComponentsChain_()
+        {
+            return new ComponentTypes
+            (
+                //typeof( DrawTransform.LinkData ),
+                //typeof( DrawTransform.IndexData ),
+                //typeof( DrawTransform.TargetWorkData ),
+                typeof(Bone.RelationLinkData),
+                typeof(Bone.LocalValueData),// 回転と移動をわけたほうがいいか？
+                typeof(Translation),
+                typeof(Rotation)
+            );
+        }
+        static ComponentTypes addtypeComponentsLeveled_()
+        {
+            return new ComponentTypes
+            (
+                //typeof( DrawTransform.LinkData ),
+                //typeof( DrawTransform.IndexData ),
+                //typeof( DrawTransform.TargetWorkData ),
+                typeof(Bone.LocalValueData),// 回転と移動をわけたほうがいいか？
+                typeof(Translation),
+                typeof(Rotation)
+            );
+        }
+
 
         static void addMainEntityLinkForCollider
             (GameObjectConversionSystem gcs, GameObject main, Transform[] bones)
@@ -136,7 +160,7 @@ namespace Abarabone.Model.Authoring
         }
 
 
-        static void setBoneRelationLinks
+        static void setBoneRelationLinksChain
         (
             EntityManager em, Entity postureEntity,
             IEnumerable<Entity> boneEntities, IEnumerable<string> paths
@@ -165,6 +189,54 @@ namespace Abarabone.Model.Authoring
 
             em.SetComponentData( boneEntities, qBoneLinker );
         }
+
+        static void setBoneRelationLinksLeveled
+        (
+            EntityManager em, Entity postureEntity,
+            IEnumerable<Entity> boneEntities, IEnumerable<string> paths
+        )
+        {
+
+            var pathToEntDict =
+                (paths, boneEntities).Zip((x, y) => (path: x, ent: y))
+                .Append((path: "", ent: postureEntity))
+                .Append((path: "\0", ent: Entity.Null))
+                .ToDictionary(x => x.path, x => x.ent);
+
+            var qParent = paths
+                .Select(x => x.GetParentPath())
+                .Select(path => pathToEntDict[path]);
+
+            var qPathDepthCount =
+                from path in paths
+                select path.Where(x => x == '/').Count() + 1
+                ;
+
+            foreach( var (ent, parent, depth) in (boneEntities, qParent, qPathDepthCount).Zip() )
+            {
+                setLvLinker(ent, parent, depth);
+            }
+
+            return;
+
+
+            void setLvLinker(Entity ent, Entity parent, int lv)
+            {
+                switch (lv)
+                {
+                    case 1: em.AddComponentData(ent, new Bone.Lv01LinkData { ParentBoneEntity = parent }); break;
+                    case 2: em.AddComponentData(ent, new Bone.Lv02LinkData { ParentBoneEntity = parent }); break;
+                    case 3: em.AddComponentData(ent, new Bone.Lv03LinkData { ParentBoneEntity = parent }); break;
+                    case 4: em.AddComponentData(ent, new Bone.Lv04LinkData { ParentBoneEntity = parent }); break;
+                    case 5: em.AddComponentData(ent, new Bone.Lv05LinkData { ParentBoneEntity = parent }); break;
+                    case 6: em.AddComponentData(ent, new Bone.Lv06LinkData { ParentBoneEntity = parent }); break;
+                    case 7: em.AddComponentData(ent, new Bone.Lv07LinkData { ParentBoneEntity = parent }); break;
+                    case 8: em.AddComponentData(ent, new Bone.Lv08LinkData { ParentBoneEntity = parent }); break;
+                    case 9: em.AddComponentData(ent, new Bone.Lv09LinkData { ParentBoneEntity = parent }); break;
+                }
+            }
+        }
+
 
         static void setPostureValue( EntityManager em, Entity postureEntity, Entity boneTopEntity )
         {

@@ -13,7 +13,7 @@ using Unity.Transforms;
 using Unity.Physics;
 
 
-namespace Abarabone.CharacterMotion
+namespace Abarabone.Model
 {
 
     using Abarabone.Authoring;
@@ -23,6 +23,8 @@ namespace Abarabone.CharacterMotion
     using Abarabone.Character;
     using Abarabone.Model;
     using Abarabone.Draw;
+    using Abarabone.CharacterMotion;
+    using Abarabone.Model.Authoring;
 
 
     //[DisableAutoCreation]
@@ -35,24 +37,23 @@ namespace Abarabone.CharacterMotion
         protected override void OnUpdate()
         {
 
-            var boneRelationLinkers = this.GetComponentDataFromEntity<Bone.RelationLinkData>( isReadOnly: true );
-            var boneLocals = this.GetComponentDataFromEntity<Bone.LocalValueData>( isReadOnly: true );
-            var bonePositions = this.GetComponentDataFromEntity<Translation>();
-            var boneRotations = this.GetComponentDataFromEntity<Rotation>();
-            var boneVelocities = this.GetComponentDataFromEntity<PhysicsVelocity>();
-            var boneMasses = this.GetComponentDataFromEntity<PhysicsMass>( isReadOnly: true );
+            var boneLinkers = this.GetComponentDataFromEntity<Bone.RelationLinkData>( isReadOnly: true );
+            var locals = this.GetComponentDataFromEntity<Bone.LocalValueData>( isReadOnly: true );
+            var poss = this.GetComponentDataFromEntity<Translation>();
+            var rots = this.GetComponentDataFromEntity<Rotation>();
+            var velocities = this.GetComponentDataFromEntity<PhysicsVelocity>();
+            var masses = this.GetComponentDataFromEntity<PhysicsMass>( isReadOnly: true );
 
             var deltaTime = this.Time.DeltaTime;
 
             this.Entities
-                .WithName( "BoneTransformSystem" )
                 .WithBurst()
-                .WithReadOnly( boneRelationLinkers )
-                .WithReadOnly( boneLocals )
-                .WithReadOnly( boneMasses )
-                .WithNativeDisableParallelForRestriction( bonePositions )
-                .WithNativeDisableParallelForRestriction( boneRotations )
-                .WithNativeDisableParallelForRestriction( boneVelocities )
+                .WithReadOnly( boneLinkers )
+                .WithReadOnly( locals )
+                .WithReadOnly( masses )
+                .WithNativeDisableParallelForRestriction( poss )
+                .WithNativeDisableParallelForRestriction( rots )
+                .WithNativeDisableParallelForRestriction( velocities )
                 .ForEach(
                         (
                             in DrawInstance.BoneLinkData linker,
@@ -63,68 +64,95 @@ namespace Abarabone.CharacterMotion
                         if (target.DrawInstanceId == -1) return;
 
                         for(
-                            var ent = linker.BoneRelationTop;
-                            ent != Entity.Null;
-                            ent = boneRelationLinkers[ ent ].NextBoneEntity
+                            var entity = linker.BoneRelationTop;
+                            entity != Entity.Null;
+                            entity = boneLinkers[ entity ].NextBoneEntity
                         )
                         {
-                            var parent = boneRelationLinkers[ ent ].ParentBoneEntity;
+                            var parentEntity = boneLinkers[entity].ParentBoneEntity;
 
-                            var ppos = bonePositions[ parent ].Value;
-                            var prot = boneRotations[ parent ].Value;
+                            var parentpos = poss[parentEntity];
+                            var parentrot = rots[parentEntity];
+                            var local = locals[entity];
 
-                            //var lpos = this.BonePositions[ ent ].Value;
-                            //var lrot = this.BoneRotations[ ent ].Value;
-                            var lpos = boneLocals[ ent ].Position;
-                            var lrot = boneLocals[ ent ].Rotation;
+                            BoneUtility.transform_(in parentpos, in parentrot, in local, out var newpos, out var newrot);
 
-                            var pos = math.mul( prot, lpos ) + ppos;
-                            var rot = math.mul( prot, lrot );
 
-                            var mass = boneMasses.HasComponent( ent ) ? boneMasses[ ent ].InverseMass : 0.0f;
-                            if( mass != 0.0f && boneVelocities.HasComponent( ent ) )
-                                { }//setVelocity_( ent, pos, rot );
+                            var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                            if (im != 0.0f && velocities.HasComponent(entity))
+                            //if (velocities.HasComponent(entity))
+                            {
+                                var mass = masses[entity];
+                                var toRt = new RigidTransform(newrot, newpos);
+                                var frompos = poss[entity];
+                                var fromrot = rots[entity];
+                                velocities[entity] =
+                                    PhysicsVelocity.CalculateVelocityToTarget
+                                    (in mass, in frompos, in fromrot, in toRt, deltaTime);
+                            }
                             else
-                                setPosAndRot_( ent, pos, rot );
+                            {
+                                poss[entity] = new Translation { Value = newpos };
+                                rots[entity] = new Rotation { Value = newrot };
+                            }
+
+                            //var parent = boneRelationLinkers[ ent ].ParentBoneEntity;
+
+                            //var ppos = bonePositions[ parent ].Value;
+                            //var prot = boneRotations[ parent ].Value;
+
+                            ////var lpos = this.BonePositions[ ent ].Value;
+                            ////var lrot = this.BoneRotations[ ent ].Value;
+                            //var lpos = boneLocals[ ent ].Position;
+                            //var lrot = boneLocals[ ent ].Rotation;
+
+                            //var pos = math.mul( prot, lpos ) + ppos;
+                            //var rot = math.mul( prot, lrot );
+
+                            //var mass = boneMasses.HasComponent( ent ) ? boneMasses[ ent ].InverseMass : 0.0f;
+                            //if( mass != 0.0f && boneVelocities.HasComponent( ent ) )
+                            //    { }//setVelocity_( ent, pos, rot );
+                            //else
+                            //    setPosAndRot_( ent, pos, rot );
                         }
                     }
                 )
                 .ScheduleParallel();
 
-            return;
+            //return;
 
 
-            void setPosAndRot_( Entity ent, float3 pos, quaternion rot )
-            {
-                bonePositions[ ent ] = new Translation { Value = pos };
-                boneRotations[ ent ] = new Rotation { Value = rot };
-            }
+            //void setPosAndRot_( Entity ent, float3 pos, quaternion rot )
+            //{
+            //    bonePositions[ ent ] = new Translation { Value = pos };
+            //    boneRotations[ ent ] = new Rotation { Value = rot };
+            //}
 
-            void setVelocity_( Entity ent, float3 pos, quaternion rot )
-            {
-                var rcdt = math.rcp( deltaTime );
+            //void setVelocity_( Entity ent, float3 pos, quaternion rot )
+            //{
+            //    var rcdt = math.rcp( deltaTime );
 
-                var v = boneVelocities[ ent ];
+            //    var v = boneVelocities[ ent ];
 
-                v.Linear = ( pos - bonePositions[ ent ].Value ) * rcdt;
+            //    v.Linear = ( pos - bonePositions[ ent ].Value ) * rcdt;
 
-                //var invprev = math.inverse( this.BoneRotations[ ent ].Value );
-                //var drot = math.mul( invprev, rot );
-                //var angle = math.acos(drot.value.w);
-                //var sin = math.sin( angle );
-                //var axis = drot.value.As_float3() * math.rcp(sin);
+            //    //var invprev = math.inverse( this.BoneRotations[ ent ].Value );
+            //    //var drot = math.mul( invprev, rot );
+            //    //var angle = math.acos(drot.value.w);
+            //    //var sin = math.sin( angle );
+            //    //var axis = drot.value.As_float3() * math.rcp(sin);
 
-                var invprev = math.inverse( boneRotations[ ent ].Value );
-                var drot = math.mul( invprev, rot );
-                var axis = drot.value.As_float3();
-                var angle = math.lengthsq( drot );
+            //    var invprev = math.inverse( boneRotations[ ent ].Value );
+            //    var drot = math.mul( invprev, rot );
+            //    var axis = drot.value.As_float3();
+            //    var angle = math.lengthsq( drot );
 
-                v.Angular = axis * ( angle * rcdt );
+            //    v.Angular = axis * ( angle * rcdt );
 
-                boneVelocities[ ent ] = v;
+            //    boneVelocities[ ent ] = v;
 
-                //setPosAndRot( ent, pos, rot );//
-            }
+            //    //setPosAndRot( ent, pos, rot );//
+            //}
         }
         
 

@@ -32,7 +32,7 @@ namespace Abarabone.Draw
     /// １つのコライダとする方法なら必要ないが、破壊時にコライダを再生成する必要があるため、個別エンティティとした。
     /// スリープオンオフを楽にするために、パーツからの位置プルではなく、親からのプッシュとした。
     /// </summary>
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     //[UpdateAfter(typeof())]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]

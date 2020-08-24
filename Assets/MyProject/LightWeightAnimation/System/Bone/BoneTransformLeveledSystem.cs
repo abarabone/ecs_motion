@@ -1,23 +1,232 @@
-﻿//using System.Collections;
-//using System.Collections.Generic;
-//using System.Linq;
-//using UnityEngine;
-//using Unity.Entities;
-//using Unity.Jobs;
-//using Unity.Collections;
-//using Unity.Burst;
-//using Unity.Mathematics;
-//using Unity.Transforms;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+
+using UnityEngine;
+using Unity.Entities;
+using Unity.Jobs;
+using Unity.Collections;
+using Unity.Burst;
+using Unity.Mathematics;
+using Unity.Transforms;
+using Unity.Physics;
 
 
-//using Abarabone.Authoring;
-//using Abarabone.SystemGroup;
-//using Abarabone.Utilities;
-//using Abarabone.Geometry;
-//using Abarabone.Character;
+namespace Abarabone.Model
+{
 
-//namespace Abarabone.CharacterMotion
-//{
+    using Abarabone.Authoring;
+    using Abarabone.SystemGroup;
+    using Abarabone.Utilities;
+    using Abarabone.Geometry;
+    using Abarabone.Character;
+    using Abarabone.Model;
+    using Abarabone.Draw;
+    using Abarabone.CharacterMotion;
+    using Unity.Entities.CodeGeneratedJobForEach;
+
+
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
+    [UpdateAfter(typeof(StreamToBoneSystem))]
+    public class BoneTransformLeveldSystem : SystemBase
+    {
+        protected override void OnUpdate()
+        {
+
+            var poss = this.GetComponentDataFromEntity<Translation>();
+            var rots = this.GetComponentDataFromEntity<Rotation>();
+
+            var deltaTime = this.Time.DeltaTime;
+
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref Translation pos, ref Rotation rot,
+                        in Bone.Lv01LinkData link, in Bone.LocalValueData local
+                    ) =>
+                    {
+                        var parent = link.ParentBoneEntity;
+                        var parentpos = poss[parent];
+                        var parentrot = rots[parent];
+
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref Translation pos, ref Rotation rot,
+                        in Bone.Lv02LinkData link, in Bone.LocalValueData local
+                    ) =>
+                    {
+                        var parent = link.ParentBoneEntity;
+                        var parentpos = poss[parent];
+                        var parentrot = rots[parent];
+
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref Translation pos, ref Rotation rot,
+                        in Bone.Lv03LinkData link, in Bone.LocalValueData local
+                    ) =>
+                    {
+                        var parent = link.ParentBoneEntity;
+                        var parentpos = poss[parent];
+                        var parentrot = rots[parent];
+
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref Translation pos, ref Rotation rot,
+                        in Bone.Lv04LinkData link, in Bone.LocalValueData local
+                    ) =>
+                    {
+                        var parent = link.ParentBoneEntity;
+                        var parentpos = poss[parent];
+                        var parentrot = rots[parent];
+
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref Translation pos, ref Rotation rot,
+                        in Bone.Lv05LinkData link, in Bone.LocalValueData local
+                    ) =>
+                    {
+                        var parent = link.ParentBoneEntity;
+                        var parentpos = poss[parent];
+                        var parentrot = rots[parent];
+
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref Translation pos, ref Rotation rot,
+                        in Bone.Lv06LinkData link, in Bone.LocalValueData local
+                    ) =>
+                    {
+                        var parent = link.ParentBoneEntity;
+                        var parentpos = poss[parent];
+                        var parentrot = rots[parent];
+
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref Translation pos, ref Rotation rot,
+                        in Bone.Lv07LinkData link, in Bone.LocalValueData local
+                    ) =>
+                    {
+                        var parent = link.ParentBoneEntity;
+                        var parentpos = poss[parent];
+                        var parentrot = rots[parent];
+
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref Translation pos, ref Rotation rot,
+                        in Bone.Lv08LinkData link, in Bone.LocalValueData local
+                    ) =>
+                    {
+                        var parent = link.ParentBoneEntity;
+                        var parentpos = poss[parent];
+                        var parentrot = rots[parent];
+
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref Translation pos, ref Rotation rot,
+                        in Bone.Lv09LinkData link, in Bone.LocalValueData local
+                    ) =>
+                    {
+                        var parent = link.ParentBoneEntity;
+                        var parentpos = poss[parent];
+                        var parentrot = rots[parent];
+
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                    }
+                )
+                .ScheduleParallel();
+
+        }
+
+    }
+
+
+}
 
 //    //[DisableAutoCreation]
 //    [UpdateAfter( typeof( StreamToBoneSystem ) )]
@@ -73,7 +282,7 @@
 //                BoneRotations = boneRotations,
 //            }
 //            .Schedule( this, inputDeps );
-            
+
 //            return inputDeps;
 //        }
 
@@ -89,7 +298,7 @@
 //        public ComponentDataFromEntity<Translation> BonePositions;
 //        [NativeDisableParallelForRestriction]
 //        public ComponentDataFromEntity<Rotation> BoneRotations;
-        
+
 //        public void Execute( Entity entity, int index, ref T linker )
 //        {
 //            var parent = linker.GetParentBoneEntity;
