@@ -39,6 +39,7 @@ namespace Abarabone.Structure.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
+            createMeshes();
             var structurePrefabs = this.StructureModelPrefabs.Select( x => x.gameObject );
             referencedPrefabs.AddRange(structurePrefabs);
         }
@@ -63,77 +64,9 @@ namespace Abarabone.Structure.Authoring
                     conversionSystem.AddToMeshDictionary(go, mesh);
                 }
             }
-
-            //void stantiateMasterPrefab_ForConversion_
-            //    (GameObjectConversionSystem gcs_, IEnumerable<GameObject> partMasterPrefabs_)
-            //{
-            //    foreach( var pt in partMasterPrefabs_.Select(prefab => Instantiate(prefab)) )
-            //    {
-            //        var em = gcs_.DstEntityManager;
-
-            //        Debug.Log("pt "+pt.name);
-            //        pt.AddComponent<PhysicsBodyAuthoring>();
-
-            //        var flag = GameObjectConversionUtility.ConversionFlags.AssignName;
-            //        var settings = new GameObjectConversionSettings(em.World, flag, gcs_.BlobAssetStore);
-            //        var ent = GameObjectConversionUtility.ConvertGameObjectHierarchy(pt, settings);
-            //        // このコンバートが走るたびに、専用の変換ワールドが作られて消えるみたい、よくないね…
-            //        //GameObjectConversionUtility.ConvertGameObjectsToEntitiesField
-            //        //    (gcs_, new GameObject[] { pt.gameObject}, out var ents);
-
-            //        var addtype = new ComponentTypes
-            //        (
-            //            typeof(BinderTrimBlankLinkedEntityGroupTag),
-            //            typeof(Prefab)
-            //        );
-            //        em.AddComponents(ent, addtype);
-            //        //em.AddComponents(ents.First(), addtype);
-
-            //        Destroy(pt);
-            //    }
-            //}
         }
 
-        void Awake()
-        {
-            Debug.Log("aaa");
-            create_();
-            Debug.Log("bbb");
-        }
-
-
-        private void create()
-        {
-
-            var structureFarPrefabs = this.StructureModelPrefabs
-                .Select(st => st.FarMeshObject.objectTop)
-                .Do(x => Debug.Log($"st gr far {x.name}"))
-                .ToArray();
-
-            var structureNearPrefabs = this.StructureModelPrefabs
-                .Select(st => st.NearMeshObject.objectTop)
-                .Do(x => Debug.Log($"st gr near {x.name}"))
-                .ToArray();
-
-            var partMasterPrefabs = this.StructureModelPrefabs
-                .SelectMany(st => st.GetComponentsInChildren<StructurePartAuthoring>())
-                //.Select(pt => PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject))
-                .Select(pt => pt.MasterPrefab)
-                .Distinct()
-                .Do(x => Debug.Log($"st gr part {x.name}"))
-                .ToArray();
-            //this.partMasterPrefabs = partMasterPrefabs;
-
-
-            combineMeshes_(structureFarPrefabs, structureNearPrefabs, partMasterPrefabs);
-
-            return;
-
-
-            void combineMeshes_(GameObject[] farPrefabs_, GameObject[] nearPrefabs_, GameObject[] partMasterPrefabs_)
-            { }
-        }
-        void create_()
+        void createMeshes()
         {
 
             var qNear =
@@ -150,9 +83,9 @@ namespace Abarabone.Structure.Authoring
                 select pt
                 ;
             var qPartDistinct =
-                    from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
-                    select pt.GetPartsMeshesAndFuncs()
-                    ;
+                from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
+                select pt.GetPartsMeshesAndFuncs()
+                ;
 
             var xs = qNear.Concat(qFar).Concat(qPartDistinct).ToArray();
 

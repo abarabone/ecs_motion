@@ -64,22 +64,19 @@ namespace Abarabone.Structure.Authoring
         {
 
             var top = this.gameObject;
-            var far = this.FarMeshObject.objectTop;//top.transform.GetChild(0).gameObject;
-            var near = this.NearMeshObject.objectTop;//top.transform.GetChild(1).gameObject;
+            var far = this.FarMeshObject.objectTop;
+            var near = this.NearMeshObject.objectTop;
 
-            // A と B をパーツを含むかでより分けるようにする、できればパーツがあるものをまとめる
-
-            //createModelEntities_(conversionSystem, top, this.MaterialToDraw, this.NearMeshObject, this.FarMeshObject);
-            createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
             createModelEntity_(conversionSystem, far, this.FarMaterialToDraw, this.GetFarMeshAndFunc);
+            createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
             //createDrawInstanceEntity_(conversionSystem, top);
 
             initBinderEntity_(conversionSystem, top, far);
             initMainEntity_(conversionSystem, top, far);
 
-            //setPartLink_(conversionSystem, objA, objB);
-            setPartLocalPosition_(conversionSystem, far, near);
-            //setPartId_(conversionSystem, objB);
+            //setPartLink_(conversionSystem, far, near);
+            //setPartLocalPosition_(conversionSystem, far, near);
+            //setPartId_(conversionSystem, near);
 
             var draw = conversionSystem.GetPrimaryEntity(far);
             var lods = new ObjectAndDistance[] { this.NearMeshObject, this.FarMeshObject };
@@ -115,59 +112,6 @@ namespace Abarabone.Structure.Authoring
                 gcs_.CreateDrawModelEntityComponents
                     (go_, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
             }
-
-            //void createModelEntities_
-            //    (
-            //        GameObjectConversionSystem gcs_, GameObject top_, Material srcMaterial_,
-            //        ObjectAndDistance near_, ObjectAndDistance far_
-            //    )
-            //{
-
-            //    if (gcs_.IsExistsInModelEntityDictionary(near_.objectTop)) return;
-
-            //    var nearmesh = gcs_.GetFromMeshDictionary(near_.objectTop);
-            //    {
-            //        var x = this.GetNearMeshFunc();
-            //        nearmesh = x.mesh ?? x.f().CreateMesh();
-            //        Debug.Log($"st far {near_.objectTop.name} {nearmesh}");
-            //    }
-            //    createModelEntity_(near_.objectTop, nearmesh);
-
-            //    var farmesh = gcs_.GetFromMeshDictionary(far_.objectTop);
-            //    if(farmesh == null)
-            //    {
-            //        var x = this.GetFarMeshAndFunc();
-            //        farmesh = x.mesh ?? x.f().CreateMesh();
-            //        Debug.Log($"st far {far_.objectTop.name} {farmesh}");
-            //    }
-            //    createModelEntity_(far_.objectTop, farmesh);
-
-            //    return;
-
-
-            //    void createModelEntity_(GameObject go_, Mesh mesh_)
-            //    {
-            //        if (gcs_.IsExistsInModelEntityDictionary(go_)) return;
-
-            //        var mesh = gcs_.GetFromMeshDictionary(near_.objectTop);
-            //        if
-            //        {
-            //            var x = this.GetNearMeshFunc();
-            //            nearmesh = x.mesh ?? x.f().CreateMesh();
-            //            Debug.Log($"st far {near_.objectTop.name} {nearmesh}");
-            //        }
-
-            //        var mat = new Material(srcMaterial_);
-
-            //        const BoneType boneType = BoneType.TR;
-            //        const int boneLength = 1;
-            //        const int vectorOffsetPerInstance = 4;
-
-            //        gcs_.CreateDrawModelEntityComponents
-            //            (go_, mesh_, mat, boneType, boneLength, vectorOffsetPerInstance);
-            //    }
-
-            //}
 
 
             //Entity createDrawInstanceEntity_
@@ -304,29 +248,29 @@ namespace Abarabone.Structure.Authoring
         //}
 
 
-        void setPartLocalPosition_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
-        {
+        //void setPartLocalPosition_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
+        //{
 
-            var mtMain = main_.transform.worldToLocalMatrix;
+        //    var mtMain = main_.transform.worldToLocalMatrix;
 
-            var parts = partTop_.GetComponentsInChildren<StructurePartAuthoring>();
+        //    var parts = partTop_.GetComponentsInChildren<StructurePartAuthoring>();
 
-            var qPartEntity = parts
-                .Select(pt => pt.gameObject)
-                .Select(go => gcs_.GetPrimaryEntity(go))
-                ;
-            var qPartLocalPosition =
-                from pt in parts
-                select new StructurePart.LocalPositionData
-                {
-                    Translation = mtMain.MultiplyPoint( pt.transform.position ),
-                    Rotation = mtMain.rotation * pt.transform.rotation
-                };
+        //    var qPartEntity = parts
+        //        .Select(pt => pt.gameObject)
+        //        .Select(go => gcs_.GetPrimaryEntity(go))
+        //        ;
+        //    var qPartLocalPosition =
+        //        from pt in parts
+        //        select new StructurePart.LocalPositionData
+        //        {
+        //            Translation = mtMain.MultiplyPoint( pt.transform.position ),
+        //            Rotation = mtMain.rotation * pt.transform.rotation
+        //        };
 
-            var em = gcs_.DstEntityManager;
-            em.AddComponentData(qPartEntity, qPartLocalPosition);
+        //    var em = gcs_.DstEntityManager;
+        //    em.AddComponentData(qPartEntity, qPartLocalPosition);
 
-        }
+        //}
 
 
         //void setPartId_(GameObjectConversionSystem gcs_, GameObject partTop_)
@@ -353,6 +297,7 @@ namespace Abarabone.Structure.Authoring
 
         public (GameObject go, Func<MeshElements> f, Mesh mesh) GetFarMeshAndFunc()
         {
+            var top = this.gameObject;
             var far = this.FarMeshObject.objectTop;
 
             var chilren = far
@@ -362,7 +307,7 @@ namespace Abarabone.Structure.Authoring
 
             var isFarSingle = chilren.Length == 1 && isSameTransform_(chilren.First(), far);
 
-            var f = !isFarSingle ? MeshCombiner.BuildNormalMeshElements(chilren, far.transform) : null;
+            var f = !isFarSingle ? MeshCombiner.BuildNormalMeshElements(chilren, top.transform) : null;//far.transform) : null;
             var mesh = isFarSingle ? chilren.First().GetComponent<MeshFilter>().sharedMesh : null;
 
             Debug.Log($"far {far.name} {chilren.Length} {isFarSingle}");
@@ -375,11 +320,12 @@ namespace Abarabone.Structure.Authoring
 
         public (GameObject go, Func<MeshElements> f, Mesh mesh) GetNearMeshFunc()
         {
+            var top = this.gameObject;
             var near = this.NearMeshObject.objectTop;
 
             var objects = near.DescendantsAndSelf();
 
-            var f = MeshCombiner.BuildStructureWithPalletMeshElements(objects, near.transform);
+            var f = MeshCombiner.BuildStructureWithPalletMeshElements(objects, top.transform);//near.transform);
 
             Debug.Log($"near {near.name}");
             return (near, f, null);
