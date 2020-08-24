@@ -35,16 +35,21 @@ namespace Abarabone.Model
         protected override void OnUpdate()
         {
 
-            var poss = this.GetComponentDataFromEntity<Translation>();
-            var rots = this.GetComponentDataFromEntity<Rotation>();
+            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            var velocities = this.GetComponentDataFromEntity<PhysicsVelocity>();
+            var masses = this.GetComponentDataFromEntity<PhysicsMass>(isReadOnly: true);
 
             var deltaTime = this.Time.DeltaTime;
 
 
             this.Entities
+                .WithName("lv01")
                 .WithBurst()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(velocities)
                 .ForEach(
                     (
                         Entity entity,
@@ -56,15 +61,30 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        if (im != 0.0f && velocities.HasComponent(entity))
+                        {
+                            var mass = masses[entity];
+                            velocities[entity] =
+                                BoneUtility.BoneTransform
+                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+
+                        }
+                        else
+                        {
+                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        }
                     }
                 )
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("lv02")
                 .WithBurst()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(velocities)
                 .ForEach(
                     (
                         Entity entity,
@@ -76,15 +96,30 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        if (im != 0.0f && velocities.HasComponent(entity))
+                        {
+                            var mass = masses[entity];
+                            velocities[entity] =
+                                BoneUtility.BoneTransform
+                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+
+                        }
+                        else
+                        {
+                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        }
                     }
                 )
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("lv03")
                 .WithBurst()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(velocities)
                 .ForEach(
                     (
                         Entity entity,
@@ -96,15 +131,30 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        if (im != 0.0f && velocities.HasComponent(entity))
+                        {
+                            var mass = masses[entity];
+                            velocities[entity] =
+                                BoneUtility.BoneTransform
+                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+
+                        }
+                        else
+                        {
+                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        }
                     }
                 )
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("lv04")
                 .WithBurst()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(velocities)
                 .ForEach(
                     (
                         Entity entity,
@@ -116,15 +166,30 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        if (im != 0.0f && velocities.HasComponent(entity))
+                        {
+                            var mass = masses[entity];
+                            velocities[entity] =
+                                BoneUtility.BoneTransform
+                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+
+                        }
+                        else
+                        {
+                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        }
                     }
                 )
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("lv05")
                 .WithBurst()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(velocities)
                 .ForEach(
                     (
                         Entity entity,
@@ -136,15 +201,30 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        if (im != 0.0f && velocities.HasComponent(entity))
+                        {
+                            var mass = masses[entity];
+                            velocities[entity] =
+                                BoneUtility.BoneTransform
+                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+
+                        }
+                        else
+                        {
+                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        }
                     }
                 )
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("lv06")
                 .WithBurst()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(velocities)
                 .ForEach(
                     (
                         Entity entity,
@@ -156,15 +236,30 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        if (im != 0.0f && velocities.HasComponent(entity))
+                        {
+                            var mass = masses[entity];
+                            velocities[entity] =
+                                BoneUtility.BoneTransform
+                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+
+                        }
+                        else
+                        {
+                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        }
                     }
                 )
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("lv07")
                 .WithBurst()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(velocities)
                 .ForEach(
                     (
                         Entity entity,
@@ -176,15 +271,30 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        if (im != 0.0f && velocities.HasComponent(entity))
+                        {
+                            var mass = masses[entity];
+                            velocities[entity] =
+                                BoneUtility.BoneTransform
+                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+
+                        }
+                        else
+                        {
+                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        }
                     }
                 )
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("lv08")
                 .WithBurst()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(velocities)
                 .ForEach(
                     (
                         Entity entity,
@@ -196,15 +306,30 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        if (im != 0.0f && velocities.HasComponent(entity))
+                        {
+                            var mass = masses[entity];
+                            velocities[entity] =
+                                BoneUtility.BoneTransform
+                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+
+                        }
+                        else
+                        {
+                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        }
                     }
                 )
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("lv09")
                 .WithBurst()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(velocities)
                 .ForEach(
                     (
                         Entity entity,
@@ -216,7 +341,19 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        if (im != 0.0f && velocities.HasComponent(entity))
+                        {
+                            var mass = masses[entity];
+                            velocities[entity] =
+                                BoneUtility.BoneTransform
+                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+
+                        }
+                        else
+                        {
+                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        }
                     }
                 )
                 .ScheduleParallel();

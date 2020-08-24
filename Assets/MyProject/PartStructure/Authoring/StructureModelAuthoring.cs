@@ -74,6 +74,8 @@ namespace Abarabone.Structure.Authoring
             initBinderEntity_(conversionSystem, top, far);
             initMainEntity_(conversionSystem, top, far);
 
+            var parts = near.GetComponentsInChildren<StructurePartAuthoring>().Select(pt => pt.transform).ToArray();
+            conversionSystem.CreateBoneEntities(far, parts, EnBoneType.jobs_per_depth);
             //setPartLink_(conversionSystem, far, near);
             //setPartLocalPosition_(conversionSystem, far, near);
             //setPartId_(conversionSystem, near);

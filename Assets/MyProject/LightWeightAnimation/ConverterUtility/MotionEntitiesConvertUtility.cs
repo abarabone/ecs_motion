@@ -335,7 +335,7 @@ namespace Abarabone.CharacterMotion.Authoring
                 
             var qDrawEntity =
                 from ent in gcs.GetEntities(top)
-                where em.HasComponent<DrawInstance.BoneLinkData>(ent)
+                where em.HasComponent<DrawInstance.TargetWorkData>(ent)
                 select ent
                 ;
 

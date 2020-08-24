@@ -20,17 +20,18 @@ namespace Abarabone.Draw.Authoring
     using Abarabone.Misc;
     using Abarabone.Utilities;
     using Unity.Linq;
+    using Abarabone.Model;
 
     static public class CharacterDrawInstanceEntitiesConvertUtility
     {
 
         static public void CreateDrawInstanceEntities
-            ( this GameObjectConversionSystem gcs, GameObject top, GameObject main, Transform[] bones )
+            ( this GameObjectConversionSystem gcs, GameObject top, GameObject main, Transform[] bones, EnBoneType boneMode)
         {
 
             var em = gcs.DstEntityManager;
 
-            var drawInstanceEntity = createDrawInstanceEntity( gcs, top, main, bones );
+            var drawInstanceEntity = createDrawInstanceEntity( gcs, top, main, bones, boneMode );
 
             setBoneComponentValues( gcs, bones, drawInstanceEntity );
 
@@ -45,49 +46,79 @@ namespace Abarabone.Draw.Authoring
 
         
         static Entity createDrawInstanceEntity
-            ( GameObjectConversionSystem gcs, GameObject top, GameObject main, Transform[] bones )
+            ( GameObjectConversionSystem gcs, GameObject top, GameObject main, Transform[] bones, EnBoneType boneMode )
         {
             var em = gcs.DstEntityManager;
 
+            var ent = Entity.Null;
+            switch(boneMode)
+            {
+                case EnBoneType.reelup_chain:
+                {
+                    ent = gcs.CreateAdditionalEntity(top, archetypeForReelupChain_());
+                    setDrawComponents_();
+                    setBoneTopLink_();
+                }
+                break;
+                case EnBoneType.jobs_per_depth:
+                {
+                    ent = gcs.CreateAdditionalEntity(top, archetypeForJobPerDepth_());
+                    setDrawComponents_();
+                }
+                break;
+            }
 
-            var archetype = em.CreateArchetype
-            (
-                typeof( DrawInstance.MeshTag ),
-                typeof( DrawInstance.ModeLinkData ),
-                typeof( DrawInstance.PostureLinkData ),
-                typeof( DrawInstance.TargetWorkData ),
-                typeof( DrawInstance.BoneLinkData )
-            );
-            var ent = gcs.CreateAdditionalEntity( top, archetype );
-            
-            em.SetComponentData( ent,
-                new DrawInstance.ModeLinkData
-                {
-                    DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary( top ),
-                }
-            );
-            em.SetComponentData(ent,
-                new DrawInstance.PostureLinkData
-                {
-                    PostureEntity = gcs.GetPrimaryEntity(main),
-                }
-            );
-            em.SetComponentData( ent,
-                new DrawInstance.TargetWorkData
-                {
-                    DrawInstanceId = -1,
-                }
-            );
-            em.SetComponentData(ent,
-                new DrawInstance.BoneLinkData
-                {
-                    BoneRelationTop = gcs.GetPrimaryEntity(bones.First()),
-                }
-            );
-
-
-            em.SetName_(ent, $"{top.name} draw" );
+            em.SetName_(ent, $"{top.name} draw");
             return ent;
+
+
+            EntityArchetype archetypeForReelupChain_() =>
+                em.CreateArchetype(
+                    typeof(DrawInstance.MeshTag),
+                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.PostureLinkData),
+                    typeof(DrawInstance.TargetWorkData),
+                    typeof(DrawInstance.BoneLinkData)
+                );
+            EntityArchetype archetypeForJobPerDepth_() =>
+                em.CreateArchetype(
+                    typeof(DrawInstance.MeshTag),
+                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.PostureLinkData),
+                    typeof(DrawInstance.TargetWorkData)
+                );
+
+            void setDrawComponents_()
+            {
+                em.SetComponentData(ent,
+                    new DrawInstance.ModeLinkData
+                    {
+                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(top),
+                    }
+                );
+                em.SetComponentData(ent,
+                    new DrawInstance.PostureLinkData
+                    {
+                        PostureEntity = gcs.GetPrimaryEntity(main),
+                    }
+                );
+                em.SetComponentData(ent,
+                    new DrawInstance.TargetWorkData
+                    {
+                        DrawInstanceId = -1,
+                    }
+                );
+            }
+
+            void setBoneTopLink_()
+            {
+                em.SetComponentData(ent,
+                    new DrawInstance.BoneLinkData
+                    {
+                        BoneRelationTop = gcs.GetPrimaryEntity(bones.First()),
+                    }
+                );
+            }
         }
 
 

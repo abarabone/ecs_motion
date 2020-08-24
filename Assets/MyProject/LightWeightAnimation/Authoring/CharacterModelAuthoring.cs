@@ -29,12 +29,7 @@ namespace Abarabone.Model.Authoring
         //public bool CreateAtlusTexture;
 
         
-        public EnBoneType Mode;
-        public enum EnBoneType
-        {
-            reelup_chain,
-            jobs_per_depth,
-        }
+        public EnBoneType BoneMode;
 
 
 
@@ -56,12 +51,9 @@ namespace Abarabone.Model.Authoring
             initBinderEntity_( conversionSystem, top, main );
             initMainEntity_(conversionSystem, top, main);
 
-            if(this.Mode == EnBoneType.reelup_chain)
-                conversionSystem.CreateBoneEntitiesChain(main, bones);
-            if(this.Mode == EnBoneType.jobs_per_depth)
-                conversionSystem.CreateBoneEntitiesLeveled(main, bones);
-
-            conversionSystem.CreateDrawInstanceEntities( top, main, bones );
+            conversionSystem.CreateBoneEntities(main, bones, this.BoneMode);
+            
+            conversionSystem.CreateDrawInstanceEntities( top, main, bones, this.BoneMode );
 
             return;
 

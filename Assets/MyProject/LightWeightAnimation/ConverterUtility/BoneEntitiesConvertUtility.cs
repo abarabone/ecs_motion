@@ -34,11 +34,31 @@ namespace Abarabone.Model.Authoring
     // ・.RootBone からがいいか？
     // ・ボーンＩＤは、パスをソートした順番
 
+    public enum EnBoneType
+    {
+        reelup_chain,
+        jobs_per_depth,
+    }
+
     static public class BoneEntitiesConvertUtility
     {
 
 
-        static public void CreateBoneEntitiesChain
+        static public void CreateBoneEntities
+            (this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones, EnBoneType boneMode)
+        {
+
+            if (boneMode == EnBoneType.reelup_chain)
+                gcs.createBoneEntitiesChain(mainGameObject, bones);
+
+            if (boneMode == EnBoneType.jobs_per_depth)
+                gcs.createBoneEntitiesLeveled(mainGameObject, bones);
+
+        }
+
+        // - - - - - - - - - - - - - - - - - - - - -
+
+        static void createBoneEntitiesChain
             ( this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones )
         {
             var em = gcs.DstEntityManager;
@@ -54,8 +74,7 @@ namespace Abarabone.Model.Authoring
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
         }
 
-
-        static public void CreateBoneEntitiesLeveled
+        static void createBoneEntitiesLeveled
             (this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones)
         {
             var em = gcs.DstEntityManager;
@@ -102,6 +121,29 @@ namespace Abarabone.Model.Authoring
             return ent;
         }
 
+        static void setPostureValue(EntityManager em, Entity postureEntity, Entity boneTopEntity)
+        {
+            //em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
+            em.SetComponentData(postureEntity, new Rotation { Value = quaternion.identity });
+            em.SetComponentData(postureEntity, new Translation { Value = float3.zero });
+        }
+
+
+        static void addMainEntityLinkForCollider
+            (GameObjectConversionSystem gcs, GameObject main, Transform[] bones)
+        {
+            var em = gcs.DstEntityManager;
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var qBoneWithCollider = bones
+                .Where(bone => bone.GetComponent<PhysicsShapeAuthoring>() != null)
+                .Select(bone => gcs.TryGetPrimaryEntity(bone));
+
+            foreach (var ent in qBoneWithCollider)
+                em.AddComponentData(ent, new Bone.MainEntityLinkData { MainEntity = mainEntity });
+        }
+
+
 
         /// <summary>
         /// ゲームオブジェクトとしての子オブジェクトは、変換プロセスにて、すべてエンティティとして生成されるようす。
@@ -142,21 +184,6 @@ namespace Abarabone.Model.Authoring
                 typeof(Translation),
                 typeof(Rotation)
             );
-        }
-
-
-        static void addMainEntityLinkForCollider
-            (GameObjectConversionSystem gcs, GameObject main, Transform[] bones)
-        {
-            var em = gcs.DstEntityManager;
-            var mainEntity = gcs.GetPrimaryEntity(main);
-
-            var qBoneWithCollider = bones
-                .Where(bone => bone.GetComponent<PhysicsShapeAuthoring>() != null)
-                .Select(bone => gcs.TryGetPrimaryEntity(bone));
-
-            foreach( var ent in qBoneWithCollider )
-                em.AddComponentData(ent, new Bone.MainEntityLinkData { MainEntity = mainEntity });
         }
 
 
@@ -237,13 +264,6 @@ namespace Abarabone.Model.Authoring
             }
         }
 
-
-        static void setPostureValue( EntityManager em, Entity postureEntity, Entity boneTopEntity )
-        {
-            //em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
-            em.SetComponentData( postureEntity, new Rotation { Value = quaternion.identity } );
-            em.SetComponentData( postureEntity, new Translation { Value = float3.zero } );
-        }
 
     }
 }

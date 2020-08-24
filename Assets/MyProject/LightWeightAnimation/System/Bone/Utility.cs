@@ -40,11 +40,11 @@ namespace Abarabone.Model
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public void BoneTransform
+        static public PhysicsVelocity BoneTransform
             (
                 in Translation parentpos, in Rotation parentrot,
-                in Bone.LocalValueData local, ref Translation pos, ref Rotation rot,
-                ref PhysicsVelocity velocity, in PhysicsMass mass,
+                in Bone.LocalValueData local, in Translation pos, in Rotation rot,
+                in PhysicsMass mass,
                 float deltaTime
             )
         {
@@ -53,7 +53,7 @@ namespace Abarabone.Model
             var toRt = new RigidTransform(newrot, newpos);
             var frompos = pos;
             var fromrot = rot;
-            velocity = PhysicsVelocity.CalculateVelocityToTarget(in mass, in frompos, in fromrot, in toRt, deltaTime);
+            return PhysicsVelocity.CalculateVelocityToTarget(in mass, in frompos, in fromrot, in toRt, deltaTime);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

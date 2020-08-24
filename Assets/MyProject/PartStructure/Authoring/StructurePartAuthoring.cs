@@ -50,9 +50,9 @@ namespace Abarabone.Structure.Authoring
             var top = topAuth.gameObject;
             var main = topAuth.FarMeshObject.objectTop;
 
-            setMainLink_(conversionSystem, main, this.gameObject);
+            //setMainLink_(conversionSystem, main, this.gameObject);
             initPartData_(conversionSystem, this.gameObject, this.PartId);
-            setLocalPosition_(conversionSystem, main, this.gameObject);
+            //setLocalPosition_(conversionSystem, main, this.gameObject);
 
             createModelEntity_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
             createDebrisPrefab_(conversionSystem, this.gameObject, this.MasterPrefab);
@@ -60,20 +60,20 @@ namespace Abarabone.Structure.Authoring
             return;
 
 
-            void setMainLink_(GameObjectConversionSystem gcs_, GameObject main_, GameObject part_)
-            {
-                var em = gcs_.DstEntityManager;
+            //void setMainLink_(GameObjectConversionSystem gcs_, GameObject main_, GameObject part_)
+            //{
+            //    var em = gcs_.DstEntityManager;
 
-                var partent = gcs_.GetPrimaryEntity(part_);
-                var mainent = gcs_.GetPrimaryEntity(main_);
+            //    var partent = gcs_.GetPrimaryEntity(part_);
+            //    var mainent = gcs_.GetPrimaryEntity(main_);
 
-                em.AddComponentData(partent,
-                    new Bone.MainEntityLinkData
-                    {
-                        MainEntity = mainent,
-                    }
-                );
-            }
+            //    em.AddComponentData(partent,
+            //        new Bone.MainEntityLinkData
+            //        {
+            //            MainEntity = mainent,
+            //        }
+            //    );
+            //}
 
             void initPartData_
                 (GameObjectConversionSystem gcs, GameObject part, int partId)
@@ -91,22 +91,22 @@ namespace Abarabone.Structure.Authoring
                 );
             }
 
-            void setLocalPosition_(GameObjectConversionSystem gcs_, GameObject main_, GameObject part_)
-            {
-                var em = gcs_.DstEntityManager;
+            //void setLocalPosition_(GameObjectConversionSystem gcs_, GameObject main_, GameObject part_)
+            //{
+            //    var em = gcs_.DstEntityManager;
 
-                var mtInvMain = main_.transform.worldToLocalMatrix;
+            //    var mtInvMain = main_.transform.worldToLocalMatrix;
 
-                var partent = gcs_.GetPrimaryEntity(part_);
-                em.AddComponentData( partent,
-                    new StructurePart.LocalPositionData
-                    {
-                        Translation = mtInvMain.MultiplyPoint(part_.transform.position),
-                        Rotation = mtInvMain.rotation * part_.transform.rotation
-                    }
-                );
+            //    var partent = gcs_.GetPrimaryEntity(part_);
+            //    em.AddComponentData( partent,
+            //        new StructurePart.LocalPositionData
+            //        {
+            //            Translation = mtInvMain.MultiplyPoint(part_.transform.position),
+            //            Rotation = mtInvMain.rotation * part_.transform.rotation
+            //        }
+            //    );
 
-            }
+            //}
 
 
             void createModelEntity_
