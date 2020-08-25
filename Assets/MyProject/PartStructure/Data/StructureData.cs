@@ -76,6 +76,11 @@ namespace Abarabone.Structure
         public struct SleepingTag : IComponentData
         { }
 
+        public struct SwitchingData : IComponentData
+        {
+            public bool IsNear;
+        }
+
     }
 
     static public partial class StructurePart

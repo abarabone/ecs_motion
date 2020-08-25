@@ -69,6 +69,7 @@ namespace Abarabone.Model.Authoring
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
             setPostureValue(em, postureEntity, boneEntities.First() );
+            initLocalPosition(em, boneEntities, mainGameObject, bones);
 
             var paths = queryBonePath_( bones, mainGameObject ).ToArray();
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
@@ -85,9 +86,11 @@ namespace Abarabone.Model.Authoring
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
             setPostureValue(em, postureEntity, boneEntities.First());
+            initLocalPosition(em, boneEntities, mainGameObject, bones);
 
             var paths = queryBonePath_(bones, mainGameObject).ToArray();
-            setBoneRelationLinksLeveled(em, postureEntity, boneEntities, paths);
+            setBoneLinksLeveled(em, postureEntity, boneEntities, paths);
+
         }
 
 
@@ -136,7 +139,7 @@ namespace Abarabone.Model.Authoring
             var mainEntity = gcs.GetPrimaryEntity(main);
 
             var qBoneWithCollider = bones
-                .Where(bone => bone.GetComponent<PhysicsShapeAuthoring>() != null)
+                .Where(bone => bone.GetComponent<PhysicsBodyAuthoring>() != null)
                 .Select(bone => gcs.TryGetPrimaryEntity(bone));
 
             foreach (var ent in qBoneWithCollider)
@@ -217,7 +220,7 @@ namespace Abarabone.Model.Authoring
             em.SetComponentData( boneEntities, qBoneLinker );
         }
 
-        static void setBoneRelationLinksLeveled
+        static void setBoneLinksLeveled
         (
             EntityManager em, Entity postureEntity,
             IEnumerable<Entity> boneEntities, IEnumerable<string> paths
@@ -264,6 +267,25 @@ namespace Abarabone.Model.Authoring
             }
         }
 
+        static void initLocalPosition
+            (EntityManager em, IEnumerable<Entity> boneEntities, GameObject mainGameObject, Transform[] bones)
+        {
+            var mtInv = mainGameObject.transform.worldToLocalMatrix;
 
+            var qLocal =
+                from bn in bones
+                let lpos = bn.transform.localPosition//mtInv.MultiplyPoint(bn.transform.position)
+                let lrot = bn.transform.localRotation//bn.transform.rotation * mtInv.rotation
+                select new Bone.LocalValueData
+                {
+                    Position = lpos,
+                    Rotation = lrot,
+                };
+
+            foreach( var (ent, local) in (boneEntities, qLocal).Zip() )
+            {
+                em.SetComponentData(ent, local);
+            }
+        }
     }
 }

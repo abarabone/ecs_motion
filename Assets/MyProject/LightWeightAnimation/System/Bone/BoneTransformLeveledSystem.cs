@@ -26,60 +26,6 @@ namespace Abarabone.Model
     using Abarabone.CharacterMotion;
     using Unity.Entities.CodeGeneratedJobForEach;
 
-    using LeveledLinkData = Bone.Lv01LinkData;
-
-    static public class BoneTrnsformLeveledUtility
-    {
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void TransformBone
-            (
-                Entity entity, Entity parentEntity,
-                ref Translation pos, ref Rotation rot,
-                in Bone.LocalValueData local,
-                ref ComponentDataFromEntity<Translation> poss,
-                ref ComponentDataFromEntity<Rotation> rots,
-                ref ComponentDataFromEntity<PhysicsVelocity> velocities,
-                ref ComponentDataFromEntity<PhysicsMass> masses,
-                float deltaTime
-            )
-        {
-
-            {
-                var parent = parentEntity;
-                var parentpos = poss[parent];
-                var parentrot = rots[parent];
-
-                var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
-                if (im != 0.0f && velocities.HasComponent(entity))
-                {
-                    var mass = masses[entity];
-                    velocities[entity] =
-                        BoneUtility.BoneTransform
-                        (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
-
-                }
-                else
-                {
-                    BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
-                }
-            }
-        }
-
-    }
-
-    //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
-    [UpdateAfter(typeof(StreamToBoneSystem))]
-    public class BoneTransformLeveldSystem : SystemBase
-    {
-        protected override void OnUpdate()
-        {
-
-        }
-
-    }
-
 
     ////[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
