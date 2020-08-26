@@ -45,6 +45,7 @@ namespace Abarabone.Model
 
             this.Entities
                 .WithBurst()
+                .WithNone<TransformOption.ExcludeTransformTag>()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
                 .WithReadOnly(masses)

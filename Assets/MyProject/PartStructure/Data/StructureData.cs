@@ -15,24 +15,9 @@ using Abarabone.Geometry;
 using System.Runtime.InteropServices;
 using System;
 
-
-//namespace Abarabone.Model
-//{
-
-//    static public partial class ObjectBinder
-//    {
-
-//        public struct StructureTag : IComponentData
-//        { }
-
-//    }
-
-//}
-
 namespace Abarabone.Structure
 {
     using Abarabone.Utilities;
-
 
 
 

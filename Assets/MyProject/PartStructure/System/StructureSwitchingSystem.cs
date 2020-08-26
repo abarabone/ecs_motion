@@ -43,33 +43,34 @@ namespace Abarabone.Draw
                 .WithReadOnly(linkedGroups)
                 .ForEach(
                     (
+                        Entity mainEntity, int entityInQueryIndex,
                         in DrawInstance.ModeLinkData model,
-                        in DrawInstance.mode
+                        //in DrawInstance.mode
                         in ObjectMain.BinderLinkData binderLink,
                         in Structure.SwitchingData switcher
                     ) =>
                     {
 
-                        if(switcher.IsNear & model.DrawModelEntityCurrent == )
+                        //if(switcher.IsNear & model.DrawModelEntityCurrent == )
 
                         var children = linkedGroups[binderLink.BinderEntity];
 
-                        //foreach (var child in children)
-                        for (var i = 2; i < children.Length; i++)
-                        {
-                            var child = children[i].Value;
+                        ////foreach (var child in children)
+                        //for (var i = 2; i < children.Length; i++)
+                        //{
+                        //    var child = children[i].Value;
 
-                            //if (destructeds.HasComponent(child)) continue;
-                            if (!locals.HasComponent(child)) continue;
+                        //    //if (destructeds.HasComponent(child)) continue;
+                        //    if (!locals.HasComponent(child)) continue;
 
-                            var local = locals[child];
+                        //    var local = locals[child];
 
-                            var wpos = pos.Value + math.mul(rot.Value, local.Translation);
-                            var wrot = math.mul(rot.Value, local.Rotation);
+                        //    var wpos = pos.Value + math.mul(rot.Value, local.Translation);
+                        //    var wrot = math.mul(rot.Value, local.Rotation);
 
-                            poss[child] = new Translation { Value = wpos };
-                            rots[child] = new Rotation { Value = wrot };
-                        }
+                        //    poss[child] = new Translation { Value = wpos };
+                        //    rots[child] = new Rotation { Value = wrot };
+                        //}
 
                     }
                 )
@@ -77,6 +78,26 @@ namespace Abarabone.Draw
 
         }
 
+        void changeToNear
+            (
+                
+                DynamicBuffer<LinkedEntityGroup> children
+                //ComponentDataFromEntity<StructurePart.PartData> partData,
+            )
+        {
+
+            for (var i = 2; i < children.Length; i++)
+            {
+                var child = children[i].Value;
+                //if (!partData.HasComponent(child)) continue;
+
+
+            }
+        }
+        void changeToFar()
+        {
+
+        }
     }
 
 }
