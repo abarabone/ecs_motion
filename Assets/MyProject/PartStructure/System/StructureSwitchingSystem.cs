@@ -23,6 +23,7 @@ namespace Abarabone.Draw
     using Abarabone.SystemGroup;
     using Abarabone.Character;
     using Abarabone.Structure;
+    using System.Runtime.CompilerServices;
 
 
     //[DisableAutoCreation]
@@ -31,72 +32,111 @@ namespace Abarabone.Draw
     public class StructureSwitchingSystem : SystemBase
     {
 
+        EntityCommandBufferSystem cmdSystem;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+        }
+
         protected override void OnUpdate()
         {
+            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
+            var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);
+            var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 
             this.Entities
                 .WithBurst()
-                .WithAll<Structure.StructureMainTag, ObjectMain.ObjectMainTag>()
-                .WithNone<Structure.SleepingTag>()
+                .WithAll<Structure.StructureMainTag>()
                 .WithReadOnly(linkedGroups)
+                .WithReadOnly(excludes)
+                .WithReadOnly(parts)
                 .ForEach(
                     (
                         Entity mainEntity, int entityInQueryIndex,
+                        in ObjectMain.BinderLinkData binder,
                         in DrawInstance.ModeLinkData model,
-                        //in DrawInstance.mode
-                        in ObjectMain.BinderLinkData binderLink,
-                        in Structure.SwitchingData switcher
+                        in DrawInstance.ModelLod2LinkData lod2,
+                        in ObjectMain.BinderLinkData binderLink
                     ) =>
                     {
 
-                        //if(switcher.IsNear & model.DrawModelEntityCurrent == )
+                        var isNearComponent = excludes.HasComponent(mainEntity);
+                        var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
 
-                        var children = linkedGroups[binderLink.BinderEntity];
+                        if (isNearModel & !isNearComponent)
+                        {
+                            var children = linkedGroups[binder.BinderEntity];
 
-                        ////foreach (var child in children)
-                        //for (var i = 2; i < children.Length; i++)
-                        //{
-                        //    var child = children[i].Value;
+                            changeToNear(mainEntity, entityInQueryIndex, cmd, children, parts);
+                        }
 
-                        //    //if (destructeds.HasComponent(child)) continue;
-                        //    if (!locals.HasComponent(child)) continue;
 
-                        //    var local = locals[child];
+                        var isFarComponent = !isNearComponent;
+                        var isFarModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityFar;
 
-                        //    var wpos = pos.Value + math.mul(rot.Value, local.Translation);
-                        //    var wrot = math.mul(rot.Value, local.Rotation);
+                        if (isFarModel & !isFarComponent)
+                        {
+                            var children = linkedGroups[binder.BinderEntity];
 
-                        //    poss[child] = new Translation { Value = wpos };
-                        //    rots[child] = new Rotation { Value = wrot };
-                        //}
+                            changeToFar(mainEntity, entityInQueryIndex, cmd, children, parts);
+                        }
 
                     }
                 )
                 .ScheduleParallel();
 
+            // Make sure that the ECB system knows about our job
+            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
-        void changeToNear
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void changeToNear
             (
-                
-                DynamicBuffer<LinkedEntityGroup> children
-                //ComponentDataFromEntity<StructurePart.PartData> partData,
+                Entity mainEntity, int uniqueIndex,
+                EntityCommandBuffer.ParallelWriter cmd,
+                DynamicBuffer<LinkedEntityGroup> children,
+                ComponentDataFromEntity<StructurePart.PartData> partData
             )
         {
+
+            cmd.AddComponent<PhysicsExclude>(uniqueIndex, mainEntity);
+
 
             for (var i = 2; i < children.Length; i++)
             {
                 var child = children[i].Value;
-                //if (!partData.HasComponent(child)) continue;
+                if (!partData.HasComponent(child)) continue;
 
-
+                cmd.RemoveComponent<Disabled>(uniqueIndex, child);
             }
         }
-        void changeToFar()
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void changeToFar
+            (
+                Entity mainEntity, int uniqueIndex,
+                EntityCommandBuffer.ParallelWriter cmd,
+                DynamicBuffer<LinkedEntityGroup> children,
+                ComponentDataFromEntity<StructurePart.PartData> partData
+            )
         {
 
+            cmd.RemoveComponent<PhysicsExclude>(uniqueIndex, mainEntity);
+
+
+            for (var i = 2; i < children.Length; i++)
+            {
+                var child = children[i].Value;
+                if (!partData.HasComponent(child)) continue;
+
+                cmd.AddComponent<Disabled>(uniqueIndex, child);
+            }
         }
     }
 

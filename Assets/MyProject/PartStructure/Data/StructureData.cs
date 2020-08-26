@@ -29,6 +29,8 @@ namespace Abarabone.Structure
         public struct StructureMainTag : IComponentData
         { }
 
+        public struct SleepingTag : IComponentData
+        { }
 
 
         /// <summary>
@@ -58,13 +60,6 @@ namespace Abarabone.Structure
             public Entity NextEntity;
         }
 
-        public struct SleepingTag : IComponentData
-        { }
-
-        public struct SwitchingData : IComponentData
-        {
-            public bool IsNear;
-        }
 
     }
 
