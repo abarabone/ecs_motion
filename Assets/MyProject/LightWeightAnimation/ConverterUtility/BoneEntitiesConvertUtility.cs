@@ -45,7 +45,7 @@ namespace Abarabone.Model.Authoring
 
 
         static public void CreateBoneEntities
-            (this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones, EnBoneType boneMode)
+            (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, EnBoneType boneMode)
         {
 
             if (boneMode == EnBoneType.reelup_chain)
@@ -59,16 +59,15 @@ namespace Abarabone.Model.Authoring
         // - - - - - - - - - - - - - - - - - - - - -
 
         static void createBoneEntitiesChain
-            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones )
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones )
         {
             var em = gcs.DstEntityManager;
 
-            var postureEntity = addComponentsPostureEntity( gcs, mainGameObject );
+            var postureEntity = gcs.GetPrimaryEntity(mainGameObject);
             var boneEntities = addComponentsBoneEntities( gcs, bones, addtypeComponentsChain_());
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
-            setPostureValue(em, postureEntity, boneEntities.First() );
             initLocalPosition(em, boneEntities, mainGameObject, bones);
 
             var paths = queryBonePath_( bones, mainGameObject ).ToArray();
@@ -76,16 +75,15 @@ namespace Abarabone.Model.Authoring
         }
 
         static void createBoneEntitiesLeveled
-            (this GameObjectConversionSystem gcs, GameObject mainGameObject, Transform[] bones)
+            (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones)
         {
             var em = gcs.DstEntityManager;
 
-            var postureEntity = addComponentsPostureEntity(gcs, mainGameObject);
+            var postureEntity = gcs.GetPrimaryEntity(mainGameObject);
             var boneEntities = addComponentsBoneEntities(gcs, bones, addtypeComponentsLeveled_());
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
-            setPostureValue(em, postureEntity, boneEntities.First());
             initLocalPosition(em, boneEntities, mainGameObject, bones);
 
             var paths = queryBonePath_(bones, mainGameObject).ToArray();
@@ -107,33 +105,8 @@ namespace Abarabone.Model.Authoring
         }
 
 
-        static Entity addComponentsPostureEntity
-            ( GameObjectConversionSystem gcs, GameObject main )
-        {
-            var ent = gcs.GetPrimaryEntity(main);
-
-            var addtypes = new ComponentTypes
-            (
-                //typeof( Posture.NeedTransformTag ),
-                //typeof( Posture.LinkData ),
-                typeof( Translation ),
-                typeof( Rotation )
-            );
-            gcs.DstEntityManager.AddComponents( ent, addtypes );
-
-            return ent;
-        }
-
-        static void setPostureValue(EntityManager em, Entity postureEntity, Entity boneTopEntity)
-        {
-            //em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
-            em.SetComponentData(postureEntity, new Rotation { Value = quaternion.identity });
-            em.SetComponentData(postureEntity, new Translation { Value = float3.zero });
-        }
-
-
         static void addMainEntityLinkForCollider
-            (GameObjectConversionSystem gcs, GameObject main, Transform[] bones)
+            (GameObjectConversionSystem gcs, GameObject main, IEnumerable<Transform> bones)
         {
             var em = gcs.DstEntityManager;
             var mainEntity = gcs.GetPrimaryEntity(main);
@@ -153,7 +126,7 @@ namespace Abarabone.Model.Authoring
         /// physics もそれをあてにするようなので、ボーンもそれに乗っかろうと思う。
         /// </summary>
         static Entity[] addComponentsBoneEntities
-            ( GameObjectConversionSystem gcs, Transform[] bones, ComponentTypes addtypes )
+            ( GameObjectConversionSystem gcs, IEnumerable<Transform> bones, ComponentTypes addtypes )
         {
             var em = gcs.DstEntityManager;
 
@@ -268,7 +241,7 @@ namespace Abarabone.Model.Authoring
         }
 
         static void initLocalPosition
-            (EntityManager em, IEnumerable<Entity> boneEntities, GameObject mainGameObject, Transform[] bones)
+            (EntityManager em, IEnumerable<Entity> boneEntities, GameObject mainGameObject, IEnumerable<Transform> bones)
         {
             var mtInv = mainGameObject.transform.worldToLocalMatrix;
 

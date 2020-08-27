@@ -40,9 +40,9 @@ namespace Abarabone.Utilities
 
             return gameObject.MakePath().Substring( offset + 1 );
         }
-        static public string MakePath( this GameObject gameObjects )
+        static public string MakePath( this GameObject gameObject )
         {
-            var qNames = gameObjects.AncestorsAndSelf().Reverse().Skip( 1 ).Select( x => x.name );
+            var qNames = gameObject.AncestorsAndSelf().Reverse().Skip( 1 ).Select( x => x.name );
 
             return string.Join( "/", qNames );
         }

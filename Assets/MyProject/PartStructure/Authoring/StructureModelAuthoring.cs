@@ -33,12 +33,13 @@ namespace Abarabone.Structure.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
     {
 
-
         public Material NearMaterialToDraw;
         public Material FarMaterialToDraw;
 
         public ObjectAndDistance NearMeshObject;
         public ObjectAndDistance FarMeshObject;
+
+        public GameObject Envelope;
 
 
 
@@ -60,29 +61,21 @@ namespace Abarabone.Structure.Authoring
         /// <summary>
         /// 
         /// </summary>
-        public async void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
             var top = this.gameObject;
             var far = this.FarMeshObject.objectTop;
             var near = this.NearMeshObject.objectTop;
+            var env = this.Envelope;
 
             createModelEntity_(conversionSystem, far, this.FarMaterialToDraw, this.GetFarMeshAndFunc);
             createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
-            //createDrawInstanceEntity_(conversionSystem, top);
 
-            initBinderEntity_(conversionSystem, top, far);
-            initMainEntity_(conversionSystem, top, far);
-
-            var parts = near.GetComponentsInChildren<StructurePartAuthoring>().Select(pt => pt.transform).ToArray();
-            conversionSystem.CreateBoneEntities(far, parts, EnBoneType.jobs_per_depth);
-            //setPartLink_(conversionSystem, far, near);
-            //setPartLocalPosition_(conversionSystem, far, near);
-            //setPartId_(conversionSystem, near);
-
-            var draw = conversionSystem.GetPrimaryEntity(far);
-            var lods = new ObjectAndDistance[] { this.NearMeshObject, this.FarMeshObject };
-            conversionSystem.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
+            initBinderEntity_(conversionSystem, top, env);
+            initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
+            initFarEntity_(conversionSystem, env, far);
+            initPartEntities_(conversionSystem, env, near);
 
             return;
 
@@ -116,38 +109,6 @@ namespace Abarabone.Structure.Authoring
             }
 
 
-            //Entity createDrawInstanceEntity_
-            //    (GameObjectConversionSystem gcs, GameObject top_)
-            //{
-            //    var em = gcs.DstEntityManager;
-
-
-            //    var archetype = em.CreateArchetype
-            //    (
-            //        typeof(DrawInstance.ModeLinkData),
-            //        typeof(DrawInstance.TargetWorkData)
-            //    );
-            //    var ent = gcs.CreateAdditionalEntity(top_, archetype);
-
-            //    em.SetComponentData(ent,
-            //        new DrawInstance.ModeLinkData
-            //        {
-            //            DrawModelEntity = gcs.GetFromModelEntityDictionary(top_),
-            //        }
-            //    );
-            //    em.SetComponentData(ent,
-            //        new DrawInstance.TargetWorkData
-            //        {
-            //            DrawInstanceId = -1,
-            //        }
-            //    );
-
-
-            //    em.SetName_(ent, $"{top_.name} draw");
-            //    return ent;
-            //}
-
-
             void initBinderEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
             {
                 var em_ = gcs_.DstEntityManager;
@@ -170,7 +131,8 @@ namespace Abarabone.Structure.Authoring
                 em_.SetName_(binderEntity, $"{top_.name} binder");
             }
 
-            void initMainEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
+            void initMainEntity_
+                (GameObjectConversionSystem gcs_, GameObject top_, GameObject main_, ObjectAndDistance near_, ObjectAndDistance far_)
             {
                 var em_ = gcs_.DstEntityManager;
 
@@ -219,82 +181,38 @@ namespace Abarabone.Structure.Authoring
                     }
                 );
 
+
+                var draw = mainEntity;
+                var lods = new ObjectAndDistance[] { near_, far_ };
+                gcs_.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
+
+
+                var qTffar = Enumerable.Repeat(far_.objectTop.transform, 1);
+                gcs_.CreatePostureEntities(main_, qTffar);
+
+
                 em_.SetName_(mainEntity, $"{top_.name} main");
             }
 
         }
 
-
-        //void setPartLink_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
-        //{
-
-        //    var mainEntity = gcs_.GetPrimaryEntity(main_);
-
-
-        //    var partEntities = partTop_.GetComponentsInChildren<StructurePartAuthoring>()
-        //        .Select(pt => pt.gameObject)
-        //        .Select(go => gcs_.GetPrimaryEntity(go))
-        //        .ToArray();
-
-        //    var qPartLinkData =
-        //        from ptent in partEntities.Skip(1).Append(Entity.Null)
-        //        select new Structure.PartLinkData
-        //        {
-        //            NextEntity = ptent,
-        //        };
-
-        //    var em = gcs_.DstEntityManager;
-        //    em.AddComponentData(mainEntity, new Structure.PartLinkData { NextEntity = partEntities.First() });
-        //    em.AddComponentData(partEntities, qPartLinkData);
-
-        //}
+        void initFarEntity_(GameObjectConversionSystem gcs_, GameObject main_, GameObject far_)
+        {
+            var qTffar = Enumerable.Repeat(far_.transform, 1);
+            foreach (var x in qTffar) Debug.Log(x.name);
+            gcs_.CreateBoneEntities(main_, qTffar, EnBoneType.jobs_per_depth);
+        }
 
 
-        //void setPartLocalPosition_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
-        //{
+        void initPartEntities_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
+        {
+            var parts = partTop_.GetComponentsInChildren<StructurePartAuthoring>()
+                .Select(pt => pt.transform)
+                .ToArray();
 
-        //    var mtMain = main_.transform.worldToLocalMatrix;
+            gcs_.CreateBoneEntities(main_, parts, EnBoneType.jobs_per_depth);
+        }
 
-        //    var parts = partTop_.GetComponentsInChildren<StructurePartAuthoring>();
-
-        //    var qPartEntity = parts
-        //        .Select(pt => pt.gameObject)
-        //        .Select(go => gcs_.GetPrimaryEntity(go))
-        //        ;
-        //    var qPartLocalPosition =
-        //        from pt in parts
-        //        select new StructurePart.LocalPositionData
-        //        {
-        //            Translation = mtMain.MultiplyPoint( pt.transform.position ),
-        //            Rotation = mtMain.rotation * pt.transform.rotation
-        //        };
-
-        //    var em = gcs_.DstEntityManager;
-        //    em.AddComponentData(qPartEntity, qPartLocalPosition);
-
-        //}
-
-
-        //void setPartId_(GameObjectConversionSystem gcs_, GameObject partTop_)
-        //{
-
-        //    var parts = partTop_.GetComponentsInChildren<StructurePartAuthoring>();
-
-        //    var qPartEntity = parts
-        //        .Select(pt => pt.gameObject)
-        //        .Select(go => gcs_.GetPrimaryEntity(go))
-        //        ;
-        //    var qPartData =
-        //        from i in Enumerable.Range(0, parts.Length)
-        //        select new StructurePart.PartData
-        //        {
-        //            PartId = i,
-        //        };
-
-        //    var em = gcs_.DstEntityManager;
-        //    em.AddComponentData(qPartEntity, qPartData);
-
-        //}
 
 
         public (GameObject go, Func<MeshElements> f, Mesh mesh) GetFarMeshAndFunc()

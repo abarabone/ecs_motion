@@ -63,6 +63,7 @@ namespace Abarabone.Structure
 
     }
 
+
     static public partial class StructurePart
     {
 

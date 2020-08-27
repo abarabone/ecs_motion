@@ -65,8 +65,7 @@ namespace Abarabone.Model
                         if (im != 0.0f && velocities.HasComponent(entity))
                         {
                             var mass = masses[entity];
-                            velocities[entity] =
-                                BoneUtility.BoneTransform
+                            velocities[entity] = BoneUtility.BoneTransform
                                 (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
                         }
                         else
