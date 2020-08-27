@@ -199,7 +199,7 @@ namespace Abarabone.Structure.Authoring
         void initFarEntity_(GameObjectConversionSystem gcs_, GameObject main_, GameObject far_)
         {
             var qTffar = Enumerable.Repeat(far_.transform, 1);
-            foreach (var x in qTffar) Debug.Log(x.name);
+
             gcs_.CreateBoneEntities(main_, qTffar, EnBoneType.jobs_per_depth);
         }
 

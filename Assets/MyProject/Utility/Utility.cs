@@ -35,14 +35,16 @@ namespace Abarabone.Utilities
 
         static public string MakePath( this GameObject gameObject, GameObject root )
         {
+            if (root == gameObject) return "";
+
             var offset = root.MakePath().Length;
             if (offset == 0) return gameObject.MakePath();
-
+            
             return gameObject.MakePath().Substring( offset + 1 );
         }
         static public string MakePath( this GameObject gameObject )
         {
-            var qNames = gameObject.AncestorsAndSelf().Reverse().Skip( 1 ).Select( x => x.name );
+            var qNames = gameObject.AncestorsAndSelf().Reverse().Skip(1).Select(x => x.name);
 
             return string.Join( "/", qNames );
         }
@@ -60,7 +62,7 @@ namespace Abarabone.Utilities
                 from id in Enumerable.Range( 0, boneMask_.transformCount )
                 let isEnabled = boneMask_.GetTransformActive( id )
                 where isEnabled
-                let path = boneMask_.GetTransformPath( id )
+                let path = boneMask_.GetTransformPath(id)
                 select path
                 ;
 

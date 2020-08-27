@@ -70,7 +70,7 @@ namespace Abarabone.Model.Authoring
 
             initLocalPosition(em, boneEntities, mainGameObject, bones);
 
-            var paths = queryBonePath_( bones, mainGameObject ).ToArray();
+            var paths = queryBonePath_( bones, mainGameObject ).Do(x => Debug.Log($"@ {x}")).ToArray();
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
         }
 
@@ -86,7 +86,7 @@ namespace Abarabone.Model.Authoring
 
             initLocalPosition(em, boneEntities, mainGameObject, bones);
 
-            var paths = queryBonePath_(bones, mainGameObject).ToArray();
+            var paths = queryBonePath_(bones, mainGameObject).Do(x=>Debug.Log($"@ {x}")).ToArray();
             setBoneLinksLeveled(em, postureEntity, boneEntities, paths);
 
         }
@@ -97,11 +97,11 @@ namespace Abarabone.Model.Authoring
 
         static IEnumerable<string> queryBonePath_(IEnumerable<Transform> bones_, GameObject main_)
         {
-            return
+            return(
                 from bone in bones_
                 where !bone.name.StartsWith("_")
                 select bone.gameObject.MakePath(main_)
-                ;
+                ).Do(x=>Debug.Log("~=) "+x));
         }
 
 
@@ -170,7 +170,7 @@ namespace Abarabone.Model.Authoring
         )
         {
             var pathToEntDict =
-                (paths, boneEntities).Zip( ( x, y ) => (path: x, ent: y) )
+                (paths, boneEntities).Zip( ( x, y ) => (path: x, ent: y) ).Do(x => Debug.Log($"x {x.path}"))
                 .Append( (path: "", ent: postureEntity) )
                 .Append( (path: "\0", ent: Entity.Null) )
                 .ToDictionary( x => x.path, x => x.ent );
@@ -201,7 +201,7 @@ namespace Abarabone.Model.Authoring
         {
 
             var pathToEntDict =
-                (paths, boneEntities).Zip((x, y) => (path: x, ent: y))
+                (paths, boneEntities).Zip((x, y) => (path: x, ent: y)).Do(x=>Debug.Log($"x {x.path}"))
                 .Append((path: "", ent: postureEntity))
                 .Append((path: "\0", ent: Entity.Null))
                 .ToDictionary(x => x.path, x => x.ent);
