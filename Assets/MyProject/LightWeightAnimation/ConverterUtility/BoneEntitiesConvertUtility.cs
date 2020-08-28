@@ -45,21 +45,21 @@ namespace Abarabone.Model.Authoring
 
 
         static public void CreateBoneEntities
-            (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, EnBoneType boneMode)
+            (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root, EnBoneType boneMode)
         {
 
             if (boneMode == EnBoneType.reelup_chain)
-                gcs.createBoneEntitiesChain(mainGameObject, bones);
+                gcs.createBoneEntitiesChain(mainGameObject, bones, root);
 
             if (boneMode == EnBoneType.jobs_per_depth)
-                gcs.createBoneEntitiesLeveled(mainGameObject, bones);
+                gcs.createBoneEntitiesLeveled(mainGameObject, bones, root);
 
         }
 
         // - - - - - - - - - - - - - - - - - - - - -
 
         static void createBoneEntitiesChain
-            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones )
+            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root )
         {
             var em = gcs.DstEntityManager;
 
@@ -70,12 +70,12 @@ namespace Abarabone.Model.Authoring
 
             initLocalPosition(em, boneEntities, mainGameObject, bones);
 
-            var paths = queryBonePath_( bones, mainGameObject ).Do(x => Debug.Log($"@ {x}")).ToArray();
+            var paths = queryBonePath_(bones, root).Do(x => Debug.Log($"@ {x}")).ToArray();
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
         }
 
         static void createBoneEntitiesLeveled
-            (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones)
+            (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root)
         {
             var em = gcs.DstEntityManager;
 
@@ -86,21 +86,20 @@ namespace Abarabone.Model.Authoring
 
             initLocalPosition(em, boneEntities, mainGameObject, bones);
 
-            var paths = queryBonePath_(bones, mainGameObject).Do(x=>Debug.Log($"@ {x}")).ToArray();
+            var paths = queryBonePath_(bones, root).Do(x=>Debug.Log($"@ {x}")).ToArray();
             setBoneLinksLeveled(em, postureEntity, boneEntities, paths);
-
         }
 
 
 
         // ----------------------------------------------------------------------------------
 
-        static IEnumerable<string> queryBonePath_(IEnumerable<Transform> bones_, GameObject main_)
+        static IEnumerable<string> queryBonePath_(IEnumerable<Transform> bones_, Transform root_)
         {
             return(
                 from bone in bones_
                 where !bone.name.StartsWith("_")
-                select bone.gameObject.MakePath(main_)
+                select bone.gameObject.MakePath(root_.gameObject)
                 ).Do(x=>Debug.Log("~=) "+x));
         }
 
@@ -115,8 +114,12 @@ namespace Abarabone.Model.Authoring
                 .Where(bone => bone.GetComponent<PhysicsBodyAuthoring>() != null)
                 .Select(bone => gcs.TryGetPrimaryEntity(bone));
 
-            foreach (var ent in qBoneWithCollider)
-                em.AddComponentData(ent, new Bone.MainEntityLinkData { MainEntity = mainEntity });
+            em.AddComponentData(qBoneWithCollider,
+                new Bone.MainEntityLinkData
+                {
+                    MainEntity = mainEntity,
+                }
+            );
         }
 
 
@@ -170,7 +173,9 @@ namespace Abarabone.Model.Authoring
         )
         {
             var pathToEntDict =
-                (paths, boneEntities).Zip( ( x, y ) => (path: x, ent: y) ).Do(x => Debug.Log($"x {x.path}"))
+                (paths, boneEntities).Zip( ( x, y ) => (path: x, ent: y))
+                .Where(x => x.path != "")
+                .Do(x => Debug.Log($"x {x.path}"))
                 .Append( (path: "", ent: postureEntity) )
                 .Append( (path: "\0", ent: Entity.Null) )
                 .ToDictionary( x => x.path, x => x.ent );
@@ -201,13 +206,15 @@ namespace Abarabone.Model.Authoring
         {
 
             var pathToEntDict =
-                (paths, boneEntities).Zip((x, y) => (path: x, ent: y)).Do(x=>Debug.Log($"x {x.path}"))
+                (paths, boneEntities).Zip((x, y) => (path: x, ent: y))
+                .Where(x => x.path != "")
+                .Do(x=>Debug.Log($"x {x.path}"))
                 .Append((path: "", ent: postureEntity))
                 .Append((path: "\0", ent: Entity.Null))
                 .ToDictionary(x => x.path, x => x.ent);
 
             var qParent = paths
-                .Select(x => x.GetParentPath())
+                .Select(x => x.GetParentPath()).Do(x => Debug.Log($"w {x}"))
                 .Select(path => pathToEntDict[path]);
 
             var qPathDepthCount =

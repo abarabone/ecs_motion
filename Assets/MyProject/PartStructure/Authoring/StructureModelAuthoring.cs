@@ -74,8 +74,8 @@ namespace Abarabone.Structure.Authoring
 
             initBinderEntity_(conversionSystem, top, env);
             initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
-            initFarEntity_(conversionSystem, env, far);
-            initPartEntities_(conversionSystem, env, near);
+            initFarEntity_(conversionSystem, env, far, far.transform.parent);
+            initPartEntities_(conversionSystem, env, near, near.transform);
 
             return;
 
@@ -196,21 +196,20 @@ namespace Abarabone.Structure.Authoring
 
         }
 
-        void initFarEntity_(GameObjectConversionSystem gcs_, GameObject main_, GameObject far_)
+        void initFarEntity_(GameObjectConversionSystem gcs_, GameObject main_, GameObject far_, Transform root_)
         {
-            var qTffar = Enumerable.Repeat(far_.transform, 1);
+            var qFar = Enumerable.Repeat(far_.transform, 1);
 
-            gcs_.CreateBoneEntities(main_, qTffar, EnBoneType.jobs_per_depth);
+            gcs_.CreateBoneEntities(main_, qFar, root_, EnBoneType.jobs_per_depth);
         }
 
 
-        void initPartEntities_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_)
+        void initPartEntities_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_, Transform root_)
         {
-            var parts = partTop_.GetComponentsInChildren<StructurePartAuthoring>()
-                .Select(pt => pt.transform)
-                .ToArray();
+            var qPart = partTop_.GetComponentsInChildren<StructurePartAuthoring>()
+                .Select(pt => pt.transform);
 
-            gcs_.CreateBoneEntities(main_, parts, EnBoneType.jobs_per_depth);
+            gcs_.CreateBoneEntities(main_, qPart, root_, EnBoneType.jobs_per_depth);
         }
 
 
