@@ -7,6 +7,7 @@ using System.Linq;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
+using System;
 
 namespace MarchingCubes
 {
@@ -23,58 +24,42 @@ namespace MarchingCubes
     public unsafe struct CubeGrid32x32x32Unsafe
     {
         public uint* pUnits { get; private set; }
-
         public int CubeCount { get; private set; }
+
         public bool IsFullOrEmpty => ( this.CubeCount & 0x7fff ) == 0;
         public bool IsFull => this.CubeCount == 0x8000;
         public bool IsEmpty => this.CubeCount == 0;
 
-        
-        public CubeGrid32x32x32Unsafe( bool isFillAll ) : this()
+
+        public CubeGrid32x32x32Unsafe(bool isFillAll)
         {
-            //var align = UnsafeUtility.AlignOf<uint4>();
-            const int align = 16;
             const int size = sizeof( uint ) * 1 * 32 * 32;
 
-            this.alloc_( size, align, isFillAll );
+            var (p, cubeCount) = CubeGridAllocater.Alloc( size, isFillAll );
+            this.pUnits = (uint*)p;
+            this.CubeCount = cubeCount;
         }
-
-        static public CubeGrid32x32x32Unsafe GetDefault( bool isFillAll )
+        public CubeGrid32x32x32Unsafe(UIntPtr p, int cubeCount)
         {
-            //var align = UnsafeUtility.AlignOf<uint4>();
-            const int align = 16;
-            //const int size = sizeof( uint ) * 4;
-            const int size = sizeof( uint ) * 1 * 32 * 32;
-
-            var grid = new CubeGrid32x32x32Unsafe();
-            grid.alloc_( size, align, isFillAll );
-
-            return grid;
+            this.pUnits = (uint *)p;
+            this.CubeCount = cubeCount;
         }
 
-        void alloc_( int size, int align, bool isFillAll )
-        {
-            this.Dispose();
-            this.pUnits = (uint*)UnsafeUtility.Malloc( size, align, Allocator.Persistent );
+        static public CubeGrid32x32x32Unsafe GetDefault( bool isFillAll ) =>
+            new CubeGrid32x32x32Unsafe(isFillAll);
+        //{
+        //    const int size = sizeof(uint) * 4;// 工夫すると 16 bytes ですむ、でもなんか遅い？？不思議だけど
+        //    var (pUnits, cubeCount) = CubeGridAllocater.Alloc(size, isFillAll);
+        //    return new CubeGrid32x32x32Unsafe(pUnits, cubeCount);
+        //}
 
-            if( isFillAll )
-            {
-                UnsafeUtility.MemSet( this.pUnits, 0xff, size );
-                this.CubeCount = 32 * 32 * 32;
-            }
-            else
-            {
-                UnsafeUtility.MemClear( this.pUnits, size );
-                this.CubeCount = 0;
-            }
-        }
 
         public void Dispose()
         {
-            if( this.pUnits == null ) return;// struct なので、複製された場合はこのチェックも意味がない
+            if( this.pUnits == default ) return;// struct なので、複製された場合はこのチェックも意味がない
             
-            UnsafeUtility.Free( this.pUnits, Allocator.Persistent );
-            this.pUnits = null;
+            UnsafeUtility.Free( (void*)this.pUnits, Allocator.Persistent );
+            this.pUnits = default;
         }
 
 
@@ -96,4 +81,34 @@ namespace MarchingCubes
             }
         }
     }
+
+
+
+    static class CubeGridAllocater
+    {
+        static public unsafe (UIntPtr p, int cubeCount) Alloc(int size, bool isFillAll)
+        {
+            //var align = UnsafeUtility.AlignOf<uint4>();
+            const int align = 16;
+
+            var p = (UIntPtr)UnsafeUtility.Malloc(size, align, Allocator.Persistent);
+
+            if (isFillAll)
+            {
+                UnsafeUtility.MemSet((void*)p, 0xff, size);
+                var cubeCount = 32 * 32 * 32;
+
+                return (p, cubeCount);
+            }
+            else
+            {
+                UnsafeUtility.MemClear((void*)p, size);
+                var cubeCount = 0;
+
+                return (p, cubeCount);
+            }
+        }
+    }
+
+
 }

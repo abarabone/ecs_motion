@@ -20,13 +20,16 @@ namespace MarchingCubes
 
         NativeList<CubeGrid32x32x32Unsafe> gridStock;           // 本体を格納（アドレスを変化させてはいけないので、拡張してはいけない）
         public NativeArray<CubeGrid32x32x32UnsafePtr> grids;    // 本体へのポインタを格納
+        //public NativeArray<CubeGrid32x32x32UnsafePtr> grids { get; private set; }    // 本体へのポインタを格納
 
         CubeGrid32x32x32UnsafePtr defaultBlankCubePtr;
         CubeGrid32x32x32UnsafePtr defaultFilledCubePtr;
 
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public CubeGridArrayUnsafe( int x, int y, int z ) : this()
         {
             this.GridLength = new int3( x, y, z );
