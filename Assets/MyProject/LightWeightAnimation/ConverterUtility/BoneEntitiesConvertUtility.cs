@@ -44,7 +44,7 @@ namespace Abarabone.Model.Authoring
     {
 
 
-        static public void CreateBoneEntities
+        static public void InitBoneEntities
             (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root, EnBoneType boneMode)
         {
 

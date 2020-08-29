@@ -1,0 +1,170 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#pragma kernel clear
+
+
+StructuredBuffer<uint> src_instances;
+StructuredBuffer<int> src_indices;
+StructuredBuffer<float4> src_base_vertices;
+StructuredBuffer<float4> src_grid_positions;
+StructuredBuffer<float3> src_tri_normals;
+StructuredBuffer<int3> src_next_gridids;
+
+RWStructuredBuffer<float3> dst_normals;
+
+
+static const int element_block_size = 32 * 32 * 32;
+int element_bases[] =
+{
+				element_block_size * 0,
+	element_block_size * 2,	element_block_size * 2,
+				element_block_size * 0,
+	element_block_size * 1,	element_block_size * 1,
+	element_block_size * 1,	element_block_size * 1,
+				element_block_size * 0,
+	element_block_size * 2,	element_block_size * 2,
+				element_block_size * 0,
+};
+
+static const int _32e0 = 1;
+static const int _32e1 = 32;
+static const int _32e2 = 32 * 32;
+int3 element_spans[] =
+{
+				{_32e0, _32e1, _32e2},
+	{_32e2, _32e0, _32e1}, {_32e2, _32e0, _32e1},
+				{_32e0, _32e1, _32e2},
+	{_32e1, _32e2, _32e0}, {_32e1, _32e2, _32e0},
+	{_32e1, _32e2, _32e0}, {_32e1, _32e2, _32e0},
+				{_32e0, _32e1, _32e2},
+	{_32e2, _32e0, _32e1}, {_32e2, _32e0, _32e1},
+				{_32e0, _32e1, _32e2},
+};
+
+int3 vtx_offsets[] =
+{
+		{0,0,0},
+	{0,0,0}, {1,0,0},
+		{0,0,1},
+	{0,0,0}, {1,0,0},
+	{0,0,1}, {1,0,1},
+		{0,1,0},
+	{0,1,0}, {1,1,0},
+		{0,1,1},
+};
+
+
+int calculate_idstnm(int gridid, int3 cubepos, int isrcvtx)
+{
+	int3 elementpos = cubepos + vtx_offsets[isrcvtx];
+	int3 innerpos = elementpos & 0x1f;
+	int3 outerpos = elementpos >> 5;
+
+	int next_grid = dot(src_next_gridids[gridid], outerpos);
+	int current_grid = gridid;
+	int target_grid = lerp(current_grid, next_grid, any(outerpos));
+
+	const int grid_span = 32 * 32 * 32 * 3;
+	int base_element = target_grid * grid_span + element_bases[isrcvtx];
+
+	int3 dst_span = element_spans[isrcvtx];
+	int idstnm = base_element + dot(innerpos, dst_span);
+	return idstnm;
+}
+
+
+int get_cubeid(uint cube_instance)
+{
+	return (cube_instance & 0xff) - 1;
+}
+int get_gridid(uint cube_instance)
+{
+	return cube_instance >> 8 & 0xff;
+}
+int3 get_pos_in_grid(uint cube_instance)
+{
+	int x = cube_instance >> 16 & 0x1f;
+	int y = cube_instance >> 21 & 0x1f;
+	int z = cube_instance >> 26 & 0x1f;
+	return int3(x, y, z);
+}
+
+
+
+
+
+[numthreads(64,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+
+	uint cube_instance = src_instances[id.x];
+	int gridid = get_gridid(cube_instance);
+	int cubeid = get_cubeid(cube_instance);
+	int3 cubepos = get_pos_in_grid(cube_instance);
+
+	for( int i = 0; i < 4; i++ )
+	{
+		int isrcvtx0 = src_indices[cubeid * 12 + i * 3 + 0];
+		int isrcvtx1 = src_indices[cubeid * 12 + i * 3 + 1];
+		int isrcvtx2 = src_indices[cubeid * 12 + i * 3 + 2];
+		
+		//float3 v0 = src_base_vertices[isrcvtx0].xyz;
+		//float3 v1 = src_base_vertices[isrcvtx1].xyz;
+		//float3 v2 = src_base_vertices[isrcvtx2].xyz;
+		//float3 n = normalize(cross(v1 - v0, v2 - v0));
+		float3 n = src_tri_normals[cubeid * 4 + i];
+
+		int idstnm0 = calculate_idstnm(gridid, cubepos, isrcvtx0);
+		int idstnm1 = calculate_idstnm(gridid, cubepos, isrcvtx1);
+		int idstnm2 = calculate_idstnm(gridid, cubepos, isrcvtx2);
+
+		dst_normals[idstnm0] += n;
+		dst_normals[idstnm1] += n;
+		dst_normals[idstnm2] += n;
+	}
+}
+
+
+[numthreads(16, 8, 8)]
+void clear(uint3 id : SV_DispatchThreadID)
+{
+	int ibase = (id.x*16 + id.y*8 + id.z*8) * 32*3;
+	for (int i = 0; i < 3; i++)
+	{
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+		dst_normals[ibase++] = float3(0, 0, 0);
+	}
+}

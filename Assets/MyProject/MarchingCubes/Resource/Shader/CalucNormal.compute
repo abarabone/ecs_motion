@@ -1,0 +1,129 @@
+﻿#pragma kernel write_cubeid_grid;//calculate_cube_normal
+
+
+StructuredBuffer<uint> src_instances;
+//StructuredBuffer<int3> src_triangles;
+StructuredBuffer<int> src_indices;
+StructuredBuffer<float4> src_base_vertices;
+StructuredBuffer<float4> src_grid_positions;
+StructuredBuffer<float3> src_tri_normals;
+StructuredBuffer<int3> src_next_gridids;
+
+RWStructuredBuffer<float3> dst_normals;
+RWStructuredBuffer<uint> grid_cubeids;
+
+static const int _32e0 = 1;
+static const int _32e1 = 32;
+static const int _32e2 = 32 * 32;
+static const int _32e3 = 32 * 32 * 32;
+
+
+
+
+//int calculate_idstnm(int gridid, int3 cubepos, int isrcvtx)
+//{
+//	int3 elementpos = cubepos + vtx_offsets[isrcvtx];
+//	int3 innerpos = elementpos & 0x1f;
+//	int3 outerpos = elementpos >> 5;
+//
+//	int next_grid = dot(src_next_gridids[gridid], outerpos);
+//	int current_grid = gridid;
+//	int target_grid = lerp(current_grid, next_grid, any(outerpos));
+//
+//	const int grid_span = 32 * 32 * 32 * 3;
+//	int base_element = target_grid * grid_span + element_bases[isrcvtx];
+//
+//	int3 dst_span = element_spans[isrcvtx];
+//	int idstnm = base_element + dot(innerpos, dst_span);
+//	return idstnm;
+//}
+
+int get_cubeid(uint cube_instance)
+{
+	return (cube_instance & 0xff) - 1;
+}
+int get_gridid(uint cube_instance)
+{
+	return cube_instance >> 8 & 0xff;
+}
+int3 get_pos_in_grid(uint cube_instance)
+{
+	int x = cube_instance >> 16 & 0x1f;
+	int y = cube_instance >> 21 & 0x1f;
+	int z = cube_instance >> 26 & 0x1f;
+	return int3(x, y, z);
+}
+int get_normal_index(uint cubeid)
+{
+
+	return cubeid;
+}
+
+int write_cubeid_to_grid(int gridid, int cubeid, int3 innerpos)
+{
+	int igrid_base = gridid * _32e3;
+
+	const int3 inner_span = int3(_32e0, _32e1, _32e2);
+	int icube = dot(innerpos, inner_span);
+	
+	grid_cubeids[igrid_base + icube] = cubeid;
+}
+
+
+[numthreads(64, 1, 1)]
+void write_cubeid_grid(uint3 id : SV_DispatchThreadID)
+{
+
+	uint cube_instance = src_instances[id.x];
+
+	int gridid = get_gridid(cube_instance);
+	int cubeid = get_cubeid(cube_instance);
+	int3 cubepos = get_pos_in_grid(cube_instance);
+
+
+	write_cubeid_to_grid(gridid, cubeid, innerpos);
+}
+
+
+[numthreads(64,1,1)]
+void calculate_cube_normal(uint3 id : SV_DispatchThreadID)
+{
+
+	uint cube_instance = src_instances[id.x];
+	int gridid = get_gridid(cube_instance);
+	int cubeid = get_cubeid(cube_instance);
+	int3 cubepos = get_pos_in_grid(cube_instance);
+
+	float3 vtx_nms[12] =
+	{
+		{0,0,0}, {0,0,0}, {0,0,0}, {0,0,0},
+		{0,0,0}, {0,0,0}, {0,0,0}, {0,0,0},
+		{0,0,0}, {0,0,0}, {0,0,0}, {0,0,0},
+	};
+
+	int tri_base = cubeid * 4;
+	int idx_base = cubeid * 12;
+	for (int i = 0; i < 4; i++)
+	{
+		int3 isrc_vtx;// = src_triangles[tri_base + i];
+		isrc_vtx.x = src_indices[idx_base + i * 3 + 0];
+		isrc_vtx.y = src_indices[idx_base + i * 3 + 1];
+		isrc_vtx.z = src_indices[idx_base + i * 3 + 2];
+		float3 nm = src_tri_normals[tri_base + i];
+
+		vtx_nms[isrc_vtx.x] += nm;
+		vtx_nms[isrc_vtx.y] += nm;
+		vtx_nms[isrc_vtx.z] += nm;
+	}
+
+	const int grid_span = 32 * 32 * 32 * 3;
+	int igrid_top = gridid * grid_span;
+
+	const int3 inner_span = int3(_32e0, _32e1, _32e2);
+	int icube = dot(cubepos, inner_span);
+
+	int idst_nm_base = igrid_top + icube * 3;
+	dst_normals[idst_nm_base + 0] = vtx_nms[0];
+	dst_normals[idst_nm_base + 1] = vtx_nms[1];
+	dst_normals[idst_nm_base + 2] = vtx_nms[4];
+}

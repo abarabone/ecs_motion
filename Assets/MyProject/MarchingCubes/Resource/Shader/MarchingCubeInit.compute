@@ -1,0 +1,62 @@
+﻿#pragma kernel CSMain
+
+StructuredBuffer<uint> src_instances;
+
+RWTexture2DArray<uint> dst_grid_cubeids;
+//RWStructuredBuffer<uint> dst_grid_cubeids;
+
+static const int _32e0 = 1;
+static const int _32e1 = 32;
+static const int _32e2 = 32 * 32;
+static const int _32e3 = 32 * 32 * 32;
+
+
+//void write_cubeid_to_grid(int gridid, int cubeid, int3 innerpos)
+//{
+//	int igrid = gridid * _32e3;
+//
+//	static const int3 inner_span = int3(_32e0, _32e2, _32e1);
+//	int icube = dot(innerpos, inner_span);
+//
+//	dst_grid_cubeids[int3(0, igrid + icube, 0)] = (uint)(cubeid);
+//}
+void write_cubeid_to_grid(int gridid, int cubeid, int3 innerpos)
+{
+	//int igrid = gridid * _32e3;
+
+	//static const int3 inner_span = int3(_32e0, _32e2, _32e1);
+	//int icube = dot(innerpos, inner_span);
+	//dst_grid_cubeids[igrid + icube] = (uint)cubeid & 0xff;
+
+	uint3 index = uint3(innerpos.z * 32 + innerpos.x, innerpos.y, gridid);
+	dst_grid_cubeids[index] = (uint)(cubeid);
+}
+
+int get_cubeid(uint cube_instance)
+{
+	return (cube_instance & 0xff) - 1;
+}
+int get_gridid(uint cube_instance)
+{
+	return cube_instance >> 8 & 0xff;
+}
+int3 get_pos_in_grid(uint cube_instance)
+{
+	int x = cube_instance >> 16 & 0x1f;
+	int y = cube_instance >> 21 & 0x1f;
+	int z = cube_instance >> 26 & 0x1f;
+	return int3(x, y, z);
+}
+
+
+[numthreads(64,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	uint cube_instance = src_instances[id.x];
+
+	int gridid = get_gridid(cube_instance);
+	int cubeid = get_cubeid(cube_instance);
+	int3 cubepos = get_pos_in_grid(cube_instance);
+
+	write_cubeid_to_grid(gridid, cubeid, cubepos);
+}

@@ -41,39 +41,42 @@ namespace Abarabone.Draw
             this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
         }
 
+        /// <summary>
+        /// linked entity 番号を固定で使ってしまったので、問題でたらちゃんとなおさなければならない
+        /// </summary>
         protected override void OnUpdate()
         {
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
-            var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);
+            //var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+            var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
 
             this.Entities
                 .WithBurst()
                 .WithAll<Structure.StructureMainTag>()
                 .WithReadOnly(linkedGroups)
-                .WithReadOnly(excludes)
+                //.WithReadOnly(excludes)
                 .WithReadOnly(parts)
+                .WithReadOnly(disableds)
                 .ForEach(
                     (
-                        Entity mainEntity, int entityInQueryIndex,
+                        Entity entity, int entityInQueryIndex,
                         in ObjectMain.BinderLinkData binder,
                         in DrawInstance.ModeLinkData model,
-                        in DrawInstance.ModelLod2LinkData lod2,
-                        in ObjectMain.BinderLinkData binderLink
+                        in DrawInstance.ModelLod2LinkData lod2
                     ) =>
                     {
-
-                        var isNearComponent = excludes.HasComponent(mainEntity);
+                        var children = linkedGroups[binder.BinderEntity];
+                        
+                        var isNearComponent = disableds.HasComponent(children[2].Value);
                         var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
 
                         if (isNearModel & !isNearComponent)
                         {
-                            var children = linkedGroups[binder.BinderEntity];
-
-                            changeToNear(mainEntity, entityInQueryIndex, cmd, children, parts);
+                            changeToNear(entityInQueryIndex, cmd, children, parts);
                         }
 
 
@@ -82,9 +85,7 @@ namespace Abarabone.Draw
 
                         if (isFarModel & !isFarComponent)
                         {
-                            var children = linkedGroups[binder.BinderEntity];
-
-                            changeToFar(mainEntity, entityInQueryIndex, cmd, children, parts);
+                            changeToFar(entityInQueryIndex, cmd, children, parts);
                         }
 
                     }
@@ -95,49 +96,103 @@ namespace Abarabone.Draw
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void changeToNear
             (
-                Entity mainEntity, int uniqueIndex,
+                int uniqueIndex,
                 EntityCommandBuffer.ParallelWriter cmd,
                 DynamicBuffer<LinkedEntityGroup> children,
                 ComponentDataFromEntity<StructurePart.PartData> partData
             )
         {
 
-            cmd.AddComponent<PhysicsExclude>(uniqueIndex, mainEntity);
+            cmd.AddComponent<Disabled>(uniqueIndex, children[2].Value);
 
 
-            for (var i = 2; i < children.Length; i++)
+            for (var i = 3; i < children.Length; i++)
             {
                 var child = children[i].Value;
                 if (!partData.HasComponent(child)) continue;
 
-                cmd.RemoveComponent<Disabled>(uniqueIndex, child);
+                cmd.RemoveComponent<Disabled>(uniqueIndex, children[i].Value);
             }
         }
+
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void changeToFar
             (
-                Entity mainEntity, int uniqueIndex,
+                int uniqueIndex,
                 EntityCommandBuffer.ParallelWriter cmd,
                 DynamicBuffer<LinkedEntityGroup> children,
                 ComponentDataFromEntity<StructurePart.PartData> partData
             )
         {
 
-            cmd.RemoveComponent<PhysicsExclude>(uniqueIndex, mainEntity);
+            cmd.RemoveComponent<Disabled>(uniqueIndex, children[2].Value);
 
 
-            for (var i = 2; i < children.Length; i++)
+            for (var i = 3; i < children.Length; i++)
             {
                 var child = children[i].Value;
                 if (!partData.HasComponent(child)) continue;
 
-                cmd.AddComponent<Disabled>(uniqueIndex, child);
+                cmd.AddComponent<Disabled>(uniqueIndex, children[i].Value);
             }
         }
+
+
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static void changeToNear
+        //    (
+        //        Entity mainEntity, int uniqueIndex,
+        //        EntityCommandBuffer.ParallelWriter cmd,
+        //        DynamicBuffer<LinkedEntityGroup> children,
+        //        ComponentDataFromEntity<StructurePart.PartData> partData
+        //    )
+        //{
+
+        //    cmd.AddComponent<PhysicsExclude>(uniqueIndex, mainEntity);
+
+
+        //    for (var i = 2; i < children.Length; i++)
+        //    {
+        //        var child = children[i].Value;
+        //        if (!partData.HasComponent(child)) continue;
+
+        //        cmd.RemoveComponent<Disabled>(uniqueIndex, child);
+        //    }
+        //}
+
+
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static void changeToFar
+        //    (
+        //        Entity mainEntity, int uniqueIndex,
+        //        EntityCommandBuffer.ParallelWriter cmd,
+        //        DynamicBuffer<LinkedEntityGroup> children,
+        //        ComponentDataFromEntity<StructurePart.PartData> partData
+        //    )
+        //{
+
+        //    cmd.RemoveComponent<PhysicsExclude>(uniqueIndex, mainEntity);
+
+
+        //    for (var i = 2; i < children.Length; i++)
+        //    {
+        //        var child = children[i].Value;
+        //        if (!partData.HasComponent(child)) continue;
+
+        //        cmd.AddComponent<Disabled>(uniqueIndex, child);
+        //    }
+        //}
+
+
     }
 
 }

@@ -102,7 +102,7 @@ namespace Abarabone.Arms
                         state.NextEmitableTime = currentTime + emitter.EmittingInterval;
 
 
-                        var rnd = Random.CreateFromIndex((uint)math.asuint(deltaTime));
+                        var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(deltaTime) & 0x_7fff_ffff);
 
                         var bulletData = bullets[emitter.BulletPrefab];
                         var rot = rots[link.MuzzleBodyEntity];
