@@ -60,10 +60,10 @@ namespace MarchingCubes
 			// [1] : near grid id
 			// { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
             
-            this.Material.SetConstantBuffer( "normals", res.NormalBuffer );
+            this.Material.SetConstantBuffer_( "normals", res.NormalBuffer );
             this.Material.SetConstantBuffer( "cube_patterns", res.CubePatternBuffer );
             this.Material.SetConstantBuffer( "cube_vtxs", res.CubeVertexBuffer );
-            this.Material.SetConstantBuffer("grids", res.GridBuffer);
+            this.Material.SetConstantBuffer_("grids", res.GridBuffer);
             //this.Material.SetVectorArray( "grids", new Vector4[ 512 * 2 ] );// res.GridBuffer );
 
             this.Material.SetBuffer( "cube_instances", res.CubeInstancesBuffer );
@@ -91,7 +91,7 @@ namespace MarchingCubes
             var cb = createCommandBuffer( res, this.Material );
             Camera.main.AddCommandBuffer( CameraEvent.BeforeSkybox, cb );
 
-            //initCubes();
+            initCubes();
             //createHitMesh();
         }
         unsafe void initCubes()
@@ -215,7 +215,7 @@ namespace MarchingCubes
 
         JobHandle job;
 
-        private unsafe void Updatew()
+        private unsafe void Update()
         {
             //var c = this.cubeGrids[ 5, 1, 3 ];
             //c[ i, 0, 0 ] ^= 1;
@@ -323,7 +323,7 @@ namespace MarchingCubes
 
             RenderTexture createGridCubeIdShaderBuffer_( int maxGridLength )
             {
-                var buffer = new RenderTexture(32 * 32, 32, 0, RenderTextureFormat.R8, 0);
+                var buffer = new RenderTexture(32 * 32, 32, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R8_UInt, 0);
                 //var buffer = new RenderTexture(32 * 32, 32, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R32_UInt, 0);
                 buffer.enableRandomWrite = true;
                 buffer.dimension = TextureDimension.Tex2DArray;
@@ -359,7 +359,7 @@ namespace MarchingCubes
 
             ComputeBuffer createNormalList_( Dictionary<float3, int> normalToIdDict )
             {
-                var buffer = new ComputeBuffer( normalToIdDict.Count, Marshal.SizeOf<Vector4>(), ComputeBufferType.Constant );
+                var buffer = new ComputeBuffer(normalToIdDict.Count, Marshal.SizeOf<Vector4>(), ComputeBufferType.Constant );
 
                 var q =
                     from n in normalToIdDict
@@ -592,6 +592,8 @@ namespace MarchingCubes
         static public ComputeBuffer CreateIndirectArgumentsBufferForDispatch() =>
             new ComputeBuffer( 1, sizeof( int ) * 3, ComputeBufferType.IndirectArguments, ComputeBufferMode.Immutable );
 
+        static public void SetConstantBuffer_(this Material mat, string name, ComputeBuffer buffer) =>
+            mat.SetConstantBuffer(name, buffer, 0, buffer.stride * buffer.count);
         //static public void SetConstantBuffer( this Material mat, string name, ComputeBuffer buffer ) =>
         //    mat.SetConstantBuffer( name, buffer, 0, buffer.stride * buffer.count );
         static public void SetConstantBuffer( this Material mat, string name, ComputeBuffer buffer )
