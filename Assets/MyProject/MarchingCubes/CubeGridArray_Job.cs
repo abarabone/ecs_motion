@@ -92,7 +92,7 @@ namespace MarchingCubes
 
             [WriteOnly]
             public NativeList<CubeInstance> dstCubeInstances;
-            [WriteOnly]
+            //[WriteOnly]
             public NativeList<CubeUtility.GridInstanceData> dstGridData;
 
 

@@ -63,8 +63,8 @@ namespace MarchingCubes
             this.Material.SetConstantBuffer( "normals", res.NormalBuffer );
             this.Material.SetConstantBuffer( "cube_patterns", res.CubePatternBuffer );
             this.Material.SetConstantBuffer( "cube_vtxs", res.CubeVertexBuffer );
-            //this.Material.SetConstantBuffer( "grids", res.GridBuffer );
-            this.Material.SetVectorArray( "grids", new Vector4[ 512 * 2 ] );// res.GridBuffer );
+            this.Material.SetConstantBuffer("grids", res.GridBuffer);
+            //this.Material.SetVectorArray( "grids", new Vector4[ 512 * 2 ] );// res.GridBuffer );
 
             this.Material.SetBuffer( "cube_instances", res.CubeInstancesBuffer );
             this.Material.SetTexture( "grid_cubeids", res.GridCubeIdBuffer );
@@ -91,8 +91,8 @@ namespace MarchingCubes
             var cb = createCommandBuffer( res, this.Material );
             Camera.main.AddCommandBuffer( CameraEvent.BeforeSkybox, cb );
 
-            initCubes();
-            createHitMesh();
+            //initCubes();
+            //createHitMesh();
         }
         unsafe void initCubes()
         {
@@ -215,7 +215,7 @@ namespace MarchingCubes
 
         JobHandle job;
 
-        private unsafe void Update()
+        private unsafe void Updatew()
         {
             //var c = this.cubeGrids[ 5, 1, 3 ];
             //c[ i, 0, 0 ] ^= 1;
@@ -323,7 +323,8 @@ namespace MarchingCubes
 
             RenderTexture createGridCubeIdShaderBuffer_( int maxGridLength )
             {
-                var buffer = new RenderTexture( 32 * 32, 32, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R8_UInt, 0 );
+                var buffer = new RenderTexture(32 * 32, 32, 0, RenderTextureFormat.R8, 0);
+                //var buffer = new RenderTexture(32 * 32, 32, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R32_UInt, 0);
                 buffer.enableRandomWrite = true;
                 buffer.dimension = TextureDimension.Tex2DArray;
                 buffer.volumeDepth = maxGridLength;
@@ -428,7 +429,11 @@ namespace MarchingCubes
                         w = 0,
                     };
                     //int ntoi( int i, int shift ) => (normalToIdDict_[ round_normal_(normals[ i ]) ] & 0xff) << shift;
-                    int ntoi( int i ) { Debug.Log($"{i} @ {round_normal_( normals[ i ] )} => {normalToIdDict_[ round_normal_( normals[ i ] ) ]}"); return normalToIdDict_[ round_normal_( normals[ i ] ) ]; }
+                    int ntoi( int i )
+                    {
+                        Debug.Log($"{i} @ {round_normal_( normals[ i ] )} => {normalToIdDict_[ round_normal_( normals[ i ] ) ]}");
+                        return normalToIdDict_[ round_normal_( normals[ i ] ) ];
+                    }
                 }
             }
 

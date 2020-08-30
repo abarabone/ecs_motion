@@ -20,10 +20,10 @@ namespace MarchingCubes
             [NativeDisableUnsafePtrRestriction]
             public CubeGrid32x32x32Unsafe* p;
 
-            public uint this[ int ix, int iy, int iz ]
+            public uint this[int ix, int iy, int iz]
             {
-                get => ( *this.p )[ ix, iy, iz ];
-                set => ( *this.p )[ ix, iy, iz ] = value;
+                get => (*this.p)[ix, iy, iz];
+                set => (*this.p)[ix, iy, iz] = value;
             }
         }
 
@@ -42,12 +42,16 @@ namespace MarchingCubes
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void SampleAllCubes<TCubeInstanceWriter>
             ( ref NearCubeGrids g, int gridId, ref TCubeInstanceWriter outputCubes )
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
+
             var gcount = getEachCount( ref g );
+
             SampleAllCubes( ref g, ref gcount, gridId, ref outputCubes );
+
         }
 
 
@@ -58,6 +62,7 @@ namespace MarchingCubes
         /// あとでＹＺカリングもしたい
         /// </summary>
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void SampleAllCubes<TCubeInstanceWriter>
             ( ref NearCubeGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes )
             where TCubeInstanceWriter : ICubeInstanceWriter
@@ -128,8 +133,9 @@ namespace MarchingCubes
             }
 
         }
-        
+
         // ループ削減試行錯誤中（端っこもやれないか？）
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void SampleAllCubes_<TCubeInstanceWriter>
             ( ref NearCubeGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes )
             where TCubeInstanceWriter : ICubeInstanceWriter
