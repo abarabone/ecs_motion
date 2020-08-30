@@ -12,16 +12,27 @@ using Unity.Collections.Experimental;
 
 namespace MarchingCubes
 {
+    /// <summary>
+    /// グリッドを管理する。
+    /// グリッド本体は必要な分のみ確保される。
+    /// グリッド配列は本体へのポインタのみ持ち、all 0 / all 1 のグリッドはデフォルトとして使いまわされる。
+    /// </summary>
     public unsafe partial struct CubeGridArrayUnsafe
     {
 
         readonly public int3 GridLength;
         readonly int3 wholeGridLength;
+        // 実際に確保するグリッド配列は、外側をデフォルトグリッドでくるむ。
+        // 端っこの処理を内側と統一するため。
 
-        NativeList<CubeGrid32x32x32Unsafe> gridStock;           // 本体を格納（アドレスを変化させてはいけないので、拡張してはいけない）
-        public NativeArray<CubeGrid32x32x32UnsafePtr> grids;    // 本体へのポインタを格納
-        //public NativeArray<CubeGrid32x32x32UnsafePtr> grids { get; private set; }    // 本体へのポインタを格納
+        // 本体を格納（アドレスを変化させてはいけないので、capacity を拡張してはいけない）
+        NativeList<CubeGrid32x32x32Unsafe> gridStock;
 
+        // 本体へのポインタを格納
+        public NativeArray<CubeGrid32x32x32UnsafePtr> grids;
+        //public NativeArray<CubeGrid32x32x32UnsafePtr> grids { get; private set; }
+
+        // all 0 と all 1 のグリッド。本体は gridStock 内に作られている。
         CubeGrid32x32x32UnsafePtr defaultBlankCubePtr;
         CubeGrid32x32x32UnsafePtr defaultFilledCubePtr;
 
@@ -63,22 +74,19 @@ namespace MarchingCubes
 
             void makeDefaultGrids_( ref CubeGridArrayUnsafe ga )
             {
-                ga.gridStock.AddNoResize( CubeGrid32x32x32Unsafe.GetDefault( isFillAll: false ) );
+                ga.gridStock.AddNoResize( CubeGrid32x32x32Unsafe.CreateDefaultCube( isFillAll: false ) );
                 ga.defaultBlankCubePtr = new CubeGrid32x32x32UnsafePtr
                 {
                     p = (CubeGrid32x32x32Unsafe*)ga.gridStock.GetUnsafePtr() + 0
                 };
 
-                ga.gridStock.AddNoResize( CubeGrid32x32x32Unsafe.GetDefault( isFillAll: true ) );
+                ga.gridStock.AddNoResize( CubeGrid32x32x32Unsafe.CreateDefaultCube( isFillAll: true ) );
                 ga.defaultFilledCubePtr = new CubeGrid32x32x32UnsafePtr
                 {
                     p = (CubeGrid32x32x32Unsafe*)ga.gridStock.GetUnsafePtr() + 1
                 };
             }
         }
-
-
-
 
         public unsafe void Dispose()
         {
@@ -123,6 +131,9 @@ namespace MarchingCubes
 
 
 
+        /// <summary>
+        /// 指定したグリッド矩形を、デフォルトの all 0 か all 1 で塗りつぶす。
+        /// </summary>
         public void FillCubes( int3 topLeft, int3 length3, bool isFillAll = false )
         {
             var st = math.max( topLeft + 1, int3.zero );
@@ -148,7 +159,9 @@ namespace MarchingCubes
 
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         static NearCubeGrids getGridSet_
             ( ref CubeGridArrayUnsafe gridArray, int ix, int iy, int iz, int yspan_, int zspan_ )
         {

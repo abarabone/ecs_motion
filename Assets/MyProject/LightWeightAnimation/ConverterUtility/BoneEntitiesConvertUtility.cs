@@ -49,16 +49,16 @@ namespace Abarabone.Model.Authoring
         {
 
             if (boneMode == EnBoneType.reelup_chain)
-                gcs.createBoneEntitiesChain(mainGameObject, bones, root);
+                gcs.initBoneEntitiesChain(mainGameObject, bones, root);
 
             if (boneMode == EnBoneType.jobs_per_depth)
-                gcs.createBoneEntitiesLeveled(mainGameObject, bones, root);
+                gcs.initBoneEntitiesLeveled(mainGameObject, bones, root);
 
         }
 
         // - - - - - - - - - - - - - - - - - - - - -
 
-        static void createBoneEntitiesChain
+        static void initBoneEntitiesChain
             ( this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root )
         {
             var em = gcs.DstEntityManager;
@@ -74,7 +74,7 @@ namespace Abarabone.Model.Authoring
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
         }
 
-        static void createBoneEntitiesLeveled
+        static void initBoneEntitiesLeveled
             (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root)
         {
             var em = gcs.DstEntityManager;

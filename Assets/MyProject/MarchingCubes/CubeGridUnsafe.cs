@@ -13,14 +13,6 @@ namespace MarchingCubes
 {
 
 
-    public struct CubeInstance
-    {
-        public uint instance;
-        static public implicit operator CubeInstance( uint cubeInstance ) => new CubeInstance { instance = cubeInstance };
-    }
-
-
-
     public unsafe struct CubeGrid32x32x32Unsafe
     {
         public uint* pUnits { get; private set; }
@@ -45,13 +37,13 @@ namespace MarchingCubes
             this.CubeCount = cubeCount;
         }
 
-        static public CubeGrid32x32x32Unsafe GetDefault( bool isFillAll ) =>
-            new CubeGrid32x32x32Unsafe(isFillAll);
-        //{
-        //    const int size = sizeof(uint) * 4;// 工夫すると 16 bytes ですむ、でもなんか遅い？？不思議だけど
-        //    var (pUnits, cubeCount) = CubeGridAllocater.Alloc(size, isFillAll);
-        //    return new CubeGrid32x32x32Unsafe(pUnits, cubeCount);
-        //}
+        static public CubeGrid32x32x32Unsafe CreateDefaultCube( bool isFillAll )
+        {
+            //const int size = sizeof(uint) * 4;// 工夫すると 16 bytes ですむ、でもなんか遅い？？不思議だけど
+            const int size = sizeof(uint) * 1 * 32 * 32;
+            var (p, cubeCount) = CubeGridAllocater.Alloc(size, isFillAll);
+            return new CubeGrid32x32x32Unsafe(p, cubeCount);
+        }
 
 
         public void Dispose()
