@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace MarchingCubes
+namespace Abarabone.MarchingCubes
 {
 
     public class MarchingCubeAsset : ScriptableObject

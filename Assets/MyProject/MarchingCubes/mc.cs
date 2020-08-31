@@ -12,7 +12,7 @@ using Unity.Jobs;
 using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace MarchingCubes
+namespace Abarabone.MarchingCubes
 {
 
     using vc = Vector3;

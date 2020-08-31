@@ -13,19 +13,18 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace MarchingCubes
+namespace Abarabone.MarchingCubes
 {
-    using MarchingCubes;
+
     using Abarabone.Draw;
     using Abarabone.Utilities;
-
 
 
 
     static public partial class Grid
     {
 
-        public class GridBufferData : IComponentData
+        public class GridBufferData : IComponentData, IDisposable
         {
             public CubeGridArrayUnsafe cubeGrids;
             public MeshCollider[,,] cubeGridColliders;
@@ -33,6 +32,17 @@ namespace MarchingCubes
             public NativeList<CubeUtility.GridInstanceData> gridData;
             public NativeList<CubeInstance> cubeInstances;
             //public NativeQueue<CubeInstance> cubeInstances;
+
+
+            public GridBufferData()
+            {
+
+            }
+
+            public void Dispose()
+            {
+
+            }
         }
 
         public struct GridPointerData : IComponentData
@@ -43,6 +53,7 @@ namespace MarchingCubes
         public struct GridInfoData : IComponentData
         {
             public int maxDrawGridLength;
+            public int maxCubeInstances;
         }
         
     }
@@ -66,7 +77,7 @@ namespace MarchingCubes
             public DrawResourceData(Material srcmat, ComputeShader setGridCubeIdShader)
             {
                 this.CubeMaterial = new Material(srcmat);
-                this.SetGridCubeIdShader = SetGridCubeIdShader;
+                this.SetGridCubeIdShader = setGridCubeIdShader;
 
                 this.CubeMesh = createMesh_();
             }

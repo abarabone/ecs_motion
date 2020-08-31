@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace MarchingCubes
+namespace Abarabone.MarchingCubes
 {
     static public class CubeUtility
     {
