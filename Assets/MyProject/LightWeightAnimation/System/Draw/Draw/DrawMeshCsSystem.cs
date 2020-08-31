@@ -9,13 +9,13 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-using Abarabone.Authoring;
-using Abarabone.Misc;
-using Abarabone.SystemGroup;
-using Abarabone.Utilities;
-
 namespace Abarabone.Draw
 {
+    using Abarabone.Authoring;
+    using Abarabone.Misc;
+    using Abarabone.SystemGroup;
+    using Abarabone.Utilities;
+
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
@@ -29,11 +29,11 @@ namespace Abarabone.Draw
     //[DisableAutoCreation]
     [UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    public class DrawMeshCsSystem : JobComponentSystem
+    public class DrawMeshCsSystem : SystemBase
     {
 
 
-        protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
+        protected override unsafe void OnUpdate()
         {
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
@@ -77,8 +77,6 @@ namespace Abarabone.Draw
                     }
                 )
                 .Run();
-            
-            return inputDeps;
         }
 
     }

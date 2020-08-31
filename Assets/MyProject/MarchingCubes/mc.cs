@@ -60,7 +60,7 @@ namespace MarchingCubes
 			// [1] : near grid id
 			// { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
             
-            this.Material.SetConstantBuffer_( "normals", res.NormalBuffer );
+            this.Material.SetConstantBuffer( "normals", res.NormalBuffer );
             this.Material.SetConstantBuffer( "cube_patterns", res.CubePatternBuffer );
             this.Material.SetConstantBuffer( "cube_vtxs", res.CubeVertexBuffer );
             this.Material.SetConstantBuffer_("grids", res.GridBuffer);
