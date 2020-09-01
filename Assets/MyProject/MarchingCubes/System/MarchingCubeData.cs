@@ -27,7 +27,7 @@ namespace Abarabone.MarchingCubes
         public class GridBufferData : IComponentData, IDisposable
         {
             public CubeGridArrayUnsafe cubeGrids;
-            public MeshCollider[,,] cubeGridColliders;
+            //public MeshCollider[,,] cubeGridColliders;
 
             public NativeList<CubeUtility.GridInstanceData> gridData;
             public NativeList<CubeInstance> cubeInstances;

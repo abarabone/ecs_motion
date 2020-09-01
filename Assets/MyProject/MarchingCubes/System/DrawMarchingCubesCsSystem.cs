@@ -20,6 +20,7 @@ namespace Abarabone.MarchingCubes
     {
         protected unsafe override void OnUpdate()
         {
+
             var res = this.GetSingleton<Resource.DrawResourceData>();
             var gridbuf = this.GetSingleton<Grid.GridBufferData>();
             var resbuf = this.GetSingleton<Resource.DrawBufferData>();
@@ -36,12 +37,14 @@ namespace Abarabone.MarchingCubes
             }
             res.CubeMaterial.SetVectorArray("grids", grids);
 
+
             var remain = (64 - (gridbuf.cubeInstances.Length & 0x3f)) & 0x3f;
             for (var i = 0; i < remain; i++) gridbuf.cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
             var dargparams = new IndirectArgumentsForDispatch(gridbuf.cubeInstances.Length >> 6, 1, 1);
             var dargs = resbuf.ArgsBufferForDispatch;
             dargs.SetData(ref dargparams);
             res.SetGridCubeIdShader.Dispatch(0, gridbuf.cubeInstances.Length >> 6, 1, 1);//
+
 
             var mesh = res.CubeMesh;
             var mat = res.CubeMaterial;
@@ -50,6 +53,7 @@ namespace Abarabone.MarchingCubes
             var instanceCount = gridbuf.cubeInstances.Length;
             var iargparams = new IndirectArgumentsForInstancing(mesh, instanceCount);
             iargs.SetData(ref iargparams);
+
 
             var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };//
             Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, iargs);//

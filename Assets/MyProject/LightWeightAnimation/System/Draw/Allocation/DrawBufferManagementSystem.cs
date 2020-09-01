@@ -25,12 +25,13 @@ namespace Abarabone.Draw
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
-    public class DrawBufferManagementSystem : JobComponentSystem
+    public class DrawBufferManagementSystem : SystemBase
     {
         
 
         protected override void OnCreate()
         {
+            base.OnCreate();
 
             initDrawSystemComponents_( this.EntityManager );
 
@@ -67,10 +68,8 @@ namespace Abarabone.Draw
 
 
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
-        {
-            return inputDeps;
-        }
+        protected override void OnUpdate()
+        { }
 
 
 
@@ -81,6 +80,7 @@ namespace Abarabone.Draw
             disposeTransformComputeBuffer_();
             disposeComputeArgumentsBuffersAllModels_();
             
+            base.OnDestroy();
             return;
 
 
