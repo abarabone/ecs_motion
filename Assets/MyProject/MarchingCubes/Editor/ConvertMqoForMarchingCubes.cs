@@ -10,7 +10,7 @@ using Unity.Mathematics;
 
 using MqoUtility;
 
-namespace MarchingCubes
+namespace Abarabone.MarchingCubes
 {
     static public class ConvertMqoForMarchingCubes
     {

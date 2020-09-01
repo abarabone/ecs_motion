@@ -21,10 +21,29 @@ namespace Abarabone.MarchingCubes
 
 
 
+    static public partial class CubeGrid
+    {
+        public unsafe struct BufferData : IComponentData
+        {
+            public uint* pCubes;
+            public int CubeCount;
+        }
+    }
+
+    static public partial class CubeGridArray
+    {
+        public unsafe struct BufferData : IComponentData
+        {
+            public NativeArray<CubeGrid32x32x32UnsafePtr> grids;
+        }
+    }
+
+
+
     static public partial class Grid
     {
 
-        public class GridBufferData : IComponentData, IDisposable
+        public struct GridBufferData : IComponentData, IDisposable
         {
             public CubeGridArrayUnsafe cubeGrids;
             //public MeshCollider[,,] cubeGridColliders;
@@ -34,10 +53,10 @@ namespace Abarabone.MarchingCubes
             //public NativeQueue<CubeInstance> cubeInstances;
 
 
-            public GridBufferData()
-            {
+            //public GridBufferData()
+            //{
 
-            }
+            //}
 
             public void Dispose()
             {

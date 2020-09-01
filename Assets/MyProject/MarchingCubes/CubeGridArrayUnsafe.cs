@@ -27,6 +27,7 @@ namespace Abarabone.MarchingCubes
 
         // 本体を格納（アドレスを変化させてはいけないので、capacity を拡張してはいけない）
         NativeList<CubeGrid32x32x32Unsafe> gridStock;
+        
 
         // 本体へのポインタを格納
         public NativeArray<CubeGrid32x32x32UnsafePtr> grids;

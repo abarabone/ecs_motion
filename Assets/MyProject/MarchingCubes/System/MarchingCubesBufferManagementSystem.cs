@@ -14,7 +14,7 @@ namespace Abarabone.MarchingCubes
     using MarchingCubes;
     using Abarabone.Draw;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     public class MarchingCubesBufferManagementSystem : SystemBase
     {
@@ -29,7 +29,7 @@ namespace Abarabone.MarchingCubes
 
             var res = this.GetSingleton<Resource.DrawResourceData>();
             var gridbuf = this.GetSingleton<Grid.GridBufferData>();
-            var resbuf = new Resource.DrawBufferData();//this.GetSingleton<Resource.DrawBufferData>();
+            var resbuf = this.GetSingleton<Resource.DrawBufferData>();//new Resource.DrawBufferData();//
             var gridinfo = this.GetSingleton<Grid.GridInfoData>();
 
             gridbuf.gridData = new NativeList<CubeUtility.GridInstanceData>(gridinfo.maxDrawGridLength, Allocator.Persistent);
