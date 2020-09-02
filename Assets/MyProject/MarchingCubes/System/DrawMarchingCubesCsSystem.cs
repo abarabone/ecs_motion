@@ -21,16 +21,6 @@ namespace Abarabone.MarchingCubes
         protected unsafe override void OnUpdate()
         {
 
-            this.Entities
-                .ForEach(
-                    (in Grid.GridBufferData buf) =>
-                    {
-                        
-                    }
-                )
-                .ScheduleParallel();
-
-
             //var res = this.GetSingleton<Resource.DrawResourceData>();
             //var gridbuf = this.GetSingleton<Grid.GridBufferData>();
             //var resbuf = this.GetSingleton<Resource.DrawBufferData>();

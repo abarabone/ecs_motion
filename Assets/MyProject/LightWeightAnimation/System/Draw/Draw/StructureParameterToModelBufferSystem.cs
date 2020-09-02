@@ -23,10 +23,10 @@ namespace Abarabone.Draw
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     [UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    public class StructureParameterToModelBufferSystem : JobComponentSystem
+    public class StructureParameterToModelBufferSystem : SystemBase
     {
 
-        BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
+        BeginDrawCsBarier presentationBarier;
 
         protected override void OnStartRunning()
         {
@@ -34,13 +34,12 @@ namespace Abarabone.Draw
         }
 
 
-        protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
+        protected unsafe override void OnUpdate()
         {
 
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
 
-
-            inputDeps = this.Entities
+            this.Entities
                 .WithBurst()
                 .WithReadOnly( offsetsOfDrawModel )
                 .ForEach(
@@ -64,11 +63,10 @@ namespace Abarabone.Draw
                         }
                     }
                 )
-                .Schedule( inputDeps );
+                .ScheduleParallel();
 
 
-            this.presentationBarier.AddJobHandleForProducer( inputDeps );
-            return inputDeps;
+            this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
 
 

@@ -34,8 +34,24 @@ namespace Abarabone.MarchingCubes
     {
         public unsafe struct BufferData : IComponentData
         {
-            public NativeArray<CubeGrid32x32x32UnsafePtr> grids;
+            public UnsafeList<CubeGrid.BufferData> grids;
         }
+
+        public struct InfoData : IComponentData
+        {
+
+        }
+    }
+
+    static public partial class CubeGridGlobal
+    {
+
+        public struct InfoData : IComponentData
+        {
+            public int MaxDrawGridLength;
+            public int MaxCubeInstances;
+        }
+
     }
 
 
