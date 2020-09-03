@@ -75,13 +75,13 @@ namespace Abarabone.MarchingCubes
 
             void makeDefaultGrids_( ref CubeGridArrayUnsafe ga )
             {
-                ga.gridStock.AddNoResize( CubeGrid32x32x32Unsafe.CreateDefaultCube( isFillAll: false ) );
+                ga.gridStock.AddNoResize(CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank));// isFillAll: false); );
                 ga.defaultBlankCubePtr = new CubeGrid32x32x32UnsafePtr
                 {
                     p = (CubeGrid32x32x32Unsafe*)ga.gridStock.GetUnsafePtr() + 0
                 };
 
-                ga.gridStock.AddNoResize( CubeGrid32x32x32Unsafe.CreateDefaultCube( isFillAll: true ) );
+                ga.gridStock.AddNoResize(CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid));// isFillAll: true ) );
                 ga.defaultFilledCubePtr = new CubeGrid32x32x32UnsafePtr
                 {
                     p = (CubeGrid32x32x32Unsafe*)ga.gridStock.GetUnsafePtr() + 1
@@ -117,7 +117,7 @@ namespace Abarabone.MarchingCubes
 
                 if( grid.p == this.defaultFilledCubePtr.p | grid.p == this.defaultBlankCubePtr.p )
                 {
-                    var newGrid = new CubeGrid32x32x32Unsafe( isFillAll: grid.p->IsFull );
+                    var newGrid = new CubeGrid32x32x32Unsafe( grid.p->IsFull ? GridFillMode.Solid : GridFillMode.Blank );
                     this.gridStock.AddNoResize( newGrid );// アドレスを変化させてはいけないので、拡張してはいけない。
 
                     return this.grids[ i ] = new CubeGrid32x32x32UnsafePtr

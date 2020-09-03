@@ -21,7 +21,7 @@ namespace Abarabone.MarchingCubes
 
         BeginDrawCsBarier presentationBarier;
 
-        NativeList<>
+        //NativeList<>
 
         protected override void OnStartRunning()
         {

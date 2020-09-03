@@ -21,20 +21,20 @@ namespace Abarabone.MarchingCubes
 
 
 
-    static public partial class CubeGrid
-    {
-        public struct BufferData// : IComponentData
-        {
-            public UIntPtr pCubes;
-            public int CubeCount;
-        }
-    }
+    //static public partial class CubeGrid
+    //{
+    //    public struct BufferData// : IComponentData
+    //    {
+    //        public UIntPtr pCubes;
+    //        public int CubeCount;
+    //    }
+    //}
 
     static public partial class CubeGridArea
     {
         public unsafe struct BufferData : IComponentData
         {
-            public UnsafeList<CubeGrid.BufferData> Grids;
+            public UnsafeList<CubeGrid32x32x32Unsafe> Grids;
         }
 
         public struct InfoData : IComponentData
@@ -52,13 +52,13 @@ namespace Abarabone.MarchingCubes
             public UnsafeList<UIntPtr> CubeBuffers;
         }
 
-        public struct DefualtGridFillData : IComponentData
+        public struct DefualtGridSolidData : IComponentData
         {
-            public CubeGrid.BufferData DefaultGrid;
+            public CubeGrid32x32x32Unsafe DefaultGrid;
         }
         public struct DefualtGridBlankData : IComponentData
         {
-            public CubeGrid.BufferData DefaultGrid;
+            public CubeGrid32x32x32Unsafe DefaultGrid;
         }
 
         public struct InfoData : IComponentData

@@ -14,17 +14,21 @@ namespace Abarabone.MarchingCubes.Authoring
 {
     using Abarabone.Draw;
 
-    public class MarchingCubesGridAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
+    public class MarchingCubesGridAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public int3 GridLength;
 
         public GridFillMode FillMode;
-        public enum GridFillMode
+
+        public MarchingCubesGlobalDataAuthoring GlobalData;
+
+
+
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            Blank,
-            Fill,
-        };
+            referencedPrefabs.Add(this.GlobalData.gameObject);
+        }
 
 
 
@@ -32,14 +36,15 @@ namespace Abarabone.MarchingCubes.Authoring
         {
 
             var main = this.gameObject;
+            var global = this.GlobalData.gameObject;
 
 
-            setGridArea_(conversionSystem, main, this.FillMode);
+            setGridArea_(conversionSystem, main, global, this.FillMode);
 
             return;
 
 
-            void setGridArea_(GameObjectConversionSystem gcs_, GameObject main_, GridFillMode fillMode_)
+            void setGridArea_(GameObjectConversionSystem gcs_, GameObject main_, GameObject global_, GridFillMode fillMode_)
             {
                 var em = gcs_.DstEntityManager;
 
@@ -60,7 +65,7 @@ namespace Abarabone.MarchingCubes.Authoring
                 em.SetComponentData(ent,
                     new CubeGridArea.BufferData
                     {
-                        Grids = Alloc(gcs_, fillMode_, totalSize),
+                        Grids = AllocGridArea(gcs_, global_, totalSize, fillMode_),
                     }
                 );
                 em.SetComponentData(ent,
@@ -85,14 +90,18 @@ namespace Abarabone.MarchingCubes.Authoring
             }
 
 
-            UnsafeList<CubeGrid.BufferData> Alloc(GameObjectConversionSystem gcs_, GridFillMode fillMode_, int totalSize_)
+            UnsafeList<CubeGrid32x32x32Unsafe> AllocGridArea
+                (GameObjectConversionSystem gcs_, GameObject global_, int totalSize_, GridFillMode fillMode_)
             {
-                var buffer = new UnsafeList<CubeGrid.BufferData>(totalSize_, Allocator.Persistent);
+                var buffer = new UnsafeList<CubeGrid32x32x32Unsafe>(totalSize_, Allocator.Persistent);
                 buffer.length = totalSize_;
 
-                var defaultGrid = fillMode_ == GridFillMode.Fill
-                    ? gcs_.GetSingleton<CubeGridGlobal.DefualtGridFillData>().DefaultGrid
-                    : gcs_.GetSingleton<CubeGridGlobal.DefualtGridBlankData>().DefaultGrid;
+                var em = gcs_.DstEntityManager;
+
+                var globalEnt = gcs_.GetPrimaryEntity(global_);
+                var defaultGrid = fillMode_ == GridFillMode.Solid
+                    ? em.GetComponentData<CubeGridGlobal.DefualtGridSolidData>(globalEnt).DefaultGrid
+                    : em.GetComponentData<CubeGridGlobal.DefualtGridBlankData>(globalEnt).DefaultGrid;
 
                 for(var i=0; i<totalSize_; i++)
                 {

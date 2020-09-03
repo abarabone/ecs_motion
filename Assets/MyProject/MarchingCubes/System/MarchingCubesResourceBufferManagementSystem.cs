@@ -16,7 +16,7 @@ namespace Abarabone.MarchingCubes
 
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
-    public class MarchingCubesBufferManagementSystem : SystemBase
+    public class MarchingCubesResourceBufferManagementSystem : SystemBase
     {
 
 
@@ -27,21 +27,21 @@ namespace Abarabone.MarchingCubes
             this.Enabled = false;
 
 
-            var res = this.GetSingleton<Resource.DrawResourceData>();
-            var gridbuf = this.GetSingleton<Grid.GridBufferData>();
-            var resbuf = this.GetSingleton<Resource.DrawBufferData>();//new Resource.DrawBufferData();//
-            var gridinfo = this.GetSingleton<Grid.GridInfoData>();
+            ////var res = this.GetSingleton<Resource.DrawResourceData>();
+            ////var gridbuf = this.GetSingleton<Grid.GridBufferData>();
+            ////var resbuf = this.GetSingleton<Resource.DrawBufferData>();//new Resource.DrawBufferData();//
+            ////var gridinfo = this.GetSingleton<Grid.GridInfoData>();
 
-            gridbuf.gridData = new NativeList<CubeUtility.GridInstanceData>(gridinfo.maxDrawGridLength, Allocator.Persistent);
-            gridbuf.cubeInstances = new NativeList<CubeInstance>(gridinfo.maxCubeInstances, Allocator.Persistent);
-            //gridbuf.cubeInstances = new NativeQueue<CubeInstance>( Allocator.Persistent );
+            //gridbuf.gridData = new NativeList<CubeUtility.GridInstanceData>(gridinfo.maxDrawGridLength, Allocator.Persistent);
+            //gridbuf.cubeInstances = new NativeList<CubeInstance>(gridinfo.maxCubeInstances, Allocator.Persistent);
+            ////gridbuf.cubeInstances = new NativeQueue<CubeInstance>( Allocator.Persistent );
 
-            //res.meshResources = new MeshResources(this.MarchingCubeAsset, this.maxDrawGridLength);
-            this.SetSingleton(res);
+            ////res.meshResources = new MeshResources(this.MarchingCubeAsset, this.maxDrawGridLength);
+            //this.SetSingleton(res);
 
-            setResources_(resbuf, res);
-            //initCubes_();
-            //createHitMesh_();
+            //setResources_(resbuf, res);
+            ////initCubes_();
+            ////createHitMesh_();
 
             return;
 
@@ -89,11 +89,11 @@ namespace Abarabone.MarchingCubes
         protected override void OnDestroy()
         {
 
-            var gridbuf = this.GetSingleton<Grid.GridBufferData>();
+            //var gridbuf = this.GetSingleton<Grid.GridBufferData>();
             var resbuf = this.GetSingleton<Resource.DrawBufferData>();
 
             resbuf.Dispose();
-            gridbuf.Dispose();
+            //gridbuf.Dispose();
 
 
             base.OnDestroy();
