@@ -23,28 +23,43 @@ namespace Abarabone.MarchingCubes
 
     static public partial class CubeGrid
     {
-        public unsafe struct BufferData : IComponentData
+        public struct BufferData// : IComponentData
         {
-            public uint* pCubes;
+            public UIntPtr pCubes;
             public int CubeCount;
         }
     }
 
-    static public partial class CubeGridArray
+    static public partial class CubeGridArea
     {
         public unsafe struct BufferData : IComponentData
         {
-            public UnsafeList<CubeGrid.BufferData> grids;
+            public UnsafeList<CubeGrid.BufferData> Grids;
         }
 
         public struct InfoData : IComponentData
         {
-
+            public int3 GridLength;
+            public int3 GridWholeLength;
         }
     }
 
     static public partial class CubeGridGlobal
     {
+
+        public struct BufferData : IComponentData
+        {
+            public UnsafeList<UIntPtr> CubeBuffers;
+        }
+
+        public struct DefualtGridFillData : IComponentData
+        {
+            public CubeGrid.BufferData DefaultGrid;
+        }
+        public struct DefualtGridBlankData : IComponentData
+        {
+            public CubeGrid.BufferData DefaultGrid;
+        }
 
         public struct InfoData : IComponentData
         {
@@ -56,42 +71,42 @@ namespace Abarabone.MarchingCubes
 
 
 
-    static public partial class Grid
-    {
+    //static public partial class Grid
+    //{
 
-        public struct GridBufferData : IComponentData, IDisposable
-        {
-            public CubeGridArrayUnsafe cubeGrids;
-            //public MeshCollider[,,] cubeGridColliders;
+    //    public struct GridBufferData : IComponentData, IDisposable
+    //    {
+    //        public CubeGridArrayUnsafe cubeGrids;
+    //        //public MeshCollider[,,] cubeGridColliders;
 
-            public NativeList<CubeUtility.GridInstanceData> gridData;
-            public NativeList<CubeInstance> cubeInstances;
-            //public NativeQueue<CubeInstance> cubeInstances;
+    //        public NativeList<CubeUtility.GridInstanceData> gridData;
+    //        public NativeList<CubeInstance> cubeInstances;
+    //        //public NativeQueue<CubeInstance> cubeInstances;
 
 
-            //public GridBufferData()
-            //{
+    //        //public GridBufferData()
+    //        //{
 
-            //}
+    //        //}
 
-            public void Dispose()
-            {
+    //        public void Dispose()
+    //        {
 
-            }
-        }
+    //        }
+    //    }
 
-        public struct GridPointerData : IComponentData
-        {
+    //    public struct GridPointerData : IComponentData
+    //    {
 
-        }
+    //    }
 
-        public struct GridInfoData : IComponentData
-        {
-            public int maxDrawGridLength;
-            public int maxCubeInstances;
-        }
+    //    public struct GridInfoData : IComponentData
+    //    {
+    //        public int maxDrawGridLength;
+    //        public int maxCubeInstances;
+    //    }
         
-    }
+    //}
 
 
 

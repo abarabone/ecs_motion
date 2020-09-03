@@ -35,7 +35,7 @@ namespace Abarabone.MarchingCubes
             this.Entities
                 .WithBurst()
                 .ForEach(
-                    (in CubeGridArray.BufferData buf) =>
+                    (in CubeGridArea.BufferData buf) =>
                     {
 
 
