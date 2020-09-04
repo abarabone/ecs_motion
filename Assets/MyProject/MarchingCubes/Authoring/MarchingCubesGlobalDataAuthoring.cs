@@ -49,32 +49,32 @@ namespace Abarabone.MarchingCubes.Authoring
                 em.AddComponents(ent, types);
 
 
-                var buffer = new UnsafeList<UIntPtr>(this.MaxCubeInstances, Allocator.Persistent);
-                var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
-                var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
-                buffer.Add((UIntPtr)solid.pUnits);
-                buffer.Add((UIntPtr)blank.pUnits);
+                //var buffer = new UnsafeList<UIntPtr>(this.MaxCubeInstances, Allocator.Persistent);
+                //var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
+                //var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
+                //buffer.Add((UIntPtr)solid.pUnits);
+                //buffer.Add((UIntPtr)blank.pUnits);
 
 
-                em.SetComponentData(ent,
-                    new CubeGridGlobal.BufferData
-                    {
-                        CubeBuffers = buffer,
-                    }
-                );
-                em.SetComponentData(ent,
-                    new CubeGridGlobal.DefualtGridSolidData
-                    {
-                        DefaultGrid = solid,
-                    }
-                );
-                em.SetComponentData(ent,
-                    new CubeGridGlobal.DefualtGridBlankData
-                    {
-                        DefaultGrid = blank,
-                    }
-                );
-                em.SetComponentData(ent,
+                //em.SetComponentData(ent,
+                //    new CubeGridGlobal.BufferData
+                //    {
+                //        CubeBuffers = buffer,
+                //    }
+                //);
+                //em.SetComponentData(ent,
+                //    new CubeGridGlobal.DefualtGridSolidData
+                //    {
+                //        DefaultGrid = solid,
+                //    }
+                //);
+                //em.SetComponentData(ent,
+                //    new CubeGridGlobal.DefualtGridBlankData
+                //    {
+                //        DefaultGrid = blank,
+                //    }
+                //);
+                //em.SetComponentData(ent,
                     new CubeGridGlobal.InfoData
                     {
                         MaxCubeInstances = this.MaxCubeInstances,

@@ -32,6 +32,13 @@ namespace Abarabone.MarchingCubes
 
     static public partial class CubeGridArea
     {
+
+        public struct InitializeData : IComponentData
+        {
+            public GridFillMode FillMode;
+        }
+
+
         public unsafe struct BufferData : IComponentData
         {
             public UnsafeList<CubeGrid32x32x32Unsafe> Grids;
@@ -183,6 +190,14 @@ namespace Abarabone.MarchingCubes
 
     }
 
+
+
+
+    static public partial class GridArea
+    {
+
+
+    }
 
     static public partial class Resource
     {
