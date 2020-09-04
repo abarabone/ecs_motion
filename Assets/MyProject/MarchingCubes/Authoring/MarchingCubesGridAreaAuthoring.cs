@@ -13,6 +13,7 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace Abarabone.MarchingCubes.Authoring
 {
     using Abarabone.Draw;
+    using Abarabone.Model;
 
     public class MarchingCubesGridAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {

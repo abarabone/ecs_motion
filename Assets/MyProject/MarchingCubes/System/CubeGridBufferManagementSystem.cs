@@ -15,7 +15,7 @@ namespace Abarabone.MarchingCubes
     using MarchingCubes;
     using Abarabone.Draw;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     public class CubeGridBufferManagementSystem : SystemBase
     {
@@ -74,9 +74,7 @@ namespace Abarabone.MarchingCubes
                 var buffer = new UnsafeList<CubeGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
                 buffer.length = totalSize;
 
-                var defaultGrid = fillMode == GridFillMode.Solid
-                    ? this.GetSingleton<CubeGridGlobal.DefualtGridSolidData>().DefaultGrid
-                    : this.GetSingleton<CubeGridGlobal.DefualtGridBlankData>().DefaultGrid;
+                var defaultGrid = fillMode == GridFillMode.Solid ? solid : blank;
 
                 for (var i = 0; i < totalSize; i++)
                 {

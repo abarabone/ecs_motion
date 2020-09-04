@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Jobs;
@@ -13,7 +14,7 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace Abarabone.MarchingCubes.Authoring
 {
     using Abarabone.Draw;
-    using System;
+    using Abarabone.Model;
 
     public class MarchingCubesGlobalDataAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -44,7 +45,8 @@ namespace Abarabone.MarchingCubes.Authoring
                     typeof(CubeGridGlobal.BufferData),
                     typeof(CubeGridGlobal.DefualtGridBlankData),
                     typeof(CubeGridGlobal.DefualtGridSolidData),
-                    typeof(CubeGridGlobal.InfoData)
+                    typeof(CubeGridGlobal.InfoData),
+                    typeof(ModelPrefabNoNeedLinkedEntityGroupTag)
                 );
                 em.AddComponents(ent, types);
 
@@ -74,7 +76,7 @@ namespace Abarabone.MarchingCubes.Authoring
                 //        DefaultGrid = blank,
                 //    }
                 //);
-                //em.SetComponentData(ent,
+                em.SetComponentData(ent,
                     new CubeGridGlobal.InfoData
                     {
                         MaxCubeInstances = this.MaxCubeInstances,
