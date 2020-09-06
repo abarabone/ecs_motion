@@ -51,31 +51,32 @@ namespace Abarabone.MarchingCubes.Authoring
                 em.AddComponents(ent, types);
 
 
-                //var buffer = new UnsafeList<UIntPtr>(this.MaxCubeInstances, Allocator.Persistent);
-                //var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
-                //var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
-                //buffer.Add((UIntPtr)solid.pUnits);
-                //buffer.Add((UIntPtr)blank.pUnits);
+                // 本当は、system で初期化したいが、OnCreate() や OnRunning() では entity を取得できないようだ…
+                var buffer = new UnsafeList<UIntPtr>(this.MaxCubeInstances, Allocator.Persistent);
+                var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
+                var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
+                buffer.Add((UIntPtr)solid.pUnits);
+                buffer.Add((UIntPtr)blank.pUnits);
 
 
-                //em.SetComponentData(ent,
-                //    new CubeGridGlobal.BufferData
-                //    {
-                //        CubeBuffers = buffer,
-                //    }
-                //);
-                //em.SetComponentData(ent,
-                //    new CubeGridGlobal.DefualtGridSolidData
-                //    {
-                //        DefaultGrid = solid,
-                //    }
-                //);
-                //em.SetComponentData(ent,
-                //    new CubeGridGlobal.DefualtGridBlankData
-                //    {
-                //        DefaultGrid = blank,
-                //    }
-                //);
+                em.SetComponentData(ent,
+                    new CubeGridGlobal.BufferData
+                    {
+                        CubeBuffers = buffer,
+                    }
+                );
+                em.SetComponentData(ent,
+                    new CubeGridGlobal.DefualtGridSolidData
+                    {
+                        DefaultGrid = solid,
+                    }
+                );
+                em.SetComponentData(ent,
+                    new CubeGridGlobal.DefualtGridBlankData
+                    {
+                        DefaultGrid = blank,
+                    }
+                );
                 em.SetComponentData(ent,
                     new CubeGridGlobal.InfoData
                     {
@@ -84,6 +85,55 @@ namespace Abarabone.MarchingCubes.Authoring
                     }
                 );
             }
+            //unsafe void setGlobalData_(GameObjectConversionSystem gcs_, GameObject global_)
+            //{
+            //    var em = gcs_.DstEntityManager;
+
+            //    var ent = gcs_.GetPrimaryEntity(global_);
+            //    var types = new ComponentTypes
+            //    (
+            //        typeof(CubeGridGlobal.BufferData),
+            //        typeof(CubeGridGlobal.DefualtGridBlankData),
+            //        typeof(CubeGridGlobal.DefualtGridSolidData),
+            //        typeof(CubeGridGlobal.InfoData),
+            //        typeof(ModelPrefabNoNeedLinkedEntityGroupTag)
+            //    );
+            //    em.AddComponents(ent, types);
+
+
+            //    //var buffer = new UnsafeList<UIntPtr>(this.MaxCubeInstances, Allocator.Persistent);
+            //    //var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
+            //    //var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
+            //    //buffer.Add((UIntPtr)solid.pUnits);
+            //    //buffer.Add((UIntPtr)blank.pUnits);
+
+
+            //    //em.SetComponentData(ent,
+            //    //    new CubeGridGlobal.BufferData
+            //    //    {
+            //    //        CubeBuffers = buffer,
+            //    //    }
+            //    //);
+            //    //em.SetComponentData(ent,
+            //    //    new CubeGridGlobal.DefualtGridSolidData
+            //    //    {
+            //    //        DefaultGrid = solid,
+            //    //    }
+            //    //);
+            //    //em.SetComponentData(ent,
+            //    //    new CubeGridGlobal.DefualtGridBlankData
+            //    //    {
+            //    //        DefaultGrid = blank,
+            //    //    }
+            //    //);
+            //    em.SetComponentData(ent,
+            //        new CubeGridGlobal.InfoData
+            //        {
+            //            MaxCubeInstances = this.MaxCubeInstances,
+            //            MaxDrawGridLength = this.MaxDrawGridLength,
+            //        }
+            //    );
+            //}
 
 
         }

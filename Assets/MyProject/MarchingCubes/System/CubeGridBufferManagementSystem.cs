@@ -15,7 +15,7 @@ namespace Abarabone.MarchingCubes
     using MarchingCubes;
     using Abarabone.Draw;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     public class CubeGridBufferManagementSystem : SystemBase
     {
@@ -25,9 +25,13 @@ namespace Abarabone.MarchingCubes
         {
             base.OnCreate();
 
+        }
+
+        protected unsafe override void OnStartRunning()
+        {
+            base.OnStartRunning();
             this.Enabled = false;
 
-;
             var globalInfo = this.GetSingleton<CubeGridGlobal.InfoData>();
 
             var gbuffer = new UnsafeList<UIntPtr>(globalInfo.MaxCubeInstances, Allocator.Persistent);
@@ -88,7 +92,9 @@ namespace Abarabone.MarchingCubes
 
 
         protected override void OnUpdate()
-        { }
+        { 
+            var globalInfo = this.GetSingleton<CubeGridGlobal.InfoData>();
+}
 
 
 

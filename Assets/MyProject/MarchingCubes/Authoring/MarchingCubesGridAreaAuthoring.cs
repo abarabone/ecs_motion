@@ -63,12 +63,12 @@ namespace Abarabone.MarchingCubes.Authoring
                 var wholeLength = this.GridLength + 2;
                 var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
 
-                //em.SetComponentData(ent,
-                //    new CubeGridArea.BufferData
-                //    {
-                //        Grids = AllocGridArea(gcs_, global_, totalSize, fillMode_),
-                //    }
-                //);
+                em.SetComponentData(ent,
+                    new CubeGridArea.BufferData
+                    {
+                        Grids = allocGridArea_(gcs_, global_, totalSize, fillMode_),
+                    }
+                );
                 em.SetComponentData(ent,
                     new CubeGridArea.InfoData
                     {
@@ -88,6 +88,22 @@ namespace Abarabone.MarchingCubes.Authoring
                         Value = this.transform.position,
                     }
                 );
+
+
+                UnsafeList<CubeGrid32x32x32Unsafe> allocGridArea_(int totalSize, GridFillMode fillMode)
+                {
+                    var buffer = new UnsafeList<CubeGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
+                    buffer.length = totalSize;
+
+                    var defaultGrid = fillMode == GridFillMode.Solid ? solid : blank;
+
+                    for (var i = 0; i < totalSize; i++)
+                    {
+                        buffer[i] = defaultGrid;
+                    }
+
+                    return buffer;
+                }
             }
 
 
