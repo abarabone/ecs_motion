@@ -14,39 +14,30 @@ namespace Abarabone.MarchingCubes
     using MarchingCubes;
     using Abarabone.Draw;
 
-    [DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    //[DisableAutoCreation]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class MarchingCubesResourceBufferManagementSystem : SystemBase
     {
 
 
-        protected override void OnCreate()
+        protected override void OnStartRunning()
         {
-            base.OnCreate();
-
             this.Enabled = false;
 
 
+            var init = this.GetSingleton<Resource.Initialize>();
             var res = this.GetSingleton<Resource.DrawResourceData>();
-            var gridbuf = this.GetSingleton<Grid.GridBufferData>();
-            var resbuf = this.GetSingleton<Resource.DrawBufferData>();//new Resource.DrawBufferData();//
-            var gridinfo = this.GetSingleton<Grid.GridInfoData>();
 
-            gridbuf.gridData = new NativeList<CubeUtility.GridInstanceData>(gridinfo.maxDrawGridLength, Allocator.Persistent);
-            gridbuf.cubeInstances = new NativeList<CubeInstance>(gridinfo.maxCubeInstances, Allocator.Persistent);
-            //gridbuf.cubeInstances = new NativeQueue<CubeInstance>( Allocator.Persistent );
+            var buf = Resource.CreateDrawBufferData(init.Asset, init.MaxGridLengthInShader);
+            this.SetSingleton(buf);
 
-            //res.meshResources = new MeshResources(this.MarchingCubeAsset, this.maxDrawGridLength);
-            this.SetSingleton(res);
-
-            setResources_(resbuf, res);
-            //initCubes_();
-            //createHitMesh_();
+            setDrawResources_(buf, res);
 
             return;
 
 
-            void setResources_(Resource.DrawBufferData resbuf_, Resource.DrawResourceData res_)
+            void setDrawResources_(Resource.DrawBufferData resbuf_, Resource.DrawResourceData res_)
             {
                 //uint4 cube_patterns[ 254 ][2];
                 // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
@@ -74,8 +65,8 @@ namespace Abarabone.MarchingCubes
                 //res_.CubeMaterial.SetBuffer( "grid_cubeids", res.GridCubeIdBuffer );
 
 
-                res_.SetGridCubeIdShader.SetBuffer(0, "src_instances", resbuf_.CubeInstancesBuffer);
-                res_.SetGridCubeIdShader.SetTexture(0, "dst_grid_cubeids", resbuf_.GridCubeIdBuffer);
+                res_.GridCubeIdSetShader.SetBuffer(0, "src_instances", resbuf_.CubeInstancesBuffer);
+                res_.GridCubeIdSetShader.SetTexture(0, "dst_grid_cubeids", resbuf_.GridCubeIdBuffer);
                 //res_.SetGridCubeIdShader.SetBuffer( 0, "dst_grid_cubeids", res_.GridCubeIdBuffer );
             }
 
