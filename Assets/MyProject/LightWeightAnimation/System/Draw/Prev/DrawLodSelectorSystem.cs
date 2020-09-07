@@ -43,13 +43,13 @@ namespace Abarabone.Draw
                             in DrawInstance.ModelLod2LinkData lodLink,
                             in DrawInstance.PostureLinkData posturelink
                         ) =>
-                        {
+                    {
 
-                            var pos = poss[posturelink.PostureEntity];
+                        var pos = poss[posturelink.PostureEntity];
 
-                            modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink, modelLink);
+                        modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink, modelLink);
 
-                        }
+                    }
                 )
                 .ScheduleParallel(this.Dependency);
 
@@ -63,11 +63,11 @@ namespace Abarabone.Draw
                             in DrawInstance.ModelLod2LinkData lodLink,
                             in Translation pos
                         ) =>
-                        {
+                    {
 
-                            modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink, modelLink);
+                        modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink, modelLink);
 
-                        }
+                    }
                 )
                 .ScheduleParallel(this.Dependency);
 

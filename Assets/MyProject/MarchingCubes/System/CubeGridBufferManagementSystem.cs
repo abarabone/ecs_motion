@@ -15,22 +15,26 @@ namespace Abarabone.MarchingCubes
     using MarchingCubes;
     using Abarabone.Draw;
 
-    [DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    //[DisableAutoCreation]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class CubeGridBufferManagementSystem : SystemBase
     {
 
 
-        protected unsafe override void OnCreate()
+        EntityCommandBufferSystem cmdSystem;
+
+        protected override void OnCreate()
         {
             base.OnCreate();
 
+            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
         }
 
-        protected unsafe override void OnStartRunning()
+        protected unsafe override void OnUpdate()
         {
-            base.OnStartRunning();
-            this.Enabled = false;
+            var cmd = this.cmdSystem.CreateCommandBuffer();
+
 
             var globalInfo = this.GetSingleton<CubeGridGlobal.InfoData>();
 
@@ -47,11 +51,12 @@ namespace Abarabone.MarchingCubes
 
             this.Entities
                 .ForEach(
-                    (
-                        ref CubeGridArea.BufferData buffer,
-                        in CubeGridArea.InfoData info,
-                        in CubeGridArea.InitializeData init
-                    ) =>
+                        (
+                            Entity entity,
+                            ref CubeGridArea.BufferData buffer,
+                            in CubeGridArea.InfoData info,
+                            in CubeGridArea.InitializeData init
+                        ) =>
                     {
 
                         var wholeLength = info.GridLength + 2;
@@ -61,6 +66,8 @@ namespace Abarabone.MarchingCubes
                         gbuffer.Add((UIntPtr)gridarea.Ptr);
 
                         buffer.Grids = gridarea;
+
+                        cmd.RemoveComponent<CubeGridArea.InitializeData>(entity);
                     }
                 )
                 .Run();
@@ -88,13 +95,6 @@ namespace Abarabone.MarchingCubes
                 return buffer;
             }
         }
-
-
-
-        protected override void OnUpdate()
-        { 
-            var globalInfo = this.GetSingleton<CubeGridGlobal.InfoData>();
-}
 
 
 

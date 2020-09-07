@@ -78,45 +78,6 @@ namespace Abarabone.MarchingCubes
 
 
 
-    //static public partial class Grid
-    //{
-
-    //    public struct GridBufferData : IComponentData, IDisposable
-    //    {
-    //        public CubeGridArrayUnsafe cubeGrids;
-    //        //public MeshCollider[,,] cubeGridColliders;
-
-    //        public NativeList<CubeUtility.GridInstanceData> gridData;
-    //        public NativeList<CubeInstance> cubeInstances;
-    //        //public NativeQueue<CubeInstance> cubeInstances;
-
-
-    //        //public GridBufferData()
-    //        //{
-
-    //        //}
-
-    //        public void Dispose()
-    //        {
-
-    //        }
-    //    }
-
-    //    public struct GridPointerData : IComponentData
-    //    {
-
-    //    }
-
-    //    public struct GridInfoData : IComponentData
-    //    {
-    //        public int maxDrawGridLength;
-    //        public int maxCubeInstances;
-    //    }
-        
-    //}
-
-
-
 
     static public partial class Resource
     {

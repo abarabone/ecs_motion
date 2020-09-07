@@ -15,21 +15,12 @@ namespace Abarabone.MarchingCubes.Authoring
     using Abarabone.Draw;
     using Abarabone.Model;
 
-    public class MarchingCubesGridAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class MarchingCubesGridAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         public int3 GridLength;
 
         public GridFillMode FillMode;
-
-        public MarchingCubesGlobalDataAuthoring GlobalData;
-
-
-
-        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        {
-            referencedPrefabs.Add(this.GlobalData.gameObject);
-        }
 
 
 
@@ -37,21 +28,20 @@ namespace Abarabone.MarchingCubes.Authoring
         {
 
             var main = this.gameObject;
-            var global = this.GlobalData.gameObject;
 
-
-            setGridArea_(conversionSystem, main, global, this.FillMode);
+            setGridArea_(conversionSystem, main, this.FillMode);
 
             return;
 
 
-            void setGridArea_(GameObjectConversionSystem gcs_, GameObject main_, GameObject global_, GridFillMode fillMode_)
+            void setGridArea_(GameObjectConversionSystem gcs_, GameObject main_, GridFillMode fillMode_)
             {
                 var em = gcs_.DstEntityManager;
 
                 var ent = gcs_.GetPrimaryEntity(main_);
                 var types = new ComponentTypes
                 (
+                    typeof(CubeGridArea.InitializeData),
                     typeof(CubeGridArea.BufferData),
                     typeof(CubeGridArea.InfoData),
                     typeof(Rotation),
@@ -63,10 +53,16 @@ namespace Abarabone.MarchingCubes.Authoring
                 var wholeLength = this.GridLength + 2;
                 var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
 
+                //em.SetComponentData(ent,
+                //    new CubeGridArea.BufferData
+                //    {
+                //        Grids = allocGridArea_(gcs_, global_, totalSize, fillMode_),
+                //    }
+                //);
                 em.SetComponentData(ent,
-                    new CubeGridArea.BufferData
+                    new CubeGridArea.InitializeData
                     {
-                        Grids = allocGridArea_(gcs_, global_, totalSize, fillMode_),
+                        FillMode = fillMode_,
                     }
                 );
                 em.SetComponentData(ent,
@@ -90,20 +86,20 @@ namespace Abarabone.MarchingCubes.Authoring
                 );
 
 
-                UnsafeList<CubeGrid32x32x32Unsafe> allocGridArea_(int totalSize, GridFillMode fillMode)
-                {
-                    var buffer = new UnsafeList<CubeGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
-                    buffer.length = totalSize;
+                //UnsafeList<CubeGrid32x32x32Unsafe> allocGridArea_(int totalSize, GridFillMode fillMode)
+                //{
+                //    var buffer = new UnsafeList<CubeGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
+                //    buffer.length = totalSize;
 
-                    var defaultGrid = fillMode == GridFillMode.Solid ? solid : blank;
+                //    var defaultGrid = fillMode == GridFillMode.Solid ? solid : blank;
 
-                    for (var i = 0; i < totalSize; i++)
-                    {
-                        buffer[i] = defaultGrid;
-                    }
+                //    for (var i = 0; i < totalSize; i++)
+                //    {
+                //        buffer[i] = defaultGrid;
+                //    }
 
-                    return buffer;
-                }
+                //    return buffer;
+                //}
             }
 
 
