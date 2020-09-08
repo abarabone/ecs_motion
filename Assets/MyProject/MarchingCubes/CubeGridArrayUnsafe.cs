@@ -13,7 +13,7 @@ using Unity.Collections.Experimental;
 namespace Abarabone.MarchingCubes
 {
 
-    unsafe public struct CubeGridGlobalData
+    unsafe public struct CubeGridGlobalData : IDisposable
     {
 
         // 本体を格納（アドレスを変化させてはいけないので、capacity を拡張してはいけない）
@@ -21,40 +21,29 @@ namespace Abarabone.MarchingCubes
 
 
         // all 0 と all 1 のグリッド。本体は gridStock 内に作られている。
-        CubeGrid32x32x32UnsafePtr defaultBlankCubePtr;
-        CubeGrid32x32x32UnsafePtr defaultFilledCubePtr;
+        CubeGrid32x32x32Unsafe defaultBlankGrid;
+        CubeGrid32x32x32Unsafe defaultSolidGrid;
 
 
         public CubeGridGlobalData(int maxGridLength)
         {
-            this.gridStock = allocGridStock_(maxGridLength);
+            this.gridStock = new UnsafeList<UIntPtr>(maxGridLength, Allocator.Persistent);
 
-            makeDefaultGrids_();
+            this.defaultBlankGrid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
+            this.defaultSolidGrid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
+        }
 
-            return;
+        public void Dispose()
+        {
+            this.defaultBlankGrid.Dispose();
+            this.defaultSolidGrid.Dispose();
 
-
-            NativeList<CubeGrid32x32x32Unsafe> allocGridStock_(int3 gridLength)
+            foreach (var g in this.gridStock)
             {
-                var capacity = gridLength.x * gridLength.y * gridLength.z + 2;// +2 はデフォルト分
-
-                return new NativeList<CubeGrid32x32x32Unsafe>(capacity, Allocator.Persistent);
+                CubeGridAllocater.Dispose(g);
             }
 
-            void makeDefaultGrids_()
-            {
-                this.gridStock.AddNoResize(CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank));// isFillAll: false); );
-                this.defaultBlankCubePtr = new CubeGrid32x32x32UnsafePtr
-                {
-                    p = (CubeGrid32x32x32Unsafe*)this.gridStock.GetUnsafePtr() + 0
-                };
-
-                this.gridStock.AddNoResize(CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid));// isFillAll: true ) );
-                this.defaultFilledCubePtr = new CubeGrid32x32x32UnsafePtr
-                {
-                    p = (CubeGrid32x32x32Unsafe*)this.gridStock.GetUnsafePtr() + 1
-                };
-            }
+            this.gridStock.Dispose();
         }
     }
 
@@ -72,9 +61,8 @@ namespace Abarabone.MarchingCubes
         // 実際に確保するグリッド配列は、外側をデフォルトグリッドでくるむ。
         // 端っこの処理を内側と統一するため。
 
-        // 本体へのポインタを格納
-        public NativeArray<CubeGrid32x32x32UnsafePtr> grids;
-        //public NativeArray<CubeGrid32x32x32UnsafePtr> grids { get; private set; }
+
+        public UnsafeList<CubeGrid32x32x32Unsafe> grids;
 
 
 
@@ -94,24 +82,18 @@ namespace Abarabone.MarchingCubes
 
             return;
 
-            
-            NativeArray<CubeGrid32x32x32UnsafePtr> allocGrids_( int3 wholeGridLength )
+
+            UnsafeList<CubeGrid32x32x32Unsafe> allocGrids_( int3 wholeGridLength )
             {
                 var totalLength = wholeGridLength.x * wholeGridLength.y * wholeGridLength.z;
 
-                return new NativeArray<CubeGrid32x32x32UnsafePtr>( totalLength, Allocator.Persistent );
+                return new UnsafeList<CubeGrid32x32x32Unsafe>( totalLength, Allocator.Persistent );
             }
 
         }
 
         public unsafe void Dispose()
         {
-            foreach( var g in this.gridStock )
-            {
-                g.Dispose();
-            }
-
-            this.gridStock.Dispose();
             this.grids.Dispose();
         }
 
