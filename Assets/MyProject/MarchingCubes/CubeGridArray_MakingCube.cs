@@ -12,20 +12,27 @@ using Unity.Collections.Experimental;
 
 namespace Abarabone.MarchingCubes
 {
+
+
+
+    public unsafe struct CubeGrid32x32x32UnsafePtr
+    {
+        [NativeDisableUnsafePtrRestriction]
+        public CubeGrid32x32x32Unsafe* p;
+
+        public uint this[int ix, int iy, int iz]
+        {
+            get => (*this.p)[ix, iy, iz];
+            set => (*this.p)[ix, iy, iz] = value;
+        }
+    }
+
+
+
+
+
     public unsafe partial struct CubeGridArrayUnsafe
     {
-
-        public unsafe struct CubeGrid32x32x32UnsafePtr
-        {
-            [NativeDisableUnsafePtrRestriction]
-            public CubeGrid32x32x32Unsafe* p;
-
-            public uint this[int ix, int iy, int iz]
-            {
-                get => (*this.p)[ix, iy, iz];
-                set => (*this.p)[ix, iy, iz] = value;
-            }
-        }
 
         public struct NearCubeGrids
         {

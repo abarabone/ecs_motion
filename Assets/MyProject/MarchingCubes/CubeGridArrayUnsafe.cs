@@ -12,6 +12,53 @@ using Unity.Collections.Experimental;
 
 namespace Abarabone.MarchingCubes
 {
+
+    unsafe public struct CubeGridGlobalData
+    {
+
+        // 本体を格納（アドレスを変化させてはいけないので、capacity を拡張してはいけない）
+        UnsafeList<UIntPtr> gridStock;
+
+
+        // all 0 と all 1 のグリッド。本体は gridStock 内に作られている。
+        CubeGrid32x32x32UnsafePtr defaultBlankCubePtr;
+        CubeGrid32x32x32UnsafePtr defaultFilledCubePtr;
+
+
+        public CubeGridGlobalData(int maxGridLength)
+        {
+            this.gridStock = allocGridStock_(maxGridLength);
+
+            makeDefaultGrids_();
+
+            return;
+
+
+            NativeList<CubeGrid32x32x32Unsafe> allocGridStock_(int3 gridLength)
+            {
+                var capacity = gridLength.x * gridLength.y * gridLength.z + 2;// +2 はデフォルト分
+
+                return new NativeList<CubeGrid32x32x32Unsafe>(capacity, Allocator.Persistent);
+            }
+
+            void makeDefaultGrids_()
+            {
+                this.gridStock.AddNoResize(CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank));// isFillAll: false); );
+                this.defaultBlankCubePtr = new CubeGrid32x32x32UnsafePtr
+                {
+                    p = (CubeGrid32x32x32Unsafe*)this.gridStock.GetUnsafePtr() + 0
+                };
+
+                this.gridStock.AddNoResize(CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid));// isFillAll: true ) );
+                this.defaultFilledCubePtr = new CubeGrid32x32x32UnsafePtr
+                {
+                    p = (CubeGrid32x32x32Unsafe*)this.gridStock.GetUnsafePtr() + 1
+                };
+            }
+        }
+    }
+
+
     /// <summary>
     /// グリッドを管理する。
     /// グリッド本体は必要な分のみ確保される。
@@ -25,17 +72,9 @@ namespace Abarabone.MarchingCubes
         // 実際に確保するグリッド配列は、外側をデフォルトグリッドでくるむ。
         // 端っこの処理を内側と統一するため。
 
-        // 本体を格納（アドレスを変化させてはいけないので、capacity を拡張してはいけない）
-        NativeList<CubeGrid32x32x32Unsafe> gridStock;
-        
-
         // 本体へのポインタを格納
         public NativeArray<CubeGrid32x32x32UnsafePtr> grids;
         //public NativeArray<CubeGrid32x32x32UnsafePtr> grids { get; private set; }
-
-        // all 0 と all 1 のグリッド。本体は gridStock 内に作られている。
-        CubeGrid32x32x32UnsafePtr defaultBlankCubePtr;
-        CubeGrid32x32x32UnsafePtr defaultFilledCubePtr;
 
 
 
@@ -47,10 +86,7 @@ namespace Abarabone.MarchingCubes
             this.GridLength = new int3( x, y, z );
             this.wholeGridLength = new int3( x, y, z ) + 2;
 
-            this.gridStock = allocGridStock_( this.GridLength );
-            this.grids = allocGrids_( this.wholeGridLength );
-
-            makeDefaultGrids_( ref this );
+            this.grids = allocGrids_(this.wholeGridLength);
 
             var startGrid = new int3( -1, -1, -1 );
             var endGrid = wholeGridLength;
@@ -66,27 +102,6 @@ namespace Abarabone.MarchingCubes
                 return new NativeArray<CubeGrid32x32x32UnsafePtr>( totalLength, Allocator.Persistent );
             }
 
-            NativeList<CubeGrid32x32x32Unsafe> allocGridStock_( int3 gridLength )
-            {
-                var capacity = gridLength.x * gridLength.y * gridLength.z + 2;// +2 はデフォルト分
-
-                return new NativeList<CubeGrid32x32x32Unsafe>( capacity, Allocator.Persistent );
-            }
-
-            void makeDefaultGrids_( ref CubeGridArrayUnsafe ga )
-            {
-                ga.gridStock.AddNoResize(CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank));// isFillAll: false); );
-                ga.defaultBlankCubePtr = new CubeGrid32x32x32UnsafePtr
-                {
-                    p = (CubeGrid32x32x32Unsafe*)ga.gridStock.GetUnsafePtr() + 0
-                };
-
-                ga.gridStock.AddNoResize(CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid));// isFillAll: true ) );
-                ga.defaultFilledCubePtr = new CubeGrid32x32x32UnsafePtr
-                {
-                    p = (CubeGrid32x32x32Unsafe*)ga.gridStock.GetUnsafePtr() + 1
-                };
-            }
         }
 
         public unsafe void Dispose()
