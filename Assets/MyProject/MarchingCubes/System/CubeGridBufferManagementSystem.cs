@@ -38,7 +38,7 @@ namespace Abarabone.MarchingCubes
 
             var globalInfo = this.GetSingleton<CubeGridGlobal.InfoData>();
 
-            var gbuffer = new UnsafeList<UIntPtr>(globalInfo.MaxCubeInstances, Allocator.Persistent);
+            var gbuffer = new UnsafeList<UIntPtr>(globalInfo.MaxCubeInstanceLength, Allocator.Persistent);
             var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
             var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
 

@@ -71,7 +71,7 @@ namespace Abarabone.MarchingCubes
         public struct InfoData : IComponentData
         {
             public int MaxDrawGridLength;
-            public int MaxCubeInstances;
+            public int MaxCubeInstanceLength;
         }
 
     }

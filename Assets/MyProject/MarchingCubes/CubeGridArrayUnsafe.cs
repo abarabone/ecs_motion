@@ -13,6 +13,7 @@ using Unity.Collections.Experimental;
 namespace Abarabone.MarchingCubes
 {
 
+    /// グリッド配列は本体へのポインタのみ持ち、all 0 / all 1 のグリッドはデフォルトとして使いまわされる。
     unsafe public struct CubeGridGlobalData : IDisposable
     {
 
@@ -51,16 +52,15 @@ namespace Abarabone.MarchingCubes
     /// <summary>
     /// グリッドを管理する。
     /// グリッド本体は必要な分のみ確保される。
-    /// グリッド配列は本体へのポインタのみ持ち、all 0 / all 1 のグリッドはデフォルトとして使いまわされる。
     /// </summary>
     public unsafe partial struct CubeGridArrayUnsafe
     {
 
-        readonly public int3 GridLength;
-        readonly int3 wholeGridLength;
         // 実際に確保するグリッド配列は、外側をデフォルトグリッドでくるむ。
         // 端っこの処理を内側と統一するため。
-
+        readonly public int3 GridLength;
+        readonly int3 wholeGridLength;
+        readonly int3 gridSpan;
 
         public UnsafeList<CubeGrid32x32x32Unsafe> grids;
 
@@ -73,6 +73,7 @@ namespace Abarabone.MarchingCubes
         {
             this.GridLength = new int3( x, y, z );
             this.wholeGridLength = new int3( x, y, z ) + 2;
+            this.gridSpan = new int3(1, this.wholeGridLength.x * this.wholeGridLength.z, this.wholeGridLength.x);
 
             this.grids = allocGrids_(this.wholeGridLength);
 
@@ -98,19 +99,16 @@ namespace Abarabone.MarchingCubes
         }
 
 
-
         public unsafe CubeGrid32x32x32UnsafePtr this[ int x, int y, int z ]
         {
             get
             {
                 var i3 = new int3( x, y, z ) + 1;
-                var yspan = this.wholeGridLength.x * this.wholeGridLength.z;
-                var zspan = this.wholeGridLength.x;
-                var i = i3.y * yspan + i3.z * zspan + i3.x;
+                var i = math.dot(i3, this.gridSpan);
 
-                var grid = this.grids[ i ];
+                var gridptr = new CubeGrid32x32x32UnsafePtr { p = this.grids.Ptr + i };
 
-                if( !grid.p->IsFullOrEmpty ) return grid;
+                if( !gridptr.p->IsFullOrEmpty ) return gridptr;
 
                 if( grid.p == this.defaultFilledCubePtr.p | grid.p == this.defaultBlankCubePtr.p )
                 {
@@ -123,7 +121,7 @@ namespace Abarabone.MarchingCubes
                     };
                 }
 
-                return grid;
+                return gridptr;
             }
         }
 

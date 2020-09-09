@@ -131,7 +131,7 @@ namespace Abarabone.MarchingCubes.Authoring
                 em.SetComponentData(ent,
                     new CubeGridGlobal.InfoData
                     {
-                        MaxCubeInstances = maxCubeInstances_,
+                        MaxCubeInstanceLength = maxCubeInstances_,
                         MaxDrawGridLength = maxDrawGridLength_,
                     }
                 );
