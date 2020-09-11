@@ -63,6 +63,7 @@ namespace Abarabone.MarchingCubes
             {
                 return (uint)( this.pUnits[ ( iy << 5 ) + iz ] >> ix & 1 );
             }
+            
             set
             {
                 var maskedValue = value & 1;
@@ -126,5 +127,29 @@ namespace Abarabone.MarchingCubes
         }
     }
 
+
+    public unsafe struct Cubee
+    {
+        public ulong* pGridValueInArea;
+        public ulong* pDefaultGridValue;
+    }
+
+    static public class CubeGridExtension
+    {
+
+        static public Cubee Withg(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global)
+        {
+
+        }
+
+        static public void a(ref this CubeGridArrayUnsafe arr,  ref CubeGridGlobalData globalData)
+        {
+
+            var _0or1 = math.sign(grid.CubeCount);
+            var defaultGrid = globalData.GetDefaultGrid((GridFillMode)_0or1);
+
+
+        }
+    }
 
 }
