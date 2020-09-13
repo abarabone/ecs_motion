@@ -13,23 +13,67 @@ using Unity.Collections.Experimental;
 namespace Abarabone.MarchingCubes
 {
 
+    /// <summary>
+    /// C#8 になるまでの暫定
+    /// </summary>
+    public unsafe struct GridStocker : IDisposable
+    {
+        UIntPtr *pStock;
+
+        int maxGridLength;
+
+        public int Length;
+
+        public UIntPtr this[int i] => pStock[i];
+
+
+        public GridStocker(int maxGridLength)
+        {
+            var size = sizeof(UIntPtr) * maxGridLength;
+            var align = 4;
+            this.pStock = (UIntPtr*)UnsafeUtility.Malloc(size, align, Allocator.Persistent);
+
+            this.maxGridLength = maxGridLength;
+            this.Length = 0;
+        }
+
+        public void Add(UIntPtr p)
+        {
+            this.pStock[this.Length++] = p;
+        }
+
+        public void Dispose() => UnsafeUtility.Free(this.pStock, Allocator.Persistent);
+
+    }
+
+
     /// グリッド配列は本体へのポインタのみ持ち、all 0 / all 1 のグリッドはデフォルトとして使いまわされる。
-    unsafe public struct CubeGridGlobalData : IDisposable
+    public unsafe struct CubeGridGlobalData : IDisposable
     {
 
-        public UnsafeList<UIntPtr> GridStock;
+        //public UnsafeList<UIntPtr> GridStock;
+        public GridStocker GridStock;
+
         int usedGridCount;
 
-        fixed ulong defaultGridValues[2];
-        public CubeGrid32x32x32Unsafe DefaultBlankGrid => new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[0] };
-        public CubeGrid32x32x32Unsafe DefaultSolidGrid => new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[1] };
-        public CubeGrid32x32x32Unsafe GetDefaultGrid(GridFillMode fillMode) => new CubeGrid32x32x32Unsafe { Value = this.defaultGridValues[(int)fillMode] };
+
+        unsafe fixed ulong defaultGridValues[2];
+
+        public CubeGrid32x32x32Unsafe DefaultBlankGrid =>
+            new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[0] };
+
+        public CubeGrid32x32x32Unsafe DefaultSolidGrid =>
+            new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[1] };
+
+        public CubeGrid32x32x32Unsafe GetDefaultGrid(GridFillMode fillMode) =>
+            new CubeGrid32x32x32Unsafe { Value = this.defaultGridValues[(int)fillMode] };
 
 
 
         public CubeGridGlobalData(int maxGridLength)
         {
-            this.GridStock = new UnsafeList<UIntPtr>(maxGridLength, Allocator.Persistent);
+            //this.GridStock = new UnsafeList<UIntPtr>(maxGridLength, Allocator.Persistent);
+            this.GridStock = new GridStocker(maxGridLength);
             this.usedGridCount = 0;
 
             this.defaultGridValues[0] = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank).Value;
@@ -41,8 +85,10 @@ namespace Abarabone.MarchingCubes
             this.DefaultBlankGrid.Dispose();
             this.DefaultSolidGrid.Dispose();
 
-            foreach (var x in this.GridStock)
+            //foreach (var x in this.GridStock)
+            for(var i=0; i<GridStock.Length; i++)
             {
+                var x = this.GridStock[i];
                 CubeGridAllocater.Dispose(x);
             }
 
@@ -50,36 +96,36 @@ namespace Abarabone.MarchingCubes
         }
 
 
-        public CubeGrid32x32x32Unsafe RentGrid(GridFillMode fillMode)
-        {
-            if (this.GridStock.length > this.usedGridCount)
-            {
-                var p = this.GridStock[usedGridCount++];
-                return CubeGridAllocater.Fill(p, fillMode);
-            }
-            else
-            {
-                var grid = CubeGridAllocater.Alloc(fillMode);
+        //public CubeGrid32x32x32Unsafe RentGrid(GridFillMode fillMode)
+        //{
+        //    if (this.GridStock.length > this.usedGridCount)
+        //    {
+        //        var p = this.GridStock[usedGridCount++];
+        //        return CubeGridAllocater.Fill(p, fillMode);
+        //    }
+        //    else
+        //    {
+        //        var grid = CubeGridAllocater.Alloc(fillMode);
 
-                this.GridStock.Add((UIntPtr)grid.pUnits);
-                this.usedGridCount++;
+        //        this.GridStock.Add((UIntPtr)grid.pUnits);
+        //        this.usedGridCount++;
 
-                return grid;
-            }
-        }
-        public void BackGrid(CubeGrid32x32x32Unsafe grid)
-        {
-            [--this.usedGridCount]
+        //        return grid;
+        //    }
+        //}
+        //public void BackGrid(CubeGrid32x32x32Unsafe grid)
+        //{
+        //    [--this.usedGridCount]
 
-            if (this.GridStock.length > this.usedGridCount)
-            {
+        //    if (this.GridStock.length > this.usedGridCount)
+        //    {
 
-            }
-            else
-            {
+        //    }
+        //    else
+        //    {
 
-            }
-        }
+        //    }
+        //}
     }
 
 

@@ -29,8 +29,8 @@ namespace Abarabone.MarchingCubes
         [FieldOffset(0)]
         public ulong Value;
 
-        public bool IsFullOrEmpty => ( this.CubeCount & 0x7fff ) == 0;
-        public bool IsFull => this.CubeCount == 0x8000;
+        public bool IsFullOrEmpty => (this.CubeCount & (32*32*32-1) ) == 0;
+        public bool IsFull => this.CubeCount == 32 * 32 * 32;
         public bool IsEmpty => this.CubeCount == 0;
 
 
@@ -63,13 +63,18 @@ namespace Abarabone.MarchingCubes
             
             set
             {
-                var maskedValue = value & 1;
+                //if (value != 0 && value != 1) new ArgumentException();
 
                 var i = ( iy << 5 ) + iz;
-                var b = this.pUnits[ i ];
-                this.pUnits[ i ] ^= (uint)( (b & 1 << ix) ^ (maskedValue << ix) );
+                var oldbit = (this.pUnits[i] >> ix) & 1;
+                var newbit = value;// & 1;
 
-                this.CubeCount += (int)( (maskedValue << 1) - 1 );
+                var bitIfChange = oldbit ^ newbit;
+
+                this.pUnits[ i ] = (uint)((oldbit ^ bitIfChange) << ix);
+
+                var d = (int)(newbit << 1) - 1;
+                this.CubeCount += d * (int)bitIfChange;
             }
         }
         public uint this[int3 i]
@@ -132,22 +137,64 @@ namespace Abarabone.MarchingCubes
 
     public unsafe struct Cubee
     {
-        public ulong* pGridValueInArea;
-        public ulong* pDefaultGridValue;
+        ulong* pGridValueInArea;
+        //ulong* pDefaultGridValue;
+
+        CubeGridGlobalData *pGlobalData;
 
 
         public uint this[int3 i]
         {
-            get => new CubeGrid32x32x32Unsafe { Value = *this.pGridValueInArea }[i.x, i.y, i.z];
-
-            set => ;
+            get => this[i.x, i.y, i.z];
+            set => this[i.x, i.y, i.z] = value;
         }
+        public uint this[int ix, int iy, int iz]
+        {
+            get => asRefCube_(this.pGridValueInArea)[ix, iy, iz];
+
+            set
+            {
+                ref var cube = ref asRefCube_(this.pGridValueInArea);
+
+
+                var i = (iy << 5) + iz;
+                var oldbit = (cube.pUnits[i] >> ix) & 1;
+                var newbit = value;// & 1;
+
+                var bitIfChange = oldbit ^ newbit;
+                if (bitIfChange != 0) return;
+
+
+                if (cube.IsFullOrEmpty)
+                {
+
+                }
+                else
+                {
+                    cube[ix, iy, iz] = value;
+
+                    if(cube.IsFullOrEmpty)
+                    {
+                        var i = cube.CubeCount >> 5;
+                        cube.Value = this.pDefaultGridValue[i];
+                    }
+                }
+
+                var d = (int)(newbit << 1) - 1;
+                cube.CubeCount += d * (int)bitIfChange;
+
+                cube.pUnits[i] = (uint)((oldbit ^ bitIfChange) << ix);
+            }
+        }
+
+        static public ref CubeGrid32x32x32Unsafe asRefCube_(ulong* pCubevalue) => ref *(CubeGrid32x32x32Unsafe*)pCubevalue;
+
     }
 
-    static public class CubeGridExtension
+    static public unsafe class CubeGridExtension
     {
 
-        static public Cubee Withg(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global)
+        static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global)
         {
 
         }
