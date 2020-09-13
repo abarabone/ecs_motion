@@ -59,10 +59,7 @@ namespace Abarabone.MarchingCubes
 
         public uint this[ int ix, int iy, int iz ]
         {
-            get
-            {
-                return (uint)( this.pUnits[ ( iy << 5 ) + iz ] >> ix & 1 );
-            }
+            get => (uint)( this.pUnits[ ( iy << 5 ) + iz ] >> ix & 1 );
             
             set
             {
@@ -74,6 +71,11 @@ namespace Abarabone.MarchingCubes
 
                 this.CubeCount += (int)( (maskedValue << 1) - 1 );
             }
+        }
+        public uint this[int3 i]
+        {
+            get => this[i.x, i.y, i.z];
+            set => this[i.x, i.y, i.z] = value;
         }
 
 
@@ -132,6 +134,14 @@ namespace Abarabone.MarchingCubes
     {
         public ulong* pGridValueInArea;
         public ulong* pDefaultGridValue;
+
+
+        public uint this[int3 i]
+        {
+            get => new CubeGrid32x32x32Unsafe { Value = *this.pGridValueInArea }[i.x, i.y, i.z];
+
+            set => ;
+        }
     }
 
     static public class CubeGridExtension
