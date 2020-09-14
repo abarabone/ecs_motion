@@ -14,13 +14,21 @@ namespace Abarabone.MarchingCubes
 
     public enum GridFillMode
     {
-        Blank,
-        Solid,
+        NotFill = -1,
+        Blank = 0,
+        Solid = 1,
     };
+
+    
 
     [StructLayout(LayoutKind.Explicit)]
     public unsafe struct CubeGrid32x32x32Unsafe
     {
+        const int maxNum = 32 * 32 * 32;
+        const int xlineInGrid = 1 * 32 * 32;
+        const int shiftNum = 5;
+
+
         [FieldOffset(0)]
         public uint* pUnits;
         [FieldOffset(4)]
@@ -29,14 +37,14 @@ namespace Abarabone.MarchingCubes
         [FieldOffset(0)]
         public ulong Value;
 
-        public bool IsFullOrEmpty => (this.CubeCount & (32*32*32-1) ) == 0;
-        public bool IsFull => this.CubeCount == 32 * 32 * 32;
+        public bool IsFullOrEmpty => (this.CubeCount & (maxNum - 1) ) == 0;
+        public bool IsFull => this.CubeCount == maxNum;
         public bool IsEmpty => this.CubeCount == 0;
 
 
         public CubeGrid32x32x32Unsafe(GridFillMode fillmode) : this()
         {
-            const int size = sizeof( uint ) * 1 * 32 * 32;
+            const int size = sizeof( uint ) * xlineInGrid;
 
             var x = CubeGridAllocater.Alloc(fillmode, size);
             this.pUnits = x.pUnits;
@@ -59,13 +67,13 @@ namespace Abarabone.MarchingCubes
 
         public uint this[ int ix, int iy, int iz ]
         {
-            get => (uint)( this.pUnits[ ( iy << 5 ) + iz ] >> ix & 1 );
+            get => (uint)( this.pUnits[ (iy << shiftNum) + iz ] >> ix & 1 );
             
             set
             {
                 //if (value != 0 && value != 1) new ArgumentException();
 
-                var i = ( iy << 5 ) + iz;
+                var i = (iy << shiftNum) + iz;
                 var oldbit = (this.pUnits[i] >> ix) & 1;
                 var newbit = value;// & 1;
 
@@ -87,7 +95,7 @@ namespace Abarabone.MarchingCubes
         static public CubeGrid32x32x32Unsafe CreateDefaultCube(GridFillMode fillmode)
         {
             //const int size = sizeof(uint) * 4;// 工夫すると 16 bytes ですむ、でもなんか遅い？？不思議だけど
-            const int size = sizeof(uint) * 1 * 32 * 32;
+            const int size = sizeof(uint) * xlineInGrid;
             return CubeGridAllocater.Alloc(fillmode, size);
         }
 
@@ -138,9 +146,9 @@ namespace Abarabone.MarchingCubes
     public unsafe struct Cubee
     {
         ulong* pGridValueInArea;
-        //ulong* pDefaultGridValue;
+        ulong* pDefaultGridValue;
 
-        CubeGridGlobalData *pGlobalData;
+        ulong* pGridValueOld;// 
 
 
         public uint this[int3 i]
@@ -162,28 +170,37 @@ namespace Abarabone.MarchingCubes
                 var newbit = value;// & 1;
 
                 var bitIfChange = oldbit ^ newbit;
+
                 if (bitIfChange != 0) return;
+
+
+                var xline = (uint)((oldbit ^ bitIfChange) << ix);
+                var d = (int)(newbit << 1) - 1;
+                var cubeCount = cube.CubeCount + d * (int)bitIfChange;
 
 
                 if (cube.IsFullOrEmpty)
                 {
+                    var fillMode = (GridFillMode)(cube.CubeCount >> 5);
+                    var newGrid = CubeGridAllocater.Alloc(fillMode);
 
+                    cube = newGrid;
                 }
                 else
                 {
-                    cube[ix, iy, iz] = value;
-
-                    if(cube.IsFullOrEmpty)
+                    if ((cubeCount & (32 * 32 * 32 - 1)) != 0)// isBlankORSolid
                     {
                         var i = cube.CubeCount >> 5;
                         cube.Value = this.pDefaultGridValue[i];
+
+                        // 返す
+
+                        return;
                     }
                 }
 
-                var d = (int)(newbit << 1) - 1;
-                cube.CubeCount += d * (int)bitIfChange;
-
-                cube.pUnits[i] = (uint)((oldbit ^ bitIfChange) << ix);
+                cube.pUnits[i] = xline;
+                cube.CubeCount = cubeCount;
             }
         }
 
@@ -194,7 +211,7 @@ namespace Abarabone.MarchingCubes
     static public unsafe class CubeGridExtension
     {
 
-        static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global)
+        static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global, )
         {
 
         }
