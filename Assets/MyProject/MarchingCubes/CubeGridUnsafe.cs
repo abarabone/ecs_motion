@@ -143,16 +143,12 @@ namespace Abarabone.MarchingCubes
     }
 
 
-    public unsafe struct Cubee
+    public unsafe struct CubeOperator
     {
         CubeGrid32x32x32UnsafePtr gridInArea;
         CubeGrid32x32x32UnsafePtr defaultGridTop;
 
         UIntPtr pGridSwapOld;
-
-        //ulong* pGridValueInArea;
-        //ulong* pDefaultGridValue;
-
 
 
         public uint this[int3 i]
@@ -175,6 +171,7 @@ namespace Abarabone.MarchingCubes
 
                 var bitIfChange = oldbit ^ newbit;
 
+                // 変化がなければこのまま抜ける
                 if (bitIfChange != 0) return;
 
 
@@ -185,6 +182,7 @@ namespace Abarabone.MarchingCubes
 
                 if (cube.IsFullOrEmpty)
                 {
+                    // デフォルト→変化あり：確保
                     var fillMode = (GridFillMode)(cube.CubeCount >> 5);
                     var newGrid = CubeGridAllocater.Alloc(fillMode);
 
@@ -192,10 +190,11 @@ namespace Abarabone.MarchingCubes
                 }
                 else
                 {
-                    if ((cubeCount & (32 * 32 * 32 - 1)) != 0)// isBlankORSolid
+                    // 確保済→0or1：デフォルト
+                    if ((cubeCount & (32 * 32 * 32 - 1)) == 0)// isBlankORSolid
                     {
-                        var i = cube.CubeCount >> 5;
-                        cube.Value = this.defaultGridTop.p[i].Value;//this.pDefaultGridValue[i];
+                        var i_ = cube.CubeCount >> 5;
+                        cube.Value = this.defaultGridTop.p[i_].Value;//this.pDefaultGridValue[i];
 
                         // 返すため
                         this.pGridSwapOld = (UIntPtr)cube.pUnits;
