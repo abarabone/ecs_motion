@@ -145,10 +145,14 @@ namespace Abarabone.MarchingCubes
 
     public unsafe struct Cubee
     {
-        ulong* pGridValueInArea;
-        ulong* pDefaultGridValue;
+        CubeGrid32x32x32UnsafePtr gridInArea;
+        CubeGrid32x32x32UnsafePtr defaultGridTop;
 
-        ulong* pGridValueOld;// 
+        UIntPtr pGridSwapOld;
+
+        //ulong* pGridValueInArea;
+        //ulong* pDefaultGridValue;
+
 
 
         public uint this[int3 i]
@@ -158,11 +162,11 @@ namespace Abarabone.MarchingCubes
         }
         public uint this[int ix, int iy, int iz]
         {
-            get => asRefCube_(this.pGridValueInArea)[ix, iy, iz];
+            get => this.gridInArea[ix, iy, iz];
 
             set
             {
-                ref var cube = ref asRefCube_(this.pGridValueInArea);
+                ref var cube = ref *this.gridInArea.p;
 
 
                 var i = (iy << 5) + iz;
@@ -191,10 +195,10 @@ namespace Abarabone.MarchingCubes
                     if ((cubeCount & (32 * 32 * 32 - 1)) != 0)// isBlankORSolid
                     {
                         var i = cube.CubeCount >> 5;
-                        cube.Value = this.pDefaultGridValue[i];
+                        cube.Value = this.defaultGridTop.p[i].Value;//this.pDefaultGridValue[i];
 
-                        // 返す
-
+                        // 返すため
+                        this.pGridSwapOld = (UIntPtr)cube.pUnits;
                         return;
                     }
                 }
@@ -204,12 +208,19 @@ namespace Abarabone.MarchingCubes
             }
         }
 
-        static public ref CubeGrid32x32x32Unsafe asRefCube_(ulong* pCubevalue) => ref *(CubeGrid32x32x32Unsafe*)pCubevalue;
+        public void BackOldGrid(ref CubeGridGlobalData global)
+        {
+            global.GridStock.Add(this.pGridSwapOld);
+            this.pGridSwapOld = default;
+        }
 
     }
 
     static public unsafe class CubeGridExtension
     {
+
+        static public ref CubeGrid32x32x32Unsafe AsRef(this CubeGrid32x32x32UnsafePtr cubePtr) => ref *cubePtr.p;
+
 
         static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global, )
         {
