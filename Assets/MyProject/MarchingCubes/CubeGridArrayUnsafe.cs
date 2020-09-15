@@ -51,7 +51,7 @@ namespace Abarabone.MarchingCubes
     public unsafe struct CubeGridGlobalData : IDisposable
     {
 
-        public UnsafeList<UIntPtr> GridStock;
+        public UnsafeList<UIntPtr> FreeGridStock;
         //public GridStocker GridStock;
 
         int usedGridCount;
@@ -72,7 +72,7 @@ namespace Abarabone.MarchingCubes
 
         public CubeGridGlobalData(int maxGridLength)
         {
-            this.GridStock = new UnsafeList<UIntPtr>(maxGridLength, Allocator.Persistent);
+            this.FreeGridStock = new UnsafeList<UIntPtr>(maxGridLength, Allocator.Persistent);
             //this.GridStock = new GridStocker(maxGridLength);
             this.usedGridCount = 0;
 
@@ -86,13 +86,13 @@ namespace Abarabone.MarchingCubes
             this.DefaultSolidGrid.Dispose();
 
             //foreach (var x in this.GridStock)
-            for(var i=0; i<GridStock.Length; i++)
+            for(var i=0; i<FreeGridStock.Length; i++)
             {
-                var x = this.GridStock[i];
+                var x = this.FreeGridStock[i];
                 CubeGridAllocater.Dispose(x);
             }
 
-            this.GridStock.Dispose();
+            this.FreeGridStock.Dispose();
         }
 
 
@@ -128,7 +128,6 @@ namespace Abarabone.MarchingCubes
         //}
     }
 
-
     /// <summary>
     /// グリッドを管理する。
     /// グリッド本体は必要な分のみ確保される。
@@ -144,6 +143,8 @@ namespace Abarabone.MarchingCubes
 
         public UnsafeList<CubeGrid32x32x32Unsafe> grids;
         public UnsafeBitArray solidOrBlankWhenDefaultList;
+
+        CubeGridGlobalData* pGlobal;
 
 
 
@@ -167,6 +168,10 @@ namespace Abarabone.MarchingCubes
 
         public unsafe void Dispose()
         {
+            for (var i = 0; i < this.grids.Length; i++)
+            {
+                grids[i].Dispose();
+            }
             this.grids.Dispose();
             this.solidOrBlankWhenDefaultList.Dispose();
         }
@@ -180,6 +185,8 @@ namespace Abarabone.MarchingCubes
                 var i = math.dot(i3, this.gridSpan);
 
                 var gridptr = new CubeGrid32x32x32UnsafePtr { p = this.grids.Ptr + i };
+
+                if(gridptr.p == )
 
                 return gridptr;
             }

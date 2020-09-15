@@ -143,97 +143,97 @@ namespace Abarabone.MarchingCubes
     }
 
 
-    public unsafe struct CubeOperator
-    {
-        CubeGrid32x32x32UnsafePtr gridInArea;
-        CubeGrid32x32x32UnsafePtr defaultGridTop;
+    //public unsafe struct CubeOperator
+    //{
+    //    CubeGrid32x32x32UnsafePtr gridInArea;
+    //    CubeGrid32x32x32UnsafePtr defaultGridTop;
 
-        UIntPtr pGridSwapOld;
-
-
-        public uint this[int3 i]
-        {
-            get => this[i.x, i.y, i.z];
-            set => this[i.x, i.y, i.z] = value;
-        }
-        public uint this[int ix, int iy, int iz]
-        {
-            get => this.gridInArea[ix, iy, iz];
-
-            set
-            {
-                ref var cube = ref *this.gridInArea.p;
+    //    UIntPtr pGridSwapOld;
 
 
-                var i = (iy << 5) + iz;
-                var oldbit = (cube.pUnits[i] >> ix) & 1;
-                var newbit = value;// & 1;
+    //    public uint this[int3 i]
+    //    {
+    //        get => this[i.x, i.y, i.z];
+    //        set => this[i.x, i.y, i.z] = value;
+    //    }
+    //    public uint this[int ix, int iy, int iz]
+    //    {
+    //        get => this.gridInArea[ix, iy, iz];
 
-                var bitIfChange = oldbit ^ newbit;
-
-                // 変化がなければこのまま抜ける
-                if (bitIfChange != 0) return;
-
-
-                var xline = (uint)((oldbit ^ bitIfChange) << ix);
-                var d = (int)(newbit << 1) - 1;
-                var cubeCount = cube.CubeCount + d * (int)bitIfChange;
-
-
-                if (cube.IsFullOrEmpty)
-                {
-                    // デフォルト→変化あり：確保
-                    var fillMode = (GridFillMode)(cube.CubeCount >> 5);
-                    var newGrid = CubeGridAllocater.Alloc(fillMode);
-
-                    cube = newGrid;
-                }
-                else
-                {
-                    // 確保済→0or1：デフォルト
-                    if ((cubeCount & (32 * 32 * 32 - 1)) == 0)// isBlankORSolid
-                    {
-                        var i_ = cube.CubeCount >> 5;
-                        cube.Value = this.defaultGridTop.p[i_].Value;//this.pDefaultGridValue[i];
-
-                        // 返すため
-                        this.pGridSwapOld = (UIntPtr)cube.pUnits;
-                        return;
-                    }
-                }
-
-                cube.pUnits[i] = xline;
-                cube.CubeCount = cubeCount;
-            }
-        }
-
-        public void BackOldGrid(ref CubeGridGlobalData global)
-        {
-            global.GridStock.Add(this.pGridSwapOld);
-            this.pGridSwapOld = default;
-        }
-
-    }
-
-    static public unsafe class CubeGridExtension
-    {
-
-        static public ref CubeGrid32x32x32Unsafe AsRef(this CubeGrid32x32x32UnsafePtr cubePtr) => ref *cubePtr.p;
+    //        set
+    //        {
+    //            ref var cube = ref *this.gridInArea.p;
 
 
-        static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global, )
-        {
+    //            var i = (iy << 5) + iz;
+    //            var oldbit = (cube.pUnits[i] >> ix) & 1;
+    //            var newbit = value;// & 1;
 
-        }
+    //            var bitIfChange = oldbit ^ newbit;
 
-        static public void a(ref this CubeGridArrayUnsafe arr,  ref CubeGridGlobalData globalData)
-        {
-
-            var _0or1 = math.sign(grid.CubeCount);
-            var defaultGrid = globalData.GetDefaultGrid((GridFillMode)_0or1);
+    //            // 変化がなければこのまま抜ける
+    //            if (bitIfChange != 0) return;
 
 
-        }
-    }
+    //            var xline = (uint)((oldbit ^ bitIfChange) << ix);
+    //            var d = (int)(newbit << 1) - 1;
+    //            var cubeCount = cube.CubeCount + d * (int)bitIfChange;
+
+
+    //            if (cube.IsFullOrEmpty)
+    //            {
+    //                // デフォルト→変化あり：確保
+    //                var fillMode = (GridFillMode)(cube.CubeCount >> 5);
+    //                var newGrid = CubeGridAllocater.Alloc(fillMode);
+
+    //                cube = newGrid;
+    //            }
+    //            else
+    //            {
+    //                // 確保済→0or1：デフォルト
+    //                if ((cubeCount & (32 * 32 * 32 - 1)) == 0)// isBlankORSolid
+    //                {
+    //                    var i_ = cube.CubeCount >> 5;
+    //                    cube.Value = this.defaultGridTop.p[i_].Value;//this.pDefaultGridValue[i];
+
+    //                    // 返すため
+    //                    this.pGridSwapOld = (UIntPtr)cube.pUnits;
+    //                    return;
+    //                }
+    //            }
+
+    //            cube.pUnits[i] = xline;
+    //            cube.CubeCount = cubeCount;
+    //        }
+    //    }
+
+    //    public void BackOldGrid(ref CubeGridGlobalData global)
+    //    {
+    //        global.GridStock.Add(this.pGridSwapOld);
+    //        this.pGridSwapOld = default;
+    //    }
+
+    //}
+
+    //static public unsafe class CubeGridExtension
+    //{
+
+    //    static public ref CubeGrid32x32x32Unsafe AsRef(this CubeGrid32x32x32UnsafePtr cubePtr) => ref *cubePtr.p;
+
+
+    //    static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global, )
+    //    {
+
+    //    }
+
+    //    static public void a(ref this CubeGridArrayUnsafe arr,  ref CubeGridGlobalData globalData)
+    //    {
+
+    //        var _0or1 = math.sign(grid.CubeCount);
+    //        var defaultGrid = globalData.GetDefaultGrid((GridFillMode)_0or1);
+
+
+    //    }
+    //}
 
 }
