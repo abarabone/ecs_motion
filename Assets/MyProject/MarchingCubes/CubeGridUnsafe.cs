@@ -215,25 +215,59 @@ namespace Abarabone.MarchingCubes
 
     //}
 
-    //static public unsafe class CubeGridExtension
-    //{
+    static public unsafe class CubeGridExtension
+    {
 
-    //    static public ref CubeGrid32x32x32Unsafe AsRef(this CubeGrid32x32x32UnsafePtr cubePtr) => ref *cubePtr.p;
-
-
-    //    static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global, )
-    //    {
-
-    //    }
-
-    //    static public void a(ref this CubeGridArrayUnsafe arr,  ref CubeGridGlobalData globalData)
-    //    {
-
-    //        var _0or1 = math.sign(grid.CubeCount);
-    //        var defaultGrid = globalData.GetDefaultGrid((GridFillMode)_0or1);
+        static public ref CubeGrid32x32x32Unsafe AsRef(this CubeGrid32x32x32UnsafePtr cubePtr) => ref *cubePtr.p;
 
 
-    //    }
-    //}
+        //static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global, )
+        //{
+
+        //}
+
+        //static public void a(ref this CubeGridArrayUnsafe arr, ref CubeGridGlobalData globalData)
+        //{
+
+        //    var _0or1 = math.sign(grid.CubeCount);
+        //    var defaultGrid = globalData.GetDefaultGrid((GridFillMode)_0or1);
+
+
+        //}
+
+        static public CubeGrid32x32x32Unsafe GetGrid
+            (
+                this (CubeGridGlobal.DefualtGtidData, CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
+                int ix, int iy, int iz
+            )
+        {
+            var (defaultGrids, areas, areaInfo) = x;
+
+
+            var iii = new int3(ix, iy, iz) + 1;
+            var i = math.dot(iii, areaInfo.GridSpan);
+
+            var gridptr = new CubeGrid32x32x32UnsafePtr { p = areas.Grids.Ptr + i };
+            ref var grid = ref gridptr.AsRef();
+
+            //if (!grid.IsFullOrEmpty) return grid;
+            if (grid.pUnits == defaultGrids.Blank.pUnits | grid.pUnits == defaultGrids.Solid.pUnits) return grid;
+
+
+
+            return grid;
+        }
+
+        static public void CheckSolidOrBlank
+            (this CubeGridGlobal.DefualtGtidData defaultGrids, ref CubeGrid32x32x32Unsafe grid)
+        {
+
+            //if (!grid.IsFullOrEmpty) return grid;
+            if (grid.pUnits == defaultGrids.Blank.pUnits | grid.pUnits == defaultGrids.Solid.pUnits) return;
+
+
+
+        }
+    }
 
 }

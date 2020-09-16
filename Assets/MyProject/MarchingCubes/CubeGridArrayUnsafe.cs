@@ -144,7 +144,7 @@ namespace Abarabone.MarchingCubes
         public UnsafeList<CubeGrid32x32x32Unsafe> grids;
         public UnsafeBitArray solidOrBlankWhenDefaultList;
 
-        CubeGridGlobalData* pGlobal;
+        //CubeGridGlobalData* pGlobal;
 
 
 
@@ -185,8 +185,6 @@ namespace Abarabone.MarchingCubes
                 var i = math.dot(i3, this.gridSpan);
 
                 var gridptr = new CubeGrid32x32x32UnsafePtr { p = this.grids.Ptr + i };
-
-                if(gridptr.p == )
 
                 return gridptr;
             }

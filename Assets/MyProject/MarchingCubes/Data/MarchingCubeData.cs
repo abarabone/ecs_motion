@@ -49,6 +49,10 @@ namespace Abarabone.MarchingCubes
             public int3 GridLength;
             public int3 GridWholeLength;
         }
+        public struct InfoTempData : IComponentData
+        {
+            public int3 GridSpan;
+        }
     }
 
     static public partial class CubeGridGlobal
@@ -56,7 +60,21 @@ namespace Abarabone.MarchingCubes
 
         public struct BufferData : IComponentData
         {
-            public UnsafeList<UIntPtr> CubeBuffers;
+            public UnsafeList<UIntPtr> FreeGridStocks;
+        }
+
+        public unsafe struct DefualtGtidData : IComponentData
+        {
+            fixed ulong defaultGridValues[2];
+
+            public CubeGrid32x32x32Unsafe Blank =>
+                new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[0] };
+
+            public CubeGrid32x32x32Unsafe Solid =>
+                new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[1] };
+
+            public CubeGrid32x32x32Unsafe Get(GridFillMode fillMode) =>
+                new CubeGrid32x32x32Unsafe { Value = this.defaultGridValues[(int)fillMode] };
         }
 
         public struct DefualtGridSolidData : IComponentData
