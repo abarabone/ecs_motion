@@ -235,6 +235,14 @@ namespace Abarabone.MarchingCubes
 
         //}
 
+        static bool isDefault
+            (this CubeGrid32x32x32Unsafe grid, CubeGridGlobal.DefualtGtidData defaultGrids)
+        {
+            var p = new uint2((uint)grid.pUnits).xx;
+            var def = new uint2((uint)defaultGrids.Blank.pUnits, (uint)defaultGrids.Solid.pUnits);
+            return math.any(p == def);
+        }
+
         static public CubeGrid32x32x32Unsafe GetGrid
             (
                 this (CubeGridGlobal.DefualtGtidData, CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
@@ -250,23 +258,25 @@ namespace Abarabone.MarchingCubes
             var gridptr = new CubeGrid32x32x32UnsafePtr { p = areas.Grids.Ptr + i };
             ref var grid = ref gridptr.AsRef();
 
-            //if (!grid.IsFullOrEmpty) return grid;
-            if (grid.pUnits == defaultGrids.Blank.pUnits | grid.pUnits == defaultGrids.Solid.pUnits) return grid;
-
+            if (!grid.isDefault(defaultGrids)) return grid;
 
 
             return grid;
         }
 
-        static public void CheckSolidOrBlank
-            (this CubeGridGlobal.DefualtGtidData defaultGrids, ref CubeGrid32x32x32Unsafe grid)
+        static public void BackGridIfFilled
+            (this (CubeGridGlobal.DefualtGtidData, CubeGridGlobal.BufferData) x, ref CubeGrid32x32x32Unsafe grid)
         {
-
-            //if (!grid.IsFullOrEmpty) return grid;
-            if (grid.pUnits == defaultGrids.Blank.pUnits | grid.pUnits == defaultGrids.Solid.pUnits) return;
+            var (defaultGrids, buf) = x;
 
 
+            if (grid.isDefault(defaultGrids)) return;
 
+            if (!grid.IsFullOrEmpty) return;
+
+
+            buf.FreeGridStocks.Add((UIntPtr)grid.pUnits);
+            grid = defaultGrids.Get((GridFillMode)(grid.CubeCount >> 5));
         }
     }
 
