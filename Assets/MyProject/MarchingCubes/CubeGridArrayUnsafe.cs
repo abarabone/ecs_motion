@@ -13,86 +13,50 @@ using Unity.Collections.Experimental;
 namespace Abarabone.MarchingCubes
 {
 
-    ///// <summary>
-    ///// C#8 になるまでの暫定
-    ///// </summary>
-    //public unsafe struct GridStocker : IDisposable
-    //{
-    //    UIntPtr *pStock;
-
-    //    int maxGridLength;
-
-    //    public int Length;
-
-    //    public UIntPtr this[int i] => pStock[i];
-
-
-    //    public GridStocker(int maxGridLength)
-    //    {
-    //        var size = sizeof(UIntPtr) * maxGridLength;
-    //        var align = 4;
-    //        this.pStock = (UIntPtr*)UnsafeUtility.Malloc(size, align, Allocator.Persistent);
-
-    //        this.maxGridLength = maxGridLength;
-    //        this.Length = 0;
-    //    }
-
-    //    public void Add(UIntPtr p)
-    //    {
-    //        this.pStock[this.Length++] = p;
-    //    }
-
-    //    public void Dispose() => UnsafeUtility.Free(this.pStock, Allocator.Persistent);
-
-    //}
-
-
     /// グリッド配列は本体へのポインタのみ持ち、all 0 / all 1 のグリッドはデフォルトとして使いまわされる。
-    public unsafe struct CubeGridGlobalData : IDisposable
+    static public unsafe class CubeGridGlobalData
     {
 
-        public UnsafeList<UIntPtr> FreeGridStock;
-        //public GridStocker GridStock;
+        static public UnsafePtrList FreeBlankGridStock;
+        static public UnsafePtrList FreeSolidGridStock;
+        static public UnsafeList FreeDefaultGridStock;
 
-        int usedGridCount;
-
-
-        unsafe fixed ulong defaultGridValues[2];
-
-        public CubeGrid32x32x32Unsafe DefaultBlankGrid =>
-            new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[0] };
-
-        public CubeGrid32x32x32Unsafe DefaultSolidGrid =>
-            new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[1] };
-
-        public CubeGrid32x32x32Unsafe GetDefaultGrid(GridFillMode fillMode) =>
-            new CubeGrid32x32x32Unsafe { Value = this.defaultGridValues[(int)fillMode] };
+        static public CubeGrid32x32x32Unsafe DefaultBlankGrid => FreeDefaultGridStock.AsRef<CubeGrid32x32x32Unsafe>(0);
+        static public CubeGrid32x32x32Unsafe DefaultSolidGrid => FreeDefaultGridStock.AsRef<CubeGrid32x32x32Unsafe>(1);
 
 
-
-        public CubeGridGlobalData(int maxGridLength)
+        static public void Init(int maxGridLength)
         {
-            this.FreeGridStock = new UnsafeList<UIntPtr>(maxGridLength, Allocator.Persistent);
-            //this.GridStock = new GridStocker(maxGridLength);
-            this.usedGridCount = 0;
+            FreeBlankGridStock = new UnsafePtrList(maxGridLength, Allocator.Persistent);
+            FreeSolidGridStock = new UnsafePtrList(maxGridLength, Allocator.Persistent);
+            FreeDefaultGridStock = new UnsafeList(sizeof(CubeGrid32x32x32Unsafe), 4, 2, Allocator.Persistent);
 
-            this.defaultGridValues[0] = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank).Value;
-            this.defaultGridValues[1] = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid).Value;
+            FreeDefaultGridStock.AsRef<CubeGrid32x32x32Unsafe>(0) = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
+            FreeDefaultGridStock.AsRef<CubeGrid32x32x32Unsafe>(1) = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
         }
 
-        public void Dispose()
+        static public unsafe void Dispose()
         {
-            this.DefaultBlankGrid.Dispose();
-            this.DefaultSolidGrid.Dispose();
+            DefaultBlankGrid.Dispose();
+            DefaultSolidGrid.Dispose();
 
-            //foreach (var x in this.GridStock)
-            for(var i=0; i<FreeGridStock.Length; i++)
+            disposeAll_(FreeBlankGridStock);
+            disposeAll_(FreeSolidGridStock);
+
+            FreeBlankGridStock.Dispose();
+            FreeSolidGridStock.Dispose();
+            FreeDefaultGridStock.Dispose();
+
+            return;
+
+
+            void disposeAll_(UnsafePtrList list)
             {
-                var x = this.FreeGridStock[i];
-                CubeGridAllocater.Dispose(x);
+                for (var i = 0; i < list.Length; i++)
+                {
+                    CubeGridAllocater.Dispose((UIntPtr)(void*)list[i]);
+                }
             }
-
-            this.FreeGridStock.Dispose();
         }
 
 
@@ -144,14 +108,11 @@ namespace Abarabone.MarchingCubes
         public UnsafeList<CubeGrid32x32x32Unsafe> grids;
         public UnsafeBitArray solidOrBlankWhenDefaultList;
 
-        //CubeGridGlobalData* pGlobal;
-
-
 
         /// <summary>
         /// 
         /// </summary>
-        public CubeGridArrayUnsafe( int x, int y, int z ) : this()
+        unsafe public CubeGridArrayUnsafe( int x, int y, int z )// : this()
         {
             this.GridLength = new int3( x, y, z );
             this.wholeGridLength = new int3( x, y, z ) + 2;

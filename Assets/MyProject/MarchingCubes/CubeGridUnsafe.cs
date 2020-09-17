@@ -21,7 +21,6 @@ namespace Abarabone.MarchingCubes
 
     
 
-    [StructLayout(LayoutKind.Explicit)]
     public unsafe struct CubeGrid32x32x32Unsafe
     {
         const int maxNum = 32 * 32 * 32;
@@ -29,13 +28,9 @@ namespace Abarabone.MarchingCubes
         const int shiftNum = 5;
 
 
-        [FieldOffset(0)]
         public uint* pUnits;
-        [FieldOffset(4)]
         public int CubeCount;
 
-        [FieldOffset(0)]
-        public ulong Value;
 
         public bool IsFullOrEmpty => (this.CubeCount & (maxNum - 1) ) == 0;
         public bool IsFull => this.CubeCount == maxNum;
@@ -219,6 +214,9 @@ namespace Abarabone.MarchingCubes
     {
 
         static public ref CubeGrid32x32x32Unsafe AsRef(this CubeGrid32x32x32UnsafePtr cubePtr) => ref *cubePtr.p;
+
+        static public ref T AsRef<T>(this UnsafeList list, int index) where T : unmanaged => ref ((T*)list.Ptr)[index];
+
 
 
         //static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global, )
