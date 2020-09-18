@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Entities;
 using System;
 
 namespace Abarabone.MarchingCubes
@@ -23,17 +25,17 @@ namespace Abarabone.MarchingCubes
 
     public unsafe struct CubeGrid32x32x32Unsafe
     {
-        const int maxNum = 32 * 32 * 32;
-        const int xlineInGrid = 1 * 32 * 32;
-        const int shiftNum = 5;
+        public const int dotNum = 32 * 32 * 32;
+        public const int xlineInGrid = 1 * 32 * 32;
+        public const int shiftNum = 5;
 
 
         public uint* pUnits;
         public int CubeCount;
 
 
-        public bool IsFullOrEmpty => (this.CubeCount & (maxNum - 1) ) == 0;
-        public bool IsFull => this.CubeCount == maxNum;
+        public bool IsFullOrEmpty => (this.CubeCount & (dotNum - 1) ) == 0;
+        public bool IsFull => this.CubeCount == dotNum;
         public bool IsEmpty => this.CubeCount == 0;
 
 
@@ -209,73 +211,5 @@ namespace Abarabone.MarchingCubes
     //    }
 
     //}
-
-    static public unsafe class CubeGridExtension
-    {
-
-        static public ref CubeGrid32x32x32Unsafe AsRef(this CubeGrid32x32x32UnsafePtr cubePtr) => ref *cubePtr.p;
-
-        static public ref T AsRef<T>(this UnsafeList list, int index) where T : unmanaged => ref ((T*)list.Ptr)[index];
-
-
-
-        //static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global, )
-        //{
-
-        //}
-
-        //static public void a(ref this CubeGridArrayUnsafe arr, ref CubeGridGlobalData globalData)
-        //{
-
-        //    var _0or1 = math.sign(grid.CubeCount);
-        //    var defaultGrid = globalData.GetDefaultGrid((GridFillMode)_0or1);
-
-
-        //}
-
-        static bool isDefault
-            (this CubeGrid32x32x32Unsafe grid, CubeGridGlobal.DefualtGtidData defaultGrids)
-        {
-            var p = new uint2((uint)grid.pUnits).xx;
-            var def = new uint2((uint)defaultGrids.Blank.pUnits, (uint)defaultGrids.Solid.pUnits);
-            return math.any(p == def);
-        }
-
-        static public CubeGrid32x32x32Unsafe GetGrid
-            (
-                this (CubeGridGlobal.DefualtGtidData, CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
-                int ix, int iy, int iz
-            )
-        {
-            var (defaultGrids, areas, areaInfo) = x;
-
-
-            var iii = new int3(ix, iy, iz) + 1;
-            var i = math.dot(iii, areaInfo.GridSpan);
-
-            var gridptr = new CubeGrid32x32x32UnsafePtr { p = areas.Grids.Ptr + i };
-            ref var grid = ref gridptr.AsRef();
-
-            if (!grid.isDefault(defaultGrids)) return grid;
-
-
-            return grid;
-        }
-
-        static public void BackGridIfFilled
-            (this (CubeGridGlobal.DefualtGtidData, CubeGridGlobal.BufferData) x, ref CubeGrid32x32x32Unsafe grid)
-        {
-            var (defaultGrids, buf) = x;
-
-
-            if (grid.isDefault(defaultGrids)) return;
-
-            if (!grid.IsFullOrEmpty) return;
-
-
-            buf.FreeGridStocks.Add((UIntPtr)grid.pUnits);
-            grid = defaultGrids.Get((GridFillMode)(grid.CubeCount >> 5));
-        }
-    }
 
 }

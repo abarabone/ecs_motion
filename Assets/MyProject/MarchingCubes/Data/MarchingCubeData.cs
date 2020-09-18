@@ -30,6 +30,64 @@ namespace Abarabone.MarchingCubes
     //    }
     //}
 
+    static public partial class CubeGridGlobal
+    {
+
+        public struct BufferData : IComponentData
+        {
+            public UnsafeList<UIntPtr> FreeGridStocks;
+        }
+
+
+        [InternalBufferCapacity(2)]
+        public struct FreeGridStockData : IBufferElementData
+        {
+            public UnsafeList<UIntPtr> FreeGridStocks;
+        }
+
+
+        [InternalBufferCapacity(2)]
+        public struct DefualtGridData : IBufferElementData
+        {
+            public CubeGrid32x32x32Unsafe DefaultGrid;
+        }
+
+        //public struct DefualtGridSolidData : IComponentData
+        //{
+        //    public CubeGrid32x32x32Unsafe DefaultGrid;
+        //}
+        //public struct DefualtGridBlankData : IComponentData
+        //{
+        //    public CubeGrid32x32x32Unsafe DefaultGrid;
+        //}
+
+        public struct InfoData : IComponentData
+        {
+            public int MaxDrawGridLength;
+            public int MaxCubeInstanceLength;
+        }
+
+
+
+        static CubeGrid32x32x32Unsafe rentGrid
+            (ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid, GridFillMode fillMode)
+        {
+            const int dotnum = CubeGrid32x32x32Unsafe.dotNum;
+
+            ref var stocks = ref buf.ElementAt((int)fillMode).FreeGridStocks;
+            var p = stocks.ElementAt(stocks.length - 1);
+            return new CubeGrid32x32x32Unsafe(p, dotnum * (int)fillMode);
+        }
+        static public CubeGrid32x32x32Unsafe RentBlankGrid(ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid) =>
+            buf.rentGrid(ref grid, GridFillMode.Blank);
+        static public CubeGrid32x32x32Unsafe RentSolidGrid(ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid) =>
+            buf.rentGrid(ref grid, GridFillMode.Solid);
+
+        public static CubeGrid32x32x32Unsafe Blank(ref this DynamicBuffer<DefualtGridData> buf) => buf[0].DefaultGrid;
+        public static CubeGrid32x32x32Unsafe Solid(ref this DynamicBuffer<DefualtGridData> buf) => buf[1].DefaultGrid;
+
+    }
+
     static public partial class CubeGridArea
     {
 
@@ -53,45 +111,6 @@ namespace Abarabone.MarchingCubes
         {
             public int3 GridSpan;
         }
-    }
-
-    static public partial class CubeGridGlobal
-    {
-
-        public struct BufferData : IComponentData
-        {
-            public UnsafeList<UIntPtr> FreeGridStocks;
-        }
-
-        public unsafe struct DefualtGtidData : IComponentData
-        {
-            fixed ulong defaultGridValues[2];
-
-            public CubeGrid32x32x32Unsafe Blank =>
-                new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[0] };
-
-            public CubeGrid32x32x32Unsafe Solid =>
-                new CubeGrid32x32x32Unsafe() { Value = this.defaultGridValues[1] };
-
-            public CubeGrid32x32x32Unsafe Get(GridFillMode fillMode) =>
-                new CubeGrid32x32x32Unsafe { Value = this.defaultGridValues[(int)fillMode] };
-        }
-
-        public struct DefualtGridSolidData : IComponentData
-        {
-            public CubeGrid32x32x32Unsafe DefaultGrid;
-        }
-        public struct DefualtGridBlankData : IComponentData
-        {
-            public CubeGrid32x32x32Unsafe DefaultGrid;
-        }
-
-        public struct InfoData : IComponentData
-        {
-            public int MaxDrawGridLength;
-            public int MaxCubeInstanceLength;
-        }
-
     }
 
 
