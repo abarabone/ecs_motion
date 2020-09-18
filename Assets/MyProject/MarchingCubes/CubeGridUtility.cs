@@ -45,11 +45,13 @@ namespace Abarabone.MarchingCubes
         static bool isDefault
             (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, CubeGrid32x32x32Unsafe grid)
         {
-            var p = new uint2((uint)grid.pUnits).xx;
-            var def = new uint2((uint)defaultGrids.Blank().pUnits, (uint)defaultGrids.Solid().pUnits);
-            return math.any(p == def);
+            //var p = new uint2((uint)grid.pUnits).xx;
+            //var def = new uint2((uint)defaultGrids.Blank().pUnits, (uint)defaultGrids.Solid().pUnits);
+            //return math.any(p == def);
+            return grid.pUnits == defaultGrids.Blank().pUnits | grid.pUnits == defaultGrids.Solid().pUnits;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static ref CubeGrid32x32x32Unsafe getGridFromArea
             (
                 ref this (CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
@@ -65,12 +67,6 @@ namespace Abarabone.MarchingCubes
             return ref areas.Grids.AsRef(i);
         }
 
-        static public void rentGridFromGlobal
-            (ref this CubeGridGlobal.BufferData buf, ref CubeGrid32x32x32Unsafe grid)
-        {
-            grid.pUnits = (uint*)buf.FreeGridStocks[buf.FreeGridStocks.length--];
-        }
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public CubeGrid32x32x32Unsafe GetGrid
@@ -84,11 +80,7 @@ namespace Abarabone.MarchingCubes
             ref var areaInfo = ref x.Item3;
 
 
-            var i3 = new int3(ix, iy, iz) + 1;
-            var i = math.dot(i3, areaInfo.GridSpan);
-
-            var gridptr = new CubeGrid32x32x32UnsafePtr { p = areas.Grids.Ptr + i };
-            ref var grid = ref gridptr.AsRef();
+            ref var grid = ref 
 
             if (!defaultGrids.isDefault(grid)) return grid;
 
