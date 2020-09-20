@@ -74,11 +74,12 @@ namespace Abarabone.MarchingCubes
         {
             ref var stocks = ref buf.ElementAt((int)fillMode).FreeGridStocks;
             
-            var p = stocks.[--stocks.length];
+            var p = stocks[--stocks.length];
 
             const int dotnum = CubeGrid32x32x32Unsafe.dotNum;
             return new CubeGrid32x32x32Unsafe(p, dotnum * (int)fillMode);
         }
+
         static public CubeGrid32x32x32Unsafe RentBlankGrid(ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid) =>
             buf.rentGrid(ref grid, GridFillMode.Blank);
         static public CubeGrid32x32x32Unsafe RentSolidGrid(ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid) =>

@@ -52,6 +52,27 @@ namespace Abarabone.MarchingCubes
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static GridFillMode getFillMode(ref this CubeGrid32x32x32Unsafe grid)
+        {
+            return (GridFillMode)(grid.CubeCount >> 5);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public void backFreeGridStock
+            (ref this DynamicBuffer<CubeGridGlobal.FreeGridStockData> stocks, int iFillMode, CubeGrid32x32x32Unsafe grid)
+        {
+            stocks.ElementAt(iFillMode).FreeGridStocks.Add((UIntPtr)grid.pUnits);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public CubeGrid32x32x32Unsafe getDefaultGrid
+            (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, int iFillMode)
+        {
+            return defaultGrids.ElementAt(iFillMode).DefaultGrid;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static ref CubeGrid32x32x32Unsafe getGridFromArea
             (
                 ref this (CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
@@ -68,6 +89,7 @@ namespace Abarabone.MarchingCubes
         }
 
 
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public CubeGrid32x32x32Unsafe GetGrid
             (
@@ -76,11 +98,12 @@ namespace Abarabone.MarchingCubes
             )
         {
             ref var defaultGrids = ref x.Item1;
-            ref var areas = ref x.Item2;
+            ref var grids = ref x.Item2;
             ref var areaInfo = ref x.Item3;
 
 
-            ref var grid = ref 
+            var area = (grids, areaInfo);
+            var grid = area.getGridFromArea(ix, iy, iz);
 
             if (!defaultGrids.isDefault(grid)) return grid;
 
@@ -91,19 +114,25 @@ namespace Abarabone.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void BackGridIfFilled
-            (ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, CubeGridGlobal.BufferData) x, ref CubeGrid32x32x32Unsafe grid)
+            (
+                ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, DynamicBuffer<CubeGridGlobal.FreeGridStockData>) x,
+                ref CubeGrid32x32x32Unsafe grid
+            )
         {
             ref var defaultGrids = ref x.Item1;
-            ref var buf = ref x.Item2;
+            ref var stocks = ref x.Item2;
 
 
-            if (grid.isDefault(defaultGrids)) return;
+            if (defaultGrids.isDefault(grid)) return;
 
             if (!grid.IsFullOrEmpty) return;
 
 
-            buf.FreeGridStocks.Add((UIntPtr)grid.pUnits);
-            grid = defaultGrids.Get((GridFillMode)(grid.CubeCount >> 5));
+            var iFillMode = (int)grid.getFillMode();
+
+            stocks.backFreeGridStock(iFillMode, grid);
+
+            grid = defaultGrids.getDefaultGrid(iFillMode);
         }
     }
 
