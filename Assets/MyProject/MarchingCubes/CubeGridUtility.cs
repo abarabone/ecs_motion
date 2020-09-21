@@ -41,7 +41,6 @@ namespace Abarabone.MarchingCubes
 
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool isDefault
             (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, CubeGrid32x32x32Unsafe grid)
         {
@@ -51,29 +50,17 @@ namespace Abarabone.MarchingCubes
             return grid.pUnits == defaultGrids.Blank().pUnits | grid.pUnits == defaultGrids.Solid().pUnits;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static GridFillMode getFillMode(ref this CubeGrid32x32x32Unsafe grid)
         {
             return (GridFillMode)(grid.CubeCount >> 5);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public void backFreeGridStock
-            (ref this DynamicBuffer<CubeGridGlobal.FreeGridStockData> stocks, int iFillMode, CubeGrid32x32x32Unsafe grid)
-        {
-            stocks.ElementAt(iFillMode).FreeGridStocks.Add((UIntPtr)grid.pUnits);
-        }
 
+        /// <summary>
+        /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public CubeGrid32x32x32Unsafe getDefaultGrid
-            (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, int iFillMode)
-        {
-            return defaultGrids.ElementAt(iFillMode).DefaultGrid;
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ref CubeGrid32x32x32Unsafe getGridFromArea
+        static CubeGrid32x32x32UnsafePtr getGridFromArea
             (
                 ref this (CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
                 int ix, int iy, int iz
@@ -85,13 +72,18 @@ namespace Abarabone.MarchingCubes
             var i3 = new int3(ix, iy, iz) + 1;
             var i = math.dot(i3, areaInfo.GridSpan);
 
-            return ref areas.Grids.AsRef(i);
+            return new CubeGrid32x32x32UnsafePtr { p = areas.Grids.Ptr + i };
         }
 
 
-
+        /// <summary>
+        /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
+        /// 取得したグリッドポインタからは、グリッドエリア上のグリッドそのものを書き換えることができる。
+        /// また、取得すべきグリッドがデフォルトだった場合は、書き換え可能にするためにフリーストックから取得する。
+        /// グリッドエリア上のグリッドをそのグリッドに置き換え、そのポインタを返す。
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public CubeGrid32x32x32Unsafe GetGrid
+        static public CubeGrid32x32x32UnsafePtr GetGrid
             (
                 ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
                 int ix, int iy, int iz
@@ -103,36 +95,43 @@ namespace Abarabone.MarchingCubes
 
 
             var area = (grids, areaInfo);
-            var grid = area.getGridFromArea(ix, iy, iz);
+            var gridptr = area.getGridFromArea(ix, iy, iz);
 
-            if (!defaultGrids.isDefault(grid)) return grid;
+            if (!defaultGrids.isDefault(*gridptr.p)) return gridptr;
 
 
-            return grid;
+
+
+            return gridptr;
         }
 
-
+        /// <summary>
+        /// 指定したグリッドをチェックする。ソリッドかブランクだった場合、フリーストックエリアに戻す。
+        /// 入れ替えで、デフォルトグリッドを取得し、グリッドに格納する。
+        /// また、参照であるため、グリッドエリア上のグリッドも同時に書き換えられる。
+        /// もともとデフォルトだったり、ソリッドでもブランクでもない場合は何もしない。
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void BackGridIfFilled
             (
                 ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, DynamicBuffer<CubeGridGlobal.FreeGridStockData>) x,
-                ref CubeGrid32x32x32Unsafe grid
+                ref CubeGrid32x32x32UnsafePtr gridptr
             )
         {
             ref var defaultGrids = ref x.Item1;
             ref var stocks = ref x.Item2;
 
 
-            if (defaultGrids.isDefault(grid)) return;
+            if (defaultGrids.isDefault(*gridptr.p)) return;
 
-            if (!grid.IsFullOrEmpty) return;
+            if (!gridptr.p->IsFullOrEmpty) return;
 
 
-            var iFillMode = (int)grid.getFillMode();
+            var fillMode = gridptr.p->getFillMode();
 
-            stocks.backFreeGridStock(iFillMode, grid);
+            stocks.BackToFreeGridStocks(fillMode, *gridptr.p);
 
-            grid = defaultGrids.getDefaultGrid(iFillMode);
+            *gridptr.p = defaultGrids.GetDefaultGrid(fillMode);
         }
     }
 

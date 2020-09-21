@@ -4,6 +4,7 @@ using System.Linq;
 using System;
 using UnityEngine.Rendering;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.IO;
 using UnityEngine;
 using Unity.Entities;
@@ -68,8 +69,10 @@ namespace Abarabone.MarchingCubes
         }
 
 
-
-        static CubeGrid32x32x32Unsafe rentGrid
+        /// <summary>
+        /// 
+        /// </summary>
+        static public CubeGrid32x32x32Unsafe RentGridFromFreeStocks
             (ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid, GridFillMode fillMode)
         {
             ref var stocks = ref buf.ElementAt((int)fillMode).FreeGridStocks;
@@ -81,13 +84,36 @@ namespace Abarabone.MarchingCubes
         }
 
         static public CubeGrid32x32x32Unsafe RentBlankGrid(ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid) =>
-            buf.rentGrid(ref grid, GridFillMode.Blank);
+            buf.RentGridFromFreeStocks(ref grid, GridFillMode.Blank);
         static public CubeGrid32x32x32Unsafe RentSolidGrid(ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid) =>
-            buf.rentGrid(ref grid, GridFillMode.Solid);
+            buf.RentGridFromFreeStocks(ref grid, GridFillMode.Solid);
 
-        public static CubeGrid32x32x32Unsafe Blank(ref this DynamicBuffer<DefualtGridData> buf) => buf[0].DefaultGrid;
-        public static CubeGrid32x32x32Unsafe Solid(ref this DynamicBuffer<DefualtGridData> buf) => buf[1].DefaultGrid;
 
+        /// <summary>
+        /// 使い終わったグリッドを、フリーストックエリアに戻す。
+        /// </summary>
+        static public unsafe void BackToFreeGridStocks
+            (
+                ref this DynamicBuffer<CubeGridGlobal.FreeGridStockData> stocks,
+                GridFillMode fillMode, CubeGrid32x32x32Unsafe grid
+            )
+        {
+            stocks.ElementAt((int)fillMode).FreeGridStocks.Add((UIntPtr)grid.pUnits);
+        }
+
+
+
+
+        static public CubeGrid32x32x32Unsafe GetDefaultGrid
+            (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, GridFillMode fillMode)
+        {
+            return defaultGrids.ElementAt((int)fillMode).DefaultGrid;
+        }
+
+        public static CubeGrid32x32x32Unsafe Blank(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
+            defaultGrids.GetDefaultGrid(GridFillMode.Blank);
+        public static CubeGrid32x32x32Unsafe Solid(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
+            defaultGrids.GetDefaultGrid(GridFillMode.Solid);
     }
 
     static public partial class CubeGridArea
