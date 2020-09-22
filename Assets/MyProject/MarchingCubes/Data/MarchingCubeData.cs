@@ -70,17 +70,30 @@ namespace Abarabone.MarchingCubes
 
 
         /// <summary>
+        /// フリーストックからグリッドを貸与。
         /// 
         /// </summary>
         static public CubeGrid32x32x32Unsafe RentGridFromFreeStocks
-            (ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid, GridFillMode fillMode)
+            (ref this DynamicBuffer<FreeGridStockData> freeStocker, GridFillMode fillMode)
         {
-            ref var stocks = ref buf.ElementAt((int)fillMode).FreeGridStocks;
-            
-            var p = stocks[--stocks.length];
+            ref var currentStocks = ref freeStocker.ElementAt((int)fillMode).FreeGridStocks;
+            if(currentStocks.length > 0)
+            {
+                var p = currentStocks[--currentStocks.length];
 
-            const int dotnum = CubeGrid32x32x32Unsafe.dotNum;
-            return new CubeGrid32x32x32Unsafe(p, dotnum * (int)fillMode);
+                const int dotnum = CubeGrid32x32x32Unsafe.dotNum;
+                return new CubeGrid32x32x32Unsafe(p, dotnum * (int)fillMode);
+            }
+
+            ref var otherStocks = ref freeStocker.ElementAt((int)~fillMode).FreeGridStocks;
+            if (otherStocks.length > 0)
+            {
+                var p = otherStocks[--otherStocks.length];
+
+                return CubeGridAllocater.Fill(p, fillMode);
+            }
+
+            return CubeGridAllocater.Alloc(fillMode);
         }
 
         static public CubeGrid32x32x32Unsafe RentBlankGrid(ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid) =>
@@ -90,7 +103,7 @@ namespace Abarabone.MarchingCubes
 
 
         /// <summary>
-        /// 使い終わったグリッドを、フリーストックエリアに戻す。
+        /// 使い終わったグリッドを、フリーストックに戻す。
         /// </summary>
         static public unsafe void BackToFreeGridStocks
             (
@@ -103,7 +116,9 @@ namespace Abarabone.MarchingCubes
 
 
 
-
+        /// <summary>
+        /// デフォルトグリッドを取得する。
+        /// </summary>
         static public CubeGrid32x32x32Unsafe GetDefaultGrid
             (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, GridFillMode fillMode)
         {
