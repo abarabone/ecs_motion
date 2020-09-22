@@ -56,51 +56,35 @@ namespace Abarabone.MarchingCubes
         }
 
 
-        /// <summary>
-        /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static CubeGrid32x32x32UnsafePtr getGridFromArea
-            (
-                ref this (CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
-                int ix, int iy, int iz
-            )
-        {
-            ref var areas = ref x.Item1;
-            ref var areaInfo = ref x.Item2;
-
-            var i3 = new int3(ix, iy, iz) + 1;
-            var i = math.dot(i3, areaInfo.GridSpan);
-
-            return new CubeGrid32x32x32UnsafePtr { p = areas.Grids.Ptr + i };
-        }
-
 
         /// <summary>
         /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
         /// 取得したグリッドポインタからは、グリッドエリア上のグリッドそのものを書き換えることができる。
-        /// また、取得すべきグリッドがデフォルトだった場合は、書き換え可能にするためにフリーストックから取得する。
-        /// グリッドエリア上のグリッドをそのグリッドに置き換え、そのポインタを返す。
+        /// また、取得すべきグリッドがデフォルトだった場合は、書き換え可能にするためにフリーストックから取得し、
+        /// グリッドエリア上のグリッドを取得したグリッドで置き換える。
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public CubeGrid32x32x32UnsafePtr GetGrid
             (
-                ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
+                ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, DynamicBuffer<CubeGridGlobal.FreeGridStockData>, CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
                 int ix, int iy, int iz
             )
         {
             ref var defaultGrids = ref x.Item1;
-            ref var grids = ref x.Item2;
-            ref var areaInfo = ref x.Item3;
+            ref var freeStocks = ref x.Item2;
+            ref var grids = ref x.Item3;
+            ref var areaInfo = ref x.Item4;
 
 
             var area = (grids, areaInfo);
-            var gridptr = area.getGridFromArea(ix, iy, iz);
+            var gridptr = area.GetGridFromArea(ix, iy, iz);
 
-            if (!defaultGrids.isDefault(*gridptr.p)) return gridptr;
-
-
-
+            if (defaultGrids.isDefault(*gridptr.p))
+            {
+                var fillMode = gridptr.p->getFillMode();
+                //*gridptr.p = freeStocks.RentGridFromFreeStocks(fillMode);
+                gridptr.p->pUnits = freeStocks.RentGridFromFreeStocks(fillMode).pUnits;
+            }
 
             return gridptr;
         }
@@ -131,7 +115,8 @@ namespace Abarabone.MarchingCubes
 
             stocks.BackToFreeGridStocks(fillMode, *gridptr.p);
 
-            *gridptr.p = defaultGrids.GetDefaultGrid(fillMode);
+            //*gridptr.p = defaultGrids.GetDefaultGrid(fillMode);
+            gridptr.p->pUnits = defaultGrids.GetDefaultGrid(fillMode).pUnits;
         }
     }
 

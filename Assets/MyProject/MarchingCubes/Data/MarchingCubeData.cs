@@ -46,7 +46,6 @@ namespace Abarabone.MarchingCubes
             public UnsafeList<UIntPtr> FreeGridStocks;
         }
 
-
         [InternalBufferCapacity(2)]
         public struct DefualtGridData : IBufferElementData
         {
@@ -68,68 +67,9 @@ namespace Abarabone.MarchingCubes
             public int MaxCubeInstanceLength;
         }
 
-
-        /// <summary>
-        /// フリーストックからグリッドを貸与。
-        /// 
-        /// </summary>
-        static public CubeGrid32x32x32Unsafe RentGridFromFreeStocks
-            (ref this DynamicBuffer<FreeGridStockData> freeStocker, GridFillMode fillMode)
-        {
-            ref var currentStocks = ref freeStocker.ElementAt((int)fillMode).FreeGridStocks;
-            if(currentStocks.length > 0)
-            {
-                var p = currentStocks[--currentStocks.length];
-
-                const int dotnum = CubeGrid32x32x32Unsafe.dotNum;
-                return new CubeGrid32x32x32Unsafe(p, dotnum * (int)fillMode);
-            }
-
-            ref var otherStocks = ref freeStocker.ElementAt((int)~fillMode).FreeGridStocks;
-            if (otherStocks.length > 0)
-            {
-                var p = otherStocks[--otherStocks.length];
-
-                return CubeGridAllocater.Fill(p, fillMode);
-            }
-
-            return CubeGridAllocater.Alloc(fillMode);
-        }
-
-        static public CubeGrid32x32x32Unsafe RentBlankGrid(ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid) =>
-            buf.RentGridFromFreeStocks(ref grid, GridFillMode.Blank);
-        static public CubeGrid32x32x32Unsafe RentSolidGrid(ref this DynamicBuffer<FreeGridStockData> buf, ref CubeGrid32x32x32Unsafe grid) =>
-            buf.RentGridFromFreeStocks(ref grid, GridFillMode.Solid);
-
-
-        /// <summary>
-        /// 使い終わったグリッドを、フリーストックに戻す。
-        /// </summary>
-        static public unsafe void BackToFreeGridStocks
-            (
-                ref this DynamicBuffer<CubeGridGlobal.FreeGridStockData> stocks,
-                GridFillMode fillMode, CubeGrid32x32x32Unsafe grid
-            )
-        {
-            stocks.ElementAt((int)fillMode).FreeGridStocks.Add((UIntPtr)grid.pUnits);
-        }
-
-
-
-        /// <summary>
-        /// デフォルトグリッドを取得する。
-        /// </summary>
-        static public CubeGrid32x32x32Unsafe GetDefaultGrid
-            (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, GridFillMode fillMode)
-        {
-            return defaultGrids.ElementAt((int)fillMode).DefaultGrid;
-        }
-
-        public static CubeGrid32x32x32Unsafe Blank(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
-            defaultGrids.GetDefaultGrid(GridFillMode.Blank);
-        public static CubeGrid32x32x32Unsafe Solid(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
-            defaultGrids.GetDefaultGrid(GridFillMode.Solid);
     }
+
+
 
     static public partial class CubeGridArea
     {
@@ -216,11 +156,110 @@ namespace Abarabone.MarchingCubes
 
 
 
+
+    static public partial class CubeGridGlobal
+    {
+        /// <summary>
+        /// フリーストックからグリッドを貸与。
+        /// ストックがなければ、新規に確保して返す。
+        /// </summary>
+        static public CubeGrid32x32x32Unsafe RentGridFromFreeStocks
+            (ref this DynamicBuffer<FreeGridStockData> freeStocker, GridFillMode fillMode)
+        {
+            ref var currentStocks = ref freeStocker.ElementAt((int)fillMode).FreeGridStocks;
+            if (currentStocks.length > 0)
+            {
+                var p = currentStocks[--currentStocks.length];
+
+                const int dotnum = CubeGrid32x32x32Unsafe.dotNum;
+                return new CubeGrid32x32x32Unsafe(p, dotnum * (int)fillMode);
+            }
+
+            ref var otherStocks = ref freeStocker.ElementAt((int)~fillMode).FreeGridStocks;
+            if (otherStocks.length > 0)
+            {
+                var p = otherStocks[--otherStocks.length];
+
+                return CubeGridAllocater.Fill(p, fillMode);
+            }
+
+            return CubeGridAllocater.Alloc(fillMode);
+        }
+
+        static public CubeGrid32x32x32Unsafe RentBlankGrid(ref this DynamicBuffer<FreeGridStockData> buf, GridFillMode fillMode) =>
+            buf.RentGridFromFreeStocks(GridFillMode.Blank);
+        static public CubeGrid32x32x32Unsafe RentSolidGrid(ref this DynamicBuffer<FreeGridStockData> buf, GridFillMode fillMode) =>
+            buf.RentGridFromFreeStocks(GridFillMode.Solid);
+
+
+        /// <summary>
+        /// 使い終わったグリッドを、フリーストックに戻す。
+        /// 収容できなければ、破棄してしまう。
+        /// </summary>
+        static public unsafe void BackToFreeGridStocks
+            (
+                ref this DynamicBuffer<CubeGridGlobal.FreeGridStockData> freeStocker,
+                GridFillMode fillMode, CubeGrid32x32x32Unsafe grid
+            )
+        {
+            //freeStocker.ElementAt((int)fillMode).FreeGridStocks.Add((UIntPtr)grid.pUnits);
+
+            ref var currentStocks = ref freeStocker.ElementAt((int)fillMode).FreeGridStocks;
+            if (currentStocks.length < currentStocks.capacity)
+            {
+                currentStocks.AddNoResize((UIntPtr)grid.pUnits);
+            }
+
+            ref var otherStocks = ref freeStocker.ElementAt((int)~fillMode).FreeGridStocks;
+            if (otherStocks.length < otherStocks.capacity)
+            {
+                currentStocks.AddNoResize((UIntPtr)grid.pUnits);
+            }
+
+            CubeGridAllocater.Dispose((UIntPtr)grid.pUnits);
+        }
+
+
+        /// <summary>
+        /// デフォルトグリッドを取得する。
+        /// </summary>
+        static public CubeGrid32x32x32Unsafe GetDefaultGrid
+            (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, GridFillMode fillMode)
+        {
+            return defaultGrids.ElementAt((int)fillMode).DefaultGrid;
+        }
+
+        public static CubeGrid32x32x32Unsafe Blank(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
+            defaultGrids.GetDefaultGrid(GridFillMode.Blank);
+        public static CubeGrid32x32x32Unsafe Solid(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
+            defaultGrids.GetDefaultGrid(GridFillMode.Solid);
+    }
+
+
+
     static public partial class GridArea
     {
+        /// <summary>
+        /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public unsafe CubeGrid32x32x32UnsafePtr GetGridFromArea
+            (
+                ref this (CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
+                int ix, int iy, int iz
+            )
+        {
+            ref var areaGrids = ref x.Item1;
+            ref var areaInfo = ref x.Item2;
 
+            var i3 = new int3(ix, iy, iz) + 1;
+            var i = math.dot(i3, areaInfo.GridSpan);
 
+            return new CubeGrid32x32x32UnsafePtr { p = areaGrids.Grids.Ptr + i };
+        }
     }
+
+
 
     static public partial class Resource
     {

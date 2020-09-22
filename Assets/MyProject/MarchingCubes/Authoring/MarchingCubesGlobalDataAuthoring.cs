@@ -27,6 +27,8 @@ namespace Abarabone.MarchingCubes.Authoring
         public ComputeShader GridCubeIdSetShader;
         public int maxGridLengthInShader;
 
+        public int BlankFreeStockCapacity;
+        public int SolidFreeStockCapacity;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -35,65 +37,13 @@ namespace Abarabone.MarchingCubes.Authoring
 
             createGlobalDataEntity_(conversionSystem, this.gameObject);
 
-            setGlobalData_
-                (conversionSystem, this.gameObject, this.MaxCubeInstances, this.MaxDrawGridLength);
+            setGlobalData_(conversionSystem, this.gameObject);
 
-            setResources_
-                (conversionSystem, this.gameObject, this.SrcMaterial, this.GridCubeIdSetShader, this.MarchingCubesAsset, this.maxGridLengthInShader);
+            setResources_(conversionSystem, this.gameObject);//, this.SrcMaterial, this.GridCubeIdSetShader, this.MarchingCubesAsset, this.maxGridLengthInShader);
 
             return;
 
 
-            //unsafe void setGlobalData_(GameObjectConversionSystem gcs_, GameObject global_)
-            //{
-            //    var em = gcs_.DstEntityManager;
-
-            //    var ent = gcs_.GetPrimaryEntity(global_);
-            //    var types = new ComponentTypes
-            //    (
-            //        typeof(CubeGridGlobal.BufferData),
-            //        typeof(CubeGridGlobal.DefualtGridBlankData),
-            //        typeof(CubeGridGlobal.DefualtGridSolidData),
-            //        typeof(CubeGridGlobal.InfoData),
-            //        typeof(ModelPrefabNoNeedLinkedEntityGroupTag)
-            //    );
-            //    em.AddComponents(ent, types);
-
-
-            //    // 本当は、system で初期化したいが、OnCreate() や OnRunning() では entity を取得できないようだ…
-            //    var buffer = new UnsafeList<UIntPtr>(this.MaxCubeInstances, Allocator.Persistent);
-            //    var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
-            //    var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
-            //    buffer.Add((UIntPtr)solid.pUnits);
-            //    buffer.Add((UIntPtr)blank.pUnits);
-
-
-            //    em.SetComponentData(ent,
-            //        new CubeGridGlobal.BufferData
-            //        {
-            //            CubeBuffers = buffer,
-            //        }
-            //    );
-            //    em.SetComponentData(ent,
-            //        new CubeGridGlobal.DefualtGridSolidData
-            //        {
-            //            DefaultGrid = solid,
-            //        }
-            //    );
-            //    em.SetComponentData(ent,
-            //        new CubeGridGlobal.DefualtGridBlankData
-            //        {
-            //            DefaultGrid = blank,
-            //        }
-            //    );
-            //    em.SetComponentData(ent,
-            //        new CubeGridGlobal.InfoData
-            //        {
-            //            MaxCubeInstances = this.MaxCubeInstances,
-            //            MaxDrawGridLength = this.MaxDrawGridLength,
-            //        }
-            //    );
-            //}
             unsafe void createGlobalDataEntity_( GameObjectConversionSystem gcs_, GameObject global_ )
             {
                 var em = gcs_.DstEntityManager;
@@ -104,9 +54,8 @@ namespace Abarabone.MarchingCubes.Authoring
                 var types = new ComponentTypes
                 (new ComponentType[] {
                     typeof(Resource.Initialize),
-                    typeof(CubeGridGlobal.BufferData),
-                    typeof(CubeGridGlobal.DefualtGridBlankData),
-                    typeof(CubeGridGlobal.DefualtGridSolidData),
+                    typeof(CubeGridGlobal.FreeGridStockData),
+                    typeof(CubeGridGlobal.DefualtGridData),
                     typeof(CubeGridGlobal.InfoData),
                     typeof(Resource.DrawResourceData),
                     typeof(Resource.DrawBufferData),
@@ -117,22 +66,39 @@ namespace Abarabone.MarchingCubes.Authoring
             }
 
 
-            unsafe void setGlobalData_
-                (
-                    GameObjectConversionSystem gcs_, GameObject global_,
-                    int maxCubeInstances_, int maxDrawGridLength_
-                )
+            unsafe void setGlobalData_(GameObjectConversionSystem gcs_, GameObject global_)
             {
                 var em = gcs_.DstEntityManager;
 
 
                 var ent = gcs_.GetPrimaryEntity(global_);
 
+                var defaultBuffers = em.GetBuffer<CubeGridGlobal.DefualtGridData>(ent);
+                var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
+                var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
+                defaultBuffers.Add(new CubeGridGlobal.DefualtGridData { DefaultGrid = blank });
+                defaultBuffers.Add(new CubeGridGlobal.DefualtGridData { DefaultGrid = solid });
+
+
+                var freeStockBuffers = em.GetBuffer<CubeGridGlobal.FreeGridStockData>(ent);
+                freeStockBuffers.Add(
+                    new CubeGridGlobal.FreeGridStockData
+                    {
+                        FreeGridStocks = new UnsafeList<UIntPtr>(this.BlankFreeStockCapacity, Allocator.Persistent),
+                    }
+                );
+                freeStockBuffers.Add(
+                    new CubeGridGlobal.FreeGridStockData
+                    {
+                        FreeGridStocks = new UnsafeList<UIntPtr>(this.SolidFreeStockCapacity, Allocator.Persistent),
+                    }
+                );
+
                 em.SetComponentData(ent,
                     new CubeGridGlobal.InfoData
                     {
-                        MaxCubeInstanceLength = maxCubeInstances_,
-                        MaxDrawGridLength = maxDrawGridLength_,
+                        MaxCubeInstanceLength = this.MaxCubeInstances,
+                        MaxDrawGridLength = this.MaxDrawGridLength,
                     }
                 );
             }
@@ -140,9 +106,9 @@ namespace Abarabone.MarchingCubes.Authoring
 
             void setResources_
                 (
-                    GameObjectConversionSystem gcs_, GameObject global_,
-                    Material srcMat_, ComputeShader computeShader_,
-                    MarchingCubeAsset asset_, int maxGridLengthInShader_
+                    GameObjectConversionSystem gcs_, GameObject global_//,
+                    //Material srcMat_, ComputeShader computeShader_,
+                    //MarchingCubeAsset asset_, int maxGridLengthInShader_
                 )
             {
                 var em = gcs_.DstEntityManager;
@@ -153,17 +119,17 @@ namespace Abarabone.MarchingCubes.Authoring
                 em.SetComponentData(ent,
                     new Resource.DrawResourceData
                     {
-                        CubeMaterial = new Material(srcMat_),
+                        CubeMaterial = new Material(this.SrcMaterial),//srcMat_),
                         InstatnceMesh = Resource.CreateMesh(),
-                        GridCubeIdSetShader = computeShader_,
+                        GridCubeIdSetShader = this.GridCubeIdSetShader,//computeShader_,
                     }
                 );
 
                 em.SetComponentData(ent,
                     new Resource.Initialize
                     {
-                        Asset = asset_,
-                        MaxGridLengthInShader = maxGridLengthInShader_,
+                        Asset = this.MarchingCubesAsset,//asset_,
+                        MaxGridLengthInShader = this.maxGridLengthInShader,//maxGridLengthInShader_,
                     }
                 );
             }
