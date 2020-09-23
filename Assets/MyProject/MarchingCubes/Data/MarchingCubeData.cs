@@ -327,14 +327,14 @@ namespace Abarabone.MarchingCubes
                     .ToDictionary(x => x.x, x => x.i);
             }
 
-             ComputeBuffer createNormalList_(Dictionary<float3, int> normalToIdDict)
+            ComputeBuffer createNormalList_(Dictionary<float3, int> normalToIdDict)
             {
                 var buffer = new ComputeBuffer(normalToIdDict.Count, Marshal.SizeOf<Vector4>(), ComputeBufferType.Constant);
 
                 var q =
                     from n in normalToIdDict
-                        //.OrderBy( x => x.Value )
-                        //.Do( x => Debug.Log( $"{x.Value} {x.Key}" ) )
+                        //.OrderBy(x => x.Value)
+                        //.Do(x => Debug.Log($"{x.Value} {x.Key}"))
                         .Select(x => x.Key)
                     select new Vector4
                     {

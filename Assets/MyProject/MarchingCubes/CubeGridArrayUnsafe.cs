@@ -158,20 +158,20 @@ namespace Abarabone.MarchingCubes
         /// </summary>
         public void FillCubes( int3 topLeft, int3 length3, bool isFillAll = false )
         {
-            var st = math.max( topLeft + 1, int3.zero );
-            var ed = math.min( st + length3 - 1, this.wholeGridLength - 1 );
+            //var st = math.max( topLeft + 1, int3.zero );
+            //var ed = math.min( st + length3 - 1, this.wholeGridLength - 1 );
 
-            var pGridTemplate = isFillAll ? this.defaultFilledCubePtr : this.defaultBlankCubePtr;
+            //var pGridTemplate = isFillAll ? this.defaultFilledCubePtr : this.defaultBlankCubePtr;
 
-            var yspan = this.wholeGridLength.x * this.wholeGridLength.z;
-            var zspan = this.wholeGridLength.x;
+            //var yspan = this.wholeGridLength.x * this.wholeGridLength.z;
+            //var zspan = this.wholeGridLength.x;
 
-            for( var iy = st.y; iy <= ed.y; iy++ )
-                for( var iz = st.z; iz <= ed.z; iz++ )
-                    for( var ix = st.x; ix <= ed.x; ix++ )
-                    {
-                        this.grids[ iy * yspan + iz * zspan + ix ] = pGridTemplate;
-                    }
+            //for( var iy = st.y; iy <= ed.y; iy++ )
+            //    for( var iz = st.z; iz <= ed.z; iz++ )
+            //        for( var ix = st.x; ix <= ed.x; ix++ )
+            //        {
+            //            this.grids[ iy * yspan + iz * zspan + ix ] = pGridTemplate;
+            //        }
         }
 
 
@@ -191,20 +191,20 @@ namespace Abarabone.MarchingCubes
 
             return new NearCubeGrids
             {
-                L =
-                {
-                    x = gridArray.grids[ i + 0 ],
-                    y = gridArray.grids[ i + yspan_ + 0 ],
-                    z = gridArray.grids[ i + zspan_ + 0 ],
-                    w = gridArray.grids[ i + yspan_ + zspan_ + 0 ],
-                },
-                R =
-                {
-                    x = gridArray.grids[ i + 1 ],
-                    y = gridArray.grids[ i + yspan_ + 1 ],
-                    z = gridArray.grids[ i + zspan_ + 1 ],
-                    w = gridArray.grids[ i + yspan_ + zspan_ + 1 ],
-                },
+                //L =
+                //{
+                //    x = gridArray.grids[ i + 0 ],
+                //    y = gridArray.grids[ i + yspan_ + 0 ],
+                //    z = gridArray.grids[ i + zspan_ + 0 ],
+                //    w = gridArray.grids[ i + yspan_ + zspan_ + 0 ],
+                //},
+                //R =
+                //{
+                //    x = gridArray.grids[ i + 1 ],
+                //    y = gridArray.grids[ i + yspan_ + 1 ],
+                //    z = gridArray.grids[ i + zspan_ + 1 ],
+                //    w = gridArray.grids[ i + yspan_ + zspan_ + 1 ],
+                //},
             };
         }
 

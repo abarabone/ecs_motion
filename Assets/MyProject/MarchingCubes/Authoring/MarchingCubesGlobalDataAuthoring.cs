@@ -20,12 +20,12 @@ namespace Abarabone.MarchingCubes.Authoring
     {
 
         public int MaxCubeInstances;
-        public int MaxDrawGridLength;
+        //public int MaxDrawGridLength;
 
         public MarchingCubeAsset MarchingCubesAsset;
         public Material SrcMaterial;
         public ComputeShader GridCubeIdSetShader;
-        //public int maxGridLengthInShader;
+        public int maxGridLengthInShader;
 
         public int BlankFreeStockCapacity;
         public int SolidFreeStockCapacity;
