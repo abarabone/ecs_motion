@@ -41,7 +41,7 @@ namespace Abarabone.MarchingCubes
 
 
 
-        static bool isDefault
+        static public bool IsDefault
             (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, CubeGrid32x32x32Unsafe grid)
         {
             //var p = new uint2((uint)grid.pUnits).xx;
@@ -79,7 +79,7 @@ namespace Abarabone.MarchingCubes
             var area = (grids, areaInfo);
             var gridptr = area.GetGridFromArea(ix, iy, iz);
 
-            if (defaultGrids.isDefault(*gridptr.p))
+            if (defaultGrids.IsDefault(*gridptr.p))
             {
                 var fillMode = gridptr.p->getFillMode();
                 //*gridptr.p = freeStocks.RentGridFromFreeStocks(fillMode);
@@ -106,7 +106,7 @@ namespace Abarabone.MarchingCubes
             ref var stocks = ref x.Item2;
 
 
-            if (defaultGrids.isDefault(*gridptr.p)) return;
+            if (defaultGrids.IsDefault(*gridptr.p)) return;
 
             if (!gridptr.p->IsFullOrEmpty) return;
 

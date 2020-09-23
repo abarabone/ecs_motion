@@ -25,7 +25,7 @@ namespace Abarabone.MarchingCubes.Authoring
         public MarchingCubeAsset MarchingCubesAsset;
         public Material SrcMaterial;
         public ComputeShader GridCubeIdSetShader;
-        public int maxGridLengthInShader;
+        //public int maxGridLengthInShader;
 
         public int BlankFreeStockCapacity;
         public int SolidFreeStockCapacity;
@@ -98,7 +98,7 @@ namespace Abarabone.MarchingCubes.Authoring
                     new CubeGridGlobal.InfoData
                     {
                         MaxCubeInstanceLength = this.MaxCubeInstances,
-                        MaxDrawGridLength = this.MaxDrawGridLength,
+                        //MaxDrawGridLength = this.MaxDrawGridLength,
                     }
                 );
             }

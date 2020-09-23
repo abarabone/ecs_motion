@@ -38,83 +38,87 @@ namespace Abarabone.MarchingCubes
 
             var globalInfo = this.GetSingleton<CubeGridGlobal.InfoData>();
 
-            var gbuffer = new UnsafeList<UIntPtr>(globalInfo.MaxCubeInstanceLength, Allocator.Persistent);
-            var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
-            var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
 
-            gbuffer.Add((UIntPtr)solid.pUnits);
-            gbuffer.Add((UIntPtr)blank.pUnits);
+            //this.Entities
+            //    .ForEach(
+            //            (
+            //                Entity entity,
+            //                ref CubeGridArea.BufferData buffer,
+            //                in CubeGridArea.InfoData info,
+            //                in CubeGridArea.InitializeData init
+            //            ) =>
+            //        {
 
-            this.SetSingleton(new CubeGridGlobal.DefualtGridBlankData { DefaultGrid = blank });
-            this.SetSingleton(new CubeGridGlobal.DefualtGridSolidData { DefaultGrid = solid });
+            //            var wholeLength = info.GridLength + 2;
+            //            var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
 
+            //            var gridarea = allocGridArea_(totalSize, init.FillMode);
+            //            gbuffer.Add((UIntPtr)gridarea.Ptr);
 
-            this.Entities
-                .ForEach(
-                        (
-                            Entity entity,
-                            ref CubeGridArea.BufferData buffer,
-                            in CubeGridArea.InfoData info,
-                            in CubeGridArea.InitializeData init
-                        ) =>
-                    {
+            //            buffer.Grids = gridarea;
 
-                        var wholeLength = info.GridLength + 2;
-                        var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
+            //            cmd.RemoveComponent<CubeGridArea.InitializeData>(entity);
+            //        }
+            //    )
+            //    .Run();
 
-                        var gridarea = allocGridArea_(totalSize, init.FillMode);
-                        gbuffer.Add((UIntPtr)gridarea.Ptr);
-
-                        buffer.Grids = gridarea;
-
-                        cmd.RemoveComponent<CubeGridArea.InitializeData>(entity);
-                    }
-                )
-                .Run();
-
-            this.SetSingleton(
-                new CubeGridGlobal.BufferData
-                {
-                    CubeBuffers = gbuffer,
-                }
-            );
+            //this.SetSingleton(
+            //    new CubeGridGlobal.BufferData
+            //    {
+            //        CubeBuffers = gbuffer,
+            //    }
+            //);
 
 
-            UnsafeList<CubeGrid32x32x32Unsafe> allocGridArea_(int totalSize, GridFillMode fillMode)
-            {
-                var buffer = new UnsafeList<CubeGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
-                buffer.length = totalSize;
+            //UnsafeList<CubeGrid32x32x32Unsafe> allocGridArea_(int totalSize, GridFillMode fillMode)
+            //{
+            //    var buffer = new UnsafeList<CubeGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
+            //    buffer.length = totalSize;
 
-                var defaultGrid = fillMode == GridFillMode.Solid ? solid : blank;
+            //    var defaultGrid = fillMode == GridFillMode.Solid ? solid : blank;
 
-                for (var i = 0; i < totalSize; i++)
-                {
-                    buffer[i] = defaultGrid;
-                }
+            //    for (var i = 0; i < totalSize; i++)
+            //    {
+            //        buffer[i] = defaultGrid;
+            //    }
 
-                return buffer;
-            }
+            //    return buffer;
+            //}
         }
 
 
 
-        protected override void OnDestroy()
+        protected override unsafe void OnDestroy()
         {
+            var globalent = this.GetSingletonEntity<CubeGridGlobal.InfoData>();
+            var globalInfo = this.EntityManager.GetComponentData<CubeGridGlobal.InfoData>(globalent);
+            var globalDefaults = this.EntityManager.GetBuffer<CubeGridGlobal.DefualtGridData>(globalent);
+            var globalStocks = this.EntityManager.GetBuffer<CubeGridGlobal.FreeGridStockData>(globalent);
 
             this.Entities
                 .ForEach(
                     (
-                        in CubeGridArea.BufferData buffer
+                        ref CubeGridArea.BufferData buffer
                     ) =>
                     {
-
-                        buffer.Grids.Dispose();
-
+                        disposeCubeInGridArea_(ref buffer);
                     }
                 )
                 .Run();
 
-            disposeGridStocksAndGlobalBuffer_();
+
+            var blankFreeStocks = globalStocks.ElementAt((int)GridFillMode.Blank);
+            var solidFreeStocks = globalStocks.ElementAt((int)GridFillMode.Solid);
+
+            disposeCubeInFreeStocks_(ref blankFreeStocks);
+            disposeCubeInFreeStocks_(ref solidFreeStocks);
+
+
+            var blankDefault = globalDefaults.ElementAt((int)GridFillMode.Blank);
+            var solidDefault = globalDefaults.ElementAt((int)GridFillMode.Solid);
+
+            disposeCubeInDefault_(ref blankDefault);
+            disposeCubeInDefault_(ref solidDefault);
 
 
             base.OnDestroy();
@@ -122,20 +126,34 @@ namespace Abarabone.MarchingCubes
             return;
 
 
-
-            void disposeGridStocksAndGlobalBuffer_()
+            void disposeCubeInGridArea_(ref CubeGridArea.BufferData buffer_)
             {
-                var globufBuffer = this.GetSingleton<CubeGridGlobal.BufferData>();
-
-                for (var i = 0; i < globufBuffer.CubeBuffers.length; i++)
+                for (var i = 0; i < buffer_.Grids.length; i++)
                 {
+                    ref var grid = ref buffer_.Grids.ElementAt(i);
 
-                    CubeGridAllocater.Dispose(globufBuffer.CubeBuffers[i]);
+                    if (grid.pUnits == default) continue;
+                    if (globalDefaults.IsDefault(grid)) continue;
 
+                    grid.Dispose();
                 }
-                globufBuffer.CubeBuffers.Dispose();
+
+                buffer_.Grids.Dispose();
             }
 
+            void disposeCubeInFreeStocks_(ref CubeGridGlobal.FreeGridStockData stocks_)
+            {
+                for (var i = 0; i < stocks_.FreeGridStocks.length; i++)
+                {
+                    CubeGridAllocater.Dispose(stocks_.FreeGridStocks[i]);
+                }
+                stocks_.FreeGridStocks.Dispose();
+            }
+
+            void disposeCubeInDefault_(ref CubeGridGlobal.DefualtGridData default_)
+            {
+                default_.DefaultGrid.Dispose();
+            }
         }
 
     }
