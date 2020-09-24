@@ -58,15 +58,15 @@ namespace Abarabone.MarchingCubes.Authoring
                 var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
 
                 em.SetComponentData(ent,
-                    new CubeGridArea.BufferData
-                    {
-                        Grids = allocGridArea_(totalSize, fillMode_),
-                    }
-                );
-                em.SetComponentData(ent,
                     new CubeGridArea.InitializeData
                     {
                         FillMode = fillMode_,
+                    }
+                );
+                em.SetComponentData(ent,
+                    new CubeGridArea.BufferData
+                    {
+                        Grids = allocGridArea_(totalSize, fillMode_),
                     }
                 );
                 em.SetComponentData(ent,
@@ -74,6 +74,12 @@ namespace Abarabone.MarchingCubes.Authoring
                     {
                         GridLength = this.GridLength,
                         GridWholeLength = wholeLength,
+                    }
+                );
+                em.SetComponentData(ent,
+                    new CubeGridArea.InfoTempData
+                    {
+                        GridSpan = new int3(1, wholeLength.x * wholeLength.z, wholeLength.x),
                     }
                 );
                 em.SetComponentData(ent,

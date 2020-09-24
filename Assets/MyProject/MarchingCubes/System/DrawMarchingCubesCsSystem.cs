@@ -13,7 +13,7 @@ namespace Abarabone.MarchingCubes
 {
     using Abarabone.Draw;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateAfter(typeof(BeginDrawCsBarier))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     public class DrawMarchingCubeCsSystem : SystemBase
