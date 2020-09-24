@@ -36,7 +36,7 @@ namespace Abarabone.MarchingCubes
         NativeList<CubeInstance> cubeInstances;
         //NativeQueue<CubeInstance> cubeInstances;
 
-        MeshResources meshResources;
+        DrawResources meshResources;
 
         public int maxDrawGridLength;
 
@@ -84,7 +84,7 @@ namespace Abarabone.MarchingCubes
             this.cubeInstances = new NativeList<CubeInstance>( 1000000, Allocator.Persistent );
             //this.cubeInstances = new NativeQueue<CubeInstance>( Allocator.Persistent );
 
-            this.meshResources = new MeshResources( this.MarchingCubeAsset, this.maxDrawGridLength );
+            this.meshResources = new DrawResources( this.MarchingCubeAsset, this.maxDrawGridLength );
             setResources();
 
             var res = this.meshResources;
@@ -151,7 +151,7 @@ namespace Abarabone.MarchingCubes
         }
 
 
-        CommandBuffer createCommandBuffer( MeshResources res, Material mat )
+        CommandBuffer createCommandBuffer( DrawResources res, Material mat )
         {
             var cb = new CommandBuffer();
             cb.name = "marching cubes drawer";
@@ -266,7 +266,7 @@ namespace Abarabone.MarchingCubes
 
 
 
-        struct MeshResources : System.IDisposable
+        public struct DrawResources : System.IDisposable
         {
             public ComputeBuffer ArgsBufferForInstancing;
             public ComputeBuffer ArgsBufferForDispatch;
@@ -283,7 +283,7 @@ namespace Abarabone.MarchingCubes
             public Mesh mesh;
             
 
-            public MeshResources( MarchingCubeAsset asset, int maxGridLength ) : this()
+            public DrawResources( MarchingCubeAsset asset, int maxGridLength ) : this()
             {
                 this.ArgsBufferForInstancing = ComputeShaderUtility.CreateIndirectArgumentsBufferForInstancing();
                 this.ArgsBufferForDispatch = ComputeShaderUtility.CreateIndirectArgumentsBufferForDispatch();
@@ -594,15 +594,15 @@ namespace Abarabone.MarchingCubes
 
         static public void SetConstantBuffer_(this Material mat, string name, ComputeBuffer buffer) =>
             mat.SetConstantBuffer(name, buffer, 0, buffer.stride * buffer.count);
-        static public void SetConstantBuffer(this Material mat, string name, ComputeBuffer buffer) =>
-            mat.SetConstantBuffer(name, buffer, 0, buffer.stride * buffer.count);
-        //static public void SetConstantBuffer( this Material mat, string name, ComputeBuffer buffer )
-        //{
-        //    Debug.Log($"{buffer.stride}");
-        //    var arr = new Vector4[ buffer.stride / Marshal.SizeOf<Vector4>() * buffer.count ];
-        //    buffer.GetData( arr );
-        //    mat.SetVectorArray( name, arr );
-        //}
+        //static public void SetConstantBuffer(this Material mat, string name, ComputeBuffer buffer) =>
+        //    mat.SetConstantBuffer(name, buffer, 0, buffer.stride * buffer.count);
+        static public void SetConstantBuffer(this Material mat, string name, ComputeBuffer buffer)
+        {
+            Debug.Log($"{buffer.stride}");
+            var arr = new Vector4[buffer.stride / Marshal.SizeOf<Vector4>() * buffer.count];
+            buffer.GetData(arr);
+            mat.SetVectorArray(name, arr);
+        }
     }
 
 

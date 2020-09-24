@@ -120,7 +120,7 @@ namespace Abarabone.MarchingCubes.Authoring
                     new Resource.DrawResourceData
                     {
                         CubeMaterial = new Material(this.SrcMaterial),//srcMat_),
-                        InstatnceMesh = Resource.CreateMesh(),
+                        //InstatnceMesh = Resource.CreateMesh(),
                         GridCubeIdSetShader = this.GridCubeIdSetShader,//computeShader_,
                     }
                 );

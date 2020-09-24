@@ -29,7 +29,8 @@ namespace Abarabone.MarchingCubes
             var init = this.GetSingleton<Resource.Initialize>();
             var res = this.GetSingleton<Resource.DrawResourceData>();
 
-            var buf = Resource.CreateDrawBufferData(init.Asset, init.MaxGridLengthInShader);
+            //var buf = Resource.CreateDrawBufferData(init.Asset, init.MaxGridLengthInShader);
+            var buf = new Resource.DrawBufferData { DrawResources = new mc.DrawResources(init.Asset, init.MaxGridLengthInShader) };
             this.SetSingleton(buf);
 
             setDrawResources_(buf, res);
@@ -37,7 +38,7 @@ namespace Abarabone.MarchingCubes
             return;
 
 
-            void setDrawResources_(Resource.DrawBufferData resbuf_, Resource.DrawResourceData res_)
+            void setDrawResources_(Resource.DrawBufferData buf_, Resource.DrawResourceData res_)
             {
                 //uint4 cube_patterns[ 254 ][2];
                 // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
@@ -54,19 +55,21 @@ namespace Abarabone.MarchingCubes
                 // [1] : near grid id
                 // { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
 
-                res_.CubeMaterial.SetConstantBuffer("normals", resbuf_.NormalBuffer);
-                res_.CubeMaterial.SetConstantBuffer("cube_patterns", resbuf_.CubePatternBuffer);
-                res_.CubeMaterial.SetConstantBuffer("cube_vtxs", resbuf_.CubeVertexBuffer);
-                res_.CubeMaterial.SetConstantBuffer_("grids", resbuf_.GridBuffer);
+                var bufs = buf_.DrawResources;
+
+                res_.CubeMaterial.SetConstantBuffer("normals", bufs.NormalBuffer);
+                res_.CubeMaterial.SetConstantBuffer("cube_patterns", bufs.CubePatternBuffer);
+                res_.CubeMaterial.SetConstantBuffer("cube_vtxs", bufs.CubeVertexBuffer);
+                res_.CubeMaterial.SetConstantBuffer_("grids", bufs.GridBuffer);
                 //res_.CubeMaterial.SetVectorArray( "grids", new Vector4[ 512 * 2 ] );// res.GridBuffer );
 
-                res_.CubeMaterial.SetBuffer("cube_instances", resbuf_.CubeInstancesBuffer);
-                res_.CubeMaterial.SetTexture("grid_cubeids", resbuf_.GridCubeIdBuffer);
+                res_.CubeMaterial.SetBuffer("cube_instances", bufs.CubeInstancesBuffer);
+                res_.CubeMaterial.SetTexture("grid_cubeids", bufs.GridCubeIdBuffer);
                 //res_.CubeMaterial.SetBuffer( "grid_cubeids", res.GridCubeIdBuffer );
 
 
-                res_.GridCubeIdSetShader.SetBuffer(0, "src_instances", resbuf_.CubeInstancesBuffer);
-                res_.GridCubeIdSetShader.SetTexture(0, "dst_grid_cubeids", resbuf_.GridCubeIdBuffer);
+                res_.GridCubeIdSetShader.SetBuffer(0, "src_instances", bufs.CubeInstancesBuffer);
+                res_.GridCubeIdSetShader.SetTexture(0, "dst_grid_cubeids", bufs.GridCubeIdBuffer);
                 //res_.SetGridCubeIdShader.SetBuffer( 0, "dst_grid_cubeids", res_.GridCubeIdBuffer );
             }
 
@@ -83,7 +86,7 @@ namespace Abarabone.MarchingCubes
             //var gridbuf = this.GetSingleton<Grid.GridBufferData>();
             var resbuf = this.GetSingleton<Resource.DrawBufferData>();
 
-            resbuf.Dispose();
+            resbuf.DrawResources.Dispose();
             //gridbuf.Dispose();
 
 
