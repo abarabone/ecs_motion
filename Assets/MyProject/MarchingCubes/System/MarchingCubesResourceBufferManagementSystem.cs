@@ -83,11 +83,9 @@ namespace Abarabone.MarchingCubes
         protected override void OnDestroy()
         {
 
-            //var gridbuf = this.GetSingleton<Grid.GridBufferData>();
             var resbuf = this.GetSingleton<Resource.DrawBufferData>();
 
             resbuf.DrawResources.Dispose();
-            //gridbuf.Dispose();
 
 
             base.OnDestroy();

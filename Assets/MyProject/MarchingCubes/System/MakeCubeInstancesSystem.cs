@@ -31,14 +31,65 @@ namespace Abarabone.MarchingCubes
 
         protected unsafe override void OnUpdate()
         {
+            var globalent = this.GetSingletonEntity<CubeGridGlobal.InfoData>();
+            var globalInfo = this.EntityManager.GetComponentData<CubeGridGlobal.InfoData>(globalent);
+            var globalDefaults = this.EntityManager.GetBuffer<CubeGridGlobal.DefualtGridData>(globalent);
+            var globalStocks = this.EntityManager.GetBuffer<CubeGridGlobal.FreeGridStockData>(globalent);
+
+
+            //[ReadOnly]
+            var CubeGridArrayUnsafe gridArray;
+
+            //[WriteOnly]
+            var NativeList<CubeInstance> dstCubeInstances;
+            ////[WriteOnly]
+            var NativeList<CubeUtility.GridInstanceData> dstGridData;
+
+
 
             this.Entities
                 .WithBurst()
+                .
                 .ForEach(
-                    (in CubeGridArea.BufferData buf) =>
+                        (
+                            ref CubeGridArea.
+                            in CubeGridArea.BufferData buf
+                        ) =>
                     {
 
+                        var yspan = this.gridArray.wholeGridLength.x * this.gridArray.wholeGridLength.z;
+                        var zspan = this.gridArray.wholeGridLength.x;
 
+                        var gridId = 0;
+
+                        // 0 は 1 以上との境界面を描くことが目的だが、0 同士の境界面が生成された場合、描画されてしまう、要考慮
+                        for (var iy = 0; iy < this.gridArray.wholeGridLength.y - 1; iy++)
+                            for (var iz = 0; iz < this.gridArray.wholeGridLength.z - 1; iz++)
+                                for (var ix = 0; ix < this.gridArray.wholeGridLength.x - 1; ix++)
+                                {
+
+                                    var gridset = getGridSet_(ref this.gridArray, ix, iy, iz, yspan, zspan);
+                                    var gridcount = getEachCount(ref gridset);
+
+                                    if (!isNeedDraw_(gridcount.L, gridcount.R)) continue;
+                                    //if( !isNeedDraw_( ref gridset ) ) continue;
+
+                                    var dstCubeInstances = new InstanceCubeByList { list = this.dstCubeInstances };
+                                    SampleAllCubes(ref gridset, ref gridcount, gridId, ref dstCubeInstances);
+                                    //SampleAllCubes( ref gridset, gridId, dstCubeInstances );
+
+                                    var data = new CubeUtility.GridInstanceData
+                                    {
+                                        Position = (new int4(ix, iy, iz, 0) - new int4(1, 1, 1, 0)) * new float4(32, -32, -32, 0)
+                                    };
+                                    this.dstGridData.Add(data);
+
+                                    gridId++;
+
+                                }
+
+                        var gridScale = 1.0f / new float3(32, 32, 32);
+                        CubeUtility.GetNearGridList(this.dstGridData, gridScale);
 
                     }
                 )

@@ -28,7 +28,9 @@ namespace Abarabone.MarchingCubes
         {
             base.OnCreate();
 
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            //this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+
+            this.Enabled = false;
         }
 
         protected unsafe override void OnUpdate()
@@ -36,7 +38,7 @@ namespace Abarabone.MarchingCubes
             var cmd = this.cmdSystem.CreateCommandBuffer();
 
 
-            var globalInfo = this.GetSingleton<CubeGridGlobal.InfoData>();
+            //var globalInfo = this.GetSingleton<CubeGridGlobal.InfoData>();
 
 
             //this.Entities
