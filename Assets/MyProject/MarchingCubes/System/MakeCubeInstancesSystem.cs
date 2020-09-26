@@ -12,6 +12,7 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace Abarabone.MarchingCubes
 {
     using Abarabone.Draw;
+    using _ga = CubeGridArrayUnsafe;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
@@ -37,38 +38,32 @@ namespace Abarabone.MarchingCubes
             var globalStocks = this.EntityManager.GetBuffer<CubeGridGlobal.FreeGridStockData>(globalent);
 
 
-            //[ReadOnly]
-            var CubeGridArrayUnsafe gridArray;
-
             //[WriteOnly]
             var NativeList<CubeInstance> dstCubeInstances;
             ////[WriteOnly]
             var NativeList<CubeUtility.GridInstanceData> dstGridData;
 
+            var dstCubeInstances = new NativeList<CubeInstance>();
 
 
             this.Entities
                 .WithBurst()
-                .
                 .ForEach(
                         (
-                            ref CubeGridArea.
-                            in CubeGridArea.BufferData buf
+                            in CubeGridArea.BufferData buf,
+                            in CubeGridArea.InfoData dim,
+                            in CubeGridArea.InfoWorkData unit
                         ) =>
                     {
-
-                        var yspan = this.gridArray.wholeGridLength.x * this.gridArray.wholeGridLength.z;
-                        var zspan = this.gridArray.wholeGridLength.x;
-
                         var gridId = 0;
 
                         // 0 は 1 以上との境界面を描くことが目的だが、0 同士の境界面が生成された場合、描画されてしまう、要考慮
-                        for (var iy = 0; iy < this.gridArray.wholeGridLength.y - 1; iy++)
-                            for (var iz = 0; iz < this.gridArray.wholeGridLength.z - 1; iz++)
-                                for (var ix = 0; ix < this.gridArray.wholeGridLength.x - 1; ix++)
+                        for (var iy = 0; iy < dim.GridWholeLength.y - 1; iy++)
+                            for (var iz = 0; iz < dim.GridWholeLength.z - 1; iz++)
+                                for (var ix = 0; ix < dim.GridWholeLength.x - 1; ix++)
                                 {
 
-                                    var gridset = getGridSet_(ref this.gridArray, ix, iy, iz, yspan, zspan);
+                                    var gridset = _ga.getGridSet_(ref this.gridArray, ix, iy, iz, yspan, zspan);
                                     var gridcount = getEachCount(ref gridset);
 
                                     if (!isNeedDraw_(gridcount.L, gridcount.R)) continue;

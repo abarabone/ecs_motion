@@ -66,7 +66,7 @@ namespace Abarabone.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public CubeGrid32x32x32UnsafePtr GetGrid
             (
-                ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, DynamicBuffer<CubeGridGlobal.FreeGridStockData>, CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
+                ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, DynamicBuffer<CubeGridGlobal.FreeGridStockData>, CubeGridArea.BufferData, CubeGridArea.InfoWorkData) x,
                 int ix, int iy, int iz
             )
         {
@@ -117,6 +117,38 @@ namespace Abarabone.MarchingCubes
 
             //*gridptr.p = defaultGrids.GetDefaultGrid(fillMode);
             gridptr.p->pUnits = defaultGrids.GetDefaultGrid(fillMode).pUnits;
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        static NearCubeGrids getGridSet_
+            (ref CubeGridArrayUnsafe gridArray, int ix, int iy, int iz, int yspan_, int zspan_)
+        {
+            var i = iy * yspan_ + iz * zspan_ + ix;
+
+            return new NearCubeGrids
+            {
+                L =
+                {
+                    x = gridArray.grids[ i + 0 ],
+                    y = gridArray.grids[ i + yspan_ + 0 ],
+                    z = gridArray.grids[ i + zspan_ + 0 ],
+                    w = gridArray.grids[ i + yspan_ + zspan_ + 0 ],
+                },
+                R =
+                {
+                    x = gridArray.grids[ i + 1 ],
+                    y = gridArray.grids[ i + yspan_ + 1 ],
+                    z = gridArray.grids[ i + zspan_ + 1 ],
+                    w = gridArray.grids[ i + yspan_ + zspan_ + 1 ],
+                },
+            };
         }
     }
 

@@ -50,7 +50,7 @@ namespace Abarabone.MarchingCubes
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void SampleAllCubes<TCubeInstanceWriter>
+        public static void SampleAllCubes<TCubeInstanceWriter>
             ( ref NearCubeGrids g, int gridId, ref TCubeInstanceWriter outputCubes )
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
@@ -70,7 +70,7 @@ namespace Abarabone.MarchingCubes
         /// </summary>
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void SampleAllCubes<TCubeInstanceWriter>
+        public static void SampleAllCubes<TCubeInstanceWriter>
             ( ref NearCubeGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes )
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
@@ -143,7 +143,7 @@ namespace Abarabone.MarchingCubes
 
         // ループ削減試行錯誤中（端っこもやれないか？）
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void SampleAllCubes_<TCubeInstanceWriter>
+        public static void SampleAllCubes_<TCubeInstanceWriter>
             ( ref NearCubeGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes )
             where TCubeInstanceWriter : ICubeInstanceWriter
         {

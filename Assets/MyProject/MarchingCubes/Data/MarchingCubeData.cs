@@ -90,7 +90,7 @@ namespace Abarabone.MarchingCubes
             public int3 GridLength;
             public int3 GridWholeLength;
         }
-        public struct InfoTempData : IComponentData
+        public struct InfoWorkData : IComponentData
         {
             public int3 GridSpan;
         }
@@ -247,7 +247,7 @@ namespace Abarabone.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public unsafe CubeGrid32x32x32UnsafePtr GetGridFromArea
             (
-                ref this (CubeGridArea.BufferData, CubeGridArea.InfoTempData) x,
+                ref this (CubeGridArea.BufferData, CubeGridArea.InfoWorkData) x,
                 int ix, int iy, int iz
             )
         {

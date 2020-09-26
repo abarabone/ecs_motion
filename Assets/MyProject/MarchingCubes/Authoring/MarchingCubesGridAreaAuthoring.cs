@@ -46,7 +46,7 @@ namespace Abarabone.MarchingCubes.Authoring
                         typeof(CubeGridArea.InitializeData),
                         typeof(CubeGridArea.BufferData),
                         typeof(CubeGridArea.InfoData),
-                        typeof(CubeGridArea.InfoTempData),
+                        typeof(CubeGridArea.InfoWorkData),
                         typeof(Rotation),
                         typeof(Translation)
                     }
@@ -77,7 +77,7 @@ namespace Abarabone.MarchingCubes.Authoring
                     }
                 );
                 em.SetComponentData(ent,
-                    new CubeGridArea.InfoTempData
+                    new CubeGridArea.InfoWorkData
                     {
                         GridSpan = new int3(1, wholeLength.x * wholeLength.z, wholeLength.x),
                     }
