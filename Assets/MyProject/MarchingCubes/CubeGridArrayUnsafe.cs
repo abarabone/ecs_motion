@@ -112,19 +112,19 @@ namespace Abarabone.MarchingCubes
         /// <summary>
         /// 
         /// </summary>
-        unsafe public CubeGridArrayUnsafe( int x, int y, int z )// : this()
+        unsafe public CubeGridArrayUnsafe(int x, int y, int z)// : this()
         {
-            this.GridLength = new int3( x, y, z );
-            this.wholeGridLength = new int3( x, y, z ) + 2;
+            this.GridLength = new int3(x, y, z);
+            this.wholeGridLength = new int3(x, y, z) + 2;
             this.gridSpan = new int3(1, this.wholeGridLength.x * this.wholeGridLength.z, this.wholeGridLength.x);
 
             var totalLength = wholeGridLength.x * wholeGridLength.y * wholeGridLength.z;
             this.grids = new UnsafeList<CubeGrid32x32x32Unsafe>(totalLength, Allocator.Persistent);
             this.solidOrBlankWhenDefaultList = new UnsafeBitArray(totalLength, Allocator.Persistent);
 
-            var startGrid = new int3( -1, -1, -1 );
+            var startGrid = new int3(-1, -1, -1);
             var endGrid = wholeGridLength;
-            this.FillCubes( startGrid, endGrid, isFillAll: false );
+            this.FillCubes(startGrid, endGrid, isFillAll: false);
         }
 
         public unsafe void Dispose()
@@ -138,11 +138,11 @@ namespace Abarabone.MarchingCubes
         }
 
 
-        public unsafe CubeGrid32x32x32UnsafePtr this[ int x, int y, int z ]
+        public unsafe CubeGrid32x32x32UnsafePtr this[int x, int y, int z]
         {
             get
             {
-                var i3 = new int3( x, y, z ) + 1;
+                var i3 = new int3(x, y, z) + 1;
                 var i = math.dot(i3, this.gridSpan);
 
                 var gridptr = new CubeGrid32x32x32UnsafePtr { p = this.grids.Ptr + i };
@@ -152,11 +152,10 @@ namespace Abarabone.MarchingCubes
         }
 
 
-
         /// <summary>
         /// 指定したグリッド矩形を、デフォルトの all 0 か all 1 で塗りつぶす。
         /// </summary>
-        public void FillCubes( int3 topLeft, int3 length3, bool isFillAll = false )
+        public void FillCubes(int3 topLeft, int3 length3, bool isFillAll = false)
         {
             //var st = math.max( topLeft + 1, int3.zero );
             //var ed = math.min( st + length3 - 1, this.wholeGridLength - 1 );
@@ -173,11 +172,6 @@ namespace Abarabone.MarchingCubes
             //            this.grids[ iy * yspan + iz * zspan + ix ] = pGridTemplate;
             //        }
         }
-
-
-
-
-
 
 
 

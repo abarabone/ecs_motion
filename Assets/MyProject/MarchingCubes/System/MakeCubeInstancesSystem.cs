@@ -12,7 +12,6 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace Abarabone.MarchingCubes
 {
     using Abarabone.Draw;
-    using _ga = CubeGridArrayUnsafe;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
@@ -63,10 +62,10 @@ namespace Abarabone.MarchingCubes
                                 for (var ix = 0; ix < dim.GridWholeLength.x - 1; ix++)
                                 {
 
-                                    var gridset = _ga.getGridSet_(ref this.gridArray, ix, iy, iz, yspan, zspan);
-                                    var gridcount = getEachCount(ref gridset);
+                                    var gridset = buf.getGridSet_(ix, iy, iz, unit.GridSpan);
+                                    var gridcount = gridset.getEachCount();
 
-                                    if (!isNeedDraw_(gridcount.L, gridcount.R)) continue;
+                                    if (!gridcount.isNeedDraw_()) continue;
                                     //if( !isNeedDraw_( ref gridset ) ) continue;
 
                                     var dstCubeInstances = new InstanceCubeByList { list = this.dstCubeInstances };
