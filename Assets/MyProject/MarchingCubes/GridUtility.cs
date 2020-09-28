@@ -145,6 +145,7 @@ namespace Abarabone.MarchingCubes
 
         /// <summary>
         /// グリッドとその右グリッドが、同じフィルなら描画の必要はない。
+        /// 上下と前後はやらなくていいのか？
         /// </summary>
         static public bool isNeedDraw_(in this GridCounts gridCounts)
         {
@@ -161,17 +162,17 @@ namespace Abarabone.MarchingCubes
 
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SampleAllCubes<TCubeInstanceWriter>
-            (ref AdjacentGrids g, int gridId, ref TCubeInstanceWriter outputCubes)
-            where TCubeInstanceWriter : ICubeInstanceWriter
-        {
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static void SampleAllCubes<TCubeInstanceWriter>
+        //    (ref AdjacentGrids g, int gridId, ref TCubeInstanceWriter outputCubes)
+        //    where TCubeInstanceWriter : ICubeInstanceWriter
+        //{
 
-            var gcount = g.getEachCount();
+        //    var gcount = g.getEachCount();
 
-            SampleAllCubes(ref g, ref gcount, gridId, ref outputCubes);
+        //    SampleAllCubes(ref g, ref gcount, gridId, ref outputCubes);
 
-        }
+        //}
 
 
         // ------------------------------------------------------------------
@@ -183,8 +184,8 @@ namespace Abarabone.MarchingCubes
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SampleAllCubes<TCubeInstanceWriter>
-            (ref AdjacentGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes)
-            where TCubeInstanceWriter : ICubeInstanceWriter
+            (ref this TCubeInstanceWriter outputCubes, ref AdjacentGrids g, ref GridCounts gcount, int gridId)
+            where TCubeInstanceWriter : struct, ICubeInstanceWriter
         {
             var g0or1L = math.min(gcount.L & 0x7fff, new int4(1, 1, 1, 1));
             var g0or1R = math.min(gcount.R & 0x7fff, new int4(1, 1, 1, 1));
