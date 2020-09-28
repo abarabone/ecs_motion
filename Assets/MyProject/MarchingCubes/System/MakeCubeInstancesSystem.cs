@@ -37,12 +37,12 @@ namespace Abarabone.MarchingCubes
             var globalStocks = this.EntityManager.GetBuffer<CubeGridGlobal.FreeGridStockData>(globalent);
 
 
-            //[WriteOnly]
-            var NativeList<CubeInstance> dstCubeInstances;
             ////[WriteOnly]
-            var NativeList<CubeUtility.GridInstanceData> dstGridData;
+            //var NativeList<CubeInstance> dstCubeInstances;
+            //////[WriteOnly]
+            //var NativeList<CubeUtility.GridInstanceData> dstGridData;
 
-            var dstCubeInstances = new NativeList<CubeInstance>();
+            var dstCubeInstanceList = new NativeList<CubeInstance>();
 
 
             this.Entities
@@ -68,7 +68,7 @@ namespace Abarabone.MarchingCubes
                                     if (!gridcount.isNeedDraw_()) continue;
                                     //if( !isNeedDraw_( ref gridset ) ) continue;
 
-                                    var dstCubeInstances = new InstanceCubeByList { list = this.dstCubeInstances };
+                                    var dstCubeInstances = new InstanceCubeByList { list = dstCubeInstanceList };
                                     SampleAllCubes(ref gridset, ref gridcount, gridId, ref dstCubeInstances);
                                     //SampleAllCubes( ref gridset, gridId, dstCubeInstances );
 
@@ -87,7 +87,8 @@ namespace Abarabone.MarchingCubes
 
                     }
                 )
-                .ScheduleParallel();
+                .sche
+                //.ScheduleParallel();
 
             this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
