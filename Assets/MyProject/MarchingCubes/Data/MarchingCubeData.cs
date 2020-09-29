@@ -52,14 +52,11 @@ namespace Abarabone.MarchingCubes
             public CubeGrid32x32x32Unsafe DefaultGrid;
         }
 
-        //public struct DefualtGridSolidData : IComponentData
-        //{
-        //    public CubeGrid32x32x32Unsafe DefaultGrid;
-        //}
-        //public struct DefualtGridBlankData : IComponentData
-        //{
-        //    public CubeGrid32x32x32Unsafe DefaultGrid;
-        //}
+        public struct InstanceWorkData : IComponentData
+        {
+            public UnsafeList<CubeInstance> CubeInstances;
+            public UnsafeList<GridInstanceData> GridInstances;
+        }
 
         public struct InfoData : IComponentData
         {
@@ -113,7 +110,7 @@ namespace Abarabone.MarchingCubes
 
         public class DrawResourceData : IComponentData
         {
-            public Mesh InstatnceMesh;
+            public Mesh CubeMesh;
             public Material CubeMaterial;
 
             public ComputeShader GridCubeIdSetShader;

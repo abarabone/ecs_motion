@@ -13,11 +13,21 @@ namespace Abarabone.MarchingCubes
 {
 
 
+    [StructLayout(LayoutKind.Sequential)]
     public struct CubeInstance
     {
         public uint instance;
         static public implicit operator CubeInstance(uint cubeInstance) => new CubeInstance { instance = cubeInstance };
     }
 
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct GridInstanceData
+    {
+        public float4 Position;
+        //public ushort back, up, left, current, right, down, forward;
+        //private ushort dummy;
+        public uint4 ortho;
+    }
 
 }

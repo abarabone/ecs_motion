@@ -32,7 +32,7 @@ namespace Abarabone.MarchingCubes
         public MeshCollider[,,] cubeGridColliders { get; private set; }
 
         //uint[] cubeInstances;
-        NativeList<CubeUtility.GridInstanceData> gridData;
+        NativeList<GridInstanceData> gridData;
         NativeList<CubeInstance> cubeInstances;
         //NativeQueue<CubeInstance> cubeInstances;
 
@@ -80,7 +80,7 @@ namespace Abarabone.MarchingCubes
 
         unsafe void Awake()
         {
-            this.gridData = new NativeList<CubeUtility.GridInstanceData>( this.maxDrawGridLength, Allocator.Persistent );
+            this.gridData = new NativeList<GridInstanceData>( this.maxDrawGridLength, Allocator.Persistent );
             this.cubeInstances = new NativeList<CubeInstance>( 1000000, Allocator.Persistent );
             //this.cubeInstances = new NativeQueue<CubeInstance>( Allocator.Persistent );
 

@@ -269,7 +269,7 @@ namespace Abarabone.MarchingCubes
         /// 
         /// </summary>
         public JobHandle BuildCubeInstanceData
-            ( NativeList<CubeUtility.GridInstanceData> gridData, NativeList<CubeInstance> cubeInstances )
+            ( NativeList<GridInstanceData> gridData, NativeList<CubeInstance> cubeInstances )
         {
 
             var job = new GridJob

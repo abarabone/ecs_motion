@@ -148,3 +148,24 @@ namespace Abarabone.Utilities
     }
 }
 
+
+namespace Abarabone.Utilities
+{
+    using Unity.Collections.LowLevel.Unsafe;
+
+    public static unsafe class NativeUtility
+    {
+        public static NativeArray<T> AsNativeArray<T>(this UnsafeList<T> list)
+            where T : unmanaged
+        {
+            var arr = NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<T>(list.Ptr, list.length, Allocator.Invalid);
+
+            // これをやらないとNativeArrayのインデクサアクセス時に死ぬ
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref arr, AtomicSafetyHandle.Create());
+#endif
+
+            return arr;
+        }
+    }
+}

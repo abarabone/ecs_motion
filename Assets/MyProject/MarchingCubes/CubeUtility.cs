@@ -111,15 +111,6 @@ namespace Abarabone.MarchingCubes
         //    (uint)nearGridId.z << 18 | (uint)nearGridId.y << 9 | (uint)nearGridId.x << 0;
 
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct GridInstanceData
-        {
-            public float4 Position;
-            //public ushort back, up, left, current, right, down, forward;
-            //private ushort dummy;
-            public uint4 ortho;
-        }
-
         static public void GetNearGridList
             ( NativeList<GridInstanceData> gridData, float3 gridScale )
         {
