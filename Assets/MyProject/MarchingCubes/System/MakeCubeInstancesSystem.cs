@@ -43,7 +43,7 @@ namespace Abarabone.MarchingCubes
             //var NativeList<CubeUtility.GridInstanceData> dstGridData;
 
             var dstCubeInstanceList = new NativeList<CubeInstance>(100, Allocator.TempJob);
-            var dstGridData = new NativeList<CubeUtility.GridInstanceData>(512, Allocator.TempJob);
+            var dstGridData = new NativeList<GridInstanceData>(512, Allocator.TempJob);
 
 
             this.Entities
@@ -75,7 +75,7 @@ namespace Abarabone.MarchingCubes
                                     dstCubeInstances.SampleAllCubes(ref gridset, ref gridcount, gridId);
                                     //SampleAllCubes( ref gridset, gridId, dstCubeInstances );
 
-                                    var data = new CubeUtility.GridInstanceData
+                                    var data = new GridInstanceData
                                     {
                                         Position = (new int4(ix, iy, iz, 0) - new int4(1, 1, 1, 0)) * new float4(32, -32, -32, 0)
                                     };

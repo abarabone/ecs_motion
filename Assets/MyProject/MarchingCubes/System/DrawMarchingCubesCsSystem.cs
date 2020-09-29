@@ -14,7 +14,7 @@ namespace Abarabone.MarchingCubes
     using Abarabone.Draw;
     using Abarabone.Utilities;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateAfter(typeof(BeginDrawCsBarier))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     public class DrawMarchingCubeCsSystem : SystemBase
@@ -36,22 +36,22 @@ namespace Abarabone.MarchingCubes
                 var psrc = (Vector4*)instances.GridInstances.Ptr;
                 UnsafeUtility.MemCpy(pdst, psrc, instances.GridInstances.Length * 2 * sizeof(float4));
             }
-            res.CubeMaterial.SetVectorArray("grids", grids);
+            ////res.CubeMaterial.SetVectorArray("grids", grids);
 
 
-            var remain = (64 - (gridbuf.cubeInstances.Length & 0x3f)) & 0x3f;
-            for (var i = 0; i < remain; i++) gridbuf.cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
-            var dargparams = new IndirectArgumentsForDispatch(gridbuf.cubeInstances.Length >> 6, 1, 1);
+            var remain = (64 - (instances.CubeInstances.Length & 0x3f)) & 0x3f;
+            for (var i = 0; i < remain; i++) instances.CubeInstances.AddNoResize(new CubeInstance { instance = 1 });
+            var dargparams = new IndirectArgumentsForDispatch(instances.CubeInstances.Length >> 6, 1, 1);
             var dargs = buf.ArgsBufferForDispatch;
             dargs.SetData(ref dargparams);
-            res.SetGridCubeIdShader.Dispatch(0, gridbuf.cubeInstances.Length >> 6, 1, 1);//
+            res.GridCubeIdSetShader.Dispatch(0, instances.CubeInstances.Length >> 6, 1, 1);//
 
 
             var mesh = res.CubeMesh;
             var mat = res.CubeMaterial;
             var iargs = buf.ArgsBufferForInstancing;
 
-            var instanceCount = gridbuf.cubeInstances.Length;
+            var instanceCount = instances.CubeInstances.Length;
             var iargparams = new IndirectArgumentsForInstancing(mesh, instanceCount);
             iargs.SetData(ref iargparams);
 

@@ -96,6 +96,7 @@ namespace Abarabone.MarchingCubes
             var globalInfo = this.EntityManager.GetComponentData<CubeGridGlobal.InfoData>(globalent);
             var globalDefaults = this.EntityManager.GetBuffer<CubeGridGlobal.DefualtGridData>(globalent);
             var globalStocks = this.EntityManager.GetBuffer<CubeGridGlobal.FreeGridStockData>(globalent);
+            var globalInstances = this.EntityManager.GetComponentData<CubeGridGlobal.InstanceWorkData>(globalent);
 
             this.Entities
                 .ForEach(
@@ -108,6 +109,9 @@ namespace Abarabone.MarchingCubes
                 )
                 .Run();
 
+
+            globalInstances.CubeInstances.Dispose();
+            globalInstances.GridInstances.Dispose();
 
             var blankFreeStocks = globalStocks.ElementAt((int)GridFillMode.Blank);
             var solidFreeStocks = globalStocks.ElementAt((int)GridFillMode.Solid);

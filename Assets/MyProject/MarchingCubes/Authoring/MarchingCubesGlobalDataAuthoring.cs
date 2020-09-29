@@ -57,6 +57,7 @@ namespace Abarabone.MarchingCubes.Authoring
                     typeof(CubeGridGlobal.FreeGridStockData),
                     typeof(CubeGridGlobal.DefualtGridData),
                     typeof(CubeGridGlobal.InfoData),
+                    typeof(CubeGridGlobal.InstanceWorkData),
                     typeof(Resource.DrawResourceData),
                     typeof(Resource.DrawBufferData),
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag)
@@ -99,6 +100,13 @@ namespace Abarabone.MarchingCubes.Authoring
                     {
                         MaxCubeInstanceLength = this.MaxCubeInstances,
                         //MaxDrawGridLength = this.MaxDrawGridLength,
+                    }
+                );
+                em.SetComponentData(ent,
+                    new CubeGridGlobal.InstanceWorkData
+                    {
+                        CubeInstances = new UnsafeList<CubeInstance>(this.MaxCubeInstances, Allocator.Persistent),//
+                        GridInstances = new UnsafeList<GridInstanceData>(this.maxGridLengthInShader * 1, Allocator.Persistent),//
                     }
                 );
             }
