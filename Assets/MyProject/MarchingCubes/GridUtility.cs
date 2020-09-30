@@ -51,6 +51,16 @@ namespace Abarabone.MarchingCubes
             UnsafeUtility.MemCpy(p, pCi, length * sizeof(CubeInstance));
     }
 
+    public unsafe struct InstanceCubeByUnsafeList : ICubeInstanceWriter
+    {
+        [WriteOnly]
+        public UnsafeList<CubeInstance> list;
+        public void Add(CubeInstance ci) => list.AddNoResize(ci);
+        public void AddRange(CubeInstance* pCi, int length) => list.AddRangeNoResize(pCi, length);
+    }
+
+
+
     static public unsafe class GridUtility
     {
 

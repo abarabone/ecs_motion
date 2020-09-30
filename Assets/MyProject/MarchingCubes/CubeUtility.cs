@@ -112,7 +112,7 @@ namespace Abarabone.MarchingCubes
 
 
         static public void GetNearGridList
-            ( NativeList<GridInstanceData> gridData, float3 gridScale )
+            (NativeArray<GridInstanceData> gridData, float3 gridScale)
         {
 
             var posDict = new NativeHashMap<float3, int>( gridData.Length, Allocator.Temp );

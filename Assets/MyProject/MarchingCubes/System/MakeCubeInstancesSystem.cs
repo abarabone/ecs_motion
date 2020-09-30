@@ -12,6 +12,7 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace Abarabone.MarchingCubes
 {
     using Abarabone.Draw;
+    using Utilities;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
@@ -35,6 +36,7 @@ namespace Abarabone.MarchingCubes
             var globalInfo = this.EntityManager.GetComponentData<CubeGridGlobal.InfoData>(globalent);
             var globalDefaults = this.EntityManager.GetBuffer<CubeGridGlobal.DefualtGridData>(globalent);
             var globalStocks = this.EntityManager.GetBuffer<CubeGridGlobal.FreeGridStockData>(globalent);
+            var globalInstances = this.EntityManager.GetComponentData<CubeGridGlobal.InstanceWorkData>(globalent);
 
 
             ////[WriteOnly]
@@ -42,14 +44,16 @@ namespace Abarabone.MarchingCubes
             //////[WriteOnly]
             //var NativeList<CubeUtility.GridInstanceData> dstGridData;
 
-            var dstCubeInstanceList = new NativeList<CubeInstance>(100, Allocator.TempJob);
-            var dstGridData = new NativeList<GridInstanceData>(512, Allocator.TempJob);
+            //var dstCubeInstanceList = new NativeList<CubeInstance>(100, Allocator.TempJob);
+            //var dstGridData = new NativeList<GridInstanceData>(512, Allocator.TempJob);
+            var dstCubeInstanceList = globalInstances.CubeInstances;
+            var dstGridData = globalInstances.GridInstances;
 
 
             this.Entities
                 .WithBurst()
-                .WithDisposeOnCompletion(dstCubeInstanceList)
-                .WithDisposeOnCompletion(dstGridData)
+                //.WithDisposeOnCompletion(dstCubeInstanceList)
+                //.WithDisposeOnCompletion(dstGridData)
                 .ForEach(
                         (
                             in CubeGridArea.BufferData buf,
@@ -71,7 +75,7 @@ namespace Abarabone.MarchingCubes
                                     if (!gridcount.isNeedDraw_()) continue;
                                     //if( !isNeedDraw_( ref gridset ) ) continue;
 
-                                    var dstCubeInstances = new InstanceCubeByList { list = dstCubeInstanceList };
+                                    var dstCubeInstances = new InstanceCubeByUnsafeList { list = dstCubeInstanceList };
                                     dstCubeInstances.SampleAllCubes(ref gridset, ref gridcount, gridId);
                                     //SampleAllCubes( ref gridset, gridId, dstCubeInstances );
 
@@ -86,7 +90,7 @@ namespace Abarabone.MarchingCubes
                                 }
 
                         var gridScale = 1.0f / new float3(32, 32, 32);
-                        CubeUtility.GetNearGridList(dstGridData, gridScale);
+                        CubeUtility.GetNearGridList(dstGridData.AsNativeArray(), gridScale);
 
                     }
                 )

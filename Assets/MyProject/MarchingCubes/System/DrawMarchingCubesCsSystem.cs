@@ -22,21 +22,24 @@ namespace Abarabone.MarchingCubes
         protected unsafe override void OnUpdate()
         {
 
-            var res = this.GetSingleton<Resource.DrawResourceData>();
-            var buf = this.GetSingleton<Resource.DrawBufferData>().DrawResources;
             var instances = this.GetSingleton<CubeGridGlobal.InstanceWorkData>();
 
+            if (instances.CubeInstances.Length == 0) return;
+
+            var res = this.GetSingleton<Resource.DrawResourceData>();
+            var buf = this.GetSingleton<Resource.DrawBufferData>().DrawResources;
 
             buf.CubeInstancesBuffer.SetData(instances.CubeInstances.AsNativeArray());
 
-            //res.GridBuffer.SetData( this.gridData.AsArray() );
+
+            //res.GridBuffer.SetData(this.gridData.AsArray());
             var grids = new Vector4[instances.GridInstances.Length * 2];
             fixed (Vector4* pdst = grids)
             {
                 var psrc = (Vector4*)instances.GridInstances.Ptr;
                 UnsafeUtility.MemCpy(pdst, psrc, instances.GridInstances.Length * 2 * sizeof(float4));
             }
-            ////res.CubeMaterial.SetVectorArray("grids", grids);
+            //res.CubeMaterial.SetVectorArray("grids", grids);
 
 
             var remain = (64 - (instances.CubeInstances.Length & 0x3f)) & 0x3f;
@@ -47,7 +50,7 @@ namespace Abarabone.MarchingCubes
             res.GridCubeIdSetShader.Dispatch(0, instances.CubeInstances.Length >> 6, 1, 1);//
 
 
-            var mesh = res.CubeMesh;
+            var mesh = buf.mesh;//res.CubeMesh;
             var mat = res.CubeMaterial;
             var iargs = buf.ArgsBufferForInstancing;
 
