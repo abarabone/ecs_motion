@@ -30,7 +30,8 @@ namespace Abarabone.MarchingCubes
 
             //this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
 
-            this.Enabled = false;
+            this.RequireSingletonForUpdate<Resource.Initialize>();
+            //this.Enabled = false;
         }
 
         protected unsafe override void OnUpdate()
@@ -92,6 +93,9 @@ namespace Abarabone.MarchingCubes
 
         protected override unsafe void OnDestroy()
         {
+            if (!this.HasSingleton<CubeGridGlobal.InfoData>()) return;
+
+
             var globalent = this.GetSingletonEntity<CubeGridGlobal.InfoData>();
             var globalInfo = this.EntityManager.GetComponentData<CubeGridGlobal.InfoData>(globalent);
             var globalDefaults = this.EntityManager.GetBuffer<CubeGridGlobal.DefualtGridData>(globalent);

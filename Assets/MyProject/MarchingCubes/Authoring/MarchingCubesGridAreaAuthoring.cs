@@ -57,6 +57,7 @@ namespace Abarabone.MarchingCubes.Authoring
                 var wholeLength = this.GridLength + 2;
                 var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
 
+
                 em.SetComponentData(ent,
                     new CubeGridArea.InitializeData
                     {
@@ -109,7 +110,7 @@ namespace Abarabone.MarchingCubes.Authoring
                     {
                         buffer[i] = defaultGrid;
                     }
-
+                    
                     return buffer;
                 }
             }

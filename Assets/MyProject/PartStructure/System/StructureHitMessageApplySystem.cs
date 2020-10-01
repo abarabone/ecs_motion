@@ -186,7 +186,7 @@ namespace Abarabone.Structure
                     s_JobReflectionData = JobsUtility.CreateJobReflectionData
                     (
                         typeof(JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue>),
-                        typeof(TJob), JobType.ParallelFor,
+                        typeof(TJob),
                         (ExecuteJobFunction)Execute
                     );
                 }
@@ -261,7 +261,7 @@ namespace Abarabone.Structure
                 UnsafeUtility.AddressOf(ref jobProducer)
                 , JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue>.Initialize()
                 , dependsOn
-                , ScheduleMode.Batched
+                , ScheduleMode.Parallel
             );
 
             return JobsUtility.ScheduleParallelFor(ref scheduleParams, hashMap.GetUnsafeBucketData().bucketCapacityMask + 1, minIndicesPerJobCount);

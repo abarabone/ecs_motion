@@ -19,6 +19,13 @@ namespace Abarabone.MarchingCubes
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     public class DrawMarchingCubeCsSystem : SystemBase
     {
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            this.RequireSingletonForUpdate<CubeGridGlobal.InstanceWorkData>();
+        }
+
         protected unsafe override void OnUpdate()
         {
 

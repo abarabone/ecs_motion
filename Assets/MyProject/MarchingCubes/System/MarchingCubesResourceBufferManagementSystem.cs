@@ -20,6 +20,13 @@ namespace Abarabone.MarchingCubes
     public class MarchingCubesResourceBufferManagementSystem : SystemBase
     {
 
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+            
+            this.RequireSingletonForUpdate<Resource.Initialize>();
+        }
+
 
         protected override void OnStartRunning()
         {
@@ -82,6 +89,8 @@ namespace Abarabone.MarchingCubes
 
         protected override void OnDestroy()
         {
+            if (!this.HasSingleton<Resource.DrawBufferData>()) return;
+
 
             var resbuf = this.GetSingleton<Resource.DrawBufferData>();
 

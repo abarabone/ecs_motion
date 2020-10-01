@@ -22,7 +22,14 @@ namespace Abarabone.MarchingCubes
 
         BeginDrawCsBarier presentationBarier;
 
-        //NativeList<>
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            this.RequireSingletonForUpdate<CubeGridGlobal.InfoData>();
+        }
+
 
         protected override void OnStartRunning()
         {
