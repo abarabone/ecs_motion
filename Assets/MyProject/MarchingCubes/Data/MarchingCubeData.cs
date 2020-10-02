@@ -52,11 +52,6 @@ namespace Abarabone.MarchingCubes
             public CubeGrid32x32x32Unsafe DefaultGrid;
         }
 
-        public unsafe struct InstanceWorkPtrData : IComponentData
-        {
-            public UnsafeList<CubeInstance> *pCubeInstances;
-            public UnsafeList<GridInstanceData> *pGridInstances;
-        }
         public struct InstanceWorkData : IComponentData
         {
             public UnsafeList<CubeInstance> CubeInstances;

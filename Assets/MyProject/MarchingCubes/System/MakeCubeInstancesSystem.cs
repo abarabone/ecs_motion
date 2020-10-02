@@ -51,10 +51,10 @@ namespace Abarabone.MarchingCubes
             //////[WriteOnly]
             //var NativeList<CubeUtility.GridInstanceData> dstGridData;
 
-            //var dstCubeInstanceList = new NativeList<CubeInstance>(100, Allocator.TempJob);
-            //var dstGridData = new NativeList<GridInstanceData>(512, Allocator.TempJob);
-            var dstCubeInstanceList = globalInstances.CubeInstances;
-            var dstGridData = globalInstances.GridInstances;
+            var dstCubeInstanceList = new NativeList<CubeInstance>(100, Allocator.TempJob);
+            var dstGridData = new NativeList<GridInstanceData>(512, Allocator.TempJob);
+            //var dstCubeInstanceList = globalInstances.CubeInstances;
+            //var dstGridData = globalInstances.GridInstances;
 
 
             this.Entities
