@@ -23,13 +23,13 @@ namespace Abarabone.MarchingCubes
         {
             base.OnCreate();
 
-            this.RequireSingletonForUpdate<CubeGridGlobal.InstanceWorkData>();
+            this.RequireSingletonForUpdate<DotGridGlobal.InstanceWorkData>();
         }
 
         protected unsafe override void OnUpdate()
         {
 
-            var instances = this.GetSingleton<CubeGridGlobal.InstanceWorkData>();
+            var instances = this.GetSingleton<DotGridGlobal.InstanceWorkData>();
 
             if (instances.CubeInstances.Length == 0) return;
 

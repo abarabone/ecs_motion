@@ -12,7 +12,7 @@ using Unity.Collections.Experimental;
 
 namespace Abarabone.MarchingCubes
 {
-    public partial struct CubeGridArrayUnsafe
+    public partial struct DotGridArrayUnsafe
     {
 
 
@@ -64,9 +64,9 @@ namespace Abarabone.MarchingCubes
         {
 
             [ReadOnly]
-            public CubeGridArrayUnsafe gridArray;
+            public DotGridArrayUnsafe gridArray;
 
-            public NearCubeGrids gridset;
+            public NearDotGrids gridset;
             public GridCounts gridcount;
 
 
@@ -88,7 +88,7 @@ namespace Abarabone.MarchingCubes
         {
 
             [ReadOnly]
-            public CubeGridArrayUnsafe gridArray;
+            public DotGridArrayUnsafe gridArray;
 
             [WriteOnly]
             public NativeList<CubeInstance> dstCubeInstances;
@@ -141,10 +141,10 @@ namespace Abarabone.MarchingCubes
         {
 
             [ReadOnly]
-            public CubeGridArrayUnsafe gridArray;
+            public DotGridArrayUnsafe gridArray;
 
             [WriteOnly]
-            public NativeList<NearCubeGrids> dstNearGrids;
+            public NativeList<NearDotGrids> dstNearGrids;
             [WriteOnly]
             public NativeList<float4> dstGridPositions;
 
@@ -182,7 +182,7 @@ namespace Abarabone.MarchingCubes
         {
 
             [ReadOnly]
-            public NativeArray<NearCubeGrids> nearGrids;
+            public NativeArray<NearDotGrids> nearGrids;
 
             [WriteOnly]
             //public NativeList<CubeInstance>.ParallelWriter dstCubeInstances;

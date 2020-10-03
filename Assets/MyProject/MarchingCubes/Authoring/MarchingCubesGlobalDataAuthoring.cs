@@ -54,10 +54,10 @@ namespace Abarabone.MarchingCubes.Authoring
                 var types = new ComponentTypes
                 (new ComponentType[] {
                     typeof(Resource.Initialize),
-                    typeof(CubeGridGlobal.FreeGridStockData),
-                    typeof(CubeGridGlobal.DefualtGridData),
-                    typeof(CubeGridGlobal.InfoData),
-                    typeof(CubeGridGlobal.InstanceWorkData),
+                    typeof(DotGridGlobal.FreeGridStockData),
+                    typeof(DotGridGlobal.DefualtGridData),
+                    typeof(DotGridGlobal.InfoData),
+                    typeof(DotGridGlobal.InstanceWorkData),
                     typeof(Resource.DrawResourceData),
                     typeof(Resource.DrawBufferData),
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag)
@@ -74,36 +74,36 @@ namespace Abarabone.MarchingCubes.Authoring
 
                 var ent = gcs_.GetPrimaryEntity(global_);
 
-                var defaultBuffers = em.GetBuffer<CubeGridGlobal.DefualtGridData>(ent);
-                var blank = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
-                var solid = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
-                defaultBuffers.Add(new CubeGridGlobal.DefualtGridData { DefaultGrid = blank });
-                defaultBuffers.Add(new CubeGridGlobal.DefualtGridData { DefaultGrid = solid });
+                var defaultBuffers = em.GetBuffer<DotGridGlobal.DefualtGridData>(ent);
+                var blank = DotGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
+                var solid = DotGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
+                defaultBuffers.Add(new DotGridGlobal.DefualtGridData { DefaultGrid = blank });
+                defaultBuffers.Add(new DotGridGlobal.DefualtGridData { DefaultGrid = solid });
 
 
-                var freeStockBuffers = em.GetBuffer<CubeGridGlobal.FreeGridStockData>(ent);
+                var freeStockBuffers = em.GetBuffer<DotGridGlobal.FreeGridStockData>(ent);
                 freeStockBuffers.Add(
-                    new CubeGridGlobal.FreeGridStockData
+                    new DotGridGlobal.FreeGridStockData
                     {
                         FreeGridStocks = new UnsafeList<UIntPtr>(this.BlankFreeStockCapacity, Allocator.Persistent),
                     }
                 );
                 freeStockBuffers.Add(
-                    new CubeGridGlobal.FreeGridStockData
+                    new DotGridGlobal.FreeGridStockData
                     {
                         FreeGridStocks = new UnsafeList<UIntPtr>(this.SolidFreeStockCapacity, Allocator.Persistent),
                     }
                 );
 
                 em.SetComponentData(ent,
-                    new CubeGridGlobal.InfoData
+                    new DotGridGlobal.InfoData
                     {
                         MaxCubeInstanceLength = this.MaxCubeInstances,
                         //MaxDrawGridLength = this.MaxDrawGridLength,
                     }
                 );
                 em.SetComponentData(ent,
-                    new CubeGridGlobal.InstanceWorkData
+                    new DotGridGlobal.InstanceWorkData
                     {
                         CubeInstances = new UnsafeList<CubeInstance>(this.MaxCubeInstances, Allocator.Persistent),//
                         GridInstances = new UnsafeList<GridInstanceData>(this.maxGridLengthInShader * 1, Allocator.Persistent),//

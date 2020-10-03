@@ -43,10 +43,10 @@ namespace Abarabone.MarchingCubes.Authoring
                 var types = new ComponentTypes(
                     new ComponentType[]
                     {
-                        typeof(CubeGridArea.InitializeData),
-                        typeof(CubeGridArea.BufferData),
-                        typeof(CubeGridArea.InfoData),
-                        typeof(CubeGridArea.InfoWorkData),
+                        typeof(DotGridArea.InitializeData),
+                        typeof(DotGridArea.BufferData),
+                        typeof(DotGridArea.InfoData),
+                        typeof(DotGridArea.InfoWorkData),
                         typeof(Rotation),
                         typeof(Translation)
                     }
@@ -59,26 +59,26 @@ namespace Abarabone.MarchingCubes.Authoring
 
 
                 em.SetComponentData(ent,
-                    new CubeGridArea.InitializeData
+                    new DotGridArea.InitializeData
                     {
                         FillMode = fillMode_,
                     }
                 );
                 em.SetComponentData(ent,
-                    new CubeGridArea.BufferData
+                    new DotGridArea.BufferData
                     {
                         Grids = allocGridArea_(totalSize, fillMode_),
                     }
                 );
                 em.SetComponentData(ent,
-                    new CubeGridArea.InfoData
+                    new DotGridArea.InfoData
                     {
                         GridLength = this.GridLength,
                         GridWholeLength = wholeLength,
                     }
                 );
                 em.SetComponentData(ent,
-                    new CubeGridArea.InfoWorkData
+                    new DotGridArea.InfoWorkData
                     {
                         GridSpan = new int3(1, wholeLength.x * wholeLength.z, wholeLength.x),
                     }
@@ -97,13 +97,13 @@ namespace Abarabone.MarchingCubes.Authoring
                 );
 
 
-                UnsafeList<CubeGrid32x32x32Unsafe> allocGridArea_(int totalSize_, GridFillMode fillMode)
+                UnsafeList<DotGrid32x32x32Unsafe> allocGridArea_(int totalSize_, GridFillMode fillMode)
                 {
-                    var buffer = new UnsafeList<CubeGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
+                    var buffer = new UnsafeList<DotGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
                     buffer.length = totalSize_;
 
                     var gent = gcs_.GetPrimaryEntity(global_);
-                    var defaultGrids = em.GetBuffer<CubeGridGlobal.DefualtGridData>(gent);
+                    var defaultGrids = em.GetBuffer<DotGridGlobal.DefualtGridData>(gent);
                     var defaultGrid = defaultGrids.GetDefaultGrid(fillMode);
 
                     for (var i = 0; i < totalSize; i++)

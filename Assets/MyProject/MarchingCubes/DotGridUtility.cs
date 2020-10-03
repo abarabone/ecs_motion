@@ -14,23 +14,23 @@ using System;
 namespace Abarabone.MarchingCubes
 {
 
-    static public unsafe class CubeGridExtension
+    static public unsafe class DotGridExtension
     {
 
-        static public ref CubeGrid32x32x32Unsafe AsRef(this CubeGrid32x32x32UnsafePtr cubePtr) => ref *cubePtr.p;
+        static public ref DotGrid32x32x32Unsafe AsRef(this DotGrid32x32x32UnsafePtr cubePtr) => ref *cubePtr.p;
 
-        static public ref CubeGrid32x32x32Unsafe AsRef(this UnsafeList<CubeGrid32x32x32Unsafe> list, int index) => ref *(list.Ptr + index);
+        static public ref DotGrid32x32x32Unsafe AsRef(this UnsafeList<DotGrid32x32x32Unsafe> list, int index) => ref *(list.Ptr + index);
 
         static public ref T AsRef<T>(this UnsafeList list, int index) where T : unmanaged => ref *((T*)list.Ptr + index);
 
 
 
-        //static public Cubee With(ref this CubeGridArrayUnsafe grids, ref CubeGridGlobal global, )
+        //static public Cubee With(ref this DotGridArrayUnsafe grids, ref DotGridGlobal global, )
         //{
 
         //}
 
-        //static public void a(ref this CubeGridArrayUnsafe arr, ref CubeGridGlobalData globalData)
+        //static public void a(ref this DotGridArrayUnsafe arr, ref DotGridGlobalData globalData)
         //{
 
         //    var _0or1 = math.sign(grid.CubeCount);
@@ -42,7 +42,7 @@ namespace Abarabone.MarchingCubes
 
 
         static public bool IsDefault
-            (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, CubeGrid32x32x32Unsafe grid)
+            (ref this DynamicBuffer<DotGridGlobal.DefualtGridData> defaultGrids, DotGrid32x32x32Unsafe grid)
         {
             //var p = new uint2((uint)grid.pUnits).xx;
             //var def = new uint2((uint)defaultGrids.Blank().pUnits, (uint)defaultGrids.Solid().pUnits);
@@ -50,7 +50,7 @@ namespace Abarabone.MarchingCubes
             return grid.pUnits == defaultGrids.Blank().pUnits | grid.pUnits == defaultGrids.Solid().pUnits;
         }
 
-        static GridFillMode getFillMode(ref this CubeGrid32x32x32Unsafe grid)
+        static GridFillMode getFillMode(ref this DotGrid32x32x32Unsafe grid)
         {
             return (GridFillMode)(grid.CubeCount >> 5);
         }
@@ -64,9 +64,9 @@ namespace Abarabone.MarchingCubes
         /// グリッドエリア上のグリッドを取得したグリッドで置き換える。
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public CubeGrid32x32x32UnsafePtr GetGrid
+        static public DotGrid32x32x32UnsafePtr GetGrid
             (
-                ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, DynamicBuffer<CubeGridGlobal.FreeGridStockData>, CubeGridArea.BufferData, CubeGridArea.InfoWorkData) x,
+                ref this (DynamicBuffer<DotGridGlobal.DefualtGridData>, DynamicBuffer<DotGridGlobal.FreeGridStockData>, DotGridArea.BufferData, DotGridArea.InfoWorkData) x,
                 int ix, int iy, int iz
             )
         {
@@ -98,8 +98,8 @@ namespace Abarabone.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void BackGridIfFilled
             (
-                ref this (DynamicBuffer<CubeGridGlobal.DefualtGridData>, DynamicBuffer<CubeGridGlobal.FreeGridStockData>) x,
-                ref CubeGrid32x32x32UnsafePtr gridptr
+                ref this (DynamicBuffer<DotGridGlobal.DefualtGridData>, DynamicBuffer<DotGridGlobal.FreeGridStockData>) x,
+                ref DotGrid32x32x32UnsafePtr gridptr
             )
         {
             ref var defaultGrids = ref x.Item1;

@@ -74,16 +74,16 @@ namespace Abarabone.MarchingCubes
 
             public struct HalfGridUnit
             {
-                public CubeGrid32x32x32UnsafePtr x;
-                public CubeGrid32x32x32UnsafePtr y;
-                public CubeGrid32x32x32UnsafePtr z;
-                public CubeGrid32x32x32UnsafePtr w;
+                public DotGrid32x32x32UnsafePtr x;
+                public DotGrid32x32x32UnsafePtr y;
+                public DotGrid32x32x32UnsafePtr z;
+                public DotGrid32x32x32UnsafePtr w;
             }
         }
 
 
-        static unsafe CubeGrid32x32x32UnsafePtr toPtr(in this CubeGridArea.BufferData gridArea, int i) =>
-            new CubeGrid32x32x32UnsafePtr
+        static unsafe DotGrid32x32x32UnsafePtr toPtr(in this DotGridArea.BufferData gridArea, int i) =>
+            new DotGrid32x32x32UnsafePtr
             {
                 p = gridArea.Grids.Ptr + i,
             };
@@ -94,11 +94,11 @@ namespace Abarabone.MarchingCubes
         /// 
         /// </summary>
         static public unsafe AdjacentGrids getGridSet_
-            (in this CubeGridArea.BufferData gridArea, int ix, int iy, int iz, int3 gridSpan) =>
+            (in this DotGridArea.BufferData gridArea, int ix, int iy, int iz, int3 gridSpan) =>
             gridArea.getGridSet_(new int3(ix, iy, iz), gridSpan);
 
         static public unsafe AdjacentGrids getGridSet_
-            (in this CubeGridArea.BufferData gridArea, int3 index, int3 gridSpan)
+            (in this DotGridArea.BufferData gridArea, int3 index, int3 gridSpan)
         {
             var i = math.dot(index, gridSpan);
 
@@ -382,8 +382,8 @@ namespace Abarabone.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe CubeNearXLines getXLine_(
             int iy, int iz, int4 index0or1,
-            CubeGrid32x32x32UnsafePtr gx, CubeGrid32x32x32UnsafePtr gy,
-            CubeGrid32x32x32UnsafePtr gz, CubeGrid32x32x32UnsafePtr gw
+            DotGrid32x32x32UnsafePtr gx, DotGrid32x32x32UnsafePtr gy,
+            DotGrid32x32x32UnsafePtr gz, DotGrid32x32x32UnsafePtr gw
         )
         {
             //y0  -> ( iy + 0 & 31 ) * 32/4 + ( iz>>2 + 0 & 31>>2 );

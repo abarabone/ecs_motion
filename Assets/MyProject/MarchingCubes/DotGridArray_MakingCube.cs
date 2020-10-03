@@ -15,10 +15,10 @@ namespace Abarabone.MarchingCubes
 
 
 
-    public unsafe struct CubeGrid32x32x32UnsafePtr
+    public unsafe struct DotGrid32x32x32UnsafePtr
     {
         [NativeDisableUnsafePtrRestriction]
-        public CubeGrid32x32x32Unsafe* p;
+        public DotGrid32x32x32Unsafe* p;
 
         public uint this[int ix, int iy, int iz]
         {
@@ -31,27 +31,27 @@ namespace Abarabone.MarchingCubes
 
 
 
-    public unsafe partial struct CubeGridArrayUnsafe
+    public unsafe partial struct DotGridArrayUnsafe
     {
 
-        public struct NearCubeGrids
+        public struct NearDotGrids
         {
             public int gridId;
             public HalfGridUnit L;
             public HalfGridUnit R;
             public struct HalfGridUnit
             {
-                public CubeGrid32x32x32UnsafePtr x;
-                public CubeGrid32x32x32UnsafePtr y;
-                public CubeGrid32x32x32UnsafePtr z;
-                public CubeGrid32x32x32UnsafePtr w;
+                public DotGrid32x32x32UnsafePtr x;
+                public DotGrid32x32x32UnsafePtr y;
+                public DotGrid32x32x32UnsafePtr z;
+                public DotGrid32x32x32UnsafePtr w;
             }
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void SampleAllCubes<TCubeInstanceWriter>
-            ( ref NearCubeGrids g, int gridId, ref TCubeInstanceWriter outputCubes )
+            ( ref NearDotGrids g, int gridId, ref TCubeInstanceWriter outputCubes )
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
 
@@ -71,7 +71,7 @@ namespace Abarabone.MarchingCubes
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void SampleAllCubes<TCubeInstanceWriter>
-            ( ref NearCubeGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes )
+            ( ref NearDotGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes )
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
             var g0or1L = math.min( gcount.L & 0x7fff, new int4( 1, 1, 1, 1 ) );
@@ -144,7 +144,7 @@ namespace Abarabone.MarchingCubes
         // ループ削減試行錯誤中（端っこもやれないか？）
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void SampleAllCubes_<TCubeInstanceWriter>
-            ( ref NearCubeGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes )
+            ( ref NearDotGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes )
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
             var g0or1L = math.min( gcount.L & 0x7fff, new int4( 1, 1, 1, 1 ) );
@@ -259,8 +259,8 @@ namespace Abarabone.MarchingCubes
         [MethodImpl( MethodImplOptions.AggressiveInlining )]
         static unsafe CubeNearXLines getXLine_(
             int iy, int iz, int4 index0or1,
-            CubeGrid32x32x32UnsafePtr gx, CubeGrid32x32x32UnsafePtr gy,
-            CubeGrid32x32x32UnsafePtr gz, CubeGrid32x32x32UnsafePtr gw
+            DotGrid32x32x32UnsafePtr gx, DotGrid32x32x32UnsafePtr gy,
+            DotGrid32x32x32UnsafePtr gz, DotGrid32x32x32UnsafePtr gw
         )
         {
             //y0  -> ( iy + 0 & 31 ) * 32/4 + ( iz>>2 + 0 & 31>>2 );

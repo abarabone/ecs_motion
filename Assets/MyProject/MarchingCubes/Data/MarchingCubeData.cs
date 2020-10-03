@@ -22,7 +22,7 @@ namespace Abarabone.MarchingCubes
 
 
 
-    //static public partial class CubeGrid
+    //static public partial class DotGrid
     //{
     //    public struct BufferData// : IComponentData
     //    {
@@ -31,7 +31,7 @@ namespace Abarabone.MarchingCubes
     //    }
     //}
 
-    static public partial class CubeGridGlobal
+    static public partial class DotGridGlobal
     {
 
         //public struct BufferData : IComponentData
@@ -49,7 +49,7 @@ namespace Abarabone.MarchingCubes
         [InternalBufferCapacity(2)]
         public struct DefualtGridData : IBufferElementData
         {
-            public CubeGrid32x32x32Unsafe DefaultGrid;
+            public DotGrid32x32x32Unsafe DefaultGrid;
         }
 
         public struct InstanceWorkData : IComponentData
@@ -68,7 +68,7 @@ namespace Abarabone.MarchingCubes
 
 
 
-    static public partial class CubeGridArea
+    static public partial class DotGridArea
     {
 
         public struct InitializeData : IComponentData
@@ -79,7 +79,7 @@ namespace Abarabone.MarchingCubes
 
         public unsafe struct BufferData : IComponentData
         {
-            public UnsafeList<CubeGrid32x32x32Unsafe> Grids;
+            public UnsafeList<DotGrid32x32x32Unsafe> Grids;
         }
 
         public struct InfoData : IComponentData
@@ -156,13 +156,13 @@ namespace Abarabone.MarchingCubes
 
 
 
-    static public partial class CubeGridGlobal
+    static public partial class DotGridGlobal
     {
         /// <summary>
         /// フリーストックからグリッドを貸与。
         /// ストックがなければ、新規に確保して返す。
         /// </summary>
-        static public CubeGrid32x32x32Unsafe RentGridFromFreeStocks
+        static public DotGrid32x32x32Unsafe RentGridFromFreeStocks
             (ref this DynamicBuffer<FreeGridStockData> freeStocker, GridFillMode fillMode)
         {
             ref var currentStocks = ref freeStocker.ElementAt((int)fillMode).FreeGridStocks;
@@ -170,8 +170,8 @@ namespace Abarabone.MarchingCubes
             {
                 var p = currentStocks[--currentStocks.length];
 
-                const int dotnum = CubeGrid32x32x32Unsafe.dotNum;
-                return new CubeGrid32x32x32Unsafe(p, dotnum * (int)fillMode);
+                const int dotnum = DotGrid32x32x32Unsafe.dotNum;
+                return new DotGrid32x32x32Unsafe(p, dotnum * (int)fillMode);
             }
 
             ref var otherStocks = ref freeStocker.ElementAt((int)~fillMode).FreeGridStocks;
@@ -179,15 +179,15 @@ namespace Abarabone.MarchingCubes
             {
                 var p = otherStocks[--otherStocks.length];
 
-                return CubeGridAllocater.Fill(p, fillMode);
+                return DotGridAllocater.Fill(p, fillMode);
             }
 
-            return CubeGridAllocater.Alloc(fillMode);
+            return DotGridAllocater.Alloc(fillMode);
         }
 
-        static public CubeGrid32x32x32Unsafe RentBlankGrid(ref this DynamicBuffer<FreeGridStockData> buf, GridFillMode fillMode) =>
+        static public DotGrid32x32x32Unsafe RentBlankGrid(ref this DynamicBuffer<FreeGridStockData> buf, GridFillMode fillMode) =>
             buf.RentGridFromFreeStocks(GridFillMode.Blank);
-        static public CubeGrid32x32x32Unsafe RentSolidGrid(ref this DynamicBuffer<FreeGridStockData> buf, GridFillMode fillMode) =>
+        static public DotGrid32x32x32Unsafe RentSolidGrid(ref this DynamicBuffer<FreeGridStockData> buf, GridFillMode fillMode) =>
             buf.RentGridFromFreeStocks(GridFillMode.Solid);
 
 
@@ -197,8 +197,8 @@ namespace Abarabone.MarchingCubes
         /// </summary>
         static public unsafe void BackToFreeGridStocks
             (
-                ref this DynamicBuffer<CubeGridGlobal.FreeGridStockData> freeStocker,
-                GridFillMode fillMode, CubeGrid32x32x32Unsafe grid
+                ref this DynamicBuffer<DotGridGlobal.FreeGridStockData> freeStocker,
+                GridFillMode fillMode, DotGrid32x32x32Unsafe grid
             )
         {
             //freeStocker.ElementAt((int)fillMode).FreeGridStocks.Add((UIntPtr)grid.pUnits);
@@ -215,22 +215,22 @@ namespace Abarabone.MarchingCubes
                 currentStocks.AddNoResize((UIntPtr)grid.pUnits);
             }
 
-            CubeGridAllocater.Dispose((UIntPtr)grid.pUnits);
+            DotGridAllocater.Dispose((UIntPtr)grid.pUnits);
         }
 
 
         /// <summary>
         /// デフォルトグリッドを取得する。
         /// </summary>
-        static public CubeGrid32x32x32Unsafe GetDefaultGrid
-            (ref this DynamicBuffer<CubeGridGlobal.DefualtGridData> defaultGrids, GridFillMode fillMode)
+        static public DotGrid32x32x32Unsafe GetDefaultGrid
+            (ref this DynamicBuffer<DotGridGlobal.DefualtGridData> defaultGrids, GridFillMode fillMode)
         {
             return defaultGrids.ElementAt((int)fillMode).DefaultGrid;
         }
 
-        public static CubeGrid32x32x32Unsafe Blank(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
+        public static DotGrid32x32x32Unsafe Blank(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
             defaultGrids.GetDefaultGrid(GridFillMode.Blank);
-        public static CubeGrid32x32x32Unsafe Solid(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
+        public static DotGrid32x32x32Unsafe Solid(ref this DynamicBuffer<DefualtGridData> defaultGrids) =>
             defaultGrids.GetDefaultGrid(GridFillMode.Solid);
     }
 
@@ -242,9 +242,9 @@ namespace Abarabone.MarchingCubes
         /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public unsafe CubeGrid32x32x32UnsafePtr GetGridFromArea
+        static public unsafe DotGrid32x32x32UnsafePtr GetGridFromArea
             (
-                ref this (CubeGridArea.BufferData, CubeGridArea.InfoWorkData) x,
+                ref this (DotGridArea.BufferData, DotGridArea.InfoWorkData) x,
                 int ix, int iy, int iz
             )
         {
@@ -254,7 +254,7 @@ namespace Abarabone.MarchingCubes
             var i3 = new int3(ix, iy, iz) + 1;
             var i = math.dot(i3, areaInfo.GridSpan);
 
-            return new CubeGrid32x32x32UnsafePtr { p = areaGrids.Grids.Ptr + i };
+            return new DotGrid32x32x32UnsafePtr { p = areaGrids.Grids.Ptr + i };
         }
     }
 

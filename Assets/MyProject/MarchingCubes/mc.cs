@@ -17,7 +17,7 @@ namespace Abarabone.MarchingCubes
 
     using vc = Vector3;
     //using MarchingCubeAsset = MarchingCubes.MarchingCubeAsset;
-    //using CubeGridArrayUnsafe = MarchingCubes.CubeGridArrayUnsafe;
+    //using DotGridArrayUnsafe = MarchingCubes.DotGridArrayUnsafe;
     //using CubeInstance = MarchingCubes.CubeInstance;
     //using CubeUtility = MarchingCubes.CubeUtility;
 
@@ -28,8 +28,8 @@ namespace Abarabone.MarchingCubes
 
         public ComputeShader setGridCubeIdShader;
 
-        public CubeGridArrayUnsafe cubeGrids { get; private set; }
-        public MeshCollider[,,] cubeGridColliders { get; private set; }
+        public DotGridArrayUnsafe DotGrids { get; private set; }
+        public MeshCollider[,,] DotGridColliders { get; private set; }
 
         //uint[] cubeInstances;
         NativeList<GridInstanceData> gridData;
@@ -98,11 +98,11 @@ namespace Abarabone.MarchingCubes
         {
             var res = this.meshResources;
 
-            this.cubeGrids = new CubeGridArrayUnsafe( 8, 5, 8 );
-            this.cubeGrids.FillCubes( new int3( -1, 2, -1 ), new int3( 11, 11, 11 ), isFillAll: true );
-            this.cubeGrids.FillCubes( new int3( 2, 1, 3 ), new int3( 1, 2, 1 ), isFillAll: true );
+            this.DotGrids = new DotGridArrayUnsafe( 8, 5, 8 );
+            this.DotGrids.FillCubes( new int3( -1, 2, -1 ), new int3( 11, 11, 11 ), isFillAll: true );
+            this.DotGrids.FillCubes( new int3( 2, 1, 3 ), new int3( 1, 2, 1 ), isFillAll: true );
 
-            var c = this.cubeGrids[ 0, 0, 0 ];
+            var c = this.DotGrids[ 0, 0, 0 ];
             ( *c.p )[ 1, 1, 1 ] = 1;
             c[ 31, 1, 1 ] = 1;
             c[ 31, 31, 31 ] = 1;
@@ -111,7 +111,7 @@ namespace Abarabone.MarchingCubes
                 for( var iz = 0; iz < 15; iz++ )
                     for( var ix = 0; ix < 13; ix++ )
                         c[ 5 + ix, 5 + iy, 5 + iz ] = 1;
-            this.job = this.cubeGrids.BuildCubeInstanceData( this.gridData, this.cubeInstances );
+            this.job = this.DotGrids.BuildCubeInstanceData( this.gridData, this.cubeInstances );
 
             this.job.Complete();
             //this.gridData.AsArray().ForEach( x => Debug.Log( x ) );
@@ -125,8 +125,8 @@ namespace Abarabone.MarchingCubes
         }
         void createHitMesh()
         {
-            var glen = this.cubeGrids.GridLength;
-            this.cubeGridColliders = new MeshCollider[ glen.x, glen.y, glen.z ];
+            var glen = this.DotGrids.GridLength;
+            this.DotGridColliders = new MeshCollider[ glen.x, glen.y, glen.z ];
 
             this.idxLists = this.MarchingCubeAsset.CubeIdAndVertexIndicesList.Select( x => x.vertexIndices ).ToArray();
             this.vtxList = this.MarchingCubeAsset.BaseVertexList.Select( x => new float3( x.x, x.y, x.z ) ).ToArray();
@@ -145,8 +145,8 @@ namespace Abarabone.MarchingCubes
 
                 if( igrid.x < 0 || igrid.y < 0 || igrid.z < 0 ) continue;
 
-                var collider = this.cubeGridColliders[ igrid.x, igrid.y, igrid.z ];
-                this.cubeGridColliders[ igrid.x, igrid.y, igrid.z ] = this.BuildMeshCollider( gridpos.xyz, collider, cubeId );
+                var collider = this.DotGridColliders[ igrid.x, igrid.y, igrid.z ];
+                this.DotGridColliders[ igrid.x, igrid.y, igrid.z ] = this.BuildMeshCollider( gridpos.xyz, collider, cubeId );
             }
         }
 
@@ -207,7 +207,7 @@ namespace Abarabone.MarchingCubes
             this.job.Complete();
 
             this.meshResources.Dispose();
-            this.cubeGrids.Dispose();
+            this.DotGrids.Dispose();
             this.gridData.Dispose();
             this.cubeInstances.Dispose();
         }
@@ -217,12 +217,12 @@ namespace Abarabone.MarchingCubes
 
         private unsafe void Update()
         {
-            //var c = this.cubeGrids[ 5, 1, 3 ];
+            //var c = this.DotGrids[ 5, 1, 3 ];
             //c[ i, 0, 0 ] ^= 1;
             //i = i + 1 & 31;
             this.gridData.Clear();
             this.cubeInstances.Clear();
-            this.job = this.cubeGrids.BuildCubeInstanceData( this.gridData, this.cubeInstances );
+            this.job = this.DotGrids.BuildCubeInstanceData( this.gridData, this.cubeInstances );
 
         //}
         //private unsafe void LateUpdate()

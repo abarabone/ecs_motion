@@ -18,11 +18,11 @@ namespace Abarabone.MarchingCubes
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class CubeGridBufferManagementSystem : SystemBase
+    public class DotGridBufferManagementSystem : SystemBase
     {
 
 
-        EntityCommandBufferSystem cmdSystem;
+        //EntityCommandBufferSystem cmdSystem;
 
         protected override void OnCreate()
         {
@@ -36,19 +36,19 @@ namespace Abarabone.MarchingCubes
 
         protected unsafe override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer();
+            //var cmd = this.cmdSystem.CreateCommandBuffer();
 
 
-            //var globalInfo = this.GetSingleton<CubeGridGlobal.InfoData>();
+            //var globalInfo = this.GetSingleton<DotGridGlobal.InfoData>();
 
 
             //this.Entities
             //    .ForEach(
             //            (
             //                Entity entity,
-            //                ref CubeGridArea.BufferData buffer,
-            //                in CubeGridArea.InfoData info,
-            //                in CubeGridArea.InitializeData init
+            //                ref DotGridArea.BufferData buffer,
+            //                in DotGridArea.InfoData info,
+            //                in DotGridArea.InitializeData init
             //            ) =>
             //        {
 
@@ -60,22 +60,22 @@ namespace Abarabone.MarchingCubes
 
             //            buffer.Grids = gridarea;
 
-            //            cmd.RemoveComponent<CubeGridArea.InitializeData>(entity);
+            //            cmd.RemoveComponent<DotGridArea.InitializeData>(entity);
             //        }
             //    )
             //    .Run();
 
             //this.SetSingleton(
-            //    new CubeGridGlobal.BufferData
+            //    new DotGridGlobal.BufferData
             //    {
             //        CubeBuffers = gbuffer,
             //    }
             //);
 
 
-            //UnsafeList<CubeGrid32x32x32Unsafe> allocGridArea_(int totalSize, GridFillMode fillMode)
+            //UnsafeList<DotGrid32x32x32Unsafe> allocGridArea_(int totalSize, GridFillMode fillMode)
             //{
-            //    var buffer = new UnsafeList<CubeGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
+            //    var buffer = new UnsafeList<DotGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
             //    buffer.length = totalSize;
 
             //    var defaultGrid = fillMode == GridFillMode.Solid ? solid : blank;
@@ -93,19 +93,19 @@ namespace Abarabone.MarchingCubes
 
         protected override unsafe void OnDestroy()
         {
-            if (!this.HasSingleton<CubeGridGlobal.InfoData>()) return;
+            if (!this.HasSingleton<DotGridGlobal.InfoData>()) return;
 
 
-            var globalent = this.GetSingletonEntity<CubeGridGlobal.InfoData>();
-            var globalInfo = this.EntityManager.GetComponentData<CubeGridGlobal.InfoData>(globalent);
-            var globalDefaults = this.EntityManager.GetBuffer<CubeGridGlobal.DefualtGridData>(globalent);
-            var globalStocks = this.EntityManager.GetBuffer<CubeGridGlobal.FreeGridStockData>(globalent);
-            var globalInstances = this.EntityManager.GetComponentData<CubeGridGlobal.InstanceWorkData>(globalent);
+            var globalent = this.GetSingletonEntity<DotGridGlobal.InfoData>();
+            var globalInfo = this.EntityManager.GetComponentData<DotGridGlobal.InfoData>(globalent);
+            var globalDefaults = this.EntityManager.GetBuffer<DotGridGlobal.DefualtGridData>(globalent);
+            var globalStocks = this.EntityManager.GetBuffer<DotGridGlobal.FreeGridStockData>(globalent);
+            var globalInstances = this.EntityManager.GetComponentData<DotGridGlobal.InstanceWorkData>(globalent);
 
             this.Entities
                 .ForEach(
                     (
-                        ref CubeGridArea.BufferData buffer
+                        ref DotGridArea.BufferData buffer
                     ) =>
                     {
                         disposeCubeInGridArea_(ref buffer);
@@ -136,7 +136,7 @@ namespace Abarabone.MarchingCubes
             return;
 
 
-            void disposeCubeInGridArea_(ref CubeGridArea.BufferData buffer_)
+            void disposeCubeInGridArea_(ref DotGridArea.BufferData buffer_)
             {
                 for (var i = 0; i < buffer_.Grids.length; i++)
                 {
@@ -151,16 +151,16 @@ namespace Abarabone.MarchingCubes
                 buffer_.Grids.Dispose();
             }
 
-            void disposeCubeInFreeStocks_(ref CubeGridGlobal.FreeGridStockData stocks_)
+            void disposeCubeInFreeStocks_(ref DotGridGlobal.FreeGridStockData stocks_)
             {
                 for (var i = 0; i < stocks_.FreeGridStocks.length; i++)
                 {
-                    CubeGridAllocater.Dispose(stocks_.FreeGridStocks[i]);
+                    DotGridAllocater.Dispose(stocks_.FreeGridStocks[i]);
                 }
                 stocks_.FreeGridStocks.Dispose();
             }
 
-            void disposeCubeInDefault_(ref CubeGridGlobal.DefualtGridData default_)
+            void disposeCubeInDefault_(ref DotGridGlobal.DefualtGridData default_)
             {
                 default_.DefaultGrid.Dispose();
             }

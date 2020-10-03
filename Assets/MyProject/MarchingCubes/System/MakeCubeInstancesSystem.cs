@@ -27,7 +27,7 @@ namespace Abarabone.MarchingCubes
         {
             base.OnCreate();
 
-            this.RequireSingletonForUpdate<CubeGridGlobal.InfoData>();
+            this.RequireSingletonForUpdate<DotGridGlobal.InfoData>();
         }
 
 
@@ -39,36 +39,24 @@ namespace Abarabone.MarchingCubes
 
         protected unsafe override void OnUpdate()
         {
-            var globalent = this.GetSingletonEntity<CubeGridGlobal.InfoData>();
-            var globalInfo = this.EntityManager.GetComponentData<CubeGridGlobal.InfoData>(globalent);
-            var globalDefaults = this.EntityManager.GetBuffer<CubeGridGlobal.DefualtGridData>(globalent);
-            var globalStocks = this.EntityManager.GetBuffer<CubeGridGlobal.FreeGridStockData>(globalent);
-            var globalInstances = this.EntityManager.GetComponentData<CubeGridGlobal.InstanceWorkData>(globalent);
+            var globalent = this.GetSingletonEntity<DotGridGlobal.InfoData>();
 
-
-            ////[WriteOnly]
-            //var NativeList<CubeInstance> dstCubeInstances;
-            //////[WriteOnly]
-            //var NativeList<CubeUtility.GridInstanceData> dstGridData;
-
-            var dstCubeInstanceList = new NativeList<CubeInstance>(100, Allocator.TempJob);
-            var dstGridData = new NativeList<GridInstanceData>(512, Allocator.TempJob);
-            //var dstCubeInstanceList = globalInstances.CubeInstances;
-            //var dstGridData = globalInstances.GridInstances;
+            var instances = this.GetComponentDataFromEntity<DotGridGlobal.InstanceWorkData>();
+            var stocks = this.GetBufferFromEntity<DotGridGlobal.FreeGridStockData>();
 
 
             this.Entities
                 .WithBurst()
-                //.WithDisposeOnCompletion(dstCubeInstanceList)
-                //.WithDisposeOnCompletion(dstGridData)
                 .ForEach(
                         (
-                            in CubeGridArea.BufferData buf,
-                            in CubeGridArea.InfoData dim,
-                            in CubeGridArea.InfoWorkData unit
+                            in DotGridArea.BufferData buf,
+                            in DotGridArea.InfoData dim,
+                            in DotGridArea.InfoWorkData unit
                         ) =>
                     {
+                        var instance = instances[globalent];
                         var gridId = 0;
+
 
                         // 0 は 1 以上との境界面を描くことが目的だが、0 同士の境界面が生成された場合、描画されてしまう、要考慮
                         for (var iy = 0; iy < dim.GridWholeLength.y - 1; iy++)
@@ -82,7 +70,7 @@ namespace Abarabone.MarchingCubes
                                     if (!gridcount.isNeedDraw_()) continue;
                                     //if( !isNeedDraw_( ref gridset ) ) continue;
 
-                                    var dstCubeInstances = new InstanceCubeByUnsafeList { list = dstCubeInstanceList };
+                                    var dstCubeInstances = new InstanceCubeByUnsafeList { list = instance.CubeInstances };
                                     dstCubeInstances.SampleAllCubes(ref gridset, ref gridcount, gridId);
                                     //SampleAllCubes( ref gridset, gridId, dstCubeInstances );
 
@@ -90,15 +78,17 @@ namespace Abarabone.MarchingCubes
                                     {
                                         Position = (new int4(ix, iy, iz, 0) - new int4(1, 1, 1, 0)) * new float4(32, -32, -32, 0)
                                     };
-                                    dstGridData.AddNoResize(data);
+                                    instance.GridInstances.AddNoResize(data);
 
                                     gridId++;
 
                                 }
 
                         var gridScale = 1.0f / new float3(32, 32, 32);
-                        CubeUtility.GetNearGridList(dstGridData.AsNativeArray(), gridScale);
+                        CubeUtility.GetNearGridList(instance.GridInstances.AsNativeArray(), gridScale);
 
+
+                        instances[globalent] = instance;
                     }
                 )
                 .Schedule();

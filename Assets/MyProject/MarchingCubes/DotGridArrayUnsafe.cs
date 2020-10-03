@@ -14,25 +14,25 @@ namespace Abarabone.MarchingCubes
 {
 
     /// グリッド配列は本体へのポインタのみ持ち、all 0 / all 1 のグリッドはデフォルトとして使いまわされる。
-    static public unsafe class CubeGridGlobalData
+    static public unsafe class DotGridGlobalData
     {
 
         static public UnsafePtrList FreeBlankGridStock;
         static public UnsafePtrList FreeSolidGridStock;
         static public UnsafeList FreeDefaultGridStock;
 
-        static public CubeGrid32x32x32Unsafe DefaultBlankGrid => FreeDefaultGridStock.AsRef<CubeGrid32x32x32Unsafe>(0);
-        static public CubeGrid32x32x32Unsafe DefaultSolidGrid => FreeDefaultGridStock.AsRef<CubeGrid32x32x32Unsafe>(1);
+        static public DotGrid32x32x32Unsafe DefaultBlankGrid => FreeDefaultGridStock.AsRef<DotGrid32x32x32Unsafe>(0);
+        static public DotGrid32x32x32Unsafe DefaultSolidGrid => FreeDefaultGridStock.AsRef<DotGrid32x32x32Unsafe>(1);
 
 
         static public void Init(int maxGridLength)
         {
             FreeBlankGridStock = new UnsafePtrList(maxGridLength, Allocator.Persistent);
             FreeSolidGridStock = new UnsafePtrList(maxGridLength, Allocator.Persistent);
-            FreeDefaultGridStock = new UnsafeList(sizeof(CubeGrid32x32x32Unsafe), 4, 2, Allocator.Persistent);
+            FreeDefaultGridStock = new UnsafeList(sizeof(DotGrid32x32x32Unsafe), 4, 2, Allocator.Persistent);
 
-            FreeDefaultGridStock.AsRef<CubeGrid32x32x32Unsafe>(0) = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
-            FreeDefaultGridStock.AsRef<CubeGrid32x32x32Unsafe>(1) = CubeGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
+            FreeDefaultGridStock.AsRef<DotGrid32x32x32Unsafe>(0) = DotGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Blank);
+            FreeDefaultGridStock.AsRef<DotGrid32x32x32Unsafe>(1) = DotGrid32x32x32Unsafe.CreateDefaultCube(GridFillMode.Solid);
         }
 
         static public unsafe void Dispose()
@@ -54,22 +54,22 @@ namespace Abarabone.MarchingCubes
             {
                 for (var i = 0; i < list.Length; i++)
                 {
-                    CubeGridAllocater.Dispose((UIntPtr)(void*)list[i]);
+                    DotGridAllocater.Dispose((UIntPtr)(void*)list[i]);
                 }
             }
         }
 
 
-        //public CubeGrid32x32x32Unsafe RentGrid(GridFillMode fillMode)
+        //public DotGrid32x32x32Unsafe RentGrid(GridFillMode fillMode)
         //{
         //    if (this.GridStock.length > this.usedGridCount)
         //    {
         //        var p = this.GridStock[usedGridCount++];
-        //        return CubeGridAllocater.Fill(p, fillMode);
+        //        return DotGridAllocater.Fill(p, fillMode);
         //    }
         //    else
         //    {
-        //        var grid = CubeGridAllocater.Alloc(fillMode);
+        //        var grid = DotGridAllocater.Alloc(fillMode);
 
         //        this.GridStock.Add((UIntPtr)grid.pUnits);
         //        this.usedGridCount++;
@@ -77,7 +77,7 @@ namespace Abarabone.MarchingCubes
         //        return grid;
         //    }
         //}
-        //public void BackGrid(CubeGrid32x32x32Unsafe grid)
+        //public void BackGrid(DotGrid32x32x32Unsafe grid)
         //{
         //    [--this.usedGridCount]
 
@@ -96,7 +96,7 @@ namespace Abarabone.MarchingCubes
     /// グリッドを管理する。
     /// グリッド本体は必要な分のみ確保される。
     /// </summary>
-    public unsafe partial struct CubeGridArrayUnsafe
+    public unsafe partial struct DotGridArrayUnsafe
     {
 
         // 実際に確保するグリッド配列は、外側をデフォルトグリッドでくるむ。
@@ -105,21 +105,21 @@ namespace Abarabone.MarchingCubes
         readonly int3 wholeGridLength;
         readonly int3 gridSpan;
 
-        public UnsafeList<CubeGrid32x32x32Unsafe> grids;
+        public UnsafeList<DotGrid32x32x32Unsafe> grids;
         public UnsafeBitArray solidOrBlankWhenDefaultList;
 
 
         /// <summary>
         /// 
         /// </summary>
-        unsafe public CubeGridArrayUnsafe(int x, int y, int z)// : this()
+        unsafe public DotGridArrayUnsafe(int x, int y, int z)// : this()
         {
             this.GridLength = new int3(x, y, z);
             this.wholeGridLength = new int3(x, y, z) + 2;
             this.gridSpan = new int3(1, this.wholeGridLength.x * this.wholeGridLength.z, this.wholeGridLength.x);
 
             var totalLength = wholeGridLength.x * wholeGridLength.y * wholeGridLength.z;
-            this.grids = new UnsafeList<CubeGrid32x32x32Unsafe>(totalLength, Allocator.Persistent);
+            this.grids = new UnsafeList<DotGrid32x32x32Unsafe>(totalLength, Allocator.Persistent);
             this.solidOrBlankWhenDefaultList = new UnsafeBitArray(totalLength, Allocator.Persistent);
 
             var startGrid = new int3(-1, -1, -1);
@@ -138,14 +138,14 @@ namespace Abarabone.MarchingCubes
         }
 
 
-        public unsafe CubeGrid32x32x32UnsafePtr this[int x, int y, int z]
+        public unsafe DotGrid32x32x32UnsafePtr this[int x, int y, int z]
         {
             get
             {
                 var i3 = new int3(x, y, z) + 1;
                 var i = math.dot(i3, this.gridSpan);
 
-                var gridptr = new CubeGrid32x32x32UnsafePtr { p = this.grids.Ptr + i };
+                var gridptr = new DotGrid32x32x32UnsafePtr { p = this.grids.Ptr + i };
 
                 return gridptr;
             }
@@ -178,12 +178,12 @@ namespace Abarabone.MarchingCubes
         /// <summary>
         /// 
         /// </summary>
-        static NearCubeGrids getGridSet_
-            ( ref CubeGridArrayUnsafe gridArray, int ix, int iy, int iz, int yspan_, int zspan_ )
+        static NearDotGrids getGridSet_
+            ( ref DotGridArrayUnsafe gridArray, int ix, int iy, int iz, int yspan_, int zspan_ )
         {
             var i = iy * yspan_ + iz * zspan_ + ix;
 
-            return new NearCubeGrids
+            return new NearDotGrids
             {
                 //L =
                 //{
@@ -206,7 +206,7 @@ namespace Abarabone.MarchingCubes
         {
             public int4 L, R;
         }
-        static GridCounts getEachCount( ref NearCubeGrids g )
+        static GridCounts getEachCount( ref NearDotGrids g )
         {
             var gridCount = new int4
             (
@@ -291,7 +291,7 @@ namespace Abarabone.MarchingCubes
             ( NativeList<float4> gridPositions, NativeList<CubeInstance> cubeInstances )
         {
 
-            var gridsets = new NativeList<NearCubeGrids>( 100, Allocator.TempJob );
+            var gridsets = new NativeList<NearDotGrids>( 100, Allocator.TempJob );
 
 
             var dispJob = new GridDispatchJob
@@ -335,7 +335,7 @@ namespace Abarabone.MarchingCubes
             ( NativeList<float4> gridPositions, NativeList<CubeInstance> cubeInstances )
         {
 
-            var gridsets = new NativeList<NearCubeGrids>( 100, Allocator.TempJob );
+            var gridsets = new NativeList<NearDotGrids>( 100, Allocator.TempJob );
 
 
             var dispJob = new GridDispatchJob

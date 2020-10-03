@@ -12,13 +12,13 @@ using Unity.Collections.Experimental;
 
 namespace Abarabone.MarchingCubes
 {
-    public unsafe partial struct CubeGridArrayUnsafe
+    public unsafe partial struct DotGridArrayUnsafe
     {
 
-        //public unsafe struct CubeGrid32x32x32UnsafePtr
+        //public unsafe struct DotGrid32x32x32UnsafePtr
         //{
         //    [NativeDisableUnsafePtrRestriction]
-        //    public CubeGrid32x32x32Unsafe* p;
+        //    public DotGrid32x32x32Unsafe* p;
 
         //    public uint this[int ix, int iy, int iz]
         //    {
@@ -27,17 +27,17 @@ namespace Abarabone.MarchingCubes
         //    }
         //}
 
-        //public struct NearCubeGrids
+        //public struct NearDotGrids
         //{
         //    public int gridId;
         //    public HalfGridUnit L;
         //    public HalfGridUnit R;
         //    public struct HalfGridUnit
         //    {
-        //        public CubeGrid32x32x32UnsafePtr x;
-        //        public CubeGrid32x32x32UnsafePtr y;
-        //        public CubeGrid32x32x32UnsafePtr z;
-        //        public CubeGrid32x32x32UnsafePtr w;
+        //        public DotGrid32x32x32UnsafePtr x;
+        //        public DotGrid32x32x32UnsafePtr y;
+        //        public DotGrid32x32x32UnsafePtr z;
+        //        public DotGrid32x32x32UnsafePtr w;
         //    }
         //}
 

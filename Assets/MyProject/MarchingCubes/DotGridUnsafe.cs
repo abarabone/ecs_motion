@@ -23,7 +23,7 @@ namespace Abarabone.MarchingCubes
 
     
 
-    public unsafe struct CubeGrid32x32x32Unsafe
+    public unsafe struct DotGrid32x32x32Unsafe
     {
         public const int dotNum = 32 * 32 * 32;
         public const int xlineInGrid = 1 * 32 * 32;
@@ -39,15 +39,15 @@ namespace Abarabone.MarchingCubes
         public bool IsEmpty => this.CubeCount == 0;
 
 
-        public CubeGrid32x32x32Unsafe(GridFillMode fillmode) : this()
+        public DotGrid32x32x32Unsafe(GridFillMode fillmode) : this()
         {
             const int size = sizeof( uint ) * xlineInGrid;
 
-            var x = CubeGridAllocater.Alloc(fillmode, size);
+            var x = DotGridAllocater.Alloc(fillmode, size);
             this.pUnits = x.pUnits;
             this.CubeCount = x.CubeCount;
         }
-        public CubeGrid32x32x32Unsafe(UIntPtr p, int cubeCount) : this()
+        public DotGrid32x32x32Unsafe(UIntPtr p, int cubeCount) : this()
         {
             this.pUnits = (uint*)p;
             this.CubeCount = cubeCount;
@@ -57,7 +57,7 @@ namespace Abarabone.MarchingCubes
         {
             if( this.pUnits == null ) return;// struct なので、複製された場合はこのチェックも意味がない
 
-            CubeGridAllocater.Dispose((UIntPtr)this.pUnits);
+            DotGridAllocater.Dispose((UIntPtr)this.pUnits);
             this.pUnits = null;
         }
 
@@ -89,11 +89,11 @@ namespace Abarabone.MarchingCubes
         }
 
 
-        static public CubeGrid32x32x32Unsafe CreateDefaultCube(GridFillMode fillmode)
+        static public DotGrid32x32x32Unsafe CreateDefaultCube(GridFillMode fillmode)
         {
             //const int size = sizeof(uint) * 4;// 工夫すると 16 bytes ですむ、でもなんか遅い？？不思議だけど
             const int size = sizeof(uint) * xlineInGrid;
-            return CubeGridAllocater.Alloc(fillmode, size);
+            return DotGridAllocater.Alloc(fillmode, size);
         }
 
 
@@ -101,10 +101,10 @@ namespace Abarabone.MarchingCubes
 
 
 
-    static class CubeGridAllocater
+    static class DotGridAllocater
     {
 
-        static public unsafe CubeGrid32x32x32Unsafe Alloc(GridFillMode fillMode, int size = 1 * 32 * 32)
+        static public unsafe DotGrid32x32x32Unsafe Alloc(GridFillMode fillMode, int size = 1 * 32 * 32)
         {
             //var align = UnsafeUtility.AlignOf<uint4>();
             const int align = 16;
@@ -114,21 +114,21 @@ namespace Abarabone.MarchingCubes
             return Fill(p, fillMode, size);
         }
 
-        static public unsafe CubeGrid32x32x32Unsafe Fill(UIntPtr p, GridFillMode fillMode, int size = 1 * 32 * 32)
+        static public unsafe DotGrid32x32x32Unsafe Fill(UIntPtr p, GridFillMode fillMode, int size = 1 * 32 * 32)
         {
             if (fillMode == GridFillMode.Solid)
             {
                 UnsafeUtility.MemSet((void*)p, 0xff, size);
                 var cubeCount = 32 * 32 * 32;
 
-                return new CubeGrid32x32x32Unsafe(p, cubeCount);
+                return new DotGrid32x32x32Unsafe(p, cubeCount);
             }
             else
             {
                 UnsafeUtility.MemClear((void*)p, size);
                 var cubeCount = 0;
 
-                return new CubeGrid32x32x32Unsafe(p, cubeCount);
+                return new DotGrid32x32x32Unsafe(p, cubeCount);
             }
         }
         
@@ -142,8 +142,8 @@ namespace Abarabone.MarchingCubes
 
     //public unsafe struct CubeOperator
     //{
-    //    CubeGrid32x32x32UnsafePtr gridInArea;
-    //    CubeGrid32x32x32UnsafePtr defaultGridTop;
+    //    DotGrid32x32x32UnsafePtr gridInArea;
+    //    DotGrid32x32x32UnsafePtr defaultGridTop;
 
     //    UIntPtr pGridSwapOld;
 
@@ -181,7 +181,7 @@ namespace Abarabone.MarchingCubes
     //            {
     //                // デフォルト→変化あり：確保
     //                var fillMode = (GridFillMode)(cube.CubeCount >> 5);
-    //                var newGrid = CubeGridAllocater.Alloc(fillMode);
+    //                var newGrid = DotGridAllocater.Alloc(fillMode);
 
     //                cube = newGrid;
     //            }
@@ -204,7 +204,7 @@ namespace Abarabone.MarchingCubes
     //        }
     //    }
 
-    //    public void BackOldGrid(ref CubeGridGlobalData global)
+    //    public void BackOldGrid(ref DotGridGlobalData global)
     //    {
     //        global.GridStock.Add(this.pGridSwapOld);
     //        this.pGridSwapOld = default;
