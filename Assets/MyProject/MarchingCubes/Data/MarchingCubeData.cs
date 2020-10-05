@@ -174,7 +174,7 @@ namespace Abarabone.MarchingCubes
                 return new DotGrid32x32x32Unsafe(p, dotnum * (int)fillMode);
             }
 
-            ref var otherStocks = ref freeStocker.ElementAt((int)~fillMode).FreeGridStocks;
+            ref var otherStocks = ref freeStocker.ElementAt((int)fillMode ^ 1).FreeGridStocks;
             if (otherStocks.length > 0)
             {
                 var p = otherStocks[--otherStocks.length];
@@ -244,12 +244,14 @@ namespace Abarabone.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public unsafe DotGrid32x32x32UnsafePtr GetGridFromArea
             (
-                ref this (DotGridArea.BufferData, DotGridArea.InfoWorkData) x,
+                //ref this (DotGridArea.BufferData, DotGridArea.InfoWorkData) x,
+                ref DotGridArea.BufferData areaGrids,
+                ref DotGridArea.InfoWorkData areaInfo,
                 int ix, int iy, int iz
             )
         {
-            ref var areaGrids = ref x.Item1;
-            ref var areaInfo = ref x.Item2;
+            //ref var areaGrids = ref x.Item1;
+            //ref var areaInfo = ref x.Item2;
 
             var i3 = new int3(ix, iy, iz) + 1;
             var i = math.dot(i3, areaInfo.GridSpan);

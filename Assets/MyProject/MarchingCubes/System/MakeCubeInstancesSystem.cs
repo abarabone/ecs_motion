@@ -29,10 +29,41 @@ namespace Abarabone.MarchingCubes
 
             this.RequireSingletonForUpdate<DotGridGlobal.InfoData>();
         }
-
-
         protected override void OnStartRunning()
         {
+            var globalent = this.GetSingletonEntity<DotGridGlobal.InfoData>();
+            var defaults = this.GetBufferFromEntity<DotGridGlobal.DefualtGridData>();
+            var stocks = this.GetBufferFromEntity<DotGridGlobal.FreeGridStockData>();
+            this.Entities
+                //.WithBurst()
+                .ForEach(
+                        (
+                            ref DotGridArea.BufferData buf,
+                            ref DotGridArea.InfoData dim,
+                            ref DotGridArea.InfoWorkData unit
+                        ) =>
+                        {
+                            var def = defaults[globalent];
+                            var stock = stocks[globalent];
+
+                            //var x = (def, stock, buf, unit);
+                            //var p = x.GetGrid(0, 0, 0);
+                            var p = DotGridExtension.GetGrid(ref def, ref stock, ref buf, ref unit, 0, 0, 0);
+
+                            p[1, 0, 0] = 1;
+
+                            //var z = (def, stock);
+                            //z.BackGridIfFilled(ref p);
+                            DotGridExtension.BackGridIfFilled(ref def, ref stock, ref p);
+
+                            //defaults[globalent] = def;
+                            //stocks[globalent] = stock;
+                        }
+                )
+                .Run();//.Schedule();
+            //}
+            //protected override void OnStartRunning()
+            //{
             this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
         }
 
@@ -42,11 +73,11 @@ namespace Abarabone.MarchingCubes
             var globalent = this.GetSingletonEntity<DotGridGlobal.InfoData>();
 
             var instances = this.GetComponentDataFromEntity<DotGridGlobal.InstanceWorkData>();
-            var stocks = this.GetBufferFromEntity<DotGridGlobal.FreeGridStockData>();
+            //var stocks = this.GetBufferFromEntity<DotGridGlobal.FreeGridStockData>();
 
 
             this.Entities
-                .WithBurst()
+                //.WithBurst()
                 .ForEach(
                         (
                             in DotGridArea.BufferData buf,
@@ -55,6 +86,8 @@ namespace Abarabone.MarchingCubes
                         ) =>
                     {
                         var instance = instances[globalent];
+                        instance.CubeInstances.Clear();
+                        instance.GridInstances.Clear();
                         var gridId = 0;
 
 
@@ -84,14 +117,14 @@ namespace Abarabone.MarchingCubes
 
                                 }
 
-                        var gridScale = 1.0f / new float3(32, 32, 32);
+                        var gridScale = 1.0f / new float3(32, 32, 32);//Debug.Log(instance.GridInstances.length);
                         CubeUtility.GetNearGridList(instance.GridInstances.AsNativeArray(), gridScale);
 
 
                         instances[globalent] = instance;
                     }
                 )
-                .Schedule();
+                .Run();//.Schedule();
                 //.ScheduleParallel();
 
             this.presentationBarier.AddJobHandleForProducer(this.Dependency);

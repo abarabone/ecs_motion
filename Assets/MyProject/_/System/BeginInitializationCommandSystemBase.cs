@@ -13,7 +13,7 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace Abarabone.Common
 {
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class BeginInitializationCommandSystemBase : SystemBase
+    public abstract class BeginInitializationCommandSystemBase : SystemBase
     {
 
 
