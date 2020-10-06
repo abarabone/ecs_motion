@@ -29,7 +29,7 @@ namespace Abarabone.MarchingCubes
 
             this.RequireSingletonForUpdate<DotGridGlobal.InfoData>();
         }
-        protected override void OnStartRunning()
+        protected override unsafe void OnStartRunning()
         {
             var globalent = this.GetSingletonEntity<DotGridGlobal.InfoData>();
             var defaults = this.GetBufferFromEntity<DotGridGlobal.DefualtGridData>();
@@ -51,6 +51,8 @@ namespace Abarabone.MarchingCubes
                             var p = DotGridExtension.GetGrid(ref def, ref stock, ref buf, ref unit, 0, 0, 0);
 
                             p[1, 0, 0] = 1;
+                            p[1, 20, 10] = 1;
+                            Debug.Log(p.p->CubeCount);
 
                             //var z = (def, stock);
                             //z.BackGridIfFilled(ref p);
@@ -86,7 +88,7 @@ namespace Abarabone.MarchingCubes
                         ) =>
                     {
                         var instance = instances[globalent];
-                        instance.CubeInstances.Clear();
+                        instance.CubeInstances.Clear();// エリアごとにクリアしてたらあかんが、暫定
                         instance.GridInstances.Clear();
                         var gridId = 0;
 
@@ -99,6 +101,7 @@ namespace Abarabone.MarchingCubes
 
                                     var gridset = buf.getGridSet_(ix, iy, iz, unit.GridSpan);
                                     var gridcount = gridset.getEachCount();
+                                    Debug.Log($"{ix},{iy},{iz} {gridset.L.x.p->CubeCount}");
 
                                     if (!gridcount.isNeedDraw_()) continue;
                                     //if( !isNeedDraw_( ref gridset ) ) continue;

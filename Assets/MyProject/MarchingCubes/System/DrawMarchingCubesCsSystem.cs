@@ -30,7 +30,7 @@ namespace Abarabone.MarchingCubes
         {
 
             var instances = this.GetSingleton<DotGridGlobal.InstanceWorkData>();
-
+            //Debug.Log(instances.CubeInstances.length);
             if (instances.CubeInstances.Length == 0) return;
 
             var res = this.GetSingleton<Resource.DrawResourceData>();
@@ -46,7 +46,7 @@ namespace Abarabone.MarchingCubes
                 var psrc = (Vector4*)instances.GridInstances.Ptr;
                 UnsafeUtility.MemCpy(pdst, psrc, instances.GridInstances.Length * 2 * sizeof(float4));
             }
-            //res.CubeMaterial.SetVectorArray("grids", grids);
+            res.CubeMaterial.SetVectorArray("grids", grids);
 
 
             var remain = (64 - (instances.CubeInstances.Length & 0x3f)) & 0x3f;

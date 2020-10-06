@@ -76,12 +76,14 @@ namespace Abarabone.MarchingCubes
 
         public int MaxCubeInstanceLength;
     }
-    public struct a<T> : IDisposable
+
+    public struct DoubleSideList<T> : IDisposable
         where T:unmanaged
     {
         NativeArray<T> arr;
         public int frontCount;
         public int backCount;
+        
         public a(int maxLength)
         {
             this.arr = new NativeArray<T>(maxLength, Allocator.Persistent);
@@ -89,6 +91,16 @@ namespace Abarabone.MarchingCubes
             this.backCount = 0;
         }
         public void Dispose() => this.arr.Dispose();
+
+        public unsafe ref T ElementFrontAt(int i)
+        {
+            return ref *((T*)NativeArrayUnsafeUtility.GetUnsafePtr(this.arr) + i);
+        }
+        public unsafe ref T ElementBackAt(int i)
+        {
+            return ref *((T*)NativeArrayUnsafeUtility.GetUnsafePtr(this.arr) + (this.arr.Length - (i+1)));
+        }
+
         public T RentFromFront()
         {
             if(this.frontCount >= this.arr.Length - this.backCount)
@@ -96,6 +108,14 @@ namespace Abarabone.MarchingCubes
                 return default(T); 
             }
             return this.arr[this.frontCount++];
+        }
+        public T RentFromBack()
+        {
+            if (this.frontCount >= this.arr.Length - this.backCount)
+            {
+                return default(T);
+            }
+            return this.arr[this.backCount--];
         }
     }
 
