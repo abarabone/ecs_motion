@@ -66,6 +66,39 @@ namespace Abarabone.MarchingCubes
 
     }
 
+    public class MarchingCubeGlobalData : IComponentData
+    {
+        public NativeList<CubeInstance> CubeInstances;
+        public NativeList<GridInstanceData> GridInstances;
+
+        public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
+        public NativeArray<UIntPtr> FreeStocks;
+
+        public int MaxCubeInstanceLength;
+    }
+    public struct a<T> : IDisposable
+        where T:unmanaged
+    {
+        NativeArray<T> arr;
+        public int frontCount;
+        public int backCount;
+        public a(int maxLength)
+        {
+            this.arr = new NativeArray<T>(maxLength, Allocator.Persistent);
+            this.frontCount = 0;
+            this.backCount = 0;
+        }
+        public void Dispose() => this.arr.Dispose();
+        public T RentFromFront()
+        {
+            if(this.frontCount >= this.arr.Length - this.backCount)
+            {
+                return default(T); 
+            }
+            return this.arr[this.frontCount++];
+        }
+    }
+
 
 
     static public partial class DotGridArea
