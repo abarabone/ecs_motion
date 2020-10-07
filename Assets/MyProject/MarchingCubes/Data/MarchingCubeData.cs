@@ -66,56 +66,167 @@ namespace Abarabone.MarchingCubes
 
     }
 
-    public class MarchingCubeGlobalData : IComponentData
+    public class MarchingCubeGlobalData : IComponentData, IDisposable
     {
         public NativeList<CubeInstance> CubeInstances;
         public NativeList<GridInstanceData> GridInstances;
 
         public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
-        public NativeArray<UIntPtr> FreeStocks;
+        public FreeStockList FreeStocks;
+        //public unsafe FreeStockList* FreeStocksPtr => &this.FreeStocks;
 
-        public int MaxCubeInstanceLength;
+
+        public void Init(int maxCubeInstances, int maxGridInstances, int maxFreeGrids)
+        {
+            this.CubeInstances = new NativeList<CubeInstance>(maxCubeInstances, Allocator.Persistent);
+            this.GridInstances = new NativeList<GridInstanceData>(maxGridInstances, Allocator.Persistent);
+            this.DefaultGrids = new NativeArray<DotGrid32x32x32Unsafe>(2, Allocator.Persistent);
+            this.FreeStocks = new FreeStockList(maxFreeGrids);
+
+            this.DefaultGrids[(int)GridFillMode.Blank] = DotGridAllocater.Alloc(GridFillMode.Blank);
+            this.DefaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
+        }
+
+        public void Dispose()
+        {
+            this.DefaultGrids[(int)GridFillMode.Blank].Dispose();
+            this.DefaultGrids[(int)GridFillMode.Solid].Dispose();
+
+            this.FreeStocks.Dispose();
+            this.DefaultGrids.Dispose();
+            this.GridInstances.Dispose();
+            this.CubeInstances.Dispose();
+        }
     }
 
-    public struct DoubleSideList<T> : IDisposable
-        where T:unmanaged
+    public struct FreeStockList : IDisposable
     {
-        NativeArray<T> arr;
-        public int frontCount;
-        public int backCount;
-        
-        public a(int maxLength)
-        {
-            this.arr = new NativeArray<T>(maxLength, Allocator.Persistent);
-            this.frontCount = 0;
-            this.backCount = 0;
-        }
-        public void Dispose() => this.arr.Dispose();
+        DoubleSideStack<UIntPtr> stocks;
 
-        public unsafe ref T ElementFrontAt(int i)
+
+        public FreeStockList(int maxBufferLength) =>
+            this.stocks = new DoubleSideStack<UIntPtr>(maxBufferLength);
+
+        public void Dispose()
         {
-            return ref *((T*)NativeArrayUnsafeUtility.GetUnsafePtr(this.arr) + i);
-        }
-        public unsafe ref T ElementBackAt(int i)
-        {
-            return ref *((T*)NativeArrayUnsafeUtility.GetUnsafePtr(this.arr) + (this.arr.Length - (i+1)));
+            while (this.stocks.PopFromBack(out var p)) DotGridAllocater.Dispose(p);
+            while (this.stocks.PopFromFront(out var p)) DotGridAllocater.Dispose(p);
+            this.stocks.Dispose();
         }
 
-        public T RentFromFront()
+        public DotGrid32x32x32Unsafe Rent(GridFillMode fillMode)
         {
-            if(this.frontCount >= this.arr.Length - this.backCount)
+            switch(fillMode)
             {
-                return default(T); 
+                case GridFillMode.Blank:
+                    {
+                        var p = this.stocks.PopFromFront();
+                        if (p != null) return new DotGrid32x32x32Unsafe(p, 0);
+
+                        var p_ = this.stocks.PopFromBack();
+                        if (p_ != null) return DotGridAllocater.Fill(p_, fillMode);
+
+                        return DotGridAllocater.Alloc(fillMode);
+                    }
+                case GridFillMode.Solid:
+                    {
+                        var p = this.stocks.PopFromBack();
+                        if (p != null) return new DotGrid32x32x32Unsafe(p, 32 * 32 * 32);
+
+                        var p_ = this.stocks.PopFromFront();
+                        if (p_ != null) return DotGridAllocater.Fill(p_, fillMode);
+
+                        return DotGridAllocater.Alloc(fillMode);
+                    }
+                default:
+                    return new DotGrid32x32x32Unsafe();
             }
-            return this.arr[this.frontCount++];
         }
-        public T RentFromBack()
+
+        public unsafe void Back(DotGrid32x32x32Unsafe grid, GridFillMode fillMode)
         {
-            if (this.frontCount >= this.arr.Length - this.backCount)
+            var isBackSuccess = fillMode switch
             {
-                return default(T);
+                GridFillMode.Blank => this.stocks.PushToFront((UIntPtr)grid.pUnits),
+                GridFillMode.Solid => this.stocks.PushToBack((UIntPtr)grid.pUnits),
+                _ => true
+            };
+            if (!isBackSuccess) DotGridAllocater.Dispose((UIntPtr)grid.pUnits);
+        }
+        public void Back(DotGrid32x32x32Unsafe grid) => Back(grid, grid.FillModeBlankOrSolid);
+    }
+
+    public struct DoubleSideStack<T> : IDisposable
+        where T : unmanaged
+    {
+        //NativeArray<T> buffer;
+        UnsafeList<T> buffer;
+        public int FrontCount { get; private set; }
+        public int BackCount { get; private set; }
+
+        public DoubleSideStack(int maxLength)
+        {
+            //this.buffer = new NativeArray<T>(maxLength, Allocator.Persistent);
+            this.buffer = new UnsafeList<T>(maxLength, Allocator.Persistent);
+            this.FrontCount = 0;
+            this.BackCount = 0;
+        }
+        public void Dispose() => this.buffer.Dispose();
+
+
+        public bool PushToFront(T item)
+        {
+            if(this.FrontCount + this.BackCount < this.buffer.Length)
+            {
+                var i = this.FrontCount++;
+                this.buffer[i] = item;
+                return true;
             }
-            return this.arr[this.backCount--];
+            return false;
+        }
+        public bool PushToBack(T item)
+        {
+            if (this.FrontCount + this.BackCount < this.buffer.Length)
+            {
+                var i = this.buffer.Length - ++this.BackCount;
+                this.buffer[i] = item;
+                return true;
+            }
+            return false;
+        }
+
+        public bool PopFromFront(out T item)
+        {
+            if(this.FrontCount > 0)
+            {
+                var i = --this.FrontCount;
+                item = this.buffer[i];
+                return true;
+            }
+            item = default;
+            return false;
+        }
+        public bool PopFromBack(out T item)
+        {
+            if (this.BackCount > 0)
+            {
+                var i = this.buffer.Length - this.BackCount--;
+                item = this.buffer[i];
+                return true;
+            }
+            item = default;
+            return false;
+        }
+
+        public T PopFromFront()
+        {
+            this.PopFromFront(out var item);
+            return item;
+        }
+        public T PopFromBack()
+        {
+            this.PopFromBack(out var item);
+            return item;
         }
     }
 

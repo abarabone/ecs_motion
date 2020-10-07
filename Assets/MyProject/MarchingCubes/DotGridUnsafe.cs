@@ -16,7 +16,7 @@ namespace Abarabone.MarchingCubes
 
     public enum GridFillMode
     {
-        NotFill = -1,
+        NotFilled = -1,
         Blank = 0,
         Solid = 1,
     };
@@ -28,6 +28,7 @@ namespace Abarabone.MarchingCubes
         public const int dotNum = 32 * 32 * 32;
         public const int xlineInGrid = 1 * 32 * 32;
         public const int shiftNum = 5;
+        public const int maxbitNum = 16;
 
 
         public uint* pUnits;
@@ -37,6 +38,17 @@ namespace Abarabone.MarchingCubes
         public bool IsFullOrEmpty => (this.CubeCount & (dotNum - 1) ) == 0;
         public bool IsFull => this.CubeCount == dotNum;
         public bool IsEmpty => this.CubeCount == 0;
+
+        public GridFillMode FillModeBlankOrSolid => (GridFillMode)(this.CubeCount >> (16 - 1));
+        public GridFillMode FillMode
+        {
+            get
+            {
+                var notfilled = math.select(-1, 0, (this.CubeCount & dotNum) != 0);
+                var solid = this.CubeCount >> (16 - 1);
+                return (GridFillMode)( notfilled | solid );
+            }
+        }
 
 
         public DotGrid32x32x32Unsafe(GridFillMode fillmode) : this()

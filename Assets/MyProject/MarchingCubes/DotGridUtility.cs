@@ -44,67 +44,42 @@ namespace Abarabone.MarchingCubes
         static public bool IsDefault
             (ref this DynamicBuffer<DotGridGlobal.DefualtGridData> defaultGrids, DotGrid32x32x32Unsafe grid)
         {
-            //var p = new uint2((uint)grid.pUnits).xx;
-            //var def = new uint2((uint)defaultGrids.Blank().pUnits, (uint)defaultGrids.Solid().pUnits);
-            //return math.any(p == def);
-            return grid.pUnits == defaultGrids.Blank().pUnits | grid.pUnits == defaultGrids.Solid().pUnits;
+            return false;
         }
-
-        static GridFillMode getFillMode(ref this DotGrid32x32x32Unsafe grid)
+        static public bool IsDefault
+            (ref this NativeArray<DotGrid32x32x32Unsafe> defaultGrids, DotGrid32x32x32Unsafe grid)
         {
-            return (GridFillMode)(grid.CubeCount >> 5);
+            return grid.pUnits == defaultGrids[(int)grid.FillModeBlankOrSolid].pUnits;
         }
 
-
-        //public ref struct GridTuple1
+        //static GridFillMode getFillMode(ref this DotGrid32x32x32Unsafe grid)
         //{
-        //    public ref DynamicBuffer<DotGridGlobal.DefualtGridData> a;
-        //    public ref DynamicBuffer<DotGridGlobal.FreeGridStockData> b;
-        //    public ref DotGridArea.BufferData c;
-        //    public ref DotGridArea.InfoWorkData d;
-        //    //public GridTuple1(
-        //    //    ref DynamicBuffer<DotGridGlobal.DefualtGridData> a,
-        //    //    ref DynamicBuffer<DotGridGlobal.FreeGridStockData> b,
-        //    //    ref DotGridArea.BufferData c,
-        //    //    ref DotGridArea.InfoWorkData d
-        //    //)
-        //    //{
-        //    //    ref this.a = ref a;
-        //    //}
+        //    return (GridFillMode)(grid.CubeCount >> 5);
         //}
 
-            /// <summary>
-            /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
-            /// 取得したグリッドポインタからは、グリッドエリア上のグリッドそのものを書き換えることができる。
-            /// また、取得すべきグリッドがデフォルトだった場合は、書き換え可能にするためにフリーストックから取得し、
-            /// グリッドエリア上のグリッドを取得したグリッドで置き換える。
-            /// </summary>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <summary>
+        /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
+        /// 取得したグリッドポインタからは、グリッドエリア上のグリッドそのものを書き換えることができる。
+        /// また、取得すべきグリッドがデフォルトだった場合は、書き換え可能にするためにフリーストックから取得し、
+        /// グリッドエリア上のグリッドを取得したグリッドで置き換える。
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public DotGrid32x32x32UnsafePtr GetGrid
             (
-                //ref this (DynamicBuffer<DotGridGlobal.DefualtGridData>, DynamicBuffer<DotGridGlobal.FreeGridStockData>, DotGridArea.BufferData, DotGridArea.InfoWorkData) x,
-                ref DynamicBuffer<DotGridGlobal.DefualtGridData> defaultGrids,
-                ref DynamicBuffer<DotGridGlobal.FreeGridStockData> freeStocks,
+                ref NativeArray<DotGrid32x32x32Unsafe> defaultGrids,
+                ref FreeStockList freeStocks,
                 ref DotGridArea.BufferData grids,
                 ref DotGridArea.InfoWorkData areaInfo,
                 int ix, int iy, int iz
             )
         {
-            //ref var defaultGrids = ref x.Item1;
-            //ref var freeStocks = ref x.Item2;
-            //ref var grids = ref x.Item3;
-            //ref var areaInfo = ref x.Item4;
-
-
-            //var area = (grids, areaInfo);
-            //var gridptr = area.GetGridFromArea(ix, iy, iz);
             var gridptr = GridArea.GetGridFromArea(ref grids, ref areaInfo, ix, iy, iz);
 
             if (defaultGrids.IsDefault(*gridptr.p))
             {
-                var fillMode = gridptr.p->getFillMode();
-                //*gridptr.p = freeStocks.RentGridFromFreeStocks(fillMode);
-                gridptr.p->pUnits = freeStocks.RentGridFromFreeStocks(fillMode).pUnits;
+                var fillMode = gridptr.p->FillModeBlankOrSolid;
+                gridptr.p->pUnits = freeStocks.Rent(fillMode).pUnits;
             }
 
             return gridptr;
@@ -119,27 +94,19 @@ namespace Abarabone.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void BackGridIfFilled
             (
-                //ref this (DynamicBuffer<DotGridGlobal.DefualtGridData>, DynamicBuffer<DotGridGlobal.FreeGridStockData>) x,
-                ref DynamicBuffer<DotGridGlobal.DefualtGridData> defaultGrids,
-                ref DynamicBuffer<DotGridGlobal.FreeGridStockData> stocks,
+                ref NativeArray<DotGrid32x32x32Unsafe> defaultGrids,
+                ref FreeStockList stocks,
                 ref DotGrid32x32x32UnsafePtr gridptr
             )
         {
-            //ref var defaultGrids = ref x.Item1;
-            //ref var stocks = ref x.Item2;
-
-
             if (defaultGrids.IsDefault(*gridptr.p)) return;
 
             if (!gridptr.p->IsFullOrEmpty) return;
 
 
-            var fillMode = gridptr.p->getFillMode();
-
-            stocks.BackToFreeGridStocks(fillMode, *gridptr.p);
-
-            //*gridptr.p = defaultGrids.GetDefaultGrid(fillMode);
-            gridptr.p->pUnits = defaultGrids.GetDefaultGrid(fillMode).pUnits;
+            var fillMode = gridptr.p->FillModeBlankOrSolid;
+            stocks.Back(*gridptr.p, fillMode);
+            gridptr.p->pUnits = defaultGrids[(int)fillMode].pUnits;
         }
 
 

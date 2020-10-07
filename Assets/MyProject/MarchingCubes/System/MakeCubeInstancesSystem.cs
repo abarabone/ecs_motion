@@ -31,11 +31,14 @@ namespace Abarabone.MarchingCubes
         }
         protected override unsafe void OnStartRunning()
         {
+            var mcdata = this.GetSingleton<MarchingCubeGlobalData>();
             var globalent = this.GetSingletonEntity<DotGridGlobal.InfoData>();
             var defaults = this.GetBufferFromEntity<DotGridGlobal.DefualtGridData>();
             var stocks = this.GetBufferFromEntity<DotGridGlobal.FreeGridStockData>();
+
+            ref var a = ref mcdata.FreeStocks;
             this.Entities
-                //.WithBurst()
+                .WithBurst()
                 .ForEach(
                         (
                             ref DotGridArea.BufferData buf,
@@ -43,26 +46,27 @@ namespace Abarabone.MarchingCubes
                             ref DotGridArea.InfoWorkData unit
                         ) =>
                         {
-                            var def = defaults[globalent];
-                            var stock = stocks[globalent];
+                            //var x = a.Rent(GridFillMode.Blank);
+                            //var def = defaults[globalent];
+                            //var stock = stocks[globalent];
 
-                            //var x = (def, stock, buf, unit);
-                            //var p = x.GetGrid(0, 0, 0);
-                            var p = DotGridExtension.GetGrid(ref def, ref stock, ref buf, ref unit, 0, 0, 0);
+                            ////var x = (def, stock, buf, unit);
+                            ////var p = x.GetGrid(0, 0, 0);
+                            //var p = DotGridExtension.GetGrid(ref def, ref stock, ref buf, ref unit, 0, 0, 0);
 
-                            p[1, 0, 0] = 1;
-                            p[1, 20, 10] = 1;
-                            Debug.Log(p.p->CubeCount);
+                            //p[1, 0, 0] = 1;
+                            //p[1, 20, 10] = 1;
+                            //Debug.Log(p.p->CubeCount);
 
-                            //var z = (def, stock);
-                            //z.BackGridIfFilled(ref p);
-                            DotGridExtension.BackGridIfFilled(ref def, ref stock, ref p);
+                            ////var z = (def, stock);
+                            ////z.BackGridIfFilled(ref p);
+                            //DotGridExtension.BackGridIfFilled(ref def, ref stock, ref p);
 
-                            //defaults[globalent] = def;
-                            //stocks[globalent] = stock;
+                            ////defaults[globalent] = def;
+                            ////stocks[globalent] = stock;
                         }
                 )
-                .Run();//.Schedule();
+                .Schedule();
             //}
             //protected override void OnStartRunning()
             //{
