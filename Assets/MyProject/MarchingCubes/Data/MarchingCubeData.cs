@@ -73,8 +73,10 @@ namespace Abarabone.MarchingCubes
 
         public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
         public FreeStockList FreeStocks;
-        //public unsafe FreeStockList* FreeStocksPtr => &this.FreeStocks;
-
+        public unsafe FreeStockList* FreeStocksPtr
+        {
+            get { fixed (FreeStockList* p = &this.FreeStocks) return p; }
+        }
 
         public void Init(int maxCubeInstances, int maxGridInstances, int maxFreeGrids)
         {
@@ -156,27 +158,29 @@ namespace Abarabone.MarchingCubes
         public void Back(DotGrid32x32x32Unsafe grid) => Back(grid, grid.FillModeBlankOrSolid);
     }
 
-    public struct DoubleSideStack<T> : IDisposable
+    public unsafe struct DoubleSideStack<T> : IDisposable
         where T : unmanaged
     {
         //NativeArray<T> buffer;
-        UnsafeList<T> buffer;
+        T *buffer;
+        int bufferLength;
         public int FrontCount { get; private set; }
         public int BackCount { get; private set; }
 
         public DoubleSideStack(int maxLength)
         {
             //this.buffer = new NativeArray<T>(maxLength, Allocator.Persistent);
-            this.buffer = new UnsafeList<T>(maxLength, Allocator.Persistent);
+            this.buffer = (T*)UnsafeUtility.Malloc(sizeof(T) * maxLength, UnsafeUtility.AlignOf<T>(), Allocator.Persistent);
+            this.bufferLength = maxLength;
             this.FrontCount = 0;
             this.BackCount = 0;
         }
-        public void Dispose() => this.buffer.Dispose();
+        public void Dispose() => UnsafeUtility.Free(this.buffer, Allocator.Persistent);//this.buffer.Dispose();
 
 
         public bool PushToFront(T item)
         {
-            if(this.FrontCount + this.BackCount < this.buffer.Length)
+            if(this.FrontCount + this.BackCount < this.bufferLength)
             {
                 var i = this.FrontCount++;
                 this.buffer[i] = item;
@@ -186,9 +190,9 @@ namespace Abarabone.MarchingCubes
         }
         public bool PushToBack(T item)
         {
-            if (this.FrontCount + this.BackCount < this.buffer.Length)
+            if (this.FrontCount + this.BackCount < this.bufferLength)
             {
-                var i = this.buffer.Length - ++this.BackCount;
+                var i = this.bufferLength - ++this.BackCount;
                 this.buffer[i] = item;
                 return true;
             }
@@ -210,7 +214,7 @@ namespace Abarabone.MarchingCubes
         {
             if (this.BackCount > 0)
             {
-                var i = this.buffer.Length - this.BackCount--;
+                var i = this.bufferLength - this.BackCount--;
                 item = this.buffer[i];
                 return true;
             }

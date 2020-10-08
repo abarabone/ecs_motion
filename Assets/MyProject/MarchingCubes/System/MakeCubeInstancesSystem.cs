@@ -36,7 +36,7 @@ namespace Abarabone.MarchingCubes
             var defaults = this.GetBufferFromEntity<DotGridGlobal.DefualtGridData>();
             var stocks = this.GetBufferFromEntity<DotGridGlobal.FreeGridStockData>();
 
-            ref var a = ref mcdata.FreeStocks;
+            var a = mcdata.FreeStocksPtr;
             this.Entities
                 .WithBurst()
                 .ForEach(
@@ -46,7 +46,7 @@ namespace Abarabone.MarchingCubes
                             ref DotGridArea.InfoWorkData unit
                         ) =>
                         {
-                            //var x = a.Rent(GridFillMode.Blank);
+                            var x = a->Rent(GridFillMode.Blank);
                             //var def = defaults[globalent];
                             //var stock = stocks[globalent];
 
