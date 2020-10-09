@@ -37,3 +37,4 @@ namespace Abarabone.MarchingCubes.Authoring
 
         }
     }
+}
