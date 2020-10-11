@@ -66,7 +66,7 @@ namespace Abarabone.MarchingCubes
 
     }
 
-    public class MarchingCubeGlobalData : IComponentData, IDisposable
+    public class MarchingCubeGlobalData : IComponentData//, IDisposable
     {
         public NativeList<CubeInstance> CubeInstances;
         public NativeList<GridInstanceData> GridInstances;
@@ -78,7 +78,7 @@ namespace Abarabone.MarchingCubes
             get { fixed (FreeStockList* p = &this.FreeStocks) return p; }
         }
 
-        public void Init(int maxCubeInstances, int maxGridInstances, int maxFreeGrids)
+        public MarchingCubeGlobalData Init(int maxCubeInstances, int maxGridInstances, int maxFreeGrids)
         {
             this.CubeInstances = new NativeList<CubeInstance>(maxCubeInstances, Allocator.Persistent);
             this.GridInstances = new NativeList<GridInstanceData>(maxGridInstances, Allocator.Persistent);
@@ -87,6 +87,8 @@ namespace Abarabone.MarchingCubes
 
             this.DefaultGrids[(int)GridFillMode.Blank] = DotGridAllocater.Alloc(GridFillMode.Blank);
             this.DefaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
+
+            return this;
         }
 
         public void Dispose()
