@@ -14,7 +14,7 @@ namespace Abarabone.MarchingCubes
     using Abarabone.Draw;
     using Utilities;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     [UpdateBefore(typeof(BeginDrawCsBarier))]
     public class MakeCubeInstancesSystem : SystemBase

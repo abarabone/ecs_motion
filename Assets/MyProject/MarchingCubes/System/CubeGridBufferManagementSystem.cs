@@ -93,6 +93,8 @@ namespace Abarabone.MarchingCubes
 
         protected override unsafe void OnDestroy()
         {
+
+
             if (!this.HasSingleton<DotGridGlobal.InfoData>()) return;
 
 

@@ -26,12 +26,13 @@ namespace Abarabone.MarchingCubes.Authoring
         public MarchingCubeAsset MarchingCubesAsset;
         public Material SrcMaterial;
         public ComputeShader GridCubeIdSetShader;
-        public int maxGridLengthInShader;
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
+            createDataEntity_(conversionSystem, this.gameObject);
 
+            return;
 
 
             unsafe void createDataEntity_(GameObjectConversionSystem gcs_, GameObject global_)
@@ -40,7 +41,8 @@ namespace Abarabone.MarchingCubes.Authoring
 
                 var ent = gcs_.GetPrimaryEntity(global_);
                 em.AddComponentData(ent,
-                    new MarchingCubeGlobalData().Init(this.MaxCubeInstances, this.MaxGridInstances, this.MaxFreeGrids)
+                    new MarchingCubeGlobalData()
+                        .Init(this.MaxCubeInstances, this.MaxGridInstances, this.MaxFreeGrids)
                 );
             }
 
