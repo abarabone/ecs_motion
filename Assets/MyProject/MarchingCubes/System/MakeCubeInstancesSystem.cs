@@ -38,7 +38,8 @@ namespace Abarabone.MarchingCubes
             var stocks = globaldata.FreeStocks;
 
             this.Entities
-                .WithBurst()
+                //.WithBurst()
+                .WithReadOnly(defaults)
                 .ForEach(
                         (
                             ref DotGridArea.BufferData buf,
@@ -48,9 +49,9 @@ namespace Abarabone.MarchingCubes
                         {
                             var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, 0, 0, 0);
 
+                            Debug.Log(p.p->pUnits == null);
                             p[1, 0, 0] = 1;
                             p[1, 20, 10] = 1;
-                            //Debug.Log(p.p->CubeCount);
 
                             DotGridExtension.BackGridIfFilled(ref defaults, ref stocks, ref p);
                         }

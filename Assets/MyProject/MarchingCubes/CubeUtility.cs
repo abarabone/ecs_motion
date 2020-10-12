@@ -196,6 +196,7 @@ namespace Abarabone.MarchingCubes
 
     public unsafe struct FreeStockList : IDisposable
     {
+        [NativeDisableUnsafePtrRestriction]
         DoubleSideStack<UIntPtr>* stocksPtr;
 
 
