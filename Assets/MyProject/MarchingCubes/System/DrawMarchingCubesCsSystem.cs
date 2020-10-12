@@ -14,7 +14,7 @@ namespace Abarabone.MarchingCubes
     using Abarabone.Draw;
     using Abarabone.Utilities;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateAfter(typeof(BeginDrawCsBarier))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     public class DrawMarchingCubeCsSystem : SystemBase
@@ -23,45 +23,47 @@ namespace Abarabone.MarchingCubes
         {
             base.OnCreate();
 
-            this.RequireSingletonForUpdate<DotGridGlobal.InstanceWorkData>();
+            this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
         }
 
         protected unsafe override void OnUpdate()
         {
+            var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
 
-            var instances = this.GetSingleton<DotGridGlobal.InstanceWorkData>();
+            var cubeInstances = globaldata.CubeInstances;
             //Debug.Log(instances.CubeInstances.length);
-            if (instances.CubeInstances.Length == 0) return;
+            if (cubeInstances.Length == 0) return;
 
             var res = this.GetSingleton<Resource.DrawResourceData>();
             var buf = this.GetSingleton<Resource.DrawBufferData>().DrawResources;
 
-            buf.CubeInstancesBuffer.SetData(instances.CubeInstances.AsNativeArray());
+            buf.CubeInstancesBuffer.SetData(cubeInstances.AsArray());
 
 
+            var gridInstances = globaldata.GridInstances;
             //res.GridBuffer.SetData(this.gridData.AsArray());
-            var grids = new Vector4[instances.GridInstances.Length * 2];
+            var grids = new Vector4[gridInstances.Length * 2];
             fixed (Vector4* pdst = grids)
             {
-                var psrc = (Vector4*)instances.GridInstances.Ptr;
-                UnsafeUtility.MemCpy(pdst, psrc, instances.GridInstances.Length * 2 * sizeof(float4));
+                var psrc = (Vector4*)gridInstances.GetUnsafePtr();
+                UnsafeUtility.MemCpy(pdst, psrc, gridInstances.Length * 2 * sizeof(float4));
             }
             res.CubeMaterial.SetVectorArray("grids", grids);
 
 
-            var remain = (64 - (instances.CubeInstances.Length & 0x3f)) & 0x3f;
-            for (var i = 0; i < remain; i++) instances.CubeInstances.AddNoResize(new CubeInstance { instance = 1 });
-            var dargparams = new IndirectArgumentsForDispatch(instances.CubeInstances.Length >> 6, 1, 1);
+            var remain = (64 - (cubeInstances.Length & 0x3f)) & 0x3f;
+            for (var i = 0; i < remain; i++) cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
+            var dargparams = new IndirectArgumentsForDispatch(cubeInstances.Length >> 6, 1, 1);
             var dargs = buf.ArgsBufferForDispatch;
             dargs.SetData(ref dargparams);
-            res.GridCubeIdSetShader.Dispatch(0, instances.CubeInstances.Length >> 6, 1, 1);//
+            res.GridCubeIdSetShader.Dispatch(0, cubeInstances.Length >> 6, 1, 1);//
 
 
             var mesh = buf.mesh;//res.CubeMesh;
             var mat = res.CubeMaterial;
             var iargs = buf.ArgsBufferForInstancing;
 
-            var instanceCount = instances.CubeInstances.Length;
+            var instanceCount = cubeInstances.Length;
             var iargparams = new IndirectArgumentsForInstancing(mesh, instanceCount);
             iargs.SetData(ref iargparams);
 

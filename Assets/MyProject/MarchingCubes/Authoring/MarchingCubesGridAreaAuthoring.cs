@@ -26,7 +26,7 @@ namespace Abarabone.MarchingCubes.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            var global = this.GetComponentInParent<MarchingCubesGlobalDataAuthoring>().gameObject;
+            var global = this.GetComponentInParent<MarchingCubesAuthoring>().gameObject;//<MarchingCubesGlobalDataAuthoring>().gameObject;
             var area = this.gameObject;
 
             setGridArea_(conversionSystem, global, area, this.FillMode);
@@ -103,8 +103,8 @@ namespace Abarabone.MarchingCubes.Authoring
                     buffer.length = totalSize_;
 
                     var gent = gcs_.GetPrimaryEntity(global_);
-                    var defaultGrids = em.GetBuffer<DotGridGlobal.DefualtGridData>(gent);
-                    var defaultGrid = defaultGrids.GetDefaultGrid(fillMode);
+                    var defaultGrids = em.GetComponentData<MarchingCubeGlobalData>(gent).DefaultGrids;//em.GetBuffer<DotGridGlobal.DefualtGridData>(gent);
+                    var defaultGrid = defaultGrids[(int)FillMode];//.GetDefaultGrid(fillMode);
 
                     for (var i = 0; i < totalSize; i++)
                     {

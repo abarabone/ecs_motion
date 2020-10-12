@@ -42,21 +42,10 @@ namespace Abarabone.MarchingCubes
 
 
         static public bool IsDefault
-            (ref this DynamicBuffer<DotGridGlobal.DefualtGridData> defaultGrids, DotGrid32x32x32Unsafe grid)
-        {
-            return false;
-        }
-        static public bool IsDefault
             (ref this NativeArray<DotGrid32x32x32Unsafe> defaultGrids, DotGrid32x32x32Unsafe grid)
         {
             return grid.pUnits == defaultGrids[(int)grid.FillModeBlankOrSolid].pUnits;
         }
-
-        //static GridFillMode getFillMode(ref this DotGrid32x32x32Unsafe grid)
-        //{
-        //    return (GridFillMode)(grid.CubeCount >> 5);
-        //}
-
 
         /// <summary>
         /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
