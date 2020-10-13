@@ -25,11 +25,11 @@ namespace Abarabone.MarchingCubes
             base.OnCreate();
             
             this.RequireSingletonForUpdate<Resource.Initialize>();
-        }
+        //}
 
 
-        protected override void OnStartRunning()
-        {
+        //protected override void OnStartRunning()
+        //{
             this.Enabled = false;
 
 
@@ -37,7 +37,10 @@ namespace Abarabone.MarchingCubes
             var res = this.GetSingleton<Resource.DrawResourceData>();
 
             //var buf = Resource.CreateDrawBufferData(init.Asset, init.MaxGridLengthInShader);
-            var buf = new Resource.DrawBufferData { DrawResources = new mc.DrawResources(init.Asset, init.MaxGridLengthInShader) };
+            var buf = new Resource.DrawBufferData
+            {
+                DrawResources = new mc.DrawResources(init.Asset, init.MaxGridLengthInShader)
+            };
             this.SetSingleton(buf);
 
             setDrawResources_(buf, res);

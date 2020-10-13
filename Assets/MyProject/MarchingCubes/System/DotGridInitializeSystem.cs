@@ -12,18 +12,19 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace Abarabone.MarchingCubes
 {
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class DotGridFillingSystem : BeginInitializationEntityCommandBufferSystem
+    public class DotGridFillingSystem : Common.BeginInitializationCommandSystemBase
     {
         protected override void OnUpdate()
         {
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
             var defaults = globaldata.DefaultGrids;
 
-            var cmd = this.
+            var cmd = this.cmdSystem.CreateCommandBuffer();
 
             this.Entities
                 .ForEach(
                     (
+                        Entity ent,
                         ref DotGridArea.BufferData buf,
                         in DotGridArea.InitializeData init,
                         in DotGridArea.InfoWorkData work,
@@ -31,16 +32,15 @@ namespace Abarabone.MarchingCubes
                     ) =>
                     {
 
-                        for(var i = 0; i < buf.Grids.length; i++)
+                        for (var i = 0; i < buf.Grids.length; i++)
                         {
                             buf.Grids[i] = defaults[(int)GridFillMode.Blank];
                         }
 
-                        this.EntityManager.RemoveComponent<GridArea.>
+                        cmd.RemoveComponent<DotGridArea.InitializeData>(ent);
                     }
                 )
                 .Run();
-
         }
     }
 }
