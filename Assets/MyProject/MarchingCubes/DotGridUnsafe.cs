@@ -44,7 +44,7 @@ namespace Abarabone.MarchingCubes
         {
             get
             {
-                var notfilled = math.select(-1, 0, (this.CubeCount & dotNum) != 0);
+                var notfilled = math.select(-1, 0, (this.CubeCount & (dotNum - 1)) != 0);
                 var solid = this.CubeCount >> (16 - 1);
                 return (GridFillMode)( notfilled | solid );
             }
