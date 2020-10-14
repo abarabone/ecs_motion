@@ -28,37 +28,12 @@ namespace Abarabone.MarchingCubes
             base.OnCreate();
 
             this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
+            this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
         }
         protected override unsafe void OnStartRunning()
         {
             base.OnStartRunning();
 
-            var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
-            var defaults = globaldata.DefaultGrids;
-            var stocks = globaldata.FreeStocks;
-
-            this.Entities
-                //.WithBurst()
-                .WithReadOnly(defaults)
-                .ForEach(
-                        (
-                            ref DotGridArea.BufferData buf,
-                            ref DotGridArea.InfoData dim,
-                            ref DotGridArea.InfoWorkData unit
-                        ) =>
-                        {
-                            var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, 0, 0, 0);
-
-                            Debug.Log(p.p->pUnits == null);
-                            p[1, 0, 0] = 1;
-                            p[1, 20, 10] = 1;
-
-                            DotGridExtension.BackGridIfFilled(ref defaults, ref stocks, ref p);
-                        }
-                )
-                .Schedule();
-
-            this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
         }
 
 

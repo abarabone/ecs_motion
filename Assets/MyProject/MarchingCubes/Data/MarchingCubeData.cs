@@ -35,7 +35,8 @@ namespace Abarabone.MarchingCubes
         public ComputeShader GridCubeIdSetShader;
 
 
-        public MarchingCubeGlobalData Init(int maxCubeInstances, int maxGridInstances, int maxFreeGrids, MarchingCubeAsset asset)
+        public MarchingCubeGlobalData Init
+            (int maxCubeInstances, int maxGridInstances, int maxFreeGrids, MarchingCubeAsset asset, Material mat, ComputeShader cs)
         {
             this.CubeInstances = new NativeList<CubeInstance>(maxCubeInstances, Allocator.Persistent);
             this.GridInstances = new NativeList<GridInstanceData>(maxGridInstances, Allocator.Persistent);
@@ -46,7 +47,9 @@ namespace Abarabone.MarchingCubes
             this.DefaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
 
             this.DrawResources = new mc.DrawResources(asset, maxGridInstances);
-            this.DrawResources.SetResourcesTo(this.CubeMaterial, this.GridCubeIdSetShader);
+            this.DrawResources.SetResourcesTo(mat, cs);
+            this.GridCubeIdSetShader = cs;
+            this.CubeMaterial = mat;
 
             return this;
         }

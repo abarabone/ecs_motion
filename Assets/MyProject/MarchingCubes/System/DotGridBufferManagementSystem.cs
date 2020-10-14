@@ -28,7 +28,7 @@ namespace Abarabone.MarchingCubes
         {
             base.OnCreate();
 
-            this.RequireSingletonForUpdate<Resource.Initialize>();
+            //this.RequireSingletonForUpdate<Resource.Initialize>();
             this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
             this.Enabled = false;
         }

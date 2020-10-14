@@ -22,6 +22,8 @@ namespace Abarabone.MarchingCubes
             var cmd = this.cmdSystem.CreateCommandBuffer();
 
             this.Entities
+                .WithBurst()
+                .WithReadOnly(defaults)
                 .ForEach(
                     (
                         Entity ent,
@@ -34,13 +36,38 @@ namespace Abarabone.MarchingCubes
 
                         for (var i = 0; i < buf.Grids.length; i++)
                         {
-                            buf.Grids[i] = defaults[(int)GridFillMode.Blank];
+                            buf.Grids[i] = defaults[(int)init.FillMode];
                         }
 
                         cmd.RemoveComponent<DotGridArea.InitializeData>(ent);
                     }
                 )
                 .Run();
+
+
+            var stocks = globaldata.FreeStocks;
+
+            this.Entities
+                //.WithBurst()
+                .WithReadOnly(defaults)
+                .ForEach(
+                        (
+                            ref DotGridArea.BufferData buf,
+                            ref DotGridArea.InfoData dim,
+                            ref DotGridArea.InfoWorkData unit
+                        ) =>
+                        {
+                            var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, 0, 0, 0);
+
+                            //Debug.Log(p.p->pUnits == null);
+                            p[1, 0, 0] = 1;
+                            p[1, 20, 10] = 1;
+
+                            DotGridExtension.BackGridIfFilled(ref defaults, ref stocks, ref p);
+                        }
+                )
+                .Run();
+
         }
     }
 }

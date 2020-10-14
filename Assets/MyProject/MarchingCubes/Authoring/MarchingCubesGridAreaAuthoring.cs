@@ -102,14 +102,14 @@ namespace Abarabone.MarchingCubes.Authoring
                     var buffer = new UnsafeList<DotGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
                     buffer.length = totalSize_;
 
-                    var gent = gcs_.GetPrimaryEntity(global_);
-                    var defaultGrids = em.GetComponentData<MarchingCubeGlobalData>(gent).DefaultGrids;//em.GetBuffer<DotGridGlobal.DefualtGridData>(gent);
-                    var defaultGrid = defaultGrids[(int)FillMode];//.GetDefaultGrid(fillMode);
+                    //var gent = gcs_.GetPrimaryEntity(global_);
+                    //var defaultGrids = em.GetComponentData<MarchingCubeGlobalData>(gent).DefaultGrids;//em.GetBuffer<DotGridGlobal.DefualtGridData>(gent);
+                    //var defaultGrid = defaultGrids[(int)FillMode];//.GetDefaultGrid(fillMode);
 
-                    for (var i = 0; i < totalSize; i++)
-                    {
-                        buffer[i] = defaultGrid;
-                    }
+                    //for (var i = 0; i < totalSize; i++)
+                    //{
+                    //    buffer[i] = defaultGrid;
+                    //}
                     
                     return buffer;
                 }
