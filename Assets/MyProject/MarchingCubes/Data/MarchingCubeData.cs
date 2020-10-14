@@ -30,7 +30,12 @@ namespace Abarabone.MarchingCubes
         public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
         public FreeStockList FreeStocks;
 
-        public MarchingCubeGlobalData Init(int maxCubeInstances, int maxGridInstances, int maxFreeGrids)
+        public mc.DrawResources DrawResources;
+        public Material CubeMaterial;
+        public ComputeShader GridCubeIdSetShader;
+
+
+        public MarchingCubeGlobalData Init(int maxCubeInstances, int maxGridInstances, int maxFreeGrids, MarchingCubeAsset asset)
         {
             this.CubeInstances = new NativeList<CubeInstance>(maxCubeInstances, Allocator.Persistent);
             this.GridInstances = new NativeList<GridInstanceData>(maxGridInstances, Allocator.Persistent);
@@ -40,11 +45,16 @@ namespace Abarabone.MarchingCubes
             this.DefaultGrids[(int)GridFillMode.Blank] = DotGridAllocater.Alloc(GridFillMode.Blank);
             this.DefaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
 
+            this.DrawResources = new mc.DrawResources(asset, maxGridInstances);
+            this.DrawResources.SetResourcesTo(this.CubeMaterial, this.GridCubeIdSetShader);
+
             return this;
         }
 
         public void Dispose()
         {
+            this.DrawResources.Dispose();
+
             this.DefaultGrids[(int)GridFillMode.Blank].Dispose();
             this.DefaultGrids[(int)GridFillMode.Solid].Dispose();
 
@@ -96,47 +106,47 @@ namespace Abarabone.MarchingCubes
 
 
 
-        public class DrawResourceData : IComponentData
-        {
-            public Mesh CubeMesh;
-            public Material CubeMaterial;
+        //public class DrawResourceData : IComponentData
+        //{
+        //    public Mesh CubeMesh;
+        //    public Material CubeMaterial;
 
-            public ComputeShader GridCubeIdSetShader;
-        }
-
-
-        public class DrawBufferData : IComponentData//, IDisposable
-        {
-            public mc.DrawResources DrawResources;
-
-            //public ComputeBuffer ArgsBufferForInstancing;
-            //public ComputeBuffer ArgsBufferForDispatch;
-
-            //public ComputeBuffer NormalBuffer;
-            //public ComputeBuffer CubePatternBuffer;
-            //public ComputeBuffer CubeVertexBuffer;
-            //public ComputeBuffer GridBuffer;
-
-            //public ComputeBuffer CubeInstancesBuffer;
-            //public RenderTexture GridCubeIdBuffer;
-            ////public ComputeBuffer GridCubeIdBuffer;
+        //    public ComputeShader GridCubeIdSetShader;
+        //}
 
 
-            //public void Dispose()
-            //{
-            //    Debug.Log("dispose");
-            //    if (this.ArgsBufferForInstancing != null) this.ArgsBufferForInstancing.Dispose();
-            //    if (this.ArgsBufferForDispatch != null) this.ArgsBufferForDispatch.Dispose();
+        //public class DrawBufferData : IComponentData//, IDisposable
+        //{
+        //    public mc.DrawResources DrawResources;
 
-            //    if (this.CubeInstancesBuffer != null) this.CubeInstancesBuffer.Dispose();
-            //    if (this.GridCubeIdBuffer != null) this.GridCubeIdBuffer.Release();
+        //    //public ComputeBuffer ArgsBufferForInstancing;
+        //    //public ComputeBuffer ArgsBufferForDispatch;
 
-            //    if (this.NormalBuffer != null) this.NormalBuffer.Dispose();
-            //    if (this.CubePatternBuffer != null) this.CubePatternBuffer.Dispose();
-            //    if (this.CubeVertexBuffer != null) this.CubeVertexBuffer.Dispose();
-            //    if (this.GridBuffer != null) this.GridBuffer.Dispose();
-            //}
-        }
+        //    //public ComputeBuffer NormalBuffer;
+        //    //public ComputeBuffer CubePatternBuffer;
+        //    //public ComputeBuffer CubeVertexBuffer;
+        //    //public ComputeBuffer GridBuffer;
+
+        //    //public ComputeBuffer CubeInstancesBuffer;
+        //    //public RenderTexture GridCubeIdBuffer;
+        //    ////public ComputeBuffer GridCubeIdBuffer;
+
+
+        //    //public void Dispose()
+        //    //{
+        //    //    Debug.Log("dispose");
+        //    //    if (this.ArgsBufferForInstancing != null) this.ArgsBufferForInstancing.Dispose();
+        //    //    if (this.ArgsBufferForDispatch != null) this.ArgsBufferForDispatch.Dispose();
+
+        //    //    if (this.CubeInstancesBuffer != null) this.CubeInstancesBuffer.Dispose();
+        //    //    if (this.GridCubeIdBuffer != null) this.GridCubeIdBuffer.Release();
+
+        //    //    if (this.NormalBuffer != null) this.NormalBuffer.Dispose();
+        //    //    if (this.CubePatternBuffer != null) this.CubePatternBuffer.Dispose();
+        //    //    if (this.CubeVertexBuffer != null) this.CubeVertexBuffer.Dispose();
+        //    //    if (this.GridBuffer != null) this.GridBuffer.Dispose();
+        //    //}
+        //}
 
     }
 

@@ -34,8 +34,9 @@ namespace Abarabone.MarchingCubes
             //Debug.Log(instances.CubeInstances.length);
             if (cubeInstances.Length == 0) return;
 
-            var res = this.GetSingleton<Resource.DrawResourceData>();
-            var buf = this.GetSingleton<Resource.DrawBufferData>().DrawResources;
+            var cs = globaldata.GridCubeIdSetShader;
+            var mat = globaldata.CubeMaterial;
+            var buf = globaldata.DrawResources;
 
             buf.CubeInstancesBuffer.SetData(cubeInstances.AsArray());
 
@@ -48,7 +49,7 @@ namespace Abarabone.MarchingCubes
                 var psrc = (Vector4*)gridInstances.GetUnsafePtr();
                 UnsafeUtility.MemCpy(pdst, psrc, gridInstances.Length * 2 * sizeof(float4));
             }
-            res.CubeMaterial.SetVectorArray("grids", grids);
+            mat.SetVectorArray("grids", grids);
 
 
             var remain = (64 - (cubeInstances.Length & 0x3f)) & 0x3f;
@@ -56,11 +57,10 @@ namespace Abarabone.MarchingCubes
             var dargparams = new IndirectArgumentsForDispatch(cubeInstances.Length >> 6, 1, 1);
             var dargs = buf.ArgsBufferForDispatch;
             dargs.SetData(ref dargparams);
-            res.GridCubeIdSetShader.Dispatch(0, cubeInstances.Length >> 6, 1, 1);//
+            cs.Dispatch(0, cubeInstances.Length >> 6, 1, 1);//
 
 
-            var mesh = buf.mesh;//res.CubeMesh;
-            var mat = res.CubeMaterial;
+            var mesh = globaldata.DrawResources.mesh;
             var iargs = buf.ArgsBufferForInstancing;
 
             var instanceCount = cubeInstances.Length;

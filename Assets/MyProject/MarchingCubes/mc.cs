@@ -41,42 +41,6 @@ namespace Abarabone.MarchingCubes
         public int maxDrawGridLength;
 
         
-        void setResources()
-        {
-            var res = this.meshResources;
-            
-            //uint4 cube_patterns[ 254 ][2];
-			// [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
-			// [1] : vertex normal index { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
-            
-            //uint4 cube_vtxs[ 12 ];
-            // x: near vertex index (x>>0 | y>>8 | z>>16)
-            // y: near vertex index offset prev (left >>0 | up  >>8 | front>>16)
-            // z: near vertex index offset next (right>>0 | down>>8 | back >>16)
-            // w: pos(x>>0 | y>>8 | z>>16)
-            
-            //uint3 grids[ 512 ][2];
-			// [0] : position as float3
-			// [1] : near grid id
-			// { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
-            
-            this.Material.SetConstantBuffer( "normals", res.NormalBuffer );
-            this.Material.SetConstantBuffer( "cube_patterns", res.CubePatternBuffer );
-            this.Material.SetConstantBuffer( "cube_vtxs", res.CubeVertexBuffer );
-            this.Material.SetConstantBuffer_("grids", res.GridBuffer);
-            //this.Material.SetVectorArray( "grids", new Vector4[ 512 * 2 ] );// res.GridBuffer );
-
-            this.Material.SetBuffer( "cube_instances", res.CubeInstancesBuffer );
-            this.Material.SetTexture( "grid_cubeids", res.GridCubeIdBuffer );
-            //this.Material.SetBuffer( "grid_cubeids", res.GridCubeIdBuffer );
-
-
-            this.setGridCubeIdShader.SetBuffer( 0, "src_instances", res.CubeInstancesBuffer );
-            this.setGridCubeIdShader.SetTexture( 0, "dst_grid_cubeids", res.GridCubeIdBuffer );
-            //this.setGridCubeIdShader.SetBuffer( 0, "dst_grid_cubeids", res.GridCubeIdBuffer );
-        }
-
-
 
         unsafe void Awake()
         {
@@ -85,7 +49,7 @@ namespace Abarabone.MarchingCubes
             //this.cubeInstances = new NativeQueue<CubeInstance>( Allocator.Persistent );
 
             this.meshResources = new DrawResources( this.MarchingCubeAsset, this.maxDrawGridLength );
-            setResources();
+            this.meshResources.SetResourcesTo(this.Material, this.setGridCubeIdShader);
 
             var res = this.meshResources;
             var cb = createCommandBuffer( res, this.Material );
@@ -525,11 +489,46 @@ namespace Abarabone.MarchingCubes
             }
             
         }
-
-
     }
 
 
+    public static class DrawResourceExtension
+    {
+
+        public static void SetResourcesTo(this mc.DrawResources res, Material mat, ComputeShader cs)
+        {
+            //uint4 cube_patterns[ 254 ][2];
+            // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
+            // [1] : vertex normal index { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
+
+            //uint4 cube_vtxs[ 12 ];
+            // x: near vertex index (x>>0 | y>>8 | z>>16)
+            // y: near vertex index offset prev (left >>0 | up  >>8 | front>>16)
+            // z: near vertex index offset next (right>>0 | down>>8 | back >>16)
+            // w: pos(x>>0 | y>>8 | z>>16)
+
+            //uint3 grids[ 512 ][2];
+            // [0] : position as float3
+            // [1] : near grid id
+            // { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
+
+            mat.SetConstantBuffer("normals", res.NormalBuffer);
+            mat.SetConstantBuffer("cube_patterns", res.CubePatternBuffer);
+            mat.SetConstantBuffer("cube_vtxs", res.CubeVertexBuffer);
+            mat.SetConstantBuffer_("grids", res.GridBuffer);
+            //mat.SetVectorArray( "grids", new Vector4[ 512 * 2 ] );// res.GridBuffer );
+
+            mat.SetBuffer("cube_instances", res.CubeInstancesBuffer);
+            mat.SetTexture("grid_cubeids", res.GridCubeIdBuffer);
+            //mat.SetBuffer( "grid_cubeids", res.GridCubeIdBuffer );
+
+
+            cs.SetBuffer(0, "src_instances", res.CubeInstancesBuffer);
+            cs.SetTexture(0, "dst_grid_cubeids", res.GridCubeIdBuffer);
+            //cs.SetBuffer( 0, "dst_grid_cubeids", res.GridCubeIdBuffer );
+        }
+
+    }
 
 
 

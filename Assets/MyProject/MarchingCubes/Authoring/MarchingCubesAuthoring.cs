@@ -42,7 +42,7 @@ namespace Abarabone.MarchingCubes.Authoring
                 var ent = gcs_.GetPrimaryEntity(global_);
                 em.AddComponentData(ent,
                     new MarchingCubeGlobalData()
-                        .Init(this.MaxCubeInstances, this.MaxGridInstances, this.MaxFreeGrids)
+                        .Init(this.MaxCubeInstances, this.MaxGridInstances, this.MaxFreeGrids, this.MarchingCubesAsset)
                 );
             }
 
