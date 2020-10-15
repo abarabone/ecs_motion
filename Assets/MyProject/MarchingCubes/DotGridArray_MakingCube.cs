@@ -23,7 +23,13 @@ namespace Abarabone.MarchingCubes
         public uint this[int ix, int iy, int iz]
         {
             get => (*this.p)[ix, iy, iz];
-            set => (*this.p)[ix, iy, iz] = value;
+            //set => (*this.p)[ix, iy, iz] = value;
+            set
+            {
+                var grid = *this.p;
+                grid[ix, iy, iz] = value;
+                *this.p = grid;
+            }
         }
     }
 

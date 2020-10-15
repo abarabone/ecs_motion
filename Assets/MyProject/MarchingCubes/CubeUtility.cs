@@ -224,20 +224,20 @@ namespace Abarabone.MarchingCubes
                 case GridFillMode.Blank:
                     {
                         var p = this.stocksPtr->PopFromFront();
-                        if (p != null) return new DotGrid32x32x32Unsafe(p, 0);
+                        if (p != default) return new DotGrid32x32x32Unsafe(p, 0);
 
                         var p_ = this.stocksPtr->PopFromBack();
-                        if (p_ != null) return DotGridAllocater.Fill(p_, fillMode);
+                        if (p_ != default) return DotGridAllocater.Fill(p_, fillMode);
 
                         return DotGridAllocater.Alloc(fillMode);
                     }
                 case GridFillMode.Solid:
                     {
                         var p = this.stocksPtr->PopFromBack();
-                        if (p != null) return new DotGrid32x32x32Unsafe(p, 32 * 32 * 32);
+                        if (p != default) return new DotGrid32x32x32Unsafe(p, 32 * 32 * 32);
 
                         var p_ = this.stocksPtr->PopFromFront();
-                        if (p_ != null) return DotGridAllocater.Fill(p_, fillMode);
+                        if (p_ != default) return DotGridAllocater.Fill(p_, fillMode);
 
                         return DotGridAllocater.Alloc(fillMode);
                     }
