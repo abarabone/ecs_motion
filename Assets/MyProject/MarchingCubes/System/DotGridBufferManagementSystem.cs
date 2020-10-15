@@ -40,6 +40,8 @@ namespace Abarabone.MarchingCubes
 
         protected override unsafe void OnDestroy()
         {
+            if (!this.HasSingleton<MarchingCubeGlobalData>()) return;
+
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
 
             globaldata.Dispose();

@@ -267,8 +267,9 @@ namespace Abarabone.MarchingCubes
         // ループ削減試行錯誤中（端っこもやれないか？）
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SampleAllCubes_<TCubeInstanceWriter>
-            (ref AdjacentGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes)
-            where TCubeInstanceWriter : ICubeInstanceWriter
+            //(ref AdjacentGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes)
+            (ref this TCubeInstanceWriter outputCubes, ref AdjacentGrids g, ref GridCounts gcount, int gridId)
+            where TCubeInstanceWriter : struct, ICubeInstanceWriter
         {
             var g0or1L = math.min(gcount.L & 0x7fff, new int4(1, 1, 1, 1));
             var g0or1R = math.min(gcount.R & 0x7fff, new int4(1, 1, 1, 1));

@@ -45,28 +45,33 @@ namespace Abarabone.MarchingCubes
                 .Run();
 
 
-            //var stocks = globaldata.FreeStocks;
+            var stocks = globaldata.FreeStocks;
 
-            //this.Entities
-            //    //.WithBurst()
-            //    .WithReadOnly(defaults)
-            //    .ForEach(
-            //            (
-            //                ref DotGridArea.BufferData buf,
-            //                ref DotGridArea.InfoData dim,
-            //                ref DotGridArea.InfoWorkData unit
-            //            ) =>
-            //            {
-            //                var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, 0, 0, 0);
+            this.Entities
+                //.WithBurst()
+                .WithReadOnly(defaults)
+                .WithAll<DotGridArea.InitializeData>()
+                .ForEach(
+                        (
+                            ref DotGridArea.BufferData buf,
+                            ref DotGridArea.InfoData dim,
+                            ref DotGridArea.InfoWorkData unit
+                        ) =>
+                        {
+                            var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, 0, 0, 0);
 
-            //                //Debug.Log(p.p->pUnits == null);
-            //                p[1, 0, 0] = 1;
-            //                p[1, 20, 10] = 1;
+                            p[1, 0, 0] = 1;
+                            p[1, 20, 10] = 1;
+                            //unsafe
+                            //{
+                            //    p.p->pUnits[0] |= 1;
+                            //    p.p->CubeCount = 1;
+                            //}
 
-            //                DotGridExtension.BackGridIfFilled(ref defaults, ref stocks, ref p);
-            //            }
-            //    )
-            //    .Run();
+                            DotGridExtension.BackGridIfFilled(ref defaults, ref stocks, ref p);
+                        }
+                )
+                .Run();
 
         }
     }
