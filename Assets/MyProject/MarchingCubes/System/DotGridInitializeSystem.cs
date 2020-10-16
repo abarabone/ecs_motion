@@ -46,6 +46,7 @@ namespace Abarabone.MarchingCubes
 
 
             var stocks = globaldata.FreeStocks;
+            var rnd = Unity.Mathematics.Random.CreateFromIndex(0);
 
             this.Entities
                 //.WithBurst()
@@ -58,17 +59,19 @@ namespace Abarabone.MarchingCubes
                             ref DotGridArea.InfoWorkData unit
                         ) =>
                         {
-                            var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, 0, 0, 0);
+                            for (var ig = 0; ig < 32; ig++)
+                            {
+                                var rg = rnd.NextInt3() & (4-1);
+                                var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, rg.x, rg.y, rg.z);
 
-                            p[1, 0, 0] = 1;
-                            p[1, 20, 10] = 1;
-                            //unsafe
-                            //{
-                            //    p.p->pUnits[0] |= 1;
-                            //    p.p->CubeCount = 1;
-                            //}
+                                for (var i = 0; i < 32; i++)
+                                {
+                                    var r = rnd.NextInt3() & (32 - 1);
+                                    p[r.x, r.y, r.z] = 1;
+                                }
 
-                            DotGridExtension.BackGridIfFilled(ref defaults, ref stocks, ref p);
+                                DotGridExtension.BackGridIfFilled(ref defaults, ref stocks, ref p);
+                            }
                         }
                 )
                 .Run();
