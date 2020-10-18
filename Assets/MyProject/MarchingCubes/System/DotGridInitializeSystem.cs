@@ -46,10 +46,9 @@ namespace Abarabone.MarchingCubes
 
 
             var stocks = globaldata.FreeStocks;
-            var rnd = Unity.Mathematics.Random.CreateFromIndex(0);
 
             this.Entities
-                //.WithBurst()
+                .WithBurst()
                 .WithReadOnly(defaults)
                 .WithAll<DotGridArea.InitializeData>()
                 .ForEach(
@@ -59,16 +58,19 @@ namespace Abarabone.MarchingCubes
                             ref DotGridArea.InfoWorkData unit
                         ) =>
                         {
-                            for (var ig = 0; ig < 32; ig++)
+                            for (var ig = 0; ig < 3; ig++)
                             {
-                                var rg = rnd.NextInt3() & (4-1);
+                                var rnd = Unity.Mathematics.Random.CreateFromIndex((uint)ig+1);
+
+                                var rg = rnd.NextInt3(0,4);
                                 var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, rg.x, rg.y, rg.z);
 
-                                for (var i = 0; i < 32; i++)
-                                {
-                                    var r = rnd.NextInt3() & (32 - 1);
-                                    p[r.x, r.y, r.z] = 1;
-                                }
+                                for (var ix = 0; ix < 32; ix++)
+                                    for (var iy = 0; iy < 32; iy++)
+                                        for (var iz = 0; iz < 32; iz++)
+                                        {
+                                            if(!rnd.NextBool()) p[ix, iy, iz] = 1;
+                                        }
 
                                 DotGridExtension.BackGridIfFilled(ref defaults, ref stocks, ref p);
                             }
