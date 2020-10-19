@@ -376,7 +376,7 @@ namespace Abarabone.MarchingCubes
 
         ComputeBuffer createGridShaderBuffer_(int maxGridLength)
         {
-            var buffer = new ComputeBuffer(maxGridLength * 2, Marshal.SizeOf<uint4>(), ComputeBufferType.Constant);
+            var buffer = new ComputeBuffer(maxGridLength * 2, Marshal.SizeOf<float4>()*2, ComputeBufferType.Constant);
 
             return buffer;
         }
@@ -428,8 +428,7 @@ namespace Abarabone.MarchingCubes
             mat.SetConstantBuffer("normals", res.NormalBuffer);
             mat.SetConstantBuffer("cube_patterns", res.CubePatternBuffer);
             mat.SetConstantBuffer("cube_vtxs", res.CubeVertexBuffer);
-            mat.SetConstantBuffer_("grids", res.GridBuffer);
-            //mat.SetVectorArray( "grids", new Vector4[ 512 * 2 ] );// res.GridBuffer );
+            mat.SetConstantBuffer_("SetPerFrame", res.GridBuffer);
 
             mat.SetBuffer("cube_instances", res.CubeInstancesBuffer);
             mat.SetTexture("grid_cubeids", res.GridCubeIdBuffer);

@@ -38,11 +38,10 @@ namespace Abarabone.MarchingCubes
             var mat = globaldata.CubeMaterial;
             var buf = globaldata.DrawResources;
 
-            buf.CubeInstancesBuffer.SetData(cubeInstances.AsArray());
 
 
             var gridInstances = globaldata.GridInstances;
-            //res.GridBuffer.SetData(this.gridData.AsArray());
+            buf.GridBuffer.SetData(gridInstances.AsArray());
             var grids = new Vector4[gridInstances.Length * 2];
             fixed (Vector4* pdst = grids)
             {
@@ -50,10 +49,14 @@ namespace Abarabone.MarchingCubes
                 UnsafeUtility.MemCpy(pdst, psrc, gridInstances.Length * 2 * sizeof(float4));
             }
             mat.SetVectorArray("grids", grids);
+            //buf.GridBuffer.SetData(grids);
+            //mat.SetConstantBuffer_("grids", buf.GridBuffer);
 
 
             var remain = (64 - (cubeInstances.Length & 0x3f)) & 0x3f;
             for (var i = 0; i < remain; i++) cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
+            buf.CubeInstancesBuffer.SetData(cubeInstances.AsArray());
+
             var dargparams = new IndirectArgumentsForDispatch(cubeInstances.Length >> 6, 1, 1);
             var dargs = buf.ArgsBufferForDispatch;
             dargs.SetData(ref dargparams);

@@ -71,12 +71,11 @@
 			// z: near vertex offset ortho2 (x>>0 | y>>8 | z>>16)
 			// w: pos(x>>0 | y>>8 | z>>16)
 
-			CBUFFER_START(SetPerFrame)
+
 			float4 grids[512][2];
 			// [0] : position as float3
 			// [1] : near grid id
 			// { x : back>>0 | up>>16  y : left>>0 | current>>16  z : right>>0 | down>>16  w : forward>>0 }
-			CBUFFER_END
 
 			static const uint grid_pos = 0;
 			static const uint grid_near_id = 1;
