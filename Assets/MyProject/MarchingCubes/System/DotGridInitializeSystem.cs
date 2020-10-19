@@ -58,18 +58,20 @@ namespace Abarabone.MarchingCubes
                             ref DotGridArea.InfoWorkData unit
                         ) =>
                         {
-                            for (var ig = 0; ig < 3; ig++)
+                            for (var ig = 0; ig < 1; ig++)
                             {
                                 var rnd = Unity.Mathematics.Random.CreateFromIndex((uint)ig+1);
 
                                 var rg = rnd.NextInt3(0,4);
-                                var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, rg.x, rg.y, rg.z);
+                                var p = DotGridExtension.GetGrid(ref defaults, ref stocks, ref buf, ref unit, ig, 0, 0);
 
+                                var j = 0;
                                 for (var ix = 0; ix < 32; ix++)
                                     for (var iy = 0; iy < 32; iy++)
                                         for (var iz = 0; iz < 32; iz++)
                                         {
-                                            if(!rnd.NextBool()) p[ix, iy, iz] = 1;
+                                            //if (!rnd.NextBool()) p[ix, iy, iz] = 1;
+                                            if ((j++ & 1) == 0) p[ix, iy, iz] = 1;
                                         }
 
                                 DotGridExtension.BackGridIfFilled(ref defaults, ref stocks, ref p);

@@ -83,15 +83,30 @@ namespace Abarabone.MarchingCubes
                 //if (value != 0 && value != 1) new ArgumentException();
 
                 var i = (iy << shiftNum) + iz;
-                var oldbit = (this.pUnits[i] >> ix) & 1;
-                var newbit = value;// & 1;
+                var prev = this.pUnits[i];
+                if (value == 1)
+                {
+                    var x = 1 << ix;
+                    this.pUnits[i] |= (uint)x;
+                    if (prev != this.pUnits[i]) this.CubeCount++;
+                }
+                if(value == 0)
+                {
+                    var x = ~1 << ix;
+                    this.pUnits[i] &= (uint)x;
+                    if (prev != this.pUnits[i]) this.CubeCount--;
+                }
 
-                var bitIfChange = oldbit ^ newbit;
+                //var i = (iy << shiftNum) + iz;
+                //var oldbit = (this.pUnits[i] >> ix) & 1;
+                //var newbit = value;// & 1;
 
-                this.pUnits[ i ] = (uint)((oldbit ^ bitIfChange) << ix);
+                //var bitIfChange = oldbit ^ newbit;
 
-                var d = (int)(newbit << 1) - 1;
-                this.CubeCount += d * (int)bitIfChange;
+                //this.pUnits[ i ] = (uint)((oldbit ^ bitIfChange) << ix);
+
+                //var d = (int)(newbit << 1) - 1;
+                //this.CubeCount += d * (int)bitIfChange;
             }
         }
         public uint this[int3 i]
