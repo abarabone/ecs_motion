@@ -428,7 +428,7 @@ namespace Abarabone.MarchingCubes
             mat.SetConstantBuffer("normals", res.NormalBuffer);
             mat.SetConstantBuffer("cube_patterns", res.CubePatternBuffer);
             mat.SetConstantBuffer("cube_vtxs", res.CubeVertexBuffer);
-            mat.SetConstantBuffer_("SetPerFrame", res.GridBuffer);
+            mat.SetConstantBuffer_("grids", res.GridBuffer);
 
             mat.SetBuffer("cube_instances", res.CubeInstancesBuffer);
             mat.SetTexture("grid_cubeids", res.GridCubeIdBuffer);

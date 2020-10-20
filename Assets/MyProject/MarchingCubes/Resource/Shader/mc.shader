@@ -71,12 +71,12 @@
 			// z: near vertex offset ortho2 (x>>0 | y>>8 | z>>16)
 			// w: pos(x>>0 | y>>8 | z>>16)
 
-			CBUFFER_START(SetPerFrame)
+			CBUFFER_START(Grids)
 			float4 grids[512][2];
 			// [0] : position as float3
 			// [1] : near grid id
 			// { x : back>>0 | up>>16  y : left>>0 | current>>16  z : right>>0 | down>>16  w : forward>>0 }
-			CBUFFER_END
+			CBUFFER_END;
 
 			static const uint grid_pos = 0;
 			static const uint grid_near_id = 1;
@@ -215,8 +215,8 @@
 				const uint ivtx_in_cube = unpack8bit_uint4_to_uint(ivtx_packed, v.vertex.y, v.vertex.x);
 
 				const uint4 cubeindex = data.xxxx >> uint4(16, 21, 26, 8) & uint4(0x1f, 0x1f, 0x1f, 0xff);
-
-				const float3 gridpos = grids[cubeindex.w][grid_pos];
+				
+				const float3 gridpos = grids[cubeindex.w][grid_pos].xyz;
 				const int3 cubepos = (int3)cubeindex.xyz * int3(1, -1, -1);
 
 				const uint cube_vtx_lpos_packed = asuint(cube_vtxs[ivtx_in_cube].w);
