@@ -1,4 +1,4 @@
-﻿Shader "Custom/mc"
+﻿Shader "Custom/mc2"
 {
 	Properties
 	{

@@ -172,7 +172,7 @@ namespace Abarabone.MarchingCubes
             this.NormalBuffer = createNormalList_(vertexNormalDict);
             this.CubePatternBuffer = createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList, vertexNormalDict);
             this.CubeVertexBuffer = createCubeVertexBuffer_(asset.BaseVertexList);
-            this.GridBuffer = createGridShaderBuffer_(512);
+            this.GridBuffer = createGridShaderBuffer_(maxGridLength);// 512);
 
             this.mesh = createMesh_();
         }
@@ -376,7 +376,8 @@ namespace Abarabone.MarchingCubes
 
         ComputeBuffer createGridShaderBuffer_(int maxGridLength)
         {
-            var buffer = new ComputeBuffer(maxGridLength * 2, Marshal.SizeOf<float4>()*2, ComputeBufferType.Constant);
+            //var buffer = new ComputeBuffer(maxGridLength, Marshal.SizeOf<float4>()*2, ComputeBufferType.Constant);
+            var buffer = new ComputeBuffer(maxGridLength * 2, Marshal.SizeOf<float4>(), ComputeBufferType.Constant);
 
             return buffer;
         }
@@ -428,7 +429,8 @@ namespace Abarabone.MarchingCubes
             mat.SetConstantBuffer("normals", res.NormalBuffer);
             mat.SetConstantBuffer("cube_patterns", res.CubePatternBuffer);
             mat.SetConstantBuffer("cube_vtxs", res.CubeVertexBuffer);
-            mat.SetConstantBuffer_("Grids", res.GridBuffer);
+            mat.SetConstantBuffer_("grid_constant", res.GridBuffer);
+            //mat.SetConstantBuffer("grids", res.GridBuffer);
 
             mat.SetBuffer("cube_instances", res.CubeInstancesBuffer);
             mat.SetTexture("grid_cubeids", res.GridCubeIdBuffer);

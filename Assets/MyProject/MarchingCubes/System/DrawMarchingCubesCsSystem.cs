@@ -41,7 +41,7 @@ namespace Abarabone.MarchingCubes
 
 
             var gridInstances = globaldata.GridInstances;
-            //buf.GridBuffer.SetData(gridInstances.AsArray());
+            //buf.GridBuffer.SetData(gridInstances.AsArray());//Debug.Log(gridInstances.AsArray().Length);
             var grids = new Vector4[gridInstances.Length * 2];
             fixed (Vector4* pdst = grids)
             {

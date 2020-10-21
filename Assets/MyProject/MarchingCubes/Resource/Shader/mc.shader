@@ -70,19 +70,29 @@
 			// y: near vertex offset ortho1 (x>>0 | y>>8 | z>>16)
 			// z: near vertex offset ortho2 (x>>0 | y>>8 | z>>16)
 			// w: pos(x>>0 | y>>8 | z>>16)
-
-			CBUFFER_START(Grids)
+			
+		//#if defined(UNITY_INSTANCING_ENABLED)
+			//CBUFFER_START(grid_constant)
+			//cbuffer grid_constant
+			//{
+				//struct {
+				//	float4 position;
+				//	uint4 near_id;
+				//} grids[512];
+			//	float4 grids[512][2];
+			//}
+			//struct aaa { int i; }
+			//ConstantBuffer<aaa> a;
 			float4 grids[512][2];
 			// [0] : position as float3
 			// [1] : near grid id
 			// { x : back>>0 | up>>16  y : left>>0 | current>>16  z : right>>0 | down>>16  w : forward>>0 }
-			CBUFFER_END;
+			//CBUFFER_END;
 
 			static const uint grid_pos = 0;
 			static const uint grid_near_id = 1;
 
-
-
+			
 			//static const int _32e0 = 1;
 			//static const int _32e1 = 32;
 			//static const int _32e2 = 32 * 32;
@@ -151,7 +161,7 @@
 				const uint grid_near_selector = dot(outer_offset, int3(1, 2, 3)) + 3;
 				
 				const uint gridindex_current = cubeindex.w;
-				const uint4 gridindex_near_packed = asuint(grids[gridindex_current][grid_near_id]);
+				const uint4 gridindex_near_packed = asuint(grids[gridindex_current][grid_near_id]);//.near_id);//
 				const uint gridindex_near = unpack16bit_uint4_to_uint(gridindex_near_packed, grid_near_selector);
 
 				const uint3 cubeindex_inner = cubeindex_outer & 0x1f;
@@ -216,7 +226,7 @@
 
 				const uint4 cubeindex = data.xxxx >> uint4(16, 21, 26, 8) & uint4(0x1f, 0x1f, 0x1f, 0xff);
 				
-				const float3 gridpos = grids[cubeindex.w][grid_pos].xyz;
+				const float3 gridpos = grids[cubeindex.w][grid_pos].xyz;//.position;//
 				const int3 cubepos = (int3)cubeindex.xyz * int3(1, -1, -1);
 
 				const uint cube_vtx_lpos_packed = asuint(cube_vtxs[ivtx_in_cube].w);
@@ -253,7 +263,10 @@
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
 			}
-
+		//#else
+		//	v2f vert(appdata v, uint i : SV_InstanceID){ v2f o; o.vertex = float4(0,0,0,0); return o; }
+		//	fixed4 frag(v2f i) : SV_Target { fixed4 o; return o; }
+		//#endif
 		ENDCG
 	}
 	}
