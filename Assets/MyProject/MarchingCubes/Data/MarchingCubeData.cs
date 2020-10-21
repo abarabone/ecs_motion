@@ -148,9 +148,10 @@ namespace Abarabone.MarchingCubes
         public ComputeBuffer ArgsBufferForInstancing;
         public ComputeBuffer ArgsBufferForDispatch;
 
-        public ComputeBuffer NormalBuffer;
-        public ComputeBuffer CubePatternBuffer;
-        public ComputeBuffer CubeVertexBuffer;
+        //public ComputeBuffer NormalBuffer;
+        //public ComputeBuffer CubePatternBuffer;
+        //public ComputeBuffer CubeVertexBuffer;
+        public ComputeBuffer StaticDataBuffer;
         public ComputeBuffer GridBuffer;
 
         public ComputeBuffer CubeInstancesBuffer;
@@ -168,10 +169,14 @@ namespace Abarabone.MarchingCubes
             this.CubeInstancesBuffer = createCubeIdInstancingShaderBuffer_(32 * 32 * 32 * maxGridLength);
             this.GridCubeIdBuffer = createGridCubeIdShaderBuffer_(maxGridLength);
 
-            var vertexNormalDict = makeVertexNormalsDict_(asset.CubeIdAndVertexIndicesList); Debug.Log(vertexNormalDict.Count);
-            this.NormalBuffer = createNormalList_(vertexNormalDict);
-            this.CubePatternBuffer = createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList, vertexNormalDict);
-            this.CubeVertexBuffer = createCubeVertexBuffer_(asset.BaseVertexList);
+            var vertexNormalDict = makeVertexNormalsDict_(asset.CubeIdAndVertexIndicesList);
+            //this.NormalBuffer = createNormalList_(vertexNormalDict);
+            //this.CubePatternBuffer = createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList, vertexNormalDict);
+            //this.CubeVertexBuffer = createCubeVertexBuffer_(asset.BaseVertexList);
+            var normalBuffer = createNormalList_(vertexNormalDict);
+            var cubePatternBuffer = createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList, vertexNormalDict);
+            var cubeVertexBuffer = createCubeVertexBuffer_(asset.BaseVertexList);
+
             this.GridBuffer = createGridShaderBuffer_(maxGridLength);// 512);
 
             this.mesh = createMesh_();
@@ -185,9 +190,9 @@ namespace Abarabone.MarchingCubes
             if (this.CubeInstancesBuffer != null) this.CubeInstancesBuffer.Dispose();
             if (this.GridCubeIdBuffer != null) this.GridCubeIdBuffer.Release();
 
-            if (this.NormalBuffer != null) this.NormalBuffer.Dispose();
-            if (this.CubePatternBuffer != null) this.CubePatternBuffer.Dispose();
-            if (this.CubeVertexBuffer != null) this.CubeVertexBuffer.Dispose();
+            //if (this.NormalBuffer != null) this.NormalBuffer.Dispose();
+            //if (this.CubePatternBuffer != null) this.CubePatternBuffer.Dispose();
+            //if (this.CubeVertexBuffer != null) this.CubeVertexBuffer.Dispose();
             if (this.GridBuffer != null) this.GridBuffer.Dispose();
         }
 
@@ -234,34 +239,47 @@ namespace Abarabone.MarchingCubes
                 .ToDictionary(x => x.x, x => x.i);
         }
 
-        ComputeBuffer createNormalList_(Dictionary<float3, int> normalToIdDict)
+
+
+        ComputeBuffer createCubeGeometryData_
+            (IEnumerable<float4> normalList, IEnumerable<uint4[]> cubePatterns, IEnumerable<uint4> cubeVertices)
         {
+
+            var q = new[]
+            {
+                normalList,
+                from x in cubePatterns select x.,
+                
+
+
+
             var buffer = new ComputeBuffer(normalToIdDict.Count, Marshal.SizeOf<Vector4>(), ComputeBufferType.Constant);
 
+
+
+            return buffer;
+        }
+
+        IEnumerable<float4> createNormalList_(Dictionary<float3, int> normalToIdDict)
+        {
             var q =
                 from n in normalToIdDict
                     //.OrderBy( x => x.Value )
                     //.Do( x => Debug.Log( $"{x.Value} {x.Key}" ) )
                     .Select(x => x.Key)
-                select new Vector4
+                select new float4
                 {
                     x = n.x,
                     y = n.y,
                     z = n.z,
                     w = 0.0f,
                 };
-
-            buffer.SetData(q.ToArray());
-
-            return buffer;
+            return q;
         }
 
-        ComputeBuffer createCubePatternBuffer_
+        IEnumerable<uint4[]> createCubePatternBuffer_
             (MarchingCubeAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict)
         {
-            //var buffer = new ComputeBuffer( 254, Marshal.SizeOf<uint4>() * 2, ComputeBufferType.Constant );
-            var buffer = new ComputeBuffer(254 * 2, Marshal.SizeOf<uint4>(), ComputeBufferType.Constant);
-
             var q =
                 from cube in cubeIdsAndVtxIndexLists_
                 orderby cube.cubeId
@@ -271,9 +289,8 @@ namespace Abarabone.MarchingCubes
                     toVtxNormalIndex_( cube.normalsForVertex, normalToIdDict )
                 };
             //q.SelectMany(x=>x).ForEach( x => Debug.Log(x) );
-            buffer.SetData(q.SelectMany(x => x).Select(x => math.asfloat(x)).ToArray());
-
-            return buffer;
+            
+            return q;
 
 
             uint4 toTriPositionIndex_(int[] indices)
@@ -315,10 +332,8 @@ namespace Abarabone.MarchingCubes
             }
         }
 
-        ComputeBuffer createCubeVertexBuffer_(Vector3[] baseVertices)
+        IEnumerable<uint4> createCubeVertexBuffer_(Vector3[] baseVertices)
         {
-            var buffer = new ComputeBuffer(12, Marshal.SizeOf<uint4>(), ComputeBufferType.Constant);
-
             ((int x, int y, int z) ortho1, (int x, int y, int z) ortho2)[] near_cube_offsets =
             {
                     (( 0, 0, -1), ( 0, -1, 0)),
@@ -369,9 +384,7 @@ namespace Abarabone.MarchingCubes
                     select new uint4(x, y, z, w)
                 ;
 
-            buffer.SetData(q.Select(x => math.asfloat(x)).ToArray());
-
-            return buffer;
+            return q;
         }
 
         ComputeBuffer createGridShaderBuffer_(int maxGridLength)
@@ -426,10 +439,43 @@ namespace Abarabone.MarchingCubes
             // [1] : near grid id
             // { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
 
+            //mat.SetConstantBuffer("static_data",)
+            mat.SetConstantBuffer_("_normals", res.NormalBuffer);
+            mat.SetConstantBuffer_("_cube_patterns", res.CubePatternBuffer);
+            mat.SetConstantBuffer_("_cube_vtxs", res.CubeVertexBuffer);
+            //mat.SetConstantBuffer_("grid_constant", res.GridBuffer);
+            //mat.SetConstantBuffer("grids", res.GridBuffer);
+
+            mat.SetBuffer("cube_instances", res.CubeInstancesBuffer);
+            mat.SetTexture("grid_cubeids", res.GridCubeIdBuffer);
+            //mat.SetBuffer( "grid_cubeids", res.GridCubeIdBuffer );
+
+
+            cs.SetBuffer(0, "src_instances", res.CubeInstancesBuffer);
+            cs.SetTexture(0, "dst_grid_cubeids", res.GridCubeIdBuffer);
+            //cs.SetBuffer( 0, "dst_grid_cubeids", res.GridCubeIdBuffer );
+        }
+        public static void SetResourcesTo_(this DrawResources res, Material mat, ComputeShader cs)
+        {
+            //uint4 cube_patterns[ 254 ][2];
+            // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
+            // [1] : vertex normal index { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
+
+            //uint4 cube_vtxs[ 12 ];
+            // x: near vertex index (x>>0 | y>>8 | z>>16)
+            // y: near vertex index offset prev (left >>0 | up  >>8 | front>>16)
+            // z: near vertex index offset next (right>>0 | down>>8 | back >>16)
+            // w: pos(x>>0 | y>>8 | z>>16)
+
+            //uint3 grids[ 512 ][2];
+            // [0] : position as float3
+            // [1] : near grid id
+            // { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
+
             mat.SetConstantBuffer("normals", res.NormalBuffer);
             mat.SetConstantBuffer("cube_patterns", res.CubePatternBuffer);
             mat.SetConstantBuffer("cube_vtxs", res.CubeVertexBuffer);
-            mat.SetConstantBuffer_("grid_constant", res.GridBuffer);
+            //mat.SetConstantBuffer_("grid_constant", res.GridBuffer);
             //mat.SetConstantBuffer("grids", res.GridBuffer);
 
             mat.SetBuffer("cube_instances", res.CubeInstancesBuffer);

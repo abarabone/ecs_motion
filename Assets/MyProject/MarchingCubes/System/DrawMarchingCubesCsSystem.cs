@@ -48,8 +48,8 @@ namespace Abarabone.MarchingCubes
                 var psrc = (Vector4*)gridInstances.GetUnsafePtr();
                 UnsafeUtility.MemCpy(pdst, psrc, gridInstances.Length * 2 * sizeof(float4));
             }
-            //mat.SetVectorArray("grids", grids);
-            buf.GridBuffer.SetData(grids);
+            mat.SetVectorArray("grids", grids);
+            //buf.GridBuffer.SetData(grids);
             //mat.SetConstantBuffer_("grids", buf.GridBuffer);
 
 

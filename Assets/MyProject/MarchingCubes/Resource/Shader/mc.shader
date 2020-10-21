@@ -54,23 +54,27 @@
 			//StructuredBuffer<uint> grid_cubeids;
 
 
-			float4 normals[155];
-
-			//StructuredBuffer<uint4> cube_patterns;
-			float4 cube_patterns[254][2];
-			// [0] : vertex posision index for tringle { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
-			// [1] : vertex normal index for vertex { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
-
-			static const uint itri_to_ivtx = 0;
-			static const uint ivtx_to_inml = 1;
-
-
-			float4 cube_vtxs[12];
-			// x: near vertex index (ortho1>>0 | ortho2>>8 | slant>>16)
-			// y: near vertex offset ortho1 (x>>0 | y>>8 | z>>16)
-			// z: near vertex offset ortho2 (x>>0 | y>>8 | z>>16)
-			// w: pos(x>>0 | y>>8 | z>>16)
+			CBUFFER_START(static_data)
 			
+				float4 normals[155];
+			
+				float4 cube_patterns[254][2];
+				// [0] : vertex posision index for tringle { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
+				// [1] : vertex normal index for vertex { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
+
+				static const uint itri_to_ivtx = 0;
+				static const uint ivtx_to_inml = 1;
+
+			
+				float4 cube_vtxs[12];
+				// x: near vertex index (ortho1>>0 | ortho2>>8 | slant>>16)
+				// y: near vertex offset ortho1 (x>>0 | y>>8 | z>>16)
+				// z: near vertex offset ortho2 (x>>0 | y>>8 | z>>16)
+				// w: pos(x>>0 | y>>8 | z>>16)
+			
+			CBUFFER_END;
+
+
 		//#if defined(UNITY_INSTANCING_ENABLED)
 			//CBUFFER_START(grid_constant)
 			//cbuffer grid_constant

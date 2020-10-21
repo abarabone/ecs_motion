@@ -15,11 +15,11 @@ C:/Users/abarabone/Desktop/vsgithub/abarabone/ecs_motion
 -logFile
 Logs/AssetImportWorker2.log
 -srvPort
-61720
+49836
 Successfully changed project path to: C:/Users/abarabone/Desktop/vsgithub/abarabone/ecs_motion
 C:/Users/abarabone/Desktop/vsgithub/abarabone/ecs_motion
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 368.17 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 353.85 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.2.0b5 (e2067236bd5c)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/Resources/UnitySubsystems
@@ -35,49 +35,1118 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56372
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56696
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.010870 seconds.
+Registered in 0.005067 seconds.
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 204.35 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 230.98 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Invoked RoslynAnalysisRunner static constructor.
 RoslynAnalysisRunner will not be running.
 RoslynAnalysisRunner has terminated.
 Mono: successfully reloaded assembly
-- Completed reload, in  5.813 seconds
+- Completed reload, in  5.732 seconds
 Platform modules already initialized, skipping
 Registering precompiled user dll's ...
-Registered in 0.062172 seconds.
+Registered in 0.029236 seconds.
 Begin MonoManager ReloadAssembly
 Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 206.39 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 236.76 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Invoked RoslynAnalysisRunner static constructor.
 RoslynAnalysisRunner will not be running.
 RoslynAnalysisRunner has terminated.
 Mono: successfully reloaded assembly
-- Completed reload, in 10.561 seconds
+- Completed reload, in  8.404 seconds
 Platform modules already initialized, skipping
 ========================================================================
 Worker process is ready to serve import requests
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.27 seconds
-Refreshing native plugins compatible for Editor in 1.97 ms, found 1 plugins.
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.23 seconds
+Refreshing native plugins compatible for Editor in 1.93 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Unloading 3498 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 151.7 MB.
-System memory in use after: 151.9 MB.
+System memory in use before: 151.6 MB.
+System memory in use after: 151.8 MB.
 
-Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 3937.
-Total: 29.434500 ms (FindLiveObjects: 2.230500 ms CreateObjectMapping: 1.208000 ms MarkObjects: 25.199700 ms  DeleteObjects: 0.773500 ms)
+Unloading 29 unused Assets to reduce memory usage. Loaded Objects now: 3938.
+Total: 15.398700 ms (FindLiveObjects: 2.169100 ms CreateObjectMapping: 1.156300 ms MarkObjects: 11.885700 ms  DeleteObjects: 0.181600 ms)
 
 ========================================================================
 Received Import Request.
   path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
   artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '46ece03c1644cb7103259f47563c35f5') in 0.200209 seconds
-  Import took 0.228918 seconds .
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '44d4e51467b2283b864cc14ea773d209') in 0.129563 seconds
+  Import took 0.150634 seconds .
 
+========================================================================
+Received Import Request.
+  Time since last request: 74.825767 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5da0ad532936c97ff39ae728f6d5328b') in 0.026733 seconds
+  Import took 0.062005 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 316.882546 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '787f1e410a09f52c424fbd590bfcfc2c') in 0.018230 seconds
+  Import took 0.042535 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.033882 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '787f1e410a09f52c424fbd590bfcfc2c') in 0.021695 seconds
+  Import took 0.045158 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 53.228733 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2ea1b30d313d8dc426954032e9a444e5') in 0.136627 seconds
+  Import took 0.212608 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 16.693781 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ce3388b3f04df92caa45bbdfc8a155aa') in 0.178078 seconds
+  Import took 0.280088 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 21.940975 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0b2496a86bcb34b8fc5841e27ab9e86e') in 0.018697 seconds
+  Import took 0.121194 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 34.749233 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ad44344f358239d6a0d69b67cace155b') in 0.542544 seconds
+  Import took 0.580583 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 117.867537 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b13578bd9e7e007cbaae535c2328a0ac') in 0.019501 seconds
+  Import took 0.040226 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 8.903170 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a00141dfa581d7e1a5b9aefc3b04138f') in 0.037949 seconds
+  Import took 0.090067 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 10.289017 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e1c8394e6ad30fa8edd36fee6da3b25d') in 0.033031 seconds
+  Import took 0.057676 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.005456 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e1c8394e6ad30fa8edd36fee6da3b25d') in 0.029178 seconds
+  Import took 0.064530 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 64.595006 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '769a81de5d7e0ed65973154ad0eb8298') in 0.034135 seconds
+  Import took 0.069311 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.002848 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '769a81de5d7e0ed65973154ad0eb8298') in 0.181232 seconds
+  Import took 0.217866 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 108.264020 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '075314548bc226709c36a1d6c2df36cf') in 0.026168 seconds
+  Import took 0.056003 seconds .
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.005891 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 195.37 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  9.761 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.028773 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 1.97 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  6.780 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.92 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.6 MB.
+System memory in use after: 83.8 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 3946.
+Total: 14.156600 ms (FindLiveObjects: 2.501100 ms CreateObjectMapping: 0.873100 ms MarkObjects: 10.701100 ms  DeleteObjects: 0.074600 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.007992 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 193.06 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 10.394 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.028570 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.05 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  7.249 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.98 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.6 MB.
+System memory in use after: 83.9 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 3954.
+Total: 14.523100 ms (FindLiveObjects: 2.446200 ms CreateObjectMapping: 0.909000 ms MarkObjects: 11.090100 ms  DeleteObjects: 0.072600 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 265.923480 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '869c07ecc36ca4ed1a61705dd72533ac') in 0.039368 seconds
+  Import took 0.056919 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 166.477745 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '99d95d25221df1cf60cf6eaf7a84b0b4') in 0.017484 seconds
+  Import took 0.047134 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 154.912778 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '70590ea921010a68f2a74d929c9a9418') in 0.016699 seconds
+  Import took 0.043994 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 11.735116 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9d279b0ec6974d503a5b86dd6d6d1602') in 0.026690 seconds
+  Import took 0.052695 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.005034 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9d279b0ec6974d503a5b86dd6d6d1602') in 0.030813 seconds
+  Import took 0.060816 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 186.605988 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e3e858f11c5a3eb15b5bcd8b79be474b') in 0.033855 seconds
+  Import took 0.059547 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.020654 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e3e858f11c5a3eb15b5bcd8b79be474b') in 0.028022 seconds
+  Import took 0.054732 seconds .
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.006558 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 189.95 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  9.914 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.028469 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.26 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  7.272 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.93 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.9 MB.
+System memory in use after: 84.1 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 3962.
+Total: 13.845700 ms (FindLiveObjects: 2.470000 ms CreateObjectMapping: 1.337900 ms MarkObjects: 9.957000 ms  DeleteObjects: 0.075200 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.009852 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 399.10 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 13.564 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.034922 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.82 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 10.625 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.05 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.9 MB.
+System memory in use after: 84.1 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 3970.
+Total: 18.805800 ms (FindLiveObjects: 2.453000 ms CreateObjectMapping: 0.975000 ms MarkObjects: 15.232700 ms  DeleteObjects: 0.138300 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.007954 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 305.09 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 14.911 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.079723 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 3.16 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 10.708 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.94 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.9 MB.
+System memory in use after: 84.1 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 3978.
+Total: 14.459500 ms (FindLiveObjects: 2.766900 ms CreateObjectMapping: 0.961900 ms MarkObjects: 10.650600 ms  DeleteObjects: 0.074700 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 849.549003 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e7f1063850cb3d8eaf35ae37ffbe2fa1') in 0.114138 seconds
+  Import took 0.140567 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 114.796837 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1c2ee0d5fa31a4c9af123c0d2441ca9b') in 0.018435 seconds
+  Import took 0.039755 seconds .
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.006829 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 189.67 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.322 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.028388 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.08 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  9.227 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.06 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.9 MB.
+System memory in use after: 84.1 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 3986.
+Total: 13.418900 ms (FindLiveObjects: 2.311200 ms CreateObjectMapping: 0.996400 ms MarkObjects: 10.032800 ms  DeleteObjects: 0.072900 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.008154 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 193.11 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 12.171 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.026461 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.14 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  8.628 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.17 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.6 MB.
+System memory in use after: 83.9 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 3994.
+Total: 15.034400 ms (FindLiveObjects: 2.324700 ms CreateObjectMapping: 0.923500 ms MarkObjects: 11.697700 ms  DeleteObjects: 0.079400 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.005178 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 255.28 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 12.854 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.041630 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.79 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.054 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.11 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.7 MB.
+System memory in use after: 83.9 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4002.
+Total: 13.939000 ms (FindLiveObjects: 2.387500 ms CreateObjectMapping: 0.978000 ms MarkObjects: 10.443300 ms  DeleteObjects: 0.101500 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.010192 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 209.74 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.997 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.027156 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.11 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.466 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 3.83 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.9 MB.
+System memory in use after: 84.2 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4010.
+Total: 19.927500 ms (FindLiveObjects: 5.190000 ms CreateObjectMapping: 2.565300 ms MarkObjects: 11.163700 ms  DeleteObjects: 1.001400 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.008465 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 195.72 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.701 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.028010 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 1.99 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.971 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.15 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 84.0 MB.
+System memory in use after: 84.2 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4018.
+Total: 13.908100 ms (FindLiveObjects: 2.187900 ms CreateObjectMapping: 0.838900 ms MarkObjects: 10.776800 ms  DeleteObjects: 0.099100 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 2579.960915 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '13d029a149589419438edcbac7c544e4') in 0.274848 seconds
+  Import took 0.310018 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.001563 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc 1.shader
+  artifactKey: Guid(6918464f23a416e4b9568832c8736a36) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc 1.shader using Guid(6918464f23a416e4b9568832c8736a36) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5f496b6ad467a77a00be23e9211b8325') in 0.014844 seconds
+  Import took 0.035276 seconds .
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.005930 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 206.88 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 17.572 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.027986 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.10 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  9.587 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.02 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 84.0 MB.
+System memory in use after: 84.2 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4026.
+Total: 16.112600 ms (FindLiveObjects: 2.410700 ms CreateObjectMapping: 1.842400 ms MarkObjects: 11.759900 ms  DeleteObjects: 0.094100 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.007058 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 197.74 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.838 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.028285 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 1.98 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  9.763 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.94 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 84.0 MB.
+System memory in use after: 84.2 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4034.
+Total: 14.465300 ms (FindLiveObjects: 2.533300 ms CreateObjectMapping: 1.256700 ms MarkObjects: 10.567200 ms  DeleteObjects: 0.102800 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.004987 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 189.57 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 12.044 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.022518 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.07 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 10.159 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.21 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.7 MB.
+System memory in use after: 84.0 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4042.
+Total: 17.570500 ms (FindLiveObjects: 3.093500 ms CreateObjectMapping: 0.973600 ms MarkObjects: 13.417900 ms  DeleteObjects: 0.079200 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.009154 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 189.85 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 12.721 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.028923 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.02 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.245 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.02 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.8 MB.
+System memory in use after: 84.0 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4050.
+Total: 15.235000 ms (FindLiveObjects: 2.880100 ms CreateObjectMapping: 1.453000 ms MarkObjects: 10.821800 ms  DeleteObjects: 0.073500 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.008402 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 199.97 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 13.022 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.021435 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.74 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 12.258 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.10 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 84.0 MB.
+System memory in use after: 84.3 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4058.
+Total: 13.789800 ms (FindLiveObjects: 2.278200 ms CreateObjectMapping: 0.968300 ms MarkObjects: 10.463300 ms  DeleteObjects: 0.073300 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.006139 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 195.31 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 12.894 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.026442 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.04 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 10.895 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.93 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 84.0 MB.
+System memory in use after: 84.3 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4066.
+Total: 13.972500 ms (FindLiveObjects: 2.455700 ms CreateObjectMapping: 0.920000 ms MarkObjects: 10.518400 ms  DeleteObjects: 0.072300 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.005318 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 190.18 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 13.191 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.021702 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.06 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.204 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.98 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 84.0 MB.
+System memory in use after: 84.3 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4074.
+Total: 14.387500 ms (FindLiveObjects: 2.405600 ms CreateObjectMapping: 0.858100 ms MarkObjects: 11.046200 ms  DeleteObjects: 0.071900 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 1479.324869 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'eb03257cd0b227b629df7dca1e940bc0') in 0.044589 seconds
+  Import took 0.064064 seconds .
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.010856 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 191.01 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 15.984 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.022768 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.55 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.956 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.99 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 84.0 MB.
+System memory in use after: 84.3 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4082.
+Total: 14.501100 ms (FindLiveObjects: 2.384700 ms CreateObjectMapping: 1.307500 ms MarkObjects: 10.728400 ms  DeleteObjects: 0.074300 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 111.119386 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '07557fcc1652b348ccbef90c4f02b0a2') in 0.036745 seconds
+  Import took 0.053970 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 50.472392 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5da3d3a4a888286fe0f11ecd826dbdac') in 0.062517 seconds
+  Import took 0.084948 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 237.705432 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6ff60e93feb15fd2ab25b56db9e1b444') in 0.016861 seconds
+  Import took 0.052510 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.024490 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6ff60e93feb15fd2ab25b56db9e1b444') in 0.085686 seconds
+  Import took 0.126438 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 207.683321 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b328aca139129d193073b6fc2d82a713') in 0.028344 seconds
+  Import took 0.090495 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 53.153324 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c5ae8beb45cb364a721ffae49087e75e') in 0.019110 seconds
+  Import took 0.039459 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.038319 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c5ae8beb45cb364a721ffae49087e75e') in 0.026241 seconds
+  Import took 0.044960 seconds .
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.006484 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 222.93 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 16.301 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.027242 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 4.30 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 11.687 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.93 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.8 MB.
+System memory in use after: 84.0 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4090.
+Total: 14.868600 ms (FindLiveObjects: 2.332600 ms CreateObjectMapping: 0.980900 ms MarkObjects: 11.451400 ms  DeleteObjects: 0.096200 ms)
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.005839 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 190.04 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 15.565 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.028955 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 3.23 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in 15.853 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 4.16 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 83.9 MB.
+System memory in use after: 84.1 MB.
+
+Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 4098.
+Total: 22.002900 ms (FindLiveObjects: 2.615800 ms CreateObjectMapping: 1.562500 ms MarkObjects: 17.729300 ms  DeleteObjects: 0.089100 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 1873.614260 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3760c3fe8a9617ca895f412c055bfbf3') in 0.047458 seconds
+  Import took 0.071562 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.036661 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3760c3fe8a9617ca895f412c055bfbf3') in 0.023078 seconds
+  Import took 0.055928 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 36.208461 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader
+  artifactKey: Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/mc.shader using Guid(5df05f1f282eb8845aca53610dc25c84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a389c39c84aae94bf796281104e9f26d') in 0.157292 seconds
+  Import took 0.344462 seconds .
+
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
