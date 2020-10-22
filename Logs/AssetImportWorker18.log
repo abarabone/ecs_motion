@@ -1,0 +1,140 @@
+Using pre-set license
+Built from '2020.2/staging' branch; Version is '2020.2.0b5 (e2067236bd5c) revision 14812786'; Using compiler version '192528614'; Build Type 'Release'
+OS: 'Windows 10  (10.0.0) 64bit' Language: 'ja' Physical Memory: 3928 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 0
+
+ COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker18
+-projectPath
+C:/Users/abarabone/Desktop/vsgithub/abarabone/ecs_motion
+-logFile
+Logs/AssetImportWorker18.log
+-srvPort
+50374
+Successfully changed project path to: C:/Users/abarabone/Desktop/vsgithub/abarabone/ecs_motion
+C:/Users/abarabone/Desktop/vsgithub/abarabone/ecs_motion
+Using Asset Import Pipeline V2.
+Refreshing native plugins compatible for Editor in 230.91 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2020.2.0b5 (e2067236bd5c)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/abarabone/Desktop/vsgithub/abarabone/ecs_motion/Assets
+GfxDevice: creating device client; threaded=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: Intel(R) HD Graphics (ID=0x5a85)
+    Vendor:   
+    VRAM:     1964 MB
+    Driver:   25.20.100.6373
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56412
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.005250 seconds.
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 215.36 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  3.696 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.028270 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\abarabone\ecs_motion\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 209.45 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  9.120 seconds
+Platform modules already initialized, skipping
+========================================================================
+Worker process is ready to serve import requests
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.18 seconds
+Refreshing native plugins compatible for Editor in 2.00 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 3499 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 151.8 MB.
+System memory in use after: 152.1 MB.
+
+Unloading 29 unused Assets to reduce memory usage. Loaded Objects now: 3939.
+Total: 22.208900 ms (FindLiveObjects: 2.116300 ms CreateObjectMapping: 0.873100 ms MarkObjects: 18.043100 ms  DeleteObjects: 1.171200 ms)
+
+========================================================================
+Received Import Request.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute
+  artifactKey: Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute using Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fef3a8d17c0076f1a5207b515bd314ad') in 0.137836 seconds
+  Import took 0.156189 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 239.006928 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute
+  artifactKey: Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute using Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '515f2d650487daaa85c85d327db1eba4') in 0.125185 seconds
+  Import took 0.194671 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 20.587308 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute
+  artifactKey: Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute using Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '00989f32c828b7b715f36891a73a2f8d') in 0.023960 seconds
+  Import took 0.051499 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 36.533070 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute
+  artifactKey: Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute using Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd421c8ec542ce13a14d280775f1b5f29') in 0.033743 seconds
+  Import took 0.440308 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 466.600003 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute
+  artifactKey: Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute using Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3afb2ffec790736d58c564723aec1ce6') in 0.058155 seconds
+  Import took 0.091506 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.443989 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute
+  artifactKey: Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute using Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3afb2ffec790736d58c564723aec1ce6') in 0.018411 seconds
+  Import took 0.040906 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 376.790193 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute
+  artifactKey: Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute using Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '179a5697006957e6887c8a7d097abe6e') in 0.018622 seconds
+  Import took 0.056962 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 40.386554 seconds.
+  path: Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute
+  artifactKey: Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/MarchingCubes/Resource/Shader/MarchingCubeInit n.compute using Guid(227b286ddc9804649bd742ad23811412) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0d90bf00ecb19becc53fb079db95b532') in 0.037034 seconds
+  Import took 0.081241 seconds .
+
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
