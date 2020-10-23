@@ -41,14 +41,16 @@ namespace Abarabone.MarchingCubes
 
 
             var gridInstances = globaldata.GridInstances;
-            //buf.GridBuffer.SetData(gridInstances.AsArray());//Debug.Log(gridInstances.AsArray().Length);
-            var grids = new Vector4[gridInstances.Length * 2];
-            fixed (Vector4* pdst = grids)
-            {
-                var psrc = (Vector4*)gridInstances.GetUnsafePtr();
-                UnsafeUtility.MemCpy(pdst, psrc, gridInstances.Length * 2 * sizeof(float4));
-            }
-            mat.SetVectorArray("grids", grids);
+            buf.GridBuffer.SetData(gridInstances.AsArray());//Debug.Log(gridInstances.AsArray().Length);
+            var d = new GridInstanceData[gridInstances.Length];
+            buf.GridBuffer.GetData(d);Debug.Log($"{gridInstances[0].Position}, {gridInstances[0].ortho}: {d[0].Position}, {d[0].ortho}");
+            //var grids = new Vector4[gridInstances.Length * 2];
+            //fixed (Vector4* pdst = grids)
+            //{
+            //    var psrc = gridInstances.GetUnsafePtr();
+            //    UnsafeUtility.MemCpy(pdst, psrc, gridInstances.Length * 2 * sizeof(float4));
+            //}
+            //mat.SetVectorArray("grids", grids);
             //buf.GridBuffer.SetData(grids);
             //mat.SetConstantBuffer_("grids", buf.GridBuffer);
 
@@ -57,10 +59,14 @@ namespace Abarabone.MarchingCubes
             for (var i = 0; i < remain; i++) cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
             buf.CubeInstancesBuffer.SetData(cubeInstances.AsArray());
 
-            var dargparams = new IndirectArgumentsForDispatch(cubeInstances.Length >> 6, 1, 1);
-            var dargs = buf.ArgsBufferForDispatch;
-            dargs.SetData(ref dargparams);
-            cs.Dispatch(0, cubeInstances.Length >> 6, 1, 1);//
+
+            if(cs != null)
+            {
+                var dargparams = new IndirectArgumentsForDispatch(cubeInstances.Length >> 6, 1, 1);
+                var dargs = buf.ArgsBufferForDispatch;
+                dargs.SetData(ref dargparams);
+                cs.Dispatch(0, cubeInstances.Length >> 6, 1, 1);//
+            }
 
 
             var mesh = globaldata.DrawResources.mesh;

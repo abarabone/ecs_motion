@@ -437,15 +437,16 @@ namespace Abarabone.MarchingCubes
             // { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
 
             mat.SetConstantBuffer_("static_data", res.StaticDataBuffer);
-            //mat.SetConstantBuffer_("grid_constant", res.GridBuffer);
+            mat.SetConstantBuffer_("grid_constant", res.GridBuffer);
+            //res.GridBuffer.SetData(new float4[] {new float4(), new float4()});
             //mat.SetConstantBuffer("grids", res.GridBuffer);
 
             mat.SetBuffer("cube_instances", res.CubeInstancesBuffer);
             mat.SetTexture("grid_cubeids", res.GridCubeIdBuffer);
             //mat.SetBuffer( "grid_cubeids", res.GridCubeIdBuffer );
 
-            cs.SetBuffer(0, "src_instances", res.CubeInstancesBuffer);
-            cs.SetTexture(0, "dst_grid_cubeids", res.GridCubeIdBuffer);
+            if (cs != null) cs.SetBuffer(0, "src_instances", res.CubeInstancesBuffer);
+            if (cs != null) cs.SetTexture(0, "dst_grid_cubeids", res.GridCubeIdBuffer);
         }
         //public static void SetResourcesTo_(this DrawResources res, Material mat, ComputeShader cs)
         //{

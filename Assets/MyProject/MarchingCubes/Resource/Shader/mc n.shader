@@ -76,23 +76,12 @@
 			CBUFFER_END;
 
 
-		//#if defined(UNITY_INSTANCING_ENABLED)
-			//CBUFFER_START(grid_constant)
-			//cbuffer grid_constant
-			//{
-				//struct {
-				//	float4 position;
-				//	uint4 near_id;
-				//} grids[512];
-			//	float4 grids[512][2];
-			//}
-			//struct aaa { int i; }
-			//ConstantBuffer<aaa> a;
-			float4 grids[512][2];
-			// [0] : position as float3
-			// [1] : near grid id
-			// { x : back>>0 | up>>16  y : left>>0 | current>>16  z : right>>0 | down>>16  w : forward>>0 }
-			//CBUFFER_END;
+			CBUFFER_START(grid_constant)
+				float4 grids[512][2];
+			//	// [0] : position as float3
+			//	// [1] : near grid id
+			//	// { x : back>>0 | up>>16  y : left>>0 | current>>16  z : right>>0 | down>>16  w : forward>>0 }
+			CBUFFER_END;
 
 			static const uint grid_pos = 0;
 			static const uint grid_near_id = 1;
@@ -268,10 +257,7 @@
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
 			}
-		//#else
-		//	v2f vert(appdata v, uint i : SV_InstanceID){ v2f o; o.vertex = float4(0,0,0,0); return o; }
-		//	fixed4 frag(v2f i) : SV_Target { fixed4 o; return o; }
-		//#endif
+
 		ENDCG
 	}
 	}

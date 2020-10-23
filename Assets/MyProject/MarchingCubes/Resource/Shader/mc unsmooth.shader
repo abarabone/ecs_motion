@@ -1,4 +1,4 @@
-﻿Shader "Custom/mc"
+﻿Shader "Custom/mc_unsmooth"
 {
 	Properties
 	{
@@ -77,17 +77,14 @@
 
 			
 			CBUFFER_START(grid_constant)
-				
 				float4 grids[512][2];
 				// [0] : position as float3
 				// [1] : near grid id
 				// { x : back>>0 | up>>16  y : left>>0 | current>>16  z : right>>0 | down>>16  w : forward>>0 }
-				
-				static const uint grid_pos = 0;
-				static const uint grid_near_id = 1;
-
 			CBUFFER_END;
 
+			static const uint grid_pos = 0;
+			static const uint grid_near_id = 1;
 
 			
 			//static const int _32e0 = 1;
@@ -201,16 +198,16 @@
 
 				uint4 cubeindex_near;
 				const float3 nm0 = get_vtx_normal(cubeid_current, ivtx.w);
-				const float3 nm1 = get_vtx_normal_near(cubeindex_current, ivtx.wx, 1, cubeindex_near);
-				const float3 nm2 = get_vtx_normal_near(cubeindex_current, ivtx.wy, 2, cubeindex_near);
-				const float3 nm3 = get_vtx_normal_near(cubeindex_near,    ivtx.wz, 1, cubeindex_near);
+				//const float3 nm1 = get_vtx_normal_near(cubeindex_current, ivtx.wx, 1, cubeindex_near);
+				//const float3 nm2 = get_vtx_normal_near(cubeindex_current, ivtx.wy, 2, cubeindex_near);
+				//const float3 nm3 = get_vtx_normal_near(cubeindex_near,    ivtx.wz, 1, cubeindex_near);
 
-				return normalize(nm0 + nm1 + nm2 + nm3);
+				return normalize(nm0);// + nm1 + nm2 + nm3);
 			}
 
 
 
-			//static const float3 vvvv[] = { {0,0,0}, {1,0,0}, {0,1,0} };
+
 			v2f vert(appdata v, uint i : SV_InstanceID)
 			{
 				v2f o;
