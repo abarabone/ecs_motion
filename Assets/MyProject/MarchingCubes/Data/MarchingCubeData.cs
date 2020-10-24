@@ -169,13 +169,13 @@ namespace Abarabone.MarchingCubes
             this.CubeInstancesBuffer = createCubeIdInstancingShaderBuffer_(32 * 32 * 32 * maxGridLength);
             this.GridCubeIdBuffer = createGridCubeIdShaderBuffer_(maxGridLength);
 
+            this.GridBuffer = createGridShaderBuffer_(maxGridLength);// 512);
+
             var cubeVertexBuffer = createCubeVertexBuffer_(asset.BaseVertexList);
             var vertexNormalDict = makeVertexNormalsDict_(asset.CubeIdAndVertexIndicesList);
             var cubePatternBuffer = createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList, vertexNormalDict);
             var normalBuffer = createNormalList_(vertexNormalDict);
             this.StaticDataBuffer = createCubeGeometryData_(cubeVertexBuffer, cubePatternBuffer, normalBuffer);
-
-            this.GridBuffer = createGridShaderBuffer_(maxGridLength);// 512);
 
             this.mesh = createMesh_();
         }
@@ -386,9 +386,13 @@ namespace Abarabone.MarchingCubes
 
         ComputeBuffer createGridShaderBuffer_(int maxGridLength)
         {
-            //var buffer = new ComputeBuffer(maxGridLength, Marshal.SizeOf<float4>()*2, ComputeBufferType.Constant);
-            var buffer = new ComputeBuffer(maxGridLength * 2, Marshal.SizeOf<float4>(), ComputeBufferType.Constant);
-
+            var buffer = new ComputeBuffer(maxGridLength, Marshal.SizeOf<float4>() * 2, ComputeBufferType.Constant);
+            //var buffer = new ComputeBuffer(maxGridLength * 2, Marshal.SizeOf<float4>(), ComputeBufferType.Constant);
+            var d = new DrawMarchingCubeCsSystem.V2[maxGridLength];
+            d[0] = DrawMarchingCubeCsSystem.V2.v;
+            buffer.SetData(d);
+            var a = new Vector4[4];
+            buffer.GetData(a, 0, 0, 2); Debug.Log(a[0]);
             return buffer;
         }
 

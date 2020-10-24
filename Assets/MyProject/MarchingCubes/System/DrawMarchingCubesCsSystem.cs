@@ -26,6 +26,12 @@ namespace Abarabone.MarchingCubes
             this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
         }
 
+        unsafe public struct V2
+        {
+            public float vec0, vec1, vec2, vec3;
+            public float vec4, vec5, vec6, vec7;
+            static public V2 v => new V2 {vec0=1, vec1=2, vec2=3, vec3=4, vec4=5, vec5=6, vec6=7, vec7=8 };
+        }
         protected unsafe override void OnUpdate()
         {
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
@@ -39,21 +45,26 @@ namespace Abarabone.MarchingCubes
             var buf = globaldata.DrawResources;
 
 
-
             var gridInstances = globaldata.GridInstances;
-            buf.GridBuffer.SetData(gridInstances.AsArray());//Debug.Log(gridInstances.AsArray().Length);
-            var d = new GridInstanceData[gridInstances.Length];
-            buf.GridBuffer.GetData(d);Debug.Log($"{gridInstances[0].Position}, {gridInstances[0].ortho}: {d[0].Position}, {d[0].ortho}");
-            //var grids = new Vector4[gridInstances.Length * 2];
-            //fixed (Vector4* pdst = grids)
-            //{
-            //    var psrc = gridInstances.GetUnsafePtr();
-            //    UnsafeUtility.MemCpy(pdst, psrc, gridInstances.Length * 2 * sizeof(float4));
-            //}
-            //mat.SetVectorArray("grids", grids);
-            //buf.GridBuffer.SetData(grids);
-            //mat.SetConstantBuffer_("grids", buf.GridBuffer);
+            buf.GridBuffer.SetData(gridInstances.AsArray().Reinterpret<V2>());//Debug.Log(gridInstances.AsArray().Length);
+            //var ns = gridInstances.AsArray().Reinterpret<V2>();
+            ////using var nd = new NativeArray<V2>(gridInstances.Length, Allocator.Temp);
+            //var d = new V2[gridInstances.Length];// nd.Reinterpret<GridInstanceData>();
+            ////buf.GridBuffer.GetData(d);Debug.Log($"{gridInstances[0].Position}, {gridInstances[0].ortho}: {d[0].Position}, {d[0].ortho}");
+            //buf.GridBuffer.GetData(d); Debug.Log($"{ns[0].vec0}, {ns[0].vec4}: {math.asuint(d[0].vec0)}, {math.asuint(d[0].vec4)}");
+            ////var grids = new Vector4[gridInstances.Length * 2];
+            ////fixed (Vector4* pdst = grids)
+            ////{
+            ////    var psrc = gridInstances.GetUnsafePtr();
+            ////    UnsafeUtility.MemCpy(pdst, psrc, gridInstances.Length * 2 * sizeof(float4));
+            ////}
+            ////mat.SetVectorArray("grids", grids);
+            ////buf.GridBuffer.SetData(grids);
+            ////mat.SetConstantBuffer_("grids", buf.GridBuffer);
 
+            var e = new uint4[1];
+            buf.StaticDataBuffer.GetData(e, 0, 0, 1);
+            Debug.Log($"{e[0]}");
 
             var remain = (64 - (cubeInstances.Length & 0x3f)) & 0x3f;
             for (var i = 0; i < remain; i++) cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
