@@ -143,7 +143,7 @@ namespace Abarabone.MarchingCubes
 
 
 
-    public struct DrawResources : System.IDisposable
+    public struct DrawResources : IDisposable
     {
         public ComputeBuffer ArgsBufferForInstancing;
         public ComputeBuffer ArgsBufferForDispatch;
@@ -388,11 +388,17 @@ namespace Abarabone.MarchingCubes
         {
             var buffer = new ComputeBuffer(maxGridLength, Marshal.SizeOf<float4>() * 2, ComputeBufferType.Constant);
             //var buffer = new ComputeBuffer(maxGridLength * 2, Marshal.SizeOf<float4>(), ComputeBufferType.Constant);
-            var d = new DrawMarchingCubeCsSystem.V2[maxGridLength];
-            d[0] = DrawMarchingCubeCsSystem.V2.v;
-            buffer.SetData(d);
-            var a = new Vector4[4];
-            buffer.GetData(a, 0, 0, 2); Debug.Log(a[0]);
+            
+            ////var d = new GridInstanceData[maxGridLength];
+            ////buffer.SetData(d);
+
+            ////d[0] = new GridInstanceData {ortho=new uint4(1,1,1,1), Position=new float4(1,1,1,1)};
+            ////buffer.SetData(d);
+
+            ////var a = new GridInstanceData[2];
+            ////buffer.GetData(a, 0, 0, 2);
+            ////Debug.Log(a[0].Position);
+
             return buffer;
         }
 

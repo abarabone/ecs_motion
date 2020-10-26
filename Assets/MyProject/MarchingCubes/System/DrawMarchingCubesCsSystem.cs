@@ -46,25 +46,9 @@ namespace Abarabone.MarchingCubes
 
 
             var gridInstances = globaldata.GridInstances;
-            buf.GridBuffer.SetData(gridInstances.AsArray().Reinterpret<V2>());//Debug.Log(gridInstances.AsArray().Length);
-            //var ns = gridInstances.AsArray().Reinterpret<V2>();
-            ////using var nd = new NativeArray<V2>(gridInstances.Length, Allocator.Temp);
-            //var d = new V2[gridInstances.Length];// nd.Reinterpret<GridInstanceData>();
-            ////buf.GridBuffer.GetData(d);Debug.Log($"{gridInstances[0].Position}, {gridInstances[0].ortho}: {d[0].Position}, {d[0].ortho}");
-            //buf.GridBuffer.GetData(d); Debug.Log($"{ns[0].vec0}, {ns[0].vec4}: {math.asuint(d[0].vec0)}, {math.asuint(d[0].vec4)}");
-            ////var grids = new Vector4[gridInstances.Length * 2];
-            ////fixed (Vector4* pdst = grids)
-            ////{
-            ////    var psrc = gridInstances.GetUnsafePtr();
-            ////    UnsafeUtility.MemCpy(pdst, psrc, gridInstances.Length * 2 * sizeof(float4));
-            ////}
-            ////mat.SetVectorArray("grids", grids);
-            ////buf.GridBuffer.SetData(grids);
-            ////mat.SetConstantBuffer_("grids", buf.GridBuffer);
+            gridInstances.Length = buf.GridBuffer.count;
+            buf.GridBuffer.SetData(gridInstances.AsArray());
 
-            var e = new uint4[1];
-            buf.StaticDataBuffer.GetData(e, 0, 0, 1);
-            Debug.Log($"{e[0]}");
 
             var remain = (64 - (cubeInstances.Length & 0x3f)) & 0x3f;
             for (var i = 0; i < remain; i++) cubeInstances.AddNoResize(new CubeInstance { instance = 1 });

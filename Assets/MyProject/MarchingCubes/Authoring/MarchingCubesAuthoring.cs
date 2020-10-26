@@ -20,6 +20,7 @@ namespace Abarabone.MarchingCubes.Authoring
     {
 
         public int MaxCubeInstances;
+        [Range(0, 512)]
         public int MaxGridInstances;
         public int MaxFreeGrids;
 
