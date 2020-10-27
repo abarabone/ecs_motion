@@ -47,6 +47,7 @@ namespace Abarabone.MarchingCubes.Authoring
                         typeof(DotGridArea.BufferData),
                         typeof(DotGridArea.InfoData),
                         typeof(DotGridArea.InfoWorkData),
+                        typeof(DotGridArea.OutputCubesData),
                         typeof(Rotation),
                         typeof(Translation)
                     }
@@ -81,6 +82,12 @@ namespace Abarabone.MarchingCubes.Authoring
                     new DotGridArea.InfoWorkData
                     {
                         GridSpan = new int3(1, wholeLength.x * wholeLength.z, wholeLength.x),
+                    }
+                );
+                em.SetComponentData(ent,
+                    new DotGridArea.OutputCubesData
+                    {
+                        CubeInstances = new UnsafeList<CubeInstance>(32*32*32, Allocator.Persistent),
                     }
                 );
                 em.SetComponentData(ent,
