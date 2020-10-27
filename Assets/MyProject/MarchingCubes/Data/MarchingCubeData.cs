@@ -70,6 +70,17 @@ namespace Abarabone.MarchingCubes
         }
     }
 
+    static public partial class Resource
+    {
+
+        public class Initialize : IComponentData
+        {
+            public MarchingCubeAsset Asset;
+            public int MaxGridLengthInShader;
+        }
+
+    }
+
 
     static public partial class DotGridArea
     {
@@ -83,6 +94,11 @@ namespace Abarabone.MarchingCubes
         public unsafe struct BufferData : IComponentData
         {
             public UnsafeList<DotGrid32x32x32Unsafe> Grids;
+        }
+
+        public struct OutputCubesData : IComponentData
+        {
+            public UnsafeList<CubeInstance> CubeInstances;
         }
 
         public struct InfoData : IComponentData
@@ -99,20 +115,10 @@ namespace Abarabone.MarchingCubes
 
 
 
-    static public partial class Resource
-    {
-
-        public class Initialize : IComponentData
-        {
-            public MarchingCubeAsset Asset;
-            public int MaxGridLengthInShader;
-        }
-
-    }
 
 
 
-    static public partial class GridArea
+    static public partial class DotGridArea
     {
         /// <summary>
         /// グリッドエリアから、指定した位置のグリッドポインタを取得する。

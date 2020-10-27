@@ -63,7 +63,7 @@ namespace Abarabone.MarchingCubes
                 int ix, int iy, int iz
             )
         {
-            var gridptr = GridArea.GetGridFromArea(ref grids, ref areaInfo, ix, iy, iz);
+            var gridptr = DotGridArea.GetGridFromArea(ref grids, ref areaInfo, ix, iy, iz);
 
             if (defaultGrids.IsDefault(*gridptr.p))
             {
