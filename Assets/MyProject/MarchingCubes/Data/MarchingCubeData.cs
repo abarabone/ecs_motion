@@ -148,10 +148,18 @@ namespace Abarabone.MarchingCubes
 
 
 
+    public struct DotGridAreaDrawResources// : IDisposable
+    {
+        public ComputeBuffer ArgsBufferForInstancing;
+        public ComputeBuffer ArgsBufferForDispatch;
+
+        public ComputeBuffer GridBuffer;
+        public ComputeBuffer CubeInstancesBuffer;
+    }
 
 
 
-    public struct DrawResources : IDisposable
+        public struct DrawResources : IDisposable
     {
         public ComputeBuffer ArgsBufferForInstancing;
         public ComputeBuffer ArgsBufferForDispatch;

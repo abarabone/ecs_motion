@@ -44,6 +44,30 @@ namespace Abarabone.MarchingCubes
 
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
 
+            this.Entities
+                .WithoutBurst()
+                .ForEach(
+                    (
+                        ref DotGridArea.BufferData buf,
+                        ref DotGridArea.OutputCubesData output
+                    ) =>
+                    {
+                        for (var i = 0; i < buf.Grids.length; i++)
+                        {
+                            var defs = globaldata.DefaultGrids;
+                            var grid = buf.Grids[i];
+                            if (grid.pUnits == null) continue;
+                            if (defs.IsDefault(grid)) continue;
+
+                            buf.Grids[i].Dispose();
+                        }
+
+                        output.CubeInstances.Dispose();
+                        output.GridInstances.Dispose();
+                    }
+                )
+                .Run();
+
             globaldata.Dispose();
         }
 
