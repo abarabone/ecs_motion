@@ -22,6 +22,9 @@ namespace Abarabone.MarchingCubes.Authoring
 
         public GridFillMode FillMode;
 
+        [Range(0, 512)]
+        public int MaxGridInstances;
+        public int MaxCubeInstances;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -87,7 +90,8 @@ namespace Abarabone.MarchingCubes.Authoring
                 em.SetComponentData(ent,
                     new DotGridArea.OutputCubesData
                     {
-                        CubeInstances = new UnsafeList<CubeInstance>(32*32*32, Allocator.Persistent),
+                        GridInstances = new UnsafeList<GridInstanceData>(this.MaxGridInstances, Allocator.Persistent),
+                        CubeInstances = new UnsafeList<CubeInstance>(this.MaxCubeInstances, Allocator.Persistent),
                     }
                 );
                 em.SetComponentData(ent,

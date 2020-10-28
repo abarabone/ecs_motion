@@ -24,8 +24,8 @@ namespace Abarabone.MarchingCubes
 
     public class MarchingCubeGlobalData : IComponentData//, IDisposable
     {
-        public NativeList<CubeInstance> CubeInstances;
         public NativeList<GridInstanceData> GridInstances;
+        public NativeList<CubeInstance> CubeInstances;
 
         public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
         public FreeStockList FreeStocks;
@@ -98,7 +98,9 @@ namespace Abarabone.MarchingCubes
 
         public struct OutputCubesData : IComponentData
         {
+            public UnsafeList<GridInstanceData> GridInstances;
             public UnsafeList<CubeInstance> CubeInstances;
+            //public UnsafeRingQueue<CubeInstance*> CubeInstances;
         }
 
         public struct InfoData : IComponentData
@@ -134,7 +136,7 @@ namespace Abarabone.MarchingCubes
         {
             //ref var areaGrids = ref x.Item1;
             //ref var areaInfo = ref x.Item2;
-
+            
             var i3 = new int3(ix, iy, iz) + 1;
             var i = math.dot(i3, areaInfo.GridSpan);
 

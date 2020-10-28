@@ -39,16 +39,17 @@ namespace Abarabone.MarchingCubes
 
         protected unsafe override void OnUpdate()
         {
-            var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
-            var cubeInstances = globaldata.CubeInstances;
-            var gridInstances = globaldata.GridInstances;
-            cubeInstances.Clear();
-            gridInstances.Clear();
+            //var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
+            //var cubeInstances = globaldata.CubeInstances;
+            //var gridInstances = globaldata.GridInstances;
+            //cubeInstances.Clear();
+            //gridInstances.Clear();
 
             this.Entities
                 .WithBurst()
                 .ForEach(
                         (
+                            ref DotGridArea.OutputCubesData output,
                             in DotGridArea.BufferData buf,
                             in DotGridArea.InfoData dim,
                             in DotGridArea.InfoWorkData unit
@@ -70,22 +71,24 @@ namespace Abarabone.MarchingCubes
                                     if (!gridcount.isNeedDraw_()) continue;
                                     //if( !isNeedDraw_( ref gridset ) ) continue;
 
-                                    var dstCubeInstances = new InstanceCubeByList { list = cubeInstances };
+
+                                    var dstCubeInstances = new InstanceCubeByUnsafeList { list = output.CubeInstances };
                                     dstCubeInstances.SampleAllCubes(ref gridset, ref gridcount, gridId);
                                     //SampleAllCubes( ref gridset, gridId, dstCubeInstances );
+                                    output.CubeInstances = dstCubeInstances.list;
 
                                     var data = new GridInstanceData
                                     {
                                         Position = (new int4(ix, iy, iz, 0) - new int4(1, 1, 1, 0)) * new float4(32, -32, -32, 0)
                                     };
-                                    gridInstances.AddNoResize(data);
+                                    output.GridInstances.AddNoResize(data);
 
                                     gridId++;
 
                                 }
 
                         var gridScale = 1.0f / new float3(32, 32, 32);//Debug.Log(instance.GridInstances.length);
-                        CubeUtility.GetNearGridList(gridInstances, gridScale);
+                        CubeUtility.GetNearGridList(output.GridInstances.AsNativeArray(), gridScale);
                     }
                 )
                 .Schedule();
