@@ -30,14 +30,15 @@ namespace Abarabone.MarchingCubes
         {
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
 
-            var cs = globaldata.GridCubeIdSetShader;
-            var mat = globaldata.CubeMaterial;
-            var buf = globaldata.DrawResources;
+            var gbuf = globaldata.DrawResources;
 
             this.Entities
                 .WithoutBurst()
                 .ForEach(
-                    (ref DotGridArea.OutputCubesData output)
+                        (
+                            ref DotGridArea.OutputCubesData output,
+                            in DotGridArea.ResourceData res
+                        )
                     =>
                     {
                         var cubeInstances = output.CubeInstances;//globaldata.CubeInstances;
@@ -45,27 +46,32 @@ namespace Abarabone.MarchingCubes
                         if (cubeInstances.Length == 0) return;
 
 
+                        var cs = res.GridCubeIdSetShader;
+                        var mat = res.CubeMaterial;
+                        var abuf = res.Resources;
+
+
                         var gridInstances = output.GridInstances;//globaldata.GridInstances;
-                        gridInstances.Length = buf.GridBuffer.count;//
-                        buf.GridBuffer.SetData(gridInstances.AsNativeArray());
+                        gridInstances.Length = abuf.GridInstancesBuffer.count;//
+                        abuf.GridInstancesBuffer.SetData(gridInstances.AsNativeArray());
 
 
                         var remain = (64 - (cubeInstances.Length & 0x3f)) & 0x3f;
                         for (var i = 0; i < remain; i++) cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
-                        buf.CubeInstancesBuffer.SetData(cubeInstances.AsNativeArray());
+                        abuf.CubeInstancesBuffer.SetData(cubeInstances.AsNativeArray());
 
 
                         if (cs != null)
                         {
                             var dargparams = new IndirectArgumentsForDispatch(cubeInstances.Length >> 6, 1, 1);
-                            var dargs = buf.ArgsBufferForDispatch;
+                            var dargs = abuf.ArgsBufferForDispatch;
                             dargs.SetData(ref dargparams);
                             cs.Dispatch(0, cubeInstances.Length >> 6, 1, 1);//
                         }
 
 
                         var mesh = globaldata.DrawResources.mesh;
-                        var iargs = buf.ArgsBufferForInstancing;
+                        var iargs = abuf.ArgsBufferForInstancing;
 
                         var instanceCount = cubeInstances.Length;
                         var iargparams = new IndirectArgumentsForInstancing(mesh, instanceCount);

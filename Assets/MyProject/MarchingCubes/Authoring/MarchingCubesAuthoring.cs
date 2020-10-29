@@ -25,8 +25,8 @@ namespace Abarabone.MarchingCubes.Authoring
         public int MaxFreeGrids;
 
         public MarchingCubeAsset MarchingCubesAsset;
-        public Material SrcMaterial;
-        public ComputeShader GridCubeIdSetShader;
+        //public Material SrcMaterial;
+        //public ComputeShader GridCubeIdSetShader;
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -45,7 +45,7 @@ namespace Abarabone.MarchingCubes.Authoring
                     new MarchingCubeGlobalData()
                         .Init(
                             this.MaxCubeInstances, this.MaxGridInstances, this.MaxFreeGrids,
-                            this.MarchingCubesAsset, this.SrcMaterial, this.GridCubeIdSetShader
+                            this.MarchingCubesAsset//, this.SrcMaterial, this.GridCubeIdSetShader
                         )
                 );
             }

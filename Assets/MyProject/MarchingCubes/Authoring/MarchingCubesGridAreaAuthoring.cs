@@ -26,6 +26,9 @@ namespace Abarabone.MarchingCubes.Authoring
         public int MaxGridInstances;
         public int MaxCubeInstances;
 
+        public Material SrcMaterial;
+        public ComputeShader GridCubeIdSetShader;
+
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -51,6 +54,7 @@ namespace Abarabone.MarchingCubes.Authoring
                         typeof(DotGridArea.InfoData),
                         typeof(DotGridArea.InfoWorkData),
                         typeof(DotGridArea.OutputCubesData),
+                        typeof(DotGridArea.ResourceData),
                         typeof(Rotation),
                         typeof(Translation)
                     }
@@ -93,6 +97,13 @@ namespace Abarabone.MarchingCubes.Authoring
                         GridInstances = new UnsafeList<GridInstanceData>(this.MaxGridInstances, Allocator.Persistent),
                         CubeInstances = new UnsafeList<CubeInstance>(this.MaxCubeInstances, Allocator.Persistent),
                     }
+                );
+                em.SetComponentData(ent,
+                    new DotGridArea.ResourceData()
+                        .Init(
+                            this.MaxCubeInstances, this.MaxGridInstances,
+                            this.SrcMaterial, this.GridCubeIdSetShader
+                        )
                 );
                 em.SetComponentData(ent,
                     new Rotation
