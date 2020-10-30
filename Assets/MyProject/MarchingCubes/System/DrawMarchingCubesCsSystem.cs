@@ -25,12 +25,34 @@ namespace Abarabone.MarchingCubes
 
             this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
         }
+        protected override void OnStartRunning()
+        {
+            base.OnStartRunning();
+         
+            var gres = this.GetSingleton<MarchingCubeGlobalData>().Resources;
+
+            this.Entities
+                .WithoutBurst()
+                .ForEach(
+                    (
+                        DotGridArea.ResourceData ares    
+                    ) =>
+                    {
+                        var mat = ares.CubeMaterial;
+                        var cs = ares.GridCubeIdSetShader;
+
+                        gres.SetResourcesTo(mat, cs);
+                        ares.Resources.SetResourcesTo(mat, cs);
+                    }
+                )
+                .Run();
+        }
 
         protected unsafe override void OnUpdate()
         {
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
 
-            var gbuf = globaldata.DrawResources;
+            var gbuf = globaldata.Resources;
 
             this.Entities
                 .WithoutBurst()
@@ -70,7 +92,7 @@ namespace Abarabone.MarchingCubes
                         }
 
 
-                        var mesh = globaldata.DrawResources.mesh;
+                        var mesh = globaldata.Resources.mesh;
                         var iargs = abuf.ArgsBufferForInstancing;
 
                         var instanceCount = cubeInstances.Length;

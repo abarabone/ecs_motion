@@ -31,14 +31,13 @@ namespace Abarabone.MarchingCubes
         public FreeStockList FreeStocks;
 
         //public mc.DrawResources DrawResources;
-        public GlobalResources DrawResources;
+        public GlobalResources Resources;
 
         //public Material CubeMaterial;
         //public ComputeShader GridCubeIdSetShader;
 
 
-        public MarchingCubeGlobalData Init
-            (int maxCubeInstances, int maxGridInstances, int maxFreeGrids, MarchingCubeAsset asset, Material mat, ComputeShader cs)
+        public MarchingCubeGlobalData Init(int maxFreeGrids, int maxGridInstances, MarchingCubeAsset asset)
         {
             //this.CubeInstances = new NativeList<CubeInstance>(maxCubeInstances, Allocator.Persistent);
             //this.GridInstances = new NativeList<GridInstanceData>(maxGridInstances, Allocator.Persistent);
@@ -48,8 +47,8 @@ namespace Abarabone.MarchingCubes
             this.DefaultGrids[(int)GridFillMode.Blank] = DotGridAllocater.Alloc(GridFillMode.Blank);
             this.DefaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
 
-            this.DrawResources = new GlobalResources(asset, maxCubeInstances, maxGridInstances);
-            this.DrawResources.SetResourcesTo(mat, cs);
+            this.Resources = new GlobalResources(asset, maxGridInstances);
+            //this.DrawResources.SetResourcesTo(mat, cs);
             //this.GridCubeIdSetShader = cs;
             //this.CubeMaterial = mat;
 
@@ -58,7 +57,7 @@ namespace Abarabone.MarchingCubes
 
         public void Dispose()
         {
-            this.DrawResources.Dispose();
+            this.Resources.Dispose();
 
             this.DefaultGrids[(int)GridFillMode.Blank].Dispose();
             this.DefaultGrids[(int)GridFillMode.Solid].Dispose();
@@ -140,7 +139,7 @@ namespace Abarabone.MarchingCubes
             )
         {
             res.Resources = new DotGridAreaDrawResources(maxCubeInstances, maxGridInstances);
-            res.Resources.SetResourcesTo(mat, cs);
+            //res.Resources.SetResourcesTo(mat, cs);
             res.GridCubeIdSetShader = cs;
             res.CubeMaterial = mat;
 
@@ -223,7 +222,7 @@ namespace Abarabone.MarchingCubes
         public Mesh mesh;
 
 
-        public GlobalResources(MarchingCubeAsset asset, int maxCubeInstances, int maxGridInstances) : this()
+        public GlobalResources(MarchingCubeAsset asset, int maxGridInstances) : this()
         {
             //this.ArgsBufferForInstancing = ComputeShaderUtility.CreateIndirectArgumentsBufferForInstancing();
             //this.ArgsBufferForDispatch = ComputeShaderUtility.CreateIndirectArgumentsBufferForDispatch();

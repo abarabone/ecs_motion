@@ -19,7 +19,7 @@ namespace Abarabone.MarchingCubes.Authoring
     public class MarchingCubesAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
-        public int MaxCubeInstances;
+        //public int MaxCubeInstances;
         [Range(0, 512)]
         public int MaxGridInstances;
         public int MaxFreeGrids;
@@ -43,10 +43,7 @@ namespace Abarabone.MarchingCubes.Authoring
                 var ent = gcs_.GetPrimaryEntity(global_);
                 em.AddComponentData(ent,
                     new MarchingCubeGlobalData()
-                        .Init(
-                            this.MaxCubeInstances, this.MaxGridInstances, this.MaxFreeGrids,
-                            this.MarchingCubesAsset//, this.SrcMaterial, this.GridCubeIdSetShader
-                        )
+                        .Init(this.MaxFreeGrids, this.MaxGridInstances, this.MarchingCubesAsset)
                 );
             }
 
