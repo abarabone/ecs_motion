@@ -25,28 +25,6 @@ namespace Abarabone.MarchingCubes
 
             this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
         }
-        protected override void OnStartRunning()
-        {
-            base.OnStartRunning();
-         
-            var gres = this.GetSingleton<MarchingCubeGlobalData>().Resources;
-
-            this.Entities
-                .WithoutBurst()
-                .ForEach(
-                    (
-                        DotGridArea.ResourceData ares    
-                    ) =>
-                    {
-                        var mat = ares.CubeMaterial;
-                        var cs = ares.GridCubeIdSetShader;
-
-                        gres.SetResourcesTo(mat, cs);
-                        ares.Resources.SetResourcesTo(mat, cs);
-                    }
-                )
-                .Run();
-        }
 
         protected unsafe override void OnUpdate()
         {

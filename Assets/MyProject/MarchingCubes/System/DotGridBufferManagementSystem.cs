@@ -30,7 +30,29 @@ namespace Abarabone.MarchingCubes
 
             //this.RequireSingletonForUpdate<Resource.Initialize>();
             this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
+        }
+        protected override void OnStartRunning()
+        {
+            base.OnStartRunning();
             this.Enabled = false;
+
+            var gres = this.GetSingleton<MarchingCubeGlobalData>().Resources;
+
+            this.Entities
+                .WithoutBurst()
+                .ForEach(
+                    (
+                        DotGridArea.ResourceData ares
+                    ) =>
+                    {
+                        var mat = ares.CubeMaterial;
+                        var cs = ares.GridCubeIdSetShader;
+
+                        gres.SetResourcesTo(mat, cs);
+                        ares.Resources.SetResourcesTo(mat, cs);
+                    }
+                )
+                .Run();
         }
 
         protected unsafe override void OnUpdate()
@@ -48,6 +70,7 @@ namespace Abarabone.MarchingCubes
                 .WithoutBurst()
                 .ForEach(
                     (
+                        DotGridArea.ResourceData ares,
                         ref DotGridArea.BufferData buf,
                         ref DotGridArea.OutputCubesData output
                     ) =>
@@ -64,6 +87,8 @@ namespace Abarabone.MarchingCubes
 
                         output.CubeInstances.Dispose();
                         output.GridInstances.Dispose();
+
+                        ares.Resources.Dispose();
                     }
                 )
                 .Run();

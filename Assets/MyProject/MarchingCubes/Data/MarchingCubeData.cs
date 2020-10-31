@@ -97,7 +97,7 @@ namespace Abarabone.MarchingCubes
 
         public class ResourceData : IComponentData
         {
-            public DotGridAreaDrawResources Resources;
+            public DotGridAreaResources Resources;
 
             public Material CubeMaterial;
             public ComputeShader GridCubeIdSetShader;
@@ -138,7 +138,7 @@ namespace Abarabone.MarchingCubes
                 Material mat, ComputeShader cs
             )
         {
-            res.Resources = new DotGridAreaDrawResources(maxCubeInstances, maxGridInstances);
+            res.Resources = new DotGridAreaResources(maxCubeInstances, maxGridInstances);
             //res.Resources.SetResourcesTo(mat, cs);
             res.GridCubeIdSetShader = cs;
             res.CubeMaterial = mat;
@@ -175,7 +175,7 @@ namespace Abarabone.MarchingCubes
 
 
 
-    public struct DotGridAreaDrawResources// : IDisposable
+    public struct DotGridAreaResources// : IDisposable
     {
         public ComputeBuffer ArgsBufferForInstancing;
         public ComputeBuffer ArgsBufferForDispatch;
@@ -184,7 +184,7 @@ namespace Abarabone.MarchingCubes
         public ComputeBuffer CubeInstancesBuffer;
 
 
-        public DotGridAreaDrawResources(int maxCubeInstances, int maxGridInstances) : this()
+        public DotGridAreaResources(int maxCubeInstances, int maxGridInstances) : this()
         {
             this.ArgsBufferForInstancing = ComputeShaderUtility.CreateIndirectArgumentsBufferForInstancing();
             this.ArgsBufferForDispatch = ComputeShaderUtility.CreateIndirectArgumentsBufferForDispatch();
@@ -285,12 +285,12 @@ namespace Abarabone.MarchingCubes
         }
 
 
-        public static void SetResourcesTo(this DotGridAreaDrawResources res, Material mat, ComputeShader cs)
+        public static void SetResourcesTo(this DotGridAreaResources res, Material mat, ComputeShader cs)
         {
             mat.SetBuffer("cube_instances", res.CubeInstancesBuffer);
 
-            mat.SetConstantBuffer_("grid_constant", res.CubeInstancesBuffer);
-            //mat.SetConstantBuffer("grids", res.CubeInstancesBuffer);
+            mat.SetConstantBuffer_("grid_constant", res.GridInstancesBuffer);
+            //mat.SetConstantBuffer("grids", res.GridInstancesBuffer);
 
             if (cs != null) cs.SetBuffer(0, "src_instances", res.CubeInstancesBuffer);
         }

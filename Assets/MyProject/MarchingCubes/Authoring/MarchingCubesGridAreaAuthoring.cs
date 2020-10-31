@@ -26,8 +26,9 @@ namespace Abarabone.MarchingCubes.Authoring
         public int MaxGridInstances;
         public int MaxCubeInstances;
 
-        public Material SrcMaterial;
-        public ComputeShader GridCubeIdSetShader;
+        public Texture2D Texture;
+        public Shader DrawCubeShader;
+        public ComputeShader CubeAdjacentShader;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -65,6 +66,8 @@ namespace Abarabone.MarchingCubes.Authoring
                 var wholeLength = this.GridLength + 2;
                 var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
 
+                var mat = new Material(this.DrawCubeShader);
+                mat.mainTexture = this.Texture;
 
                 em.SetComponentData(ent,
                     new DotGridArea.InitializeData
@@ -102,7 +105,7 @@ namespace Abarabone.MarchingCubes.Authoring
                     new DotGridArea.ResourceData()
                         .Init(
                             this.MaxCubeInstances, this.MaxGridInstances,
-                            this.SrcMaterial, this.GridCubeIdSetShader
+                            mat, this.CubeAdjacentShader
                         )
                 );
                 em.SetComponentData(ent,

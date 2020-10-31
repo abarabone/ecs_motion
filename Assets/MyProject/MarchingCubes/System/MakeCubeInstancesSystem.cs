@@ -12,6 +12,7 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace Abarabone.MarchingCubes
 {
     using Abarabone.Draw;
+    using Unity.Transforms;
     using Utilities;
 
     //[DisableAutoCreation]
@@ -52,7 +53,9 @@ namespace Abarabone.MarchingCubes
                             ref DotGridArea.OutputCubesData output,
                             in DotGridArea.BufferData buf,
                             in DotGridArea.InfoData dim,
-                            in DotGridArea.InfoWorkData unit
+                            in DotGridArea.InfoWorkData unit,
+                            in Translation pos,
+                            in Rotation rot
                         ) =>
                     {
                         var gridId = 0;
@@ -79,7 +82,8 @@ namespace Abarabone.MarchingCubes
 
                                     var data = new GridInstanceData
                                     {
-                                        Position = (new int4(ix, iy, iz, 0) - new int4(1, 1, 1, 0)) * new float4(32, -32, -32, 0)
+                                        Position = new float4(pos.Value, 0.0f) +
+                                            (new int4(ix, iy, iz, 0) - new int4(1, 1, 1, 0)) * new float4(32, -32, -32, 0)
                                     };
                                     output.GridInstances.AddNoResize(data);
 
