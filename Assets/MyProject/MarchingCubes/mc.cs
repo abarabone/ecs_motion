@@ -28,7 +28,7 @@ namespace Abarabone.MarchingCubes
 
         public ComputeShader setGridCubeIdShader;
 
-        public DotGridArrayUnsafe DotGrids { get; private set; }
+        public DotGridAreaUnsafe DotGrids { get; private set; }
         public MeshCollider[,,] DotGridColliders { get; private set; }
 
         //uint[] cubeInstances;
@@ -62,7 +62,7 @@ namespace Abarabone.MarchingCubes
         {
             var res = this.meshResources;
 
-            this.DotGrids = new DotGridArrayUnsafe( 8, 5, 8 );
+            this.DotGrids = new DotGridAreaUnsafe( 8, 5, 8 );
             this.DotGrids.FillCubes( new int3( -1, 2, -1 ), new int3( 11, 11, 11 ), isFillAll: true );
             this.DotGrids.FillCubes( new int3( 2, 1, 3 ), new int3( 1, 2, 1 ), isFillAll: true );
 

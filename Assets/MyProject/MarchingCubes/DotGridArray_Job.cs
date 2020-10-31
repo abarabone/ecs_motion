@@ -12,7 +12,7 @@ using Unity.Collections.Experimental;
 
 namespace Abarabone.MarchingCubes
 {
-    public partial struct DotGridArrayUnsafe
+    public partial struct DotGridAreaUnsafe
     {
 
 
@@ -64,7 +64,7 @@ namespace Abarabone.MarchingCubes
         {
 
             [ReadOnly]
-            public DotGridArrayUnsafe gridArray;
+            public DotGridAreaUnsafe gridArray;
 
             public NearDotGrids gridset;
             public GridCounts gridcount;
@@ -88,7 +88,7 @@ namespace Abarabone.MarchingCubes
         {
 
             [ReadOnly]
-            public DotGridArrayUnsafe gridArray;
+            public DotGridAreaUnsafe gridArray;
 
             [WriteOnly]
             public NativeList<CubeInstance> dstCubeInstances;
@@ -141,7 +141,7 @@ namespace Abarabone.MarchingCubes
         {
 
             [ReadOnly]
-            public DotGridArrayUnsafe gridArray;
+            public DotGridAreaUnsafe gridArray;
 
             [WriteOnly]
             public NativeList<NearDotGrids> dstNearGrids;

@@ -96,7 +96,7 @@ namespace Abarabone.MarchingCubes
     /// グリッドを管理する。
     /// グリッド本体は必要な分のみ確保される。
     /// </summary>
-    public unsafe partial struct DotGridArrayUnsafe
+    public unsafe partial struct DotGridAreaUnsafe
     {
 
         // 実際に確保するグリッド配列は、外側をデフォルトグリッドでくるむ。
@@ -112,7 +112,7 @@ namespace Abarabone.MarchingCubes
         /// <summary>
         /// 
         /// </summary>
-        unsafe public DotGridArrayUnsafe(int x, int y, int z)// : this()
+        unsafe public DotGridAreaUnsafe(int x, int y, int z)// : this()
         {
             this.GridLength = new int3(x, y, z);
             this.wholeGridLength = new int3(x, y, z) + 2;
@@ -179,7 +179,7 @@ namespace Abarabone.MarchingCubes
         /// 
         /// </summary>
         static NearDotGrids getGridSet_
-            ( ref DotGridArrayUnsafe gridArray, int ix, int iy, int iz, int yspan_, int zspan_ )
+            ( ref DotGridAreaUnsafe gridArray, int ix, int iy, int iz, int yspan_, int zspan_ )
         {
             var i = iy * yspan_ + iz * zspan_ + ix;
 

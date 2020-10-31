@@ -134,7 +134,7 @@ namespace Abarabone.MarchingCubes
         static public unsafe DotGrid32x32x32Unsafe Alloc(GridFillMode fillMode, int dotnum = 32 * 32 * 32)
         {
             //var align = UnsafeUtility.AlignOf<uint4>();
-            const int align = 16;
+            const int align = 32;// 16;
 
             var p = (UIntPtr)UnsafeUtility.Malloc(dotnum >> 3, align, Allocator.Persistent);
 

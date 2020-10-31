@@ -37,7 +37,7 @@ namespace Abarabone.MarchingCubes
 
 
 
-    public unsafe partial struct DotGridArrayUnsafe
+    public unsafe partial struct DotGridAreaUnsafe
     {
 
         public struct NearDotGrids

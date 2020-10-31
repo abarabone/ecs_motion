@@ -24,23 +24,14 @@ namespace Abarabone.MarchingCubes
 
     public class MarchingCubeGlobalData : IComponentData//, IDisposable
     {
-        //public NativeList<GridInstanceData> GridInstances;
-        //public NativeList<CubeInstance> CubeInstances;
-
         public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
         public FreeStockList FreeStocks;
 
-        //public mc.DrawResources DrawResources;
         public GlobalResources Resources;
-
-        //public Material CubeMaterial;
-        //public ComputeShader GridCubeIdSetShader;
 
 
         public MarchingCubeGlobalData Init(int maxFreeGrids, int maxGridInstances, MarchingCubeAsset asset)
         {
-            //this.CubeInstances = new NativeList<CubeInstance>(maxCubeInstances, Allocator.Persistent);
-            //this.GridInstances = new NativeList<GridInstanceData>(maxGridInstances, Allocator.Persistent);
             this.DefaultGrids = new NativeArray<DotGrid32x32x32Unsafe>(2, Allocator.Persistent);
             this.FreeStocks = new FreeStockList(maxFreeGrids);
 
@@ -48,9 +39,6 @@ namespace Abarabone.MarchingCubes
             this.DefaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
 
             this.Resources = new GlobalResources(asset, maxGridInstances);
-            //this.DrawResources.SetResourcesTo(mat, cs);
-            //this.GridCubeIdSetShader = cs;
-            //this.CubeMaterial = mat;
 
             return this;
         }
@@ -64,8 +52,6 @@ namespace Abarabone.MarchingCubes
 
             this.FreeStocks.Dispose();
             this.DefaultGrids.Dispose();
-            //this.GridInstances.Dispose();
-            //this.CubeInstances.Dispose();
         }
     }
 
@@ -119,6 +105,9 @@ namespace Abarabone.MarchingCubes
         {
             public int3 GridSpan;
         }
+
+        public struct Mode2 : IComponentData
+        { }
     }
 
 
@@ -199,9 +188,6 @@ namespace Abarabone.MarchingCubes
             if (this.ArgsBufferForDispatch != null) this.ArgsBufferForDispatch.Dispose();
 
             if (this.CubeInstancesBuffer != null) this.CubeInstancesBuffer.Dispose();
-            //if (this.GridCubeIdBuffer != null) this.GridCubeIdBuffer.Release();
-
-            //if (this.StaticDataBuffer != null) this.StaticDataBuffer.Dispose();
             if (this.GridInstancesBuffer != null) this.GridInstancesBuffer.Dispose();
         }
     }
@@ -210,13 +196,7 @@ namespace Abarabone.MarchingCubes
 
     public struct GlobalResources : IDisposable
     {
-        //public ComputeBuffer ArgsBufferForInstancing;
-        //public ComputeBuffer ArgsBufferForDispatch;
-
         public ComputeBuffer StaticDataBuffer;
-        //public ComputeBuffer GridBuffer;
-
-        //public ComputeBuffer CubeInstancesBuffer;
         public RenderTexture GridCubeIdBuffer;
 
         public Mesh mesh;
@@ -224,13 +204,7 @@ namespace Abarabone.MarchingCubes
 
         public GlobalResources(MarchingCubeAsset asset, int maxGridInstances) : this()
         {
-            //this.ArgsBufferForInstancing = ComputeShaderUtility.CreateIndirectArgumentsBufferForInstancing();
-            //this.ArgsBufferForDispatch = ComputeShaderUtility.CreateIndirectArgumentsBufferForDispatch();
-
-            //this.CubeInstancesBuffer = createCubeIdInstancingShaderBuffer_(maxCubeInstances);// 32 * 32 * 32 * maxGridLength);
             this.GridCubeIdBuffer = ResourceAllocator.createGridCubeIdShaderBuffer_(maxGridInstances);
-
-            //this.GridBuffer = createGridShaderBuffer_(maxGridLength);// 512);
 
             var cubeVertexBuffer = ResourceAllocator.createCubeVertexBuffer_(asset.BaseVertexList);
             var vertexNormalDict = ResourceAllocator.makeVertexNormalsDict_(asset.CubeIdAndVertexIndicesList);
@@ -243,14 +217,8 @@ namespace Abarabone.MarchingCubes
 
         public void Dispose()
         {
-            //if (this.ArgsBufferForInstancing != null) this.ArgsBufferForInstancing.Dispose();
-            //if (this.ArgsBufferForDispatch != null) this.ArgsBufferForDispatch.Dispose();
-
-            //if (this.CubeInstancesBuffer != null) this.CubeInstancesBuffer.Dispose();
             if (this.GridCubeIdBuffer != null) this.GridCubeIdBuffer.Release();
-
             if (this.StaticDataBuffer != null) this.StaticDataBuffer.Dispose();
-            //if (this.GridBuffer != null) this.GridBuffer.Dispose();
         }
 
     }
