@@ -35,6 +35,8 @@ namespace Abarabone.MarchingCubes
         }
 
 
+
+
         [MethodImpl( MethodImplOptions.AggressiveInlining )]
         static public uint ToCubeInstance( int ix, int iy, int iz, int gridId, uint cubeId ) =>
             //(uint)iz << 24 | (uint)iy << 16 | (uint)ix << 8 | cubeId;

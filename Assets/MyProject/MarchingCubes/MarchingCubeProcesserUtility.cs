@@ -26,7 +26,7 @@ namespace Abarabone.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void SampleAlternateCubes<TCubeInstanceWriter>
-            (ref this DotGrid32x32x32Unsafe grid, int gridId, ref UnsafeList<uint4> outputCubes)
+            (ref this DotGrid32x32x32Unsafe grid, int gridId, ref UnsafeList<uint4> outputCubeBits)
         {
             var gptr = (uint4*)grid.pUnits;
 
@@ -49,17 +49,35 @@ namespace Abarabone.MarchingCubes
                     var y1z0 = math.shuffle(y1z0123, y1z4567, sh.LeftX, sh.LeftZ, sh.RightX, sh.RightZ);
                     var y1z1 = math.shuffle(y1z0123, y1z4567, sh.LeftY, sh.LeftW, sh.RightY, sh.RightW);
 
-                    var cubes = bitwiseCubesXLine_(y0z0, y0z1, y1z0, y1z1);
+                    var cubes = bitwiseCubesBase_(y0z0, y0z1, y1z0, y1z1);
 
-                    outputCubes.AddNoResize(cubes._98109810);
-                    outputCubes.AddNoResize(cubes._ba32ba32);
-                    outputCubes.AddNoResize(cubes._dc54dc54);
-                    outputCubes.AddNoResize(cubes._fe76fe76);
+                    // x:(_98109810,iy,iz+0), y:(_98109810,iy,iz+2), z:(_98109810,iy,iz+4), w:(_98109810,iy,iz+6)
+                    // x:(_ba32ba32,iy,iz+0), y:(_ba32ba32,iy,iz+2), z:(_ba32ba32,iy,iz+4), w:(_ba32ba32,iy,iz+6)
+                    // x:(_dc54dc54,iy,iz+0), y:(_dc54dc54,iy,iz+2), z:(_dc54dc54,iy,iz+4), w:(_dc54dc54,iy,iz+6)
+                    // x:(_fe76fe76,iy,iz+0), y:(_fe76fe76,iy,iz+2), z:(_fe76fe76,iy,iz+4), w:(_fe76fe76,iy,iz+6)
+                    outputCubeBits.AddNoResize(cubes._98109810);
+                    outputCubeBits.AddNoResize(cubes._ba32ba32);
+                    outputCubeBits.AddNoResize(cubes._dc54dc54);
+                    outputCubeBits.AddNoResize(cubes._fe76fe76);
                 }
             }
-
         }
-
+        //static public void add_(int gridid, int ix, int iy, int iz, ref UnsafeList<byte> output)
+        //{
+        //    output.Ptr
+        //    var ix4 = ix + new int4(0 + 0, 0 + 8, 16 + 0, 16 + 8);
+        //    var iy4 = new int4(iy, iy, iy, iy);
+        //    var iz4 = new int4(iz, iz, iz, iz) + new int4(0, 2, 4, 6);
+        //    outputCubes.AddNoResize(CubeUtility.ToCubeInstance(ix4, iy4, iz4, gridId, cubes._98109810));
+        //}
+        static public void a_(ref UnsafeList<uint4> cubeBitwises)
+        {
+            for(var i = 0; i < 16; i++)
+            {
+                var ix = i * 8;
+                cubeBitwises[ix + 0] ;
+            }
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct CubeXLineBitwise// タプルだと burst 利かないので
@@ -97,8 +115,7 @@ namespace Abarabone.MarchingCubes
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // あらかじめ共通段階（キューブ手前）までビット操作しておいたほうが速くなるかも、でも余計なエリアにストアするから、逆効果の可能性もある
-        static CubeXLineBitwise bitwiseCubesXLine_(uint4 y0z0, uint4 y0z1, uint4 y1z0, uint4 y1z1)
+        static CubeXLineBitwise bitwiseCubesBase_(uint4 y0z0, uint4 y0z1, uint4 y1z0, uint4 y1z1)
         {
             if (!math.any(y0z0 | y0z1 | y1z0 | y1z1)) return new CubeXLineBitwise();
 
