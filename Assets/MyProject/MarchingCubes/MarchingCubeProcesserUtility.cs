@@ -93,10 +93,10 @@ namespace Abarabone.MarchingCubes
                     // edededed65656565edededed65656565
                     // -f-f-f-f878787870f0f0f0f87878787
 
-                    var y0z1 = ;
-                    var y0z2 = ;
-                    var y1z1 = ;
-                    var y1z2 = ;
+                    //var y0z1 = ;
+                    //var y0z2 = ;
+                    //var y1z1 = ;
+                    //var y1z2 = ;
                 }
             }
         }

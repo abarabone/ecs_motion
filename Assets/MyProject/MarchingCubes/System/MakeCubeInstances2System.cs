@@ -74,16 +74,16 @@ namespace Abarabone.MarchingCubes
                                         if (grid.IsFullOrEmpty) continue;
 
 
-                                        grid.SampleAlternateCubes(gridId, ref output.CubeInstances);
+                                        //grid.SampleAlternateCubes(gridId, ref output.CubeInstances);
 
-                                        var data = new GridInstanceData
-                                        {
-                                            Position = new float4(pos.Value, 0.0f) +
-                                                (new int4(ix, iy, iz, 0) - new int4(1, 1, 1, 0)) * new float4(32, -32, -32, 0)
-                                        };
-                                        output.GridInstances.AddNoResize(data);
+                                        //var data = new GridInstanceData
+                                        //{
+                                        //    Position = new float4(pos.Value, 0.0f) +
+                                        //        (new int4(ix, iy, iz, 0) - new int4(1, 1, 1, 0)) * new float4(32, -32, -32, 0)
+                                        //};
+                                        //output.GridInstances.AddNoResize(data);
 
-                                        gridId++;
+                                        //gridId++;
 
                                     }
 
