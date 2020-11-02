@@ -70,12 +70,34 @@ namespace Abarabone.MarchingCubes
         //    var iz4 = new int4(iz, iz, iz, iz) + new int4(0, 2, 4, 6);
         //    outputCubes.AddNoResize(CubeUtility.ToCubeInstance(ix4, iy4, iz4, gridId, cubes._98109810));
         //}
-        static public void a_(ref UnsafeList<uint4> cubeBitwises)
+        static public void makeAlterX_(ref UnsafeList<uint4> cubeBitwises)
         {
-            for(var i = 0; i < 16; i++)
+            var i = 0;
+            for (var iy = 0; iy < 16; iy++)
             {
-                var ix = i * 8;
-                cubeBitwises[ix + 0] ;
+                for (var iz = 0; iz < 4; iz++)
+                {
+                    var _98109810 = cubeBitwises[i++];
+                    var _ba32ba32 = cubeBitwises[i++];
+                    var _dc54dc54 = cubeBitwises[i++];
+                    var _fe76fe76 = cubeBitwises[i++];
+
+                    var m55 = 0x_5555_5555u;
+                    var maa = 0x_aaaa_aaaau;
+                    var _a921a921 = (_ba32ba32 & m55) << 1 | (_98109810 & maa) >> 1;
+                    var _cb43cb43 = (_dc54dc54 & m55) << 1 | (_ba32ba32 & maa) >> 1;
+                    var _ed65ed65 = (_fe76fe76 & m55) << 1 | (_dc54dc54 & maa) >> 1;
+                    var __f870f87 = (_98109810 >> 8 & 0x_55_5555u) << 1 | (_fe76fe76 & maa) >> 1;
+                    // a9a9a9a921212121a9a9a9a921212121
+                    // cbcbcbcb43434343cbcbcbcb43434343
+                    // edededed65656565edededed65656565
+                    // -f-f-f-f878787870f0f0f0f87878787
+
+                    var y0z1 = ;
+                    var y0z2 = ;
+                    var y1z1 = ;
+                    var y1z2 = ;
+                }
             }
         }
 
