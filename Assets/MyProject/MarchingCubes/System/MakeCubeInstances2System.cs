@@ -47,7 +47,7 @@ namespace Abarabone.MarchingCubes
             //gridInstances.Clear();
 
             this.Entities
-                .WithAll<DotGridArea.Mode2>()
+                .WithAll<DotGridArea.Mode2>()//
                 .WithBurst()
                 .ForEach(
                         (
@@ -59,6 +59,9 @@ namespace Abarabone.MarchingCubes
                             in Rotation rot
                         ) =>
                         {
+                            var pDst = (uint4*)UnsafeUtility.Malloc(16 * 16 * 16, 32, Allocator.Temp);// output.CubeInstances.Ptr;
+                            var dstIdx = 0;
+
                             var gridId = 0;
 
 
@@ -74,7 +77,8 @@ namespace Abarabone.MarchingCubes
                                         if (grid.IsFullOrEmpty) continue;
 
 
-                                        grid.SampleAlternateCubes(gridId, ref output.CubeInstances);
+                                        grid.SampleAlternateCubes(gridId, pDst, (uint*)output.CubeInstances.Ptr, ref output.CubeInstances.length);
+
 
                                         var data = new GridInstanceData
                                         {
@@ -87,8 +91,11 @@ namespace Abarabone.MarchingCubes
 
                                     }
 
+
                             var gridScale = 1.0f / new float3(32, 32, 32);
                             CubeUtility.GetNearGridList(output.GridInstances.AsNativeArray(), gridScale);
+
+                            UnsafeUtility.Free(pDst, Allocator.Temp);
                         }
                 )
                 .Schedule();
