@@ -50,6 +50,7 @@ namespace Abarabone.MarchingCubes.Authoring
                 var types = new ComponentTypes(
                     new ComponentType[]
                     {
+                        typeof(DotGridArea.Mode2),//
                         typeof(DotGridArea.InitializeData),
                         typeof(DotGridArea.BufferData),
                         typeof(DotGridArea.InfoData),

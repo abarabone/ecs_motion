@@ -25,11 +25,11 @@ namespace Abarabone.MarchingCubes
         // ------------------------------------------------------------------
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void SampleAlternateCubes<TCubeInstanceWriter>
-            (ref this DotGrid32x32x32Unsafe grid, int gridId, uint4 *pDst, uint *pOutput)
+        public static unsafe void SampleAlternateCubes
+            (ref this DotGrid32x32x32Unsafe grid, int gridId, uint4 *pDst, uint *pOutput, ref int outputCounter)
         {
             var gptr = (uint4*)grid.pUnits;
-            var i = 0;
+            var iDst = 0;
 
             for (var iy = 0; iy < 31; iy += 1*2)
             {
@@ -51,28 +51,29 @@ namespace Abarabone.MarchingCubes
                     var y1z1 = math.shuffle(y1z0123, y1z4567, sh.LeftY, sh.LeftW, sh.RightY, sh.RightW);
 
                     var cubes = bitwiseCubesBase_(y0z0, y0z1, y1z0, y1z1);
-
                     // x:(_98109810,iy,iz+0), y:(_98109810,iy,iz+2), z:(_98109810,iy,iz+4), w:(_98109810,iy,iz+6)
                     // x:(_ba32ba32,iy,iz+0), y:(_ba32ba32,iy,iz+2), z:(_ba32ba32,iy,iz+4), w:(_ba32ba32,iy,iz+6)
                     // x:(_dc54dc54,iy,iz+0), y:(_dc54dc54,iy,iz+2), z:(_dc54dc54,iy,iz+4), w:(_dc54dc54,iy,iz+6)
                     // x:(_fe76fe76,iy,iz+0), y:(_fe76fe76,iy,iz+2), z:(_fe76fe76,iy,iz+4), w:(_fe76fe76,iy,iz+6)
-                    pDst[i++] = cubes._98109810;
-                    pDst[i++] = cubes._ba32ba32;
-                    pDst[i++] = cubes._dc54dc54;
-                    pDst[i++] = cubes._fe76fe76;
 
-                    var gix = int4.zero;
+                    pDst[iDst++] = cubes._98109810;
+                    pDst[iDst++] = cubes._ba32ba32;
+                    pDst[iDst++] = cubes._dc54dc54;
+                    pDst[iDst++] = cubes._fe76fe76;
+
                     var giz = iz + new int4(0, 2, 4, 6);
-                    var giy = iy + int4.zero;
-                    storeCubeInstances(pOutput, cubes._98109810, gridId, gix + 0, giy, giz);
-                    storeCubeInstances(pOutput, cubes._ba32ba32, gridId, gix + 2, giy, giz);
-                    storeCubeInstances(pOutput, cubes._dc54dc54, gridId, gix + 4, giy, giz);
-                    storeCubeInstances(pOutput, cubes._fe76fe76, gridId, gix + 6, giy, giz);
+                    var giy = new int4(iy, iy, iy, iy);
+                    storeCubeInstances(pOutput, ref outputCounter, cubes._98109810, gridId, gix: new int4(0, 0, 0, 0), giy, giz);
+                    storeCubeInstances(pOutput, ref outputCounter, cubes._ba32ba32, gridId, gix: new int4(2, 2, 2, 2), giy, giz);
+                    storeCubeInstances(pOutput, ref outputCounter, cubes._dc54dc54, gridId, gix: new int4(4, 4, 4, 4), giy, giz);
+                    storeCubeInstances(pOutput, ref outputCounter, cubes._fe76fe76, gridId, gix: new int4(6, 6, 6, 6), giy, giz);
                 }
             }
         }
-        static unsafe void storeCubeInstances(uint *pDst, uint4 cube4x4, int gridid, int4 gix, int4 giy, int4 giz)
+        static unsafe void storeCubeInstances(uint *pDst, ref int idx, uint4 cube4x4, int gridid, int4 gix, int4 giy, int4 giz)
         {
+            if (!math.any(cube4x4)) return;
+
             var c0 = cube4x4 & 0xff;
             var c1 = cube4x4 >> 8 & 0xff;
             var c2 = cube4x4 >> 16 & 0xff;
@@ -83,39 +84,41 @@ namespace Abarabone.MarchingCubes
             var ci2 = CubeUtility.ToCubeInstance(gix + 16, giy, giz, gridid, c2);
             var ci3 = CubeUtility.ToCubeInstance(gix + 24, giy, giz, gridid, c3);
 
-            store_(ci0);
-            store_(ci1);
-            store_(ci2);
-            store_(ci3);
+            store_(ci0, ref idx, c0 != 0);
+            store_(ci1, ref idx, c1 != 0);
+            store_(ci2, ref idx, c2 != 0);
+            store_(ci3, ref idx, c3 != 0);
 
             return;
 
 
-            void store_(uint4 ci)
+            void store_(uint4 ci, ref int idx, bool4 isOutput)
             {
-                switch(math.bitmask(ci != 0))
-                {
-                    case 0b_0000: break;
+                idx = math.compress(pDst, idx, ci, isOutput);
+                
+                //switch(math.bitmask(ci != 0))
+                //{
+                //    case 0b_0000: break;
 
-                    case 0b_0001: *((uint*)pDst) = ci.x; break;
-                    case 0b_0010: *((uint*)pDst) = ci.y; break;
-                    case 0b_0100: *((uint*)pDst) = ci.z; break;
-                    case 0b_1000: *((uint*)pDst) = ci.w; break;
+                //    case 0b_0001: *((uint*)pDst) = ci.x; break;
+                //    case 0b_0010: *((uint*)pDst) = ci.y; break;
+                //    case 0b_0100: *((uint*)pDst) = ci.z; break;
+                //    case 0b_1000: *((uint*)pDst) = ci.w; break;
 
-                    case 0b_0011: *((uint2*)pDst) = ci.xy; break;
-                    case 0b_0101: *((uint2*)pDst) = ci.xz; break;
-                    case 0b_1001: *((uint2*)pDst) = ci.xw; break;
-                    case 0b_0110: *((uint2*)pDst) = ci.yz; break;
-                    case 0b_1010: *((uint2*)pDst) = ci.yw; break;
-                    case 0b_1100: *((uint2*)pDst) = ci.zw; break;
+                //    case 0b_0011: *((uint2*)pDst) = ci.xy; break;
+                //    case 0b_0101: *((uint2*)pDst) = ci.xz; break;
+                //    case 0b_1001: *((uint2*)pDst) = ci.xw; break;
+                //    case 0b_0110: *((uint2*)pDst) = ci.yz; break;
+                //    case 0b_1010: *((uint2*)pDst) = ci.yw; break;
+                //    case 0b_1100: *((uint2*)pDst) = ci.zw; break;
 
-                    case 0b_1110: *((uint3*)pDst) = ci.yzw; break;
-                    case 0b_0111: *((uint3*)pDst) = ci.xyz; break;
-                    case 0b_1101: *((uint3*)pDst) = ci.xzw; break;
-                    case 0b_1011: *((uint3*)pDst) = ci.xyw; break;
+                //    case 0b_1110: *((uint3*)pDst) = ci.yzw; break;
+                //    case 0b_0111: *((uint3*)pDst) = ci.xyz; break;
+                //    case 0b_1101: *((uint3*)pDst) = ci.xzw; break;
+                //    case 0b_1011: *((uint3*)pDst) = ci.xyw; break;
 
-                    case 0b_1111: *((uint4*)pDst) = ci; break;
-                };
+                //    case 0b_1111: *((uint4*)pDst) = ci; break;
+                //};
             }
         }
         static public void MakeAlterCube()

@@ -47,6 +47,7 @@ namespace Abarabone.MarchingCubes
             //gridInstances.Clear();
 
             this.Entities
+                .WithNone<DotGridArea.Mode2>()//
                 .WithBurst()
                 .ForEach(
                         (
@@ -72,12 +73,10 @@ namespace Abarabone.MarchingCubes
                                     //Debug.Log($"{ix},{iy},{iz} {gridset.L.x.p->CubeCount}");
 
                                     if (!gridcount.isNeedDraw_()) continue;
-                                    //if( !isNeedDraw_( ref gridset ) ) continue;
 
 
                                     var dstCubeInstances = new InstanceCubeByUnsafeList { list = output.CubeInstances };
                                     dstCubeInstances.SampleAllCubes(ref gridset, ref gridcount, gridId);
-                                    //SampleAllCubes( ref gridset, gridId, dstCubeInstances );
                                     output.CubeInstances = dstCubeInstances.list;
 
                                     var data = new GridInstanceData
