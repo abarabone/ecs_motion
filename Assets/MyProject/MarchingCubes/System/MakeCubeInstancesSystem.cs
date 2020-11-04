@@ -75,10 +75,8 @@ namespace Abarabone.MarchingCubes
                                     if (!gridcount.isNeedDraw_()) continue;
 
 
-                                    var dstCubeInstances = new InstanceCubeByUnsafeList { list = output.CubeInstances };
-                                    dstCubeInstances.SampleAllCubes(ref gridset, ref gridcount, gridId);
-                                    output.CubeInstances = dstCubeInstances.list;
-
+                                    gridset.SampleAllCubes(ref gridcount, gridId, (uint*)output.CubeInstances.Ptr, ref output.CubeInstances.length);
+                                    
                                     var data = new GridInstanceData
                                     {
                                         Position = new float4(pos.Value, 0.0f) +

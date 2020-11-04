@@ -61,16 +61,30 @@ namespace Abarabone.MarchingCubes
                     pDst[iDst++] = cubes._dc54dc54;
                     pDst[iDst++] = cubes._fe76fe76;
 
-                    var giz = iz + new int4(0, 2, 4, 6);
-                    var giy = new int4(iy, iy, iy, iy);
-                    storeCubeInstances(pOutput, ref outputCounter, cubes._98109810, gridId, gix: new int4(0, 0, 0, 0), giy, giz);
-                    storeCubeInstances(pOutput, ref outputCounter, cubes._ba32ba32, gridId, gix: new int4(2, 2, 2, 2), giy, giz);
-                    storeCubeInstances(pOutput, ref outputCounter, cubes._dc54dc54, gridId, gix: new int4(4, 4, 4, 4), giy, giz);
-                    storeCubeInstances(pOutput, ref outputCounter, cubes._fe76fe76, gridId, gix: new int4(6, 6, 6, 6), giy, giz);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, cubes._98109810, gridId, ix: 0, iy, iz);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, cubes._ba32ba32, gridId, ix: 2, iy, iz);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, cubes._dc54dc54, gridId, ix: 4, iy, iz);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, cubes._fe76fe76, gridId, ix: 6, iy, iz);
                 }
             }
         }
-        static unsafe void storeCubeInstances(uint *pDst, ref int idx, uint4 cube4x4, int gridid, int4 gix, int4 giy, int4 giz)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public
+        static unsafe void StoreCubeInstances
+            (uint* pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int iz)
+        {
+            storeCubeInstances(pOutput, ref outputCounter, cube4x4, gridid, ix, iy, iz + new int4(0, 1, 2, 3));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void storeCubeInstancesAlter
+            (uint* pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int iz)
+        {
+            storeCubeInstances(pOutput, ref outputCounter, cube4x4, gridid, ix, iy, iz + new int4(0, 2, 4, 6));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void storeCubeInstances
+            (uint *pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int4 iz4)
         {
             if (!math.any(cube4x4)) return;
 
@@ -79,53 +93,58 @@ namespace Abarabone.MarchingCubes
             var c2 = cube4x4 >> 16 & 0xff;
             var c3 = cube4x4 >> 24 & 0xff;
 
-            var ci0 = CubeUtility.ToCubeInstance(gix + 0, giy, giz, gridid, c0);
-            var ci1 = CubeUtility.ToCubeInstance(gix + 8, giy, giz, gridid, c1);
-            var ci2 = CubeUtility.ToCubeInstance(gix + 16, giy, giz, gridid, c2);
-            var ci3 = CubeUtility.ToCubeInstance(gix + 24, giy, giz, gridid, c3);
+            var ix4 = new int4(ix, ix, ix, ix);
+            var iy4 = new int4(iy, iy, iy, iy);
+            var ci0 = CubeUtility.ToCubeInstance(ix4 + 0, iy4, iz4, gridid, c0);
+            var ci1 = CubeUtility.ToCubeInstance(ix4 + 8, iy4, iz4, gridid, c1);
+            var ci2 = CubeUtility.ToCubeInstance(ix4 + 16, iy4, iz4, gridid, c2);
+            var ci3 = CubeUtility.ToCubeInstance(ix4 + 24, iy4, iz4, gridid, c3);
 
-            store_(ci0, ref idx, c0 != 0);
-            store_(ci1, ref idx, c1 != 0);
-            store_(ci2, ref idx, c2 != 0);
-            store_(ci3, ref idx, c3 != 0);
+            store_(ci0, ref outputCounter, c0 != 0 & c0 != 0xff);
+            store_(ci1, ref outputCounter, c1 != 0 & c1 != 0xff);
+            store_(ci2, ref outputCounter, c2 != 0 & c2 != 0xff);
+            store_(ci3, ref outputCounter, c3 != 0 & c3 != 0xff);
 
             return;
 
 
             void store_(uint4 ci, ref int idx, bool4 isOutput)
             {
-                idx = math.compress(pDst, idx, ci, isOutput);
-                
-                //switch(math.bitmask(ci != 0))
+                idx = math.compress(pOutput, idx, ci, isOutput);
+
+                // 遅い、倍以上
+                //switch (math.bitmask(isOutput))
                 //{
                 //    case 0b_0000: break;
 
-                //    case 0b_0001: *((uint*)pDst) = ci.x; break;
-                //    case 0b_0010: *((uint*)pDst) = ci.y; break;
-                //    case 0b_0100: *((uint*)pDst) = ci.z; break;
-                //    case 0b_1000: *((uint*)pDst) = ci.w; break;
+                //    case 0b_0001: *((uint*)(pOutput + idx++)) = ci.x; break;
+                //    case 0b_0010: *((uint*)(pOutput + idx++)) = ci.y; break;
+                //    case 0b_0100: *((uint*)(pOutput + idx++)) = ci.z; break;
+                //    case 0b_1000: *((uint*)(pOutput + idx++)) = ci.w; break;
 
-                //    case 0b_0011: *((uint2*)pDst) = ci.xy; break;
-                //    case 0b_0101: *((uint2*)pDst) = ci.xz; break;
-                //    case 0b_1001: *((uint2*)pDst) = ci.xw; break;
-                //    case 0b_0110: *((uint2*)pDst) = ci.yz; break;
-                //    case 0b_1010: *((uint2*)pDst) = ci.yw; break;
-                //    case 0b_1100: *((uint2*)pDst) = ci.zw; break;
+                //    case 0b_0011: *((uint2*)(pOutput + idx)) = ci.xy; idx += 2; break;
+                //    case 0b_0101: *((uint2*)(pOutput + idx)) = ci.xz; idx += 2; break;
+                //    case 0b_1001: *((uint2*)(pOutput + idx)) = ci.xw; idx += 2; break;
+                //    case 0b_0110: *((uint2*)(pOutput + idx)) = ci.yz; idx += 2; break;
+                //    case 0b_1010: *((uint2*)(pOutput + idx)) = ci.yw; idx += 2; break;
+                //    case 0b_1100: *((uint2*)(pOutput + idx)) = ci.zw; idx += 2; break;
 
-                //    case 0b_1110: *((uint3*)pDst) = ci.yzw; break;
-                //    case 0b_0111: *((uint3*)pDst) = ci.xyz; break;
-                //    case 0b_1101: *((uint3*)pDst) = ci.xzw; break;
-                //    case 0b_1011: *((uint3*)pDst) = ci.xyw; break;
+                //    case 0b_1110: *((uint3*)(pOutput + idx)) = ci.yzw; idx += 3; break;
+                //    case 0b_0111: *((uint3*)(pOutput + idx)) = ci.xyz; idx += 3; break;
+                //    case 0b_1101: *((uint3*)(pOutput + idx)) = ci.xzw; idx += 3; break;
+                //    case 0b_1011: *((uint3*)(pOutput + idx)) = ci.xyw; idx += 3; break;
 
-                //    case 0b_1111: *((uint4*)pDst) = ci; break;
+                //    case 0b_1111: *((uint4*)(pOutput + idx)) = ci; idx += 4; break;
                 //};
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void MakeAlterCube()
         {
 
         }
-        static unsafe void makeAlterX(uint4 *pSrc, uint4 *pDst)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void makeAlterX(uint4 *pSrc, uint4 *pDst, int gridid, uint* pOutput, ref int outputCounter, int yofs, int zofs)
         {
             for(var i4 = 0; i4 < 16 * 16; i4 += 4)
             {
@@ -149,11 +168,19 @@ namespace Abarabone.MarchingCubes
                 pDst[i4 + 1] = xd5d5;
                 pDst[i4 + 3] = xf7f7;
 
+                var iy = (i4 >> 2) + yofs;
+                var iz = (i4 << 2) + zofs;
+                storeCubeInstancesAlter(pOutput, ref outputCounter, x9191, gridid, ix: 1, iy, iz);
+                storeCubeInstancesAlter(pOutput, ref outputCounter, xb3b3, gridid, ix: 3, iy, iz);
+                storeCubeInstancesAlter(pOutput, ref outputCounter, xd5d5, gridid, ix: 5, iy, iz);
+                storeCubeInstancesAlter(pOutput, ref outputCounter, xf7f7, gridid, ix: 7, iy, iz);
+
                 static uint4 bitwise_x_(uint4 v0, uint4 v1) => (v0 & 0x_5555_5555u) << 1 | (v1 & 0x_aaaa_aaaau) >> 1;
                 static uint4 rot_(uint4 l, uint4 r) => l >> 8 & 0x_00ff_ffffu | r << (32 - 8) & 0x_ff00_0000u;
             }
         }
-        static unsafe void makeAlterZ(uint4* pSrc, uint4* pDst)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void makeAlterZ(uint4* pSrc, uint4* pDst, int gridid, uint* pOutput, ref int outputCounter, int xofs, int yofs)
         {
             for(var zofs = 0; zofs < 16 * 16; zofs += 16)
             {
@@ -175,6 +202,13 @@ namespace Abarabone.MarchingCubes
                     pSrc[i4 + 8 + zofs] = z1_1357;
                     pSrc[i4 + 12 + zofs] = z1_9bdf;
 
+                    var iy = (i4 >> 2) + yofs;
+                    var iz = (i4 + zofs << 2) + 1;
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, z0_1357, gridid, ix: 0 + xofs, iy, iz);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, z0_9bdf, gridid, ix: 2 + xofs, iy, iz);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, z1_1357, gridid, ix: 4 + xofs, iy, iz);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, z1_9bdf, gridid, ix: 6 + xofs, iy, iz);
+
                     static uint4 bitwise_z_(uint4 v0, uint4 v1) => (v0 & 0x_3333_3333u) << 2 | (shz_(v0, v1.x) & 0x_cccc_ccccu) >> 2;
                     static uint4 bitwise_z1_(uint4 v0, uint x1) => (v0 & 0x_3333_3333u) << 2 | (shz_(v0, x1) & 0x_cccc_ccccu) >> 2;
                     static uint4 shz_(uint4 cur, uint next)
@@ -186,7 +220,8 @@ namespace Abarabone.MarchingCubes
                 }
             }
         }
-        static unsafe void makeAlterY(uint4* pSrc, uint4* pDst)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void makeAlterY(uint4* pSrc, uint4* pDst, int gridid, uint* pOutput, ref int outputCounter, int xofs, int zofs)
         {
             var i4 = 0;
             for (; i4 < 16 * 16 - 16; i4++)
@@ -196,7 +231,12 @@ namespace Abarabone.MarchingCubes
 
                 var y1 = bitwise_y_(y0, y2);
 
-                pDst[i4 + 0] = y1;
+                //pDst[i4 + 0] = y1;
+
+                var ix = (i4 >> 4) + xofs;
+                var iy = (i4 >> 2) + 1;
+                var iz = (i4 << 2) + zofs;
+                storeCubeInstancesAlter(pOutput, ref outputCounter, y1, gridid, ix, iy, iz);
             }
             for (; i4 < 16 * 16; i4++)
             {
@@ -205,12 +245,17 @@ namespace Abarabone.MarchingCubes
 
                 var y1 = bitwise_y_(y0, y2);
 
-                pDst[i4 + 0] = y1;
+                //pDst[i4 + 0] = y1;
+
+                var ix = (i4 >> 4) + xofs;
+                var iy = (i4 >> 2) + 1;
+                var iz = (i4 << 2) + zofs;
+                storeCubeInstancesAlter(pOutput, ref outputCounter, y1, gridid, ix, iy, iz);
             }
             static uint4 bitwise_y_(uint4 v0, uint4 v1) => (v0 & 0x_0f0f_0f0fu) << 4 | (v1 & 0x_f0f0_f0f0u) >> 4;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        //[StructLayout(LayoutKind.Sequential)]
         public struct CubeXLineBitwise// タプルだと burst 利かないので
         {
             public uint4 _98109810, _ba32ba32, _dc54dc54, _fe76fe76;
@@ -228,19 +273,19 @@ namespace Abarabone.MarchingCubes
             }
         }
 
-        public struct CubeNearXLines// タプルだと burst 利かないので
-        {
-            public uint4 y0z0, y0z1, y1z0, y1z1;
+        //public struct CubeNearXLines// タプルだと burst 利かないので
+        //{
+        //    public uint4 y0z0, y0z1, y1z0, y1z1;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public CubeNearXLines(uint4 y0z0, uint4 y0z1, uint4 y1z0, uint4 y1z1)
-            {
-                this.y0z0 = y0z0;
-                this.y0z1 = y0z1;
-                this.y1z0 = y1z0;
-                this.y1z1 = y1z1;
-            }
-        }
+        //    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //    public CubeNearXLines(uint4 y0z0, uint4 y0z1, uint4 y1z0, uint4 y1z1)
+        //    {
+        //        this.y0z0 = y0z0;
+        //        this.y0z1 = y0z1;
+        //        this.y1z0 = y1z0;
+        //        this.y1z1 = y1z1;
+        //    }
+        //}
 
 
 

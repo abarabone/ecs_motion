@@ -193,9 +193,8 @@ namespace Abarabone.MarchingCubes
         /// </summary>
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SampleAllCubes<TCubeInstanceWriter>
-            (ref this TCubeInstanceWriter outputCubes, ref AdjacentGrids g, ref GridCounts gcount, int gridId)
-            where TCubeInstanceWriter : struct, ICubeInstanceWriter
+        public static void SampleAllCubes
+            (ref this AdjacentGrids g, ref GridCounts gcount, int gridId, uint *pOutput, ref int outputCounter)
         {
             var g0or1L = math.min(gcount.L & 0x7fff, new int4(1, 1, 1, 1));
             var g0or1R = math.min(gcount.R & 0x7fff, new int4(1, 1, 1, 1));
@@ -223,7 +222,7 @@ namespace Abarabone.MarchingCubes
                     var cr = getXLine_(iy, iz, g0or1Rxxxx, g.R.x, g.R.x, g.R.x, g.R.x);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
 
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
+                    cubes.storeTo(pOutput, ref outputCounter, gridId, iy, iz);
                 }
                 {
                     const int iz = 31 & ~0x3;
@@ -234,7 +233,7 @@ namespace Abarabone.MarchingCubes
                     var cr = getXLine_(iy, iz, g0or1Rxxzz, g.R.x, g.R.x, g.R.z, g.R.z);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
 
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
+                    cubes.storeTo(pOutput, ref outputCounter, gridId, iy, iz);
                 }
             }
             {
@@ -247,7 +246,7 @@ namespace Abarabone.MarchingCubes
                     var cr = getXLine_(iy, iz, g0or1Rxyxy, g.R.x, g.R.y, g.R.x, g.R.y);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
 
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
+                    cubes.storeTo(pOutput, ref outputCounter, gridId, iy, iz);
                 }
                 {
                     const int iz = 31 & ~0x3;
@@ -258,84 +257,7 @@ namespace Abarabone.MarchingCubes
                     var cr = getXLine_(iy, iz, g0or1Rxyzw, g.R.x, g.R.y, g.R.z, g.R.w);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
 
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
-                }
-            }
-
-        }
-
-        // ループ削減試行錯誤中（端っこもやれないか？）
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SampleAllCubes_<TCubeInstanceWriter>
-            //(ref AdjacentGrids g, ref GridCounts gcount, int gridId, ref TCubeInstanceWriter outputCubes)
-            (ref this TCubeInstanceWriter outputCubes, ref AdjacentGrids g, ref GridCounts gcount, int gridId)
-            where TCubeInstanceWriter : struct, ICubeInstanceWriter
-        {
-            var g0or1L = math.min(gcount.L & 0x7fff, new int4(1, 1, 1, 1));
-            var g0or1R = math.min(gcount.R & 0x7fff, new int4(1, 1, 1, 1));
-
-            var g0or1x = g0or1L.x | g0or1R.x | (g.L.x.p->IsFull ^ g.R.x.p->IsFull).AsByte();
-            var g0or1y = g0or1L.y | g0or1R.y | (g.L.y.p->IsFull ^ g.R.y.p->IsFull).AsByte();
-            var g0or1z = g0or1L.z | g0or1R.z | (g.L.z.p->IsFull ^ g.R.z.p->IsFull).AsByte();
-
-            var g0or1Lxxxx = g0or1L.xxxx;
-            var g0or1Rxxxx = g0or1R.xxxx;
-            var g0or1Lxxzz = g0or1L.xxzz;
-            var g0or1Rxxzz = g0or1R.xxzz;
-            var g0or1Lxyxy = g0or1L.xyxy;
-            var g0or1Rxyxy = g0or1R.xyxy;
-            var g0or1Lxyzw = g0or1L;
-            var g0or1Rxyzw = g0or1R;
-
-            for (var iy = 0; iy < 31 * g0or1x; iy++)
-            {
-                for (var iz = 0; iz < (31 & ~0x3); iz += 4)
-                {
-                    var c = getXLine_(iy, iz, g0or1Lxxxx, g.L.x, g.L.x, g.L.x, g.L.x);
-                    var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
-
-                    var cr = getXLine_(iy, iz, g0or1Rxxxx, g.R.x, g.R.x, g.R.x, g.R.x);
-                    cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
-                }
-            }
-            for (var iy = 0; iy < 31; iy++)
-            {
-                {
-                    const int iz = 31 & ~0x3;
-
-                    var c = getXLine_(iy, iz, g0or1Lxxzz, g.L.x, g.L.x, g.L.z, g.L.z);
-                    var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
-
-                    var cr = getXLine_(iy, iz, g0or1Rxxzz, g.R.x, g.R.x, g.R.z, g.R.z);
-                    cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
-                }
-            }
-            {
-                const int iy = 31;
-                for (var iz = 0; iz < (31 & ~0x3); iz += 4)
-                {
-                    var c = getXLine_(iy, iz, g0or1Lxyxy, g.L.x, g.L.y, g.L.x, g.L.y);
-                    var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
-
-                    var cr = getXLine_(iy, iz, g0or1Rxyxy, g.R.x, g.R.y, g.R.x, g.R.y);
-                    cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
-                }
-                {
-                    const int iz = 31 & ~0x3;
-
-                    var c = getXLine_(iy, iz, g0or1Lxyzw, g.L.x, g.L.y, g.L.z, g.L.w);
-                    var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
-
-                    var cr = getXLine_(iy, iz, g0or1Rxyzw, g.R.x, g.R.y, g.R.z, g.R.w);
-                    cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
+                    cubes.storeTo(pOutput, ref outputCounter, gridId, iy, iz);
                 }
             }
 
@@ -381,6 +303,21 @@ namespace Abarabone.MarchingCubes
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void storeTo
+            (ref this CubeXLineBitwise cubes, uint* pOutput, ref int outputCounter, int gridid, int iy, int iz)
+        {
+            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._98109810, gridid, ix: 0, iy, iz);
+            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._a921a921, gridid, ix: 1, iy, iz);
+            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._ba32ba32, gridid, ix: 2, iy, iz);
+            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._cb43cb43, gridid, ix: 3, iy, iz);
+            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._dc54dc54, gridid, ix: 4, iy, iz);
+            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._ed65ed65, gridid, ix: 5, iy, iz);
+            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._fe76fe76, gridid, ix: 6, iy, iz);
+            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._0f870f87, gridid, ix: 7, iy, iz);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe CubeNearXLines getXLine_(
             int iy, int iz, int4 index0or1,
             DotGrid32x32x32UnsafePtr gx, DotGrid32x32x32UnsafePtr gy,
@@ -416,47 +353,6 @@ namespace Abarabone.MarchingCubes
             var y1z1 = y1.yzwx;
 
             return new CubeNearXLines(y0z0, y0z1, y1z0, y1z1);
-        }
-
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void addCubeFromXLine_<TCubeInstanceWriter>(
-            ref CubeXLineBitwise cubes,
-            int gridId_, int iy, int iz, ref TCubeInstanceWriter outputCubes_
-        )
-            where TCubeInstanceWriter : ICubeInstanceWriter
-        {
-            var i = 0;
-            var ix = 0;
-            var iz_ = new int4(iz + 0, iz + 1, iz + 2, iz + 3);
-            for (var ipack = 0; ipack < 32 / 8; ipack++)// 8 は 1cube の 8bit
-            {// レジスタ１つずつ見ていったほうがいいのでは
-                addCubeIfVisible_(cubes._98109810 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._a921a921 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._ba32ba32 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._cb43cb43 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._dc54dc54 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._ed65ed65 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._fe76fe76 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._0f870f87 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                i += 8;
-            }
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void addCubeIfVisible_<TCubeInstanceWriter>
-            (uint4 cubeId, int gridId__, int4 ix_, int4 iy_, int4 iz_, ref TCubeInstanceWriter cubeInstances)
-            where TCubeInstanceWriter : ICubeInstanceWriter
-        {
-            var _0or255to0 = cubeId + 1 & 0xfe;
-            if (!math.any(_0or255to0)) return;// すべての cubeId が 0 か 255 なら何もしない
-
-            var cubeInstance = CubeUtility.ToCubeInstance(ix_, iy_, iz_, gridId__, cubeId);
-
-            if (_0or255to0.x != 0) cubeInstances.Add(cubeInstance.x);
-            if (_0or255to0.y != 0) cubeInstances.Add(cubeInstance.y);
-            if (_0or255to0.z != 0) cubeInstances.Add(cubeInstance.z);
-            if (_0or255to0.w != 0) cubeInstances.Add(cubeInstance.w);
         }
 
 
