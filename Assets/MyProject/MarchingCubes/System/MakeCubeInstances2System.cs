@@ -59,8 +59,10 @@ namespace Abarabone.MarchingCubes
                             in Rotation rot
                         ) =>
                         {
-                            var pDst = (uint4*)UnsafeUtility.Malloc(16 * 16 * 16, 32, Allocator.Temp);// output.CubeInstances.Ptr;
-                            var dstIdx = 0;
+                            const int singleGridDataSize = 32 * 32 * 32;//16 * 16 * 16;
+                            //const int alterPartDataSize = 16 * 16 * 16;
+                            var pCubesWork = (uint4*)UnsafeUtility.Malloc(singleGridDataSize, 32, Allocator.Temp);
+                            //var pDst = (uint4*)UnsafeUtility.Malloc(singleGridDataSize * buf.Grids.length, 32, Allocator.Temp);
 
                             var gridId = 0;
 
@@ -77,7 +79,9 @@ namespace Abarabone.MarchingCubes
                                         if (grid.IsFullOrEmpty) continue;
 
 
-                                        grid.SampleAlternateCubes(gridId, pDst, (uint*)output.CubeInstances.Ptr, ref output.CubeInstances.length);
+                                        var pOutput = (uint*)output.CubeInstances.Ptr;
+                                        grid.SampleAlternateCubes(gridId, pCubesWork, pOutput, ref output.CubeInstances.length);
+                                        ProcesserUtility.MakeAlterCubes(gridId, pCubesWork, pOutput, ref output.CubeInstances.length);
 
 
                                         var data = new GridInstanceData
@@ -91,11 +95,13 @@ namespace Abarabone.MarchingCubes
 
                                     }
 
-
                             var gridScale = 1.0f / new float3(32, 32, 32);
                             CubeUtility.GetNearGridList(output.GridInstances.AsNativeArray(), gridScale);
 
-                            UnsafeUtility.Free(pDst, Allocator.Temp);
+
+                            
+
+                            UnsafeUtility.Free(pCubesWork, Allocator.Temp);
                         }
                 )
                 .Schedule();

@@ -139,12 +139,25 @@ namespace Abarabone.MarchingCubes
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public void MakeAlterCube()
+        static unsafe public void MakeAlterCubes
+            (int gridid, uint4* pCubeWork, uint* pOutput, ref int outputCounter)
         {
-
+            const int blockSize = 16 * 16 * 16;
+            uint4* p0 = pCubeWork + blockSize * 0;
+            uint4* p1 = pCubeWork + blockSize * 1;
+            uint4* p2 = pCubeWork + blockSize * 2;
+            uint4* p3 = pCubeWork + blockSize * 3;
+            uint4* pn = null;
+            makeAlterZ(gridid, pSrc: p0, pDst: p1, pOutput, ref outputCounter, xofs: 0, yofs: 0);
+            makeAlterX(gridid, pSrc: p0, pDst: p2, pOutput, ref outputCounter, yofs: 0, zofs: 0);
+            makeAlterX(gridid, pSrc: p1, pDst: p3, pOutput, ref outputCounter, yofs: 0, zofs: 0);
+            makeAlterY(gridid, pSrc: p0, pDst: pn, pOutput, ref outputCounter, xofs: 0, zofs: 0);
+            makeAlterY(gridid, pSrc: p1, pDst: pn, pOutput, ref outputCounter, xofs: 0, zofs: 0);
+            makeAlterY(gridid, pSrc: p2, pDst: pn, pOutput, ref outputCounter, xofs: 0, zofs: 0);
+            makeAlterY(gridid, pSrc: p3, pDst: pn, pOutput, ref outputCounter, xofs: 0, zofs: 0);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void makeAlterX(uint4 *pSrc, uint4 *pDst, int gridid, uint* pOutput, ref int outputCounter, int yofs, int zofs)
+        static unsafe void makeAlterX(int gridid, uint4 *pSrc, uint4 *pDst, uint* pOutput, ref int outputCounter, int yofs, int zofs)
         {
             for(var i4 = 0; i4 < 16 * 16; i4 += 4)
             {
@@ -180,7 +193,7 @@ namespace Abarabone.MarchingCubes
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void makeAlterZ(uint4* pSrc, uint4* pDst, int gridid, uint* pOutput, ref int outputCounter, int xofs, int yofs)
+        static unsafe void makeAlterZ(int gridid, uint4* pSrc, uint4* pDst, uint* pOutput, ref int outputCounter, int xofs, int yofs)
         {
             for(var zofs = 0; zofs < 16 * 16; zofs += 16)
             {
@@ -221,7 +234,7 @@ namespace Abarabone.MarchingCubes
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void makeAlterY(uint4* pSrc, uint4* pDst, int gridid, uint* pOutput, ref int outputCounter, int xofs, int zofs)
+        static unsafe void makeAlterY(int gridid, uint4* pSrc, uint4* pDst, uint* pOutput, ref int outputCounter, int xofs, int zofs)
         {
             var i4 = 0;
             for (; i4 < 16 * 16 - 16; i4++)
