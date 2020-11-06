@@ -30,6 +30,9 @@ namespace Abarabone.MarchingCubes.Authoring
         public Shader DrawCubeShader;
         public ComputeShader CubeAdjacentShader;
 
+        public bool IsMode2;
+        //public bool IsParallel;
+
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -50,7 +53,6 @@ namespace Abarabone.MarchingCubes.Authoring
                 var types = new ComponentTypes(
                     new ComponentType[]
                     {
-                        typeof(DotGridArea.Mode2),//
                         typeof(DotGridArea.InitializeData),
                         typeof(DotGridArea.BufferData),
                         typeof(DotGridArea.InfoData),
@@ -62,6 +64,7 @@ namespace Abarabone.MarchingCubes.Authoring
                     }
                 );
                 em.AddComponents(ent, types);
+                if(this.IsMode2) em.AddComponent<DotGridArea.Mode2>(ent);
 
 
                 var wholeLength = this.GridLength + 2;

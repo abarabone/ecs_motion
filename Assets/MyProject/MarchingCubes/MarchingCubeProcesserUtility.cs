@@ -77,7 +77,7 @@ namespace Abarabone.MarchingCubes
             uint4* p2 = pCubeWork + blockSize * 2;
             uint4* p3 = pCubeWork + blockSize * 3;
             uint4* pn = null;
-            makeAlterZ(gridid, pSrc: p0, pDst: p1, pOutput, ref outputCounter, xofs: 0, yofs: 0);
+            //makeAlterZ(gridid, pSrc: p0, pDst: p1, pOutput, ref outputCounter, xofs: 0, yofs: 0);
             //makeAlterX(gridid, pSrc: p0, pDst: p2, pOutput, ref outputCounter, yofs: 0, zofs: 0);
             //makeAlterX(gridid, pSrc: p1, pDst: p3, pOutput, ref outputCounter, yofs: 0, zofs: 0);
             //makeAlterY(gridid, pSrc: p0, pDst: pn, pOutput, ref outputCounter, xofs: 0, zofs: 0);
@@ -124,14 +124,17 @@ namespace Abarabone.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void makeAlterZ(int gridid, uint4* pSrc, uint4* pDst, uint* pOutput, ref int outputCounter, int xofs, int yofs)
         {
-            for (var zofs = 0; zofs < 16 * 16; zofs += 16)
+            //for (var iy16 = 0; iy16 < 16 * 16; iy16 += 16)
+            for (var iy = 0; iy < 32; iy += 2)
             {
-                for(var i4 = 0; i4 < 4; i4++)
+                var iy16 = iy << 3;
+                for (var i4 = 0; i4 < 4; i4++)
                 {
-                    var z0_0246 = pSrc[i4 + 0 + zofs];
-                    var z0_8ace = pSrc[i4 + 4 + zofs];
-                    var z1_0246 = pSrc[i4 + 8 + zofs];
-                    var z1_8ace = pSrc[i4 + 12 + zofs];
+                    var zofs = i4 + iy16;
+                    var z0_0246 = pSrc[0 + zofs];
+                    var z0_8ace = pSrc[4 + zofs];
+                    var z1_0246 = pSrc[8 + zofs];
+                    var z1_8ace = pSrc[12 + zofs];
                     var z0_0_ = 0u;
 
                     var z0_1357 = bitwise_z_(z0_0246, z0_8ace);
@@ -139,17 +142,18 @@ namespace Abarabone.MarchingCubes
                     var z1_1357 = bitwise_z_(z1_0246, z1_8ace);
                     var z1_9bdf = bitwise_z1_(z1_8ace, z0_0_);
 
-                    pSrc[i4 + 0 + zofs] = z0_1357;
-                    pSrc[i4 + 4 + zofs] = z0_9bdf;
-                    pSrc[i4 + 8 + zofs] = z1_1357;
-                    pSrc[i4 + 12 + zofs] = z1_9bdf;
+                    pSrc[0 + zofs] = z0_1357;
+                    pSrc[4 + zofs] = z0_9bdf;
+                    pSrc[8 + zofs] = z1_1357;
+                    pSrc[12 + zofs] = z1_9bdf;
 
-                    var iy = (zofs >> 3) + yofs;
-                    var iz = (i4 + zofs << 3);// + 1;
-                    storeCubeInstancesAlter(pOutput, ref outputCounter, z0_1357, gridid, ix: 0 + xofs, iy, iz);
-                    storeCubeInstancesAlter(pOutput, ref outputCounter, z0_9bdf, gridid, ix: 2 + xofs, iy, iz);
-                    storeCubeInstancesAlter(pOutput, ref outputCounter, z1_1357, gridid, ix: 4 + xofs, iy, iz);
-                    storeCubeInstancesAlter(pOutput, ref outputCounter, z1_9bdf, gridid, ix: 6 + xofs, iy, iz);
+                    //var iy = (iy16 >> 3) + yofs;
+                    //var iz = (zofs >> 2) + 1;
+                    var ix = (i4 << 1) + xofs;
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, z0_1357, gridid, ix+2, iy + yofs, iz: 0 + 1);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, z0_9bdf, gridid, ix+2, iy + yofs, iz: 8 + 1);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, z1_1357, gridid, ix, iy + yofs, iz: 16 + 1);
+                    storeCubeInstancesAlter(pOutput, ref outputCounter, z1_9bdf, gridid, ix, iy + yofs, iz: 24 + 1);
 
                     static uint4 bitwise_z_(uint4 v0, uint4 v1) => (v0 & 0x_3333_3333u) << 2 | (shz_(v0, v1.x) & 0x_cccc_ccccu) >> 2;
                     static uint4 bitwise_z1_(uint4 v0, uint x1) => (v0 & 0x_3333_3333u) << 2 | (shz_(v0, x1) & 0x_cccc_ccccu) >> 2;
