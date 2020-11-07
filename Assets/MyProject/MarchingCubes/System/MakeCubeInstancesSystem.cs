@@ -59,6 +59,10 @@ namespace Abarabone.MarchingCubes
                             in Rotation rot
                         ) =>
                     {
+                        output.GridInstances.Clear();
+                        output.CubeInstances.Clear();
+
+
                         var gridId = 0;
 
 

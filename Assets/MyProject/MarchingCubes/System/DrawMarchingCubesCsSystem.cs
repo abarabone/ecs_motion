@@ -82,8 +82,8 @@ namespace Abarabone.MarchingCubes
                         Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, iargs);//
 
 
-                        output.GridInstances.Clear();
-                        output.CubeInstances.Clear();
+                        //output.GridInstances.Clear();
+                        //output.CubeInstances.Clear();
                     }
                 )
                 .Run();

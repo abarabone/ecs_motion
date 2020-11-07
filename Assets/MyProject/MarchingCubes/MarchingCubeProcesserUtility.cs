@@ -55,8 +55,8 @@ namespace Abarabone.MarchingCubes
                     // x:(_fe76fe76,iy,iz+0), y:(_fe76fe76,iy,iz+2), z:(_fe76fe76,iy,iz+4), w:(_fe76fe76,iy,iz+6)
 
                     pDst[iDst++] = cubes._98109810;
-                    pDst[iDst++] = cubes._ba32ba32;
                     pDst[iDst++] = cubes._dc54dc54;
+                    pDst[iDst++] = cubes._ba32ba32;
                     pDst[iDst++] = cubes._fe76fe76;
 
                     storeCubeInstancesAlter(pOutput, ref outputCounter, cubes._98109810, gridId, ix: 0, iy, iz);
@@ -71,11 +71,11 @@ namespace Abarabone.MarchingCubes
         static unsafe public void MakeAlterCubes
             (int gridid, uint4* pCubeWork, uint* pOutput, ref int outputCounter)
         {
-            const int blockSize = 16 * 16 * 16;
-            uint4* p0 = pCubeWork + blockSize * 0;
-            uint4* p1 = pCubeWork + blockSize * 1;
-            uint4* p2 = pCubeWork + blockSize * 2;
-            uint4* p3 = pCubeWork + blockSize * 3;
+            const int blockSizeOnUint4 = 16 * 16 * 16 / 16;
+            uint4* p0 = pCubeWork + blockSizeOnUint4 * 0;
+            uint4* p1 = pCubeWork + blockSizeOnUint4 * 1;
+            uint4* p2 = pCubeWork + blockSizeOnUint4 * 2;
+            uint4* p3 = pCubeWork + blockSizeOnUint4 * 3;
             uint4* pn = null;
             //makeAlterZ(gridid, pSrc: p0, pDst: p1, pOutput, ref outputCounter, xofs: 0, yofs: 0);
             makeAlterX(gridid, pSrc: p0, pDst: p2, pOutput, ref outputCounter, yofs: 0, zofs: 0);
@@ -88,7 +88,7 @@ namespace Abarabone.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void makeAlterX(int gridid, uint4 *pSrc, uint4 *pDst, uint* pOutput, ref int outputCounter, int yofs, int zofs)
         {
-            for (var i4 = 0; i4 < 16 * 16; i4 += 4)
+            for (var i4 = 0; i4 < 16 * 16 * 16 / 16; i4 += 4)
             {
                 var x_8080 = pSrc[i4 + 0];
                 var x_a2a2 = pSrc[i4 + 2];
@@ -110,8 +110,8 @@ namespace Abarabone.MarchingCubes
                 pDst[i4 + 1] = xd5d5;
                 pDst[i4 + 3] = xf7f7;
 
-                var iy = (i4 >> 3) + yofs;
-                var iz = ((i4 & 0xf) << 1) + zofs;
+                var iy = (i4 >> 4) + yofs;
+                var iz = ((i4 & 0xf) << 3) + zofs;
                 storeCubeInstancesAlter(pOutput, ref outputCounter, x9191, gridid, ix: 1, iy, iz);
                 storeCubeInstancesAlter(pOutput, ref outputCounter, xb3b3, gridid, ix: 3, iy, iz);
                 storeCubeInstancesAlter(pOutput, ref outputCounter, xd5d5, gridid, ix: 5, iy, iz);
@@ -124,7 +124,7 @@ namespace Abarabone.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void makeAlterZ(int gridid, uint4* pSrc, uint4* pDst, uint* pOutput, ref int outputCounter, int xofs, int yofs)
         {
-            //for (var iy16 = 0; iy16 < 16 * 16; iy16 += 16)
+            //for (var iy16 = 0; iy16 < 16 * 16 * 16 / 16; iy16 += 16)
             for (var iy = 0; iy < 32; iy += 2)
             {
                 var iy16 = iy << 3;
@@ -317,15 +317,15 @@ namespace Abarabone.MarchingCubes
             var ci2 = CubeUtility.ToCubeInstance(ix4 + 16, iy4, iz4, gridid, c2);
             var ci3 = CubeUtility.ToCubeInstance(ix4 + 24, iy4, iz4, gridid, c3);
 
-            store_(ci0, ref outputCounter, c0 != 0 & c0 != 0xff);
-            store_(ci1, ref outputCounter, c1 != 0 & c1 != 0xff);
-            store_(ci2, ref outputCounter, c2 != 0 & c2 != 0xff);
-            store_(ci3, ref outputCounter, c3 != 0 & c3 != 0xff);
+            store_(pOutput, ci0, ref outputCounter, c0 != 0 & c0 != 0xff);
+            store_(pOutput, ci1, ref outputCounter, c1 != 0 & c1 != 0xff);
+            store_(pOutput, ci2, ref outputCounter, c2 != 0 & c2 != 0xff);
+            store_(pOutput, ci3, ref outputCounter, c3 != 0 & c3 != 0xff);
 
             return;
 
 
-            void store_(uint4 ci, ref int idx, bool4 isOutput)
+            static void store_(uint* pOutput, uint4 ci, ref int idx, bool4 isOutput)
             {
                 idx = math.compress(pOutput, idx, ci, isOutput);
 

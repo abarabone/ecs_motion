@@ -59,9 +59,13 @@ namespace Abarabone.MarchingCubes
                             in Rotation rot
                         ) =>
                         {
+                            output.GridInstances.Clear();
+                            output.CubeInstances.Clear();
+
+
                             const int singleGridDataSize = 32 * 32 * 32;
                             //const int alterPartDataSize = 16 * 16 * 16;
-                            var pCubesWork = (uint4*)UnsafeUtility.Malloc(singleGridDataSize, 32, Allocator.Temp);
+                            var pCubesWork = (uint4*)UnsafeUtility.Malloc(singleGridDataSize / 2, 32, Allocator.Temp);
                             //var pDst = (uint4*)UnsafeUtility.Malloc(singleGridDataSize * buf.Grids.length, 32, Allocator.Temp);
 
                             var gridId = 0;
