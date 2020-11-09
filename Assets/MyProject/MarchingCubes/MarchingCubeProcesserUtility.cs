@@ -71,25 +71,30 @@ namespace Abarabone.MarchingCubes
         static unsafe public void MakeAlterCubes
             (int gridid, uint4* pCubeWork, uint* pOutput, ref int outputCounter)
         {
-            const int blockSizeOnUint4 = 16 * 16 * 16 / 16;
+            const int blockSizeOnUint4 = 16 * 16;
             uint4* p0 = pCubeWork + blockSizeOnUint4 * 0;
             uint4* p1 = pCubeWork + blockSizeOnUint4 * 1;
             uint4* p2 = pCubeWork + blockSizeOnUint4 * 2;
             uint4* p3 = pCubeWork + blockSizeOnUint4 * 3;
             uint4* pn = null;
 
-            makeAlterX(gridid, pSrc: p0, pDst: p1, pOutput, ref outputCounter, yofs: 0, zofs: 0);
-            makeAlterZ(gridid, pSrc: p0, pDst: p2, pOutput, ref outputCounter, xofs: 0, yofs: 0);
-            makeAlterZ(gridid, pSrc: p1, pDst: p3, pOutput, ref outputCounter, xofs: 1, yofs: 0);
-            
-
-
-            //makeAlterZ(gridid, pSrc: p0, pDst: p1, pOutput, ref outputCounter, xofs: 0, yofs: 0);
-
-            //makeAlterX(gridid, pSrc: p0, pDst: p2, pOutput, ref outputCounter, yofs: 0, zofs: 0);
-            //makeAlterX(gridid, pSrc: p1, pDst: p3, pOutput, ref outputCounter, yofs: 0, zofs: 1);
+            //makeAlterX(gridid, pSrc: p0, pDst: p1, pOutput, ref outputCounter, yofs: 0, zofs: 0);
+            //makeAlterZ(gridid, pSrc: p0, pDst: p2, pOutput, ref outputCounter, xofs: 0, yofs: 0);
+            ////makeAlterZ(gridid, pSrc: p1, pDst: p3, pOutput, ref outputCounter, xofs: 1, yofs: 0);
 
             //makeAlterY(gridid, pSrc: p0, pDst: pn, pOutput, ref outputCounter, xofs: 0, zofs: 0);
+            ////makeAlterY(gridid, pSrc: p1, pDst: pn, pOutput, ref outputCounter, xofs: 1, zofs: 0);
+            ////makeAlterY(gridid, pSrc: p2, pDst: pn, pOutput, ref outputCounter, xofs: 0, zofs: 1);
+            ////makeAlterY(gridid, pSrc: p3, pDst: pn, pOutput, ref outputCounter, xofs: 1, zofs: 1);
+
+
+
+            makeAlterZ(gridid, pSrc: p0, pDst: p1, pOutput, ref outputCounter, xofs: 0, yofs: 0);
+
+            makeAlterX(gridid, pSrc: p0, pDst: p2, pOutput, ref outputCounter, yofs: 0, zofs: 0);
+            //makeAlterX(gridid, pSrc: p1, pDst: p3, pOutput, ref outputCounter, yofs: 0, zofs: 1);
+
+            makeAlterY(gridid, pSrc: p0, pDst: pn, pOutput, ref outputCounter, xofs: 0, zofs: 0);
             //makeAlterY(gridid, pSrc: p1, pDst: pn, pOutput, ref outputCounter, xofs: 0, zofs: 1);
             //makeAlterY(gridid, pSrc: p2, pDst: pn, pOutput, ref outputCounter, xofs: 1, zofs: 0);
             //makeAlterY(gridid, pSrc: p3, pDst: pn, pOutput, ref outputCounter, xofs: 1, zofs: 1);
@@ -213,7 +218,8 @@ namespace Abarabone.MarchingCubes
                 var iz = ((i4 << 1) & 0x18) + zofs;
                 storeCubeInstancesAlter(pOutput, ref outputCounter, y1, gridid, ix, iy, iz);
             }
-            static uint4 bitwise_y_(uint4 v0, uint4 v1) => (v0 & 0x_0f0f_0f0fu) << 4 | (v1 & 0x_f0f0_f0f0u) >> 4;
+            //static uint4 bitwise_y_(uint4 v0, uint4 v1) => (v0 & 0x_0f0f_0f0fu) << 4 | (v1 & 0x_f0f0_f0f0u) >> 4;
+            static uint4 bitwise_y_(uint4 v0, uint4 v1) => (v1 & 0x_0f0f_0f0fu) << 4 | (v0 & 0x_f0f0_f0f0u) >> 4;
         }
 
         //[StructLayout(LayoutKind.Sequential)]
@@ -312,22 +318,23 @@ namespace Abarabone.MarchingCubes
         {
             storeCubeInstances(pOutput, ref outputCounter, cube4x4, gridid, ix, iy, iz + new int4(0, 2, 4, 6));
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void storeCubeInstancesAlterX
-            (uint* pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int iz)
-        {
-            storeCubeInstances(pOutput, ref outputCounter, cube4x4, gridid, ix, iy, new int4(iz, iz, iz, iz));
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static unsafe void storeCubeInstancesAlterX
+        //    (uint* pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int iz)
+        //{
+        //    storeCubeInstances(pOutput, ref outputCounter, cube4x4, gridid, ix, iy, new int4(iz, iz, iz, iz));
+        //}
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void storeCubeInstances
             (uint* pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int4 iz4)
         {
-            if (!math.any(cube4x4)) return;
+            //if (!math.any(cube4x4)) return;
+            //if (!math.any(cube4x4) | !math.any(~cube4x4)) return;
 
             var c0 = cube4x4 & 0xff;
-            var c1 = cube4x4 >> 8 & 0xff;
-            var c2 = cube4x4 >> 16 & 0xff;
-            var c3 = cube4x4 >> 24 & 0xff;
+            var c1 = (cube4x4 >> 8) & 0xff;
+            var c2 = (cube4x4 >> 16) & 0xff;
+            var c3 = (cube4x4 >> 24) & 0xff;
 
             var ix4 = new int4(ix, ix, ix, ix);
             var iy4 = new int4(iy, iy, iy, iy);
