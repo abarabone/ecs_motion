@@ -48,7 +48,7 @@ namespace Abarabone.MarchingCubes
 
             this.Entities
                 .WithAll<DotGridArea.Mode2>()//
-                .WithoutBurst()
+                .WithBurst()
                 .ForEach(
                         (
                             ref DotGridArea.OutputCubesData output,
