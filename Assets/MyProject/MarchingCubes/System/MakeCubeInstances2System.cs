@@ -77,14 +77,19 @@ namespace Abarabone.MarchingCubes
                                     for (var ix = 0; ix < dim.GridWholeLength.x - 1; ix++)
                                     {
 
-                                        var i = math.dot(new int3(ix, iy, iz), unit.GridSpan);
-                                        var grid = buf.Grids[i];
+                                        //var i = math.dot(new int3(ix, iy, iz), unit.GridSpan);
+                                        //var grid = buf.Grids[i];
 
-                                        if (grid.IsFullOrEmpty) continue;
+                                        //if (grid.IsFullOrEmpty) continue;
 
+                                        var gridset = buf.getGridSet_(ix, iy, iz, unit.GridSpan);
+                                        var gridcount = gridset.getEachCount();
 
+                                        if (!gridcount.isNeedDraw_()) continue;
+
+                                        var grid = gridset.L.x;
                                         var pOutput = (uint*)output.CubeInstances.Ptr;
-                                        grid.SampleAlternateCubes(gridId, pCubesWork, pOutput, ref output.CubeInstances.length);
+                                        grid.p->SampleAlternateCubes(gridId, pCubesWork, pOutput, ref output.CubeInstances.length);
                                         ProcesserUtility.MakeAlterCubes(gridId, pCubesWork, pOutput, ref output.CubeInstances.length);
 
 
