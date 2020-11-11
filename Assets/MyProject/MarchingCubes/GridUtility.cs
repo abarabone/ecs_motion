@@ -306,15 +306,18 @@ namespace Abarabone.MarchingCubes
         static void storeTo
             (ref this CubeXLineBitwise cubes, uint* pOutput, ref int outputCounter, int gridid, int iy, int iz)
         {
-            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._98109810, gridid, ix: 0, iy, iz);
-            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._a921a921, gridid, ix: 1, iy, iz);
-            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._ba32ba32, gridid, ix: 2, iy, iz);
-            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._cb43cb43, gridid, ix: 3, iy, iz);
-            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._dc54dc54, gridid, ix: 4, iy, iz);
-            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._ed65ed65, gridid, ix: 5, iy, iz);
-            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._fe76fe76, gridid, ix: 6, iy, iz);
-            ProcesserUtility.StoreCubeInstances(pOutput, ref outputCounter, cubes._0f870f87, gridid, ix: 7, iy, iz);
+            storeCubeInstances(pOutput, ref outputCounter, cubes._98109810, gridid, ix: 0, iy, iz);
+            storeCubeInstances(pOutput, ref outputCounter, cubes._a921a921, gridid, ix: 1, iy, iz);
+            storeCubeInstances(pOutput, ref outputCounter, cubes._ba32ba32, gridid, ix: 2, iy, iz);
+            storeCubeInstances(pOutput, ref outputCounter, cubes._cb43cb43, gridid, ix: 3, iy, iz);
+            storeCubeInstances(pOutput, ref outputCounter, cubes._dc54dc54, gridid, ix: 4, iy, iz);
+            storeCubeInstances(pOutput, ref outputCounter, cubes._ed65ed65, gridid, ix: 5, iy, iz);
+            storeCubeInstances(pOutput, ref outputCounter, cubes._fe76fe76, gridid, ix: 6, iy, iz);
+            storeCubeInstances(pOutput, ref outputCounter, cubes._0f870f87, gridid, ix: 7, iy, iz);
         }
+
+
+        //static int 
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -422,5 +425,70 @@ namespace Abarabone.MarchingCubes
 
 
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void storeCubeInstances
+            (uint* pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int iz)
+        {
+            StoreCubeInstances(pOutput, ref outputCounter, cube4x4, gridid, ix, iy, iz + new int4(0, 1, 2, 3));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public unsafe void StoreCubeInstances
+            (uint* pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int4 iz4)
+        {
+            //if (!math.any(cube4x4)) return;
+            if (!math.any(cube4x4) | !math.any(~cube4x4)) return;
+
+            var c0 = cube4x4 & 0xff;
+            var c1 = (cube4x4 >> 8) & 0xff;
+            var c2 = (cube4x4 >> 16) & 0xff;
+            var c3 = (cube4x4 >> 24) & 0xff;
+
+            var ix4 = new int4(ix, ix, ix, ix);
+            var iy4 = new int4(iy, iy, iy, iy);
+            var ci0 = CubeUtility.ToCubeInstance(ix4 + 0, iy4, iz4, gridid, c0);
+            var ci1 = CubeUtility.ToCubeInstance(ix4 + 8, iy4, iz4, gridid, c1);
+            var ci2 = CubeUtility.ToCubeInstance(ix4 + 16, iy4, iz4, gridid, c2);
+            var ci3 = CubeUtility.ToCubeInstance(ix4 + 24, iy4, iz4, gridid, c3);
+
+            store_(pOutput, ci0, ref outputCounter, c0 != 0 & c0 != 0xff);
+            store_(pOutput, ci1, ref outputCounter, c1 != 0 & c1 != 0xff);
+            store_(pOutput, ci2, ref outputCounter, c2 != 0 & c2 != 0xff);
+            store_(pOutput, ci3, ref outputCounter, c3 != 0 & c3 != 0xff);
+
+            return;
+
+
+            static void store_(uint* pOutput, uint4 ci, ref int idx, bool4 isOutput)
+            {
+                idx = math.compress(pOutput, idx, ci, isOutput);
+
+                // 遅い、倍以上
+                //switch (math.bitmask(isOutput))
+                //{
+                //    case 0b_0000: break;
+
+                //    case 0b_0001: *((uint*)(pOutput + idx++)) = ci.x; break;
+                //    case 0b_0010: *((uint*)(pOutput + idx++)) = ci.y; break;
+                //    case 0b_0100: *((uint*)(pOutput + idx++)) = ci.z; break;
+                //    case 0b_1000: *((uint*)(pOutput + idx++)) = ci.w; break;
+
+                //    case 0b_0011: *((uint2*)(pOutput + idx)) = ci.xy; idx += 2; break;
+                //    case 0b_0101: *((uint2*)(pOutput + idx)) = ci.xz; idx += 2; break;
+                //    case 0b_1001: *((uint2*)(pOutput + idx)) = ci.xw; idx += 2; break;
+                //    case 0b_0110: *((uint2*)(pOutput + idx)) = ci.yz; idx += 2; break;
+                //    case 0b_1010: *((uint2*)(pOutput + idx)) = ci.yw; idx += 2; break;
+                //    case 0b_1100: *((uint2*)(pOutput + idx)) = ci.zw; idx += 2; break;
+
+                //    case 0b_1110: *((uint3*)(pOutput + idx)) = ci.yzw; idx += 3; break;
+                //    case 0b_0111: *((uint3*)(pOutput + idx)) = ci.xyz; idx += 3; break;
+                //    case 0b_1101: *((uint3*)(pOutput + idx)) = ci.xzw; idx += 3; break;
+                //    case 0b_1011: *((uint3*)(pOutput + idx)) = ci.xyw; idx += 3; break;
+
+                //    case 0b_1111: *((uint4*)(pOutput + idx)) = ci; idx += 4; break;
+                //};
+            }
+        }
     }
 }
