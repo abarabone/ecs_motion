@@ -108,6 +108,8 @@ namespace Abarabone.MarchingCubes
 
         public struct Mode2 : IComponentData
         { }
+        public struct Parallel : IComponentData
+        { }
     }
 
 

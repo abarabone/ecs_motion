@@ -9,55 +9,56 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
+using na = Unity.Burst.NoAliasAttribute;
 
 namespace Abarabone.MarchingCubes
 {
 
-    public unsafe interface ICubeInstanceWriter
-    {
-        void Add(CubeInstance ci);
-        void AddRange(CubeInstance* pCi, int length);
-    }
-    public unsafe struct InstanceCubeByList : ICubeInstanceWriter
-    {
-        [WriteOnly]
-        public NativeList<CubeInstance> list;
-        public void Add(CubeInstance ci) => list.AddNoResize(ci);
-        public void AddRange(CubeInstance* pCi, int length) => list.AddRangeNoResize(pCi, length);
-    }
-    public unsafe struct InstanceCubeByParaList : ICubeInstanceWriter
-    {
-        [WriteOnly]
-        public NativeList<CubeInstance>.ParallelWriter list;
-        public void Add(CubeInstance ci) => list.AddNoResize(ci);
-        public void AddRange(CubeInstance* pCi, int length) => list.AddRangeNoResize(pCi, length);
-    }
-    public unsafe struct InstanceCubeByParaQueue : ICubeInstanceWriter
-    {
-        [WriteOnly]
-        public NativeQueue<CubeInstance>.ParallelWriter queue;
-        public void Add(CubeInstance ci) => queue.Enqueue(ci);
-        public void AddRange(CubeInstance* pCi, int length) => queue.Enqueue(*pCi);// キューは範囲追加ムリ
-    }
-    public unsafe struct InstanceCubeByTempMem : ICubeInstanceWriter
-    {
-        [WriteOnly]
-        [NativeDisableUnsafePtrRestriction]
-        [NativeDisableParallelForRestriction]
-        public CubeInstance* p;
-        public int length;
-        public void Add(CubeInstance ci) => p[length++] = ci;
-        public void AddRange(CubeInstance* pCi, int length) =>
-            UnsafeUtility.MemCpy(p, pCi, length * sizeof(CubeInstance));
-    }
+    //public unsafe interface ICubeInstanceWriter
+    //{
+    //    void Add(CubeInstance ci);
+    //    void AddRange(CubeInstance* pCi, int length);
+    //}
+    //public unsafe struct InstanceCubeByList : ICubeInstanceWriter
+    //{
+    //    [WriteOnly]
+    //    public NativeList<CubeInstance> list;
+    //    public void Add(CubeInstance ci) => list.AddNoResize(ci);
+    //    public void AddRange(CubeInstance* pCi, int length) => list.AddRangeNoResize(pCi, length);
+    //}
+    //public unsafe struct InstanceCubeByParaList : ICubeInstanceWriter
+    //{
+    //    [WriteOnly]
+    //    public NativeList<CubeInstance>.ParallelWriter list;
+    //    public void Add(CubeInstance ci) => list.AddNoResize(ci);
+    //    public void AddRange(CubeInstance* pCi, int length) => list.AddRangeNoResize(pCi, length);
+    //}
+    //public unsafe struct InstanceCubeByParaQueue : ICubeInstanceWriter
+    //{
+    //    [WriteOnly]
+    //    public NativeQueue<CubeInstance>.ParallelWriter queue;
+    //    public void Add(CubeInstance ci) => queue.Enqueue(ci);
+    //    public void AddRange(CubeInstance* pCi, int length) => queue.Enqueue(*pCi);// キューは範囲追加ムリ
+    //}
+    //public unsafe struct InstanceCubeByTempMem : ICubeInstanceWriter
+    //{
+    //    [WriteOnly]
+    //    [NativeDisableUnsafePtrRestriction]
+    //    [NativeDisableParallelForRestriction]
+    //    public CubeInstance* p;
+    //    public int length;
+    //    public void Add(CubeInstance ci) => p[length++] = ci;
+    //    public void AddRange(CubeInstance* pCi, int length) =>
+    //        UnsafeUtility.MemCpy(p, pCi, length * sizeof(CubeInstance));
+    //}
 
-    public unsafe struct InstanceCubeByUnsafeList : ICubeInstanceWriter
-    {
-        [WriteOnly]
-        public UnsafeList<CubeInstance> list;
-        public void Add(CubeInstance ci) => list.AddNoResize(ci);
-        public void AddRange(CubeInstance* pCi, int length) => list.AddRangeNoResize(pCi, length);
-    }
+    //public unsafe struct InstanceCubeByUnsafeList : ICubeInstanceWriter
+    //{
+    //    [WriteOnly]
+    //    public UnsafeList<CubeInstance> list;
+    //    public void Add(CubeInstance ci) => list.AddNoResize(ci);
+    //    public void AddRange(CubeInstance* pCi, int length) => list.AddRangeNoResize(pCi, length);
+    //}
 
 
 
@@ -74,10 +75,10 @@ namespace Abarabone.MarchingCubes
 
             public struct HalfGridUnit
             {
-                public DotGrid32x32x32UnsafePtr x;
-                public DotGrid32x32x32UnsafePtr y;
-                public DotGrid32x32x32UnsafePtr z;
-                public DotGrid32x32x32UnsafePtr w;
+                [na] public DotGrid32x32x32UnsafePtr x;
+                [na] public DotGrid32x32x32UnsafePtr y;
+                [na] public DotGrid32x32x32UnsafePtr z;
+                [na] public DotGrid32x32x32UnsafePtr w;
             }
         }
 
@@ -194,7 +195,7 @@ namespace Abarabone.MarchingCubes
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SampleAllCubes
-            (ref this AdjacentGrids g, ref GridCounts gcount, int gridId, uint *pOutput, ref int outputCounter)
+            (ref this AdjacentGrids g, ref GridCounts gcount, int gridId, [na] uint* pOutput, [na] ref int outputCounter)
         {
             var g0or1L = math.min(gcount.L & 0x7fff, new int4(1, 1, 1, 1));
             var g0or1R = math.min(gcount.R & 0x7fff, new int4(1, 1, 1, 1));
@@ -304,7 +305,7 @@ namespace Abarabone.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void storeTo
-            (ref this CubeXLineBitwise cubes, uint* pOutput, ref int outputCounter, int gridid, int iy, int iz)
+            (ref this CubeXLineBitwise cubes, [na] uint* pOutput, [na] ref int outputCounter, int gridid, int iy, int iz)
         {
             storeCubeInstances(pOutput, ref outputCounter, cubes._98109810, gridid, ix: 0, iy, iz);
             storeCubeInstances(pOutput, ref outputCounter, cubes._a921a921, gridid, ix: 1, iy, iz);
@@ -428,14 +429,14 @@ namespace Abarabone.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void storeCubeInstances
-            (uint* pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int iz)
+            ([na] uint* pOutput, [na] ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int iz)
         {
             StoreCubeInstances(pOutput, ref outputCounter, cube4x4, gridid, ix, iy, iz + new int4(0, 1, 2, 3));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public unsafe void StoreCubeInstances
-            (uint* pOutput, ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int4 iz4)
+            ([na] uint* pOutput, [na] ref int outputCounter, uint4 cube4x4, int gridid, int ix, int iy, int4 iz4)
         {
             //if (!math.any(cube4x4)) return;
             if (!math.any(cube4x4) | !math.any(~cube4x4)) return;

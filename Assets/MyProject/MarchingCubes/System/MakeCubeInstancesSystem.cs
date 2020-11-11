@@ -48,6 +48,7 @@ namespace Abarabone.MarchingCubes
 
             this.Entities
                 .WithNone<DotGridArea.Mode2>()//
+                .WithNone<DotGridArea.Parallel>()//
                 .WithBurst()
                 .ForEach(
                         (
