@@ -1,16 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using Abarabone.Misc;
 using Unity.Entities;
-using Unity.Jobs;
-using Unity.Collections;
-using Unity.Burst;
-using Unity.Mathematics;
-
-using Abarabone.Authoring;
-using Abarabone.Misc;
-using Abarabone.SystemGroup;
 
 namespace Abarabone.Draw
 {

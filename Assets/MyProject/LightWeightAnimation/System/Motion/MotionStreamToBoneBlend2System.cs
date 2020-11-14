@@ -13,7 +13,7 @@ using Unity.Transforms;
 namespace Abarabone.CharacterMotion
 {
 
-    using Abarabone.Authoring;
+    
     using Abarabone.SystemGroup;
     using Abarabone.Utilities;
     using Abarabone.Geometry;

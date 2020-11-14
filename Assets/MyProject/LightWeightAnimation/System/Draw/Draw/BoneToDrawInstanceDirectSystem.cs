@@ -10,12 +10,11 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 
-using Abarabone.Authoring;
-using Abarabone.CharacterMotion;
-using Abarabone.SystemGroup;
-
 namespace Abarabone.Draw
 {
+    using Abarabone.CharacterMotion;
+    using Abarabone.SystemGroup;
+
 
     //[UpdateAfter( typeof( DrawInstanceTempBufferAllocationSystem ) )]
     static class A

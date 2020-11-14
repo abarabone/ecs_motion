@@ -9,7 +9,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-using Abarabone.Authoring;
+
 using Abarabone.CharacterMotion;
 using Abarabone.SystemGroup;
 using Unity.Collections.LowLevel.Unsafe;

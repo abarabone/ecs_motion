@@ -13,7 +13,7 @@ namespace Abarabone.Model.Authoring
     using CharacterMotion;
     using Draw;
     using Character;
-    using Abarabone.Authoring;
+    
 
     using Abarabone.Common.Extension;
     using Abarabone.Misc;

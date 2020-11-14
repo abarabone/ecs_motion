@@ -11,7 +11,7 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace Abarabone.Draw
 {
-    using Abarabone.Authoring;
+    
     using Abarabone.Misc;
     using Abarabone.SystemGroup;
     using Abarabone.Utilities;

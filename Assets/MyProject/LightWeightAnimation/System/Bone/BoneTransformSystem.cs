@@ -16,7 +16,7 @@ using Unity.Physics;
 namespace Abarabone.Model
 {
 
-    using Abarabone.Authoring;
+    
     using Abarabone.SystemGroup;
     using Abarabone.Utilities;
     using Abarabone.Geometry;

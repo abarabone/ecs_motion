@@ -12,7 +12,7 @@ using Unity.Transforms;
 namespace Abarabone.Draw
 {
 
-    using Abarabone.Authoring;
+    
     using Abarabone.CharacterMotion;
     using Abarabone.SystemGroup;
     using Abarabone.Geometry;

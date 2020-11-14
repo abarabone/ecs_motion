@@ -11,7 +11,7 @@ using Unity.Transforms;
 
 namespace Abarabone.Draw
 {
-    using Abarabone.Authoring;
+    
     using Abarabone.Misc;
     using Abarabone.SystemGroup;
     using Abarabone.Geometry;

@@ -13,7 +13,7 @@ using Unity.Physics;
 
 namespace Abarabone.Physics
 {
-    using Abarabone.Authoring;
+    
     using Abarabone.SystemGroup;
     using Abarabone.Utilities;
     using Abarabone.Geometry;

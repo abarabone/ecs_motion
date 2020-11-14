@@ -1,23 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using Unity.Collections;
-using Unity.Burst;
 using Unity.Mathematics;
-using Unity.Transforms;
-using Unity.Collections.LowLevel.Unsafe;
-
-
-using Abarabone.Authoring;
-using Abarabone.CharacterMotion;
-using Abarabone.SystemGroup;
-using Abarabone.Misc;
 
 namespace Abarabone.Draw
 {
+    using Abarabone.Misc;
+
     /// <summary>
     /// ジョブで依存関係をスケジュールしてバッファを確保したいが、うまくいかない
     /// そもそもジョブで確保できるのか、外部に渡せるのかもわからない
