@@ -78,7 +78,8 @@ namespace Abarabone.Arms
     }
 
 
-    static public partial class WaponSelector
+
+        static public partial class WaponSelector
     {
 
         public struct LinkData : IComponentData
