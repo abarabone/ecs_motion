@@ -29,7 +29,7 @@ namespace Abarabone.Arms
     using Random = Unity.Mathematics.Random;
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class WaponInitializeSystem : SystemBase
@@ -141,10 +141,10 @@ namespace Abarabone.Arms
                         }
                         cmd.RemoveComponent<FunctionUnitWithWapon.InitializeData>(entityInQueryIndex, entity);
 
-                    //setWaponLinkForSelector_
-                    //    (cmd, entityInQueryIndex, init.WaponCarryId, init.SelectorEntity, entity);
-                    setWaponLinkForSelector_
-                        (init.WaponCarryId, init.SelectorEntity, entity, wapons0w, wapons1w, wapons2w, wapons3w);
+                        //setWaponLinkForSelector_
+                        //    (cmd, entityInQueryIndex, init.WaponCarryId, init.SelectorEntity, entity);
+                        setWaponLinkForSelector_
+                            (init.WaponCarryId, init.SelectorEntity, entity, wapons0w, wapons1w, wapons2w, wapons3w);
                     }
                 )
                 .ScheduleParallel(this.Dependency);

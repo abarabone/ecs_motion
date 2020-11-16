@@ -18,14 +18,36 @@ using System.Runtime.InteropServices;
 namespace Abarabone.Arms
 {
 
+    static public partial class FunctionHolder
+    {
+
+        [InternalBufferCapacity(8)]
+        public struct ElementData : IBufferElementData
+        {
+            public Entity FunctionEntity;
+        }
+
+
+        public struct InitializeMessageData : IComponentData
+        {
+            public Entity PrefabEntity;
+        }
+
+    }
 
     static public partial class WaponHolder
     {
 
         [InternalBufferCapacity(4)]
-        public struct WaponsData : IBufferElementData
+        public struct WaponData : IBufferElementData
         {
 
+        }
+
+
+        public struct InitializeMessage2Data : IComponentData
+        {
+            public Entity PrefabEntity;
         }
 
     }
