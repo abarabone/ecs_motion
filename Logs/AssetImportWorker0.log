@@ -15,11 +15,11 @@ C:/Users/abarabone/Desktop/vsgithub/新しいフォルダー
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-54736
+61559
 Successfully changed project path to: C:/Users/abarabone/Desktop/vsgithub/新しいフォルダー
 C:/Users/abarabone/Desktop/vsgithub/新しいフォルダー
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 330.73 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 248.23 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.2.0b5 (e2067236bd5c)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/Resources/UnitySubsystems
@@ -35,19 +35,368 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56496
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56020
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.012960 seconds.
+Registered in 0.005648 seconds.
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 495.82 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 208.05 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Invoked RoslynAnalysisRunner static constructor.
 RoslynAnalysisRunner will not be running.
 RoslynAnalysisRunner has terminated.
 Mono: successfully reloaded assembly
-- Completed reload, in 10.388 seconds
+- Completed reload, in  7.794 seconds
 Platform modules already initialized, skipping
 Registering precompiled user dll's ...
-Registered in 0.077722 seconds.
+Registered in 0.029663 seconds.
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 207.38 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+TypeManager.Initialize took: 871ms
+UnauthorizedAccessException: Access to the path "C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\BurstCache\JIT\00cbce297433d974834c0d0f0680d763.dll" is denied.
+  at System.IO.File.Delete (System.String path) [0x00073] in <9577ac7a62ef43179789031239ba8798>:0 
+  at Burst.Compiler.IL.Jit.JitCacheManager.DeleteCacheIfBurstVersionChanged () [0x0004c] in <991cfc0e5dc843b2a9bb6d6c2e81a171>:0 
+  at Burst.Compiler.IL.Jit.JitCacheManager..ctor (Burst.Compiler.IL.DebugInfo.PortablePdbCache pdbCache, System.String libraryCacheFolderName) [0x00035] in <991cfc0e5dc843b2a9bb6d6c2e81a171>:0 
+  at Burst.Compiler.IL.Jit.JitCompilerService..ctor (System.Int32 numberOfThreads, System.String libraryCacheFolderName) [0x00086] in <991cfc0e5dc843b2a9bb6d6c2e81a171>:0 
+  at Burst.Compiler.IL.Jit.JitCompilerService..ctor () [0x00000] in <991cfc0e5dc843b2a9bb6d6c2e81a171>:0 
+Unity.Burst.LowLevel.BurstCompilerService:InitializeInternal(String, ExtractCompilerFlags)
+Unity.Burst.LowLevel.BurstCompilerService:Initialize(String, ExtractCompilerFlags)
+Unity.Burst.Editor.BurstLoader:.cctor()
+System.Runtime.CompilerServices.RuntimeHelpers:RunClassConstructor(IntPtr)
+System.Runtime.CompilerServices.RuntimeHelpers:RunClassConstructor(RuntimeTypeHandle)
+UnityEditor.EditorAssemblies:ProcessInitializeOnLoadAttributes(Type[])
+
+Unexpected error while trying to initialize the burst JIT compiler: Unexpected exception occured while initializing burst JitCompilerService
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+Unity.Burst.LowLevel.BurstCompilerService:Initialize (string,Unity.Burst.LowLevel.BurstCompilerService/ExtractCompilerFlags)
+Unity.Burst.Editor.BurstLoader:.cctor () (at Library/PackageCache/com.unity.burst@1.4.1-pre.2/Editor/BurstLoader.cs:126)
+System.Runtime.CompilerServices.RuntimeHelpers:RunClassConstructor (System.RuntimeTypeHandle)
+UnityEditor.EditorAssemblies:ProcessInitializeOnLoadAttributes (System.Type[])
+
+(Filename: Library/PackageCache/com.unity.burst@1.4.1-pre.2/Editor/BurstLoader.cs Line: 126)
+
+System.InvalidOperationException: Burst failed to compile the function pointer `Int32 DoGetCSRTrampoline()`
+  at Unity.Burst.BurstCompiler.Compile[T] (T delegateObj, System.Boolean isFunctionPointer) [0x0014f] in C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.burst@1.4.1-pre.2\Runtime\BurstCompiler.cs:227 
+  at Unity.Burst.BurstCompiler.CompileFunctionPointer[T] (T delegateMethod) [0x00006] in C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.burst@1.4.1-pre.2\Runtime\BurstCompiler.cs:119 
+  at Unity.Burst.Intrinsics.X86.CompileManagedCsrAccessors () [0x00000] in C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.burst@1.4.1-pre.2\Runtime\Intrinsics\x86\Csr.cs:245 
+  at Unity.Burst.Editor.BurstLoader..cctor () [0x00161] in C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.burst@1.4.1-pre.2\Editor\BurstLoader.cs:204 
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+UnityEditor.EditorAssemblies:ProcessInitializeOnLoadAttributes (System.Type[])
+
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  6.040 seconds
+Platform modules already initialized, skipping
+========================================================================
+Worker process is ready to serve import requests
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.21 seconds
+Refreshing native plugins compatible for Editor in 1.94 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 3567 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 152.9 MB.
+System memory in use after: 153.1 MB.
+
+Unloading 29 unused Assets to reduce memory usage. Loaded Objects now: 4002.
+Total: 21.304000 ms (FindLiveObjects: 2.177300 ms CreateObjectMapping: 0.963600 ms MarkObjects: 16.931900 ms  DeleteObjects: 1.225600 ms)
+
+========================================================================
+Received Import Request.
+  path: Assets/MyProject/Logic/Wapon/System
+  artifactKey: Guid(f65701b4970e29b4994f76fadc6a1d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/Logic/Wapon/System using Guid(f65701b4970e29b4994f76fadc6a1d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b59a688cb46d04acb1af837d47711995') in 0.026161 seconds
+  Import took 0.043117 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 19.772347 seconds.
+  path: Assets/MyProject/Logic/Wapon/System
+  artifactKey: Guid(f65701b4970e29b4994f76fadc6a1d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/Logic/Wapon/System using Guid(f65701b4970e29b4994f76fadc6a1d71) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b59a688cb46d04acb1af837d47711995') in 0.015108 seconds
+  Import took 0.036534 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 597.569279 seconds.
+  path: Assets/MyProject/Logic/Wapon/System/WaponInitializeSystem.cs
+  artifactKey: Guid(d9a1ea768fb152b4d9fc61455733cdd2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/Logic/Wapon/System/WaponInitializeSystem.cs using Guid(d9a1ea768fb152b4d9fc61455733cdd2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2568357ee449c700d4ce04482af17a05') in 0.143577 seconds
+  Import took 0.166489 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 19.160764 seconds.
+  path: Assets/MyProject/Logic/Wapon/System/WaponInitializeSystem1.cs
+  artifactKey: Guid(6db370c6e6a25cd4a80a3ed1582e8ba4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/Logic/Wapon/System/WaponInitializeSystem1.cs using Guid(6db370c6e6a25cd4a80a3ed1582e8ba4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '30755c6113da7753cf10f0cd56bffe0b') in 0.089644 seconds
+  Import took 0.166231 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 136.284338 seconds.
+  path: Assets/MyProject/Logic/Wapon/System/WaponSelectorSystem1.cs
+  artifactKey: Guid(058d944ed030169478ce136b59d68d37) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/Logic/Wapon/System/WaponSelectorSystem1.cs using Guid(058d944ed030169478ce136b59d68d37) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e0ddf5db6a8a7e5a64aacf760eaebe9d') in 0.022709 seconds
+  Import took 0.045123 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.002938 seconds.
+  path: Assets/MyProject/Logic/Wapon/System/WaponSelectorSystem1.cs
+  artifactKey: Guid(058d944ed030169478ce136b59d68d37) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyProject/Logic/Wapon/System/WaponSelectorSystem1.cs using Guid(058d944ed030169478ce136b59d68d37) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e0ddf5db6a8a7e5a64aacf760eaebe9d') in 0.025201 seconds
+  Import took 0.053599 seconds .
+
+========================================================================
+Received Prepare
+Reloading mono domain
+Begin MonoManager ReloadAssembly
+InvalidOperationException: Burst failed to compile the function pointer `Int32 DoGetCSRTrampoline()`
+  at Unity.Burst.BurstCompiler.Compile[T] (T delegateObj, System.Boolean isFunctionPointer) [0x0014f] in C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.burst@1.4.1-pre.2\Runtime\BurstCompiler.cs:227 
+  at Unity.Burst.BurstCompiler.CompileFunctionPointer[T] (T delegateMethod) [0x00006] in C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.burst@1.4.1-pre.2\Runtime\BurstCompiler.cs:119 
+  at Unity.Burst.Intrinsics.X86.CompileManagedCsrAccessors () [0x00000] in C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.burst@1.4.1-pre.2\Runtime\Intrinsics\x86\Csr.cs:245 
+  at Unity.Burst.Editor.BurstLoader..cctor () [0x00161] in C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.burst@1.4.1-pre.2\Editor\BurstLoader.cs:204 
+Rethrow as TypeInitializationException: The type initializer for 'Unity.Burst.Editor.BurstLoader' threw an exception.
+  at (wrapper delegate-invoke) <Module>.invoke_void_object_EventArgs(object,System.EventArgs)
+  at System.AppDomain.DoDomainUnload () [0x00008] in <9577ac7a62ef43179789031239ba8798>:0 
+
+(Filename: Library/PackageCache/com.unity.burst@1.4.1-pre.2/Runtime/BurstCompiler.cs Line: 227)
+
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.005343 seconds.
+Symbol file LoadedFromMemory doesn't match image C:\Users\abarabone\Desktop\vsgithub\新しいフォルダー\Library\PackageCache\com.unity.ext.nunit@1.0.0\net35\unity-custom\nunit.framework.dll
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 203.26 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+TypeManager.Initialize took: 695ms
+implement type compare for 0!
+Crash!!!
+SymInit: Symbol-SearchPath: 'C:/Program Files/Unity/Hub/Editor/2020.2.0b5/Editor/Data/Mono;.;C:\Users\abarabone\Desktop\vsgithub\�V�����t�H���_�[;C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor;C:\WINDOWS;C:\WINDOWS\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/', symOptions: 534, UserName: 'abarabone'
+OS-Version: 10.0.0
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\Unity.exe:Unity.exe (00007FF70AA90000), size: 133373952 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 2020.2.0.1650
+C:\WINDOWS\SYSTEM32\ntdll.dll:ntdll.dll (00007FF8137E0000), size: 2031616 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\Program Files\AVAST Software\Avast\aswhook.dll:aswhook.dll (00007FFFF6510000), size: 73728 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 20.9.5758.0
+C:\WINDOWS\System32\KERNEL32.DLL:KERNEL32.DLL (00007FF812750000), size: 729088 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1110
+C:\WINDOWS\System32\KERNELBASE.dll:KERNELBASE.dll (00007FF811020000), size: 2772992 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1139
+C:\WINDOWS\System32\CRYPT32.dll:CRYPT32.dll (00007FF811600000), size: 1347584 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.592
+C:\WINDOWS\System32\ucrtbase.dll:ucrtbase.dll (00007FF811330000), size: 1024000 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1110
+C:\WINDOWS\System32\MSASN1.dll:MSASN1.dll (00007FF810740000), size: 73728 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\System32\USER32.dll:USER32.dll (00007FF8132F0000), size: 1654784 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\System32\win32u.dll:win32u.dll (00007FF810F40000), size: 135168 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1198
+C:\WINDOWS\System32\GDI32.dll:GDI32.dll (00007FF812720000), size: 155648 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\System32\gdi32full.dll:gdi32full.dll (00007FF811460000), size: 1662976 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1139
+C:\WINDOWS\System32\msvcp_win.dll:msvcp_win.dll (00007FF8117F0000), size: 647168 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1110
+C:\WINDOWS\System32\ADVAPI32.dll:ADVAPI32.dll (00007FF813540000), size: 667648 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.752
+C:\WINDOWS\System32\msvcrt.dll:msvcrt.dll (00007FF812810000), size: 647168 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 7.0.18362.1
+C:\WINDOWS\System32\sechost.dll:sechost.dll (00007FF812A80000), size: 618496 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.959
+C:\WINDOWS\System32\RPCRT4.dll:RPCRT4.dll (00007FF8118A0000), size: 1179648 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1198
+C:\WINDOWS\System32\SHELL32.dll:SHELL32.dll (00007FF812030000), size: 7237632 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\System32\cfgmgr32.dll:cfgmgr32.dll (00007FF810EF0000), size: 303104 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.387
+C:\WINDOWS\System32\shcore.dll:shcore.dll (00007FF8119C0000), size: 692224 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\System32\combase.dll:combase.dll (00007FF811CF0000), size: 3362816 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\System32\bcryptPrimitives.dll:bcryptPrimitives.dll (00007FF811750000), size: 524288 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.836
+C:\WINDOWS\System32\windows.storage.dll:windows.storage.dll (00007FF810760000), size: 7868416 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\System32\profapi.dll:profapi.dll (00007FF810710000), size: 143360 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.693
+C:\WINDOWS\System32\powrprof.dll:powrprof.dll (00007FF8106A0000), size: 303104 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\System32\UMPDC.dll:UMPDC.dll (00007FF810690000), size: 65536 (result: 0), SymType: '-deferred-', PDB: ''
+C:\WINDOWS\System32\shlwapi.dll:shlwapi.dll (00007FF812A20000), size: 335872 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\System32\kernel.appcore.dll:kernel.appcore.dll (00007FF8106F0000), size: 69632 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\System32\cryptsp.dll:cryptsp.dll (00007FF8117D0000), size: 94208 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\System32\ole32.dll:ole32.dll (00007FF812B20000), size: 1404928 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1082
+C:\WINDOWS\System32\IMM32.dll:IMM32.dll (00007FF812CE0000), size: 188416 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.387
+C:\WINDOWS\System32\SETUPAPI.dll:SETUPAPI.dll (00007FF812E70000), size: 4653056 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\System32\bcrypt.dll:bcrypt.dll (00007FF811430000), size: 155648 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.267
+C:\WINDOWS\System32\WS2_32.dll:WS2_32.dll (00007FF812930000), size: 454656 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.387
+C:\WINDOWS\System32\OLEAUT32.dll:OLEAUT32.dll (00007FF812DA0000), size: 806912 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1110
+C:\WINDOWS\System32\WINTRUST.dll:WINTRUST.dll (00007FF8112D0000), size: 376832 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1198
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\libfbxsdk.dll:libfbxsdk.dll (00007FFFD5C80000), size: 8974336 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 2020.0.0.0
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\optix.6.0.0.dll:optix.6.0.0.dll (00007FFFFD1B0000), size: 208896 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 6.0.0.0
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\OpenImageDenoise.dll:OpenImageDenoise.dll (00007FFFB3340000), size: 43806720 (result: 0), SymType: '-deferred-', PDB: ''
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\umbraoptimizer64.dll:umbraoptimizer64.dll (00007FFFD89A0000), size: 1306624 (result: 0), SymType: '-deferred-', PDB: ''
+C:\WINDOWS\System32\WLDAP32.dll:WLDAP32.dll (00007FF813730000), size: 425984 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.449
+C:\WINDOWS\System32\Normaliz.dll:Normaliz.dll (00007FF8132E0000), size: 32768 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\FreeImage.dll:FreeImage.dll (0000000180000000), size: 6414336 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 3.18.0.0
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\ispc_texcomp.dll:ispc_texcomp.dll (00007FFFD7830000), size: 1609728 (result: 0), SymType: '-deferred-', PDB: ''
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\WinPixEventRuntime.dll:WinPixEventRuntime.dll (00007FF80C670000), size: 45056 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 1.0.1812.6001
+C:\WINDOWS\SYSTEM32\OPENGL32.dll:OPENGL32.dll (00007FFFEF300000), size: 1400832 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.387
+C:\WINDOWS\SYSTEM32\GLU32.dll:GLU32.dll (00007FFFF4830000), size: 180224 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.387
+C:\WINDOWS\SYSTEM32\IPHLPAPI.DLL:IPHLPAPI.DLL (00007FF80FB90000), size: 237568 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\WINHTTP.dll:WINHTTP.dll (00007FF808000000), size: 983040 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.778
+C:\WINDOWS\SYSTEM32\WINMM.dll:WINMM.dll (00007FF80E3E0000), size: 147456 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\HID.DLL:HID.DLL (00007FF80EE80000), size: 57344 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\RadeonImageFilters.dll:RadeonImageFilters.dll (00007FFFD69A0000), size: 2535424 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 1.5.1.0
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\OpenRL.dll:OpenRL.dll (0000018829780000), size: 12779520 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 1.5.100.0
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\SketchUpAPI.dll:SketchUpAPI.dll (00007FFFD53F0000), size: 8978432 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 19.0.753.0
+C:\WINDOWS\SYSTEM32\VERSION.dll:VERSION.dll (00007FF809FD0000), size: 40960 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\WSOCK32.dll:WSOCK32.dll (00007FF801B20000), size: 36864 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\tbb.dll:tbb.dll (00007FFFFD070000), size: 413696 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 2017.0.2016.1004
+C:\WINDOWS\SYSTEM32\VCRUNTIME140.dll:VCRUNTIME140.dll (00007FF80CB10000), size: 102400 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 14.26.28720.3
+C:\WINDOWS\SYSTEM32\MSVCP140.dll:MSVCP140.dll (00007FF80C780000), size: 593920 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 14.26.28720.3
+C:\WINDOWS\SYSTEM32\WINMMBASE.dll:WINMMBASE.dll (00007FF80E3B0000), size: 184320 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\OpenRL_pthread.dll:OpenRL_pthread.dll (000001882A3D0000), size: 61440 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 2.9.0.0
+C:\WINDOWS\SYSTEM32\MSVCP100.dll:MSVCP100.dll (00000000689A0000), size: 622592 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.30319.1
+C:\WINDOWS\SYSTEM32\MSVCR100.dll:MSVCR100.dll (00000000688C0000), size: 856064 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.30319.1
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\embree.dll:embree.dll (00007FFFD3FE0000), size: 16711680 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 2.14.0.0
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\SketchUpCommonPreferences.dll:SketchUpCommonPreferences.dll (00007FFFD8920000), size: 483328 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 19.0.753.20342
+C:\WINDOWS\SYSTEM32\Secur32.dll:Secur32.dll (00007FF801270000), size: 49152 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\CRYPTBASE.DLL:CRYPTBASE.DLL (00007FF810050000), size: 49152 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\MSVCP120.dll:MSVCP120.dll (00007FFFD7530000), size: 679936 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 12.0.40649.5
+C:\WINDOWS\SYSTEM32\MSVCR120.dll:MSVCR120.dll (00007FFFD7440000), size: 978944 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 12.0.40649.5
+C:\WINDOWS\SYSTEM32\VCRUNTIME140_1.dll:VCRUNTIME140_1.dll (00007FF80C770000), size: 49152 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 14.26.28720.3
+C:\WINDOWS\SYSTEM32\MSWSOCK.DLL:MSWSOCK.DLL (00007FF80FE80000), size: 421888 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.815
+C:\WINDOWS\SYSTEM32\dxcore.dll:dxcore.dll (00007FF80F2D0000), size: 131072 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\SSPICLI.DLL:SSPICLI.DLL (00007FF810570000), size: 225280 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1049
+C:\WINDOWS\system32\uxtheme.dll:uxtheme.dll (00007FF80E5E0000), size: 626688 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.449
+C:\WINDOWS\System32\clbcatq.dll:clbcatq.dll (00007FF813490000), size: 663552 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 2001.12.10941.16384
+C:\WINDOWS\System32\netprofm.dll:netprofm.dll (00007FF80C4D0000), size: 249856 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1198
+C:\WINDOWS\System32\npmproxy.dll:npmproxy.dll (00007FF808930000), size: 65536 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1198
+C:\WINDOWS\System32\NSI.dll:NSI.dll (00007FF812D90000), size: 32768 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\SYSTEM32\dhcpcsvc6.DLL:dhcpcsvc6.DLL (00007FF809420000), size: 90112 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\SYSTEM32\dhcpcsvc.DLL:dhcpcsvc.DLL (00007FF809720000), size: 114688 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\SYSTEM32\DNSAPI.dll:DNSAPI.dll (00007FF80FBD0000), size: 831488 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\System32\fwpuclnt.dll:fwpuclnt.dll (00007FF808D60000), size: 487424 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1110
+C:\Windows\System32\rasadhlp.dll:rasadhlp.dll (00007FF805020000), size: 40960 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\d3d11.dll:d3d11.dll (00007FF80CE70000), size: 2469888 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\SYSTEM32\dxgi.dll:dxgi.dll (00007FF80F360000), size: 962560 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1049
+C:\WINDOWS\System32\DriverStore\FileRepository\igdlh64.inf_amd64_bdd37d808cfdf045\igd10iumd64.dll:igd10iumd64.dll (00007FF805030000), size: 19333120 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 27.20.100.7989
+C:\WINDOWS\SYSTEM32\ncrypt.dll:ncrypt.dll (00007FF810150000), size: 155648 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\NTASN1.dll:NTASN1.dll (00007FF810110000), size: 241664 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\System32\DriverStore\FileRepository\igdlh64.inf_amd64_bdd37d808cfdf045\igdgmm64.dll:igdgmm64.dll (00007FF804E70000), size: 1720320 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 27.20.100.7989
+C:\WINDOWS\System32\DriverStore\FileRepository\igdlh64.inf_amd64_bdd37d808cfdf045\igc64.dll:igc64.dll (00007FF802960000), size: 38383616 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 27.20.100.7989
+C:\WINDOWS\system32\wbem\wbemprox.dll:wbemprox.dll (00007FF808620000), size: 69632 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\SYSTEM32\wbemcomn.dll:wbemcomn.dll (00007FF808590000), size: 540672 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\system32\wbem\wbemsvc.dll:wbemsvc.dll (00007FF8074B0000), size: 81920 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\system32\wbem\fastprox.dll:fastprox.dll (00007FF807700000), size: 1052672 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\amsi.dll:amsi.dll (00007FFFFCD50000), size: 94208 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\SYSTEM32\USERENV.dll:USERENV.dll (00007FF8105B0000), size: 151552 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1139
+C:\Program Files\AVAST Software\Avast\aswAMSI.dll:aswAMSI.dll (00007FFFFCBA0000), size: 1761280 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 20.9.5758.0
+C:\WINDOWS\SYSTEM32\opencl.dll:opencl.dll (00007FFFD19A0000), size: 131072 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 2.2.5.0
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\radeonrays.dll:radeonrays.dll (00007FFFD1910000), size: 552960 (result: 0), SymType: '-deferred-', PDB: ''
+C:\Program Files\Unity\Hub\Editor\2020.2.0b5\Editor\Data\MonoBleedingEdge\EmbedRuntime\mono-2.0-bdwgc.dll:mono-2.0-bdwgc.dll (00007FFFC76F0000), size: 7786496 (result: 0), SymType: '-deferred-', PDB: ''
+C:\WINDOWS\System32\PSAPI.DLL:PSAPI.DLL (00007FF811890000), size: 32768 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\ProgramData\Microsoft\VisualStudio\Setup\x64\Microsoft.VisualStudio.Setup.Configuration.Native.dll:Microsoft.VisualStudio.Setup.Configuration.Native.dll (00007FFFD18C0000), size: 327680 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 2.6.2111.5687
+C:\WINDOWS\SYSTEM32\PROPSYS.dll:PROPSYS.dll (00007FF80CD20000), size: 983040 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 7.0.18362.815
+C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.18362.1198_none_9e820b57e45ad92f\comctl32.dll:comctl32.dll (00007FFFECCD0000), size: 2637824 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 6.10.18362.1198
+C:\WINDOWS\SYSTEM32\WindowsCodecs.dll:WindowsCodecs.dll (00007FF8074D0000), size: 1765376 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.959
+C:\Windows\System32\thumbcache.dll:thumbcache.dll (00007FFFEB0A0000), size: 385024 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1049
+C:\WINDOWS\SYSTEM32\policymanager.dll:policymanager.dll (00007FF80B040000), size: 561152 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1171
+C:\WINDOWS\SYSTEM32\msvcp110_win.dll:msvcp110_win.dll (00007FF80DCD0000), size: 565248 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1
+C:\WINDOWS\SYSTEM32\dbghelp.dll:dbghelp.dll (00007FF80EF40000), size: 2048000 (result: 0), SymType: '-deferred-', PDB: '', fileVersion: 10.0.18362.1049
+
+========== OUTPUTTING STACK TRACE ==================
+
+0x00007FF811063B29 (KERNELBASE) RaiseException
+0x00007FFFC7706025 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\utils\mono-log-common.c:142] mono_log_write_logfile 
+0x00007FFFC76F4D41 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\eglib\goutput.c:131] monoeg_g_log 
+0x00007FFFC777DD46 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\metadata.c:5469] do_mono_metadata_type_equal 
+0x00007FFFC779C640 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\mono-hash.c:121] mono_g_hash_table_find_slot 
+0x00007FFFC779C3C0 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\mono-hash.c:203] do_rehash 
+0x00007FFFC79F804F (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\external\bdwgc\misc.c:2120] GC_call_with_alloc_lock 
+0x00007FFFC779CFC1 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\mono-hash.c:235] rehash 
+0x00007FFFC779C94C (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\mono-hash.c:444] mono_g_hash_table_insert_replace 
+0x00007FFFC77E9D6C (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\reflection.c:536] mono_type_get_object_checked 
+0x00007FFFC788364F (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\mini\method-to-ir.c:11385] mono_method_to_ir 
+0x00007FFFC78142D9 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\mini\mini.c:3465] mini_method_compile 
+0x00007FFFC7818EF1 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\mini\mini.c:4201] mono_jit_compile_method_inner 
+0x00007FFFC781D312 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\mini\mini-runtime.c:2133] mono_jit_compile_method_with_opt 
+0x00007FFFC78F8206 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\mini\mini-trampolines.c:716] common_call_trampoline 
+0x00007FFFC78FA224 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\mini\mini-trampolines.c:848] mono_magic_trampoline 
+  ERROR: SymGetSymFromAddr64, GetLastError: '指定されたモジュールが見つかりません。
+' (Address: 00000189F62803A3)
+  ERROR: SymGetModuleInfo64, GetLastError: 'ダイナミック リンク ライブラリ (DLL) 初期化ルーチンの実行に失敗しました。
+' (Address: 00000189F62803A3)
+0x00000189F62803A3 ((<unknown>)) (function-name not available)
+0x00000189FA13FC03 (Mono JIT Code) Burst.Backend.StandardCompilerBackend:GetSingleton (string)
+0x00000189FA13F903 (Mono JIT Code) Burst.Backend.StandardCompilerBackend:GetDefault ()
+0x00000189F68C783B (Mono JIT Code) Burst.Compiler.IL.Jit.JitCompilerService:.ctor (int,string)
+0x00000189F68C2613 (Mono JIT Code) Burst.Compiler.IL.Jit.JitCompilerService:.ctor ()
+0x00000189F68C29A0 (Mono JIT Code) (wrapper runtime-invoke) object:runtime_invoke_void__this__ (object,intptr,intptr,intptr)
+0x00007FFFC781DE60 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\mini\mini-runtime.c:2812] mono_jit_runtime_invoke 
+0x00007FFFC77A2902 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\object.c:2921] do_runtime_invoke 
+0x00007FFFC77AB95F (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\object.c:2968] mono_runtime_invoke 
+0x00007FF70C5A1751 (Unity) mono_runtime_object_init_exception
+0x00007FF70B7C8880 (Unity) BurstCompilerService::Initialize
+0x00007FF70C7DDD31 (Unity) BurstCompilerService_CUSTOM_InitializeInternal
+  ERROR: SymGetSymFromAddr64, GetLastError: '指定されたモジュールが見つかりません。
+' (Address: 00000189FB1D54AD)
+  ERROR: SymGetModuleInfo64, GetLastError: 'ダイナミック リンク ライブラリ (DLL) 初期化ルーチンの実行に失敗しました。
+' (Address: 00000189FB1D54AD)
+0x00000189FB1D54AD ((<unknown>)) (function-name not available)
+  ERROR: SymGetSymFromAddr64, GetLastError: '指定されたモジュールが見つかりません。
+' (Address: 00000189FB1D528B)
+  ERROR: SymGetModuleInfo64, GetLastError: 'ダイナミック リンク ライブラリ (DLL) 初期化ルーチンの実行に失敗しました。
+' (Address: 00000189FB1D528B)
+0x00000189FB1D528B ((<unknown>)) (function-name not available)
+  ERROR: SymGetSymFromAddr64, GetLastError: '指定されたモジュールが見つかりません。
+' (Address: 00000189FB1D35EB)
+  ERROR: SymGetModuleInfo64, GetLastError: 'ダイナミック リンク ライブラリ (DLL) 初期化ルーチンの実行に失敗しました。
+' (Address: 00000189FB1D35EB)
+0x00000189FB1D35EB ((<unknown>)) (function-name not available)
+  ERROR: SymGetSymFromAddr64, GetLastError: '指定されたモジュールが見つかりません。
+' (Address: 00000189FB1D319D)
+  ERROR: SymGetModuleInfo64, GetLastError: 'ダイナミック リンク ライブラリ (DLL) 初期化ルーチンの実行に失敗しました。
+' (Address: 00000189FB1D319D)
+0x00000189FB1D319D ((<unknown>)) (function-name not available)
+0x00007FFFC781DE60 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\mini\mini-runtime.c:2812] mono_jit_runtime_invoke 
+0x00007FFFC77A2902 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\object.c:2921] do_runtime_invoke 
+0x00007FFFC77AB01C (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\object.c:477] mono_runtime_class_init_full 
+0x00007FFFC7758C4E (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\icall.c:990] ves_icall_System_Runtime_CompilerServices_RuntimeHelpers_RunClassConstructor 
+  ERROR: SymGetSymFromAddr64, GetLastError: '指定されたモジュールが見つかりません。
+' (Address: 00000189FA1CF2D0)
+  ERROR: SymGetModuleInfo64, GetLastError: 'ダイナミック リンク ライブラリ (DLL) 初期化ルーチンの実行に失敗しました。
+' (Address: 00000189FA1CF2D0)
+0x00000189FA1CF2D0 ((<unknown>)) (function-name not available)
+  ERROR: SymGetSymFromAddr64, GetLastError: '指定されたモジュールが見つかりません。
+' (Address: 00000189FA1CF1DB)
+  ERROR: SymGetModuleInfo64, GetLastError: 'ダイナミック リンク ライブラリ (DLL) 初期化ルーチンの実行に失敗しました。
+' (Address: 00000189FA1CF1DB)
+0x00000189FA1CF1DB ((<unknown>)) (function-name not available)
+  ERROR: SymGetSymFromAddr64, GetLastError: '指定されたモジュールが見つかりません。
+' (Address: 00000189FA1CF063)
+  ERROR: SymGetModuleInfo64, GetLastError: 'ダイナミック リンク ライブラリ (DLL) 初期化ルーチンの実行に失敗しました。
+' (Address: 00000189FA1CF063)
+0x00000189FA1CF063 ((<unknown>)) (function-name not available)
+  ERROR: SymGetSymFromAddr64, GetLastError: '指定されたモジュールが見つかりません。
+' (Address: 0000018A1F00AD10)
+  ERROR: SymGetModuleInfo64, GetLastError: 'ダイナミック リンク ライブラリ (DLL) 初期化ルーチンの実行に失敗しました。
+' (Address: 0000018A1F00AD10)
+0x0000018A1F00AD10 ((<unknown>)) (function-name not available)
+0x00007FFFC781DE60 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\mini\mini-runtime.c:2812] mono_jit_runtime_invoke 
+0x00007FFFC77A2902 (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\object.c:2921] do_runtime_invoke 
+0x00007FFFC77AB95F (mono-2.0-bdwgc) [c:\build\output\unity-technologies\mono\mono\metadata\object.c:2968] mono_runtime_invoke 
+0x00007FF70C5F1184 (Unity) scripting_method_invoke
+0x00007FF70C5E9995 (Unity) ScriptingInvocation::Invoke
+0x00007FF70C5E2B05 (Unity) ScriptingInvocation::Invoke<void>
+0x00007FF70AC9C1DB (Unity) Scripting::UnityEditor::EditorAssembliesProxy::ProcessInitializeOnLoadAttributes
+0x00007FF70C5B7675 (Unity) MonoManager::SetupLoadedEditorAssemblies
+0x00007FF70C5AE6BC (Unity) MonoManager::EndReloadAssembly
+0x00007FF70C5B56E9 (Unity) MonoManager::ReloadAssembly
+0x00007FF70D93F6F9 (Unity) LoadDomainAndUnityAssemblies
+0x00007FF70DD5AA1A (Unity) <lambda_8b47e3292552704bb0dbfdf924c55945>::operator()
+0x00007FF70DE1F4A2 (Unity) asio::detail::completion_handler<core::mutable_function<void __cdecl(void)> >::do_complete
+0x00007FF70DE21600 (Unity) asio::detail::win_iocp_io_service::do_one
+0x00007FF70DE24D8E (Unity) asio::io_service::run
+0x00007FF70DDA09E0 (Unity) RunAssetImportWorkerClientV2
+0x00007FF70DDA0A30 (Unity) RunAssetImporterV2
+0x00007FF70D2D640B (Unity) Application::InitializeProject
+0x00007FF70DC36012 (Unity) WinMain
+0x00007FF70FA30796 (Unity) __scrt_common_main_seh
+0x00007FF812767C24 (KERNEL32) BaseThreadInitThunk
+0x00007FF81384D4D1 (ntdll) RtlUserThreadStart
+
+========== END OF STACKTRACE ===========
+
+A crash has been intercepted by the crash handler. For call stack and other details, see the latest crash report generated in:
+ * C:/Users/ABARAB~1/AppData/Local/Temp/Unity/Editor/Crashes

@@ -59,7 +59,7 @@ namespace Abarabone.Arms
     /// <summary>
     /// 兵士はユニットを武器にまとめて所持する。
     /// 敵はユニット単位で武器を使用する。
-    /// ユニットは「機能をトリガーすること」と「反射間隔／リロードの制御」以外は行わない。
+    /// ユニットは「機能を発動する（射出など）」と「反射間隔／有効無効」以外は行わない。
     /// 他はユニットを管理する側の役目。
     /// </summary>
     static public partial class FunctionUnit
@@ -96,9 +96,12 @@ namespace Abarabone.Arms
             public double NextEmitableTime;
         }
 
+        public struct AliveData : IComponentData
+        { }
+
         public struct RealoadingStateData : IComponentData
         {
-
+            public bool IsAlived;
         }
 
 

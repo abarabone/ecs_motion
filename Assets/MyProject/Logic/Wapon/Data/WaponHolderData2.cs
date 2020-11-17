@@ -38,6 +38,9 @@ namespace Abarabone.Arms
     static public partial class WaponHolder
     {
 
+        public 
+
+
         [InternalBufferCapacity(4)]
         public struct WaponData : IBufferElementData
         {
