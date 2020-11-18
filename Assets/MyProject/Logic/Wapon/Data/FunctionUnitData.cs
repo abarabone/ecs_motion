@@ -97,12 +97,12 @@ namespace Abarabone.Arms
         }
 
         public struct AliveData : IComponentData
-        { }
-
-        public struct RealoadingStateData : IComponentData
         {
             public bool IsAlived;
         }
+
+        public struct RealoadingStateData : IComponentData
+        { }
 
 
         //public struct BulletEmitterData : IComponentData

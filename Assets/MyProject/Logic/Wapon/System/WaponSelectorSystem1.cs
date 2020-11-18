@@ -31,7 +31,7 @@ namespace Abarabone.Arms
     using System.Net;
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class WaponSelectorSystem_pre : SystemBase

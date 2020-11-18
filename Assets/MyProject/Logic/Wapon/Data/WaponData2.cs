@@ -19,6 +19,8 @@ namespace Abarabone.Arms
     static public partial class Wapon
     {
 
+
+
     }
 
 }

@@ -29,7 +29,7 @@ namespace Abarabone.Arms
     using Random = Unity.Mathematics.Random;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class WaponInitializeSystem : SystemBase
@@ -50,7 +50,7 @@ namespace Abarabone.Arms
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
 
-            var selectorDependency = this.Entities
+            this.Entities
                 .WithName("WaponInitializeSelectorSystem")
                 .WithBurst()
                 .ForEach(
@@ -65,69 +65,19 @@ namespace Abarabone.Arms
 
                     }
                 )
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();
 
 
-            var wapons1 = this.GetComponentDataFromEntity<WaponSelector.WaponLink1>(isReadOnly: true);
-            var wapons2 = this.GetComponentDataFromEntity<WaponSelector.WaponLink2>(isReadOnly: true);
-            var wapons3 = this.GetComponentDataFromEntity<WaponSelector.WaponLink3>(isReadOnly: true);
-
-            var createWaponDependency = this.Entities
-                .WithName("WaponInitializeReplacingSystem")
-                .WithBurst()
-                //.WithAny<WaponSelector.WaponLink1, WaponSelector.WaponLink2, WaponSelector.WaponLink3>()
-                .WithReadOnly(wapons1)
-                .WithReadOnly(wapons2)
-                .WithReadOnly(wapons3)
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        in WaponSelector.WaponLink0 wapon0,
-                        in WaponSelector.LinkData link,
-                        in WaponMessage.ReplaceWapon4MsgData msg
-                    ) =>
-                    {
-                        var i = entityInQueryIndex;
-
-                        var old0 = wapon0.WaponEntity;
-                        var old1 = wapons1.HasComponent(entity) ? wapons1[entity].WaponEntity : Entity.Null;
-                        var old2 = wapons2.HasComponent(entity) ? wapons2[entity].WaponEntity : Entity.Null;
-                        var old3 = wapons3.HasComponent(entity) ? wapons3[entity].WaponEntity : Entity.Null;
-
-                        replaceWapon_(cmd, i, old0, msg.WaponPrefab0, 0, link.OwnerMainEntity, link.muzzleBodyEntity, entity);
-                        replaceWapon_(cmd, i, old1, msg.WaponPrefab1, 1, link.OwnerMainEntity, link.muzzleBodyEntity, entity);
-                        replaceWapon_(cmd, i, old2, msg.WaponPrefab2, 2, link.OwnerMainEntity, link.muzzleBodyEntity, entity);
-                        replaceWapon_(cmd, i, old3, msg.WaponPrefab3, 3, link.OwnerMainEntity, link.muzzleBodyEntity, entity);
-
-                        cmd.RemoveComponent<WaponMessage.ReplaceWapon4MsgData>(i, entity);
-                    }
-                )
-                .ScheduleParallel(this.Dependency);
-
-
-            var wapons0w = this.GetComponentDataFromEntity<WaponSelector.WaponLink0>();
-            var wapons1w = this.GetComponentDataFromEntity<WaponSelector.WaponLink1>();
-            var wapons2w = this.GetComponentDataFromEntity<WaponSelector.WaponLink2>();
-            var wapons3w = this.GetComponentDataFromEntity<WaponSelector.WaponLink3>();
 
             var ownerLinks = this.GetComponentDataFromEntity<FunctionUnit.OwnerLinkData>();
             var ids = this.GetComponentDataFromEntity<FunctionUnitWithWapon.WaponCarryIdData>();
             var selectorLinks = this.GetComponentDataFromEntity<FunctionUnitWithWapon.SelectorLinkData>();
 
-            var unitDependency = this.Entities
+            this.Entities
                 .WithName("WaponInitializeFunctionSystem")
                 .WithBurst()
                 .WithNativeDisableParallelForRestriction(ownerLinks)
                 .WithNativeDisableParallelForRestriction(ids)
-                .WithNativeDisableParallelForRestriction(selectorLinks)
-                .WithNativeDisableContainerSafetyRestriction(wapons0w)
-                .WithNativeDisableContainerSafetyRestriction(wapons1w)
-                .WithNativeDisableContainerSafetyRestriction(wapons2w)
-                .WithNativeDisableContainerSafetyRestriction(wapons3w)
-                .WithNativeDisableParallelForRestriction(wapons0w)
-                .WithNativeDisableParallelForRestriction(wapons1w)
-                .WithNativeDisableParallelForRestriction(wapons2w)
-                .WithNativeDisableParallelForRestriction(wapons3w)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -135,25 +85,41 @@ namespace Abarabone.Arms
                         in FunctionUnitWithWapon.InitializeData init
                     ) =>
                     {
+
                         for (var i = 0; i < entlinks.Length; i++)
                         {
                             initUnits_(init, entlinks[i], ownerLinks, ids, selectorLinks);
                         }
                         cmd.RemoveComponent<FunctionUnitWithWapon.InitializeData>(entityInQueryIndex, entity);
 
-                        //setWaponLinkForSelector_
-                        //    (cmd, entityInQueryIndex, init.WaponCarryId, init.SelectorEntity, entity);
                         setWaponLinkForSelector_
                             (init.WaponCarryId, init.SelectorEntity, entity, wapons0w, wapons1w, wapons2w, wapons3w);
+
+                        return;
+
+
+                        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+                        static void setWaponLinkForSelector_
+                            (
+                                int waponCarryId_, Entity selectorEntity_, Entity waponEntity_,
+                                ComponentDataFromEntity<WaponSelector.WaponLink0> wapons0w_,
+                                ComponentDataFromEntity<WaponSelector.WaponLink1> wapons1w_,
+                                ComponentDataFromEntity<WaponSelector.WaponLink2> wapons2w_,
+                                ComponentDataFromEntity<WaponSelector.WaponLink3> wapons3w_
+                            )
+                        {
+                            switch (waponCarryId_)
+                            {
+                                case 0: wapons0w_[selectorEntity_] = new WaponSelector.WaponLink0 { WaponEntity = waponEntity_ }; break;
+                                case 1: wapons1w_[selectorEntity_] = new WaponSelector.WaponLink1 { WaponEntity = waponEntity_ }; break;
+                                case 2: wapons2w_[selectorEntity_] = new WaponSelector.WaponLink2 { WaponEntity = waponEntity_ }; break;
+                                case 3: wapons3w_[selectorEntity_] = new WaponSelector.WaponLink3 { WaponEntity = waponEntity_ }; break;
+                            }
+                        }
                     }
                 )
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();
 
-
-            this.Dependency = JobHandle.CombineDependencies(selectorDependency, createWaponDependency, unitDependency);
-
-            // Make sure that the ECB system knows about our job
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
 
@@ -204,24 +170,6 @@ namespace Abarabone.Arms
         //        case 3: cmd_.SetComponent(uniqueIndex_, selectorEntity_, new WaponSelector.WaponLink3 { WaponEntity = waponEntity_ }); break;
         //    }
         //}
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void setWaponLinkForSelector_
-            (
-                int waponCarryId_, Entity selectorEntity_, Entity waponEntity_,
-                ComponentDataFromEntity<WaponSelector.WaponLink0> wapons0w_,
-                ComponentDataFromEntity<WaponSelector.WaponLink1> wapons1w_,
-                ComponentDataFromEntity<WaponSelector.WaponLink2> wapons2w_,
-                ComponentDataFromEntity<WaponSelector.WaponLink3> wapons3w_
-            )
-        {
-            switch (waponCarryId_)
-            {
-                case 0: wapons0w_[selectorEntity_] = new WaponSelector.WaponLink0 { WaponEntity = waponEntity_ }; break;
-                case 1: wapons1w_[selectorEntity_] = new WaponSelector.WaponLink1 { WaponEntity = waponEntity_ }; break;
-                case 2: wapons2w_[selectorEntity_] = new WaponSelector.WaponLink2 { WaponEntity = waponEntity_ }; break;
-                case 3: wapons3w_[selectorEntity_] = new WaponSelector.WaponLink3 { WaponEntity = waponEntity_ }; break;
-            }
-        }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
