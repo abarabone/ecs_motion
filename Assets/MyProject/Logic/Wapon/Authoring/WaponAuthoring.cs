@@ -25,15 +25,12 @@ namespace Abarabone.Arms.Authoring
     /// WaponEntity はインスタンス化しない。
     /// FunctionUnit をインスタンス化するためのリファレンスでしかない。
     /// </summary>
-    public class WaponAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
+    public partial class WaponAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
     {
 
-        public class FunctionUnitAuthoring : MonoBehaviour
-        { }
 
-
-        public FunctionUnitAuthoring UnitForMainTrigger;
-        public FunctionUnitAuthoring UnitForSubTrigger;
+        public IFunctionUnitAuthoring UnitForMainTrigger;
+        public IFunctionUnitAuthoring UnitForSubTrigger;
 
 
 
@@ -51,7 +48,7 @@ namespace Abarabone.Arms.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var units = this.GetComponentsInChildren<FunctionUnitAuthoring>()
+            var units = this.GetComponentsInChildren<IFunctionUnitAuthoring>()
                 .Select(x => x.gameObject)
                 .Select(x => conversionSystem.GetPrimaryEntity(x))
                 .ToArray();
@@ -71,7 +68,7 @@ namespace Abarabone.Arms.Authoring
 
 
             void addTriggerType_
-                (GameObjectConversionSystem gcs_, FunctionUnitAuthoring unit, FunctionUnitWithWapon.TriggerType type)
+                (GameObjectConversionSystem gcs_, IFunctionUnitAuthoring unit, FunctionUnitWithWapon.TriggerType type)
             {
                 if (unit == null) return;
 

@@ -96,10 +96,8 @@ namespace Abarabone.Arms
             public double NextEmitableTime;
         }
 
-        public struct AliveData : IComponentData
-        {
-            public bool IsAlived;
-        }
+        public struct ActiveDataTag : IComponentData
+        { }
 
         public struct RealoadingStateData : IComponentData
         { }

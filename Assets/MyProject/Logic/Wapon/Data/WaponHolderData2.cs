@@ -47,7 +47,8 @@ namespace Abarabone.Arms
         [InternalBufferCapacity(4)]
         public struct WaponData : IBufferElementData
         {
-            public Entity FunctionEntity;
+            //public Entity FunctionEntity;
+            public Entity WaponEntity;
         }
 
 
