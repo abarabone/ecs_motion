@@ -44,7 +44,7 @@ namespace Abarabone.Arms.Authoring
             referencedPrefabs.Add(this.BulletPrefab.gameObject);
         }
 
-        public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
             initEmitter_(conversionSystem, this.gameObject, this.BulletPrefab.gameObject);
@@ -74,7 +74,6 @@ namespace Abarabone.Arms.Authoring
                     typeof(FunctionUnit.SightModeData),
                     typeof(FunctionUnit.TriggerData),
                     typeof(FunctionUnit.OwnerLinkData)
-                    //typeof(FunctionUnit.UnitChainLinkData)
                 });
                 em.AddComponents(ent, types);
 
