@@ -15,47 +15,6 @@ using Unity.Physics;
 
 namespace Abarabone.Arms
 {
-
-    static public partial class FunctionUnitWithWapon
-    {
-
-        public struct WaponCarryIdData : IComponentData
-        {
-            public int WaponCarryId;
-        }
-        public struct SelectorLinkData : IComponentData
-        {
-            public Entity SelectorEntity;
-        }
-        //public struct UnitChainLinkData : IComponentData
-        //{
-        //    public Entity NextUnitEntity;
-        //}
-
-        public struct TriggerTypeData : IComponentData
-        {
-            public TriggerType Type;
-        }
-        public enum TriggerType
-        {
-            main,
-            sub
-        }
-
-        public struct InitializeData : IComponentData
-        {
-            public int WaponCarryId;
-            public Entity SelectorEntity;
-            public Entity OwnerMainEntity;
-            public Entity MuzzleBodyEntity;
-        }
-    }
-
-    static public partial class FunctionUnitWithDirect
-    {
-
-    }
-
     /// <summary>
     /// 兵士はユニットを武器にまとめて所持する。
     /// 敵はユニット単位で武器を使用する。
@@ -96,28 +55,29 @@ namespace Abarabone.Arms
             public double NextEmitableTime;
         }
 
-        public struct ActiveDataTag : IComponentData
-        { }
+        public struct ActivateData : IComponentData
+        {
+            public bool IsActive;   
+        }
 
         public struct RealoadingStateData : IComponentData
-        { }
+        {
+            
+        }
 
+    }
 
-        //public struct BulletEmitterData : IComponentData
-        //{
-        //    public Entity BulletEntity;
-
-        //    public Entity MainEntity;
-        //}
-
-        //public struct BeamEmitterData : IComponentData
-        //{
-        //    public Entity BeamPrefab;
-
-        //    public Entity MainEntity;
-
-        //    public float3 MuzzlePositionLocal;
-        //}
+    static public partial class FunctionUnitWithWapon
+    {
+        public struct TriggerTypeData : IComponentData
+        {
+            public TriggerType Type;
+        }
+        public enum TriggerType
+        {
+            main,
+            sub
+        }
     }
 
 }

@@ -25,7 +25,7 @@ namespace Abarabone.Arms.Authoring
     /// プライマリエンティティは LinkedEntityGroup のみとする。
     /// その１つ下に、ＦＢＸのキャラクターを置く。それがメインエンティティとなる。
     /// </summary>
-    public class BeamUnitAuthoring : IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class BeamUnitAuthoring : FunctionUnitAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public BeamBulletAuthoring BeamPrefab;

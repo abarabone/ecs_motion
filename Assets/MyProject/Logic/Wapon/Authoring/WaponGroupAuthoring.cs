@@ -32,11 +32,12 @@ namespace Abarabone.Arms.Authoring
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
 
-            var wapons = this.Wapons
+            var functions = this.Wapons
                 .Where(x => x != null)
-                .Select(x => x.gameObject);
+                .Select(x => new[] { x.UnitForMainTrigger.gameObject, x.UnitForSubTrigger.gameObject })
+                .SelectMany();
 
-            referencedPrefabs.AddRange(wapons);
+            referencedPrefabs.AddRange(functions);
 
         }
 

@@ -21,8 +21,8 @@ namespace Abarabone.Arms
     static public partial class FunctionHolder
     {
 
-        [InternalBufferCapacity(8)]
-        public struct ElementData : IBufferElementData
+        [InternalBufferCapacity(4)]
+        public struct LinkData : IBufferElementData
         {
             public Entity FunctionEntity;
         }
@@ -38,11 +38,11 @@ namespace Abarabone.Arms
             public int CurrentWaponIndex;
         }
 
-
         [InternalBufferCapacity(4)]
-        public struct WaponData : IBufferElementData
+        public struct LinkData : IBufferElementData
         {
-            public Entity WaponEntity;
+            public Entity FunctionEntity0;
+            public Entity FunctionEntity1;
         }
 
     }

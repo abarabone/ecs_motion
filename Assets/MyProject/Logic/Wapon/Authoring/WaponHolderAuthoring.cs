@@ -35,7 +35,6 @@ namespace Abarabone.Arms.Authoring
                 select (wapon, muzzle)
                 ;
 
-
             var qWaponData =
                 from x in qWaponInfos
                 select new 

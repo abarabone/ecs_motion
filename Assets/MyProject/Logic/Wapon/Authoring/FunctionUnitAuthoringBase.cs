@@ -2,6 +2,6 @@
 
 namespace Abarabone.Arms.Authoring
 {
-    public class IFunctionUnitAuthoring : MonoBehaviour
+    public abstract class FunctionUnitAuthoringBase : MonoBehaviour
     { }
 }

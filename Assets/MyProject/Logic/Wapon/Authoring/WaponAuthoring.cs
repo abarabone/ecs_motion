@@ -29,46 +29,27 @@ namespace Abarabone.Arms.Authoring
     {
 
 
-        public IFunctionUnitAuthoring UnitForMainTrigger;
-        public IFunctionUnitAuthoring UnitForSubTrigger;
+        public FunctionUnitAuthoringBase UnitForMainTrigger;
+        public FunctionUnitAuthoringBase UnitForSubTrigger;
 
-
-
-
-        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        //{
-        //    var qUnit = this.GetComponentsInChildren<FunctionUnitAuthoring>()
-        //        //.Take(4)// とりあえず４つまでとする
-        //        .Select(x => x.gameObject);
-
-        //    referencedPrefabs.AddRange(qUnit);
-        //}
-
+        
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var units = this.GetComponentsInChildren<IFunctionUnitAuthoring>()
+            var units = this.GetComponentsInChildren<FunctionUnitAuthoringBase>()
                 .Select(x => x.gameObject)
                 .Select(x => conversionSystem.GetPrimaryEntity(x))
                 .ToArray();
 
-            //addWaponComponents_(conversionSystem, entity);
-
-            //initFunctionUnit_(conversionSystem, entity, units);
-
-            //setFunctionChainLink_(conversionSystem, entity, units);
-
             addTriggerType_(conversionSystem, this.UnitForMainTrigger, FunctionUnitWithWapon.TriggerType.main);
             addTriggerType_(conversionSystem, this.UnitForSubTrigger, FunctionUnitWithWapon.TriggerType.sub);
-
-            addWaponSelectorAndCarryIdData_(conversionSystem, units);
 
             return;
 
 
             void addTriggerType_
-                (GameObjectConversionSystem gcs_, IFunctionUnitAuthoring unit, FunctionUnitWithWapon.TriggerType type)
+                (GameObjectConversionSystem gcs_, FunctionUnitAuthoringBase unit, FunctionUnitWithWapon.TriggerType type)
             {
                 if (unit == null) return;
 
@@ -84,57 +65,6 @@ namespace Abarabone.Arms.Authoring
                     }
                 );
             }
-
-            void addWaponSelectorAndCarryIdData_
-                (GameObjectConversionSystem gcs_, Entity[] units_)
-            {
-                var em = gcs_.DstEntityManager;
-
-                em.AddComponentData(units_, new FunctionUnitWithWapon.WaponCarryIdData { });
-                em.AddComponentData(units_, new FunctionUnitWithWapon.SelectorLinkData { });
-            }
-
-            //void addWaponComponents_(GameObjectConversionSystem gcs_, Entity wapon_)
-            //{
-            //    var em = gcs_.DstEntityManager;
-
-            //    var addtypes = new ComponentTypes
-            //    (
-            //        //typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-            //        typeof(Wapon.FunctionUnitPrefabsData)
-            //    );
-            //    em.AddComponents(wapon_, addtypes);
-            //}
-
-            //void initFunctionUnit_(GameObjectConversionSystem gcs_, Entity wapon_, Entity[] units_)
-            //{
-            //    var em = gcs_.DstEntityManager;
-
-            //    var prefabs = new Wapon.FunctionUnitPrefabsData { };
-
-            //    if (units.Length >= 1) prefabs.FunctionUnitPrefab0 = units_[0];
-            //    if (units.Length >= 2) prefabs.FunctionUnitPrefab0 = units_[1];
-            //    if (units.Length >= 3) prefabs.FunctionUnitPrefab0 = units_[2];
-            //    if (units.Length >= 4) prefabs.FunctionUnitPrefab0 = units_[3];
-
-            //    dstManager.SetComponentData(wapon_, prefabs);
-            //}
-
-            //void setFunctionChainLink_(GameObjectConversionSystem gcs_, Entity wapon_, Entity[] units_)
-            //{
-            //    var em = gcs_.DstEntityManager;
-
-            //    var nexts = units_.Skip(1).Append(Entity.Null);
-            //    foreach( var (unit, next) in (units, nexts).Zip())
-            //    {
-            //        em.AddComponentData(unit,
-            //            new FunctionUnit.UnitChainLinkData
-            //            {
-            //                NextUnitEntity = next,
-            //            }
-            //        );
-            //    }
-            //}
 
         }
     }
