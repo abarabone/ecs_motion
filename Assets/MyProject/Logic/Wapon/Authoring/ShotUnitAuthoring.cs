@@ -25,7 +25,7 @@ namespace Abarabone.Arms.Authoring
     /// プライマリエンティティは LinkedEntityGroup のみとする。
     /// その１つ下に、ＦＢＸのキャラクターを置く。それがメインエンティティとなる。
     /// </summary>
-    public class ShotUnitAuthoring : FunctionUnitAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class ShotUnitAuthoring : FunctionUnitAuthoringBase//, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public ShotBulletAuthoring BulletPrefab;
@@ -39,32 +39,28 @@ namespace Abarabone.Arms.Authoring
         public float RangeDistanceFactor;// 弾丸のと掛け合わせて射程とする
 
 
-        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        public override void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
             referencedPrefabs.Add(this.BulletPrefab.gameObject);
         }
 
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public override void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            initEmitter_(conversionSystem, this.gameObject, this.BulletPrefab.gameObject);
+            initEmitter_(conversionSystem, entity);
 
             return;
 
 
-            void initEmitter_
-                (
-                    GameObjectConversionSystem gcs_,
-                    GameObject emitter_, GameObject bullet_
-                )
+            void initEmitter_(GameObjectConversionSystem gcs_, Entity emitter_)
             {
+
                 var em = gcs_.DstEntityManager;
 
+                var beamPrefab = gcs_.GetPrimaryEntity(this.BulletPrefab.gameObject);
 
-                var beamPrefab = gcs_.GetPrimaryEntity(bullet_);
-
-
-                var ent = conversionSystem.GetPrimaryEntity(emitter_);
+                var ent = emitter_;
+                
 
                 var types = new ComponentTypes
                 (new ComponentType[] {

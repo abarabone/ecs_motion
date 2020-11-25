@@ -30,32 +30,29 @@ namespace Abarabone.Arms.Authoring
         public float3 MuzzleLocalPosition;
 
 
-        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        public override void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
             referencedPrefabs.Add(this.BeamPrefab.gameObject);
         }
 
-        public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public override void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            initEmitter_(conversionSystem, this.gameObject, this.BeamPrefab.gameObject);
+            initEmitter_(conversionSystem, entity);
 
             return;
 
-
-            void initEmitter_
-                (
-                    GameObjectConversionSystem gcs_,
-                    GameObject emitter_, GameObject beam_
-                )
+            
+            void initEmitter_(GameObjectConversionSystem gcs_, Entity emitter_)
             {
+
                 var em = gcs_.DstEntityManager;
 
-                var beamBullet = beam_.GetComponent<BeamBulletAuthoring>();
-                var beamPrefab = gcs_.GetPrimaryEntity(beam_);
+                var beamPrefab = gcs_.GetPrimaryEntity(this.BeamPrefab.gameObject);
+                var beamBullet = this.BeamPrefab;
 
-
-                var ent = conversionSystem.GetPrimaryEntity(emitter_);
+                var ent = emitter_;
+                
 
                 var types = new ComponentTypes
                 (

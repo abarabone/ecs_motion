@@ -35,9 +35,17 @@ namespace Abarabone.Arms.Authoring
                 select (wapon, muzzle)
                 ;
 
+            foreach(var i in qWaponInfos)
+            {
+                var ent = conversionSystem.CreateAdditionalEntity(top);
+                i.wapon.UnitForMainTrigger.Convert(ent, dstManager, conversionSystem);
+            }
             var qWaponData =
                 from x in qWaponInfos
-                select new 
+                select new FunctionUnit.
+                {
+                    
+                }
 
 
             var holderEntity = conversionSystem.CreateAdditionalEntity(top);
