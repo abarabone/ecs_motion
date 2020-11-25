@@ -25,7 +25,7 @@ namespace Abarabone.Arms.Authoring
     /// プライマリエンティティは LinkedEntityGroup のみとする。
     /// その１つ下に、ＦＢＸのキャラクターを置く。それがメインエンティティとなる。
     /// </summary>
-    public class ShotUnitAuthoring : FunctionUnitAuthoringBase//, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class ShotUnitAuthoring : MonoBehaviour, IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public ShotBulletAuthoring BulletPrefab;
@@ -39,12 +39,12 @@ namespace Abarabone.Arms.Authoring
         public float RangeDistanceFactor;// 弾丸のと掛け合わせて射程とする
 
 
-        public override void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
             referencedPrefabs.Add(this.BulletPrefab.gameObject);
         }
 
-        public override void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
             initEmitter_(conversionSystem, entity);
@@ -60,16 +60,17 @@ namespace Abarabone.Arms.Authoring
                 var beamPrefab = gcs_.GetPrimaryEntity(this.BulletPrefab.gameObject);
 
                 var ent = emitter_;
-                
 
-                var types = new ComponentTypes
-                (new ComponentType[] {
+
+                var types = new ComponentTypes(new ComponentType[]
+                {
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                     typeof(FunctionUnit.BulletEmittingData),
                     typeof(FunctionUnit.EmittingStateData),
                     typeof(FunctionUnit.SightModeData),
                     typeof(FunctionUnit.TriggerData),
-                    typeof(FunctionUnit.OwnerLinkData)
+                    typeof(FunctionUnit.OwnerLinkData),
+                    typeof(FunctionUnit.ActivateData)
                 });
                 em.AddComponents(ent, types);
 
@@ -77,8 +78,6 @@ namespace Abarabone.Arms.Authoring
                     new FunctionUnit.BulletEmittingData
                     {
                         BulletPrefab = beamPrefab,
-                        //MainEntity = mainEntity,
-                        //MuzzleBodyEntity = muzzleEntity,
                         MuzzlePositionLocal = this.MuzzleLocalPosition,
                         EmittingInterval = this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,
@@ -92,7 +91,28 @@ namespace Abarabone.Arms.Authoring
                         NextEmitableTime = this.EmittingInterval,
                     }
                 );
+                em.SetComponentData(ent,
+                    new FunctionUnit.OwnerLinkData
+                    {
+                        OwnerMainEntity = getMainOrDefault_(),
+                        MuzzleBodyEntity = getMuzzleOrDefault_(),
+                    }
+                );
             }
+
+            Entity getMuzzleOrDefault_() => this.MuzzleObject
+                ? conversionSystem.GetPrimaryEntity(this.MuzzleObject)
+                : Entity.Null;
+
+            Entity getMainOrDefault_()
+            {
+                var top = this.gameObject.Ancestors().FirstOrDefault(go => go.GetComponent<CharacterModelAuthoring>());
+                if (top == null) return Entity.Null;
+
+                var main = top.transform.GetChild(0).gameObject;
+                return conversionSystem.GetPrimaryEntity(main);
+            }
+
         }
 
     }

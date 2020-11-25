@@ -23,7 +23,7 @@ namespace Abarabone.Arms.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var armsFunctions = this.GetComponentsInChildren<FunctionUnitAuthoringBase>();
+            var armsFunctions = this.GetComponentsInChildren<IFunctionUnitAuthoring>();
 
 
 

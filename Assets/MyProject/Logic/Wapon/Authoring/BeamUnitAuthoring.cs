@@ -21,7 +21,7 @@ namespace Abarabone.Arms.Authoring
     using Abarabone.Arms;
     using Abarabone.Model;
 
-    public class BeamUnitAuthoring : FunctionUnitAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class BeamUnitAuthoring : MonoBehaviour, IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public BeamBulletAuthoring BeamPrefab;
@@ -30,12 +30,12 @@ namespace Abarabone.Arms.Authoring
         public float3 MuzzleLocalPosition;
 
 
-        public override void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
             referencedPrefabs.Add(this.BeamPrefab.gameObject);
         }
 
-        public override void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
             initEmitter_(conversionSystem, entity);
@@ -52,25 +52,23 @@ namespace Abarabone.Arms.Authoring
                 var beamBullet = this.BeamPrefab;
 
                 var ent = emitter_;
-                
 
-                var types = new ComponentTypes
-                (
+
+                var types = new ComponentTypes(new ComponentType[]
+                {
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                     typeof(FunctionUnit.BulletEmittingData),
                     typeof(Bullet.SpecData), // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
                     typeof(FunctionUnit.TriggerData),
-                    typeof(FunctionUnit.OwnerLinkData)
-                    //typeof(FunctionUnit.UnitChainLinkData)
-                );
+                    typeof(FunctionUnit.OwnerLinkData),
+                    typeof(FunctionUnit.ActivateData)
+                });
                 em.AddComponents(ent, types);
 
                 em.SetComponentData(ent,
                     new FunctionUnit.BulletEmittingData
                     {
                         BulletPrefab = beamPrefab,
-                        //MainEntity = mainEntity,
-                        //MuzzleBodyEntity = muzzleEntity,
                         MuzzlePositionLocal = this.MuzzleLocalPosition,
                         RangeDistanceFactor = 1.0f,
                     }
@@ -78,10 +76,29 @@ namespace Abarabone.Arms.Authoring
                 em.SetComponentData(ent,
                     new Bullet.SpecData
                     {
-                        //MainEntity = mainEntity,
                         RangeDistanceFactor = beamBullet.RangeDistance,
                     }
                 );
+                em.SetComponentData(ent,
+                    new FunctionUnit.OwnerLinkData
+                    {
+                        OwnerMainEntity = getMainOrDefault_(),
+                        MuzzleBodyEntity = getMuzzleOrDefault_(),
+                    }
+                );
+            }
+
+            Entity getMuzzleOrDefault_() => this.MuzzleObject
+                ? conversionSystem.GetPrimaryEntity(this.MuzzleObject)
+                : Entity.Null;
+
+            Entity getMainOrDefault_()
+            {
+                var top = this.gameObject.Ancestors().FirstOrDefault(go => go.GetComponent<CharacterModelAuthoring>());
+                if (top == null) return Entity.Null;
+
+                var main = top.transform.GetChild(0).gameObject;
+                return conversionSystem.GetPrimaryEntity(main);
             }
         }
 

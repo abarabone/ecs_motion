@@ -34,7 +34,7 @@ namespace Abarabone.Arms.Authoring
 
             var functions = this.Wapons
                 .Where(x => x != null)
-                .Select(x => new[] { x.UnitForMainTrigger.gameObject, x.UnitForSubTrigger.gameObject })
+                .Select(x => new[] { x.MainUnit.gameObject, x.SubUnit.gameObject })
                 .SelectMany();
 
             referencedPrefabs.AddRange(functions);

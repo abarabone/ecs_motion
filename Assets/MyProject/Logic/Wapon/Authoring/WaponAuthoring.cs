@@ -25,11 +25,11 @@ namespace Abarabone.Arms.Authoring
     /// WaponEntity はインスタンス化しない。
     /// FunctionUnit をインスタンス化するためのリファレンスでしかない。
     /// </summary>
-    public partial class WaponAuthoring : WaponAuthoringBase//MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public partial class WaponAuthoring : MonoBehaviour, IWaponAuthoring//, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
-        public FunctionUnitAuthoringBase UnitForMainTrigger;
-        public FunctionUnitAuthoringBase UnitForSubTrigger;
+        public IFunctionUnitAuthoring MainUnit;
+        public IFunctionUnitAuthoring SubUnit;
 
     }
 
