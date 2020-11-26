@@ -19,6 +19,7 @@ namespace Abarabone.Arms.Authoring
     using Abarabone.CharacterMotion;
     using Abarabone.Arms;
 
+    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     public class WaponHolderAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -39,14 +40,15 @@ namespace Abarabone.Arms.Authoring
             var top = this.gameObject.Ancestors().First(go => go.GetComponent<CharacterModelAuthoring>());
             var main = top.transform.GetChild(0).gameObject;
 
+
             var wapons = this.GetComponentsInChildren<IWaponAuthoring>()
                 .Cast<WaponAuthoring>();
-
             var qWaponInfos =
                 from wapon in wapons
                 let muzzle = wapon.transform.parent.gameObject
                 select (wapon, muzzle)
                 ;
+
 
             var holderEntity = conversionSystem.CreateAdditionalEntity(top);
             var holderBuf = dstManager.AddBuffer<WaponHolder.LinkData>(holderEntity);
@@ -72,7 +74,7 @@ namespace Abarabone.Arms.Authoring
 
                     functionUnit.Convert(ent, dstManager, conversionSystem);
 
-                    dstManager.SetComponentData(ent,
+                    dstManager.AddComponentData(ent,
                         new FunctionUnit.OwnerLinkData
                         {
                             OwnerMainEntity = conversionSystem.GetPrimaryEntity(main),

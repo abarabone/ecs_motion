@@ -60,7 +60,7 @@ namespace Abarabone.Arms.Authoring
                     typeof(FunctionUnit.BulletEmittingData),
                     typeof(Bullet.SpecData), // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
                     typeof(FunctionUnit.TriggerData),
-                    typeof(FunctionUnit.OwnerLinkData),
+                    //typeof(FunctionUnit.OwnerLinkData),
                     typeof(FunctionUnit.ActivateData)
                 });
                 em.AddComponents(ent, types);
@@ -79,26 +79,6 @@ namespace Abarabone.Arms.Authoring
                         RangeDistanceFactor = beamBullet.RangeDistance,
                     }
                 );
-                em.SetComponentData(ent,
-                    new FunctionUnit.OwnerLinkData
-                    {
-                        OwnerMainEntity = getMainOrDefault_(),
-                        MuzzleBodyEntity = getMuzzleOrDefault_(),
-                    }
-                );
-            }
-
-            Entity getMuzzleOrDefault_() => this.MuzzleObject
-                ? conversionSystem.GetPrimaryEntity(this.MuzzleObject)
-                : Entity.Null;
-
-            Entity getMainOrDefault_()
-            {
-                var top = this.gameObject.Ancestors().FirstOrDefault(go => go.GetComponent<CharacterModelAuthoring>());
-                if (top == null) return Entity.Null;
-
-                var main = top.transform.GetChild(0).gameObject;
-                return conversionSystem.GetPrimaryEntity(main);
             }
         }
 

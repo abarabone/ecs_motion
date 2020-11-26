@@ -21,16 +21,32 @@ namespace Abarabone.Arms.Authoring
     using Unity.Physics.Authoring;
     using Abarabone.Model;
 
-    /// <summary>
-    /// WaponEntity はインスタンス化しない。
-    /// FunctionUnit をインスタンス化するためのリファレンスでしかない。
-    /// </summary>
-    public partial class WaponAuthoring : MonoBehaviour, IWaponAuthoring//, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public partial class WaponAuthoring : MonoBehaviour, IWaponAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public IFunctionUnitAuthoring MainUnit;
         public IFunctionUnitAuthoring SubUnit;
 
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            (this.MainUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
+            (this.SubUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
+        }
+
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            var top = this.gameObject
+                .Ancestors()
+                .First(go => go.GetComponent<CharacterModelAuthoring>());
+
+            var mainEntity = conversionSystem.CreateAdditionalEntity(top);
+            (this.MainUnit as IConvertGameObjectToEntity)?.Convert(mainEntity, dstManager, conversionSystem);
+
+            var subEntity = conversionSystem.CreateAdditionalEntity(top);
+            (this.SubUnit as IConvertGameObjectToEntity)?.Convert(subEntity, dstManager, conversionSystem);
+
+            dstManager.DestroyEntity(entity);
+        }
     }
 
 }
