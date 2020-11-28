@@ -24,6 +24,8 @@ namespace Abarabone.Arms.Authoring
     public class BeamUnitAuthoring : MonoBehaviour, IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
+        public int Id;
+
         public BeamBulletAuthoring BeamPrefab;
 
         public GameObject MuzzleObject;

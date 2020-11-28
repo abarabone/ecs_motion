@@ -28,6 +28,8 @@ namespace Abarabone.Arms.Authoring
     public class ShotUnitAuthoring : MonoBehaviour, IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
+        public int Id;
+
         public ShotBulletAuthoring BulletPrefab;
 
         public GameObject MuzzleObject;
