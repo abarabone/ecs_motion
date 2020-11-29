@@ -41,49 +41,49 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
-            var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
-            var selectors = this.GetComponentDataFromEntity<WaponSelector.ToggleModeData>(isReadOnly: true);
+            //var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+            //var selectors = this.GetComponentDataFromEntity<WaponSelector.ToggleModeData>(isReadOnly: true);
 
 
-            this.Entities
-                .WithBurst()
-                .WithReadOnly(handles)
-                .WithReadOnly(selectors)
-                .ForEach(
-                    (
-                        ref FunctionUnit.TriggerData trigger,
-                        in FunctionUnitWithWapon.WaponCarryIdData carryid,
-                        in FunctionUnitWithWapon.TriggerTypeData triggerType,
-                        in FunctionUnitWithWapon.SelectorLinkData selectorLink,
-                        in FunctionUnit.OwnerLinkData mainLink
-                    ) =>
-                    {
-                        if (selectorLink.SelectorEntity == Entity.Null) return;
+            //this.Entities
+            //    .WithBurst()
+            //    .WithReadOnly(handles)
+            //    .WithReadOnly(selectors)
+            //    .ForEach(
+            //        (
+            //            ref FunctionUnit.TriggerData trigger,
+            //            in FunctionUnitWithWapon.WaponCarryIdData carryid,
+            //            in FunctionUnitWithWapon.TriggerTypeData triggerType,
+            //            in FunctionUnitWithWapon.SelectorLinkData selectorLink,
+            //            in FunctionUnit.OwnerLinkData mainLink
+            //        ) =>
+            //        {
+            //            if (selectorLink.SelectorEntity == Entity.Null) return;
 
 
-                        var selector = selectors[selectorLink.SelectorEntity];
-                        var isCurrentUsing = (selector.CurrentWaponCarryId == carryid.WaponCarryId);
+            //            var selector = selectors[selectorLink.SelectorEntity];
+            //            var isCurrentUsing = (selector.CurrentWaponCarryId == carryid.WaponCarryId);
 
 
-                        var handle = handles[mainLink.OwnerMainEntity];
+            //            var handle = handles[mainLink.OwnerMainEntity];
 
-                        switch(triggerType.Type)// いずれは配列インデックスで取得できるようにしたい
-                        {
-                            case FunctionUnitWithWapon.TriggerType.main:
+            //            switch(triggerType.Type)// いずれは配列インデックスで取得できるようにしたい
+            //            {
+            //                case FunctionUnitWithWapon.TriggerType.main:
 
-                                trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsShooting;
+            //                    trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsShooting;
 
-                                break;
-                            case FunctionUnitWithWapon.TriggerType.sub:
+            //                    break;
+            //                case FunctionUnitWithWapon.TriggerType.sub:
 
-                                trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsTriggerdSub;
+            //                    trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsTriggerdSub;
 
-                                break;
-                        }
+            //                    break;
+            //            }
 
-                    }
-                )
-                .ScheduleParallel();
+            //        }
+            //    )
+            //    .ScheduleParallel();
 
         }
 

@@ -41,32 +41,32 @@ namespace Abarabone.Arms
         protected override void OnUpdate()
         {
 
-            var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
-            var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
+            //var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+            //var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
 
-            this.Entities
-                .WithBurst()
-                .WithReadOnly(handles)
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        ref WaponSelector.ToggleModeData selector,
-                        in WaponSelector.LinkData link,
-                        in WaponSelector.WaponLink0 wapon0
-                    ) =>
-                    {
-                        if (selector.WaponCarryLength == 0) return;
+            //this.Entities
+            //    .WithBurst()
+            //    .WithReadOnly(handles)
+            //    .ForEach(
+            //        (
+            //            Entity entity, int entityInQueryIndex,
+            //            ref WaponSelector.ToggleModeData selector,
+            //            in WaponSelector.LinkData link,
+            //            in WaponSelector.WaponLink0 wapon0
+            //        ) =>
+            //        {
+            //            if (selector.WaponCarryLength == 0) return;
 
-                        if (!handles[link.OwnerMainEntity].ControlAction.IsChangingWapon) return;
+            //            if (!handles[link.OwnerMainEntity].ControlAction.IsChangingWapon) return;
 
 
-                        var newCurrentId = (selector.CurrentWaponCarryId + 1) % selector.WaponCarryLength;
+            //            var newCurrentId = (selector.CurrentWaponCarryId + 1) % selector.WaponCarryLength;
 
-                        selector.CurrentWaponCarryId = newCurrentId;
+            //            selector.CurrentWaponCarryId = newCurrentId;
 
-                    }
-                )
-                .ScheduleParallel();
+            //        }
+            //    )
+            //    .ScheduleParallel();
 
         }
 

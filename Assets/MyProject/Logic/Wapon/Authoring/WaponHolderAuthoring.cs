@@ -20,19 +20,19 @@ namespace Abarabone.Arms.Authoring
     using Abarabone.Arms;
 
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class WaponHolderAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class WaponHolderAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
     {
-        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        {
-            var wapons = this.GetComponentsInChildren<IWaponAuthoring>()
-                .Cast<WaponAuthoring>();
+        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        //{
+        //    var wapons = this.GetComponentsInChildren<IWaponAuthoring>()
+        //        .Cast<WaponAuthoring>();
 
-            foreach (var w in wapons)
-            {
-                (w.MainUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
-                (w.SubUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
-            }
-        }
+        //    foreach (var w in wapons)
+        //    {
+        //        (w.MainUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
+        //        (w.SubUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
+        //    }
+        //}
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -41,26 +41,26 @@ namespace Abarabone.Arms.Authoring
             var main = top.transform.GetChild(0).gameObject;
 
 
-            var wapons = this.GetComponentsInChildren<IWaponAuthoring>()
-                .Cast<WaponAuthoring>();
-            var qWaponInfos =
-                from wapon in wapons
-                let muzzle = wapon.transform.parent.gameObject
-                select (wapon, muzzle)
-                ;
+            //var wapons = this.GetComponentsInChildren<IWaponAuthoring>()
+            //    .Cast<WaponAuthoring>();
+            //var qWaponInfos =
+            //    from wapon in wapons
+            //    let muzzle = wapon.transform.parent.gameObject
+            //    select (wapon, muzzle)
+            //    ;
 
 
-            var holderEntity = conversionSystem.CreateAdditionalEntity(top);
-            var holderBuf = dstManager.AddBuffer<WaponHolder.LinkData>(holderEntity);
+            //var holderEntity = conversionSystem.CreateAdditionalEntity(top);
+            //var holderBuf = dstManager.AddBuffer<WaponHolder.LinkData>(holderEntity);
 
-            foreach(var i in qWaponInfos)
-            {
-                holderBuf.Add(new WaponHolder.LinkData
-                {
-                    FunctionEntity0 = createFunctionUnitAdditionalEntity_(top, main, i.wapon.MainUnit, i.muzzle),
-                    FunctionEntity1 = createFunctionUnitAdditionalEntity_(top, main, i.wapon.SubUnit, i.muzzle),
-                });
-            }
+            //foreach(var i in qWaponInfos)
+            //{
+            //    holderBuf.Add(new WaponHolder.LinkData
+            //    {
+            //        FunctionEntity0 = createFunctionUnitAdditionalEntity_(top, main, i.wapon.MainUnit, i.muzzle),
+            //        FunctionEntity1 = createFunctionUnitAdditionalEntity_(top, main, i.wapon.SubUnit, i.muzzle),
+            //    });
+            //}
 
             return;
 

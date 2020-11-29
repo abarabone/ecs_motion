@@ -23,7 +23,7 @@ namespace Abarabone.Arms.Authoring
     /// <summary>
     /// 
     /// </summary>
-    public class ShotBulletAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class ShotBulletAuthoring : MonoBehaviour, IBulletAuthoring, IConvertGameObjectToEntity
     {
 
         public float RangeDistance;

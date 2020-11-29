@@ -30,6 +30,7 @@ namespace Abarabone.Arms.Authoring
 
         public int Id;
 
+        public IBulletAuthoring aaa;
         public ShotBulletAuthoring BulletPrefab;
 
         public GameObject MuzzleObject;

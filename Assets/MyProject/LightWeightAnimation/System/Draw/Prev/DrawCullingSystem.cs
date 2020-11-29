@@ -48,10 +48,12 @@ namespace Abarabone.Draw
             var viewFrustum = new ViewFrustumSoa(cam);
 
 
-            var dependsTRbone = this.Entities
+            //var dependsTRbone = this.Entities
+            this.Entities
                 .WithName("Character")
-                .WithBurst( FloatMode.Fast, FloatPrecision.Standard )
-                .WithNativeDisableParallelForRestriction( drawModels )
+                .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
+                .WithNativeDisableParallelForRestriction(drawModels)
+                .WithNativeDisableContainerSafetyRestriction(drawModels)
                 .WithReadOnly(bboxes)
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
@@ -83,19 +85,21 @@ namespace Abarabone.Draw
                         }
 
 
-                        var drawModelData = drawModels[ modellink.DrawModelEntityCurrent ];
+                        var drawModelData = drawModels[modellink.DrawModelEntityCurrent];
 
                         target.DrawInstanceId = drawModelData.InstanceCounter.GetSerial();
 
                     }
                 )
-                .ScheduleParallel( this.Dependency );
+                .ScheduleParallel();// this.Dependency );
 
 
-            var dependsTR = this.Entities
+            //var dependsTR = this.Entities
+            this.Entities
                 .WithName("MeshTRS")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
+                .WithNativeDisableContainerSafetyRestriction(drawModels)
                 .WithReadOnly(bboxes)
                 //.WithNone<NonUniformScale>()
                 .WithNone<Particle.TranslationPtoPData>()
@@ -132,13 +136,15 @@ namespace Abarabone.Draw
 
                         }
                 )
-                .ScheduleParallel( this.Dependency );
+                .ScheduleParallel();// this.Dependency );
 
 
-            var dependsParticle = this.Entities
+            //var dependsParticle = this.Entities
+            this.Entities
                 .WithName("PtopParticle")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
+                .WithNativeDisableContainerSafetyRestriction(drawModels)
                 //.WithNone<Rotation, Translation, NonUniformScale>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach(
@@ -177,10 +183,10 @@ namespace Abarabone.Draw
 
                         }
                 )
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();// this.Dependency);
 
 
-            this.Dependency = JobHandle.CombineDependencies(dependsTRbone, dependsTR, dependsParticle);
+            //this.Dependency = JobHandle.CombineDependencies(dependsTRbone, dependsTR, dependsParticle);
 
             //this.presentationBarier.AddJobHandleForProducer( this.Dependency );
         }
