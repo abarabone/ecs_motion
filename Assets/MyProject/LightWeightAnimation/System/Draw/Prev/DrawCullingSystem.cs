@@ -48,8 +48,8 @@ namespace Abarabone.Draw
             var viewFrustum = new ViewFrustumSoa(cam);
 
 
-            //var dependsTRbone = this.Entities
-            this.Entities
+            var dependsTRbone = this.Entities
+            //this.Entities
                 .WithName("Character")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
@@ -91,11 +91,11 @@ namespace Abarabone.Draw
 
                     }
                 )
-                .ScheduleParallel();// this.Dependency );
+                .ScheduleParallel(this.Dependency );
 
 
-            //var dependsTR = this.Entities
-            this.Entities
+            var dependsTR = this.Entities
+            //this.Entities
                 .WithName("MeshTRS")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
@@ -136,11 +136,11 @@ namespace Abarabone.Draw
 
                         }
                 )
-                .ScheduleParallel();// this.Dependency );
+                .ScheduleParallel(this.Dependency );
 
 
-            //var dependsParticle = this.Entities
-            this.Entities
+            var dependsParticle = this.Entities
+            //this.Entities
                 .WithName("PtopParticle")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
@@ -183,10 +183,10 @@ namespace Abarabone.Draw
 
                         }
                 )
-                .ScheduleParallel();// this.Dependency);
+                .ScheduleParallel(this.Dependency);
 
 
-            //this.Dependency = JobHandle.CombineDependencies(dependsTRbone, dependsTR, dependsParticle);
+            this.Dependency = JobHandle.CombineDependencies(dependsTRbone, dependsTR, dependsParticle);
 
             //this.presentationBarier.AddJobHandleForProducer( this.Dependency );
         }
