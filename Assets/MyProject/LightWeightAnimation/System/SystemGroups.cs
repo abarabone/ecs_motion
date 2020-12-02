@@ -74,10 +74,10 @@ namespace Abarabone.SystemGroup
             public class DrawPrevSystemGroup : ComponentSystemGroup
             {
                 [UpdateInGroup(typeof(DrawPrevSystemGroup))]
-                public class Lod : ComponentSystemGroup { }
+                public class ResetCounter : ComponentSystemGroup { }
 
                 [UpdateInGroup(typeof(DrawPrevSystemGroup))]
-                public class ResetCounter : ComponentSystemGroup { }
+                public class Lod : ComponentSystemGroup { }
 
                 [UpdateInGroup(typeof(DrawPrevSystemGroup))] [UpdateAfter(typeof(ResetCounter))] [UpdateAfter(typeof(Lod))]
                 public class Culling : ComponentSystemGroup { }

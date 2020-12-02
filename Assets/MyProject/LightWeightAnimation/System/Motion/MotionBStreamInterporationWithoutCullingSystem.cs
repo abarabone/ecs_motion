@@ -19,7 +19,7 @@ namespace Abarabone.CharacterMotion
     //[UpdateAfter(typeof(MotionProgressSystem))]//MotionB
     [UpdateBefore(typeof(StreamToBoneSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
-    public class MotionStreamInterporationSystem : SystemBase
+    public class MotionStreamInterporationWithoutCullingSystem : SystemBase
     {
 
 
@@ -29,8 +29,8 @@ namespace Abarabone.CharacterMotion
             var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>(isReadOnly: true);
             var motionCurrings = this.GetComponentDataFromEntity<Motion.DrawCullingData>(isReadOnly: true);
 
-            var streamDeps = this.Entities
-                .WithName("standard")
+            this.Entities
+                //.WithName("standard")
                 .WithBurst()
                 .WithReadOnly(motionCursors)
                 .WithReadOnly(motionCurrings)
@@ -56,40 +56,8 @@ namespace Abarabone.CharacterMotion
                         dst.Interpolation = nearKeys.Interpolate(timeProgressNormalized);
                     }
                 )
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();
 
-            var streamSleepOnCullingDeps = this.Entities
-                .WithName("SleepOnCulling")
-                .WithBurst()
-                .WithReadOnly(motionCursors)
-                .WithReadOnly(motionCurrings)
-                .WithAll<Motion.SleepOnDrawCullingTag>()
-                .ForEach(
-                    (
-                        ref Stream.DrawTargetData drawtarget,
-                        ref Stream.KeyShiftData shiftInfo,
-                        ref Stream.NearKeysCacheData nearKeys,
-                        ref Stream.InterpolationData dst,
-                        in Stream.MotionLinkData linker
-                    ) =>
-                    {
-                        drawtarget.IsDrawTarget = motionCurrings[linker.MotionEntity].IsDrawTarget;
-
-                        if (!drawtarget.IsDrawTarget) return;
-
-
-                        var cursor = motionCursors[linker.MotionEntity];
-
-                        nearKeys.ShiftKeysIfOverKeyTimeForLooping(ref shiftInfo, ref cursor);
-
-                        var timeProgressNormalized = nearKeys.CaluclateTimeNormalized(cursor.CurrentPosition);
-
-                        dst.Interpolation = nearKeys.Interpolate(timeProgressNormalized);
-                    }
-                )
-                .ScheduleParallel(this.Dependency);
-
-            this.Dependency = JobHandle.CombineDependencies(streamDeps, streamSleepOnCullingDeps);
         }
 
 

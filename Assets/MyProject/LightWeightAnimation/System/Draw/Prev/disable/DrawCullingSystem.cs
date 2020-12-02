@@ -20,7 +20,7 @@ namespace Abarabone.Draw
 
     [DisableAutoCreation]
     [UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Culling))]
     public class DrawCullingSystem : SystemBase
     {
 

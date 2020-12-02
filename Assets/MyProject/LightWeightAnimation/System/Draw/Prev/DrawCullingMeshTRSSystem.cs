@@ -18,8 +18,8 @@ namespace Abarabone.Draw
     using Abarabone.Particle;
     
 
-    [UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Culling))]
     public class DrawCullingMeshTrsSystem : SystemBase
     {
 

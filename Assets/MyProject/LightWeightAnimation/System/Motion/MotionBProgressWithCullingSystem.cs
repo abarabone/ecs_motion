@@ -20,7 +20,8 @@ namespace Abarabone.CharacterMotion
     /// ストリーム回転 → 補間
     /// </summary>
     [UpdateAfter(typeof(MotionBInitializeSystem))]
-    [UpdateBefore(typeof(MotionStreamInterporationSystem))]
+    //[UpdateBefore(typeof(MotionStreamInterporationSystem))]
+    [UpdateBefore(typeof(MotionStreamInterporationWithCullingSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
     public class MotionProgressWithCullingSystem : SystemBase//JobComponentSystem
     {
