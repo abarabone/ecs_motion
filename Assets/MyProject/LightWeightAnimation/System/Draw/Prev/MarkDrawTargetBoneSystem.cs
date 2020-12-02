@@ -15,12 +15,13 @@ using Abarabone.SystemGroup;
 
 namespace Abarabone.Draw
 {
-    
+
     /// <summary>
     /// 描画対象ボーンのマークを兼ね、モデル内描画位置をセットする。
     /// </summary>
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
-    [UpdateAfter( typeof( DrawCullingSystem ) )]
+    ////[UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
+    ////[UpdateAfter( typeof( DrawCullingSystem ) )]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Marking))]
     public class MarkDrawTargetBoneSystem : SystemBase
     {
 

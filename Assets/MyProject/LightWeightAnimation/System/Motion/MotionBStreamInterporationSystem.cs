@@ -16,7 +16,7 @@ namespace Abarabone.CharacterMotion
 {
     
     //[UpdateAfter(typeof())]
-    [UpdateAfter(typeof(MotionProgressSystem))]//MotionB
+    //[UpdateAfter(typeof(MotionProgressSystem))]//MotionB
     [UpdateBefore(typeof(StreamToBoneSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
     public class MotionStreamInterporationSystem : SystemBase

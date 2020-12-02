@@ -12,9 +12,11 @@ namespace Abarabone.Draw
     /// そもそもジョブで確保できるのか、外部に渡せるのかもわからない
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
-    //[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
-    [UpdateAfter(typeof(DrawCullingSystem))]
+    ////[UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
+    //////[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
+    ////[UpdateAfter(typeof(DrawCullingSystem))]
+    ////[UpdateAfter(typeof(DrawCullingSystem))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.TempAlloc))]
     public class DrawInstanceTempBufferAllocateSystem : JobComponentSystem
     {
 

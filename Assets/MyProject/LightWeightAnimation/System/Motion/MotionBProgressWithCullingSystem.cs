@@ -19,9 +19,10 @@ namespace Abarabone.CharacterMotion
     /// <summary>
     /// ストリーム回転 → 補間
     /// </summary>
-    //[UpdateAfter(typeof())]
+    [UpdateAfter(typeof(MotionBInitializeSystem))]
+    [UpdateBefore(typeof(MotionStreamInterporationSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
-    public class MotionProgressSystem : SystemBase//JobComponentSystem
+    public class MotionProgressWithCullingSystem : SystemBase//JobComponentSystem
     {
 
 
@@ -30,23 +31,7 @@ namespace Abarabone.CharacterMotion
 
             var deltaTime = this.Time.DeltaTime;
 
-            var motionDeps = this.Entities
-                .WithName( "MotionProgressSystem" )
-                .WithBurst()
-                .WithNone<Motion.DrawCullingData>()
-                .ForEach
-                (
-                    (ref Motion.CursorData cursor) =>
-                    {
-                        progressTimeForLooping( ref cursor );
-
-                        cursor.Progress( deltaTime );
-                    }
-                )
-                .ScheduleParallel(this.Dependency);
-
-            var motionCullDeps = this.Entities
-                .WithName("MotionCullingProgressSystem")
+            this.Entities
                 .WithBurst()
                 .ForEach
                 (
@@ -60,9 +45,8 @@ namespace Abarabone.CharacterMotion
                         cursor.Progress(deltaTime);
                     }
                 )
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();
 
-            this.Dependency = JobHandle.CombineDependencies(motionDeps, motionCullDeps);
             return;
 
 

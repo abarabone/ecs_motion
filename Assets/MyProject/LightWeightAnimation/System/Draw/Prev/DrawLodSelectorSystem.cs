@@ -19,8 +19,9 @@ namespace Abarabone.Draw
     using System.Runtime.CompilerServices;
 
     //[DisableAutoCreation]
-    [UpdateBefore(typeof(DrawCullingSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    ////[UpdateBefore(typeof(DrawCullingSystem))]
+    ////[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Lod))]
     public class DrawLodSelectorSystem : SystemBase
     {
 

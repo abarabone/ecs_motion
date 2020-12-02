@@ -15,8 +15,9 @@ namespace Abarabone.Draw
     using Abarabone.SystemGroup;
 
 
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
-    [UpdateAfter( typeof( DrawCullingSystem ) )]
+    ////[UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
+    ////[UpdateAfter( typeof( DrawCullingSystem ) )]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Marking))]
     public class MarkDrawTargetMotionSystem : SystemBase
     {
 

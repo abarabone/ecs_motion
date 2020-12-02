@@ -18,6 +18,7 @@ namespace Abarabone.Draw
     using Abarabone.Particle;
     
 
+    [DisableAutoCreation]
     [UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     public class DrawCullingSystem : SystemBase

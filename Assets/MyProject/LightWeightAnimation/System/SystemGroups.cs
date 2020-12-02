@@ -72,7 +72,22 @@ namespace Abarabone.SystemGroup
             //[DisableAutoCreation]
             //[UpdateAfter(typeof(ObjectLogicSystemGroup))]
             public class DrawPrevSystemGroup : ComponentSystemGroup
-            { }
+            {
+                [UpdateInGroup(typeof(DrawPrevSystemGroup))]
+                public class Lod : ComponentSystemGroup { }
+
+                [UpdateInGroup(typeof(DrawPrevSystemGroup))]
+                public class ResetCounter : ComponentSystemGroup { }
+
+                [UpdateInGroup(typeof(DrawPrevSystemGroup))] [UpdateAfter(typeof(ResetCounter))] [UpdateAfter(typeof(Lod))]
+                public class Culling : ComponentSystemGroup { }
+
+                [UpdateInGroup(typeof(DrawPrevSystemGroup))] [UpdateAfter(typeof(Culling))]
+                public class Marking : ComponentSystemGroup { }
+                
+                [UpdateInGroup(typeof(DrawPrevSystemGroup))] [UpdateAfter(typeof(Culling))]
+                public class TempAlloc : ComponentSystemGroup { }
+            }
 
             //[UpdateInGroup( typeof( PresentationSystemGroup ) )]
             ////[DisableAutoCreation]

@@ -4,8 +4,9 @@ using Unity.Entities;
 namespace Abarabone.Draw
 {
 
-    [UpdateBefore( typeof( DrawCullingSystem ) )]
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    ////[UpdateBefore( typeof( DrawCullingSystem ) )]
+    ////[UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.ResetCounter))]
     public class DrawInstanceCounterResetSystem : ComponentSystem
     {
 
