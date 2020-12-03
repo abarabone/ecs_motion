@@ -41,52 +41,60 @@ namespace Abarabone.Arms.Authoring
             var main = top.transform.GetChild(0).gameObject;
 
 
-            //var wapons = this.GetComponentsInChildren<IWaponAuthoring>()
-            //    .Cast<WaponAuthoring>();
-            //var qWaponInfos =
-            //    from wapon in wapons
-            //    let muzzle = wapon.transform.parent.gameObject
-            //    select (wapon, muzzle)
-            //    ;
+            var wapons = this.GetComponentsInChildren<WaponAuthoring>();
+            var qWaponInfos =
+                from wapon in wapons
+
+                let muzzle = wapon.transform.parent.gameObject
+                let muzzleEntity = conversionSystem.GetPrimaryEntity(main)
+
+                let qUnit = wapon.GetComponentsInChildren<IFunctionUnitAuthoring>()
+                    .Select(u => (u as MonoBehaviour)?.gameObject)
+                    .Where(x => x != null)
+                    .Select(go => conversionSystem.GetPrimaryEntity(go))
+                let unitEntity0 = qUnit.ElementAtOrDefault(0)
+                let unitEntity1 = qUnit.ElementAtOrDefault(1)
+
+                //let localMuzzlePosision 
+
+                select (muzzleEntity, unitEntity0, unitEntity1)
+                ;
 
 
-            //var holderEntity = conversionSystem.CreateAdditionalEntity(top);
-            //var holderBuf = dstManager.AddBuffer<WaponHolder.LinkData>(holderEntity);
+            var holderEntity = entity;//conversionSystem.CreateAdditionalEntity(top);
+            var holderBuf = dstManager.AddBuffer<WaponHolder.LinkData>(holderEntity);
 
-            //foreach(var i in qWaponInfos)
-            //{
-            //    holderBuf.Add(new WaponHolder.LinkData
-            //    {
-            //        FunctionEntity0 = createFunctionUnitAdditionalEntity_(top, main, i.wapon.MainUnit, i.muzzle),
-            //        FunctionEntity1 = createFunctionUnitAdditionalEntity_(top, main, i.wapon.SubUnit, i.muzzle),
-            //    });
-            //}
+            var mainEntity = conversionSystem.GetPrimaryEntity(main);
 
-            return;
-
-
-            Entity createFunctionUnitAdditionalEntity_
-                (GameObject top, GameObject main, IFunctionUnitAuthoring unit, GameObject muzzle)
+            foreach (var (muzzleEntity, unitEntity0, unitEntity1) in qWaponInfos)
             {
-                if (unit is IConvertGameObjectToEntity functionUnit)
+                if (unitEntity0 != Entity.Null)
                 {
-                    var ent = conversionSystem.CreateAdditionalEntity(top);
-
-                    functionUnit.Convert(ent, dstManager, conversionSystem);
-
-                    dstManager.AddComponentData(ent,
+                    dstManager.AddComponentData(unitEntity0,
                         new FunctionUnit.OwnerLinkData
                         {
-                            OwnerMainEntity = conversionSystem.GetPrimaryEntity(main),
-                            MuzzleBodyEntity = conversionSystem.GetPrimaryEntity(muzzle),
+                            OwnerMainEntity = mainEntity,
+                            MuzzleBodyEntity = muzzleEntity,
                         }
                     );
-
-                    return entity;
                 }
-
-                return Entity.Null;
+                if (unitEntity1 != Entity.Null)
+                {
+                    dstManager.AddComponentData(unitEntity1,
+                        new FunctionUnit.OwnerLinkData
+                        {
+                            OwnerMainEntity = mainEntity,
+                            MuzzleBodyEntity = muzzleEntity,
+                        }
+                    );
+                }
+                holderBuf.Add(new WaponHolder.LinkData
+                {
+                    FunctionEntity0 = unitEntity0,
+                    FunctionEntity1 = unitEntity1,
+                });
             }
+
         }
     }
 }

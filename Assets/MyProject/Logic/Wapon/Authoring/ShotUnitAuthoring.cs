@@ -72,7 +72,7 @@ namespace Abarabone.Arms.Authoring
                     typeof(FunctionUnit.EmittingStateData),
                     typeof(FunctionUnit.SightModeData),
                     typeof(FunctionUnit.TriggerData),
-                    //typeof(FunctionUnit.OwnerLinkData),
+                    typeof(FunctionUnit.OwnerLinkData),
                     typeof(FunctionUnit.ActivateData)
                 });
                 em.AddComponents(ent, types);
@@ -92,6 +92,12 @@ namespace Abarabone.Arms.Authoring
                     new FunctionUnit.EmittingStateData
                     {
                         NextEmitableTime = this.EmittingInterval,
+                    }
+                );
+                em.SetComponentData(ent,
+                    new FunctionUnit.TriggerData
+                    {
+                        IsTriggered = true,
                     }
                 );
             }
