@@ -37,11 +37,11 @@ namespace Abarabone.Draw
         {
 
             var drawModels = this.GetComponentDataFromEntity<DrawModel.InstanceCounterData>();
-            var bboxes = this.GetComponentDataFromEntity<DrawModel.BoundingBoxData>(isReadOnly: true);
+            //var bboxes = this.GetComponentDataFromEntity<DrawModel.BoundingBoxData>(isReadOnly: true);
 
-            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
-            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
-            var scls = this.GetComponentDataFromEntity<NonUniformScale>(isReadOnly: true);
+            //var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            //var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            //var scls = this.GetComponentDataFromEntity<NonUniformScale>(isReadOnly: true);
 
 
             var cam = Camera.main;
@@ -90,7 +90,7 @@ namespace Abarabone.Draw
 
                         }
                 )
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();// this.Dependency);
 
 
             //this.presentationBarier.AddJobHandleForProducer( this.Dependency );

@@ -41,7 +41,7 @@ namespace Abarabone.Draw
 
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
-            var scls = this.GetComponentDataFromEntity<NonUniformScale>(isReadOnly: true);
+            //var scls = this.GetComponentDataFromEntity<NonUniformScale>(isReadOnly: true);
 
 
             var cam = Camera.main;

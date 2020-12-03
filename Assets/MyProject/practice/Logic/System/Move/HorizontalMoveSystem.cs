@@ -30,66 +30,97 @@ namespace Abarabone.Character
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
     //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
-    public class HorizontalMoveSystem : JobComponentSystem
+    public class HorizontalMoveSystem : SystemBase
     {
 
 
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
+        //BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
 
 
         protected override void OnCreate()
         {
-            this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
+            //this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
         }
 
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        protected override void OnUpdate()
         {
 
-            inputDeps = new HorizontalMoveJob
-            {
-                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
-                DeltaTime = this.Time.DeltaTime,//UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
-            }
-            .Schedule( this, inputDeps );
+            //inputDeps = new HorizontalMoveJob
+            //{
+            //    CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
+            //    DeltaTime = this.Time.DeltaTime,//UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
+            //}
+            //.Schedule( this, inputDeps );
             
-            return inputDeps;
+            //return inputDeps;
+
+
+            //var collisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld;//.CollisionWorld,
+            var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
+
+            this.Entities
+                //.WithReadOnly(collisionWorld)
+                //.WithReadOnly(deltaTime)
+                .ForEach(
+                    (
+                        Entity entity, int entityInQueryIndex,
+                        ref MoveHandlingData handler,
+                        ref GroundHitResultData ground,
+                        ref Translation pos,
+                        ref PhysicsVelocity v
+                    ) =>
+                    {
+                        ref var acts = ref handler.ControlAction;
+
+                        var vlinear = v.Linear;
+
+                        var upf = math.select(0.0f, acts.JumpForce, ground.IsGround);
+
+                        var xzDir = acts.MoveDirection * (deltaTime * 300.0f);
+
+                        xzDir.y = vlinear.y + upf;
+
+                        v.Linear = xzDir;//math.min( xyDir, new float3( 1000, 1000, 1000 ) );
+                    }
+                )
+                .ScheduleParallel();
         }
 
 
 
-        [BurstCompile, RequireComponentTag(typeof(HorizontalMovingTag))]
-        struct HorizontalMoveJob : IJobForEachWithEntity
-            <MoveHandlingData, GroundHitResultData, Translation, PhysicsVelocity>
-        {
+        //[BurstCompile, RequireComponentTag(typeof(HorizontalMovingTag))]
+        //struct HorizontalMoveJob : IJobForEachWithEntity
+        //    <MoveHandlingData, GroundHitResultData, Translation, PhysicsVelocity>
+        //{
 
-            [ReadOnly] public float DeltaTime;
+        //    [ReadOnly] public float DeltaTime;
 
-            [ReadOnly] public PhysicsWorld CollisionWorld;
+        //    [ReadOnly] public PhysicsWorld CollisionWorld;
 
 
-            public unsafe void Execute(
-                Entity entity, int index,
-                [ReadOnly] ref MoveHandlingData handler,
-                [ReadOnly] ref GroundHitResultData ground,
-                [ReadOnly] ref Translation pos,
-                ref PhysicsVelocity v
-            )
-            {
-                ref var acts = ref handler.ControlAction;
+        //    public unsafe void Execute(
+        //        Entity entity, int index,
+        //        [ReadOnly] ref MoveHandlingData handler,
+        //        [ReadOnly] ref GroundHitResultData ground,
+        //        [ReadOnly] ref Translation pos,
+        //        ref PhysicsVelocity v
+        //    )
+        //    {
+        //        ref var acts = ref handler.ControlAction;
 
-                var vlinear = v.Linear;
+        //        var vlinear = v.Linear;
 
-                var upf = math.select( 0.0f, acts.JumpForce, ground.IsGround );
+        //        var upf = math.select( 0.0f, acts.JumpForce, ground.IsGround );
 
-                var xzDir = acts.MoveDirection * ( this.DeltaTime * 300.0f );
+        //        var xzDir = acts.MoveDirection * ( this.DeltaTime * 300.0f );
                 
-                xzDir.y = vlinear.y + upf;
+        //        xzDir.y = vlinear.y + upf;
 
-                v.Linear = xzDir;//math.min( xyDir, new float3( 1000, 1000, 1000 ) );
+        //        v.Linear = xzDir;//math.min( xyDir, new float3( 1000, 1000, 1000 ) );
 
-            }
-        }
+        //    }
+        //}
 
     }
 }

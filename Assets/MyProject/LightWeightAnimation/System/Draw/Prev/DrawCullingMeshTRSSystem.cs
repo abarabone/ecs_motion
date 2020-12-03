@@ -39,9 +39,9 @@ namespace Abarabone.Draw
             var drawModels = this.GetComponentDataFromEntity<DrawModel.InstanceCounterData>();
             var bboxes = this.GetComponentDataFromEntity<DrawModel.BoundingBoxData>(isReadOnly: true);
 
-            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
-            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
-            var scls = this.GetComponentDataFromEntity<NonUniformScale>(isReadOnly: true);
+            //var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            //var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            //var scls = this.GetComponentDataFromEntity<NonUniformScale>(isReadOnly: true);
 
 
             var cam = Camera.main;

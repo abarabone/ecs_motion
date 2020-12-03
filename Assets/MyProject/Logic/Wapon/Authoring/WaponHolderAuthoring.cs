@@ -62,7 +62,7 @@ namespace Abarabone.Arms.Authoring
 
 
             var holderEntity = entity;//conversionSystem.CreateAdditionalEntity(top);
-            var holderBuf = dstManager.AddBuffer<WaponHolder.LinkData>(holderEntity);
+            dstManager.AddBuffer<WaponHolder.LinkData>(holderEntity);
 
             var mainEntity = conversionSystem.GetPrimaryEntity(main);
 
@@ -88,6 +88,7 @@ namespace Abarabone.Arms.Authoring
                         }
                     );
                 }
+                var holderBuf = dstManager.GetBuffer<WaponHolder.LinkData>(holderEntity);
                 holderBuf.Add(new WaponHolder.LinkData
                 {
                     FunctionEntity0 = unitEntity0,
