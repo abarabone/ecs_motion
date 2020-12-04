@@ -80,7 +80,7 @@ namespace Abarabone.Arms
             var campos = tfcam.position.As_float3();
             var camrot = new quaternion( tfcam.rotation.As_float4() );
 
-
+            //this.Dependency =
             this.Entities
                 .WithBurst()
                 .WithReadOnly(mainLinks)
@@ -113,10 +113,10 @@ namespace Abarabone.Arms
                         var ptop = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
 
                         instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
-                        
+
                     }
                 )
-                .ScheduleParallel();
+                .ScheduleParallel();// this.buildPhysicsWorldSystem.GetOutputDependency());
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);

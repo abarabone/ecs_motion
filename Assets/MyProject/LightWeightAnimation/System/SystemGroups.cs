@@ -24,14 +24,16 @@ namespace Abarabone.SystemGroup
     namespace Simulation
     {
 
-        [UpdateInGroup(typeof(SimulationSystemGroup))]
+        //[UpdateInGroup(typeof(SimulationSystemGroup))]
+        [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
         //[DisableAutoCreation]
         public class InitializeSystemGroup : ComponentSystemGroup
         { }
 
 
 
-        [UpdateInGroup(typeof(SimulationSystemGroup))]
+        //[UpdateInGroup(typeof(SimulationSystemGroup))]
+        [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
         [UpdateAfter(typeof(InitializeSystemGroup))]
         //[DisableAutoCreation]
         public class HitSystemGroup : ComponentSystemGroup
@@ -41,7 +43,8 @@ namespace Abarabone.SystemGroup
         namespace Move
         {
 
-            [UpdateInGroup( typeof( SimulationSystemGroup ) )]
+            //[UpdateInGroup(typeof(SimulationSystemGroup))]
+            [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
             [UpdateAfter(typeof(HitSystemGroup))]
             //[DisableAutoCreation]
             public class ObjectMoveSystemGroup : ComponentSystemGroup
