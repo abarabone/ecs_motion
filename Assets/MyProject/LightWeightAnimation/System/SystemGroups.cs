@@ -24,6 +24,7 @@ namespace Abarabone.SystemGroup
     namespace Simulation
     {
 
+        //[UpdateAfter(typeof(StepPhysicsWorld))]
         //[UpdateInGroup(typeof(SimulationSystemGroup))]
         [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
         //[DisableAutoCreation]
@@ -32,6 +33,7 @@ namespace Abarabone.SystemGroup
 
 
 
+        //[UpdateAfter(typeof(StepPhysicsWorld))]
         //[UpdateInGroup(typeof(SimulationSystemGroup))]
         [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
         [UpdateAfter(typeof(InitializeSystemGroup))]
@@ -43,6 +45,7 @@ namespace Abarabone.SystemGroup
         namespace Move
         {
 
+            //[UpdateAfter(typeof(StepPhysicsWorld))]
             //[UpdateInGroup(typeof(SimulationSystemGroup))]
             [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
             [UpdateAfter(typeof(HitSystemGroup))]

@@ -31,7 +31,7 @@ namespace Abarabone.Character
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
-    public class IsGroundAroundSystem : JobComponentSystem
+    public class IsGroundAroundSystem : SystemBase
     {
         
         BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
@@ -41,22 +41,57 @@ namespace Abarabone.Character
         {
             this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
         }
-        
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+
+        protected override void OnUpdate()
         {
+
+            var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
 
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
 
-            inputDeps = new IsGroundAroundJob
-            {
-                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
-                MainEntities = mainEntities,
-            }
-            .Schedule( this, inputDeps );
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(cw)
+                .WithReadOnly(mainEntities)
+                .ForEach(
+                    (
+                        Entity entity,
+                        ref GroundHitResultData ground,
+                        in GroundHitSphereData sphere,
+                        in Translation pos,
+                        in Rotation rot
+                    ) =>
+                    {
+                        var rtf = new RigidTransform(rot.Value, pos.Value);
+
+                        var hitInput = new PointDistanceInput
+                        {
+                            Position = math.transform(rtf, sphere.Center),
+                            MaxDistance = sphere.Distance,
+                            Filter = sphere.Filter,
+                        };
+                        var collector = new AnyHitExcludeSelfCollector<DistanceHit>(sphere.Distance, entity, mainEntities);
+                        var isHit = cw.CalculateDistance(hitInput, ref collector);
+
+                        ground.IsGround = collector.NumHits > 0;
+                    }
+                )
+                .ScheduleParallel();
 
 
-            return inputDeps;
+            //var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+
+            //inputDeps = new IsGroundAroundJob
+            //{
+            //    CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
+            //    MainEntities = mainEntities,
+            //}
+            //.Schedule( this, inputDeps );
+
+
+            //return inputDeps;
         }
 
 

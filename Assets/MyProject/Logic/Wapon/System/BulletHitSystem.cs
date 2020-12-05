@@ -66,9 +66,10 @@ namespace Abarabone.Arms
                 .WithBurst()
                 .WithReadOnly(mainLinks)
                 .WithReadOnly(parts)
+                .WithReadOnly(cw)
                 .ForEach(
                     (
-                        Entity fireEntity, int entityInQueryIndex,
+                        Entity fireEntity,// int entityInQueryIndex,
                         in Particle.TranslationPtoPData ptop,
                         in Bullet.SpecData bullet,
                         in Bullet.DistanceData dist
