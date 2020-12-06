@@ -54,6 +54,10 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
+            this.Dependency = JobHandle.CombineDependencies
+                (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
+
+
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
 

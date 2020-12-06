@@ -32,6 +32,7 @@ namespace Abarabone.Arms
 
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
+    [UpdateAfter(typeof(BulletHitSystem))]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class EmitAndHitBeamSystem : SystemBase
     {
@@ -63,6 +64,10 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
+            this.Dependency = JobHandle.CombineDependencies
+                (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
+
+
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
@@ -87,6 +92,8 @@ namespace Abarabone.Arms
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
                 .WithReadOnly(parts)
+                .WithReadOnly(cw)
+                .WithReadOnly(cmd)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,

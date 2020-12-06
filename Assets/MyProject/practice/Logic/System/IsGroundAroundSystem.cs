@@ -53,8 +53,8 @@ namespace Abarabone.Character
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(cw)
                 .WithReadOnly(mainEntities)
+                .WithReadOnly(cw)
                 .ForEach(
                     (
                         Entity entity,
