@@ -104,6 +104,7 @@ namespace Abarabone.Structure
             public ComponentDataFromEntity<Translation> Positions;
 
 
+            [BurstCompile]
             public void ExecuteNext(int uniqueIndex, Entity key, ref StructureHitMessage value)
             {
 
@@ -127,6 +128,7 @@ namespace Abarabone.Structure
         }
 
 
+        [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void createDebris_
             (
@@ -141,6 +143,7 @@ namespace Abarabone.Structure
 
         }
 
+        [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void destroyPart_
             (EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity part_)
@@ -163,8 +166,10 @@ namespace Abarabone.Structure
         void ExecuteNext(int uniqueIndex, TKey key, ref TValue value);
     }
 
+    [BurstCompile]
     public static class JobNativeMultiHashMapVisitKeyMutableValue
     {
+        [BurstCompile]
         internal struct JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue>
             where TJob : struct, IJobNativeMultiHashMapVisitKeyMutableValue<TKey, TValue>
             where TKey : struct, IEquatable<TKey>
@@ -200,6 +205,7 @@ namespace Abarabone.Structure
                 IntPtr additionalPtr, IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex
             );
 
+            [BurstCompile]
             public static unsafe void Execute
                 (
                     ref JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue> producer,
@@ -245,6 +251,7 @@ namespace Abarabone.Structure
         }
 
 
+        [BurstCompile]
         public static unsafe JobHandle Schedule<TJob, TKey, TValue>
             (this TJob jobData, NativeMultiHashMap<TKey, TValue> hashMap, int minIndicesPerJobCount, JobHandle dependsOn = new JobHandle())
             where TJob : struct, IJobNativeMultiHashMapVisitKeyMutableValue<TKey, TValue>
