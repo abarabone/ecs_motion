@@ -67,10 +67,10 @@ namespace Abarabone.Structure
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
-
+            
 
             var msgs = this.messageSystem.MsgHolder;
-
+            
             this.Dependency = new StructureHitApplyJob
             {
                 Cmd = cmd,

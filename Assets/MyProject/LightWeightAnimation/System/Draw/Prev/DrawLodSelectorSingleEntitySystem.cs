@@ -22,7 +22,7 @@ namespace Abarabone.Draw
     ////[UpdateBefore(typeof(DrawCullingSystem))]
     ////[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Lod))]
-    public class DrawLodSelectorSystem : SystemBase
+    public class DrawLodSelectorSingleEntitySystem : SystemBase
     {
 
         protected override void OnUpdate()
@@ -33,30 +33,8 @@ namespace Abarabone.Draw
             var campos = Camera.main.transform.position.As_float3();
 
             
-            var postureDependency = this.Entities
-                .WithName("Posture")
-                .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
-                .WithReadOnly(poss)
-                .WithNone<Translation>()
-                .ForEach(
-                        (
-                            ref DrawInstance.ModeLinkData modelLink,
-                            in DrawInstance.ModelLod2LinkData lodLink,
-                            in DrawInstance.PostureLinkData posturelink
-                        ) =>
-                    {
-
-                        var pos = poss[posturelink.PostureEntity];
-
-                        modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink, modelLink);
-
-                    }
-                )
-                .ScheduleParallel(this.Dependency);
-
-            
-            var translationDependency = this.Entities
-                .WithName("SingleEntity")
+            this.Entities
+                //.WithName("SingleEntity")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .ForEach(
                         (
@@ -70,10 +48,7 @@ namespace Abarabone.Draw
 
                     }
                 )
-                .ScheduleParallel(this.Dependency);
-
-
-            this.Dependency = JobHandle.CombineDependencies(postureDependency, translationDependency);
+                .ScheduleParallel();
 
         }
 

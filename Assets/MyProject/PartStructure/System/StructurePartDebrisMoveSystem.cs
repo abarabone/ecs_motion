@@ -42,6 +42,9 @@ namespace Abarabone.Draw
             this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
         }
 
+        /// <summary>
+        /// 現在は剛体に任せているが、いずれはここで計算したい
+        /// </summary>
         protected override void OnUpdate()
         {
 
@@ -72,6 +75,7 @@ namespace Abarabone.Draw
                 )
                 .ScheduleParallel();
 
+            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
     }
