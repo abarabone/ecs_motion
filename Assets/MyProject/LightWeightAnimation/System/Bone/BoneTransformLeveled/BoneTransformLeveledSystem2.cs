@@ -27,7 +27,7 @@ namespace Abarabone.Model
 
     using LeveledLinkData = Bone.Lv02LinkData;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
     [UpdateAfter(typeof(BoneTransformLeveld01System))]
     public class BoneTransformLeveld02System : SystemBase

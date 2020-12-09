@@ -94,12 +94,12 @@ namespace Abarabone.Arms.Authoring
                         NextEmitableTime = this.EmittingInterval,
                     }
                 );
-                em.SetComponentData(ent,
-                    new FunctionUnit.TriggerData
-                    {
-                        IsTriggered = true,
-                    }
-                );
+                //em.SetComponentData(ent,
+                //    new FunctionUnit.TriggerData
+                //    {
+                //        IsTriggered = true,
+                //    }
+                //);
             }
 
         }

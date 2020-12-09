@@ -77,7 +77,7 @@ namespace Abarabone.Character
 
                         var upf = math.select(0.0f, acts.JumpForce, ground.IsGround);
 
-                        var xzDir = acts.MoveDirection * (deltaTime * 300.0f);
+                        var xzDir = acts.MoveDirection * (deltaTime * 300.0f * 3);
 
                         xzDir.y = vlinear.y + upf;
 

@@ -104,7 +104,7 @@ namespace Abarabone.Structure
             public ComponentDataFromEntity<Translation> Positions;
 
 
-            [BurstCompile]
+            //[BurstCompile]
             public void ExecuteNext(int uniqueIndex, Entity key, ref StructureHitMessage value)
             {
 

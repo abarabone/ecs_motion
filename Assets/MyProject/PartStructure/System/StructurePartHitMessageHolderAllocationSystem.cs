@@ -32,8 +32,8 @@ namespace Abarabone.Structure
 
 
         public NativeMultiHashMap<Entity, StructureHitMessage> MsgHolder
-             = new NativeMultiHashMap<Entity, StructureHitMessage>(1000, Allocator.Persistent);
-        //= new NativeMultiHashMap<Entity, StructureHitMessage>(10000, Allocator.Persistent);
+        //= new NativeMultiHashMap<Entity, StructureHitMessage>(1000, Allocator.Persistent);
+        = new NativeMultiHashMap<Entity, StructureHitMessage>(10000, Allocator.Persistent);
 
 
         protected override void OnUpdate()
