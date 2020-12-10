@@ -39,7 +39,8 @@ namespace Abarabone.Structure
         protected override void OnUpdate()
         {
 
-            //this.MsgHolder = new NativeMultiHashMap<Entity, StructurePartHitMessage>(100, Allocator.TempJob);
+            //this.MsgHolder.Dispose();
+            //this.MsgHolder = new NativeMultiHashMap<Entity, StructureHitMessage>(100, Allocator.TempJob);
             this.MsgHolder.Clear();
 
         }

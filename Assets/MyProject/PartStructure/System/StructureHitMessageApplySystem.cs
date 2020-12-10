@@ -166,7 +166,7 @@ namespace Abarabone.Structure
         void ExecuteNext(int uniqueIndex, TKey key, ref TValue value);
     }
 
-    //[BurstCompile]
+    [BurstCompile]
     public static class JobNativeMultiHashMapVisitKeyMutableValue
     {
         //[BurstCompile]
@@ -232,7 +232,7 @@ namespace Abarabone.Structure
                     var nextPtrs = (int*)bucketData.next;
                     var keys = bucketData.keys;
                     var values = bucketData.values;
-
+                    
                     for (int i = begin; i < end; i++)
                     {
                         int entryIndex = buckets[i];
@@ -272,6 +272,124 @@ namespace Abarabone.Structure
             );
 
             return JobsUtility.ScheduleParallelFor(ref scheduleParams, hashMap.GetUnsafeBucketData().bucketCapacityMask + 1, minIndicesPerJobCount);
+        }
+    }
+
+
+    // -----
+
+    public interface IJobNativeMultiHashMapMergedSharedKeyIndices
+    {
+        void ExecuteFirst(int index);
+        void ExecuteNext(int firstIndex, int index);
+    }
+
+    public static class JobNativeMultiHashMapUniqueHashExtensions
+    {
+        struct NativeMultiHashMapUniqueHashJobStruct<TJob, TKey>
+            where TJob : struct, IJobNativeMultiHashMapMergedSharedKeyIndices
+            where TKey : struct, IEquatable<TKey>
+        {
+            internal struct JobMultiHashMap
+            {
+                [ReadOnly] public NativeMultiHashMap<TKey, int> HashMap;
+                public TJob JobData;
+            }
+
+            private static IntPtr jobReflectionData;
+
+            public static IntPtr Initialize()
+            {
+                if (jobReflectionData == IntPtr.Zero)
+                    jobReflectionData = JobsUtility.CreateJobReflectionData(typeof(JobMultiHashMap), typeof(TJob),
+                        JobType.ParallelFor, (ExecuteJobFunction)Execute);
+                return jobReflectionData;
+            }
+
+            private delegate void ExecuteJobFunction(ref JobMultiHashMap fullData, IntPtr additionalPtr,
+                IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex);
+
+            private static unsafe void Execute(ref JobMultiHashMap fullData, IntPtr additionalPtr,
+                IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex)
+            {
+                while (true)
+                {
+                    int begin;
+                    int end;
+
+                    if (!JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out begin, out end))
+                        return;
+
+                    var bucketData = fullData.HashMap.GetUnsafeBucketData();
+                    var buckets = (int*)bucketData.buckets;
+                    var nextPtrs = (int*)bucketData.next;
+                    var keys = bucketData.keys;
+                    var values = bucketData.values;
+                    //var buckets = (int*)fullData.HashMap.m_Buffer->buckets;
+                    //var nextPtrs = (int*)fullData.HashMap.m_Buffer->next;
+                    //var keys = fullData.HashMap.m_Buffer->keys;
+                    //var values = fullData.HashMap.m_Buffer->values;
+
+                    for (int i = begin; i < end; i++)
+                    {
+                        int entryIndex = buckets[i];
+
+                        while (entryIndex != -1)
+                        {
+                            var key = UnsafeUtility.ReadArrayElement<TKey>(keys, entryIndex);
+                            var value = UnsafeUtility.ReadArrayElement<int>(values, entryIndex);
+                            int firstValue;
+
+                            NativeMultiHashMapIterator<TKey> it;
+                            fullData.HashMap.TryGetFirstValue(key, out firstValue, out it);
+
+                            // [macton] Didn't expect a usecase for this with multiple same values
+                            // (since it's intended use was for unique indices.)
+                            // https://forum.unity.com/threads/ijobnativemultihashmapmergedsharedkeyindices-unexpected-behavior.569107/#post-3788170
+                            if (entryIndex == it.EntryIndex)
+                            {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+
+                                JobsUtility.PatchBufferMinMaxRanges(bufferRangePatchData,
+                                    UnsafeUtility.AddressOf(ref fullData), value, 1);
+#endif
+                                fullData.JobData.ExecuteFirst(value);
+                            }
+                            else
+                            {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                                var startIndex = Math.Min(firstValue, value);
+                                var lastIndex = Math.Max(firstValue, value);
+                                var rangeLength = (lastIndex - startIndex) + 1;
+
+                                JobsUtility.PatchBufferMinMaxRanges(bufferRangePatchData,
+                                    UnsafeUtility.AddressOf(ref fullData), startIndex, rangeLength);
+#endif
+                                fullData.JobData.ExecuteNext(firstValue, value);
+                            }
+
+                            entryIndex = nextPtrs[entryIndex];
+                        }
+                    }
+                }
+            }
+        }
+
+        public static unsafe JobHandle Schedule<TJob, TKey>(this TJob jobData, NativeMultiHashMap<TKey, int> hashMap,
+            int minIndicesPerJobCount, JobHandle dependsOn = new JobHandle())
+            where TJob : struct, IJobNativeMultiHashMapMergedSharedKeyIndices
+            where TKey : struct, IEquatable<TKey>
+        {
+            var fullData = new NativeMultiHashMapUniqueHashJobStruct<TJob, TKey>.JobMultiHashMap
+            {
+                HashMap = hashMap,
+                JobData = jobData
+            };
+
+            var scheduleParams = new JobsUtility.JobScheduleParameters(UnsafeUtility.AddressOf(ref fullData),
+                NativeMultiHashMapUniqueHashJobStruct<TJob, TKey>.Initialize(), dependsOn, ScheduleMode.Batched);
+            return JobsUtility.ScheduleParallelFor(ref scheduleParams, hashMap.m_Buffer->bucketCapacityMask + 1,
+                minIndicesPerJobCount);
         }
     }
 }
