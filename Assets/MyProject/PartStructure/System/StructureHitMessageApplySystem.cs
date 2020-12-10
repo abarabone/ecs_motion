@@ -127,6 +127,47 @@ namespace Abarabone.Structure
 
         }
 
+        [BurstCompile]
+        struct StructureHitApplyJob2 : IJobNativeMultiHashMapMergedSharedKeyIndices<Entity, StructureHitMessage>
+        {
+
+            public EntityCommandBuffer.ParallelWriter Cmd;
+
+
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<Structure.PartDestructionData> Destructions;
+
+            [ReadOnly]
+            public ComponentDataFromEntity<StructurePart.DebrisPrefabData> Prefabs;
+            [ReadOnly]
+            public ComponentDataFromEntity<Rotation> Rotations;
+            [ReadOnly]
+            public ComponentDataFromEntity<Translation> Positions;
+
+
+            //[BurstCompile]
+            public void ExecuteNext(int uniqueIndex, Entity key, ref StructureHitMessage value)
+            {
+
+                var destruction = this.Destructions[key];
+
+                // 複数の子パーツから１つの親構造物のフラグを立てることがあるので、並列化の際に注意が必要
+                destruction.SetDestroyed(value.PartId);
+
+                this.Destructions[key] = destruction;
+
+
+                var prefab = this.Prefabs[value.PartEntity].DebrisPrefab;
+                var rot = this.Rotations[value.PartEntity];
+                var pos = this.Positions[value.PartEntity];
+                createDebris_(this.Cmd, uniqueIndex, prefab, rot, pos);
+
+                destroyPart_(this.Cmd, uniqueIndex, value.PartEntity);
+
+            }
+
+        }
+
 
         //[BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -300,9 +341,19 @@ namespace Abarabone.Structure
 
             public static IntPtr Initialize()
             {
+                //if (jobReflectionData == IntPtr.Zero)
+                //    jobReflectionData = JobsUtility.CreateJobReflectionData(typeof(JobMultiHashMap), typeof(TJob),
+                //        JobType.ParallelFor, (ExecuteJobFunction)Execute);
+                //return jobReflectionData;
                 if (jobReflectionData == IntPtr.Zero)
-                    jobReflectionData = JobsUtility.CreateJobReflectionData(typeof(JobMultiHashMap), typeof(TJob),
-                        JobType.ParallelFor, (ExecuteJobFunction)Execute);
+                {
+                    jobReflectionData = JobsUtility.CreateJobReflectionData
+                    (
+                        typeof(NativeMultiHashMapUniqueHashJobStruct<TJob, TKey>),
+                        typeof(TJob),
+                        (ExecuteJobFunction)Execute
+                    );
+                }
                 return jobReflectionData;
             }
 
@@ -346,7 +397,7 @@ namespace Abarabone.Structure
                             // [macton] Didn't expect a usecase for this with multiple same values
                             // (since it's intended use was for unique indices.)
                             // https://forum.unity.com/threads/ijobnativemultihashmapmergedsharedkeyindices-unexpected-behavior.569107/#post-3788170
-                            if (entryIndex == it.EntryIndex)
+                            if (entryIndex == it.GetEntryIndex())//.EntryIndex)
                             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
 
@@ -358,8 +409,10 @@ namespace Abarabone.Structure
                             else
                             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                                var startIndex = Math.Min(firstValue, value);
-                                var lastIndex = Math.Max(firstValue, value);
+                                //var startIndex = Math.Min(firstValue, value);
+                                //var lastIndex = Math.Max(firstValue, value);
+                                var startIndex = math.min(firstValue, value);
+                                var lastIndex = math.max(firstValue, value);
                                 var rangeLength = (lastIndex - startIndex) + 1;
 
                                 JobsUtility.PatchBufferMinMaxRanges(bufferRangePatchData,
@@ -386,10 +439,19 @@ namespace Abarabone.Structure
                 JobData = jobData
             };
 
-            var scheduleParams = new JobsUtility.JobScheduleParameters(UnsafeUtility.AddressOf(ref fullData),
-                NativeMultiHashMapUniqueHashJobStruct<TJob, TKey>.Initialize(), dependsOn, ScheduleMode.Batched);
-            return JobsUtility.ScheduleParallelFor(ref scheduleParams, hashMap.m_Buffer->bucketCapacityMask + 1,
-                minIndicesPerJobCount);
+            //var scheduleParams = new JobsUtility.JobScheduleParameters(UnsafeUtility.AddressOf(ref fullData),
+            //    NativeMultiHashMapUniqueHashJobStruct<TJob, TKey>.Initialize(), dependsOn, ScheduleMode.Batched);
+            //return JobsUtility.ScheduleParallelFor(ref scheduleParams, hashMap.m_Buffer->bucketCapacityMask + 1,
+            //    minIndicesPerJobCount);
+            
+            var scheduleParams = new JobsUtility.JobScheduleParameters(
+                UnsafeUtility.AddressOf(ref fullData)
+                , NativeMultiHashMapUniqueHashJobStruct<TJob, TKey>.Initialize()
+                , dependsOn
+                , ScheduleMode.Parallel
+            );
+
+            return JobsUtility.ScheduleParallelFor(ref scheduleParams, hashMap.GetUnsafeBucketData().bucketCapacityMask + 1, minIndicesPerJobCount);
         }
-    }
+}
 }
