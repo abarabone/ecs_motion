@@ -126,47 +126,7 @@ namespace Abarabone.Structure
             }
 
         }
-
-        [BurstCompile]
-        struct StructureHitApplyJob2 : IJobNativeMultiHashMapMergedSharedKeyIndices<Entity, StructureHitMessage>
-        {
-
-            public EntityCommandBuffer.ParallelWriter Cmd;
-
-
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Structure.PartDestructionData> Destructions;
-
-            [ReadOnly]
-            public ComponentDataFromEntity<StructurePart.DebrisPrefabData> Prefabs;
-            [ReadOnly]
-            public ComponentDataFromEntity<Rotation> Rotations;
-            [ReadOnly]
-            public ComponentDataFromEntity<Translation> Positions;
-
-
-            //[BurstCompile]
-            public void ExecuteNext(int uniqueIndex, Entity key, ref StructureHitMessage value)
-            {
-
-                var destruction = this.Destructions[key];
-
-                // 複数の子パーツから１つの親構造物のフラグを立てることがあるので、並列化の際に注意が必要
-                destruction.SetDestroyed(value.PartId);
-
-                this.Destructions[key] = destruction;
-
-
-                var prefab = this.Prefabs[value.PartEntity].DebrisPrefab;
-                var rot = this.Rotations[value.PartEntity];
-                var pos = this.Positions[value.PartEntity];
-                createDebris_(this.Cmd, uniqueIndex, prefab, rot, pos);
-
-                destroyPart_(this.Cmd, uniqueIndex, value.PartEntity);
-
-            }
-
-        }
+        
 
 
         //[BurstCompile]
@@ -198,7 +158,7 @@ namespace Abarabone.Structure
 
 
 
-
+    
     [JobProducerType(typeof(JobNativeMultiHashMapVisitKeyMutableValue.JobNativeMultiHashMapVisitKeyMutableValueProducer<,,>))]
     public interface IJobNativeMultiHashMapVisitKeyMutableValue<TKey, TValue>
         where TKey : struct, IEquatable<TKey>
@@ -318,7 +278,7 @@ namespace Abarabone.Structure
 
 
     // -----
-
+    /*
     public interface IJobNativeMultiHashMapMergedSharedKeyIndices
     {
         void ExecuteFirst(int index);
@@ -453,5 +413,5 @@ namespace Abarabone.Structure
 
             return JobsUtility.ScheduleParallelFor(ref scheduleParams, hashMap.GetUnsafeBucketData().bucketCapacityMask + 1, minIndicesPerJobCount);
         }
-}
+    }*/
 }

@@ -149,9 +149,9 @@ namespace Abarabone.Particle.Aurthoring
         /// 加工せずに採用するため、この関数では配列に null を格納して返される。
         /// 返される要素数は、 LodOptionalMeshTops.Length と同じ。
         /// </summary>
-        public Func<MeshElements>[] GetMeshCombineFuncPerObjects()
+        public Func<MeshCombinerElements>[] GetMeshCombineFuncPerObjects()
         {
-            var qResult = Enumerable.Empty<Func<MeshElements>>();
+            var qResult = Enumerable.Empty<Func<MeshCombinerElements>>();
 
             if (this.LodOptionalMeshTops.Length == 0) return qResult.ToArray();
 

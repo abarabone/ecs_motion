@@ -22,7 +22,7 @@ namespace Abarabone.Geometry//.Editor
 		/// <summary>
 		/// Mesh 要素を結合するデリゲートを返す。Structure オブジェクト用。
 		/// </summary>
-		static public Func<MeshElements> BuildStructureWithPalletMeshElements
+		static public Func<MeshCombinerElements> BuildStructureWithPalletMeshElements
 			( IEnumerable<StructurePartAuthoring> parts, Transform tfBase )
 		{
 			var gameObjects = from part in parts select part.gameObject;
@@ -31,7 +31,7 @@ namespace Abarabone.Geometry//.Editor
 			return BuildStructureWithPalletMeshElements( mmts, tfBase );
 		}
 
-		static public Func<MeshElements> BuildStructureWithPalletMeshElements
+		static public Func<MeshCombinerElements> BuildStructureWithPalletMeshElements
 			(IEnumerable<GameObject> children, Transform tfBase)
 		{
 			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(children).ToArray();
@@ -39,7 +39,7 @@ namespace Abarabone.Geometry//.Editor
 			return BuildStructureWithPalletMeshElements(mmts, tfBase);
 		}
 
-		static public Func<MeshElements> BuildStructureWithPalletMeshElements
+		static public Func<MeshCombinerElements> BuildStructureWithPalletMeshElements
 			( (Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase )
 		{
 

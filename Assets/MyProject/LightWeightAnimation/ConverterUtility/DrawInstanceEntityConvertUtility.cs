@@ -52,7 +52,7 @@ namespace Abarabone.Draw.Authoring
             (
                 this GameObjectConversionSystem gcs_,
                 GameObject main_, GameObject[] lods_,
-                Func<Func<MeshElements>[]> getMeshCombineFuncs
+                Func<Func<MeshCombinerElements>[]> getMeshCombineFuncs
             )
         {
             var result = new List<GameObject>(lods_.Length);

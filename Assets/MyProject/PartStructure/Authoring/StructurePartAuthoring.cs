@@ -181,7 +181,7 @@ namespace Abarabone.Structure.Authoring
         }
 
 
-        public (GameObject go, Func<MeshElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
+        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
         {
 
             var part = this.MasterPrefab;

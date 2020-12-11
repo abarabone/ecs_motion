@@ -84,7 +84,7 @@ namespace Abarabone.Structure.Authoring
             void createModelEntity_
                 (
                     GameObjectConversionSystem gcs_, GameObject go_, Material srcMaterial_,
-                    Func<(GameObject go, Func<MeshElements> f, Mesh mesh)> meshCreateFunc_
+                    Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshCreateFunc_
                 )
             {
                 if (gcs_.IsExistsInModelEntityDictionary(go_)) return;
@@ -214,7 +214,7 @@ namespace Abarabone.Structure.Authoring
 
 
 
-        public (GameObject go, Func<MeshElements> f, Mesh mesh) GetFarMeshAndFunc()
+        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetFarMeshAndFunc()
         {
             var top = this.gameObject;
             var far = this.FarMeshObject.objectTop;
@@ -237,7 +237,7 @@ namespace Abarabone.Structure.Authoring
                 (target_.transform.localToWorldMatrix * top_.transform.worldToLocalMatrix).isIdentity;
         }
 
-        public (GameObject go, Func<MeshElements> f, Mesh mesh) GetNearMeshFunc()
+        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetNearMeshFunc()
         {
             var top = this.gameObject;
             var near = this.NearMeshObject.objectTop;
