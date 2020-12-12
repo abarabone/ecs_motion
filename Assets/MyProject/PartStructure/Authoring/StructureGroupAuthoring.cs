@@ -88,25 +88,25 @@ namespace Abarabone.Structure.Authoring
                 ;
 
 
-            var xs = qNear.Concat(qFar).Concat(qPartDistinct).ToArray();
+            var allMeshFuncs = qNear.Concat(qFar).Concat(qPartDistinct).ToArray();
 
-            var qGoTask = xs
+            var qGoAndTask = allMeshFuncs
                 .Where(x => x.f != null)
                 .Select(x => (x.go, t: Task.Run(x.f)));
 
-            var qGoMesh = xs
+            var qGoAndMesh = allMeshFuncs
                 .Where(x => x.mesh != null)
                 .Select(x => (x.go, x.mesh));
 
-            var qGoMeshFromTask = qGoTask
+            var qGoAndMeshFromTask = qGoAndTask
                 .Select(x => x.t)
                 .WhenAll()
                 .Result
                 .Select(x => x.CreateMesh())
-                .Zip(qGoTask, (x, y) => (y.go, mesh: x));
+                .Zip(qGoAndTask, (x, y) => (y.go, mesh: x));
 
 
-            this.objectsAndMeshes = qGoMesh.Concat(qGoMeshFromTask)
+            this.objectsAndMeshes = qGoAndMesh.Concat(qGoAndMeshFromTask)
                 .ToArray();
         }
 
