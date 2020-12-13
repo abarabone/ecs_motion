@@ -31,6 +31,7 @@ namespace Abarabone.Geometry//.Editor
 			return BuildStructureWithPalletMeshElements( mmts, tfBase );
 		}
 
+
 		static public Func<MeshCombinerElements> BuildStructureWithPalletMeshElements
 			(IEnumerable<GameObject> children, Transform tfBase)
 		{
@@ -38,6 +39,9 @@ namespace Abarabone.Geometry//.Editor
 
 			return BuildStructureWithPalletMeshElements(mmts, tfBase);
 		}
+
+
+
 
 		static public Func<MeshCombinerElements> BuildStructureWithPalletMeshElements
 			( (Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase )

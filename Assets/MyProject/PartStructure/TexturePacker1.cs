@@ -12,6 +12,52 @@ namespace Abarabone.Geometry
 	public static class TexturePacker1
 	{
 
+
+		public static (Texture atlas, Rect[] uvOffsets) Pack(IEnumerable<GameObject> targetObjects)
+        {
+
+			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(targetObjects).ToArray();
+
+
+			// 重複のない材質配列を生成。
+			var uniqueMaterials = mmts
+				.Select(x => x.mats)
+				.To(MaterialCombined.QueryCombine)
+				.Select(mats => mats.)
+				.ToArray()
+				;
+
+			// テクスチャを結合する。
+			var (atlas, uvOffsets) = packTexture_(uniqueMaterials);
+
+			
+
+
+			static (Texture, Rect[]) packTexture_(IEnumerable < Material > qDstMats)
+			{
+				var srcTextures = qDstMats
+					.Select(mat => mat.mainTexture)
+					.OfType<Texture2D>()
+					.ToArray();
+
+				var dstTexture = new Texture2D(width: 0, height: 0, textureFormat: TextureFormat.ARGB32, mipChain: true);
+				//var dstTexture_ = new Texture2D( 0, 0 );
+
+				var uvRects = dstTexture.PackTextures
+					(srcTextures, padding: 0, maximumAtlasSize: 4096, makeNoLongerReadable: true);
+
+				return (dstTexture, uvRects);
+			}
+
+		}
+
+		public static Dictionary<Mesh src, Mesh dst> MakeCovertedMeshDictionary()
+        {
+
+        }
+
+
+
 		/// <summary>
 		/// 全テクスチャを結合して、ソースとなったオブジェクトのＵＶと材質を差し替える。
 		/// 材質は、元同じだったもの同士は、新しい材質でも同じものを共有する。

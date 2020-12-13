@@ -20,11 +20,14 @@ namespace Abarabone.Geometry
 		/// </summary>
 		public static IEnumerable<Material> QueryCombine(IEnumerable<Material[]> materials_PerObject)
 		{
-			var qMats =
-				from mat in materials_PerObject.SelectMany().Distinct()
-					//	orderby mat.name
-				select mat
+			var qMats = materials_PerObject
+				.SelectMany()
+				.Distinct()
 				;
+				//from mat in materials_PerObject.SelectMany().Distinct()
+				//	//	orderby mat.name
+				//select mat
+				//;
 
 			return qMats;
 		}
