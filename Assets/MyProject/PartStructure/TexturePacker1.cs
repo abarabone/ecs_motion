@@ -18,37 +18,53 @@ namespace Abarabone.Geometry
 
 			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(targetObjects).ToArray();
 
+			var uniqueTextures = queryUniqueTextures_(mmts.Select(x => x.mats));
 
-			// 重複のない材質配列を生成。
-			var uniqueMaterials = mmts
-				.Select(x => x.mats)
-				.To(MaterialCombined.QueryCombine)
-				.Select(mats => mats.)
-				.ToArray()
-				;
+			var (atlas, uvOffsets) = packTexture_(uniqueTextures);
 
-			// テクスチャを結合する。
-			var (atlas, uvOffsets) = packTexture_(uniqueMaterials);
+			var uvOffsetDict = (uniqueTextures, uvOffsets).Zip()
+				.ToDictionary(x => x.x, x => x.y);
 
-			
+			mmts
+				.Select(x => x.)
 
 
-			static (Texture, Rect[]) packTexture_(IEnumerable < Material > qDstMats)
-			{
-				var srcTextures = qDstMats
+
+			static Texture2D[] queryUniqueTextures_(IEnumerable<Material[]> matss) =>
+				matss
+					.SelectMany()
+					.Distinct()
 					.Select(mat => mat.mainTexture)
 					.OfType<Texture2D>()
 					.ToArray();
 
-				var dstTexture = new Texture2D(width: 0, height: 0, textureFormat: TextureFormat.ARGB32, mipChain: true);
-				//var dstTexture_ = new Texture2D( 0, 0 );
+
+			static (Texture, Rect[]) packTexture_(IEnumerable<Texture2D> srcTextures)
+			{
+				//var dstTexture = new Texture2D( 0, 0 );
+				var dstTexture = new Texture2D
+					(width: 0, height: 0, textureFormat: TextureFormat.ARGB32, mipChain: true);
 
 				var uvRects = dstTexture.PackTextures
-					(srcTextures, padding: 0, maximumAtlasSize: 4096, makeNoLongerReadable: true);
+					(srcTextures.ToArray(), padding: 0, maximumAtlasSize: 4096, makeNoLongerReadable: true);
 
 				return (dstTexture, uvRects);
 			}
 
+			static void aaa_(Mesh mesh)
+            {
+				from i in Enumerable.Range(0, mesh.subMeshCount)
+				let submesh = mesh.GetSubMesh(i)
+				select (fst: submesh.firstVertex, end:
+				
+            }
+
+
+
+			static void aa_(IEnumerable<()
+            {
+
+            }
 		}
 
 		public static Dictionary<Mesh src, Mesh dst> MakeCovertedMeshDictionary()
