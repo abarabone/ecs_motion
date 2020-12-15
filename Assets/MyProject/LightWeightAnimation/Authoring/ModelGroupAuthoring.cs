@@ -20,6 +20,7 @@ namespace Abarabone.Model.Authoring
     /// できればシェーダーでも描画順をまとめいたいけど、unity はマテリアル単位の設定なので無理かな…？
     /// unity が自動的にやってくれてる可能性もある。
     /// </summary>
+    [UpdateAfter(typeof(GameObjectBeforeConversionGroup))]
     public class ModelGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
@@ -30,6 +31,8 @@ namespace Abarabone.Model.Authoring
         { }
 
 
+        public (Texture2D atlas, Dictionary<Mesh, Mesh> packedMeshes) Texture;
+        
 
         public ModelAuthoringBase[] ModelPrefabs;
 
@@ -45,10 +48,17 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
+            var qGo = this.ModelPrefabs.Select(x => x.gameObject);
+
+            this.Texture = TexturePacker.Pack(qGo);
+
+
+
             // モデルグループ自体にはエンティティは不要
             dstManager.DestroyEntity( entity );
             
         }
+        
 
     }
 
