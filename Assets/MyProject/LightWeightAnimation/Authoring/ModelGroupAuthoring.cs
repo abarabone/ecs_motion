@@ -31,7 +31,7 @@ namespace Abarabone.Model.Authoring
         { }
 
 
-        public (Texture2D atlas, Dictionary<Mesh, Mesh> packedMeshes) Texture;
+        //public (Texture2D atlas, Dictionary<Mesh, Mesh> packedMeshes) Texture;
         
 
         public ModelAuthoringBase[] ModelPrefabs;
@@ -48,9 +48,9 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
-            var qGo = this.ModelPrefabs.Select(x => x.gameObject);
+            //var qGo = this.ModelPrefabs.Select(x => x.gameObject);
 
-            this.Texture = TexturePacker.Pack(qGo);
+            //this.Texture = TexturePacker.Pack(qGo);
 
 
 
