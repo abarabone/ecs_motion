@@ -25,9 +25,7 @@ namespace Abarabone.Model.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public Material MaterialToDraw;
-
-        //public bool CreateAtlusTexture;
+        public Shader DrawShader;
 
         
         public EnBoneType BoneMode;
@@ -40,14 +38,13 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
-            var skinnedMeshRenderers = this.GetComponentsInChildren<SkinnedMeshRenderer>();
-            var (atlas, qMesh) = skinnedMeshRenderers.Select(x => x.gameObject).PackTextureAndTranslateMeshes();
-            var bones = skinnedMeshRenderers.First().bones.Where( x => !x.name.StartsWith( "_" ) ).ToArray();
+            var (atlas, meshes, bones) = buildGeometrySources_(this.gameObject);
+            var mat = createMaterial_(this.DrawShader, atlas);
 
             var top = this.gameObject;
             var main = top.Children().First();
 
-            createModelEntity_( conversionSystem, top, this.MaterialToDraw, qMesh, bones );
+            createModelEntity_( conversionSystem, top, meshes, bones, mat );
 
             initBinderEntity_( conversionSystem, top, main );
             initMainEntity_(conversionSystem, top, main);
@@ -60,13 +57,27 @@ namespace Abarabone.Model.Authoring
             return;
 
 
+            static (Texture2D atlas, Mesh[] meshes, Transform[] bones) buildGeometrySources_(GameObject go)
+            {
+                var skinnedMeshRenderers = go.GetComponentsInChildren<SkinnedMeshRenderer>();
+                var (atlas, qMesh) = skinnedMeshRenderers.Select(x => x.gameObject).PackTextureAndTranslateMeshes();
+                var qBone = skinnedMeshRenderers.First().bones.Where(x => !x.name.StartsWith("_"));
+                return (atlas, qMesh.ToArray(), qBone.ToArray());
+            }
+
+            static Material createMaterial_(Shader srcShader, Texture2D tex)
+            {
+                var mat = new Material( srcShader );
+                mat.mainTexture = tex;
+                return mat;
+            }
+
             void createModelEntity_
                 (
                     GameObjectConversionSystem gcs_, GameObject top_,
-                    Material srcMaterial, IEnumerable<Mesh> srcMeshes, Transform[] bones_
+                    IEnumerable<Mesh> srcMeshes, Transform[] bones_, Material mat
                 )
             {
-                var mat = new Material( srcMaterial );
                 var mesh = DrawModelEntityConvertUtility.CombineAndConvertMesh( srcMeshes, bones_ );
 
                 const BoneType BoneType = BoneType.TR;
@@ -75,7 +86,7 @@ namespace Abarabone.Model.Authoring
             }
 
 
-            void initBinderEntity_( GameObjectConversionSystem gcs_, GameObject top_, GameObject main_ )
+            static void initBinderEntity_( GameObjectConversionSystem gcs_, GameObject top_, GameObject main_ )
             {
                 var em_ = gcs_.DstEntityManager;
 
@@ -97,7 +108,7 @@ namespace Abarabone.Model.Authoring
                 em_.SetName_( binderEntity, $"{top_.name} binder" );
             }
 
-            void initMainEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
+            static void initMainEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
             {
                 var em_ = gcs_.DstEntityManager;
 
