@@ -7,30 +7,58 @@ namespace Abarabone.Geometry
 {
 
 	using Abarabone.Common.Extension;
+	using Abarabone.Utilities;
 
 
 	public static class TexturePacker
 	{
 
-
-		public static (Texture2D atlas, Dictionary<Mesh, Mesh> newmeshes) Pack(IEnumerable<GameObject> targetObjects)
-        {
-
+		/// <summary>
+		/// パックしたテクスチャと、ＵＶを差し替えた新しいメッシュを返す。
+		/// ただしテクスチャが１つしかない場合は、元のテクスチャとメッシュを返す。
+		/// </summary>
+		public static (Texture2D atlas, Dictionary<Mesh, Mesh> newmeshes) PackTextureAndPairingMeshes(this IEnumerable<GameObject> targetObjects)
+		{
 			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(targetObjects).ToArray();
+			var qSrcMesh = mmts.Select(x => x.mesh);
+			var qSrcMats = mmts.Select(x => x.mats);
+
+			var (atlas, qDstMesh) = packTextureAndTranslateMeshes_(qSrcMesh, qSrcMats);
+			var dict = (qSrcMesh, qDstMesh).Zip().ToDictionary(x => x.x, x => x.y);
+
+			return (atlas, dict);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public static (Texture2D atlas, IEnumerable<Mesh> meshes) PackTextureAndTranslateMeshes(this IEnumerable<GameObject> targetObjects)
+		{
+			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(targetObjects).ToArray();
+			var qMesh = mmts.Select(x => x.mesh);
+			var qMats = mmts.Select(x => x.mats);
+
+			return packTextureAndTranslateMeshes_(qMesh, qMats);
+		}
 
 
-			var uniqueTextures = queryUniqueTextures_(mmts.Select(x => x.mats));
+		static (Texture2D atlas, IEnumerable<Mesh> translatedMeshes) packTextureAndTranslateMeshes_
+			(IEnumerable<Mesh> meshes, IEnumerable<Material[]> matss)
+		{
+
+			var uniqueTextures = queryUniqueTextures_(matss);
+			if (uniqueTextures.IsSingle()) return (uniqueTextures.First(), meshes);
 
 			var (atlas, uvOffsets) = packTexture_(uniqueTextures);
 
 
 			var uvOffsetDict = makeUvOffsetDict_(uniqueTextures, uvOffsets);
 
-			var qMeshNewUv = queryMeshNewUv_(mmts, uvOffsetDict);
+			var qMeshNewUv = queryMeshNewUv_(meshes, matss, uvOffsetDict);
 
-			var meshPairDict = makeMeshPairDict_(mmts, qMeshNewUv);
+			var qDstMesh = makeTranslatedUvMeshes_(meshes, qMeshNewUv);
 
-			return (atlas, meshPairDict);
+			return (atlas, qDstMesh);
 
 
 			static Texture2D[] queryUniqueTextures_(IEnumerable<Material[]> matss) =>
@@ -40,7 +68,6 @@ namespace Abarabone.Geometry
 					.Select(mat => mat.mainTexture)
 					.OfType<Texture2D>()
 					.ToArray();
-
 
 			static (Texture2D, Rect[]) packTexture_(IEnumerable<Texture2D> srcTextures)
 			{
@@ -66,17 +93,17 @@ namespace Abarabone.Geometry
 			}
 
 			static IEnumerable<IEnumerable<Vector2>> queryMeshNewUv_
-				(IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts, Dictionary<Texture2D, Rect> uvOffsetDict)
+				(IEnumerable<Mesh> meshes, IEnumerable<Material[]> matss, Dictionary<Texture2D, Rect> uvOffsetDict)
 			{
 				var qSubmeshUv =
-					from mmt in mmts
-					select mmt.mesh.SubmeshVertices(mmt.mesh.uv)
+					from mesh in meshes
+					select mesh.SubmeshVertices(mesh.uv)
 					// 頂点は若い submesh の順に、隙間なく格納されていると仮定する
 					;
 				var qSubmeshTex =
-					from mmt in mmts
+					from mats in matss
 					select
-						from mat in mmt.mats
+						from mat in mats
 						select mat.mainTexture as Texture2D
 					;
 
@@ -93,17 +120,16 @@ namespace Abarabone.Geometry
 				return qMeshUvNew;
 			}
 
-			static Dictionary<Mesh, Mesh> makeMeshPairDict_
-				(IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts, IEnumerable<IEnumerable<Vector2>> meshUvNew)
+			static IEnumerable<Mesh> makeTranslatedUvMeshes_
+				(IEnumerable<Mesh> meshes, IEnumerable<IEnumerable<Vector2>> newUvs)
 			{
-				var qMeshPair =
-					from x in (mmts, meshUvNew).Zip()
-					let src = x.x.mesh
-					let dst = cloneMesh_(x.x.mesh, x.y.ToArray())
-					select (src, dst)
+				var qMeshUvTranslated =
+					from x in (meshes, newUvs).Zip()
+					let src = x.x
+					let dst = cloneMesh_(src, x.y.ToArray())
+					select dst
 					;
-
-				return qMeshPair.ToDictionary(x => x.src, x => x.dst);
+				return qMeshUvTranslated;
 
 
 				static Mesh cloneMesh_(Mesh srcmesh, Vector2[] newuv)
@@ -119,7 +145,6 @@ namespace Abarabone.Geometry
 					return newmesh;
 				}
 			}
-
 		}
 
 	}

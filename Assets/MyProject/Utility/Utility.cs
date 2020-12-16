@@ -15,7 +15,13 @@ namespace Abarabone.Utilities
 {
     static public class Extentions
     {
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static bool IsSingle<T>(this IEnumerable<T> src) => src.Any() && src.Skip(1).IsEmpty();
+
+
 		/// <summary>
 		/// 値を取得、keyがなければデフォルト値を設定し、デフォルト値を取得
 		/// </summary>

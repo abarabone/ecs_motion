@@ -15,6 +15,7 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Character;
     using Abarabone.Common.Extension;
     using Abarabone.CharacterMotion.Authoring;
+    using Abarabone.Geometry;
 
     /// <summary>
     /// プライマリエンティティは LinkedEntityGroup のみとする。
@@ -40,7 +41,7 @@ namespace Abarabone.Model.Authoring
         {
 
             var skinnedMeshRenderers = this.GetComponentsInChildren<SkinnedMeshRenderer>();
-            var qMesh = skinnedMeshRenderers.Select( x => x.sharedMesh );
+            var (atlas, qMesh) = skinnedMeshRenderers.Select(x => x.gameObject).PackTextureAndTranslateMeshes();
             var bones = skinnedMeshRenderers.First().bones.Where( x => !x.name.StartsWith( "_" ) ).ToArray();
 
             var top = this.gameObject;
