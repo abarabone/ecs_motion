@@ -64,6 +64,11 @@ namespace Abarabone.Structure.Authoring2
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
+            switch(true)
+            {
+                case : { } break;
+
+            }
             var top = this.gameObject;
             var far = this.FarMeshObject.objectTop;
             var near = this.NearMeshObject.objectTop;
@@ -172,7 +177,7 @@ namespace Abarabone.Structure.Authoring2
                 em_.SetComponentData(mainEntity,
                     new DrawInstance.ModeLinkData
                     {
-                        DrawModelEntityCurrent = gcs_.GetFromModelEntityDictionary(top_),
+                        DrawModelEntityCurrent = Entity.Null,//gcs_.GetFromModelEntityDictionary(far_.objectTop),//(top_),
                     }
                 );
                 em_.SetComponentData(mainEntity,
