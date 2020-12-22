@@ -44,39 +44,64 @@ namespace Abarabone.Structure.Authoring
 
 
 
-        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        {
-            //var parts = this.GetComponentsInChildren<StructurePartAuthoring>();
+        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        //{
+        //    //var parts = this.GetComponentsInChildren<StructurePartAuthoring>();
 
-            //var qMasterPrefab = parts
-            //    .Select(x => x.gameObject)
-            ////    .Select(x => UnityEditor.PrefabUtility.GetCorrespondingObjectFromOriginalSource(x))
-            //    .Select(x => x.MasterPrefab)
-            //    .Distinct();
+        //    //var qMasterPrefab = parts
+        //    //    .Select(x => x.gameObject)
+        //    ////    .Select(x => UnityEditor.PrefabUtility.GetCorrespondingObjectFromOriginalSource(x))
+        //    //    .Select(x => x.MasterPrefab)
+        //    //    .Distinct();
 
-            //referencedPrefabs.AddRange( qMasterPrefab );
-        }
+        //    //referencedPrefabs.AddRange( qMasterPrefab );
+        //}
 
 
         /// <summary>
-        /// 
+        /// near と far のモデルエンティティを生成、
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            var structureGroup = this.GetComponentInParent<IStructureGroupAuthoring>();
 
-            var top = this.gameObject;
-            var far = this.FarMeshObject.objectTop;
-            var near = this.NearMeshObject.objectTop;
-            var env = this.Envelope;
+            switch(structureGroup)
+            {
+                case StructureGroupAuthoring group:
+                    {
+                        var top = this.gameObject;
+                        var far = this.FarMeshObject.objectTop;
+                        var near = this.NearMeshObject.objectTop;
+                        var env = this.Envelope;
 
-            createModelEntity_(conversionSystem, far, this.FarMaterialToDraw, this.GetFarMeshAndFunc);
-            createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
+                        createModelEntity_(conversionSystem, far, this.FarMaterialToDraw, this.GetFarMeshAndFunc);
+                        createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
 
-            initBinderEntity_(conversionSystem, top, env);
-            initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
-            setBoneForFarEntity_(conversionSystem, env, far, far.transform.parent);
-            setBoneForPartEntities_(conversionSystem, env, near, near.transform);
+                        initBinderEntity_(conversionSystem, top, env);
+                        initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
 
+                        setBoneForFarEntity_(conversionSystem, env, far, far.transform.parent);
+                        setBoneForPartEntities_(conversionSystem, env, near, near.transform);
+                    }
+                break;
+
+                case StructureAreaAuthoring area:
+                    {
+                        var top = this.gameObject;
+                        var far = this.FarMeshObject.objectTop;
+                        var near = this.NearMeshObject.objectTop;
+                        var env = this.Envelope;
+
+                        createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
+
+                        initBinderEntity_(conversionSystem, top, env);
+                        initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
+
+                        setBoneForFarEntity_(conversionSystem, env, far, far.transform.parent);
+                        setBoneForPartEntities_(conversionSystem, env, near, near.transform);
+                    }
+                break;
+            }
             return;
 
 
@@ -131,13 +156,13 @@ namespace Abarabone.Structure.Authoring
                 em_.SetName_(binderEntity, $"{top_.name} binder");
             }
 
-            void initMainEntity_
-                (GameObjectConversionSystem gcs_, GameObject top_, GameObject main_, ObjectAndDistance near_, ObjectAndDistance far_)
+            static void initMainEntity_
+                (GameObjectConversionSystem gcs, GameObject top, GameObject main, ObjectAndDistance near, ObjectAndDistance far)
             {
-                var em_ = gcs_.DstEntityManager;
+                var em_ = gcs.DstEntityManager;
 
-                var binderEntity = gcs_.GetPrimaryEntity(top_);
-                var mainEntity = gcs_.GetPrimaryEntity(main_);
+                var binderEntity = gcs.GetPrimaryEntity(top);
+                var mainEntity = gcs.GetPrimaryEntity(main);
 
 
                 var mainAddtypes = new ComponentTypes
@@ -171,7 +196,7 @@ namespace Abarabone.Structure.Authoring
                 em_.SetComponentData(mainEntity,
                     new DrawInstance.ModeLinkData
                     {
-                        DrawModelEntityCurrent = gcs_.GetFromModelEntityDictionary(top_),
+                        DrawModelEntityCurrent = Entity.Null,//gcs_.GetFromModelEntityDictionary(far_.objectTop),//(top_),
                     }
                 );
                 em_.SetComponentData(mainEntity,
@@ -183,33 +208,33 @@ namespace Abarabone.Structure.Authoring
 
 
                 var draw = mainEntity;
-                var lods = new ObjectAndDistance[] { near_, far_ };
-                gcs_.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
+                var lods = new ObjectAndDistance[] { near, far };
+                gcs.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
 
 
-                var qTffar = Enumerable.Repeat(far_.objectTop.transform, 1);
-                gcs_.CreatePostureEntities(main_, qTffar);
+                var qTffar = Enumerable.Repeat(far.objectTop.transform, 1);
+                gcs.CreatePostureEntities(main, qTffar);
 
 
-                em_.SetName_(mainEntity, $"{top_.name} main");
+                em_.SetName_(mainEntity, $"{top.name} main");
             }
 
         }
 
-        void setBoneForFarEntity_(GameObjectConversionSystem gcs_, GameObject main_, GameObject far_, Transform root_)
+        static void setBoneForFarEntity_(GameObjectConversionSystem gcs, GameObject parent, GameObject far, Transform root)
         {
-            var qFar = Enumerable.Repeat(far_.transform, 1);
+            var qFar = Enumerable.Repeat(far.transform, 1);
 
-            gcs_.InitBoneEntities(main_, qFar, root_, EnBoneType.jobs_per_depth);
+            gcs.InitBoneEntities(parent, qFar, root, EnBoneType.jobs_per_depth);
         }
 
 
-        void setBoneForPartEntities_(GameObjectConversionSystem gcs_, GameObject main_, GameObject partTop_, Transform root_)
+        static void setBoneForPartEntities_(GameObjectConversionSystem gcs, GameObject parent, GameObject partTop, Transform root)
         {
-            var qPart = partTop_.GetComponentsInChildren<StructurePartAuthoring>()
+            var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()
                 .Select(pt => pt.transform);
 
-            gcs_.InitBoneEntities(main_, qPart, root_, EnBoneType.jobs_per_depth);
+            gcs.InitBoneEntities(parent, qPart, root, EnBoneType.jobs_per_depth);
         }
 
 

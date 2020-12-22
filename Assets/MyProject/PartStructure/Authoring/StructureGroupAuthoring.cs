@@ -24,7 +24,7 @@ namespace Abarabone.Structure.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Structure.Authoring;
 
-    public class StructureGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
+    public class StructureGroupAuthoring : MonoBehaviour, IStructureGroupAuthoring, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
         //public bool IsCombineMesh = true;
@@ -112,17 +112,6 @@ namespace Abarabone.Structure.Authoring
 
 
 
-
-    }
-
-    static class StructureConversionExtension
-    {
-
-        /// <summary>
-        /// 
-        /// </summary>
-        static public Task<T[]> WhenAll<T>(this IEnumerable<Task<T>> tasks) =>
-            Task.WhenAll(tasks);
 
     }
 

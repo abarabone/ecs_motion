@@ -20,6 +20,7 @@ namespace Abarabone.Structure.Authoring
     using Unity.Physics;
     using Unity.Transforms;
     using Abarabone.Geometry;
+    using Abarabone.Utilities;
 
     using Material = UnityEngine.Material;
     using Unity.Physics.Authoring;
@@ -38,7 +39,8 @@ namespace Abarabone.Structure.Authoring
 
 
         /// <summary>
-        /// 
+        /// パーツインスタンスエンティティを生成する。モデルは同じパーツで１つ。
+        /// 破壊されたときの落下プレハブもインスタンス単位で作成しているが、破壊時に位置を仕込んでいるため、１つでよいのでは？
         /// </summary>
         public async void Convert
             (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -89,7 +91,7 @@ namespace Abarabone.Structure.Authoring
                 if (gcs_.IsExistsInModelEntityDictionary(master_)) return;
 
                 var mat = new Material(srcMaterial_);
-                var mesh = conversionSystem.GetFromMeshDictionary(this.MasterPrefab);
+                var mesh = conversionSystem.GetFromMeshDictionary(master_);
                 if(mesh == null)
                 {
                     var x = this.GetPartsMeshesAndFuncs();
@@ -181,13 +183,17 @@ namespace Abarabone.Structure.Authoring
         }
 
 
+        /// <summary>
+        /// 元となったプレハブから自身と子を合成する関数を取得する。ただし子からパーツは除外する。
+        /// また、オブジェクトが１つの時は直接メッシュを取得する。
+        /// </summary>
         public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
         {
 
             var part = this.MasterPrefab;
-            var children = queryPartBodyObjects_Recursive_(part).ToArray();
+            var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
 
-            var isSingle = children.Length == 1;
+            var isSingle = children.IsSingle();//children.Length == 1;
             var f = !isSingle ? MeshCombiner.BuildNormalMeshElements(children, part.transform) : null;
             var mesh = isSingle ? children.First().GetComponent<MeshFilter>().sharedMesh : null;
 

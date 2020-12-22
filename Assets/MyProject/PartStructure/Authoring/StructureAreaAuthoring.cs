@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Unity.Linq;
 using UnityEditor;
 
-namespace Abarabone.Structure.Authoring2
+namespace Abarabone.Structure.Authoring
 {
 
     using Abarabone.Model;
@@ -24,17 +24,11 @@ namespace Abarabone.Structure.Authoring2
     using Abarabone.Common.Extension;
     using Abarabone.Structure.Authoring;
 
-    public class StructureAreaAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
+    public class StructureAreaAuthoring : MonoBehaviour, IStructureGroupAuthoring, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
-        //public bool IsCombineMesh = true;
-        //public bool IsPackTexture = true;
+        public Shader ShaderToDraw;
 
-
-        public StructureModelAuthoring[] StructureModelPrefabs;
-
-        (GameObject, Mesh)[] objectsAndMeshes;
-        //GameObject[] partMasterPrefabs;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -115,15 +109,5 @@ namespace Abarabone.Structure.Authoring2
 
     }
 
-    static class StructureConversionExtension
-    {
-
-        /// <summary>
-        /// 
-        /// </summary>
-        static public Task<T[]> WhenAll<T>(this IEnumerable<Task<T>> tasks) =>
-            Task.WhenAll(tasks);
-
-    }
 
 }

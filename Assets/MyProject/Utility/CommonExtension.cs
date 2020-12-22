@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Unity.Entities;
@@ -14,7 +15,14 @@ namespace Abarabone.Common.Extension
 {
 
 	public static class LinqExtension
-	{ 
+	{
+
+		/// <summary>
+		/// 
+		/// </summary>
+		static public Task<T[]> WhenAll<T>(this IEnumerable<Task<T>> tasks) =>
+			Task.WhenAll(tasks);
+
 
 		public static IEnumerable<Tresult> Zip<T1,T2,Tresult>
 			( in this (IEnumerable<T1> e1, IEnumerable<T2> e2) src, Func<T1,T2,Tresult> resultSelector )

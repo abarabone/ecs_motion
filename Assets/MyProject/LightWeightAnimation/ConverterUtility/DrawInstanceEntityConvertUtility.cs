@@ -132,17 +132,17 @@ namespace Abarabone.Draw.Authoring
                 {
                     DrawModelEntityNear = gcs_.GetFromModelEntityDictionary(lod0_),
                     DrawModelEntityFar = gcs_.GetFromModelEntityDictionary(lod1_),
-                    LimitDistanceSqrNear = sqr_(lods_[0].LimitDistance),
-                    LimitDistanceSqrFar = sqr_(lods_[1].LimitDistance),
-                    MarginDistanceSqrNear = sqr_(lods_[0].LimitDistance + lods_[0].Margin),
-                    MarginDistanceSqrFar = sqr_(lods_[1].LimitDistance + lods_[1].Margin),
+                    LimitDistanceSqrNear = pow2_(lods_[0].LimitDistance),
+                    LimitDistanceSqrFar = pow2_(lods_[1].LimitDistance),
+                    MarginDistanceSqrNear = pow2_(lods_[0].LimitDistance + lods_[0].Margin),
+                    MarginDistanceSqrFar = pow2_(lods_[1].LimitDistance + lods_[1].Margin),
                 }
             );
             
             return;
 
 
-            float sqr_(float d_) => d_ * d_;
+            float pow2_(float d_) => d_ * d_;
         }
 
     }
