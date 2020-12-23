@@ -40,6 +40,7 @@ namespace Abarabone.Structure.Authoring
         public ObjectAndDistance FarMeshObject;
 
         public GameObject Envelope;
+        public GameObject MasterPrefab;
 
 
 

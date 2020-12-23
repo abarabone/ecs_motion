@@ -10,7 +10,7 @@ namespace Abarabone.Structure.Authoring
     /// 本当は実行時に取得できればいいんだが、プレイヤーでは取得できないし、そもそもプレハブは全部展開される。
     /// </summary>
     [CustomEditor(typeof(StructureModelAuthoring))]
-    public class ExampleScriptEditor : Editor
+    public class StructureModelEditor : Editor
     {
         public override void OnInspectorGUI()
         {
@@ -20,7 +20,7 @@ namespace Abarabone.Structure.Authoring
             GUILayout.BeginHorizontal();
 
             //ボタンを表示
-            if (GUILayout.Button("set master prefab link on part"))
+            if (GUILayout.Button("set master prefab link per part"))
             {
                 var parts = this.targets
                     .OfType<MonoBehaviour>()
@@ -28,9 +28,9 @@ namespace Abarabone.Structure.Authoring
                     .Select(pt => (pt, PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject)));
                     ;
                 
-                foreach ( var (pt, master) in parts )
+                foreach ( var (pt, masterPrefab) in parts )
                 {
-                    pt.MasterPrefab = master ?? pt.gameObject;
+                    pt.MasterPrefab = masterPrefab ?? pt.gameObject;
                     Debug.Log($"{pt.name} <- {pt.MasterPrefab.name}");
 
                     EditorUtility.SetDirty(pt);
@@ -45,7 +45,7 @@ namespace Abarabone.Structure.Authoring
                 var parts = this.targets
                     .OfType<MonoBehaviour>()
                     .SelectMany(s => s.GetComponentsInChildren<StructurePartAuthoring>())
-                ;
+                    ;
 
                 foreach (var x in parts.Select( (pt, i) => (pt, i) ))
                 {

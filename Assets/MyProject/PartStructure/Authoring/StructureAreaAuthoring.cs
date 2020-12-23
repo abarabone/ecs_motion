@@ -33,8 +33,13 @@ namespace Abarabone.Structure.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            createMeshes();
-            var structurePrefabs = this.StructureModelPrefabs.Select( x => x.gameObject );
+            var structurePrefabs = this.GetComponentsInChildren<StructureModelAuthoring>()
+                .Select( x => x.MasterPrefab )
+                .Distinct()
+                .ToArray();
+
+            createMeshes(structurePrefabs);
+
             referencedPrefabs.AddRange(structurePrefabs);
         }
 
@@ -60,7 +65,7 @@ namespace Abarabone.Structure.Authoring
             }
         }
 
-        void createMeshes()
+        void createMeshes(GameObject[] structurePrefabs)
         {
 
             var qNear =
