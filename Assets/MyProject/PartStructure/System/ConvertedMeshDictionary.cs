@@ -11,8 +11,7 @@ namespace Abarabone.Draw.Authoring
 {
 
     /// <summary>
-    /// モデルエンティティとゲームオブジェクトを紐づける仕組み。
-    /// モデルプレハブはモデルのトップエンティティに紐づけるので、別枠が必要になった。（そもそもインスタンスとリソースは別か）
+    /// 
     /// </summary>
     public class ConvertedMeshDictionary : GameObjectConversionSystem
     {

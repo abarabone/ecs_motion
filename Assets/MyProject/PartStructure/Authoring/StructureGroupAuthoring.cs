@@ -39,7 +39,8 @@ namespace Abarabone.Structure.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            createMeshes();
+            this.objectsAndMeshes = createMeshes(this.StructureModelPrefabs);
+
             var structurePrefabs = this.StructureModelPrefabs.Select( x => x.gameObject );
             referencedPrefabs.AddRange(structurePrefabs);
         }
@@ -50,8 +51,6 @@ namespace Abarabone.Structure.Authoring
             dstManager.DestroyEntity(entity);
 
             addToMeshDictionary_(this.objectsAndMeshes);
-
-            //stantiateMasterPrefab_ForConversion_(conversionSystem, this.partMasterPrefabs);
 
             return;
 
@@ -66,19 +65,19 @@ namespace Abarabone.Structure.Authoring
             }
         }
 
-        void createMeshes()
+        (GameObject, Mesh)[] createMeshes(StructureModelAuthoring[] structureModelPrefabs)
         {
 
             var qNear =
-                from st in this.StructureModelPrefabs.Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
+                from st in structureModelPrefabs.Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
                 select st.GetNearMeshFunc()
                 ;
             var qFar =
-                from st in this.StructureModelPrefabs.Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
+                from st in structureModelPrefabs.Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
                 select st.GetFarMeshAndFunc()
                 ;
             var qPartAll =
-                from st in this.StructureModelPrefabs
+                from st in structureModelPrefabs
                 from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
                 select pt
                 ;
@@ -106,7 +105,7 @@ namespace Abarabone.Structure.Authoring
                 .Zip(qGoAndTask, (x, y) => (y.go, mesh: x));
 
 
-            this.objectsAndMeshes = qGoAndMesh.Concat(qGoAndMeshFromTask)
+            return qGoAndMesh.Concat(qGoAndMeshFromTask)
                 .ToArray();
         }
 
