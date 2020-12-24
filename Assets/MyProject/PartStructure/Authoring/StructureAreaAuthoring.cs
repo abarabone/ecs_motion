@@ -27,7 +27,7 @@ namespace Abarabone.Structure.Authoring
     public class StructureAreaAuthoring : MonoBehaviour, IStructureGroupAuthoring, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
-        public Shader ShaderToDraw;
+        public Material MaterialToDraw;
 
         (GameObject, Mesh)[] objectsAndMeshes;
 

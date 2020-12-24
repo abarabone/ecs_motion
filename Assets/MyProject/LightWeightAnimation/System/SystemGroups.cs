@@ -44,7 +44,7 @@ namespace Abarabone.SystemGroup
 
         namespace Move
         {
-            [UpdateBefore(typeof(EndFramePhysicsSystem))]
+            //[UpdateBefore(typeof(EndFramePhysicsSystem))]
             //[UpdateAfter(typeof(StepPhysicsWorld))]
             [UpdateInGroup(typeof(SimulationSystemGroup))]
             //[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]

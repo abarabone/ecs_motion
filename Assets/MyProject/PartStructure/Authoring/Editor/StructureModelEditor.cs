@@ -23,17 +23,26 @@ namespace Abarabone.Structure.Authoring
             if (GUILayout.Button("set master prefab link per part"))
             {
                 var parts = this.targets
-                    .OfType<MonoBehaviour>()
-                    .SelectMany(s => s.GetComponentsInChildren<StructurePartAuthoring>())
+                    .OfType<StructureModelAuthoring>()
+                    .SelectMany(st => st.GetComponentsInChildren<StructurePartAuthoring>())
                     .Select(pt => (pt, PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject)));
-                    ;
-                
                 foreach ( var (pt, masterPrefab) in parts )
                 {
                     pt.MasterPrefab = masterPrefab ?? pt.gameObject;
                     Debug.Log($"{pt.name} <- {pt.MasterPrefab.name}");
 
                     EditorUtility.SetDirty(pt);
+                }
+
+                var structures = this.targets
+                    .OfType<StructureModelAuthoring>()
+                    .Select(st => (st, PrefabUtility.GetCorrespondingObjectFromOriginalSource(st.gameObject)));
+                foreach (var (st, masterPrefab) in structures)
+                {
+                    st.MasterPrefab = masterPrefab ?? st.gameObject;
+                    Debug.Log($"{st.name} <- {st.MasterPrefab.name}");
+
+                    EditorUtility.SetDirty(st);
                 }
 
                 AssetDatabase.SaveAssets();

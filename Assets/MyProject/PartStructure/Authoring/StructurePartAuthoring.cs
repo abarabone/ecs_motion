@@ -48,7 +48,10 @@ namespace Abarabone.Structure.Authoring
 
             Debug.Log("pt auth "+this.name);
 
-            var topAuth = this.gameObject.Ancestors().Select( go => go.GetComponent<StructureModelAuthoring>() ).First(x => x != null);
+            var topAuth = this.gameObject
+                .Ancestors()
+                .Select(go => go.GetComponent<StructureModelAuthoring>())
+                .First(x => x != null);
             var top = topAuth.gameObject;
             var main = topAuth.FarMeshObject.objectTop;
 
@@ -86,23 +89,23 @@ namespace Abarabone.Structure.Authoring
 
 
             void createModelEntity_
-                (GameObjectConversionSystem gcs_, GameObject master_, Material srcMaterial_)
+                (GameObjectConversionSystem gcs, GameObject masterPrefab, Material shader)
             {
-                if (gcs_.IsExistsInModelEntityDictionary(master_)) return;
+                if (gcs.IsExistsInModelEntityDictionary(masterPrefab)) return;
 
-                var mat = new Material(srcMaterial_);
-                var mesh = conversionSystem.GetFromMeshDictionary(master_);
+                var mat = new Material(shader);
+                var mesh = conversionSystem.GetFromMeshDictionary(masterPrefab);
                 if(mesh == null)
                 {
                     var x = this.GetPartsMeshesAndFuncs();
                     mesh = x.mesh ?? x.f().CreateMesh();
-                    gcs_.AddToMeshDictionary(master_, mesh);
+                    gcs.AddToMeshDictionary(masterPrefab, mesh);
                 }
 
                 const BoneType BoneType = BoneType.TR;// あとでＳもつける
                 const int boneLength = 1;
 
-                var modelEntity_ = gcs_.CreateDrawModelEntityComponents(master_, mesh, mat, BoneType, boneLength);
+                var modelEntity_ = gcs.CreateDrawModelEntityComponents(masterPrefab, mesh, mat, BoneType, boneLength);
             }
 
             void createDebrisPrefab_(GameObjectConversionSystem gcs_, GameObject part_, GameObject master_)
@@ -194,21 +197,25 @@ namespace Abarabone.Structure.Authoring
             var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
 
             var isSingle = children.IsSingle();//children.Length == 1;
-            var f = !isSingle ? MeshCombiner.BuildNormalMeshElements(children, part.transform) : null;
-            var mesh = isSingle ? children.First().GetComponent<MeshFilter>().sharedMesh : null;
+            var f = !isSingle
+                ? MeshCombiner.BuildNormalMeshElements(children, part.transform)
+                : null;
+            var mesh = isSingle
+                ? children.First().GetComponent<MeshFilter>().sharedMesh
+                : null;
 
             return (part, f, mesh);
 
 
-            IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go_)
+            static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
             {
                 var q =
-                    from child in go_.Children()
+                    from child in go.Children()
                     where child.GetComponent<StructurePartAuthoring>() == null
                     from x in queryPartBodyObjects_Recursive_(child)
                     select x
                     ;
-                return q.Prepend(go_);
+                return q.Prepend(go);
             }
         }
     }
