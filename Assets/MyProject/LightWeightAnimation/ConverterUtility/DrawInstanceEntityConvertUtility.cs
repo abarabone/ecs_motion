@@ -142,7 +142,7 @@ namespace Abarabone.Draw.Authoring
             return;
 
 
-            float pow2_(float d_) => d_ * d_;
+            static float pow2_(float d) => d * d;
         }
 
     }

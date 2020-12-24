@@ -64,45 +64,42 @@ namespace Abarabone.Structure.Authoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            var structureGroup = this.GetComponentInParent<IStructureGroupAuthoring>();
+            var area = this.GetComponentInParent<StructureAreaAuthoring>();
 
-            switch(structureGroup)
-            {
-                case StructureGroupAuthoring group:
-                    {
-                        var top = this.gameObject;
-                        var far = this.FarMeshObject.objectTop;
-                        var near = this.NearMeshObject.objectTop;
-                        var env = this.Envelope;
+            //if(area != null)
+            //{
+            //    var top = this.gameObject;
+            //    var far = this.FarMeshObject.objectTop;
+            //    var near = this.NearMeshObject.objectTop;
+            //    var env = this.Envelope;// main object
 
-                        createModelEntity_(conversionSystem, far, this.FarMaterialToDraw, this.GetFarMeshAndFunc);
-                        createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
+            //    createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
 
-                        initBinderEntity_(conversionSystem, top, env);
-                        initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
+            //    initBinderEntity_(conversionSystem, top, env);
+            //    initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
 
-                        setBoneForFarEntity_(conversionSystem, env, far, far.transform.parent);
-                        setBoneForPartEntities_(conversionSystem, env, near, near.transform);
-                    }
-                break;
+            //    setBoneForFarEntity_(conversionSystem, env, far, far.transform.parent);
+            //    setBoneForPartEntities_(conversionSystem, env, near, near.transform);
+            //}
 
-                case StructureAreaAuthoring area:
-                    {
-                        var top = this.gameObject;
-                        var far = this.FarMeshObject.objectTop;
-                        var near = this.NearMeshObject.objectTop;
-                        var env = this.Envelope;
+            //if (area == null)
+            //{
+                var top = this.gameObject;
+                var far = this.FarMeshObject.objectTop;
+                var near = this.NearMeshObject.objectTop;
+                var env = this.Envelope;// main object
 
-                        createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
+                createModelEntity_(conversionSystem, far, this.FarMaterialToDraw, this.GetFarMeshAndFunc);
+                createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
 
-                        initBinderEntity_(conversionSystem, top, env);
-                        initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
+                initBinderEntity_(conversionSystem, top, env);
+                initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
 
-                        setBoneForFarEntity_(conversionSystem, env, far, far.transform.parent);
-                        setBoneForPartEntities_(conversionSystem, env, near, near.transform);
-                    }
-                break;
-            }
+                setBoneForFarEntity_(conversionSystem, env, far, top.transform);// far.transform.parent);
+                setBoneForPartEntities_(conversionSystem, env, near, top.transform);// near.transform);
+                    
+            //}
+
             return;
 
 
@@ -213,8 +210,7 @@ namespace Abarabone.Structure.Authoring
                 gcs.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
 
 
-                var qTffar = Enumerable.Repeat(far.objectTop.transform, 1);
-                gcs.CreatePostureEntities(main, qTffar);
+                gcs.InitPostureEntity(main);//, far.objectTop.transform);
 
 
                 em_.SetName_(mainEntity, $"{top.name} main");
@@ -233,7 +229,8 @@ namespace Abarabone.Structure.Authoring
         static void setBoneForPartEntities_(GameObjectConversionSystem gcs, GameObject parent, GameObject partTop, Transform root)
         {
             var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()
-                .Select(pt => pt.transform);
+                .Select(pt => pt.transform)
+                .Append(partTop.transform);// うまくできてない
 
             gcs.InitBoneEntities(parent, qPart, root, EnBoneType.jobs_per_depth);
         }
@@ -252,7 +249,7 @@ namespace Abarabone.Structure.Authoring
 
             var isFarSingle = chilren.Length == 1 && isSameTransform_(chilren.First(), far);
 
-            var f = !isFarSingle ? MeshCombiner.BuildNormalMeshElements(chilren, top.transform) : null;//far.transform) : null;
+            var f = !isFarSingle ? MeshCombiner.BuildNormalMeshElements(chilren, top.transform) : null;//far.transform) : null;//
             var mesh = isFarSingle ? chilren.First().GetComponent<MeshFilter>().sharedMesh : null;
 
             Debug.Log($"far {far.name} {chilren.Length} {isFarSingle}");
@@ -270,7 +267,7 @@ namespace Abarabone.Structure.Authoring
 
             var objects = near.DescendantsAndSelf();
 
-            var f = MeshCombiner.BuildStructureWithPalletMeshElements(objects, top.transform);//near.transform);
+            var f = MeshCombiner.BuildStructureWithPalletMeshElements(objects, top.transform);//near.transform);//
 
             Debug.Log($"near {near.name}");
             return (near, f, null);

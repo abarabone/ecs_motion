@@ -25,13 +25,13 @@ namespace Abarabone.Model.Authoring
     {
 
 
-        static public void CreatePostureEntities
-            (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones)
+        static public void InitPostureEntity
+            (this GameObjectConversionSystem gcs, GameObject mainGameObject)//, Transform topBone)
         {
 
             var postureEntity = addComponentsPostureEntity_(gcs, mainGameObject);
 
-            setPostureValue(gcs, postureEntity, bones.First());
+            setPostureValue(gcs, postureEntity);//, topBone);
 
             return;
 
@@ -52,11 +52,11 @@ namespace Abarabone.Model.Authoring
                 return ent;
             }
 
-            void setPostureValue(GameObjectConversionSystem gcs_, Entity postureEntity_, Transform tfbone_)
+            void setPostureValue(GameObjectConversionSystem gcs_, Entity postureEntity_)//, Transform tfbone_)
             {
                 var em = gcs_.DstEntityManager;
 
-                var boneEntity = gcs_.GetPrimaryEntity(tfbone_);
+                //var boneEntity = gcs_.GetPrimaryEntity(tfbone_);
 
                 //em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
                 em.SetComponentData(postureEntity_, new Rotation { Value = quaternion.identity });
