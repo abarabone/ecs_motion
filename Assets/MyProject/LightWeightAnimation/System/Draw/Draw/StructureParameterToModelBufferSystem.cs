@@ -41,6 +41,7 @@ namespace Abarabone.Draw
 
             this.Entities
                 .WithBurst()
+                //.WithAll<Structure.ShowNearTag>()
                 .WithReadOnly( offsetsOfDrawModel )
                 .ForEach(
                     (

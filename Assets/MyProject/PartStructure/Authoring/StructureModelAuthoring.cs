@@ -91,7 +91,7 @@ namespace Abarabone.Structure.Authoring
 
                 createModelEntity_(conversionSystem, far, this.FarMaterialToDraw, this.GetFarMeshAndFunc);
                 createModelEntity_(conversionSystem, near, this.NearMaterialToDraw, this.GetNearMeshFunc);
-
+                
                 initBinderEntity_(conversionSystem, top, env);
                 initMainEntity_(conversionSystem, top, env, this.NearMeshObject, this.FarMeshObject);
 
@@ -103,32 +103,44 @@ namespace Abarabone.Structure.Authoring
             return;
 
 
-
-            void createModelEntity_
+            // メッシュの位置は、main object の位置となるようにすること
+            static void createModelEntity_
                 (
-                    GameObjectConversionSystem gcs_, GameObject go_, Material srcMaterial_,
-                    Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshCreateFunc_
+                    GameObjectConversionSystem gcs, GameObject go, Material srcMaterial,
+                    Func<(GameObject, Func<MeshCombinerElements>, Mesh)> meshCreateFunc
                 )
             {
-                if (gcs_.IsExistsInModelEntityDictionary(go_)) return;
+                if (gcs.IsExistsInModelEntityDictionary(go)) return;
 
-                var mesh = gcs_.GetFromMeshDictionary(go_);
-                if(mesh == null)
-                {
-                    var x = meshCreateFunc_();
-                    mesh = x.mesh ?? x.f().CreateMesh();
-                    Debug.Log($"st model {go_.name} - {mesh.name}");
-                    gcs_.AddToMeshDictionary(go_, mesh);
-                }
 
-                var mat = new Material(srcMaterial_);
+                var mesh = getOrCreateMesh_(gcs, go, meshCreateFunc);
+                var mat = new Material(srcMaterial);
 
                 const BoneType boneType = BoneType.TR;
                 const int boneLength = 1;
                 const int vectorOffsetPerInstance = 4;
 
-                gcs_.CreateDrawModelEntityComponents
-                    (go_, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
+                gcs.CreateDrawModelEntityComponents
+                    (go, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
+
+                return;
+
+
+                static Mesh getOrCreateMesh_(
+                    GameObjectConversionSystem gcs, GameObject go,
+                    Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshCreateFunc)
+                {
+                    var existingMesh = gcs.GetFromMeshDictionary(go);
+                    if (existingMesh != null) return existingMesh;
+
+                    var x = meshCreateFunc();
+                    var newmesh = x.mesh ?? x.f().CreateMesh();
+
+                    Debug.Log($"st model {go.name} - {newmesh.name}");
+
+                    gcs.AddToMeshDictionary(go, newmesh);
+                    return newmesh;
+                }
             }
 
 
@@ -167,7 +179,7 @@ namespace Abarabone.Structure.Authoring
                 (
                     new ComponentType[]
                     {
-                        typeof(Structure.StructureMainTag),
+                        typeof(Structure.MainTag),
                         typeof(DrawInstance.MeshTag),
                         //typeof(NonUniformScale),//暫定
                         typeof(ObjectMain.ObjectMainTag),

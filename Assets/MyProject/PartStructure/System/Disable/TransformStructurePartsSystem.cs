@@ -50,7 +50,7 @@ namespace Abarabone.Draw
 
             this.Entities
                 .WithBurst()
-                .WithAll<Structure.StructureMainTag, ObjectMain.ObjectMainTag>()
+                .WithAll<Structure.MainTag, ObjectMain.ObjectMainTag>()
                 .WithNone<Structure.SleepingTag>()
                 .WithReadOnly(linkedGroups)
                 //.WithReadOnly(destructeds)

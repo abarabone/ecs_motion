@@ -26,11 +26,15 @@ namespace Abarabone.Structure
     static public partial class Structure
     {
 
-        public struct StructureMainTag : IComponentData
+        public struct MainTag : IComponentData
         { }
 
         public struct SleepingTag : IComponentData
         { }
+
+        public struct ShowNearTag : IComponentData
+        { }
+
 
 
         /// <summary>

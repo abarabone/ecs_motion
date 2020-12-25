@@ -56,7 +56,7 @@ namespace Abarabone.Draw
 
             this.Entities
                 .WithBurst()
-                .WithAll<Structure.StructureMainTag>()
+                .WithAll<Structure.MainTag>()
                 .WithReadOnly(linkedGroups)
                 //.WithReadOnly(excludes)
                 .WithReadOnly(parts)
@@ -76,7 +76,7 @@ namespace Abarabone.Draw
 
                         if (isNearModel & !isNearComponent)
                         {
-                            changeToNear(entityInQueryIndex, cmd, children, parts);
+                            changeToNear(entityInQueryIndex, entity, cmd, children, parts);
                         }
 
 
@@ -85,7 +85,7 @@ namespace Abarabone.Draw
 
                         if (isFarModel & !isFarComponent)
                         {
-                            changeToFar(entityInQueryIndex, cmd, children, parts);
+                            changeToFar(entityInQueryIndex, entity, cmd, children, parts);
                         }
 
                     }
@@ -101,12 +101,14 @@ namespace Abarabone.Draw
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void changeToNear
             (
-                int uniqueIndex,
+                int uniqueIndex, Entity entity,
                 EntityCommandBuffer.ParallelWriter cmd,
                 DynamicBuffer<LinkedEntityGroup> children,
                 ComponentDataFromEntity<StructurePart.PartData> partData
             )
         {
+
+            //cmd.AddComponent<Structure.ShowNearTag>(uniqueIndex, entity);
 
             cmd.AddComponent<Disabled>(uniqueIndex, children[2].Value);
 
@@ -125,12 +127,14 @@ namespace Abarabone.Draw
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void changeToFar
             (
-                int uniqueIndex,
+                int uniqueIndex, Entity entity,
                 EntityCommandBuffer.ParallelWriter cmd,
                 DynamicBuffer<LinkedEntityGroup> children,
                 ComponentDataFromEntity<StructurePart.PartData> partData
             )
         {
+
+            //cmd.RemoveComponent<Structure.ShowNearTag>(uniqueIndex, entity);
 
             cmd.RemoveComponent<Disabled>(uniqueIndex, children[2].Value);
 
