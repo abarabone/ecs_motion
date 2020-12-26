@@ -50,6 +50,8 @@ namespace Abarabone.Model
                 .WithReadOnly(rots)
                 .WithReadOnly(masses)
                 .WithNativeDisableParallelForRestriction(velocities)
+                .WithNativeDisableContainerSafetyRestriction(poss)
+                .WithNativeDisableContainerSafetyRestriction(rots)
                 .ForEach(
                     (
                         Entity entity,

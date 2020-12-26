@@ -12,7 +12,6 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Physics;
 
-
 namespace Abarabone.Model
 {
 
@@ -50,6 +49,8 @@ namespace Abarabone.Model
                 .WithReadOnly(rots)
                 .WithReadOnly(masses)
                 .WithNativeDisableParallelForRestriction(velocities)
+                .WithNativeDisableContainerSafetyRestriction(poss)
+                .WithNativeDisableContainerSafetyRestriction(rots)
                 .ForEach(
                     (
                         Entity entity,
