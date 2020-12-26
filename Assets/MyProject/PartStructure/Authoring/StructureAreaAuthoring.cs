@@ -24,7 +24,7 @@ namespace Abarabone.Structure.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Structure.Authoring;
 
-    public class StructureAreaAuthoring : MonoBehaviour, IStructureGroupAuthoring, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
+    public class StructureAreaAuthoring : MonoBehaviour, IStructureGroupAuthoring, IConvertGameObjectToEntity
     {
 
         public Material MaterialToDraw;
@@ -33,25 +33,24 @@ namespace Abarabone.Structure.Authoring
 
 
 
-        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        {
-            var structurePrefabs = this.GetComponentsInChildren<StructureModelAuthoring>()
-                .Select( x => x.MasterPrefab )
-                .Distinct()
-                .ToArray();
+        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        //{
+        //    var qStructurePrefabsInAlias = this.GetComponentsInChildren<StructureBuildingModelAliasAuthoring>()
+        //        .Select(x => x.StructureModelPrefab);
 
-            var structureModelPrefabs = structurePrefabs
-                .Select(x => x.GetComponent<StructureModelAuthoring>())
-                .ToArray();
-            this.objectsAndMeshes = createMeshes(structureModelPrefabs);
+        //    var qStructurePrefabs = this.GetComponentsInChildren<StructureBuildingModelAuthoring>()
+        //        .Concat(qStructurePrefabsInAlias)
+        //        .Select(x => x.MasterPrefab?.gameObject)
+        //        .Where(x => x.As() != null)
+        //        .Distinct();
 
-            referencedPrefabs.AddRange(structurePrefabs);
-        }
+        //    referencedPrefabs.AddRange(qStructurePrefabs);
+        //}
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            addToMeshDictionary_(this.objectsAndMeshes);
+            //addToMeshDictionary_(this.objectsAndMeshes);
 
             return;
 
@@ -66,7 +65,7 @@ namespace Abarabone.Structure.Authoring
             }
         }
 
-        (GameObject, Mesh)[] createMeshes(StructureModelAuthoring[] structureModelPrefabs)
+        (GameObject, Mesh)[] createMeshes(StructureBuildingModelAuthoring[] structureModelPrefabs)
         {
 
             var qNear =

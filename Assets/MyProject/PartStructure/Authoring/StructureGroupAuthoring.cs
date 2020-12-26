@@ -31,7 +31,7 @@ namespace Abarabone.Structure.Authoring
         //public bool IsPackTexture = true;
 
 
-        public StructureModelAuthoring[] StructureModelPrefabs;
+        public StructureBuildingModelAuthoring[] StructureModelPrefabs;
 
         (GameObject, Mesh)[] objectsAndMeshes;
         //GameObject[] partMasterPrefabs;
@@ -65,7 +65,7 @@ namespace Abarabone.Structure.Authoring
             }
         }
 
-        (GameObject, Mesh)[] createMeshes(StructureModelAuthoring[] structureModelPrefabs)
+        (GameObject, Mesh)[] createMeshes(StructureBuildingModelAuthoring[] structureModelPrefabs)
         {
 
             var qNear =

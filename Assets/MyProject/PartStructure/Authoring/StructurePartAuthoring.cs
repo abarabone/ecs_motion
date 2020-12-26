@@ -50,7 +50,7 @@ namespace Abarabone.Structure.Authoring
 
             var topAuth = this.gameObject
                 .Ancestors()
-                .Select(go => go.GetComponent<StructureModelAuthoring>())
+                .Select(go => go.GetComponent<StructureBuildingModelAuthoring>())
                 .First(x => x != null);
             var top = topAuth.gameObject;
             var main = topAuth.FarMeshObject.objectTop;

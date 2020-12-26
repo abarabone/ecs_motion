@@ -9,7 +9,7 @@ namespace Abarabone.Structure.Authoring
     /// すべてのパーツに、マスタープレハブへのリンクをセットする。
     /// 本当は実行時に取得できればいいんだが、プレイヤーでは取得できないし、そもそもプレハブは全部展開される。
     /// </summary>
-    [CustomEditor(typeof(StructureModelAuthoring))]
+    [CustomEditor(typeof(StructureBuildingModelAuthoring))]
     public class StructureModelEditor : Editor
     {
         public override void OnInspectorGUI()
@@ -23,7 +23,7 @@ namespace Abarabone.Structure.Authoring
             if (GUILayout.Button("set master prefab link per part"))
             {
                 var parts = this.targets
-                    .OfType<StructureModelAuthoring>()
+                    .OfType<StructureBuildingModelAuthoring>()
                     .SelectMany(st => st.GetComponentsInChildren<StructurePartAuthoring>())
                     .Select(pt => (pt, PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject)));
                 foreach ( var (pt, masterPrefab) in parts )
@@ -35,11 +35,12 @@ namespace Abarabone.Structure.Authoring
                 }
 
                 var structures = this.targets
-                    .OfType<StructureModelAuthoring>()
-                    .Select(st => (st, PrefabUtility.GetCorrespondingObjectFromOriginalSource(st.gameObject)));
+                    .OfType<StructureBuildingModelAuthoring>()
+                    .Select(st => (st, PrefabUtility.GetCorrespondingObjectFromOriginalSource(st.gameObject)))
+                    .Select(x => (x.st, x.Item2.GetComponent<StructureBuildingModelAuthoring>()));
                 foreach (var (st, masterPrefab) in structures)
                 {
-                    st.MasterPrefab = masterPrefab ?? st.gameObject;
+                    st.MasterPrefab = masterPrefab ?? st;
                     Debug.Log($"{st.name} <- {st.MasterPrefab.name}");
 
                     EditorUtility.SetDirty(st);
