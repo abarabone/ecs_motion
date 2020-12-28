@@ -37,7 +37,7 @@ namespace Abarabone.Structure.Authoring
                 var structures = this.targets
                     .OfType<StructureBuildingModelAuthoring>()
                     .Select(st => (st, PrefabUtility.GetCorrespondingObjectFromOriginalSource(st.gameObject)))
-                    .Select(x => (x.st, x.Item2.GetComponent<StructureBuildingModelAuthoring>()));
+                    .Select(x => (x.st, x.Item2?.GetComponent<StructureBuildingModelAuthoring>()));
                 foreach (var (st, masterPrefab) in structures)
                 {
                     st.MasterPrefab = masterPrefab ?? st;

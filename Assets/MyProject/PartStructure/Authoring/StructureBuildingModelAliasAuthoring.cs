@@ -38,7 +38,8 @@ namespace Abarabone.Structure.Authoring
             var prefab = this.StructureModelPrefab?.MasterPrefab;
             if (prefab == null) return;
 
-            conversionSystem.CreateStructureEntities(prefab);
+            Debug.Log(name);
+            conversionSystem.CreateStructureEntities(this.StructureModelPrefab);// prefab);
         }
     }
 }

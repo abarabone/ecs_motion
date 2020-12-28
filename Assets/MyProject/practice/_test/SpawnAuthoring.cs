@@ -22,14 +22,14 @@ public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
     public float3 span;
 
 
-    void IDeclareReferencedPrefabs.DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
+    public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
     {
 
         referencedPrefabs.Add( this.prefab.gameObject );
 
     }
 
-    void IConvertGameObjectToEntity.Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
+    public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
     {
 
         var prefab_ent = conversionSystem.GetPrimaryEntity( this.prefab );
