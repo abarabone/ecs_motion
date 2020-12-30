@@ -24,7 +24,7 @@ namespace Abarabone.Structure.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Structure.Authoring;
 
-    public class StructureAreaAuthoring : MonoBehaviour, IStructureGroupAuthoring, IConvertGameObjectToEntity
+    public class StructureAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs//, IStructureGroupAuthoring
     {
 
         public Material MaterialToDraw;

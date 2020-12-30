@@ -27,19 +27,37 @@ namespace Abarabone.Structure.Authoring
     using System.CodeDom;
 
     public class StructureBuildingModelAliasAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs//
     {
 
         public StructureBuildingModelAuthoring StructureModelPrefab;
 
 
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            var prefab = this.StructureModelPrefab?.MasterPrefab;
+            var prefab = this.StructureModelPrefab;//?.MasterPrefab;
             if (prefab == null) return;
 
-            Debug.Log(name);
-            conversionSystem.CreateStructureEntities(this.StructureModelPrefab);// prefab);
+            Debug.Log("prefab : " + prefab.name);
+            referencedPrefabs.Add(prefab.gameObject);
         }
+
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            var prefab = this.StructureModelPrefab;//?.MasterPrefab;
+            if (prefab == null) return;
+
+            Debug.Log("instantiate : " + prefab.name);
+            //conversionSystem.CreateStructureEntities(prefab);
+
+            var prefabent = conversionSystem.GetPrimaryEntity(prefab);
+            //dstManager.Instantiate(prefabent);
+            ////dstManager
+
+            //dstManager.DestroyEntity(entity);
+
+            dstManager.World.GetExistingSystem<InitializationSystemGroup>().PostUpdateCommands.Instantiate(prefabent);
+        }
+
     }
 }

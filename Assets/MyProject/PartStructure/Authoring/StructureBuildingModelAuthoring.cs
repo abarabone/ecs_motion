@@ -49,10 +49,12 @@ namespace Abarabone.Structure.Authoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            var prefab = this.MasterPrefab;
-            if (prefab == null) return;
+            conversionSystem.CreateStructureEntities(this);
+            
+            //var prefab = this.MasterPrefab;
+            //if (prefab == null) return;
 
-            conversionSystem.CreateStructureEntities(prefab);
+            //conversionSystem.CreateStructureEntities(prefab);
         }
 
 
