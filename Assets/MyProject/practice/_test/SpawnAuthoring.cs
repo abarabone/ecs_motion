@@ -52,6 +52,7 @@ public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 public struct SpawnData : IComponentData
 {
     public float3 pos;
+    public quaternion rot;
     public float3 span;
     public Entity ent;
     public int3 length;
@@ -90,10 +91,11 @@ public class SpawnSystem : SystemBase
                     var l = spawn.length;
                     var s = spawn.span;
 
-                    cmd.AddComponent(entityInQueryIndex, ent,
+                    cmd.SetComponent(entityInQueryIndex, ent,
                         new ObjectInitializeData
                         {
-                            pos = spawn.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z)
+                            pos = spawn.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z),
+                            rot = math.any(spawn.rot.value) ? spawn.rot : quaternion.identity,
                         }
                     );
 
@@ -114,6 +116,7 @@ public class SpawnSystem : SystemBase
 public struct ObjectInitializeData : IComponentData
 {
     public float3 pos;
+    public quaternion rot;
 }
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
@@ -138,11 +141,13 @@ public class ObjectInitializeSystem : SystemBase
         this.Entities
             //.WithoutBurst()
             .WithBurst()
+            .WithNone<ObjectBinder.MainEntityLinkData>()
             .ForEach(
-                (Entity ent, int entityInQueryIndex, ref Translation pos, in ObjectInitializeData init) =>
+                (Entity ent, int entityInQueryIndex, ref Translation pos, ref Rotation rot, in ObjectInitializeData init) =>
                 {
 
                     pos.Value = init.pos;
+                    rot.Value = init.rot;
 
                     cmd.RemoveComponent<ObjectInitializeData>(entityInQueryIndex, ent);
 
@@ -154,18 +159,22 @@ public class ObjectInitializeSystem : SystemBase
         //var cmd2 = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
 
         var translations = this.GetComponentDataFromEntity<Translation>();
+        var rotations = this.GetComponentDataFromEntity<Rotation>();
 
         this.Entities
             //.WithoutBurst()
             .WithBurst()
             .WithNativeDisableParallelForRestriction(translations)
+            .WithNativeDisableParallelForRestriction(rotations)
             .ForEach(
                 (Entity ent, int entityInQueryIndex, in ObjectInitializeData init, in ObjectBinder.MainEntityLinkData link) =>
                 {
 
                     var pos = new Translation { Value = init.pos };
+                    var rot = new Rotation { Value = init.rot };
 
                     translations[link.MainEntity] = pos;
+                    rotations[link.MainEntity] = rot;
 
                     cmd.RemoveComponent<ObjectInitializeData>(entityInQueryIndex, ent);
 

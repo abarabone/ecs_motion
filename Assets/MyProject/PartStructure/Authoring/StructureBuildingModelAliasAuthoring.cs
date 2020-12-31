@@ -52,11 +52,18 @@ namespace Abarabone.Structure.Authoring
 
             var prefabent = conversionSystem.GetPrimaryEntity(prefab);
             //dstManager.Instantiate(prefabent);
-            ////dstManager
 
-            //dstManager.DestroyEntity(entity);
+            dstManager.DestroyEntity(entity);
 
-            dstManager.World.GetExistingSystem<InitializationSystemGroup>().PostUpdateCommands.Instantiate(prefabent);
+            var cmd = dstManager.World.GetExistingSystem<InitializationSystemGroup>().PostUpdateCommands;
+            var instanceent = cmd.Instantiate(prefabent);
+            cmd.AddComponent(instanceent,
+                new ObjectInitializeData
+                {
+                    pos = this.transform.position,
+                    rot = this.transform.rotation,
+                }
+            );
         }
 
     }
