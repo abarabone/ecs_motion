@@ -63,17 +63,23 @@ namespace Abarabone.Structure.Authoring
             var top = this.gameObject;
             var far = this.FarMeshObject.objectTop;
 
-            var chilren = far
+            var children = far
                 .DescendantsAndSelf()
                 .Where(child => child.GetComponent<MeshFilter>() != null)
                 .ToArray();
 
-            var isFarSingle = chilren.Length == 1 && isSameTransform_(chilren.First(), far);
+            var isFarSingle = children.Length == 1 && isSameTransform_(children.First(), far);
 
-            var f = !isFarSingle ? MeshCombiner.BuildNormalMeshElements(chilren, top.transform) : null;//far.transform) : null;//
-            var mesh = isFarSingle ? chilren.First().GetComponent<MeshFilter>().sharedMesh : null;
+            var f = !isFarSingle
+                ? MeshCombiner.BuildNormalMeshElements(children, top.transform)
+                : null;
+                //far.transform) : null;//
 
-            Debug.Log($"far {far.name} {chilren.Length} {isFarSingle}");
+            var mesh = isFarSingle
+                ? children.First().GetComponent<MeshFilter>().sharedMesh
+                : null;
+
+            Debug.Log($"far {far.name} {children.Length} {isFarSingle}");
             return (far, f, mesh);
 
 

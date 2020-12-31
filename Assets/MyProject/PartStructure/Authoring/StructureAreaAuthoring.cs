@@ -24,33 +24,26 @@ namespace Abarabone.Structure.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Structure.Authoring;
 
-    public class StructureAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs//, IStructureGroupAuthoring
+    public class StructureAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IStructureGroupAuthoring
     {
 
         public Material MaterialToDraw;
 
-        (GameObject, Mesh)[] objectsAndMeshes;
-
-
-
-        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        //{
-        //    var qStructurePrefabsInAlias = this.GetComponentsInChildren<StructureBuildingModelAliasAuthoring>()
-        //        .Select(x => x.StructureModelPrefab);
-
-        //    var qStructurePrefabs = this.GetComponentsInChildren<StructureBuildingModelAuthoring>()
-        //        .Concat(qStructurePrefabsInAlias)
-        //        .Select(x => x.MasterPrefab?.gameObject)
-        //        .Where(x => x.As() != null)
-        //        .Distinct();
-
-        //    referencedPrefabs.AddRange(qStructurePrefabs);
-        //}
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            //addToMeshDictionary_(this.objectsAndMeshes);
+            var modelsFromDirect = this.GetComponentsInChildren<StructureBuildingModelAuthoring>();
+            var qModelFromAlias = this.GetComponentsInChildren<StructureBuildingModelAliasAuthoring>()
+                .Select(x => x.StructureModelPrefab);
+
+            var models = modelsFromDirect
+                .Concat(qModelFromAlias)
+                .ToArray();
+            
+            var objectsAndMeshes = createMeshes(models);
+
+            addToMeshDictionary_(objectsAndMeshes);
 
             return;
 
@@ -68,45 +61,33 @@ namespace Abarabone.Structure.Authoring
         (GameObject, Mesh)[] createMeshes(StructureBuildingModelAuthoring[] structureModelPrefabs)
         {
 
-            var qNear =
-                from st in structureModelPrefabs.Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
-                select st.GetNearMeshFunc()
-                ;
             var qFar =
-                from st in structureModelPrefabs.Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
+                from st in structureModelPrefabs
+                    .Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
                 select st.GetFarMeshAndFunc()
                 ;
-            var qPartAll =
-                from st in structureModelPrefabs
-                from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
-                select pt
-                ;
-            var qPartDistinct =
-                from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
-                select pt.GetPartsMeshesAndFuncs()
-                ;
 
+            var allMeshFuncs = qFar.ToArray();
 
-            var allMeshFuncs = qNear.Concat(qFar).Concat(qPartDistinct).ToArray();
-
-            var qGoAndTask = allMeshFuncs
-                .Where(x => x.f != null)
-                .Select(x => (x.go, t: Task.Run(x.f)));
-
-            var qGoAndMesh = allMeshFuncs
+            var qObjectAndMesh = allMeshFuncs
                 .Where(x => x.mesh != null)
                 .Select(x => (x.go, x.mesh));
 
-            var qGoAndMeshFromTask = qGoAndTask
+            var qObjectAndTask = allMeshFuncs
+                .Where(x => x.f != null)
+                .Select(x => (x.go, t: Task.Run(x.f)));
+            var qObjectAndMeshFromTask = qObjectAndTask
                 .Select(x => x.t)
                 .WhenAll()
                 .Result
                 .Select(x => x.CreateMesh())
-                .Zip(qGoAndTask, (x, y) => (y.go, mesh: x));
+                .Zip(qObjectAndTask, (x, y) => (y.go, mesh: x));
 
-
-            return qGoAndMesh.Concat(qGoAndMeshFromTask)
+            var farObjectsAndMeshes = qObjectAndMesh.Concat(qObjectAndMeshFromTask)
                 .ToArray();
+
+
+
         }
 
 

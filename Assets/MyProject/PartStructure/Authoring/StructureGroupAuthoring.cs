@@ -69,11 +69,13 @@ namespace Abarabone.Structure.Authoring
         {
 
             var qNear =
-                from st in structureModelPrefabs.Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
+                from st in structureModelPrefabs
+                    .Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
                 select st.GetNearMeshFunc()
                 ;
             var qFar =
-                from st in structureModelPrefabs.Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
+                from st in structureModelPrefabs
+                    .Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
                 select st.GetFarMeshAndFunc()
                 ;
             var qPartAll =
@@ -87,25 +89,27 @@ namespace Abarabone.Structure.Authoring
                 ;
 
 
-            var allMeshFuncs = qNear.Concat(qFar).Concat(qPartDistinct).ToArray();
+            var allMeshFuncs = qNear
+                .Concat(qFar)
+                .Concat(qPartDistinct)
+                .ToArray();
 
-            var qGoAndTask = allMeshFuncs
-                .Where(x => x.f != null)
-                .Select(x => (x.go, t: Task.Run(x.f)));
-
-            var qGoAndMesh = allMeshFuncs
+            var qObjectAndMesh = allMeshFuncs
                 .Where(x => x.mesh != null)
                 .Select(x => (x.go, x.mesh));
 
-            var qGoAndMeshFromTask = qGoAndTask
+            var qObjectAndTask = allMeshFuncs
+                .Where(x => x.f != null)
+                .Select(x => (x.go, t: Task.Run(x.f)));
+            var qObjectAndMeshFromTask = qObjectAndTask
                 .Select(x => x.t)
                 .WhenAll()
                 .Result
                 .Select(x => x.CreateMesh())
-                .Zip(qGoAndTask, (x, y) => (y.go, mesh: x));
+                .Zip(qObjectAndTask, (x, y) => (y.go, mesh: x));
 
 
-            return qGoAndMesh.Concat(qGoAndMeshFromTask)
+            return qObjectAndMesh.Concat(qObjectAndMeshFromTask)
                 .ToArray();
         }
 
