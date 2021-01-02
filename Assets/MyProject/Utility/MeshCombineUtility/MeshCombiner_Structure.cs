@@ -22,28 +22,28 @@ namespace Abarabone.Geometry//.Editor
 		/// <summary>
 		/// Mesh 要素を結合するデリゲートを返す。Structure オブジェクト用。
 		/// </summary>
-		static public Func<MeshCombinerElements> BuildStructureWithPalletMeshElements
-			( IEnumerable<StructurePartAuthoring> parts, Transform tfBase )
-		{
-			var gameObjects = from part in parts select part.gameObject;
-			var mmts = FromObject.QueryMeshMatsTransform_IfHaving( gameObjects ).ToArray();
+		//static public Func<MeshCombinerElements> BuildStructureMeshElements
+		//	( IEnumerable<StructurePartAuthoring> parts, Transform tfBase )
+		//{
+		//	var gameObjects = from part in parts select part.gameObject;
+		//	var mmts = FromObject.QueryMeshMatsTransform_IfHaving( gameObjects ).ToArray();
 
-			return BuildStructureWithPalletMeshElements( mmts, tfBase );
-		}
+		//	return BuildStructureMeshElements( mmts, tfBase );
+		//}
 
 
-		static public Func<MeshCombinerElements> BuildStructureWithPalletMeshElements
+		static public Func<MeshCombinerElements> BuildStructureMeshElements
 			(IEnumerable<GameObject> children, Transform tfBase)
 		{
 			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(children).ToArray();
 
-			return BuildStructureWithPalletMeshElements(mmts, tfBase);
+			return BuildStructureMeshElements(mmts, tfBase);
 		}
 
 
 
 
-		static public Func<MeshCombinerElements> BuildStructureWithPalletMeshElements
+		static public Func<MeshCombinerElements> BuildStructureMeshElements
 			( (Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase )
 		{
 

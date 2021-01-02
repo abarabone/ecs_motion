@@ -9,7 +9,7 @@ using Unity.Mathematics;
 
 using Abarabone.Model;
 using Abarabone.Model.Authoring;
-using Microsoft.CSharp.RuntimeBinder;
+//using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System;
 
@@ -91,7 +91,7 @@ public class SpawnSystem : SystemBase
                     var l = spawn.length;
                     var s = spawn.span;
 
-                    cmd.SetComponent(entityInQueryIndex, ent,
+                    cmd.AddComponent(entityInQueryIndex, ent,
                         new ObjectInitializeData
                         {
                             pos = spawn.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z),
@@ -156,7 +156,7 @@ public class ObjectInitializeSystem : SystemBase
             .ScheduleParallel();
 
 
-        //var cmd2 = this.cmdSystem.CreateCommandBuffer().ToConcurrent();
+        //var cmd2 = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
         var translations = this.GetComponentDataFromEntity<Translation>();
         var rotations = this.GetComponentDataFromEntity<Rotation>();

@@ -110,8 +110,8 @@ Shader "Custom/SkinnedMesh_1bone_nolit_cs"
 				float4	lvt = v.vertex;
 				float4	rvt = rot( lvt, wrot );
 				float4	tvt = rvt + wpos;
-				float4	wvt = mul(UNITY_MATRIX_VP, float4(tvt.xyz, 1.0f));
-				//float4	wvt = UnityObjectToClipPos(tvt);
+				//float4	wvt = mul(UNITY_MATRIX_VP, float4(tvt.xyz, 1.0f));
+				float4	wvt = UnityObjectToClipPos(tvt.xyz);
 
 				o.vertex = wvt;
 				o.uv = v.uv;

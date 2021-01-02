@@ -35,7 +35,8 @@ namespace Abarabone.Structure.Authoring
 
             var modelsFromDirect = this.GetComponentsInChildren<StructureBuildingModelAuthoring>();
             var qModelFromAlias = this.GetComponentsInChildren<StructureBuildingModelAliasAuthoring>()
-                .Select(x => x.StructureModelPrefab);
+                .Select(x => x.StructureModelPrefab)
+                .Distinct();
 
             var models = modelsFromDirect
                 .Concat(qModelFromAlias)
@@ -67,13 +68,60 @@ namespace Abarabone.Structure.Authoring
                 select st.GetFarMeshAndFunc()
                 ;
 
-            var allMeshFuncs = qFar.ToArray();
+            var farObjectsAndMeshes = qFar.QueryObjectAndMesh()
+                .ToArray();
 
-            var qObjectAndMesh = allMeshFuncs
+            var qFarObject = farObjectsAndMeshes
+                .Select(x => x.go);
+            var farMeshFunc = MeshCombiner.BuildStructureMeshElements(qFarObject, this.transform);
+
+            var fars = (this.gameObject, farMeshFunc, null as Mesh);
+
+
+            var qNear =
+                from st in structureModelPrefabs
+                    .Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
+                select st.GetNearMeshFunc()
+                ;
+            var qPartAll =
+                from st in structureModelPrefabs
+                from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
+                select pt
+                ;
+            var qPartDistinct =
+                from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
+                select pt.GetPartsMeshesAndFuncs()
+                ;
+
+            var qAllMeshFuncs = qNear
+                .Concat(qPartDistinct)
+                .Append(fars);
+            
+            return qAllMeshFuncs.QueryObjectAndMesh()
+                .ToArray();
+            
+        }
+
+
+
+
+    }
+
+
+
+    static class StructureMeshCreateUtility
+    {
+
+        static public IEnumerable<(GameObject go, Mesh mesh)> QueryObjectAndMesh
+            (this IEnumerable<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> qObject_And_MeshOrFunc)
+        {
+            var objects_And_meshesOrFuncs = qObject_And_MeshOrFunc.ToArray();
+
+            var qObjectAndMesh = objects_And_meshesOrFuncs
                 .Where(x => x.mesh != null)
                 .Select(x => (x.go, x.mesh));
 
-            var qObjectAndTask = allMeshFuncs
+            var qObjectAndTask = objects_And_meshesOrFuncs
                 .Where(x => x.f != null)
                 .Select(x => (x.go, t: Task.Run(x.f)));
             var qObjectAndMeshFromTask = qObjectAndTask
@@ -83,17 +131,8 @@ namespace Abarabone.Structure.Authoring
                 .Select(x => x.CreateMesh())
                 .Zip(qObjectAndTask, (x, y) => (y.go, mesh: x));
 
-            var farObjectsAndMeshes = qObjectAndMesh.Concat(qObjectAndMeshFromTask)
-                .ToArray();
-
-
-
+            return qObjectAndMesh.Concat(qObjectAndMeshFromTask);
         }
-
-
-
-
     }
-
 
 }

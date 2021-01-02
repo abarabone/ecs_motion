@@ -9,7 +9,7 @@ using Unity.Mathematics;
 
 using Abarabone.Model;
 using Abarabone.Model.Authoring;
-using Microsoft.CSharp.RuntimeBinder;
+//using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 
 public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs

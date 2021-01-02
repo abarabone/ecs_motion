@@ -29,7 +29,7 @@ namespace Abarabone.Character
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
-    public class PlayerMoveDirectionSystem : JobComponentSystem
+    public class PlayerMoveDirectionSystem : SystemBase//JobComponentSystem
     {
 
 
@@ -39,7 +39,8 @@ namespace Abarabone.Character
         quaternion hrot = quaternion.identity;
         float vangle = 0.0f;
 
-        protected override void OnCreate()
+        // OnCreate() だと、ビルド版で失敗した。エディタ上との初期化タイミングの違いだろうか？
+        protected override void OnStartRunning()
         {
 
             setControllerFunc_();
@@ -49,6 +50,7 @@ namespace Abarabone.Character
 
             void setControllerFunc_()
             {
+                Debug.Log("Gamepad.current " + Gamepad.current);
                 if( Gamepad.current != null )
                 {
                     this.getControlUnitFunc = () =>
@@ -86,8 +88,10 @@ namespace Abarabone.Character
                     };
                     return;
                 }
-                
-                if( Mouse.current != null && Keyboard.current != null )
+
+                Debug.Log("Mouse.current " + Mouse.current);
+                Debug.Log("Keyboard.current " + Keyboard.current);
+                if ( Mouse.current != null && Keyboard.current != null )
                 {
                     this.getControlUnitFunc = () =>
                     {
@@ -132,18 +136,29 @@ namespace Abarabone.Character
         }
 
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        //protected override JobHandle OnUpdate( JobHandle inputDeps )
+        protected override void OnUpdate()
         {
 
             var acts = this.getControlUnitFunc();
 
-            inputDeps = new ContDevJob
-            {
-                Acts = acts,
-            }
-            .Schedule( this, inputDeps );
+            this.Entities
+                .WithBurst()
+                .ForEach(
+                    (ref MoveHandlingData handler) =>
+                    {
+                        handler.ControlAction = acts;
+                    }
+                )
+                .ScheduleParallel();
+            
+            //inputDeps = new ContDevJob
+            //{
+            //    Acts = acts,
+            //}
+            //.Schedule( this, inputDeps );
 
-            return inputDeps;
+            //return inputDeps;
         }
 
 

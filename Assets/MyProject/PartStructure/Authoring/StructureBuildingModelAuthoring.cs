@@ -94,7 +94,7 @@ namespace Abarabone.Structure.Authoring
 
             var objects = near.DescendantsAndSelf();
 
-            var f = MeshCombiner.BuildStructureWithPalletMeshElements(objects, top.transform);//near.transform);//
+            var f = MeshCombiner.BuildStructureMeshElements(objects, top.transform);//near.transform);//
 
             Debug.Log($"near {near.name}");
             return (near, f, null);

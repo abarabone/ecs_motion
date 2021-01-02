@@ -83,3 +83,14 @@ The following packages were 更新済:
   com.unity.ide.rider をバージョン 1.2.1 から 2.0.7 へ
   com.unity.test-framework をバージョン 1.1.14 から 1.1.16 へ
   com.unity.textmeshpro をバージョン 3.0.0-preview.1 から 3.0.1 へ
+
+=== Fri Jan  1 01:44:20 2021
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were 更新済:
+  com.unity.ext.nunit をバージョン 1.0.0 から 1.0.5 へ
+  com.unity.ide.vscode をバージョン 1.2.1 から 1.2.3 へ
+  com.unity.inputsystem をバージョン 1.0.0 から 1.0.1 へ
+  com.unity.test-framework をバージョン 1.1.16 から 1.1.19 へ
