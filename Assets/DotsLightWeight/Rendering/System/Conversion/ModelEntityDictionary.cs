@@ -47,21 +47,26 @@ namespace Abarabone.Model.Authoring
 
     static public class ModelEntityDictionaryExtension
     {
-        static public void AddToModelEntityDictionary
-            ( this GameObjectConversionSystem gcs, GameObject topGameObject, Entity entity ) =>
-            gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.Add(topGameObject, entity);
 
-        static public Entity GetFromModelEntityDictionary
-            (this GameObjectConversionSystem gcs, GameObject topGameObject)
+        static public void AddToModelEntityDictionary(this GameObjectConversionSystem gcs, GameObject topGameObject, Entity entity) =>
+            gcs.GetSingleton<ModelEntityDictionary.Data>()
+                .ModelDictionary
+                .Add(topGameObject, entity);
+
+        static public Entity GetFromModelEntityDictionary(this GameObjectConversionSystem gcs, GameObject topGameObject)
         {
-            gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.TryGetValue(topGameObject, out var entity);
+            gcs.GetSingleton<ModelEntityDictionary.Data>()
+                .ModelDictionary
+                .TryGetValue(topGameObject, out var entity);
 
             return entity;
         }
 
-        static public bool IsExistsInModelEntityDictionary
-            (this GameObjectConversionSystem gcs, GameObject topGameObject) =>
-            gcs.GetSingleton<ModelEntityDictionary.Data>().ModelDictionary.ContainsKey(topGameObject);
+        static public bool IsExistsInModelEntityDictionary(this GameObjectConversionSystem gcs, GameObject topGameObject) =>
+            gcs.GetSingleton<ModelEntityDictionary.Data>()
+                .ModelDictionary
+                .ContainsKey(topGameObject);
+
     }
 
 }

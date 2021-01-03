@@ -37,6 +37,11 @@ namespace Abarabone.Draw
             public SimpleNativeBuffer<float4, TempJob> Transforms;
             //public NativeArray<float4> aaa;
         }
+
+        public struct TransformBufferInfoData : IComponentData
+        {
+            public int VectorLength;
+        }
     }
 
 }
