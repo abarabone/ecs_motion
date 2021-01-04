@@ -17,7 +17,7 @@ namespace Abarabone.Geometry
 		/// パックしたテクスチャと、ＵＶを差し替えた新しいメッシュを返す。
 		/// ただしテクスチャが１つしかない場合は、元のテクスチャとメッシュを返す。
 		/// </summary>
-		public static (Texture2D atlas, Dictionary<Mesh, Mesh> newmeshes) PackTextureAndPairingMeshes(this IEnumerable<GameObject> targetObjects)
+		public static (Texture2D atlas, Dictionary<Mesh, Mesh> oldToNewMesh) PackTextureAndPairingMeshes(this IEnumerable<GameObject> targetObjects)
 		{
 			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(targetObjects).ToArray();
 			var qSrcMesh = mmts.Select(x => x.mesh);

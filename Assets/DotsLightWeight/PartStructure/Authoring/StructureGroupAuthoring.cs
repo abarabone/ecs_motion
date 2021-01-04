@@ -113,7 +113,11 @@ namespace Abarabone.Structure.Authoring
                 .ToArray();
         }
 
-
+        (Texture2D, Dictionary<Mesh, Mesh>[]) convertNearTextureAndMesh
+            (IEnumerable<(GameObject, Mesh)> objectAndMeshPairs, StructureBuildingModelAuthoring[] structureModelPrefabs)
+        {
+            
+        }
 
 
     }
