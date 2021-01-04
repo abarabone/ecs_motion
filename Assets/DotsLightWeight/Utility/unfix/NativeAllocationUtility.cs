@@ -30,7 +30,6 @@ namespace Abarabone.Misc
 	}
 
 
-
 	public static class NativeArrayExtension
 	{
 		

@@ -22,45 +22,31 @@ namespace Abarabone.Draw
     using Abarabone.Misc;
 
 
-    public unsafe struct SimpleNativeBuffer<T> : IDisposable
+    public unsafe struct SimpleNativeTypedBuffer<T, Tallocator> : IDisposable
         where T : unmanaged
+        where Tallocator : IAllocatorLabel, new()
     {
 
         public T* pBuffer { get; private set; }
         public int Length { get; private set; }
-        public Allocator Allocator { get; private set; }
+        public Allocator Allocator => new Tallocator().Label;
 
-        public SimpleNativeBuffer(int length, Allocator allocator = Allocator.Temp)
+        public SimpleNativeTypedBuffer(int length)
         {
             var size = UnsafeUtility.SizeOf<T>();
             var align = UnsafeUtility.AlignOf<T>();
+            var allocator = new Tallocator().Label;
 
             this.pBuffer = (T*)UnsafeUtility.Malloc(size * length, align, allocator);
             this.Length = length;
-            this.Allocator = allocator;
         }
 
         public void Dispose()
         {
-            UnsafeUtility.Free((void*)this.pBuffer, this.Allocator);
+            var allocator = new Tallocator().Label;
+            UnsafeUtility.Free((void*)this.pBuffer, allocator);
         }
 
     }
 
-    public static class SimpleNativeBufferUtility
-    {
-        static public unsafe NativeArray<T> AsNativeArray<T>(ref this SimpleNativeBuffer<T> buffer)
-            where T : unmanaged
-        {
-            var na = NativeArrayUnsafeUtility
-                .ConvertExistingDataToNativeArray<T>(buffer.pBuffer, buffer.Length, Allocator.None);
-
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            NativeArrayUnsafeUtility
-                .SetAtomicSafetyHandle(ref na, AtomicSafetyHandle.GetTempUnsafePtrSliceHandle());
-#endif
-
-            return na;
-        }
-    }
 }

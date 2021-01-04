@@ -58,7 +58,7 @@ namespace Abarabone.Structure.Authoring
         }
 
 
-        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetFarMeshAndFunc()
+        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetFarMeshAndFunc(Dictionary<Mesh, Mesh> oldToNewMesh)
         {
             var top = this.gameObject;
             var far = this.FarMeshObject.objectTop;
@@ -87,7 +87,7 @@ namespace Abarabone.Structure.Authoring
                 (target_.transform.localToWorldMatrix * top_.transform.worldToLocalMatrix).isIdentity;
         }
 
-        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetNearMeshFunc()
+        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetNearMeshFunc(Dictionary<Mesh, Mesh> oldToNewMesh)
         {
             var top = this.gameObject;
             var near = this.NearMeshObject.objectTop;

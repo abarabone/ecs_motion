@@ -36,6 +36,12 @@ namespace Abarabone.Structure.Authoring
         (GameObject, Mesh)[] objectsAndMeshes;
         //GameObject[] partMasterPrefabs;
 
+        struct Packed
+        {
+            public Texture2D atlas;
+            public Dictionary<Mesh, Mesh> oldToNewMesh;
+        }
+
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
@@ -114,9 +120,9 @@ namespace Abarabone.Structure.Authoring
         }
 
         (Texture2D, Dictionary<Mesh, Mesh>[]) convertNearTextureAndMesh
-            (IEnumerable<(GameObject, Mesh)> objectAndMeshPairs, StructureBuildingModelAuthoring[] structureModelPrefabs)
+            (, StructureBuildingModelAuthoring[] structureModelPrefabs)
         {
-            
+
         }
 
 

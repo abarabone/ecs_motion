@@ -40,6 +40,16 @@ namespace Abarabone.Geometry//.Editor
 			return BuildStructureMeshElements(mmts, tfBase);
 		}
 
+		static public Func<MeshCombinerElements> BuildStructureMeshElements
+			(IEnumerable<GameObject> children, Transform tfBase, Dictionary<Mesh, Mesh> oldToNewMesh)
+		{
+			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(children)
+				.Select(x => (oldToNewMesh[x.mesh], x.mats, x.tf))
+				.ToArray();
+
+			return BuildStructureMeshElements(mmts, tfBase);
+		}
+
 
 
 
