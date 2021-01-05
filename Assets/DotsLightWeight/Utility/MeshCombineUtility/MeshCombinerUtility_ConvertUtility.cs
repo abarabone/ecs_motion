@@ -225,7 +225,7 @@ namespace Abarabone.Geometry
 
 			var qPerMesh = (idxsss, qSrcMatHashes, mts, qBaseVtxs)
 				.Zip((x, y, z, w) => (idxss: x, hashes: y, mt: z, baseVtx: w));
-			Debug.Log(materials_PerMesh.First().First().mainTexture.GetHashCode());
+
 			var qSrcMatGroups =
 				from src in qPerMesh
 				from perSub in (src.idxss, src.hashes).Zip((x, y) => (idxs: x, hash: y, src.mt, src.baseVtx))
@@ -242,44 +242,6 @@ namespace Abarabone.Geometry
 
 			return qIdxsPerDstMat.ToArrayRecursive2();
 		}
-
-
-		public static int[][] ToUvArray
-			(
-				IEnumerable<Vector3[]> vertices_PerMesh,
-				IEnumerable<IEnumerable<int[]>> indices_PerSubmeshPerMesh,
-				IEnumerable<Matrix4x4> mtPart_PerMesh,
-				IEnumerable<Material[]> materials_PerMesh,
-				IEnumerable<Material> materialsCombined
-			)
-		{
-			var qDstMatHashes = from mat in materialsCombined select mat.GetHashCode();
-			var qSrcMatHashes = materials_PerMesh.To(PerSubMeshPerMesh.QueryMaterialHash);
-
-			var idxsss = indices_PerSubmeshPerMesh;
-			var mts = mtPart_PerMesh;
-			var qBaseVtxs = PerMesh.QueryBaseVertex(vertices_PerMesh);
-
-			var qPerMesh = (idxsss, qSrcMatHashes, mts, qBaseVtxs)
-				.Zip((x, y, z, w) => (idxss: x, hashes: y, mt: z, baseVtx: w));
-			
-			var qSrcMatGroups =
-				from src in qPerMesh
-				from perSub in (src.idxss, src.hashes).Zip((x, y) => (idxs: x, hash: y, src.mt, src.baseVtx))
-				group perSub by perSub.hash
-				;
-
-			var qIdxsPerDstMat =
-				from dstHash in qDstMatHashes
-				join srcs in qSrcMatGroups on dstHash equals srcs.Key
-				select
-					from src in srcs
-					from idx in src.idxs.ReverseEvery3_IfMinusScale(src.mt)
-					select src.baseVtx + idx;
-
-			return qIdxsPerDstMat.ToArrayRecursive2();
-		}
-
 	}
 
 

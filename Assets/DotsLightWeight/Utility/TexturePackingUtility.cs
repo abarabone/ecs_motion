@@ -35,7 +35,7 @@ namespace Abarabone.Geometry
 		}
 
 		static public Dictionary<Texture2D, Rect> MakeTextureToUvOffsetDict
-			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvOffsets) x)
+			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x)
 		{
 			var uvOffsetDict = x.Zip()
 				.ToDictionary(x => x.src0, x => x.src1);
@@ -43,8 +43,49 @@ namespace Abarabone.Geometry
 			return uvOffsetDict;
 		}
 
+		static public Dictionary<int, Rect> MakeTextureHashToUvOffsetDict
+			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x)
+		{
+			var uvOffsetDict = x.Zip()
+				.ToDictionary(x => x.src0?.GetHashCode() ?? default, x => x.src1);
+
+			return uvOffsetDict;
+		}
+
+		static public (Vector2[][][] uvsss, int[][] texhashess) ToUvTranslateSource
+			(this (IEnumerable<Mesh> meshes, IEnumerable<Material[]> matss) x)
+        {
+			var qSubmeshUv =
+				from mesh in x.meshes
+				select mesh.SubmeshVertices(mesh.uv)
+				// 頂点は若い submesh の順に、隙間なく格納されていると仮定する
+				;
+			var qSubmeshTex =
+				from mats in x.matss
+				select
+					from mat in mats
+					select mat.mainTexture?.GetHashCode() ?? default
+				;
+			return (qSubmeshUv.ToArrayRecursive3(), qSubmeshTex.ToArrayRecursive2());
+		}
 		static public IEnumerable<IEnumerable<Vector2>> QueryTranslatedUv
-			(this IEnumerable<Mesh> meshes, IEnumerable<Material[]> matss, Dictionary<Texture2D, Rect> uvOffsetDict)
+			(this (Vector2[][][] uvsss, int[][] texhashess) uvsrc, Dictionary<int, Rect> texhashToUvRect)
+		{
+			var qMeshUvNew =
+				from obj in uvsrc.Zip()
+				select
+					from x in obj.Zip()
+					let uvs = x.src0
+					let tex = x.src1
+					from uv in uvs
+					select uv.ScaleUv(texhashToUvRect.GetOrDefault(tex, new Rect(0, 0, 1, 1)))
+				;
+
+			return qMeshUvNew;
+		}
+
+		static public IEnumerable<IEnumerable<Vector2>> QueryTranslatedUv
+			(this IEnumerable<Mesh> meshes, IEnumerable<Material[]> matss, Dictionary<Texture2D, Rect> texToUvRect)
 		{
 			var qSubmeshUv =
 				from mesh in meshes
@@ -65,7 +106,7 @@ namespace Abarabone.Geometry
 					let uvs = x.src0
 					let tex = x.src1
 					from uv in uvs
-					select uv.ScaleUv(uvOffsetDict.GetOrDefault(tex, new Rect(0, 0, 1, 1)))
+					select uv.ScaleUv(texToUvRect.GetOrDefault(tex, new Rect(0, 0, 1, 1)))
 				;
 
 			return qMeshUvNew;
@@ -83,6 +124,7 @@ namespace Abarabone.Geometry
 			return qMeshUvTranslated;
 
 
+			// 無駄なゲームオブジェクトを作成しているので、もっとよいメッシュクローン法に変えるべき
 			static Mesh cloneMesh_(Mesh srcmesh, Vector2[] newuv)
 			{
 				var go = new GameObject("dummy for mesh copy");

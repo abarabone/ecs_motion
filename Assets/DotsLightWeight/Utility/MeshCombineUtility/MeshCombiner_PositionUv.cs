@@ -21,12 +21,17 @@ namespace Abarabone.Geometry
 		/// Mesh —v‘f‚ğŒ‹‡‚·‚éƒfƒŠƒQ[ƒg‚ğ•Ô‚·BˆÊ’u‚Æ‚t‚u‚Ì‚İB
 		/// </summary>
 		static public Func<MeshCombinerElements> BuildUnlitMeshElements
-			(IEnumerable<GameObject> gameObjects, Transform tfBase, bool isCombineSubMeshes = true)
+			(this IEnumerable<GameObject> gameObjects,
+			Transform tfBase, bool isCombineSubMeshes = true, Dictionary<int, Rect> texToUvRect = null)
 		{
 			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(gameObjects).ToArray();
 
-			return BuildUnlitMeshElements(mmts, tfBase, isCombineSubMeshes);
+			return texToUvRect == null
+				? BuildUnlitMeshElements(mmts, tfBase, isCombineSubMeshes)
+				: BuildUnlitMeshElements(mmts, tfBase, isCombineSubMeshes, texToUvRect)
+				;
 		}
+
 
 		static public Func<MeshCombinerElements> BuildUnlitMeshElements
 			((Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase, bool isCombineSubMeshes)
@@ -40,6 +45,24 @@ namespace Abarabone.Geometry
 				var me = f();
 
 				me.Uvs = uvss.SelectMany(uvs => uvs).ToArray();
+
+				return me;
+			};
+		}
+
+		static public Func<MeshCombinerElements> BuildUnlitMeshElements
+			((Mesh mesh, Material[] mats, Transform tf)[] mmts,
+			Transform tfBase, bool isCombineSubMeshes, Dictionary<int, Rect> texToUvRect)
+		{
+			var f = BuildBaseMeshElements(mmts, tfBase, isCombineSubMeshes);
+
+			var uvsrc = (mmts.Select(x => x.mesh), mmts.Select(x => x.mats)).ToUvTranslateSource();
+
+			return () =>
+			{
+				var me = f();
+
+				me.Uvs = uvsrc.QueryTranslatedUv(texToUvRect).SelectMany(x => x).ToArray();
 
 				return me;
 			};
