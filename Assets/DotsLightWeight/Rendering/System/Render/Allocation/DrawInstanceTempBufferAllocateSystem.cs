@@ -50,7 +50,7 @@ namespace Abarabone.Draw
 
             inputDeps = this.Job
                 .WithBurst()
-                .WithDeallocateOnJobCompletion( chunks )
+                .WithDisposeOnCompletion( chunks )
                 .WithNativeDisableParallelForRestriction( nativeBuffers )
                 .WithCode(
                     () =>
