@@ -21,7 +21,7 @@ namespace Abarabone.Geometry
 		/// 
 		/// </summary>
 		public static Vector3[] ToVerticesArray
-			(IEnumerable<IEnumerable<Vector3>> verticesPerMeshes, IEnumerable<Matrix4x4> mtObjects, Matrix4x4 mtBaseInv)
+			(this IEnumerable<IEnumerable<Vector3>> verticesPerMeshes, IEnumerable<Matrix4x4> mtObjects, Matrix4x4 mtBaseInv)
 		{
 			var qVertex =
 				from xy in (verticesPerMeshes, mtObjects).Zip((x, y) => (vtxs: x, mt: y))
@@ -179,6 +179,7 @@ namespace Abarabone.Geometry
 		/// 各パーツメッシュの持つインデックスをすべて結合し、ひとつの配列にして返す。
 		/// その際各メッシュの頂点数は、次のインデックスのベースとなる。
 		/// また、マテリアル別のサブメッシュも、ひとつに統合される。
+		/// （頂点情報は、位置情報ではなくベースの個数を計算するために必要となる。）
 		/// </summary>
 		public static int[][] ToIndicesArray
 			(
@@ -192,8 +193,8 @@ namespace Abarabone.Geometry
 			var qBaseVtxs = PerMesh.QueryBaseVertex(vertices_PerMesh);
 
 			var qIndex =
-				from xyz_ in (indices_PerSubmeshPerMesh, mts, qBaseVtxs).Zip()
-				select (idxss: xyz_.x, mt: xyz_.y, baseVtx: xyz_.z) into srcPerMesh
+				from x in (indices_PerSubmeshPerMesh, mts, qBaseVtxs).Zip()
+				select (idxss: x.src0, mt: x.src1, baseVtx: x.src2) into srcPerMesh
 				from idxs in srcPerMesh.idxss
 				from index in IndexUtility.ReverseEvery3_IfMinusScale(idxs, srcPerMesh.mt)
 				select srcPerMesh.baseVtx + index;

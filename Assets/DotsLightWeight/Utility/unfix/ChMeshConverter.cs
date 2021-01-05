@@ -79,8 +79,8 @@ namespace Abarabone.Geometry
         {
             return
                 from x in (tfBones, bindPoses).Zip()
-                let tfBone = x.x
-                let bindPose = x.y
+                let tfBone = x.src0
+                let bindPose = x.src1
                 where !tfBone.name.StartsWith( "_" )
                 select bindPose
                 ;

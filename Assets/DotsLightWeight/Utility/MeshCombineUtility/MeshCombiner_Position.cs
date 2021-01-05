@@ -47,7 +47,7 @@ namespace Abarabone.Geometry
 
 				return new MeshCombinerElements
 				{
-					Vertecies = ConvertUtility.ToVerticesArray(vtxss, mtObjects, mtBaseInv),
+					Vertecies = vtxss.ToVerticesArray(mtObjects, mtBaseInv),
 
 					IndicesPerSubmesh = isCombineSubMeshes
 						? ConvertUtility.ToIndicesArray(vtxss, idxsss, mtObjects)

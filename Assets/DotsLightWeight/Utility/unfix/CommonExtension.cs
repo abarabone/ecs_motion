@@ -29,7 +29,7 @@ namespace Abarabone.Common.Extension
 		{
 			return Enumerable.Zip( src.e1, src.e2, resultSelector );
 		}
-		public static IEnumerable<(T1 x, T2 y)>
+		public static IEnumerable<(T1 src0, T2 src1)>
 			Zip<T1,T2>( in this (IEnumerable<T1> e1, IEnumerable<T2> e2) src )
 		{
 			return Enumerable.Zip(src.e1, src.e2, (x, y)=>(x, y) );
@@ -49,7 +49,7 @@ namespace Abarabone.Common.Extension
 				yield return resultSelector( etor1.Current, etor2.Current, etor3.Current );
 			}
 		}
-		public static IEnumerable<(T1 x,T2 y,T3 z)> Zip<T1,T2,T3>
+		public static IEnumerable<(T1 src0,T2 src1,T3 src2)> Zip<T1,T2,T3>
 			( in this (IEnumerable<T1> e1, IEnumerable<T2> e2, IEnumerable<T3> e3) src )
 		{
 			return src.Zip( (x,y,z)=>(x,y,z) );
@@ -69,7 +69,7 @@ namespace Abarabone.Common.Extension
 				yield return resultSelector( etor1.Current, etor2.Current, etor3.Current, etor4.Current );
 			}
 		}
-		public static IEnumerable<(T1 x,T2 y,T3 z, T4 w)> Zip<T1,T2,T3,T4>
+		public static IEnumerable<(T1 src0,T2 src1,T3 src2, T4 src3)> Zip<T1,T2,T3,T4>
 			( in this (IEnumerable<T1> e1, IEnumerable<T2> e2, IEnumerable<T3> e3, IEnumerable<T4> e4) src )
 		{
 			return src.Zip( (x,y,z,w)=>(x,y,z,w) );
@@ -243,7 +243,7 @@ namespace Abarabone.Common.Extension
         {
             foreach( var x in (entities,components).Zip() )
             {
-                em.SetComponentData( x.x, x.y );
+                em.SetComponentData( x.src0, x.src1 );
             }
         }
         public static void AddComponentData<T>
@@ -252,7 +252,7 @@ namespace Abarabone.Common.Extension
         {
             foreach( var x in (entities, components).Zip() )
             {
-                em.AddComponentData( x.x, x.y );
+                em.AddComponentData( x.src0, x.src1 );
             }
         }
 

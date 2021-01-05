@@ -70,7 +70,7 @@ namespace Abarabone.Draw.Authoring
 
             var meshfuncs = getMeshCombineFuncs();
 
-            foreach(var (lod, f) in (lods_, meshfuncs).Zip().Where(x => x.x != null))
+            foreach(var (lod, f) in (lods_, meshfuncs).Zip().Where(x => x.src0 != null))
             {
                 if (!gcs_.IsExistingInMeshDictionary(lod))
                 {

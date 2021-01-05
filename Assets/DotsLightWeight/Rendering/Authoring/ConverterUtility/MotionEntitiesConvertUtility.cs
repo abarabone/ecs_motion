@@ -281,8 +281,8 @@ namespace Abarabone.CharacterMotion.Authoring
 
                 return
                     from x in (qNext, enabledBoneIds_).Zip()
-                    let next = x.x
-                    let boneid = x.y
+                    let next = x.src0
+                    let boneid = x.src1
                     select new Stream.RelationData
                     {
                         NextStreamEntity = next,
@@ -300,8 +300,8 @@ namespace Abarabone.CharacterMotion.Authoring
 
             var qStreamLink =
                 from x in (poss, rots).Zip()
-                let pos = x.x
-                let rot = x.y
+                let pos = x.src0
+                let rot = x.src1
                 select new Bone.Stream0LinkData
                 {
                     PositionStreamEntity = pos,
