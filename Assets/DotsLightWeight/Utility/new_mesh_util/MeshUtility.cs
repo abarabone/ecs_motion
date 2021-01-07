@@ -11,6 +11,8 @@ using System.Runtime.CompilerServices;
 
 namespace Abarabone.Geometry
 {
+    using Abarabone.Utilities;
+
     static public class MeshInWorkerThreadUtility
     {
 
@@ -25,8 +27,13 @@ namespace Abarabone.Geometry
 
         public struct SubMesh<T> where T : struct
         {
-            public SubMesh(IEnumerable<T> submeshVertexData) => this.VertexData = submeshVertexData;
+            public SubMesh(int i, IEnumerable<T> submeshVertexData)
+            {
+                this.VertexData = submeshVertexData;
+                this.SubMeshIndex = i;
+            }
 
+            public int SubMeshIndex { get; private set; }
             public IEnumerable<T> VertexData { get; private set; }
         }
 
@@ -35,9 +42,10 @@ namespace Abarabone.Geometry
         {
             var vtxs = meshdata.GetVertexData<T>();
 
+            var i = 0;
             foreach (var range in meshdata.getSubmeshVertexRanges_())
             {
-                yield return new SubMesh<T>(getVerticesInSubmesh_());
+                yield return new SubMesh<T>(i++, getVerticesInSubmesh_());
 
                 IEnumerable<T> getVerticesInSubmesh_()
                 {
@@ -50,7 +58,7 @@ namespace Abarabone.Geometry
 		}
 
 		static IEnumerable<(int start, int length)> getSubmeshVertexRanges_(this Mesh.MeshData meshdata) =>
-            from i in Enumerable.Range(0, meshdata.subMeshCount)
+            from i in 0.UpTo(meshdata.subMeshCount)
             let submeshDescriptor = meshdata.GetSubMesh(i)
             select (fst: submeshDescriptor.firstVertex, length: submeshDescriptor.vertexCount)
             ;
@@ -61,9 +69,10 @@ namespace Abarabone.Geometry
         {
             var idxs = meshdata.GetIndexData<T>();
 
+            var i = 0;
             foreach (var range in meshdata.getSubmeshIndexRanges_())
             {
-                yield return new SubMesh<T>(getIndicesInSubmesh_());
+                yield return new SubMesh<T>(i++, getIndicesInSubmesh_());
 
                 IEnumerable<T> getIndicesInSubmesh_()
                 {
@@ -76,11 +85,31 @@ namespace Abarabone.Geometry
         }
 
         static IEnumerable<(int start, int length)> getSubmeshIndexRanges_(this Mesh.MeshData meshdata) =>
-            from i in Enumerable.Range(0, meshdata.subMeshCount)
+            from i in 0.UpTo(meshdata.subMeshCount)
             let submeshDescriptor = meshdata.GetSubMesh(i)
             select (fst: submeshDescriptor.indexStart, length: submeshDescriptor.indexCount)
             ;
 
+        static IEnumerable<IEnumerable<int>> triangle_(IEnumerable<int> indecies_)
+        {
+            using (var e = indecies_.GetEnumerator())
+            {
+                for (; ; )
+                {
+                    yield return tri_();
+
+                    IEnumerable<int> tri_()
+                    {
+                        yield return e.Current;
+                        if (!e.MoveNext()) yield break;
+                        yield return e.Current;
+                        if (!e.MoveNext()) yield break;
+                        yield return e.Current;
+                        if (!e.MoveNext()) yield break;
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>

@@ -88,6 +88,9 @@ namespace Abarabone.Utilities
         //    }
         //    return arr;
         //}
+
+        static public IEnumerable<int> UpTo(this int start, int end) =>
+            Enumerable.Range(start, end);
     }
 
     
