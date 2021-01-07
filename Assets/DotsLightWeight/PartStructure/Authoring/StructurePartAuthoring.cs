@@ -42,7 +42,7 @@ namespace Abarabone.Structure.Authoring
         /// パーツインスタンスエンティティを生成する。モデルは同じパーツで１つ。
         /// 破壊されたときの落下プレハブもインスタンス単位で作成しているが、破壊時に位置を仕込んでいるため、１つでよいのでは？
         /// </summary>
-        public async void Convert
+        public void Convert
             (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
@@ -57,14 +57,15 @@ namespace Abarabone.Structure.Authoring
 
             initPartData_(conversionSystem, this.gameObject, this.PartId);
 
-            createModelEntity_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
+            createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
+            createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
             createDebrisPrefab_(conversionSystem, this.gameObject, this.MasterPrefab);
 
             return;
 
 
 
-            void initPartData_
+            static void initPartData_
                 (GameObjectConversionSystem gcs, GameObject part, int partId)
             {
                 var em = gcs.DstEntityManager;
@@ -88,19 +89,27 @@ namespace Abarabone.Structure.Authoring
             }
 
 
-            void createModelEntity_
+            static void createMeshAndSetToDictionary_
+                (GameObjectConversionSystem gcs, GameObject go, Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshHolder)
+            {
+                if (gcs.IsExistingInMeshDictionary(go)) return;
+
+                var x = meshHolder();
+                var newmesh = x.mesh ?? x.f().CreateMesh();
+
+                Debug.Log($"part model {go.name} - {newmesh.name}");
+
+                gcs.AddToMeshDictionary(go, newmesh);
+            }
+
+
+            static void createModelEntity_IfNotExists_
                 (GameObjectConversionSystem gcs, GameObject masterPrefab, Material shader)
             {
                 if (gcs.IsExistsInModelEntityDictionary(masterPrefab)) return;
 
+                var mesh = gcs.GetFromMeshDictionary(masterPrefab);
                 var mat = new Material(shader);
-                var mesh = conversionSystem.GetFromMeshDictionary(masterPrefab);
-                if(mesh == null)
-                {
-                    var x = this.GetPartsMeshesAndFuncs();
-                    mesh = x.mesh ?? x.f().CreateMesh();
-                    gcs.AddToMeshDictionary(masterPrefab, mesh);
-                }
 
                 const BoneType BoneType = BoneType.TR;// あとでＳもつける
                 const int boneLength = 1;
@@ -108,9 +117,10 @@ namespace Abarabone.Structure.Authoring
                 var modelEntity_ = gcs.CreateDrawModelEntityComponents(masterPrefab, mesh, mat, BoneType, boneLength);
             }
 
-            void createDebrisPrefab_(GameObjectConversionSystem gcs_, GameObject part_, GameObject master_)
+            // 同じプレハブをまとめることはできないだろうか？
+            static void createDebrisPrefab_(GameObjectConversionSystem gcs, GameObject part, GameObject master)
             {
-                var em_ = gcs_.DstEntityManager;
+                var em_ = gcs.DstEntityManager;
 
 
                 var types = em_.CreateArchetype
@@ -147,7 +157,7 @@ namespace Abarabone.Structure.Authoring
                 em_.SetComponentData(prefabEnt,
                     new DrawInstance.ModeLinkData
                     {
-                        DrawModelEntityCurrent = gcs_.GetFromModelEntityDictionary(master_),
+                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(master),
                     }
                 );
                 em_.SetComponentData(prefabEnt,
@@ -171,7 +181,7 @@ namespace Abarabone.Structure.Authoring
                 );
 
 
-                var partEnt = gcs_.GetPrimaryEntity(part_);
+                var partEnt = gcs.GetPrimaryEntity(part);
 
                 em_.AddComponentData(partEnt,
                     new StructurePart.DebrisPrefabData
@@ -181,7 +191,7 @@ namespace Abarabone.Structure.Authoring
                 );
 
 
-                em_.SetName_(prefabEnt, $"{part_.name} debris");
+                em_.SetName_(prefabEnt, $"{part.name} debris");
             }
         }
 

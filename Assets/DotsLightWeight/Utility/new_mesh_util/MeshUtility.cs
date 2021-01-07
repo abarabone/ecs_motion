@@ -89,57 +89,57 @@ namespace Abarabone.Geometry
     public static partial class MeshCombiner2
 	{
 
-		/// <summary>
-		/// Mesh 要素を結合するデリゲートを返す。位置のみ。
-		/// </summary>
-		static public Func<MeshCombinerElements> BuildPositionMeshCombiner
-			(IEnumerable<GameObject> gameObjects, Transform tfBase)
-		{
-			var mmts = FromObject.QueryMeshMatsTransform_IfHaving(gameObjects).ToArray();
+        //	/// <summary>
+        //	/// Mesh 要素を結合するデリゲートを返す。位置のみ。
+        //	/// </summary>
+        //	static public Func<MeshCombinerElements> BuildPositionMeshCombiner
+        //		(IEnumerable<GameObject> gameObjects, Transform tfBase)
+        //	{
+        //		var mmts = FromObject.QueryMeshMatsTransform_IfHaving(gameObjects).ToArray();
 
-			var meshes = mmts.Select(x => x.mesh).ToArray();
-			var srcmesh = Mesh.AcquireReadOnlyMeshData(meshes);
+        //		var meshes = mmts.Select(x => x.mesh).ToArray();
+        //		var srcmesh = Mesh.AcquireReadOnlyMeshData(meshes);
 
 
-			var dstmesh = Mesh.AllocateWritableMeshData(1);
+        //		var dstmesh = Mesh.AllocateWritableMeshData(1);
 
-			return BuildPositionMeshCombiner(mmts, tfBase);
-		}
+        //		return BuildPositionMeshCombiner(mmts, tfBase);
+        //	}
 
-		static public Func<MeshCombinerElements> BuildPositionMeshCombiner
-			(Mesh.MeshDataArray dstmeshes, Mesh.MeshDataArray srcmeshes,
-			(Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase)
-		{
+        //	static public Func<MeshCombinerElements> BuildPositionMeshCombiner
+        //		(Mesh.MeshDataArray dstmeshes, Mesh.MeshDataArray srcmeshes,
+        //		(Mesh mesh, Material[] mats, Transform tf)[] mmts, Transform tfBase)
+        //	{
 
-			var vtxss = (from x in mmts select x.mesh.vertices).ToArray();
+        //		var vtxss = (from x in mmts select x.mesh.vertices).ToArray();
 
-			var idxsss = (from x in mmts select x.mesh)
-				.To(PerSubMeshPerMesh.QueryIndices).ToArrayRecursive2();
+        //		var idxsss = (from x in mmts select x.mesh)
+        //			.To(PerSubMeshPerMesh.QueryIndices).ToArrayRecursive2();
 
-			var mtBaseInv = tfBase.worldToLocalMatrix;
-			var mtObjects = (from x in mmts select x.tf.localToWorldMatrix).ToArray();
-			//Debug.Log( string.Join(";",mmts.SelectMany(x=>x.mats).Select(x=>$"{x.name} {x.GetHashCode()}")) );
+        //		var mtBaseInv = tfBase.worldToLocalMatrix;
+        //		var mtObjects = (from x in mmts select x.tf.localToWorldMatrix).ToArray();
+        //		//Debug.Log( string.Join(";",mmts.SelectMany(x=>x.mats).Select(x=>$"{x.name} {x.GetHashCode()}")) );
 
-			return () =>
-			{
-				var materialsCombined = (from x in mmts select x.mats)
-					.To(MaterialCombined.QueryCombine).ToArray();
+        //		return () =>
+        //		{
+        //			var materialsCombined = (from x in mmts select x.mats)
+        //				.To(MaterialCombined.QueryCombine).ToArray();
 
-				return new MeshCombinerElements
-				{
-					Vertecies = vtxss.ToVerticesArray(mtObjects, mtBaseInv),
+        //			return new MeshCombinerElements
+        //			{
+        //				Vertecies = vtxss.ToVerticesArray(mtObjects, mtBaseInv),
 
-					IndicesPerSubmesh = isCombineSubMeshes
-						? ConvertUtility.ToIndicesArray(vtxss, idxsss, mtObjects)
-						: ConvertUtility.ToIndicesArray(vtxss, idxsss, mtObjects, (from x in mmts select x.mats), materialsCombined),
+        //				IndicesPerSubmesh = isCombineSubMeshes
+        //					? ConvertUtility.ToIndicesArray(vtxss, idxsss, mtObjects)
+        //					: ConvertUtility.ToIndicesArray(vtxss, idxsss, mtObjects, (from x in mmts select x.mats), materialsCombined),
 
-					MtBaseInv = mtBaseInv,
-					mtObjects = mtObjects,
+        //				MtBaseInv = mtBaseInv,
+        //				mtObjects = mtObjects,
 
-					materials = materialsCombined,
-				};
-			};
-		}
+        //				materials = materialsCombined,
+        //			};
+        //		};
+        //	}
 
-	}
+    }
 }

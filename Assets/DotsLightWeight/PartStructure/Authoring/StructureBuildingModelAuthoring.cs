@@ -112,8 +112,11 @@ namespace Abarabone.Structure.Authoring
             var near = structureModel.NearMeshObject.objectTop;
             var env = structureModel.Envelope;// main object
 
-            createModelEntity_(gcs, far, structureModel.FarMaterialToDraw, structureModel.GetFarMeshAndFunc);
-            createModelEntity_(gcs, near, structureModel.NearMaterialToDraw, structureModel.GetNearMeshFunc);
+            createMeshAndSetToDictionary_(gcs, far, structureModel.GetFarMeshAndFunc);
+            createMeshAndSetToDictionary_(gcs, near, structureModel.GetNearMeshFunc);
+
+            createModelEntity_IfNotExists_(gcs, far, structureModel.FarMaterialToDraw);
+            createModelEntity_IfNotExists_(gcs, near, structureModel.NearMaterialToDraw);
 
             initBinderEntity_(gcs, top, env);
             initMainEntity_(gcs, top, env, structureModel.NearMeshObject, structureModel.FarMeshObject);
@@ -130,7 +133,9 @@ namespace Abarabone.Structure.Authoring
             var near = structureModel.NearMeshObject.objectTop;
             var env = structureModel.Envelope;// main object
 
-            createModelEntity_(gcs, near, structureModel.NearMaterialToDraw, structureModel.GetNearMeshFunc);
+            createMeshAndSetToDictionary_(gcs, near, structureModel.GetNearMeshFunc);
+
+            createModelEntity_IfNotExists_(gcs, near, structureModel.NearMaterialToDraw);
 
             initBinderEntity_(gcs, top, env);
             initMainEntity_(gcs, top, env, structureModel.NearMeshObject, structureModel.FarMeshObject);
@@ -142,17 +147,28 @@ namespace Abarabone.Structure.Authoring
 
         // ---------------------------------------------------------------------
 
+
+        static void createMeshAndSetToDictionary_
+            (GameObjectConversionSystem gcs, GameObject go, Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshHolder)
+        {
+            if (gcs.IsExistingInMeshDictionary(go)) return;
+            
+            var x = meshHolder();
+            var newmesh = x.mesh ?? x.f().CreateMesh();
+
+            Debug.Log($"st model {go.name} - {newmesh.name}");
+
+            gcs.AddToMeshDictionary(go, newmesh);
+        }
+
+
         // メッシュの位置は、main object の位置となるようにすること
-        static void createModelEntity_
-            (
-                GameObjectConversionSystem gcs, GameObject go, Material srcMaterial,
-                Func<(GameObject, Func<MeshCombinerElements>, Mesh)> meshCreateFunc
-            )
+        static void createModelEntity_IfNotExists_
+            (GameObjectConversionSystem gcs, GameObject go, Material srcMaterial)
         {
             if (gcs.IsExistsInModelEntityDictionary(go)) return;
 
-
-            var mesh = getOrCreateMesh_(gcs, go, meshCreateFunc);
+            var mesh = gcs.GetFromMeshDictionary(go);
             var mat = new Material(srcMaterial);
 
             const BoneType boneType = BoneType.TR;
@@ -161,25 +177,6 @@ namespace Abarabone.Structure.Authoring
 
             gcs.CreateDrawModelEntityComponents
                 (go, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
-
-            return;
-
-
-            static Mesh getOrCreateMesh_(
-                GameObjectConversionSystem gcs, GameObject go,
-                Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshCreateFunc)
-            {
-                var existingMesh = gcs.GetFromMeshDictionary(go);
-                if (existingMesh != null) return existingMesh;
-
-                var x = meshCreateFunc();
-                var newmesh = x.mesh ?? x.f().CreateMesh();
-
-                Debug.Log($"st model {go.name} - {newmesh.name}");
-
-                gcs.AddToMeshDictionary(go, newmesh);
-                return newmesh;
-            }
         }
 
 
