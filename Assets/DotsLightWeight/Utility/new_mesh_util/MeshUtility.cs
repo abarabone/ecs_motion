@@ -27,13 +27,15 @@ namespace Abarabone.Geometry
 
         public struct SubMesh<T> where T : struct
         {
-            public SubMesh(int i, IEnumerable<T> submeshElements)
+            public SubMesh(int i, SubMeshDescriptor descriptor, IEnumerable<T> submeshElements)
             {
                 this.SubMeshIndex = i;
                 this.Elements = submeshElements;
+                this.Descriptor = descriptor;
             }
 
             public int SubMeshIndex { get; private set; }
+            public SubMeshDescriptor Descriptor { get; private set; }
             public IEnumerable<T> Elements { get; private set; }
         }
 
@@ -60,42 +62,25 @@ namespace Abarabone.Geometry
 
 
         static public IEnumerable<SubMesh<T>> VertexInSubMeshes<T>(this Mesh.MeshData meshdata) where T : struct =>
-            meshdata.ElementsInSubMesh(meshdata.GetVertexData<T>(), (submesh, vtx) => vtx);
+            meshdata.ElementsInSubMesh(meshdata.GetVertexData<T>());
 
         static public IEnumerable<SubMesh<T>> IndexInSubMeshes<T>(this Mesh.MeshData meshdata) where T : struct =>
-            meshdata.ElementsInSubMesh(meshdata.GetIndexData<T>(), (submesh, idx) => idx + submesh.baseVertex);
+            meshdata.ElementsInSubMesh(meshdata.GetIndexData<T>());
 
 
-        //static public IEnumerable<SubMesh<int>> IndicesInSubMesh2(this Mesh.MeshData meshdata, NativeArray<int> srcArray)
-        //{
-        //    var i = 0;
-        //    foreach (var desc in meshdata.submeshDescripters_())
-        //    {
-        //        yield return new SubMesh<int>(i++, getElementsInSubmesh_());
-
-        //        IEnumerable<int> getElementsInSubmesh_()
-        //        {
-        //            for (var i = desc.indexStart; i < desc.indexCount; i++)
-        //            {
-        //                yield return srcArray[i] + desc.baseVertex;
-        //            }
-        //        }
-        //    }
-        //}
-
-        static public IEnumerable<SubMesh<T>> ElementsInSubMesh<T>
-            (this Mesh.MeshData meshdata, NativeArray<T> srcArray, Func<SubMeshDescriptor,T,T> conversion) where T : struct
+        static public IEnumerable<SubMesh<T>> ElementsInSubMesh<T>(this Mesh.MeshData meshdata, NativeArray<T> srcArray)
+            where T : struct
         {
             var i = 0;
             foreach (var desc in meshdata.submeshDescripters_())
             {
-                yield return new SubMesh<T>(i++, getElementsInSubmesh_());
+                yield return new SubMesh<T>(i++, desc, getElementsInSubmesh_());
 
                 IEnumerable<T> getElementsInSubmesh_()
                 {
                     for (var i = desc.firstVertex; i < desc.vertexCount; i++)
                     {
-                        yield return conversion(desc, srcArray[i]);
+                        yield return srcArray[i];
                     }
                 }
             }
@@ -105,18 +90,6 @@ namespace Abarabone.Geometry
             from i in 0.UpTo(meshdata.subMeshCount)
             select meshdata.GetSubMesh(i)
             ;
-
-        //static IEnumerable<(int start, int length)> getSubmeshVertexRanges_(this Mesh.MeshData meshdata) =>
-        //    from i in 0.UpTo(meshdata.subMeshCount)
-        //    let submeshDescriptor = meshdata.GetSubMesh(i)
-        //    select (start: submeshDescriptor.firstVertex, length: submeshDescriptor.vertexCount)
-        //    ;
-
-        //static IEnumerable<(int start, int length)> getSubmeshIndexRanges_(this Mesh.MeshData meshdata) =>
-        //    from i in 0.UpTo(meshdata.subMeshCount)
-        //    let submeshDescriptor = meshdata.GetSubMesh(i)
-        //    select (start: submeshDescriptor.indexStart, length: submeshDescriptor.indexCount)
-        //    ;
 
 
         static void aaa(IEnumerable<GameObject> gameObjects, Transform tfBase)
