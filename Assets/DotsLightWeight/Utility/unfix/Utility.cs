@@ -75,22 +75,11 @@ namespace Abarabone.Utilities
             return new HashSet<string>( qEnabledBonePaths );
         }
 
-        // Misc.ToNativeArray() だと大丈夫なのに、こちらだとハングするケースがある、なぜ？？ unsafe がらみ？
-        //public static NativeArray<T> ToNativeArray<T>( this IEnumerable<T> src, Allocator allocator )
-        //    where T : struct
-        //{
-        //    var arr = new NativeArray<T>( src.Count(), allocator, NativeArrayOptions.UninitializedMemory );
-        //    var i = 0;
-        //    //foreach( var x in src.Select((item,i)=>(i,item)) )
-        //    foreach( var x in src )
-        //    {
-        //        arr[ i++ ] = x;
-        //    }
-        //    return arr;
-        //}
-
         static public IEnumerable<int> UpTo(this int start, int end) =>
-            Enumerable.Range(start, end);
+            Enumerable.Range(start, end - start);
+
+        static public IEnumerable<int> Inc(this int start, int times) =>
+            Enumerable.Range(start, times);
     }
 
     
