@@ -8,11 +8,11 @@ using Unity.Linq;
 using Unity.Collections;
 using Unity.Mathematics;
 
-using Abarabone.Common.Extension;
-using Abarabone.Geometry;
-
 namespace Abarabone.Utilities
 {
+    using Abarabone.Common.Extension;
+    using Abarabone.Geometry;
+
     static public class Extentions
     {
 

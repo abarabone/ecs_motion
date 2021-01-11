@@ -9,13 +9,14 @@ using UnityEngine.Rendering;
 using Unity.Collections;
 using Unity.Linq;
 using Unity.Mathematics;
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace Abarabone.Geometry
 {
     using Abarabone.Common.Extension;
     using Abarabone.Utilities;
 
-    static public class MeshInWorkerThreadUtility
+    static public class MeshUtilityThreadSafe
     {
 
         public struct MeshUnit
@@ -26,7 +27,6 @@ namespace Abarabone.Geometry
                 this.MeshData = meshdata;
                 this.BaseVertex = baseVertex;
             }
-
             public readonly int MeshIndex;
             public readonly Mesh.MeshData MeshData;
             public readonly int BaseVertex;
@@ -52,26 +52,44 @@ namespace Abarabone.Geometry
                 this.Elements = submeshElements;
                 this.Descriptor = descriptor;
             }
-
             public readonly int SubMeshIndex;
             public readonly SubMeshDescriptor Descriptor;
             public readonly IEnumerable<T> Elements;
         }
 
+        static public IEnumerable<SubMeshUnit<float3>> PositionsPerSubMesh(this Mesh.MeshData meshdata)
+        {
+            var array = new NativeArray<float3>(meshdata.vertexCount, Allocator.Temp);
+            meshdata.GetVertices(array.Reinterpret<Vector3>());
+            return meshdata.ElementsInSubMesh(array, () => array.Dispose());
+        }
+        static public IEnumerable<SubMeshUnit<float2>> UvsPerSubMesh(this Mesh.MeshData meshdata)
+        {
+            var array = new NativeArray<float2>(meshdata.vertexCount, Allocator.Temp);
+            meshdata.GetUVs(0, array.Reinterpret<Vector2>());
+            return meshdata.ElementsInSubMesh(array, () => array.Dispose());
+        }
 
-
-        static public IEnumerable<SubMeshUnit<T>> VertexPerSubMesh<T>(this Mesh.MeshData meshdata) where T : struct =>
+        static public IEnumerable<SubMeshUnit<T>> VerticesPerSubMesh<T>(this Mesh.MeshData meshdata) where T : struct =>
             meshdata.ElementsInSubMesh(meshdata.GetVertexData<T>());
 
-        static public IEnumerable<SubMeshUnit<T>> IndexPerSubMesh<T>(this Mesh.MeshData meshdata) where T : struct =>
+        static public IEnumerable<SubMeshUnit<T>> IndicesPerSubMesh<T>(this Mesh.MeshData meshdata) where T : struct =>
             meshdata.ElementsInSubMesh(meshdata.GetIndexData<T>());
 
 
-        static public IEnumerable<SubMeshUnit<T>> ElementsInSubMesh<T>(this Mesh.MeshData meshdata, NativeArray<T> srcArray)
+        struct DisposableDummy : IDisposable
+        {
+            Action action;
+            public DisposableDummy(Action disposeAction = null) => this.action = disposeAction;
+            public void Dispose() => this.action?.Invoke();
+        }
+        static public IEnumerable<SubMeshUnit<T>> ElementsInSubMesh<T>(this Mesh.MeshData meshdata, NativeArray<T> srcArray, Action disposeAction = null)
             where T : struct
         {
+            using var arr = new DisposableDummy(disposeAction);
+
             var i = 0;
-            foreach (var desc in meshdata.submeshDescripters_())
+            foreach (var desc in submeshDescripters_())
             {
                 yield return new SubMeshUnit<T>(i++, desc, getElementsInSubmesh_());
 
@@ -83,12 +101,13 @@ namespace Abarabone.Geometry
                     }
                 }
             }
+
+            IEnumerable<SubMeshDescriptor> submeshDescripters_() =>
+                from i in 0.Inc(meshdata.subMeshCount)
+                select meshdata.GetSubMesh(i)
+                ;
         }
 
-        static IEnumerable<SubMeshDescriptor> submeshDescripters_(this Mesh.MeshData meshdata) =>
-            from i in 0.Inc(meshdata.subMeshCount)
-            select meshdata.GetSubMesh(i)
-            ;
 
         //[StructLayout(LayoutKind.Sequential)]
         //struct SrcVertexUnit
@@ -99,12 +118,6 @@ namespace Abarabone.Geometry
         //}
 
 
-        public static bool IsMuinusScale(this float4x4 mt)
-        {
-            var mtinv = math.transpose(mt);
-            var up = math.cross(mtinv.c0.xyz, mtinv.c2.xyz);
-            return Vector3.Dot(up, mtinv.c1.xyz) > 0.0f;
-        }
 
         static IEnumerable<uint> ConvertIndicesUInt
             (this Mesh.MeshDataArray srcmeshes, IEnumerable<float4x4> mtsPerMesh)
@@ -113,12 +126,18 @@ namespace Abarabone.Geometry
             let mesh = xsub.mesh
             let submesh = xsub.submesh
             let mt = xsub.mt
-            from tri in mt.IsMuinusScale()
+            from tri in mt.isMuinusScale()
                 ? submesh.Elements.AsTriangle().Reverse()
                 : submesh.Elements.AsTriangle()
             from idx in tri
             select (uint)mesh.BaseVertex + (uint)submesh.Descriptor.baseVertex + idx
             ;
+        static bool isMuinusScale(this float4x4 mt)
+        {
+            var mtinv = math.transpose(mt);
+            var up = math.cross(mtinv.c0.xyz, mtinv.c2.xyz);
+            return Vector3.Dot(up, mtinv.c1.xyz) > 0.0f;
+        }
 
         static IEnumerable<float3> ConvertVertices
             (this Mesh.MeshDataArray srcmeshes, IEnumerable<int> texhashPerSubMesh, IEnumerable<float4x4> mtsPerMesh, float4x4 mtBaseInv)
@@ -137,7 +156,7 @@ namespace Abarabone.Geometry
             from x in (srcmeshes.AsEnumerable(), mtsPerMesh).Zip()
             let mesh = x.src0
             let mt = mtBaseInv * x.src1
-            from xsub in (mesh.MeshData.VertexPerSubMesh<T>(), texhashPerSubMesh).Zip()
+            from xsub in (mesh.MeshData.VerticesPerSubMesh<T>(), texhashPerSubMesh).Zip()
             let submesh = xsub.src0
             let texhash = xsub.src1
             select (mesh, submesh, texhash, mt)
@@ -150,7 +169,7 @@ namespace Abarabone.Geometry
             from x in (srcmeshes.AsEnumerable(), mtsPerMesh).Zip()
             let mesh = x.src0
             let mt = x.src1
-            from xsub in mesh.MeshData.IndexPerSubMesh<T>()
+            from xsub in mesh.MeshData.IndicesPerSubMesh<T>()
             select (mesh, submesh:xsub, mt)
             ;
 
