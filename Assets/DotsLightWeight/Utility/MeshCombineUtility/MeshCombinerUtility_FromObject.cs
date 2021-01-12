@@ -20,7 +20,7 @@ namespace Abarabone.Geometry
 		/// メッシュと材質配列を持つオブジェクトを抽出し、その組を列挙して返す。片方でも null であれば、除外される。
 		/// </summary>
 		public static IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>
-			QueryMeshMatsTransform_IfHaving(IEnumerable<GameObject> gameObjects)
+			QueryMeshMatsTransform_IfHaving(this IEnumerable<GameObject> gameObjects)
 		{
 			return
 				from obj in gameObjects
