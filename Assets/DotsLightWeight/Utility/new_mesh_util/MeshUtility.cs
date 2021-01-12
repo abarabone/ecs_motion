@@ -109,24 +109,24 @@ namespace Abarabone.Geometry
         //{
         //    public float3 Position;
         //    public float3 Normal;
-            
+
         //}
 
 
 
-        static IEnumerable<uint> ConvertIndicesUInt
-            (this Mesh.MeshDataArray srcmeshes, IEnumerable<float4x4> mtsPerMesh)
-        =>
-            from xsub in querySubMeshForIndex<uint>(srcmeshes, mtsPerMesh)
-            let mesh = xsub.mesh
-            let submesh = xsub.submesh
-            let mt = xsub.mt
-            from tri in mt.isMuinusScale()
-                ? submesh.Elements.AsTriangle().Reverse()
-                : submesh.Elements.AsTriangle()
-            from idx in tri
-            select (uint)mesh.BaseVertex + (uint)submesh.Descriptor.baseVertex + idx
-            ;
+        //static IEnumerable<uint> ConvertIndicesUInt
+        //    (this Mesh.MeshDataArray srcmeshes, IEnumerable<float4x4> mtsPerMesh)
+        //=>
+        //    from xsub in querySubMeshForIndex<uint>(srcmeshes, mtsPerMesh)
+        //    let mesh = xsub.mesh
+        //    let submesh = xsub.submesh
+        //    let mt = xsub.mt
+        //    from tri in mt.isMuinusScale()
+        //        ? submesh.Elements.AsTriangle().Reverse()
+        //        : submesh.Elements.AsTriangle()
+        //    from idx in tri
+        //    select (uint)mesh.BaseVertex + (uint)submesh.Descriptor.baseVertex + idx
+        //    ;
         static bool isMuinusScale(this float4x4 mt)
         {
             var mtinv = math.transpose(mt);
@@ -193,7 +193,7 @@ namespace Abarabone.Geometry
 
 
         static void aaa<TVtx, TIdx>(IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect,
-            Func<TVtx,TVtx> vertexConversion)
+            Func<TVtx,TVtx> vertexConversion) where TVtx : struct
         {
             var mmts = FromObject.QueryMeshMatsTransform_IfHaving(gameObjects).ToArray();
 
@@ -210,16 +210,17 @@ namespace Abarabone.Geometry
 
             var srcmeshes = Mesh.AcquireReadOnlyMeshData(meshesPerMesh);
 
-            var qIdx = srcmeshes.ConvertIndicesUInt(mtsPerMesh);
+            //var qIdx = srcmeshes.ConvertIndicesUInt(mtsPerMesh);
             var vtxs = srcmeshes.ConvertPositions(texhashesPerSubMesh, mtsPerMesh, mtBaseInv).ToArray();
             var qUv = srcmeshes.ConvertUvs(texhashesPerSubMesh, mtsPerMesh, mtBaseInv, texhashToUvRect);
 
 
             var dstmeshes = Mesh.AllocateWritableMeshData(1);
             var dstmesh = new Mesh();
-            var dstVtxs = new NativeArray<Vector3>(vtxs.Length, Allocator.Temp);
-            dstmeshes[0].GetVertices(dstVtxs);
-            dstVtxs.CopyFrom(vtxs.ToArray());
+            //var dstVtxs = new NativeArray<Vector3>(vtxs.Length, Allocator.Temp);
+            //dstmeshes[0].GetVertices(dstVtxs);
+            //var dstVtxs = dstmeshes[0].GetVertexData<TVtx>();
+            //dstVtxs.CopyFrom(vtxs.ToArray());
             Mesh.ApplyAndDisposeWritableMeshData(dstmeshes, dstmesh);
         }
 

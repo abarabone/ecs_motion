@@ -14,7 +14,7 @@ using Unity.Entities.UniversalDelegates;
 public class CreatePhysicsCategoryNamesConstants : MonoBehaviour
 {
 
-    [MenuItem("Assets/Create Physics Category Names Constats")]
+    [MenuItem("Assets/Create Physics Category Names Constants")]
     static public void Create()
     {
         if (Selection.objects == null) return;
