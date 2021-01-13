@@ -104,16 +104,6 @@ namespace Abarabone.Geometry
         }
 
 
-        [StructLayout(LayoutKind.Sequential)]
-        struct PosisionUvVertex
-        {
-            public Vector3 Position;
-            public Vector2 Uv;
-        }
-
-
-
-
 
         static IEnumerable<(int baseVertex, T idx)> queryIndices<T>
             (this Mesh.MeshDataArray srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh) where T : struct
@@ -165,7 +155,9 @@ namespace Abarabone.Geometry
             from submeshdata in srcmeshes.querySubMeshForVertices<Vector2>
                 ((md, arr) => md.GetUVs(0, arr), texhashPerSubMesh, mtsPerMesh, mtBaseInv)
             from uv in submeshdata.submesh.Elements
-            select uv.ScaleUv(texhashToUvRect[submeshdata.texhash])
+            select texhashToUvRect != null
+                ? uv.ScaleUv(texhashToUvRect[submeshdata.texhash])
+                : uv
             ;
 
 
@@ -208,7 +200,7 @@ namespace Abarabone.Geometry
             var texhashesPerSubMesh = (
                 from mmt in mmts
                 from mat in mmt.mats
-                select mat.mainTexture.GetHashCode()
+                select mat.mainTexture?.GetHashCode() ?? 0
             ).ToArray();
 
             var mtBaseInv = tfBase.worldToLocalMatrix;
@@ -218,26 +210,26 @@ namespace Abarabone.Geometry
             return (srcmeshes, mtsPerMesh, texhashesPerSubMesh, mtBaseInv);
         }
 
-        static Func<MeshCreator<uint>> CombinePositionMesh
-            (IEnumerable<GameObject> gameObjects, Transform tfBase)
+        static public Func<MeshElements<uint>> CombinePositionMesh
+            (this IEnumerable<GameObject> gameObjects, Transform tfBase)
         {
             var (srcmeshes, mtsPerMesh, texhashesPerSubMesh, mtBaseInv) =
                 calculateParametorsUnmanaged(gameObjects, tfBase);
 
-            return () => new MeshCreator<uint>
+            return () => new MeshElements<uint>
             {
                 idxs = srcmeshes.queryConvertIndicesUInt(mtsPerMesh).ToArray(),
                 poss = srcmeshes.queryConvertPositions(texhashesPerSubMesh, mtsPerMesh, mtBaseInv).ToArray(),
             };
         }
 
-        static Func<MeshCreator<uint>> CombinePositionUvMesh
-            (IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect)
+        static public Func<MeshElements<uint>> CombinePositionUvMesh
+            (this IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect = null)
         {
             var (srcmeshes, mtsPerMesh, texhashesPerSubMesh, mtBaseInv) =
                 calculateParametorsUnmanaged(gameObjects, tfBase);
 
-            return () => new MeshCreator<uint>
+            return () => new MeshElements<uint>
             {
                 idxs = srcmeshes.queryConvertIndicesUInt(mtsPerMesh).ToArray(),
                 poss = srcmeshes.queryConvertPositions(texhashesPerSubMesh, mtsPerMesh, mtBaseInv).ToArray(),
@@ -245,7 +237,7 @@ namespace Abarabone.Geometry
             };
         }
 
-        public struct MeshCreator<TIdx>
+        public struct MeshElements<TIdx>
         {
             public TIdx[] idxs;
             public Vector3[] poss;
@@ -253,14 +245,36 @@ namespace Abarabone.Geometry
             public Vector3[] nms;
         }
 
-        static Mesh CreateMesh<T>(this MeshCreator<T> meshcreator)
+        [StructLayout(LayoutKind.Sequential)]
+        struct PosisionUvVertex
+        {
+            public Vector3 Position;
+            public Vector2 Uv;
+        }
+
+
+        static public Mesh CreateMesh<T>(this MeshElements<T> meshElements) where T : struct
         {
             var dstmeshes = Mesh.AllocateWritableMeshData(1);
             var dstmesh = new Mesh();
-            //var dstVtxs = new NativeArray<Vector3>(vtxs.Length, Allocator.Temp);
-            //dstmeshes[0].GetVertices(dstVtxs);
-            //var dstVtxs = dstmeshes[0].GetVertexData<TVtx>();
-            //dstVtxs.CopyFrom(vtxs.ToArray());
+
+            var m = meshElements;
+
+            var idxs = m.idxs.ToArray();
+            dstmeshes[0].AsIndex<T>(idxs.Length);
+            dstmeshes[0].GetIndexData<T>().CopyFrom(idxs);
+
+            var qVtx =
+                from x in (m.poss, m.uvs).Zip()
+                select new PosisionUvVertex
+                {
+                    Position = x.src0,
+                    Uv = x.src1,
+                };
+            var vtxs = qVtx.ToArray();
+            dstmeshes[0].AsPositionUv(vtxs.Length);
+            dstmeshes[0].GetVertexData<PosisionUvVertex>().CopyFrom(vtxs);
+
             Mesh.ApplyAndDisposeWritableMeshData(dstmeshes, dstmesh);
 
             return dstmesh;
@@ -288,8 +302,25 @@ namespace Abarabone.Geometry
 
         static float3 TransformPosition(float3 position, float4x4 mt) =>
             math.transform(mt, position);
-        
 
+
+        static void AsPosition(this Mesh.MeshData meshdata, int vertexLength)
+        {
+            var layout = new[]
+            {
+                new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+            };
+            meshdata.SetVertexBufferParams(vertexLength, layout);
+        }
+        static void AsPositionUv(this Mesh.MeshData meshdata, int vertexLength)
+        {
+            var layout = new[]
+            {
+                new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+                new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
+            };
+            meshdata.SetVertexBufferParams(vertexLength, layout);
+        }
         static void AsPositionNormalUv(this Mesh.MeshData meshdata, int vertexLength)
         {
             var layout = new[]
@@ -300,13 +331,14 @@ namespace Abarabone.Geometry
             };
             meshdata.SetVertexBufferParams(vertexLength, layout);
         }
-        static void AsUIntIndex(this Mesh.MeshData meshdata, int indexLength)
+        static void AsIndex<T>(this Mesh.MeshData meshdata, int indexLength) where T : struct
         {
-            meshdata.SetIndexBufferParams(indexLength, IndexFormat.UInt32);
-        }
-        static void AsUShortIndex(this Mesh.MeshData meshdata, int indexLength)
-        {
-            meshdata.SetIndexBufferParams(indexLength, IndexFormat.UInt16);
+            var format = default(T) switch
+            {
+                uint ui => IndexFormat.UInt32,
+                ushort us => IndexFormat.UInt16,
+            };
+            meshdata.SetIndexBufferParams(indexLength, format);
         }
     }
 

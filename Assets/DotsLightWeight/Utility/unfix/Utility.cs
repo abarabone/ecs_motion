@@ -16,6 +16,9 @@ namespace Abarabone.Utilities
     static public class Extentions
     {
 
+        public static IEnumerable<T> AsEnumerable<T>(this T src) =>
+            Enumerable.Repeat(src, 1);
+
         /// <summary>
         /// 
         /// </summary>
