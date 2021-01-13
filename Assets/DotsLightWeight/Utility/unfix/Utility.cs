@@ -79,7 +79,7 @@ namespace Abarabone.Utilities
         }
 
         static public IEnumerable<int> UpTo(this int start, int end) =>
-            Enumerable.Range(start, end - start);
+            Enumerable.Range(start, end - start + 1);
 
         static public IEnumerable<int> Inc(this int start, int times) =>
             Enumerable.Range(start, times);

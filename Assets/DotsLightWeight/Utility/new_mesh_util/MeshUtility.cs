@@ -46,15 +46,38 @@ namespace Abarabone.Geometry
 
         public struct SubMeshUnit<T> where T : struct
         {
-            public SubMeshUnit(int i, SubMeshDescriptor descriptor, IEnumerable<T> submeshElements)
+            public SubMeshUnit(int i, SubMeshDescriptor descriptor, NativeArray<T> srcArray)
             {
                 this.SubMeshIndex = i;
-                this.Elements = submeshElements;
                 this.Descriptor = descriptor;
+                this.srcArray = srcArray;
             }
+            //public SubMeshUnit(int i, SubMeshDescriptor descriptor, IEnumerable<T> submeshElements)
+            //{
+            //    this.SubMeshIndex = i;
+            //    this.Elements = submeshElements;
+            //    this.Descriptor = descriptor;
+            //}
             public readonly int SubMeshIndex;
             public readonly SubMeshDescriptor Descriptor;
-            public readonly IEnumerable<T> Elements;
+            //public readonly IEnumerable<T> Elements;
+            readonly NativeArray<T> srcArray;
+            public IEnumerable<T> Indices()
+            {
+                var desc = this.Descriptor;
+                for (var i = desc.indexStart; i < desc.indexCount; i++)
+                {
+                    yield return this.srcArray[i];
+                }
+            }
+            public IEnumerable<T> Vertices()
+            {
+                var desc = this.Descriptor;
+                for (var i = desc.firstVertex; i < desc.vertexCount; i++)
+                {
+                    yield return this.srcArray[i];
+                }
+            }
         }
 
         static IEnumerable<SubMeshUnit<T>> verticesPerSubMesh<T>
@@ -66,7 +89,8 @@ namespace Abarabone.Geometry
         }
 
         static IEnumerable<SubMeshUnit<T>> vertexDataPerSubMesh<T>(this Mesh.MeshData meshdata) where T : struct =>
-            meshdata.elementsInSubMesh(meshdata.GetVertexData<T>());
+            //meshdata.elementsInSubMesh(meshdata.GetVertexData<T>());
+            meshdata.elementsInSubMesh2<T>();
 
         static IEnumerable<SubMeshUnit<T>> indexDataPerSubMesh<T>(this Mesh.MeshData meshdata) where T : struct =>
             meshdata.elementsInSubMesh(meshdata.GetIndexData<T>());
@@ -78,7 +102,8 @@ namespace Abarabone.Geometry
             public DisposableDummy(Action disposeAction = null) => this.action = disposeAction;
             public void Dispose() => this.action?.Invoke();
         }
-        static IEnumerable<SubMeshUnit<T>> elementsInSubMesh<T>(this Mesh.MeshData meshdata, NativeArray<T> srcArray, Action disposeAction = null)
+        static IEnumerable<SubMeshUnit<T>> elementsInSubMesh<T>
+            (this Mesh.MeshData meshdata, NativeArray<T> srcArray, Action disposeAction = null)
             where T : struct
         {
             using var arr = new DisposableDummy(disposeAction);
@@ -101,11 +126,19 @@ namespace Abarabone.Geometry
                 from i in 0.Inc(meshdata.subMeshCount)
                 select meshdata.GetSubMesh(i)
                 ;
-        }
+    }
+    static IEnumerable<SubMeshUnit<T>> elementsInSubMesh2<T>
+        (this Mesh.MeshData meshdata, NativeArray<T> srcArray) where T : struct
+    =>
+        from i in 0.Inc(meshdata.subMeshCount)
+        let desc = meshdata.GetSubMesh(i)
+        select new SubMeshUnit<T>(i, desc, srcArray)
+        ;
+    
 
 
 
-        static IEnumerable<(int baseVertex, T idx)> queryIndices<T>
+    static IEnumerable<(int baseVertex, T idx)> queryIndices<T>
             (this Mesh.MeshDataArray srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh) where T : struct
         =>
             from xsub in srcmeshes.querySubMeshForIndexData<T>(mtsPerMesh)
