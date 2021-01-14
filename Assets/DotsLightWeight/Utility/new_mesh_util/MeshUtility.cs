@@ -110,7 +110,7 @@ namespace Abarabone.Geometry
             from tri in mt.isMuinusScale()
                 ? submesh.Indices().AsTriangle().Reverse()
                 : submesh.Indices().AsTriangle()
-            from idx in tri
+            from idx in tri.Do(x=>Debug.Log(x))
             select (mesh.BaseVertex + submesh.Descriptor.baseVertex, idx)
             ;
         static bool isMuinusScale(this Matrix4x4 mt)
@@ -268,24 +268,29 @@ namespace Abarabone.Geometry
             var dstmeshes = Mesh.AllocateWritableMeshData(1);
             var dstmesh = new Mesh();
 
-            var m = meshElements;
+            var sm = meshElements;
+            var dm = dstmeshes[0];
 
-            var idxs = m.idxs.ToArray();
-            dstmeshes[0].AsIndex<T>(idxs.Length);
-            dstmeshes[0].GetIndexData<T>().CopyFrom(idxs);
+            var idxs = sm.idxs.ToArray();
+            dm.AsIndex<T>(idxs.Length);
+            dm.GetIndexData<T>().CopyFrom(idxs);
 
             var qVtx =
-                from x in (m.poss, m.uvs).Zip()
+                from x in (sm.poss.Do(x=>Debug.Log(x)), sm.uvs).Zip()
                 select new PosisionUvVertex
                 {
                     Position = x.src0,
                     Uv = x.src1,
                 };
             var vtxs = qVtx.ToArray();
-            dstmeshes[0].AsPositionUv(vtxs.Length);
-            dstmeshes[0].GetVertexData<PosisionUvVertex>().CopyFrom(vtxs);
+            dm.AsPositionUv(vtxs.Length);
+            dm.GetVertexData<PosisionUvVertex>().CopyFrom(vtxs);
 
+            dm.subMeshCount = 1;
+            dm.SetSubMesh(0, new SubMeshDescriptor(0, idxs.Length));
+            
             Mesh.ApplyAndDisposeWritableMeshData(dstmeshes, dstmesh);
+            dstmesh.RecalculateBounds();
 
             return dstmesh;
         }

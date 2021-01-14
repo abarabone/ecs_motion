@@ -13,8 +13,10 @@ public class MeshTest : MonoBehaviour
     {
         Debug.Log(this.name);
         this.mesh = this.gameObject.AsEnumerable()
-            .CombinePositionUvMesh<uint>(this.transform)()
+            .CombinePositionUvMesh<ushort>(this.transform)()
             .CreateMesh();
+
+        GetComponent<MeshFilter>().mesh = this.mesh;
     }
 
     // Update is called once per frame
