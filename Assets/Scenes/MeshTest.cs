@@ -13,7 +13,7 @@ public class MeshTest : MonoBehaviour
     {
         Debug.Log(this.name);
         this.mesh = this.gameObject.AsEnumerable()
-            .CombinePositionUvMesh(this.transform)()
+            .CombinePositionUvMesh<uint>(this.transform)()
             .CreateMesh();
     }
 

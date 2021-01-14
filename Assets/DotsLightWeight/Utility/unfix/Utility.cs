@@ -16,6 +16,14 @@ namespace Abarabone.Utilities
     static public class Extentions
     {
 
+        public static IEnumerable<T> Using<T>(this IEnumerable<T> src) where T : IDisposable
+        {
+            foreach (var e in src)
+            {
+                using (e) yield return e;
+            }
+        }
+
         public static IEnumerable<T> AsEnumerable<T>(this T src) =>
             Enumerable.Repeat(src, 1);
 
@@ -156,17 +164,20 @@ namespace Abarabone.Utilities
 
     public static unsafe class NativeUtility
     {
-        public static NativeArray<T> AsNativeArray<T>(this UnsafeList<T> list)
+        static public NativeArray<T> AsNativeArray<T>(this UnsafeList<T> list)
             where T : unmanaged
         {
             var arr = NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<T>(list.Ptr, list.length, Allocator.Invalid);
 
             // これをやらないとNativeArrayのインデクサアクセス時に死ぬ
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref arr, AtomicSafetyHandle.Create());
-#endif
+            #if ENABLE_UNITY_COLLECTIONS_CHECKS
+                NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref arr, AtomicSafetyHandle.Create());
+            #endif
 
             return arr;
         }
+
+        static public IEnumerable<T> Range<T>(this NativeArray<T> src, int start, int length) where T : struct =>
+            from i in Enumerable.Range(start, length) select src[i];
     }
 }
