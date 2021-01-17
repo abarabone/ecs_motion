@@ -69,10 +69,10 @@ namespace Abarabone.Geometry
         }
 
 
-    }
+    //}
 
-    static partial class ConvertVerticesUtility
-    {
+    //static partial class ConvertVerticesUtility
+    //{
 
 
         static IEnumerable<Vector3> QueryConvertPositions
@@ -101,19 +101,40 @@ namespace Abarabone.Geometry
                 ? uv.ScaleUv(texhashToUvRect[submeshdata.texhash])
                 : uv
             ;
-    }
-
-    static public partial class FromMeshArrayCombineUtility
-    {
 
 
 
+        static IEnumerable<Vector3> QueryConvertPositions2
+            (this IEnumerable<(MeshUnit, Matrix4x4, IEnumerable<(SubMeshUnit<Vector3>, int)>)> src)
+        =>
+            from x in src
+            let mesh = x.Item1
+            let mt = x.Item2
+            let submeshes = x.Item3
+            from xsub in submeshes
+            let submesh = xsub.Item1
+            let texhash = xsub.Item2
+            from vtx in submesh.VerticesWithUsing()
+            select (Vector3)math.transform(mt, vtx)
+            ;
 
-    }
+
+        //}
+
+        //static public partial class FromMeshArrayCombineUtility
+        //{
+        static void Az()
+        {
+            var a = new { a = 1 };
+        }
 
 
-    static partial class SubMeshQueryUtility
-    {
+
+    //}
+
+
+    //static partial class SubMeshQueryUtility
+    //{
 
 
         static public IEnumerable<(MeshUnit mesh, SubMeshUnit<T> submesh, int texhash, Matrix4x4 mt)>
@@ -132,6 +153,26 @@ namespace Abarabone.Geometry
             select (mesh, submesh, texhash, mt)
             ;
 
+        static public IEnumerable<(MeshUnit, Matrix4x4, IEnumerable<(SubMeshUnit<T>, int)>)>
+            QuerySubMeshForVertices2<T>(
+                this Mesh.MeshDataArray srcmeshes,
+                Action<Mesh.MeshData, NativeArray<T>> getVertices,
+                IEnumerable<int> texhashPerSubMesh, IEnumerable<Matrix4x4> mtsPerMesh, Matrix4x4 mtBaseInv
+            ) where T : struct
+        =>
+            from x in (srcmeshes.AsEnumerable(), mtsPerMesh).Zip()
+            let mesh = x.src0
+            let mt = mtBaseInv * x.src1
+            select (
+                mesh,
+                mt,
+                from xsub in (mesh.MeshData.verticesPerSubMesh(getVertices), texhashPerSubMesh).Zip()
+                let submesh = xsub.src0
+                let texhash = xsub.src1
+                select(submesh, texhash)
+            );
+
+
 
 
         static public IEnumerable<(MeshUnit mesh, SubMeshUnit<T> submesh, Matrix4x4 mt)>
@@ -144,10 +185,10 @@ namespace Abarabone.Geometry
             select (mesh, submesh: xsub, mt)
             ;
 
-    }
+    //}
 
-    static partial class MeshArrayCombineUtility
-    {
+    //static partial class MeshArrayCombineUtility
+    //{
 
         static public IEnumerable<MeshUnit> AsEnumerable(this Mesh.MeshDataArray meshDataArray)
         {
@@ -163,10 +204,10 @@ namespace Abarabone.Geometry
 
 
 
-    }
+    //}
     
-    static public partial class MeshUtility2
-    {
+    //static public partial class MeshUtility2
+    //{
 
         public struct MeshUnit
         {
@@ -181,9 +222,9 @@ namespace Abarabone.Geometry
             public readonly int BaseVertex;
         }
 
-    }
-    static class SubMeshUtility
-    {
+    //}
+    //static class SubMeshUtility
+    //{
 
         public struct SubMeshUnit<T> where T : struct
         {
@@ -238,11 +279,11 @@ namespace Abarabone.Geometry
         static IEnumerable<SubMeshUnit<T>> indexDataPerSubMesh<T>(this Mesh.MeshData meshdata) where T : struct =>
             meshdata.elementsInSubMesh(meshdata.GetIndexData<T>());
 
-    }
+    //}
 
 
-    static public partial class MeshCombineUtility
-    {
+    //static public partial class MeshCombineUtility
+    //{
         public struct MeshElements<TIdx>
         {
             public TIdx[] idxs;
@@ -255,12 +296,15 @@ namespace Abarabone.Geometry
             (this IEnumerable<GameObject> gameObjects, Transform tfBase)
         {
             var (srcmeshes, mtsPerMesh, texhashesPerSubMesh, mtBaseInv) =
-                calculateParametorsUnmanaged(gameObjects, tfBase);
+                calculateParametors(gameObjects, tfBase);
 
             return () => new MeshElements<TIdx>
             {
                 idxs = srcmeshes.queryConvertIndices<TIdx>(mtsPerMesh).ToArray(),
-                poss = srcmeshes.queryConvertPositions(texhashesPerSubMesh, mtsPerMesh, mtBaseInv).ToArray(),
+                //poss = srcmeshes.queryConvertPositions(texhashesPerSubMesh, mtsPerMesh, mtBaseInv).ToArray(),
+                poss = srcmeshes.QuerySubMeshForVertices2<Vector3>
+                    ((md, arr) => md.GetVertices(arr), texhashesPerSubMesh, mtsPerMesh, mtBaseInv)
+                    .QueryConvertPositions2().ToArray(),
             };
         }
 
@@ -268,7 +312,7 @@ namespace Abarabone.Geometry
             (this IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect = null)
         {
             var (srcmeshes, mtsPerMesh, texhashesPerSubMesh, mtBaseInv) =
-                calculateParametorsUnmanaged(gameObjects, tfBase);
+                calculateParametors(gameObjects, tfBase);
 
             return () => new MeshElements<TIdx>
             {
@@ -280,7 +324,7 @@ namespace Abarabone.Geometry
 
 
         static (Mesh.MeshDataArray srcmeshes, Matrix4x4[] mtsPerMesh, int[] texhashesPerSubMesh, Matrix4x4 mtBaseInv)
-            calculateParametorsUnmanaged(IEnumerable<GameObject> gameObjects, Transform tfBase)
+            calculateParametors(IEnumerable<GameObject> gameObjects, Transform tfBase)
         {
             var mmts = FromObject.QueryMeshMatsTransform_IfHaving(gameObjects).ToArray();
 
@@ -298,11 +342,11 @@ namespace Abarabone.Geometry
 
             return (srcmeshes, mtsPerMesh, texhashesPerSubMesh, mtBaseInv);
         }
-    }
+    //}
 
 
-    static public partial class MeshCreatorUtility
-    {
+    //static public partial class MeshCreatorUtility
+    //{
 
         [StructLayout(LayoutKind.Sequential)]
         struct PosisionUvVertex
