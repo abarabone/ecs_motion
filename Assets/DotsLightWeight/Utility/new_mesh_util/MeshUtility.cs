@@ -51,7 +51,7 @@ namespace Abarabone.Geometry
         static IEnumerable<(int baseVertex, T idx)> queryIndices<T>
             (this Mesh.MeshDataArray srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh) where T : struct
         =>
-            from xsub in srcmeshes.QuerySubMeshForIndexData<T>(mtsPerMesh)
+            from xsub in srcmeshes.querySubMeshForIndexData<T>(mtsPerMesh)
             let mesh = xsub.mesh
             let submesh = xsub.submesh
             let mt = xsub.mt
@@ -81,7 +81,7 @@ namespace Abarabone.Geometry
                 IEnumerable<int> texhashPerSubMesh, IEnumerable<Matrix4x4> mtsPerMesh, float4x4 mtBaseInv
             )
         =>
-            from submeshdata in srcmeshes.QuerySubMeshForVertices<Vector3>
+            from submeshdata in srcmeshes.querySubMeshForVertices<Vector3>
                 ((md, arr) => md.GetVertices(arr), texhashPerSubMesh, mtsPerMesh, mtBaseInv)
             from vtx in submeshdata.submesh.VerticesWithUsing()
             select (Vector3)math.transform(submeshdata.mt, vtx)
@@ -94,7 +94,7 @@ namespace Abarabone.Geometry
                 Dictionary<int, Rect> texhashToUvRect
             )
         =>
-            from submeshdata in srcmeshes.QuerySubMeshForVertices<Vector2>
+            from submeshdata in srcmeshes.querySubMeshForVertices<Vector2>
                 ((md, arr) => md.GetUVs(0, arr), texhashPerSubMesh, mtsPerMesh, mtBaseInv)
             from uv in submeshdata.submesh.VerticesWithUsing()
             select texhashToUvRect != null
@@ -117,7 +117,7 @@ namespace Abarabone.Geometry
 
 
         static public IEnumerable<(MeshUnit mesh, SubMeshUnit<T> submesh, int texhash, Matrix4x4 mt)>
-            QuerySubMeshForVertices<T>(
+            querySubMeshForVertices<T>(
                 this Mesh.MeshDataArray srcmeshes,
                 Action<Mesh.MeshData, NativeArray<T>> getVertices,
                 IEnumerable<int> texhashPerSubMesh, IEnumerable<Matrix4x4> mtsPerMesh, Matrix4x4 mtBaseInv
@@ -134,8 +134,9 @@ namespace Abarabone.Geometry
 
 
 
-        static public IEnumerable<(MeshUnit mesh, SubMeshUnit<T> submesh, Matrix4x4 mt)>
-            QuerySubMeshForIndexData<T>(this Mesh.MeshDataArray srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh) where T : struct
+        static IEnumerable<(MeshUnit mesh, SubMeshUnit<T> submesh, Matrix4x4 mt)>
+            querySubMeshForIndexData<T>
+            (this Mesh.MeshDataArray srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh) where T : struct
         =>
             from x in (srcmeshes.AsEnumerable(), mtsPerMesh).Zip()
             let mesh = x.src0
