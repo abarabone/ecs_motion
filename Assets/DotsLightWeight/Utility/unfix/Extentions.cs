@@ -49,6 +49,33 @@ namespace Abarabone.Geometry
 			return dst;
         }
 
+		static public bool IsMuinusScale(this float4x4 mt)
+		{
+			var mtinv = math.transpose(mt);
+			var up = math.cross(mtinv.c0.xyz, mtinv.c2.xyz);
+			return Vector3.Dot(up, mtinv.c1.xyz) > 0.0f;
+		}
+
+		static public IEnumerable<IEnumerable<T>> AsTriangle<T>(this IEnumerable<T> indecies_)
+			where T : struct
+		{
+			using var e = indecies_.GetEnumerator();
+
+			while (e.MoveNext())
+			{
+				yield return tri_();
+
+				IEnumerable<T> tri_()
+				{
+					yield return e.Current; e.MoveNext();
+					//if (!e.MoveNext()) yield break;
+					yield return e.Current; e.MoveNext();
+					//if (!e.MoveNext()) yield break;
+					yield return e.Current;
+				}
+			}
+		}
+
 		/*
 		static public Vector4 ToVector4( this Quaternion q )
 		{
