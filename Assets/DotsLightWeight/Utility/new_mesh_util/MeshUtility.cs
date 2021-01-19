@@ -63,13 +63,12 @@ namespace Abarabone.Geometry.inner
     static partial class ConvertIndicesUtility
     {
 
-        public static IEnumerable<Ti> QueryConvertIndices<TIdx, Ti>
+        public static IEnumerable<TIdx> QueryConvertIndices<TIdx>
             (this Mesh.MeshDataArray srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
-            where TIdx : IIndexType<Ti>, new()
-            where Ti : struct
+            where TIdx : struct, IIndexUnit<TIdx>
         {
             return
-                from xsub in srcmeshes.QuerySubMeshForIndexData<Ti>(mtsPerMesh)
+                from xsub in srcmeshes.QuerySubMeshForIndexData<TIdx>(mtsPerMesh)
                 let mesh = xsub.mesh
                 let submesh = xsub.submesh
                 let mt = xsub.mt
@@ -77,7 +76,7 @@ namespace Abarabone.Geometry.inner
                     ? submesh.Indices().AsTriangle().Reverse()
                     : submesh.Indices().AsTriangle()
                 from idx in tri.Do(x => Debug.Log(x))
-                select new TIdx().Add(mesh.BaseVertex + submesh.Descriptor.baseVertex, idx)
+                select idx.Add(mesh.BaseVertex + submesh.Descriptor.baseVertex)
             ;
         }
 
@@ -204,17 +203,25 @@ namespace Abarabone.Geometry
         public Vector3[] nms;
     }
 
-    public interface IIndexType<T>
+    public interface IIndexUnit<T>
     {
-        public T Add(int l, T r);
+        public int Get();
+        public T Set(int newValue);
+        public T Add(int otherValue);
     }
-    public struct UI16 : IIndexType<ushort>
+    public struct UI16 : IIndexUnit<UI16>
     {
-        public ushort Add(int l, ushort r) => (ushort)(l + r);
+        public ushort value;
+        public int Get() => this.value; 
+        public UI16 Set(int newValue) { this.value = (ushort)newValue; return this; }
+        public UI16 Add(int otherValue) => new UI16 { value = (ushort)(otherValue + this.value) };
     }
-    public struct UI32 : IIndexType<uint>
+    public struct UI32 : IIndexUnit<UI32>
     {
-        public uint Add(int l, uint r) => (uint)(l + r);
+        public uint value;
+        public int Get() => (int)this.value;
+        public UI32 Set(int newValue) { this.value = (uint)newValue; return this; }
+        public UI32 Add(int otherValue) => new UI32 { value = (uint)(otherValue + this.value) };
     }
 
 
@@ -262,30 +269,28 @@ namespace Abarabone.Geometry
         //    };
         
 
-        static public Func<MeshElements<Ti>> CombinePositionMesh<TIdx, Ti>
+        static public Func<MeshElements<TIdx>> CombinePositionMesh<TIdx>
             (this IEnumerable<GameObject> gameObjects, Transform tfBase)
-            where TIdx : IIndexType<Ti>, new()
-            where Ti : struct
+            where TIdx : struct, IIndexUnit<TIdx>
         {
             var (srcmeshes, p) = calculateParametors(gameObjects, tfBase);
 
-            return () => new MeshElements<Ti>
+            return () => new MeshElements<TIdx>
             {
-                idxs = srcmeshes.QueryConvertIndices<TIdx, Ti>(p.mtsPerMesh).ToArray(),
+                idxs = srcmeshes.QueryConvertIndices<TIdx>(p.mtsPerMesh).ToArray(),
                 poss = srcmeshes.QueryConvertPositions(p).ToArray(),
             };
         }
 
-        static public Func<MeshElements<Ti>> CombinePositionUvMesh<TIdx, Ti>
+        static public Func<MeshElements<TIdx>> CombinePositionUvMesh<TIdx>
             (this IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect = null)
-            where TIdx : IIndexType<Ti>, new() 
-            where Ti : struct
+            where TIdx : struct, IIndexUnit<TIdx>
         {
             var (srcmeshes, p) = calculateParametors(gameObjects, tfBase, texhashToUvRect);
 
-            return () => new MeshElements<Ti>
+            return () => new MeshElements<TIdx>
             {
-                idxs = srcmeshes.QueryConvertIndices<TIdx, Ti>(p.mtsPerMesh).ToArray(),
+                idxs = srcmeshes.QueryConvertIndices<TIdx>(p.mtsPerMesh).ToArray(),
                 poss = srcmeshes.QueryConvertPositions(p).ToArray(),
                 uvs = srcmeshes.QueryConvertUvs(p).ToArray(),
             };
@@ -325,7 +330,7 @@ namespace Abarabone.Geometry
     {
 
         public static Mesh CreateMesh<TIdx, TVtx>(this MeshElements<TIdx> meshElements)
-            where TIdx : struct
+            where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         {
             var dstmeshes = Mesh.AllocateWritableMeshData(1);
@@ -336,7 +341,7 @@ namespace Abarabone.Geometry
 
             var idxs = src.idxs.ToArray();
             dst.AsIndex<TIdx>(idxs.Length);
-            dst.GetIndexData<TIdx>().CopyFrom(idxs);
+            dst.GetIndexData<TIdx>().CopyFrom(idxs);//.Select(x=>new TIdx().Set(x.Get()));
 
             var vtxs =  new TVtx().Replace(meshElements).ToArray();
             dst.AsPositionUv(vtxs.Length);
@@ -358,6 +363,7 @@ namespace Abarabone.Geometry
             {
                 uint ui => IndexFormat.UInt32,
                 ushort us => IndexFormat.UInt16,
+                _ => IndexFormat.UInt16,
             };
             meshdata.SetIndexBufferParams(indexLength, format);
         }

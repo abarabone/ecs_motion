@@ -13,8 +13,8 @@ public class MeshTest : MonoBehaviour
     {
         Debug.Log(this.name);
         this.mesh = this.gameObject.AsEnumerable()
-            .CombinePositionUvMesh<UI16, ushort>(this.transform)()
-            .CreateMesh<ushort, PositionUvVertex>();
+            .CombinePositionUvMesh<UI16>(this.transform)()
+            .CreateMesh<UI16, PositionUvVertex>();
 
         GetComponent<MeshFilter>().mesh = this.mesh;
     }
