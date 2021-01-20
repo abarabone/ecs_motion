@@ -16,6 +16,7 @@ namespace Abarabone.Geometry
     using Abarabone.Common.Extension;
     using Abarabone.Utilities;
     using Abarabone.Geometry.inner;
+    using Abarabone.Geometry.inner.unit;
 
 
 }

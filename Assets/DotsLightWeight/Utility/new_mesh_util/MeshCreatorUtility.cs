@@ -16,11 +16,12 @@ namespace Abarabone.Geometry
     using Abarabone.Common.Extension;
     using Abarabone.Utilities;
     using Abarabone.Geometry.inner;
+    using Abarabone.Geometry.inner.unit;
 
     static public partial class MeshCreatorUtility
     {
 
-        public static Mesh CreateMesh<TIdx, TVtx>(this MeshElements<TIdx> meshElements)
+        public static Mesh CreateMesh<TIdx, TVtx>(this MeshElements<TIdx, TVtx> meshElements)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
             where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         {
@@ -49,7 +50,7 @@ namespace Abarabone.Geometry
 
 
 
-        static IEnumerable<TVtx> selectAll<TIdx, TVtx>(this MeshElements<TIdx> src)
+        static IEnumerable<TVtx> selectAll<TIdx, TVtx>(this MeshElements<TIdx, TVtx> src)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         =>

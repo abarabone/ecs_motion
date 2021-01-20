@@ -16,11 +16,12 @@ namespace Abarabone.Geometry
     using Abarabone.Common.Extension;
     using Abarabone.Utilities;
     using Abarabone.Geometry.inner;
+    using Abarabone.Geometry.inner.unit;
 
     public static class MeshCombineUtility
     {
 
-        public static Func<MeshElements<TIdx>> BuildCombiner<TIdx, TVtx>
+        public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
             (this IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect = null)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>

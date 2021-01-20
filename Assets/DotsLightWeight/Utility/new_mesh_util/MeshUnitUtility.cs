@@ -16,10 +16,13 @@ namespace Abarabone.Geometry
     using Abarabone.Common.Extension;
     using Abarabone.Utilities;
     using Abarabone.Geometry.inner;
+    using Abarabone.Geometry.inner.unit;
 
 
 
-    public struct MeshElements<TIdx> where TIdx : struct
+    public struct MeshElements<TIdx, TVtx>
+        where TIdx : struct, IIndexUnit<TIdx>
+        where TVtx : struct, IVertexUnit<TVtx>
     {
         public TIdx[] idxs;
         public Vector3[] poss;
@@ -27,6 +30,11 @@ namespace Abarabone.Geometry
         public Vector3[] nms;
     }
 
+
+    public interface ISetBufferParams
+    {
+        void SetBufferParams(Mesh.MeshData meshdata, int elementLength);
+    }
 
 
 }

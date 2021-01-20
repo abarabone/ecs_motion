@@ -16,29 +16,35 @@ namespace Abarabone.Geometry
     using Abarabone.Common.Extension;
     using Abarabone.Utilities;
     using Abarabone.Geometry.inner;
-
+    using Abarabone.Geometry.inner.unit;
 
     [StructLayout(LayoutKind.Sequential)]
     public struct PositionVertex : IVertexUnit<PositionVertex>, ISetBufferParams
     {
+
         public Vector3 Position;
 
-        public MeshElements<TIdx> BuildCombiner<TIdx>
-            (IEnumerable<GameObject> gameObjects, Mesh.MeshData srcmeshes, AdditionalParameters p)
+
+        public MeshElements<TIdx, PositionVertex> BuildCombiner<TIdx>
+            (IEnumerable<GameObject> gameObjects, Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>
         =>
-            new MeshElements<TIdx>
+            new MeshElements<TIdx, PositionVertex>
             {
-                idxs = srcmeshes.QueryConvertIndices<TIdx>(p.mtsPerMesh).ToArray(),
+                idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtsPerMesh).ToArray(),
                 poss = srcmeshes.QueryConvertPositions(p).ToArray(),
             };
 
-        public IEnumerable<PositionVertex> SelectAll<TIdx>(MeshElements<TIdx> src) where TIdx : struct =>
+
+        public IEnumerable<PositionVertex> SelectAll<TIdx>(MeshElements<TIdx, PositionVertex> src)
+            where TIdx : struct, IIndexUnit<TIdx>
+        =>
             from x in src.poss
             select new PositionVertex
             {
                 Position = x
             };
+
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
         {

@@ -16,19 +16,16 @@ namespace Abarabone.Geometry
     using Abarabone.Common.Extension;
     using Abarabone.Utilities;
     using Abarabone.Geometry.inner;
-
-    public interface ISetBufferParams
-    {
-        void SetBufferParams(Mesh.MeshData meshdata, int elementLength);
-    }
+    using Abarabone.Geometry.inner.unit;
 
     public interface IVertexUnit<TVtx>
-        where TVtx : struct
+        where TVtx : struct, IVertexUnit<TVtx>
     {
-        MeshElements<TIdx> BuildCombiner<TIdx>
-            (IEnumerable<GameObject> gameObjects, Mesh.MeshData srcmeshes, AdditionalParameters p)
+        MeshElements<TIdx, TVtx> BuildCombiner<TIdx>
+            (IEnumerable<GameObject> gameObjects, Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>;
 
-        IEnumerable<TVtx> SelectAll<TIdx>(MeshElements<TIdx> src) where TIdx : struct;
+        IEnumerable<TVtx> SelectAll<TIdx>(MeshElements<TIdx, TVtx> src)
+            where TIdx : struct, IIndexUnit<TIdx>;
     }
 }
