@@ -19,4 +19,14 @@ namespace Abarabone.Geometry
 
 
 
+    public struct MeshElements<TIdx> where TIdx : struct
+    {
+        public TIdx[] idxs;
+        public Vector3[] poss;
+        public Vector2[] uvs;
+        public Vector3[] nms;
+    }
+
+
+
 }

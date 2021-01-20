@@ -18,5 +18,4 @@ namespace Abarabone.Geometry
     using Abarabone.Geometry.inner;
 
 
-
 }
