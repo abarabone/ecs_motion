@@ -44,21 +44,14 @@ namespace Abarabone.Geometry.inner.unit
 
     public struct SubMeshUnit<T> where T : struct
     {
-        public SubMeshUnit(int i, SubMeshDescriptor descriptor, NativeArray<T> srcArray)
+        public SubMeshUnit(int i, SubMeshDescriptor descriptor, Func<IEnumerable<T>> elements)
         {
             this.SubMeshIndex = i;
             this.Descriptor = descriptor;
-            this.srcArray = srcArray;
+            this.Elements = elements;
         }
         public readonly int SubMeshIndex;
         public readonly SubMeshDescriptor Descriptor;
-        readonly NativeArray<T> srcArray;
-
-        public IEnumerable<T> Indices() => this.srcArray.Range(this.Descriptor.indexStart, this.Descriptor.indexCount);
-        public IEnumerable<T> Vertices() => this.srcArray.Range(this.Descriptor.firstVertex, this.Descriptor.vertexCount);
-        public IEnumerable<T> IndicesWithUsing() { using (this.srcArray) return Indices(); }
-        public IEnumerable<T> VerticesWithUsing() { using (this.srcArray) return Vertices(); }
-
         public readonly Func<IEnumerable<T>> Elements;
     }
 

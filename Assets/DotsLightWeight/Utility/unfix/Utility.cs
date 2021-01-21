@@ -16,7 +16,12 @@ namespace Abarabone.Utilities
     static public class Extentions
     {
 
-        public static IEnumerable<T> Using<T>(this IEnumerable<T> src) where T : IDisposable
+        public static IEnumerable<T> Using<T, Tsrc>(this Tsrc src) where Tsrc : IDisposable, IEnumerable<T>
+        {
+            using (src) foreach (var e in src) yield return e;
+        }
+
+        public static IEnumerable<T> UsingEach<T>(this IEnumerable<T> src) where T : IDisposable
         {
             foreach (var e in src)
             {

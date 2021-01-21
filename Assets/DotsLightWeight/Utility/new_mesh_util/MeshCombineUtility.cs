@@ -21,6 +21,13 @@ namespace Abarabone.Geometry
     public static class MeshCombineUtility
     {
 
+        public static Task<MeshElements<TIdx, TVtx>> ToTask<TIdx, TVtx>(this Func<MeshElements<TIdx, TVtx>> f)
+            where TIdx : struct, IIndexUnit<TIdx>
+            where TVtx : struct, IVertexUnit<TVtx>
+        =>
+            Task.Run(f);
+
+
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
             (this IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect = null)
             where TIdx : struct, IIndexUnit<TIdx>
