@@ -58,6 +58,8 @@ namespace Abarabone.Geometry.inner.unit
         public IEnumerable<T> Vertices() => this.srcArray.Range(this.Descriptor.firstVertex, this.Descriptor.vertexCount);
         public IEnumerable<T> IndicesWithUsing() { using (this.srcArray) return Indices(); }
         public IEnumerable<T> VerticesWithUsing() { using (this.srcArray) return Vertices(); }
+
+        public readonly Func<IEnumerable<T>> Elements;
     }
 
 }
