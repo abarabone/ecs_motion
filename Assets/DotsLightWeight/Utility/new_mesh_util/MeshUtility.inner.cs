@@ -16,7 +16,7 @@ namespace Abarabone.Geometry.inner
     using Abarabone.Common.Extension;
     using Abarabone.Utilities;
     using Abarabone.Geometry.inner.unit;
-
+    using Abarabone.Misc;
 
 
     static class MeshQyeryUtility
@@ -104,7 +104,7 @@ namespace Abarabone.Geometry.inner
 
         public static IEnumerable<(Matrix4x4 mt, MeshUnit mesh, IEnumerable<SubMeshUnit<T>> submeshes)>
             QuerySubMeshForIndexData<T>(this Mesh.MeshDataArray srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
-            where T : struct
+            where T : struct, IIndexUnit<T>
         =>
             from x in (srcmeshes.AsEnumerable(), mtsPerMesh).Zip()
             let mesh = x.src0
@@ -124,7 +124,7 @@ namespace Abarabone.Geometry.inner
         public static IEnumerable<SubMeshUnit<T>> QuerySubmeshesForVertices<T>
             (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc) where T : struct
         {
-            var array = new NativeArray<T>(meshdata.vertexCount, Allocator.Temp);
+            var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
             getElementSrc(meshdata, array);
 
             return
@@ -135,15 +135,26 @@ namespace Abarabone.Geometry.inner
         }
 
         public static IEnumerable<SubMeshUnit<T>> QuerySubmeshesForIndexData<T>
-            (this Mesh.MeshData meshdata) where T : struct
+            (this Mesh.MeshData meshdata) where T : struct, IIndexUnit<T>
         {
-            var array = meshdata.GetIndexData<T>();
-
             return
                 from i in 0.Inc(meshdata.subMeshCount)
                 let desc = meshdata.GetSubMesh(i)
-                select new SubMeshUnit<T>(i, desc, () => array.range(desc.indexStart, desc.indexCount))
+                select new SubMeshUnit<T>(i, desc, () => getIndexDataNativeArray_(desc))
                 ;
+
+            IEnumerable<T> getIndexDataNativeArray_(SubMeshDescriptor desc) =>
+                meshdata.indexFormat switch
+                {
+                    IndexFormat.UInt16 =>
+                        !(default(T) is ushort)
+                            ? meshdata.GetIndexData<ushort>().Select(x => new T().Add(x)).ToNativeArray<T>(Allocator.TempJob).rangeWithUsing(desc.indexStart, desc.indexCount)
+                            : meshdata.GetIndexData<T>().range(desc.indexStart, desc.indexCount),
+                    IndexFormat.UInt32 =>
+                        !(default(T) is uint)
+                            ? meshdata.GetIndexData<uint>().Select(x => new T().Add((int)x)).ToNativeArray<T>(Allocator.TempJob).rangeWithUsing(desc.indexStart, desc.indexCount)
+                            : meshdata.GetIndexData<T>().range(desc.indexStart, desc.indexCount),
+                };
         }
 
 
