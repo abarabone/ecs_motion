@@ -14,15 +14,38 @@ namespace Abarabone.Geometry
 	static class TexturePackingUtility
 	{
 
-		static public Texture2D[] QueryUniqueTextures(this IEnumerable<Material[]> matss) =>
-			matss
-				.SelectMany()
-				.Select(mat => mat.mainTexture)
-				.OfType<Texture2D>()
-				.Distinct()
-				.ToArray();
+		/// <summary>
+		/// 
+		/// </summary>
+		static public (Texture2D atlas, Dictionary<int, Rect> texhashToUvRect)
+			PackTextureAndToHashToUvRectDict(this IEnumerable<GameObject> objects)
+		{
+			var mats = objects.QueryMeshMatsTransform_IfHaving().Select(x => x.mats).SelectMany();
+			var uniqueTextures = mats.QueryUniqueTextures().ToArray();
 
-		static public (Texture2D, Rect[]) PackTexture(this IEnumerable<Texture2D> srcTextures)
+			var (atlas, uvRects) = uniqueTextures.IsSingle()
+				? (uniqueTextures.First(), new Rect(0,0,1,1).AsEnumerable())
+				: uniqueTextures.PackTexture();
+
+
+			var uvRectsDict = (uniqueTextures, uvRects).ToHashToUvRectDict();
+
+			return (atlas, uvRectsDict);
+		}
+
+
+		/// <summary>
+		/// 
+		/// </summary>
+		static public IEnumerable<Texture2D> QueryUniqueTextures(this IEnumerable<Material> mats) =>
+			mats.Select(mat => mat.mainTexture)
+				.OfType<Texture2D>()
+				.Distinct();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		static public (Texture2D atlas, Rect[] uvRects) PackTexture(this IEnumerable<Texture2D> srcTextures)
 		{
 			//var dstTexture = new Texture2D( 0, 0 );
 			var dstTexture = new Texture2D
@@ -34,7 +57,10 @@ namespace Abarabone.Geometry
 			return (dstTexture, uvRects);
 		}
 
-		static public Dictionary<Texture2D, Rect> MakeTextureToUvOffsetDict
+		/// <summary>
+		/// 
+		/// </summary>
+		static public Dictionary<Texture2D, Rect> ToTextureToUvRectDict
 			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x)
 		{
 			var uvOffsetDict = x.Zip()
@@ -43,7 +69,10 @@ namespace Abarabone.Geometry
 			return uvOffsetDict;
 		}
 
-		static public Dictionary<int, Rect> MakeTextureHashToUvOffsetDict
+		/// <summary>
+		/// 
+		/// </summary>
+		static public Dictionary<int, Rect> ToHashToUvRectDict
 			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x)
 		{
 			var uvOffsetDict = x.Zip()
@@ -51,6 +80,10 @@ namespace Abarabone.Geometry
 
 			return uvOffsetDict;
 		}
+
+
+
+		// ˆÈ‰º‚Í”pŽ~—\’è
 
 		static public (Vector2[][][] uvsss, int[][] texhashess) ToUvTranslateSource
 			(this (IEnumerable<Mesh> meshes, IEnumerable<Material[]> matss) x)

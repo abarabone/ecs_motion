@@ -38,10 +38,10 @@ namespace Abarabone.Geometry
             };
 
 
-        public IEnumerable<PositionUvVertex> SelectAll<TIdx>(MeshElements<TIdx, PositionUvVertex> src)
+        public IEnumerable<PositionUvVertex> Packing<TIdx>(MeshElements<TIdx, PositionUvVertex> src)
             where TIdx : struct, IIndexUnit<TIdx>
         =>
-            from x in (src.poss.Do(x => Debug.Log(x)), src.uvs).Zip()
+            from x in (src.poss, src.uvs).Zip()
             select new PositionUvVertex
             {
                 Position = x.src0,

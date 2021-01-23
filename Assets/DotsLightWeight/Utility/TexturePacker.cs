@@ -48,13 +48,13 @@ namespace Abarabone.Geometry
 			(IEnumerable<Mesh> meshes, IEnumerable<Material[]> matss)
 		{
 
-			var uniqueTextures = matss.QueryUniqueTextures();
+			var uniqueTextures = matss.SelectMany().QueryUniqueTextures();
 			if (uniqueTextures.IsSingle()) return (uniqueTextures.First(), meshes);
 
 			var (atlas, uvOffsets) = uniqueTextures.PackTexture();
 
 
-			var uvOffsetDict = (uniqueTextures, uvOffsets).MakeTextureToUvOffsetDict();
+			var uvOffsetDict = (uniqueTextures, uvOffsets).ToTextureToUvRectDict();
 
 			var qNewUv = meshes.QueryTranslatedUv(matss, uvOffsetDict);
 

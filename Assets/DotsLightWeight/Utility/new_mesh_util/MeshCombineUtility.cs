@@ -21,17 +21,23 @@ namespace Abarabone.Geometry
     public static class MeshCombineUtility
     {
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
             (this IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect = null)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         {
-            var (srcmeshes, p) = gameObjects.calculateParametors(tfBase);
+            var (srcmeshes, p) = gameObjects.calculateParametors(tfBase, texhashToUvRect);
 
             return () => new TVtx().BuildCombiner<TIdx>(gameObjects, srcmeshes, p);
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static Task<MeshElements<TIdx, TVtx>> ToTask<TIdx, TVtx>(this Func<MeshElements<TIdx, TVtx>> f)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
@@ -43,15 +49,16 @@ namespace Abarabone.Geometry
         static (Mesh.MeshDataArray, AdditionalParameters) calculateParametors
             (this IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect = null)
         {
-            var mmts = FromObject.QueryMeshMatsTransform_IfHaving(gameObjects).ToArray();
+            var mmts = gameObjects.QueryMeshMatsTransform_IfHaving().Do(x => Debug.Log(x.mesh.name)).ToArray();
 
             var meshesPerMesh = mmts.Select(x => x.mesh).ToArray();
             var mtsPerMesh = mmts.Select(x => x.tf.localToWorldMatrix).ToArray();
             var texhashesPerSubMesh = (
                 from mmt in mmts
-                from mat in mmt.mats
-                select mat.mainTexture?.GetHashCode() ?? 0
-            ).ToArray();
+                select
+                    from mat in mmt.mats
+                    select mat.mainTexture?.GetHashCode() ?? default
+            ).ToArrayRecursive2();
 
             var mtBaseInv = tfBase.worldToLocalMatrix;
 

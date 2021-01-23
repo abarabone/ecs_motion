@@ -47,7 +47,7 @@ namespace Abarabone.Geometry.inner
             from tri in x.mt.IsMuinusScale()
                 ? submesh.Elements().AsTriangle().Reverse()
                 : submesh.Elements().AsTriangle()
-            from idx in tri.Do(x => Debug.Log(x))//
+            from idx in tri//.Do(x => Debug.Log(x))//
             select idx.Add(x.mesh.BaseVertex + submesh.Descriptor.baseVertex)
             ;
         
@@ -59,7 +59,7 @@ namespace Abarabone.Geometry.inner
         static public IEnumerable<Vector3> QueryConvertPositions
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
         =>
-            from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetVertices(arr))
+            from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetVertices(arr), VertexAttribute.Position)
             from xsub in x.submeshes
             from vtx in xsub.submesh.Elements()
             select (Vector3)math.transform(x.mt, vtx)
@@ -69,7 +69,7 @@ namespace Abarabone.Geometry.inner
         static public IEnumerable<Vector2> QueryConvertUvs
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p, int channel)
         =>
-            from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr))
+            from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), VertexAttribute.TexCoord0)
             from xsub in x.submeshes
             from uv in xsub.submesh.Elements()
             select p.texhashToUvRect != null
@@ -87,15 +87,17 @@ namespace Abarabone.Geometry.inner
             QuerySubMeshForVertices<T>(
                 this Mesh.MeshDataArray srcmeshes,
                 AdditionalParameters p,
-                Action<Mesh.MeshData, NativeArray<T>> getElementSrc
+                Action<Mesh.MeshData, NativeArray<T>> getElementSrc,
+                VertexAttribute attr
             ) where T : struct
         =>
-            from x in (srcmeshes.AsEnumerable(), p.mtsPerMesh).Zip()
-            let submeshes = x.src0.MeshData.QuerySubmeshesForVertices(getElementSrc)
+            from x in (srcmeshes.AsEnumerable(), p.mtsPerMesh, p.texhashPerSubMesh).Zip()
+            let submeshes = x.src0.MeshData.QuerySubmeshesForVertices(getElementSrc, attr)
             let mt = p.mtBaseInv * x.src1
+            let texhashes = x.src2
             select (
                 mt,
-                from xsub in (submeshes, p.texhashPerSubMesh).Zip()
+                from xsub in (submeshes, texhashes).Zip()//.Do(x => Debug.Log(x.src1+p.texhashToUvRect[x.src1].ToString()))
                 let submesh = xsub.src0
                 let texhash = xsub.src1
                 select (submesh, texhash)
@@ -122,11 +124,13 @@ namespace Abarabone.Geometry.inner
     {
 
         public static IEnumerable<SubMeshUnit<T>> QuerySubmeshesForVertices<T>
-            (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc) where T : struct
+            (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr) where T : struct
         {
             var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
-            getElementSrc(meshdata, array);
-
+            if (meshdata.GetVertexAttributeDimension(attr) > 0)
+            {
+                getElementSrc(meshdata, array);
+            }
             return
                 from i in 0.Inc(meshdata.subMeshCount)
                 let desc = meshdata.GetSubMesh(i)

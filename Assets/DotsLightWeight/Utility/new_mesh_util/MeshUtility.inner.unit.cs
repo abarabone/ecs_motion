@@ -23,7 +23,7 @@ namespace Abarabone.Geometry.inner.unit
     {
         public Matrix4x4 mtBaseInv;
         public IEnumerable<Matrix4x4> mtsPerMesh;
-        public IEnumerable<int> texhashPerSubMesh;
+        public IEnumerable<IEnumerable<int>> texhashPerSubMesh;
         public Dictionary<int, Rect> texhashToUvRect;
     }
 

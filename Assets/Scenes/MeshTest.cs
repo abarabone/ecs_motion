@@ -15,12 +15,18 @@ public class MeshTest : MonoBehaviour
     void Start()
     {
         Debug.Log(this.name);
-        this.mesh = this.gameObject.ChildrenAndSelf().Do(x => Debug.Log(x))
-            .BuildCombiner<UI32, PositionUvVertex>(this.transform)
+        var objs = this.GetComponentsInChildren<Transform>().Select(x => x.gameObject);
+        var tex = objs.PackTextureAndToHashToUvRectDict();
+        this.mesh = objs//.Do(x => Debug.Log(x))
+            .BuildCombiner<UI32, PositionUvVertex>(this.transform, tex.texhashToUvRect)
             .ToTask().Result
             .CreateMesh();
 
         GetComponent<MeshFilter>().mesh = this.mesh;
+        var r = GetComponent<Renderer>();
+        var mat = new Material(r.material);
+        mat.mainTexture = tex.atlas;
+        r.material = mat;
     }
 
 }

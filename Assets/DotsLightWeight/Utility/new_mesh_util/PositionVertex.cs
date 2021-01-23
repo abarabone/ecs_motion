@@ -36,7 +36,7 @@ namespace Abarabone.Geometry
             };
 
 
-        public IEnumerable<PositionVertex> SelectAll<TIdx>(MeshElements<TIdx, PositionVertex> src)
+        public IEnumerable<PositionVertex> Packing<TIdx>(MeshElements<TIdx, PositionVertex> src)
             where TIdx : struct, IIndexUnit<TIdx>
         =>
             from x in src.poss

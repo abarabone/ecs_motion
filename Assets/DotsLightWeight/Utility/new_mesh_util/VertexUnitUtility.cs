@@ -25,7 +25,7 @@ namespace Abarabone.Geometry
             (IEnumerable<GameObject> gameObjects, Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>;
 
-        IEnumerable<TVtx> SelectAll<TIdx>(MeshElements<TIdx, TVtx> src)
+        IEnumerable<TVtx> Packing<TIdx>(MeshElements<TIdx, TVtx> src)
             where TIdx : struct, IIndexUnit<TIdx>;
     }
 }

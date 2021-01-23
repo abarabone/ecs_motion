@@ -54,7 +54,7 @@ namespace Abarabone.Geometry
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         =>
-            new TVtx().SelectAll(src);
+            new TVtx().Packing(src);
 
         static void setBufferParams<T>(this Mesh.MeshData meshdata, int elementLength)
             where T : struct, ISetBufferParams
