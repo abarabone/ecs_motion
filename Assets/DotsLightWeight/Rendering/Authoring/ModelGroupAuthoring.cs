@@ -12,6 +12,7 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Geometry;
     using Abarabone.Draw;
     using Abarabone.Utilities;
+    using Abarabone.Common.Extension;
 
 
     /// <summary>
@@ -33,7 +34,7 @@ namespace Abarabone.Model.Authoring
 
         public ModelAuthoringBase[] ModelPrefabs;
 
-        //public bool MakeTexutreAtlus;
+        public bool MakeTexutreAtlus;
 
 
         public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
@@ -44,6 +45,21 @@ namespace Abarabone.Model.Authoring
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
+
+            if (this.MakeTexutreAtlus)
+            {
+                var tex =
+                    this.GetComponentsInChildren<Transform>()
+                    .Select(x => x.gameObject)
+                    .PackTextureAndToHashToUvRectDict();
+                
+                var holder = conversionSystem.GetTextureAtlasHolder();
+                foreach (var prefab in this.ModelPrefabs)
+                {
+                    holder.objectToAtlas.Add(prefab.gameObject, tex.atlas);
+                }
+                holder.texHashToUvRect.dict.a
+            }
 
             // モデルグループ自体にはエンティティは不要
             dstManager.DestroyEntity( entity );

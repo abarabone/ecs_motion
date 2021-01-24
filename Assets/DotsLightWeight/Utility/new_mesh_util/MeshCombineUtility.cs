@@ -25,11 +25,11 @@ namespace Abarabone.Geometry
         /// 
         /// </summary>
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
-            (this IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect = null)
+            (this IEnumerable<GameObject> gameObjects, Transform tfBase, (Texture2D atlas, HashToRect texhashToUvRect) tex = default)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         {
-            var (srcmeshes, p) = gameObjects.calculateParametors(tfBase, texhashToUvRect);
+            var (srcmeshes, p) = gameObjects.calculateParametors(tfBase, tex);
 
             return () => new TVtx().BuildCombiner<TIdx>(gameObjects, srcmeshes, p);
         }
@@ -47,7 +47,7 @@ namespace Abarabone.Geometry
 
 
         static (Mesh.MeshDataArray, AdditionalParameters) calculateParametors
-            (this IEnumerable<GameObject> gameObjects, Transform tfBase, Dictionary<int, Rect> texhashToUvRect = null)
+            (this IEnumerable<GameObject> gameObjects, Transform tfBase, (Texture2D atlas, HashToRect texhashToUvRect) tex)
         {
             var mmts = gameObjects.QueryMeshMatsTransform_IfHaving().Do(x => Debug.Log(x.mesh.name)).ToArray();
 
@@ -68,8 +68,9 @@ namespace Abarabone.Geometry
             {
                 mtsPerMesh = mtsPerMesh,
                 texhashPerSubMesh = texhashesPerSubMesh,
+                atlasHash = tex.atlas.GetHashCode(),
                 mtBaseInv = mtBaseInv,
-                texhashToUvRect = texhashToUvRect,
+                texhashToUvRect = tex.texhashToUvRect,
             });
         }
 

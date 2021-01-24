@@ -9,13 +9,19 @@ namespace Abarabone.Geometry
 	using Abarabone.Common.Extension;
 	using Abarabone.Utilities;
 
-
-	public struct TextureHashKey
+	public class HashToRect
 	{
-		public int atlas;
-		public int part;
+		public Dictionary<(int atlas, int part), Rect> dict;
+		public Rect this[int atlas, int part]
+        {
+			set => this.dict[(atlas, part)] = value;
+			get => this.dict[(atlas, part)];
+		}
+		public static implicit operator
+			Dictionary<(int atlas, int part), Rect>(HashToRect d) => d.dict;
+		public static implicit operator
+			HashToRect(Dictionary<(int atlas, int part), Rect> d) => new HashToRect { dict=d };
 	}
-
 
 	static class TexturePackingUtility
 	{
@@ -23,7 +29,7 @@ namespace Abarabone.Geometry
 		/// <summary>
 		/// 
 		/// </summary>
-		static public (Texture2D atlas, Dictionary<int, Rect> texhashToUvRect)
+		static public (Texture2D atlas, HashToRect texhashToUvRect)
 			PackTextureAndToHashToUvRectDict(this IEnumerable<GameObject> objects)
 		{
 			var mats = objects.QueryMeshMatsTransform_IfHaving().Select(x => x.mats).SelectMany();
@@ -34,7 +40,7 @@ namespace Abarabone.Geometry
 				: uniqueTextures.PackTexture();
 
 
-			var uvRectsDict = (uniqueTextures, uvRects).ToHashToUvRectDict();
+			var uvRectsDict = (uniqueTextures, uvRects).ToHashToUvRectDict(atlas);
 
 			return (atlas, uvRectsDict);
 		}
@@ -80,24 +86,17 @@ namespace Abarabone.Geometry
 		/// <summary>
 		/// 
 		/// </summary>
-		static public Dictionary<TextureHashKey, Rect> ToHashToUvRectDict
+		static public HashToRect ToHashToUvRectDict
 			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x, Texture2D atlas)
 		{
-			var qTexs =
-				from t in x.uniqueTextures
-				select new TextureHashKey
-				{
-					atlas = atlas.GetHashCode(),
-					part = t.GetHashCode(),
-				};
-
-			var uvRectDict = (qTexs, x.uvRects).Zip()
+			var qKeys =
+				from tex in x.uniqueTextures
+				select (atlas.GetHashCode(), tex.GetHashCode())
+				;
+			var uvRectDict = (qKeys, x.uvRects).Zip()
 				.ToDictionary(x => x.src0, x => x.src1);
 
-			var dummyKey = new TextureHashKey
-			{
-				atlas = atlas.GetHashCode()
-			};
+			var dummyKey = (atlas.GetHashCode(), 0);
 			uvRectDict.Add(dummyKey, new Rect(0, 0, 1, 1));
 
 			return uvRectDict;

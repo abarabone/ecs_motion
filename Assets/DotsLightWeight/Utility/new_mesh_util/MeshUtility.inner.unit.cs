@@ -18,13 +18,14 @@ namespace Abarabone.Geometry.inner.unit
     using Abarabone.Geometry.inner;
 
 
-
     public struct AdditionalParameters
     {
         public Matrix4x4 mtBaseInv;
         public IEnumerable<Matrix4x4> mtsPerMesh;
+        
+        public int atlasHash;
         public IEnumerable<IEnumerable<int>> texhashPerSubMesh;
-        public Dictionary<int, Rect> texhashToUvRect;
+        public HashToRect texhashToUvRect;
     }
 
 
