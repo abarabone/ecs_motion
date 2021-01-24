@@ -39,6 +39,7 @@ namespace Abarabone.Geometry
 		/// </summary>
 		static public IEnumerable<Texture2D> QueryUniqueTextures(this IEnumerable<Material> mats) =>
 			mats.Select(mat => mat.mainTexture)
+				.Where(x => x != null)
 				.OfType<Texture2D>()
 				.Distinct();
 
@@ -63,10 +64,10 @@ namespace Abarabone.Geometry
 		static public Dictionary<Texture2D, Rect> ToTextureToUvRectDict
 			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x)
 		{
-			var uvOffsetDict = x.Zip()
+			var uvRectDict = x.Zip()
 				.ToDictionary(x => x.src0, x => x.src1);
 
-			return uvOffsetDict;
+			return uvRectDict;
 		}
 
 		/// <summary>
@@ -75,10 +76,12 @@ namespace Abarabone.Geometry
 		static public Dictionary<int, Rect> ToHashToUvRectDict
 			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x)
 		{
-			var uvOffsetDict = x.Zip()
-				.ToDictionary(x => x.src0?.GetHashCode() ?? default, x => x.src1);
+			var uvRectDict = x.Zip()
+				.ToDictionary(x => x.src0.GetHashCode(), x => x.src1);
 
-			return uvOffsetDict;
+			uvRectDict.Add(0, new Rect(0, 0, 1, 1));
+
+			return uvRectDict;
 		}
 
 
