@@ -50,32 +50,32 @@ namespace Abarabone.Draw.Authoring
         /// </summary>
         static public GameObject[] BuildMeshesForModelEntity
             (
-                this GameObjectConversionSystem gcs_,
-                GameObject main_, GameObject[] lods_,
+                this GameObjectConversionSystem gcs,
+                GameObject main, GameObject[] lods,
                 Func<Func<MeshCombinerElements>[]> getMeshCombineFuncs
             )
         {
-            var result = new List<GameObject>(lods_.Length);
+            var result = new List<GameObject>(lods.Length);
 
-            if(lods_.Length == 0 || lods_.Where(x => x == null).Any())
+            if(lods.Length == 0 || lods.Where(x => x == null).Any())
             {
-                if(!gcs_.IsExistingInMeshDictionary(main_))
+                if(!gcs.IsExistingInMeshDictionary(main))
                 {
-                    var mesh = main_.GetComponentInChildren<MeshFilter>().sharedMesh;
-                    gcs_.AddToMeshDictionary(main_, mesh);
+                    var mesh = main.GetComponentInChildren<MeshFilter>().sharedMesh;
+                    gcs.AddToMeshDictionary(main, mesh);
                 }
 
-                result.Add(main_);
+                result.Add(main);
             }
 
             var meshfuncs = getMeshCombineFuncs();
 
-            foreach(var (lod, f) in (lods_, meshfuncs).Zip().Where(x => x.src0 != null))
+            foreach(var (lod, f) in (lods, meshfuncs).Zip().Where(x => x.src0 != null))
             {
-                if (!gcs_.IsExistingInMeshDictionary(lod))
+                if (!gcs.IsExistingInMeshDictionary(lod))
                 {
                     var mesh = f().CreateMesh();
-                    gcs_.AddToMeshDictionary(lod, mesh);
+                    gcs.AddToMeshDictionary(lod, mesh);
                 }
 
                 result.Add(lod);
