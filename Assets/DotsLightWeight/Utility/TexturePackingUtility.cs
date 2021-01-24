@@ -10,6 +10,12 @@ namespace Abarabone.Geometry
 	using Abarabone.Utilities;
 
 
+	public struct TextureHashKey
+	{
+		public int atlas;
+		public int part;
+	}
+
 
 	static class TexturePackingUtility
 	{
@@ -70,16 +76,29 @@ namespace Abarabone.Geometry
 			return uvRectDict;
 		}
 
+
 		/// <summary>
 		/// 
 		/// </summary>
-		static public Dictionary<int, Rect> ToHashToUvRectDict
-			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x)
+		static public Dictionary<TextureHashKey, Rect> ToHashToUvRectDict
+			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x, Texture2D atlas)
 		{
-			var uvRectDict = x.Zip()
-				.ToDictionary(x => x.src0.GetHashCode(), x => x.src1);
+			var qTexs =
+				from t in x.uniqueTextures
+				select new TextureHashKey
+				{
+					atlas = atlas.GetHashCode(),
+					part = t.GetHashCode(),
+				};
 
-			uvRectDict.Add(0, new Rect(0, 0, 1, 1));
+			var uvRectDict = (qTexs, x.uvRects).Zip()
+				.ToDictionary(x => x.src0, x => x.src1);
+
+			var dummyKey = new TextureHashKey
+			{
+				atlas = atlas.GetHashCode()
+			};
+			uvRectDict.Add(dummyKey, new Rect(0, 0, 1, 1));
 
 			return uvRectDict;
 		}

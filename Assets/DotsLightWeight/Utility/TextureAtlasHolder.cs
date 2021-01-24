@@ -9,6 +9,10 @@ namespace Abarabone.Geometry
 
     public class TextureAtlasHolderData : IComponentData
     {
+        // ゲームオブジェクト、プレハブからアトラスを取得する
+        public Dictionary<GameObject, Texture2D> objectToAtlas;
+
+        // アトラスとパートテクスチャからＵＶ調整矩形を取得する
         public Dictionary<TextureHashKey, Rect> texHashToUvRect;
     }
 
@@ -22,7 +26,7 @@ namespace Abarabone.Geometry
 
             var newHolder = new TextureAtlasHolderData
             {
-                texHashToUvRect = new Dictionary<int, Rect>(),
+                texHashToUvRect = new Dictionary<TextureHashKey, Rect>(),
             };
             gcs.SetSingleton(holder);
             return newHolder;
