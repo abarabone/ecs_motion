@@ -48,7 +48,7 @@ namespace Abarabone.Geometry
 			(IEnumerable<Mesh> meshes, IEnumerable<Material[]> matss)
 		{
 
-			var uniqueTextures = matss.SelectMany().QueryUniqueTextures();
+			var uniqueTextures = matss.SelectMany().queryUniqueTextures();
 			if (uniqueTextures.IsSingle()) return (uniqueTextures.First(), meshes);
 
 			var (atlas, uvOffsets) = uniqueTextures.PackTexture();

@@ -52,18 +52,37 @@ namespace Abarabone.Model.Authoring
                     this.GetComponentsInChildren<Transform>()
                     .Select(x => x.gameObject)
                     .PackTextureAndToHashToUvRectDict();
-                
+
                 var holder = conversionSystem.GetTextureAtlasHolder();
                 foreach (var prefab in this.ModelPrefabs)
                 {
                     holder.objectToAtlas.Add(prefab.gameObject, tex.atlas);
                 }
-                holder.texHashToUvRect.dict.a
+
             }
 
             // モデルグループ自体にはエンティティは不要
             dstManager.DestroyEntity( entity );
-            
+
+            return;
+
+
+            void setAtlasForObject_(IEnumerable<ModelAuthoringBase> prefabs, Texture2D atlas)
+            {
+                var holder = conversionSystem.GetTextureAtlasHolder();
+                foreach (var prefab in prefabs)
+                {
+                    holder.objectToAtlas.Add(prefab.gameObject, atlas);
+                }
+            }
+            void addUvRectsToDictionary_(IEnumerable<ModelAuthoringBase> prefabs, Texture2D atlas)
+            {
+                var holder = conversionSystem.GetTextureAtlasHolder();
+                foreach (var prefab in prefabs)
+                {
+                    holder.objectToAtlas.Add(prefab.gameObject, atlas);
+                }
+            }
         }
         
 
