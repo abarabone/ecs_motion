@@ -38,10 +38,21 @@ namespace Abarabone.Utilities
         public static bool IsSingle<T>(this IEnumerable<T> src) => src.Any() && src.Skip(1).IsEmpty();
 
 
-		/// <summary>
-		/// 値を取得、keyがなければデフォルト値を設定し、デフォルト値を取得
-		/// </summary>
-		public static TV GetOrDefault<TK, TV>(this Dictionary<TK, TV> dic, TK key,TV defaultValue = default(TV))
+
+
+        static public Dictionary<TKey, TValue> ToDictionary<TKey, TValue>
+            (this (IEnumerable<TKey> keys, IEnumerable<TValue> values) src)
+        =>
+            src.Zip().ToDictionary(x => x.src0, x => x.src1);
+
+
+
+
+
+        /// <summary>
+        /// 値を取得、keyがなければデフォルト値を設定し、デフォルト値を取得
+        /// </summary>
+        public static TV GetOrDefault<TK, TV>(this Dictionary<TK, TV> dic, TK key,TV defaultValue = default(TV))
 		{
 			return dic.TryGetValue(key, out var result) ? result : defaultValue;
 		}

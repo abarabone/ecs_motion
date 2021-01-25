@@ -51,10 +51,10 @@ namespace Abarabone.Geometry
 			var uniqueTextures = matss.SelectMany().queryUniqueTextures();
 			if (uniqueTextures.IsSingle()) return (uniqueTextures.First(), meshes);
 
-			var (atlas, uvOffsets) = uniqueTextures.PackTexture();
+			var (atlas, uvOffsets) = uniqueTextures.PackTextureOrPassThrough();
 
 
-			var uvOffsetDict = (uniqueTextures, uvOffsets).ToTextureToUvRectDict();
+			var uvOffsetDict = (uniqueTextures, uvOffsets).ToDictionary();
 
 			var qNewUv = meshes.QueryTranslatedUv(matss, uvOffsetDict);
 
