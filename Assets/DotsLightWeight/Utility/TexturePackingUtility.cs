@@ -29,16 +29,16 @@ namespace Abarabone.Geometry
 		/// <summary>
 		/// 
 		/// </summary>
-		static public (Texture2D atlas, IEnumerable<(int atlas, int part)> , IEnumerable<Rect> uvRects)
+		static public (Texture2D atlas, (IEnumerable<(int atlas, int part)> texkeyhashes, Rect[] uvRects) offsets)
 			PackTextureAndMakeHashAndUvRectPairs(this IEnumerable<GameObject> objects)
 		{
 			var uniqueTextures = objects.queryUniqueTextures().ToArray();
 
 			var (atlas, uvRects) = uniqueTextures.PackTextureOrPassThrough();
 
-			var qKeyHash = (atlas, uniqueTextures).queryKeyHashes();
+			var qKeyHash = uniqueTextures.queryKeyHashes(atlas);
 
-			return (atlas, qKeyHash, uvRects);
+			return (atlas, (qKeyHash, uvRects));
 		}
 
 
@@ -84,11 +84,12 @@ namespace Abarabone.Geometry
 
 			return (qKeysWithEmpty, qValueWithEmpty);
 		}
+
 		static IEnumerable<(int, int)> queryKeyHashes
-			(this (Texture2D atlas, IEnumerable<Texture2D> uniqueTextures) x)
+			(this IEnumerable<Texture2D> uniqueTextures, Texture2D atlas)
 		=>
-			from tex in x.uniqueTextures
-			select (x.atlas.GetHashCode(), tex.GetHashCode())
+			from tex in uniqueTextures
+			select (atlas.GetHashCode(), tex.GetHashCode())
 			;
 
 

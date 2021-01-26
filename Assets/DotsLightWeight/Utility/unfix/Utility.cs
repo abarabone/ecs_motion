@@ -45,6 +45,13 @@ namespace Abarabone.Utilities
         =>
             src.Zip().ToDictionary(x => x.src0, x => x.src1);
 
+        static public Dictionary<TKey, TValue> ToDictionaryOrNull<TKey, TValue>
+            (this (IEnumerable<TKey> keys, IEnumerable<TValue> values) src)
+        {
+            if (src.keys == null || src.values == null) return null;
+
+            return src.ToDictionary();
+        }
 
 
 

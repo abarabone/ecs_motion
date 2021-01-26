@@ -21,7 +21,8 @@ namespace Abarabone.Model.Authoring
     /// できればシェーダーでも描画順をまとめいたいけど、unity はマテリアル単位の設定なので無理かな…？
     /// unity が自動的にやってくれてる可能性もある。
     /// </summary>
-    [UpdateAfter(typeof(GameObjectBeforeConversionGroup))]
+    //[UpdateAfter(typeof(GameObjectBeforeConversionGroup))]
+    [UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     public class ModelGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {
 
@@ -51,38 +52,26 @@ namespace Abarabone.Model.Authoring
                 var tex =
                     this.GetComponentsInChildren<Transform>()
                     .Select(x => x.gameObject)
-                    .PackTextureAndToHashToUvRectDict();
+                    .PackTextureAndMakeHashAndUvRectPairs();
 
                 var holder = conversionSystem.GetTextureAtlasHolder();
                 foreach (var prefab in this.ModelPrefabs)
                 {
                     holder.objectToAtlas.Add(prefab.gameObject, tex.atlas);
                 }
-
+                foreach (var (hash, rect) in tex.offsets.Zip())
+                {
+                    holder.texHashToUvRect[hash.atlas, hash.part] = rect;
+                }
             }
+
+
 
             // モデルグループ自体にはエンティティは不要
             dstManager.DestroyEntity( entity );
 
             return;
 
-
-            void setAtlasForObject_(IEnumerable<ModelAuthoringBase> prefabs, Texture2D atlas)
-            {
-                var holder = conversionSystem.GetTextureAtlasHolder();
-                foreach (var prefab in prefabs)
-                {
-                    holder.objectToAtlas.Add(prefab.gameObject, atlas);
-                }
-            }
-            void addUvRectsToDictionary_(IEnumerable<ModelAuthoringBase> prefabs, Texture2D atlas)
-            {
-                var holder = conversionSystem.GetTextureAtlasHolder();
-                foreach (var prefab in prefabs)
-                {
-                    holder.objectToAtlas.Add(prefab.gameObject, atlas);
-                }
-            }
         }
         
 

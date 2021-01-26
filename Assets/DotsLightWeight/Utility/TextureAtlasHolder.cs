@@ -25,9 +25,10 @@ namespace Abarabone.Geometry
         {
             base.OnDestroy();
 
-            this.GetSingleton<Data>().objectToAtlas.Clear();
-            this.GetSingleton<Data>().texHashToUvRect.dict.Clear();
-            this.EntityManager.DestroyEntity(this.GetSingletonEntity<Data>());
+            if (this.HasSingleton<Data>())
+            {
+                this.EntityManager.DestroyEntity(this.GetSingletonEntity<Data>());
+            }
         }
     }
 
@@ -36,16 +37,22 @@ namespace Abarabone.Geometry
 
         public static TextureAtlasDictionary.Data GetTextureAtlasHolder(this GameObjectConversionSystem gcs)
         {
-            var holder = gcs.GetSingleton<TextureAtlasDictionary.Data>();
-            if (holder != null) return holder;
+            if (!gcs.HasSingleton<TextureAtlasDictionary.Data>()) return create_();
 
-            var newHolder = new TextureAtlasDictionary.Data
+            return gcs.GetSingleton<TextureAtlasDictionary.Data>();
+
+
+            TextureAtlasDictionary.Data create_()
             {
-                objectToAtlas = new Dictionary<GameObject, Texture2D>(),
-                texHashToUvRect = new Dictionary<(int atlas, int part), Rect>(),
-            };
-            gcs.SetSingleton(holder);
-            return newHolder;
+                var newent = gcs.EntityManager.CreateEntity(typeof(TextureAtlasDictionary.Data));
+                var newholder = new TextureAtlasDictionary.Data
+                {
+                    objectToAtlas = new Dictionary<GameObject, Texture2D>(),
+                    texHashToUvRect = new Dictionary<(int atlas, int part), Rect>(),
+                };
+                gcs.DstEntityManager.SetComponentData(newent, newholder);
+                return newholder;
+            }
         }
 
     }
