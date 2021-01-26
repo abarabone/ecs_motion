@@ -26,8 +26,7 @@ namespace Abarabone.Geometry
         public Vector2 Uv;
 
 
-        public MeshElements<TIdx, PositionUvVertex> BuildCombiner<TIdx>
-            (IEnumerable<GameObject> gameObjects, Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+        public MeshElements<TIdx, PositionUvVertex> BuildCombiner<TIdx>(Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>
         =>
             new MeshElements<TIdx, PositionUvVertex>

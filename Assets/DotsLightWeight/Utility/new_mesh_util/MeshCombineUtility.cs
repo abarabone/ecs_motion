@@ -28,14 +28,30 @@ namespace Abarabone.Geometry
             (
                 this IEnumerable<GameObject> gameObjects,
                 Transform tfBase,
-                (Texture2D atlas, (IEnumerable<(int,int)>, IEnumerable<Rect>) hashrect) tex = default
+                (Texture2D atlas, IEnumerable<(int, int)> hashes, IEnumerable<Rect> rects) tex = default
+            )
+            where TIdx : struct, IIndexUnit<TIdx>
+            where TVtx : struct, IVertexUnit<TVtx>
+        =>
+            gameObjects.QueryMeshMatsTransform_IfHaving().Do(x => Debug.Log(x.mesh.name))
+                .ToArray()
+                .BuildCombiner<TIdx, TVtx>(tfBase, tex);
+
+
+
+        public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
+            (
+                this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
+                Transform tfBase,
+                (Texture2D atlas, IEnumerable<(int, int)> hashes, IEnumerable<Rect> rects) tex = default
             )
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         {
-            var (srcmeshes, p) = gameObjects.calculateParametors(tfBase, tex.atlas, tex.hashrect.ToDictionaryOrNull());
+            var (srcmeshes, p) = mmts.calculateParametors
+                (tfBase, tex.atlas, (tex.hashes, tex.rects).ToDictionaryOrNull());
 
-            return () => new TVtx().BuildCombiner<TIdx>(gameObjects, srcmeshes, p);
+            return () => new TVtx().BuildCombiner<TIdx>(srcmeshes, p);
         }
 
 
@@ -51,10 +67,11 @@ namespace Abarabone.Geometry
 
 
         static (Mesh.MeshDataArray, AdditionalParameters) calculateParametors
-            (this IEnumerable<GameObject> gameObjects, Transform tfBase, Texture2D atlas, HashToRect texHashToUvRect)
+            (
+                this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
+                Transform tfBase, Texture2D atlas, HashToRect texHashToUvRect
+            )
         {
-            var mmts = gameObjects.QueryMeshMatsTransform_IfHaving().Do(x => Debug.Log(x.mesh.name)).ToArray();
-
             var meshesPerMesh = mmts.Select(x => x.mesh).ToArray();
             var mtsPerMesh = mmts.Select(x => x.tf.localToWorldMatrix).ToArray();
             var texhashesPerSubMesh = (

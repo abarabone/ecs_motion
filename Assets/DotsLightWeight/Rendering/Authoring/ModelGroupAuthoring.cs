@@ -13,6 +13,7 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Draw;
     using Abarabone.Utilities;
     using Abarabone.Common.Extension;
+    using Abarabone.Draw.Authoring;
 
 
     /// <summary>
@@ -35,7 +36,7 @@ namespace Abarabone.Model.Authoring
 
         public ModelAuthoringBase[] ModelPrefabs;
 
-        public bool MakeTexutreAtlus;
+        //public bool MakeTexutreAtlus;
 
 
         public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
@@ -47,28 +48,49 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
-            if (this.MakeTexutreAtlus)
-            {
-                var tex =
-                    this.GetComponentsInChildren<Transform>()
-                    .Select(x => x.gameObject)
-                    .PackTextureAndMakeHashAndUvRectPairs();
+            var mmtss =
+                from prefab in this.ModelPrefabs
+                select
+                    prefab.GetComponentsInChildren<Transform>()
+                        .Select(x => x.gameObject)
+                        .QueryMeshMatsTransform_IfHaving();
 
-                var holder = conversionSystem.GetTextureAtlasHolder();
-                foreach (var prefab in this.ModelPrefabs)
-                {
-                    holder.objectToAtlas.Add(prefab.gameObject, tex.atlas);
-                }
-                foreach (var (hash, rect) in tex.offsets.Zip())
-                {
-                    holder.texHashToUvRect[hash.atlas, hash.part] = rect;
-                }
+
+            var tex = mmtss
+                .SelectMany()
+                .SelectMany(x => x.mats)
+                .QueryUniqueTextures().PackTextureAndMakeHashAndUvRect();
+
+            var holder = conversionSystem.GetTextureAtlasHolder();
+            foreach (var prefab in this.ModelPrefabs)
+            {
+                holder.objectToAtlas.Add(prefab.gameObject, tex.atlas);
+            }
+            foreach (var (hash, rect) in (tex.texhashes, tex.uvRects).Zip())
+            {
+                holder.texHashToUvRect[hash.atlas, hash.part] = rect;
             }
 
 
+            var qMeshfunc =
+                from mmts in mmtss
+                select mmts.BuildCombiner<UI32, PositionUvVertex>(mmts.First().tf, tex).ToTask()
+                ;
+
+            var meshes =
+                from meshelement in qMeshfunc.WhenAll().Result
+                select meshelement.CreateMesh()
+                ;
+
+            var src = (this.ModelPrefabs.Select(x => x.gameObject), meshes);
+            foreach (var (go, mesh) in src.Zip())
+            {
+                conversionSystem.AddToMeshDictionary(go, mesh);
+            }
+
 
             // モデルグループ自体にはエンティティは不要
-            dstManager.DestroyEntity( entity );
+            dstManager.DestroyEntity(entity);
 
             return;
 

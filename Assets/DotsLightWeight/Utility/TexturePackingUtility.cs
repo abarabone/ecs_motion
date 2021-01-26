@@ -26,22 +26,6 @@ namespace Abarabone.Geometry
 	static class TexturePackingUtility
 	{
 
-		/// <summary>
-		/// 
-		/// </summary>
-		static public (Texture2D atlas, (IEnumerable<(int atlas, int part)> texkeyhashes, Rect[] uvRects) offsets)
-			PackTextureAndMakeHashAndUvRectPairs(this IEnumerable<GameObject> objects)
-		{
-			var uniqueTextures = objects.queryUniqueTextures().ToArray();
-
-			var (atlas, uvRects) = uniqueTextures.PackTextureOrPassThrough();
-
-			var qKeyHash = uniqueTextures.queryKeyHashes(atlas);
-
-			return (atlas, (qKeyHash, uvRects));
-		}
-
-
 
 		/// <summary>
 		/// 
@@ -58,31 +42,39 @@ namespace Abarabone.Geometry
 			return (dstTexture, uvRects);
 		}
 
-		static public (Texture2D atlas, Rect[] uvRects) PackTextureOrPassThrough
-			(this IEnumerable<Texture2D> srcTextures)
+		static public (Texture2D atlas, Rect[] uvRects) PackTextureOrPassThrough(this IEnumerable<Texture2D> srcTextures)
 		=>
 			srcTextures.IsSingle()
-				? (srcTextures.First(), new Rect[]{ new Rect(0, 0, 1, 1) })
+				? (srcTextures.First(), new Rect[] { new Rect(0, 0, 1, 1) })
 				: srcTextures.PackTexture();
 
 
 
+		static public IEnumerable<Texture2D> QueryUniqueTextures(this IEnumerable<GameObject> objects) =>
+			objects.QueryMeshMatsTransform_IfHaving()
+				.Select(x => x.mats)
+				.SelectMany()
+				.QueryUniqueTextures();
+
+		static public IEnumerable<Texture2D> QueryUniqueTextures(this IEnumerable<Material> mats) =>
+			mats.Select(mat => mat.mainTexture)
+				.Where(x => x != null)
+				.OfType<Texture2D>()
+				.Distinct();
 
 
-		/// <summary>
-		/// 
-		/// </summary>v
-		static public (IEnumerable<(int, int)>, IEnumerable<Rect>) queryHashAndUvRectPairs
-			(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x, Texture2D atlas)
+		static public (Texture2D atlas, IEnumerable<(int atlas, int part)> texhashes, IEnumerable<Rect> uvRects)
+			PackTextureAndMakeHashAndUvRect(this IEnumerable<Texture2D> uniqueTextures)
 		{
-			var qKeys =
-				from tex in x.uniqueTextures
-				select (atlas.GetHashCode(), tex.GetHashCode())
-				;
-			var qKeysWithEmpty = qKeys.Append((atlas.GetHashCode(), 0));
-			var qValueWithEmpty = x.uvRects.Append(new Rect(0, 0, 1, 1));
+			var texs = uniqueTextures.ToArray();
 
-			return (qKeysWithEmpty, qValueWithEmpty);
+			var (atlas, uvRects) = texs.PackTextureOrPassThrough();
+
+			var qKeyHash = texs.queryKeyHashes(atlas);
+
+			var emptyKey = (atlas.GetHashCode(), 0);
+			var emptyRect = new Rect(0, 0, 1, 1);
+			return (atlas, qKeyHash.Append(emptyKey), uvRects.Append(emptyRect));
 		}
 
 		static IEnumerable<(int, int)> queryKeyHashes
@@ -95,21 +87,21 @@ namespace Abarabone.Geometry
 
 
 
-		static public IEnumerable<Texture2D> queryUniqueTextures(this IEnumerable<GameObject> objects) =>
-			objects.QueryMeshMatsTransform_IfHaving()
-				.Select(x => x.mats)
-				.SelectMany()
-				.Select(mat => mat.mainTexture)
-				.Where(x => x != null)
-				.OfType<Texture2D>()
-				.Distinct();
+		///// <summary>
+		///// 
+		///// </summary>v
+		//static public (IEnumerable<(int, int)>, IEnumerable<Rect>) queryHashAndUvRectPairs
+		//	(this (IEnumerable<Texture2D> uniqueTextures, IEnumerable<Rect> uvRects) x, Texture2D atlas)
+		//{
+		//	var qKeys =
+		//		from tex in x.uniqueTextures
+		//		select (atlas.GetHashCode(), tex.GetHashCode())
+		//		;
+		//	var qKeysWithEmpty = qKeys.Append((atlas.GetHashCode(), 0));
+		//	var qValueWithEmpty = x.uvRects.Append(new Rect(0, 0, 1, 1));
 
-		static public IEnumerable<Texture2D> queryUniqueTextures(this IEnumerable<Material> mats) =>
-			mats.Select(mat => mat.mainTexture)
-				.Where(x => x != null)
-				.OfType<Texture2D>()
-				.Distinct();
-
+		//	return (qKeysWithEmpty, qValueWithEmpty);
+		//}
 
 
 
