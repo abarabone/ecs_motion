@@ -48,6 +48,14 @@ namespace Abarabone.Draw.Authoring
 
     static public class ConvertedMeshDictionaryExtension
     {
+
+        static public Dictionary<GameObject, Mesh> GetMeshDictionary(this GameObjectConversionSystem gcs)
+        {
+            return gcs.GetSingleton<ConvertedMeshDictionary.Data>().MeshDictionary;
+            // texutre atlas と同じにしよう
+        }
+
+
         static public void AddToMeshDictionary
             ( this GameObjectConversionSystem gcs, GameObject topGameObject, Mesh mesh)
         {

@@ -18,6 +18,9 @@ namespace Abarabone.Particle.Aurthoring
     using Abarabone.Draw.Authoring;
     using Abarabone.Geometry;
     using Abarabone.Structure.Authoring;
+    using Abarabone.Utilities;
+    using Abarabone.Common.Extension;
+    using Abarabone.Misc;
 
     /// <summary>
     /// 
@@ -52,16 +55,35 @@ namespace Abarabone.Particle.Aurthoring
                 (GameObjectConversionSystem gcs, GameObject top, Material srcMaterial, ObjectAndDistance[] lodOpts)
             {
 
-                var lods = LodOptionalMeshTops.Select(x => x.objectTop).ToArray();
-                var objsForModel = gcs.BuildMeshesForModelEntity(top, lods, this.GetMeshCombineFuncPerObjects);
+                var meshDict = gcs.GetMeshDictionary();
 
-                foreach(var go in objsForModel)
+                var combiner = this.BuildMeshCombiners<UI32, PositionUvVertex>(meshDict);
+                var qMesh = combiner.fs
+                    .Select(f => f.ToTask())
+                    .WhenAll().Result
+                    .Select(m => m.CreateMesh());
+                foreach(var (obj, mesh) in (combiner.objs, qMesh).Zip())
                 {
-                    Debug.Log($"{go.name} model ent");
+                    gcs.AddToMeshDictionary(obj, mesh);
+                }
+                   
 
-                    var mesh = gcs.GetFromMeshDictionary(go);
+                var lods = LodOptionalMeshTops
+                    .Select(x => x.objectTop)
+                    .ToArray();
+                var main = this.gameObject.AsEnumerable()
+                    .Where(_ => lods.Length == 0)
+                    .ToArray();
+                var meshes = lods.Concat(main)
+                    .Select(obj => gcs.GetFromMeshDictionary(obj))
+                    .ToArray();
 
-                    createModelEntity_(go, mesh);
+
+                foreach(var (obj, mesh) in (lods.Concat(main), meshes).Zip())
+                {
+                    Debug.Log($"{obj.name} model ent");
+
+                    createModelEntity_(obj, mesh);
                 }
 
                 return;
@@ -163,21 +185,37 @@ namespace Abarabone.Particle.Aurthoring
                 )
                 .ToArray();
         }
-        public Func<MeshElements<TIdx, TVtx>>[] GetMeshCombinerPerObjects<TIdx, TVtx>(TextureAtlasParameter tex = default)
+
+        /// <summary>
+        /// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
+        /// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」があれば、そちらを対象とする。
+        /// またＬＯＤに null を登録した場合は、この GameObject をルートとしたメッシュが対象となる。
+        /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
+        /// </summary>
+        public (GameObject[] objs, Func<MeshElements<TIdx, TVtx>>[] fs) BuildMeshCombiners<TIdx, TVtx>
+            (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasParameter tex = default)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         {
-            var qResult = Enumerable.Empty<Func<MeshElements<TIdx, TVtx>>>();
+            if (this.LodOptionalMeshTops.Length == 0)
+            {
+                if (meshDictionary?.ContainsKey(this.gameObject) ?? false)
+                    return (new GameObject[0], new Func<MeshElements<TIdx, TVtx>>[0]);
 
-            if (this.LodOptionalMeshTops.Length == 0) return qResult.ToArray();
+                var f = this.gameObject.BuildCombiner<TIdx, TVtx>(this.transform, tex);
 
-            return this.LodOptionalMeshTops
-                .Select(x => x.objectTop)
-                .Select(lod => lod != null
-                   ? lod.ChildrenAndSelf(), this.transform)
-                   : null
-                )
+                return (this.gameObject.AsEnumerable().ToArray(), f.AsEnumerable().ToArray());
+            }
+
+            var objs = this.LodOptionalMeshTops
+                .Select(x => x.objectTop ?? this.gameObject)
+                .Distinct()
+                .Where(x => !(meshDictionary?.ContainsKey(x) ?? false))
                 .ToArray();
+            var fs = objs
+                .Select(obj => obj.BuildCombiner<TIdx, TVtx>(obj.transform, tex))
+                .ToArray();
+            return (objs, fs);
         }
     }
 

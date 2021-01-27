@@ -22,7 +22,7 @@ namespace Abarabone.Geometry
 		public static implicit operator
 			Dictionary<(int atlas, int part), Rect>(HashToRect d) => d.dict;
 		public static implicit operator
-			HashToRect(Dictionary<(int atlas, int part), Rect> d) => new HashToRect { dict=d };
+			HashToRect(Dictionary<(int atlas, int part), Rect> d) => d != null ? new HashToRect { dict=d } : null;
 	}
 
     public struct TextureAtlasParameter

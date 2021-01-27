@@ -29,10 +29,17 @@ namespace Abarabone.Geometry
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         =>
-            gameObjects.QueryMeshMatsTransform_IfHaving().Do(x => Debug.Log(x.mesh.name))
-                .ToArray()
+            gameObjects.QueryMeshMatsTransform_IfHaving()
                 .BuildCombiner<TIdx, TVtx>(tfBase, tex);
 
+
+        public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
+            (this GameObject gameObjectTop, Transform tfBase, TextureAtlasParameter tex = default)
+            where TIdx : struct, IIndexUnit<TIdx>
+            where TVtx : struct, IVertexUnit<TVtx>
+        =>
+            gameObjectTop.QueryMeshMatsTransform_IfHaving()
+                .BuildCombiner<TIdx, TVtx>(tfBase, tex);
 
 
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
@@ -64,10 +71,12 @@ namespace Abarabone.Geometry
                 Transform tfBase, Texture2D atlas, HashToRect texHashToUvRect
             )
         {
-            var meshesPerMesh = mmts.Select(x => x.mesh).ToArray();
-            var mtsPerMesh = mmts.Select(x => x.tf.localToWorldMatrix).ToArray();
+            var mmts_ = mmts.ToArray();
+
+            var meshesPerMesh = mmts_.Select(x => x.mesh).ToArray();
+            var mtsPerMesh = mmts_.Select(x => x.tf.localToWorldMatrix).ToArray();
             var texhashesPerSubMesh = (
-                from mmt in mmts
+                from mmt in mmts_
                 select
                     from mat in mmt.mats
                     select mat.mainTexture?.GetHashCode() ?? default
@@ -81,7 +90,7 @@ namespace Abarabone.Geometry
             {
                 mtsPerMesh = mtsPerMesh,
                 texhashPerSubMesh = texhashesPerSubMesh,
-                atlasHash = atlas.GetHashCode(),
+                atlasHash = atlas?.GetHashCode() ?? 0,
                 mtBaseInv = mtBaseInv,
                 texhashToUvRect = texHashToUvRect,
             });
