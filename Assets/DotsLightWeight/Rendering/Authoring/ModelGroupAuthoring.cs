@@ -48,23 +48,30 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
-            var mmtss =
-                from prefab in this.ModelPrefabs
+            var prefabsDistinct = this.ModelPrefabs
+                .Select(x => x.gameObject)
+                .Distinct()
+                .ToArray();
+
+
+            var qMmt =
+                from prefab in prefabsDistinct
                 select
                     prefab.GetComponentsInChildren<Transform>()
                         .Select(x => x.gameObject)
                         .QueryMeshMatsTransform_IfHaving();
+            var mmtss = qMmt.ToArray();
 
 
             var tex = mmtss
                 .SelectMany()
                 .SelectMany(x => x.mats)
-                .QueryUniqueTextures().PackTextureAndMakeHashAndUvRect();
+                .QueryUniqueTextures().PackTextureAndQueryHashAndUvRect();
 
             var holder = conversionSystem.GetTextureAtlasHolder();
-            foreach (var prefab in this.ModelPrefabs)
+            foreach (var prefab in prefabsDistinct)
             {
-                holder.objectToAtlas.Add(prefab.gameObject, tex.atlas);
+                holder.objectToAtlas.Add(prefab, tex.atlas);
             }
             foreach (var (hash, rect) in (tex.texhashes, tex.uvRects).Zip())
             {
@@ -82,7 +89,7 @@ namespace Abarabone.Model.Authoring
                 select meshelement.CreateMesh()
                 ;
 
-            var src = (this.ModelPrefabs.Select(x => x.gameObject), meshes);
+            var src = (prefabsDistinct, meshes);
             foreach (var (go, mesh) in src.Zip())
             {
                 conversionSystem.AddToMeshDictionary(go, mesh);

@@ -12,18 +12,28 @@ namespace Abarabone.Geometry
 	public class HashToRect
 	{
 		public Dictionary<(int atlas, int part), Rect> dict;
+
 		public Rect this[int atlas, int part]
         {
 			set => this.dict[(atlas, part)] = value;
 			get => this.dict[(atlas, part)];
 		}
+
 		public static implicit operator
 			Dictionary<(int atlas, int part), Rect>(HashToRect d) => d.dict;
 		public static implicit operator
 			HashToRect(Dictionary<(int atlas, int part), Rect> d) => new HashToRect { dict=d };
 	}
 
-	static class TexturePackingUtility
+    public struct TextureAtlasParameter
+    {
+        public Texture2D atlas;
+        public IEnumerable<(int atlas, int part)> texhashes;
+        public IEnumerable<Rect> uvRects;
+    }
+
+
+    static class TexturePackingUtility
 	{
 
 
@@ -63,8 +73,7 @@ namespace Abarabone.Geometry
 				.Distinct();
 
 
-		static public (Texture2D atlas, IEnumerable<(int atlas, int part)> texhashes, IEnumerable<Rect> uvRects)
-			PackTextureAndMakeHashAndUvRect(this IEnumerable<Texture2D> uniqueTextures)
+		static public TextureAtlasParameter PackTextureAndQueryHashAndUvRect(this IEnumerable<Texture2D> uniqueTextures)
 		{
 			var texs = uniqueTextures.ToArray();
 
@@ -72,9 +81,12 @@ namespace Abarabone.Geometry
 
 			var qKeyHash = texs.queryKeyHashes(atlas);
 
-			var emptyKey = (atlas.GetHashCode(), 0);
-			var emptyRect = new Rect(0, 0, 1, 1);
-			return (atlas, qKeyHash.Append(emptyKey), uvRects.Append(emptyRect));
+			return new TextureAtlasParameter
+			{
+				atlas = atlas,
+				texhashes = qKeyHash.Append((atlas.GetHashCode(), 0)),
+				uvRects = uvRects.Append(new Rect(0, 0, 1, 1)),
+			};
 		}
 
 		static IEnumerable<(int, int)> queryKeyHashes

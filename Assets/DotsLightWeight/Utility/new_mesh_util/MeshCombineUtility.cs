@@ -25,11 +25,7 @@ namespace Abarabone.Geometry
         /// 
         /// </summary>
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
-            (
-                this IEnumerable<GameObject> gameObjects,
-                Transform tfBase,
-                (Texture2D atlas, IEnumerable<(int, int)> hashes, IEnumerable<Rect> rects) tex = default
-            )
+            (this IEnumerable<GameObject> gameObjects, Transform tfBase, TextureAtlasParameter tex = default)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         =>
@@ -40,16 +36,12 @@ namespace Abarabone.Geometry
 
 
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
-            (
-                this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
-                Transform tfBase,
-                (Texture2D atlas, IEnumerable<(int, int)> hashes, IEnumerable<Rect> rects) tex = default
-            )
+            (this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts, Transform tfBase, TextureAtlasParameter tex = default)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         {
             var (srcmeshes, p) = mmts.calculateParametors
-                (tfBase, tex.atlas, (tex.hashes, tex.rects).ToDictionaryOrNull());
+                (tfBase, tex.atlas, (tex.texhashes, tex.uvRects).ToDictionaryOrNull());
 
             return () => new TVtx().BuildCombiner<TIdx>(srcmeshes, p);
         }

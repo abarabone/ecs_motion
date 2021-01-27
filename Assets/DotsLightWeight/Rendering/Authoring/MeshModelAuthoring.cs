@@ -163,6 +163,22 @@ namespace Abarabone.Particle.Aurthoring
                 )
                 .ToArray();
         }
+        public Func<MeshElements<TIdx, TVtx>>[] GetMeshCombinerPerObjects<TIdx, TVtx>(TextureAtlasParameter tex = default)
+            where TIdx : struct, IIndexUnit<TIdx>
+            where TVtx : struct, IVertexUnit<TVtx>
+        {
+            var qResult = Enumerable.Empty<Func<MeshElements<TIdx, TVtx>>>();
+
+            if (this.LodOptionalMeshTops.Length == 0) return qResult.ToArray();
+
+            return this.LodOptionalMeshTops
+                .Select(x => x.objectTop)
+                .Select(lod => lod != null
+                   ? lod.ChildrenAndSelf(), this.transform)
+                   : null
+                )
+                .ToArray();
+        }
     }
 
 }

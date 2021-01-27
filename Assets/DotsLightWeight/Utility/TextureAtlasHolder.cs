@@ -44,7 +44,7 @@ namespace Abarabone.Geometry
 
             TextureAtlasDictionary.Data create_()
             {
-                var newent = gcs.EntityManager.CreateEntity(typeof(TextureAtlasDictionary.Data));
+                var newent = gcs.DstEntityManager.CreateEntity(typeof(TextureAtlasDictionary.Data));
                 var newholder = new TextureAtlasDictionary.Data
                 {
                     objectToAtlas = new Dictionary<GameObject, Texture2D>(),
