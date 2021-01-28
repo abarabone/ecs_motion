@@ -66,6 +66,16 @@ namespace Abarabone.Geometry.inner
             ;
 
 
+        static public IEnumerable<Vector3> QueryConvertNormals
+            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+        =>
+            from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetNormals(arr), VertexAttribute.Normal)
+            from xsub in x.submeshes
+            from nm in xsub.submesh.Elements()
+            select (Vector3)math.mul(x.mt.rotation, nm)
+            ;
+
+
         static public IEnumerable<Vector2> QueryConvertUvs
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p, int channel)
         =>

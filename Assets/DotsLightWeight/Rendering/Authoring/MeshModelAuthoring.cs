@@ -57,7 +57,7 @@ namespace Abarabone.Particle.Aurthoring
 
                 var meshDict = gcs.GetMeshDictionary();
 
-                var combiner = this.BuildMeshCombiners<UI32, PositionUvVertex>(meshDict);
+                var combiner = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict);
                 var qMesh = combiner.fs
                     .Select(f => f.ToTask())
                     .WhenAll().Result
@@ -66,20 +66,23 @@ namespace Abarabone.Particle.Aurthoring
                 {
                     gcs.AddToMeshDictionary(obj, mesh);
                 }
-                   
+
 
                 var lods = LodOptionalMeshTops
-                    .Select(x => x.objectTop)
+                    .Select(x => x.objectTop ?? top);
+                var main = top.AsEnumerable()
+                    .Where(_ => LodOptionalMeshTops.Length == 0);
+                var objs = lods.Concat(main)
                     .ToArray();
-                var main = this.gameObject.AsEnumerable()
-                    .Where(_ => lods.Length == 0)
-                    .ToArray();
-                var meshes = lods.Concat(main)
+                var meshes = objs
+                    .Distinct()
                     .Select(obj => gcs.GetFromMeshDictionary(obj))
                     .ToArray();
 
 
-                foreach(var (obj, mesh) in (lods.Concat(main), meshes).Zip())
+                var atlasDict = gcs.GetTextureAtlasHolder().objectToAtlas;
+
+                foreach (var (obj, mesh) in (objs, meshes).Zip())
                 {
                     Debug.Log($"{obj.name} model ent");
 
@@ -89,14 +92,15 @@ namespace Abarabone.Particle.Aurthoring
                 return;
 
 
-                void createModelEntity_(GameObject go, Mesh mesh_)
+                void createModelEntity_(GameObject obj, Mesh mesh_)
                 {
                     var mat = new Material(srcMaterial);
-
+                    if (atlasDict.ContainsKey(obj)) mat.mainTexture = atlasDict[obj];
+                    
                     const BoneType BoneType = BoneType.TR;
                     const int boneLength = 1;
 
-                    gcs.CreateDrawModelEntityComponents(go, mesh_, mat, BoneType, boneLength);
+                    gcs.CreateDrawModelEntityComponents(obj, mesh_, mat, BoneType, boneLength);
                 }
 
             }
@@ -127,7 +131,7 @@ namespace Abarabone.Particle.Aurthoring
                     new DrawInstance.ModeLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetDrawModelEntity(main, lodOpts),
+                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(main),//gcs.GetDrawModelEntity(main, lodOpts),
                     }
                 );
                 em.SetComponentData(mainEntity,

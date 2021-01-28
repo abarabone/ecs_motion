@@ -38,72 +38,72 @@ namespace Abarabone.Draw.Authoring
     static public class DrawInstanceEntityConvertUtility
     {
 
-        /// <summary>
-        /// DrawModelEntity の生成が必要なメッシュを洗い出す。
-        /// また、事前にメッシュ生成が済んでいる場合は、メッシュ辞書から取得する。
-        /// ・ＬＯＤが登録されていない場合は、
-        /// 　オブジェクトトップから見つかった最初のメッシュを無加工で採用する。（デフォルトメッシュ）
-        /// ・ＬＯＤ枠が確保されていて、ＬＯＤにオブジェクトが登録されている場合は、
-        /// 　そのオブジェクト以下の結合メッシュを採用する。
-        /// ・ＬＯＤ枠が確保されていて、ＬＯＤ登録が Nothing の場合は、
-        /// 　オブジェクトトップから見つかった最初のメッシュを無加工で採用する。
-        /// </summary>
-        static public GameObject[] BuildMeshesForModelEntity
-            (
-                this GameObjectConversionSystem gcs,
-                GameObject main, GameObject[] lods,
-                Func<Func<MeshCombinerElements>[]> getMeshCombineFuncs
-            )
-        {
-            var result = new List<GameObject>(lods.Length);
+        ///// <summary>
+        ///// DrawModelEntity の生成が必要なメッシュを洗い出す。
+        ///// また、事前にメッシュ生成が済んでいる場合は、メッシュ辞書から取得する。
+        ///// ・ＬＯＤが登録されていない場合は、
+        ///// 　オブジェクトトップから見つかった最初のメッシュを無加工で採用する。（デフォルトメッシュ）
+        ///// ・ＬＯＤ枠が確保されていて、ＬＯＤにオブジェクトが登録されている場合は、
+        ///// 　そのオブジェクト以下の結合メッシュを採用する。
+        ///// ・ＬＯＤ枠が確保されていて、ＬＯＤ登録が Nothing の場合は、
+        ///// 　オブジェクトトップから見つかった最初のメッシュを無加工で採用する。
+        ///// </summary>
+        //static public GameObject[] BuildMeshesForModelEntity
+        //    (
+        //        this GameObjectConversionSystem gcs,
+        //        GameObject main, GameObject[] lods,
+        //        Func<Func<MeshCombinerElements>[]> getMeshCombineFuncs
+        //    )
+        //{
+        //    var result = new List<GameObject>(lods.Length);
 
-            if(lods.Length == 0 || lods.Where(x => x == null).Any())
-            {
-                if(!gcs.IsExistingInMeshDictionary(main))
-                {
-                    var mesh = main.GetComponentInChildren<MeshFilter>().sharedMesh;
-                    gcs.AddToMeshDictionary(main, mesh);
-                }
+        //    if(lods.Length == 0 || lods.Where(x => x == null).Any())
+        //    {
+        //        if(!gcs.IsExistingInMeshDictionary(main))
+        //        {
+        //            var mesh = main.GetComponentInChildren<MeshFilter>().sharedMesh;
+        //            gcs.AddToMeshDictionary(main, mesh);
+        //        }
 
-                result.Add(main);
-            }
+        //        result.Add(main);
+        //    }
 
-            var meshfuncs = getMeshCombineFuncs();
+        //    var meshfuncs = getMeshCombineFuncs();
 
-            foreach(var (lod, f) in (lods, meshfuncs).Zip().Where(x => x.src0 != null))
-            {
-                if (!gcs.IsExistingInMeshDictionary(lod))
-                {
-                    var mesh = f().CreateMesh();
-                    gcs.AddToMeshDictionary(lod, mesh);
-                }
+        //    foreach(var (lod, f) in (lods, meshfuncs).Zip().Where(x => x.src0 != null))
+        //    {
+        //        if (!gcs.IsExistingInMeshDictionary(lod))
+        //        {
+        //            var mesh = f().CreateMesh();
+        //            gcs.AddToMeshDictionary(lod, mesh);
+        //        }
 
-                result.Add(lod);
-            }
+        //        result.Add(lod);
+        //    }
 
-            return result.ToArray();
-        }
+        //    return result.ToArray();
+        //}
 
 
-        /// <summary>
-        /// DrawInstanceEntity のリンクに設定すべき DrawModelEntity を返す。
-        /// ＬＯＤ使用時は毎フレーム更新される値なので、初期値は適当でもよい。
-        /// </summary>
-        static public Entity GetDrawModelEntity
-            (
-                this GameObjectConversionSystem gcs_,
-                GameObject main_, ObjectAndDistance[] lods_
-            )
-        {
-            var model = gcs_.GetFromModelEntityDictionary(main_);
-            if (model != Entity.Null) return model;
+        ///// <summary>
+        ///// DrawInstanceEntity のリンクに設定すべき DrawModelEntity を返す。
+        ///// ＬＯＤ使用時は毎フレーム更新される値なので、初期値は適当でもよい。
+        ///// </summary>
+        //static public Entity GetDrawModelEntity
+        //    (
+        //        this GameObjectConversionSystem gcs_,
+        //        GameObject main_, ObjectAndDistance[] lods_
+        //    )
+        //{
+        //    var model = gcs_.GetFromModelEntityDictionary(main_);
+        //    if (model != Entity.Null) return model;
 
-            return lods_
-                .Select(x => x.objectTop)
-                .Where(x => x != null)
-                .Select(x => gcs_.GetFromModelEntityDictionary(x))
-                .First();
-        }
+        //    return lods_
+        //        .Select(x => x.objectTop)
+        //        .Where(x => x != null)
+        //        .Select(x => gcs_.GetFromModelEntityDictionary(x))
+        //        .First();
+        //}
 
 
         /// <summary>

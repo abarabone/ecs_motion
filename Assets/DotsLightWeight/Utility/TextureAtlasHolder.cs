@@ -44,13 +44,13 @@ namespace Abarabone.Geometry
 
             TextureAtlasDictionary.Data create_()
             {
-                var newent = gcs.DstEntityManager.CreateEntity(typeof(TextureAtlasDictionary.Data));
+                var newent = gcs.EntityManager.CreateEntity(typeof(TextureAtlasDictionary.Data));
                 var newholder = new TextureAtlasDictionary.Data
                 {
                     objectToAtlas = new Dictionary<GameObject, Texture2D>(),
                     texHashToUvRect = new Dictionary<(int atlas, int part), Rect>(),
                 };
-                gcs.DstEntityManager.SetComponentData(newent, newholder);
+                gcs.EntityManager.SetComponentData(newent, newholder);
                 return newholder;
             }
         }

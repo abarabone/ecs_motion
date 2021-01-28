@@ -76,7 +76,7 @@ public class PracSpawnSystem : SystemBase
                     var ent = cmd.Instantiate(entityInQueryIndex, spawn.ent);
 
                     cmd.AddComponent(entityInQueryIndex, ent,
-                        new ObjectInitializeData { pos = new float3(spawn.i % 20, spawn.i / 20, 0.0f) }
+                        new ObjectInitializeData { pos = new float3(spawn.i % 20, spawn.i / 20, 0.0f), rot = quaternion.identity }
                         //new ObjectInitializeData { pos = new float3(0,2,0) }
                     );
 
