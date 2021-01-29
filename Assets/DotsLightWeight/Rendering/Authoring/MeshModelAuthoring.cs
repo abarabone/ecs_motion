@@ -56,71 +56,85 @@ namespace Abarabone.Particle.Aurthoring
                 (GameObjectConversionSystem gcs, GameObject top, Shader shader, ObjectAndDistance[] lodOpts)
             {
 
-                var qMat =
-                    from r in this.GetComponentsInChildren<Renderer>()
-                    from mat in r.sharedMaterials
-                    select mat
-                    ;
-
-                var tex = qMat.QueryUniqueTextures().PackTextureAndQueryHashAndUvRect();
-
-                var holder = gcs.GetTextureAtlasHolder();
-                holder.objectToAtlas.Add(this.gameObject, tex.atlas);
-                foreach (var (hash, rect) in (tex.texhashes, tex.uvRects).Zip())
-                {
-                    holder.texHashToUvRect[hash.atlas, hash.part] = rect;
-                }
-
-
-
-
-
+                var atlasHolder = gcs.GetTextureAtlasHolder();
                 var meshDict = gcs.GetMeshDictionary();
 
-                var combiner = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
-                var qMesh = combiner.fs
-                    .Select(f => f.ToTask())
-                    .WhenAll().Result
-                    .Select(m => m.CreateMesh());
-                foreach(var (obj, mesh) in (combiner.objs, qMesh).Zip())
-                {
-                    gcs.AddToMeshDictionary(obj, mesh);
-                }
-
-
-                var lods = LodOptionalMeshTops
-                    .Select(x => x.objectTop ?? top);
-                var main = top.AsEnumerable()
-                    .Where(_ => LodOptionalMeshTops.Length == 0);
-                var objs = lods.Concat(main)
-                    .ToArray();
-                var meshes = objs
-                    .Distinct()
-                    .Select(obj => gcs.GetFromMeshDictionary(obj))
-                    .ToArray();
-
-
-                var atlasDict = gcs.GetTextureAtlasHolder().objectToAtlas;
-
-                foreach (var (obj, mesh) in (objs, meshes).Zip())
-                {
-                    Debug.Log($"{obj.name} model ent");
-
-                    createModelEntity_(obj, mesh);
-                }
+                var tex = packTextures_();
+                combineMeshes_();
+                createModelEntities_();
 
                 return;
 
 
-                void createModelEntity_(GameObject obj, Mesh mesh_)
+                TextureAtlasParameter packTextures_()
                 {
-                    var mat = new Material(shader);
-                    if (atlasDict.ContainsKey(obj)) mat.mainTexture = atlasDict[obj];
-                    
-                    const BoneType BoneType = BoneType.TR;
-                    const int boneLength = 1;
+                    if (atlasHolder.objectToAtlas.ContainsKey(top)) return default;
 
-                    gcs.CreateDrawModelEntityComponents(obj, mesh_, mat, BoneType, boneLength);
+                    var qMat =
+                        from r in this.GetComponentsInChildren<Renderer>()
+                        from mat in r.sharedMaterials
+                        select mat
+                        ;
+
+                    var tex = qMat.QueryUniqueTextures().PackTextureAndQueryHashAndUvRect();
+
+                    atlasHolder.objectToAtlas[top] = tex.atlas;
+
+                    foreach (var (hash, rect) in (tex.texhashes, tex.uvRects).Zip())
+                    {
+                        atlasHolder.texHashToUvRect[hash.atlas, hash.part] = rect;
+                    }
+
+                    return tex;
+                }
+
+                void combineMeshes_()
+                {
+                    var combiner = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
+                    var qMesh = combiner.fs
+                        .Select(f => f.ToTask())
+                        .WhenAll().Result
+                        .Select(m => m.CreateMesh());
+                    foreach (var (obj, mesh) in (combiner.objs, qMesh).Zip())
+                    {
+                        meshDict[obj] = mesh;
+                    }
+                }
+
+                void createModelEntities_()
+                {
+                    var qMain = top.AsEnumerable()
+                        .Where(_ => this.LodOptionalMeshTops.Length == 0);
+                    var qLod = this.LodOptionalMeshTops
+                        .Select(x => x.objectTop ?? top);
+
+                    var objs = qLod.Concat(qMain)
+                        .ToArray();
+                    var meshes = objs
+                        .Distinct()
+                        .Select(obj => meshDict[obj])
+                        .ToArray();
+
+                    foreach (var (obj, mesh) in (objs, meshes).Zip())
+                    {
+                        Debug.Log($"{obj.name} model ent");
+
+                        createModelEntity_(obj, mesh, tex);
+                    }
+
+                    return;
+
+
+                    void createModelEntity_(GameObject obj, Mesh mesh_, TextureAtlasParameter tex)
+                    {
+                        var mat = new Material(shader);
+                        mat.mainTexture = atlasHolder.objectToAtlas[obj];
+                        
+                        const BoneType BoneType = BoneType.TR;
+                        const int boneLength = 1;
+
+                        gcs.CreateDrawModelEntityComponents(obj, mesh_, mat, BoneType, boneLength);
+                    }
                 }
 
             }
