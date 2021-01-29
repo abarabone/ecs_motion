@@ -31,7 +31,14 @@ namespace Abarabone.Model.Authoring
         /// これを継承しないと、モデルビヘイビアを要求するものに登録できない。
         /// </summary>
         public class ModelAuthoringBase : MonoBehaviour
-        { }
+        {
+            public virtual (GameObject[] objs, Func<MeshElements<TIdx, TVtx>>[] fs) BuildMeshCombiners<TIdx, TVtx>
+                (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasParameter tex = default)
+                where TIdx : struct, IIndexUnit<TIdx>
+                where TVtx : struct, IVertexUnit<TVtx>
+            =>
+                (null, null);
+        }
 
 
         public ModelAuthoringBase[] ModelPrefabs;
@@ -54,45 +61,47 @@ namespace Abarabone.Model.Authoring
                 .ToArray();
 
 
-            var qMmt =
+            var qMat =
                 from prefab in prefabsDistinct
-                select
-                    prefab.GetComponentsInChildren<Transform>()
-                        .Select(x => x.gameObject)
-                        .QueryMeshMatsTransform_IfHaving();
-            var mmtss = qMmt.ToArray();
+                from r in prefab.GetComponentsInChildren<Renderer>()
+                from mat in r.sharedMaterials
+                select mat
+                ;
 
-
-            var tex = mmtss
-                .SelectMany()
-                .SelectMany(x => x.mats)
-                .QueryUniqueTextures().PackTextureAndQueryHashAndUvRect();
+            var tex = qMat.QueryUniqueTextures().PackTextureAndQueryHashAndUvRect();
 
             var holder = conversionSystem.GetTextureAtlasHolder();
-            foreach (var prefab in prefabsDistinct)
-            {
-                holder.objectToAtlas.Add(prefab, tex.atlas);
-            }
+            //foreach (var prefab in prefabsDistinct)
+            //{
+            //    holder.objectToAtlas.Add(prefab, tex.atlas);
+            //}
             foreach (var (hash, rect) in (tex.texhashes, tex.uvRects).Zip())
             {
                 holder.texHashToUvRect[hash.atlas, hash.part] = rect;
             }
 
 
-            var qMeshfunc =
-                from mmts in mmtss
-                select mmts.BuildCombiner<UI32, PositionUvVertex>(mmts.First().tf, tex).ToTask()
-                ;
+            var meshDict = conversionSystem.GetMeshDictionary();
 
-            var meshes =
-                from meshelement in qMeshfunc.WhenAll().Result
-                select meshelement.CreateMesh()
+            var qMeshSrc =
+                from prefab in this.ModelPrefabs
+                from x in prefab.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex).Zip()
+                select (obj: x.src0, f: x.src1)
                 ;
+            var meshsrcs = qMeshSrc.ToArray();
+            var qObj = meshsrcs.Select(x => x.obj);
+            var qMesh = meshsrcs
+                .Select(x => x.f.ToTask())
+                .WhenAll().Result
+                .Select(x => x.CreateMesh());
 
-            var src = (prefabsDistinct, meshes);
-            foreach (var (go, mesh) in src.Zip())
+            foreach (var obj in qObj)
             {
-                conversionSystem.AddToMeshDictionary(go, mesh);
+                holder.objectToAtlas.Add(obj, tex.atlas);
+            }
+            foreach (var (obj, mesh) in (qObj, qMesh).Zip())
+            {
+                conversionSystem.AddToMeshDictionary(obj, mesh);
             }
 
 

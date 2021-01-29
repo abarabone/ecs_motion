@@ -31,6 +31,7 @@ namespace Abarabone.Particle.Aurthoring
 
 
         public Material Material;
+        public Shader ShaderToDraw;
 
         [SerializeField]
         public ObjectAndDistance[] LodOptionalMeshTops;
@@ -42,7 +43,7 @@ namespace Abarabone.Particle.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            createModelEntities_(conversionSystem, this.gameObject, this.Material, this.LodOptionalMeshTops);
+            createModelEntities_(conversionSystem, this.gameObject, this.ShaderToDraw, this.LodOptionalMeshTops);
 
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
 
@@ -52,12 +53,31 @@ namespace Abarabone.Particle.Aurthoring
 
 
             void createModelEntities_
-                (GameObjectConversionSystem gcs, GameObject top, Material srcMaterial, ObjectAndDistance[] lodOpts)
+                (GameObjectConversionSystem gcs, GameObject top, Shader shader, ObjectAndDistance[] lodOpts)
             {
+
+                var qMat =
+                    from r in this.GetComponentsInChildren<Renderer>()
+                    from mat in r.sharedMaterials
+                    select mat
+                    ;
+
+                var tex = qMat.QueryUniqueTextures().PackTextureAndQueryHashAndUvRect();
+
+                var holder = gcs.GetTextureAtlasHolder();
+                holder.objectToAtlas.Add(this.gameObject, tex.atlas);
+                foreach (var (hash, rect) in (tex.texhashes, tex.uvRects).Zip())
+                {
+                    holder.texHashToUvRect[hash.atlas, hash.part] = rect;
+                }
+
+
+
+
 
                 var meshDict = gcs.GetMeshDictionary();
 
-                var combiner = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict);
+                var combiner = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
                 var qMesh = combiner.fs
                     .Select(f => f.ToTask())
                     .WhenAll().Result
@@ -94,7 +114,7 @@ namespace Abarabone.Particle.Aurthoring
 
                 void createModelEntity_(GameObject obj, Mesh mesh_)
                 {
-                    var mat = new Material(srcMaterial);
+                    var mat = new Material(shader);
                     if (atlasDict.ContainsKey(obj)) mat.mainTexture = atlasDict[obj];
                     
                     const BoneType BoneType = BoneType.TR;
@@ -196,10 +216,8 @@ namespace Abarabone.Particle.Aurthoring
         /// またＬＯＤに null を登録した場合は、この GameObject をルートとしたメッシュが対象となる。
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
-        public (GameObject[] objs, Func<MeshElements<TIdx, TVtx>>[] fs) BuildMeshCombiners<TIdx, TVtx>
+        public override (GameObject[] objs, Func<MeshElements<TIdx, TVtx>>[] fs) BuildMeshCombiners<TIdx, TVtx>
             (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasParameter tex = default)
-            where TIdx : struct, IIndexUnit<TIdx>
-            where TVtx : struct, IVertexUnit<TVtx>
         {
             if (this.LodOptionalMeshTops.Length == 0)
             {
