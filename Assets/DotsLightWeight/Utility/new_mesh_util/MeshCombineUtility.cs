@@ -25,7 +25,7 @@ namespace Abarabone.Geometry
         /// 
         /// </summary>
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
-            (this IEnumerable<GameObject> gameObjects, Transform tfBase, TextureAtlasParameter tex = default)
+            (this IEnumerable<GameObject> gameObjects, Transform tfBase, TextureAtlasAndParameter tex = default)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         =>
@@ -34,7 +34,7 @@ namespace Abarabone.Geometry
 
 
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
-            (this GameObject gameObjectTop, Transform tfBase, TextureAtlasParameter tex = default)
+            (this GameObject gameObjectTop, Transform tfBase, TextureAtlasAndParameter tex = default)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         =>
@@ -43,7 +43,7 @@ namespace Abarabone.Geometry
 
 
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
-            (this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts, Transform tfBase, TextureAtlasParameter tex = default)
+            (this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts, Transform tfBase, TextureAtlasAndParameter tex = default)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         {

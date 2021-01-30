@@ -13,10 +13,33 @@ namespace Abarabone.Geometry
 	{
 		public Dictionary<(int atlas, int part), Rect> dict;
 
+		public Rect this[(int atlas, int part) hashes]
+		{
+			set => this.dict[hashes] = value;
+			get => this.dict[hashes];
+		}
 		public Rect this[int atlas, int part]
         {
 			set => this.dict[(atlas, part)] = value;
 			get => this.dict[(atlas, part)];
+		}
+
+		public IEnumerable<Rect> this[IEnumerable<(int atlas, int part)> hashes]
+		{
+			set
+			{
+				foreach (var (hash, uv) in (hashes, value).Zip())
+				{
+					this[hash.atlas, hash.part] = uv;
+				}
+			}
+            get
+			{
+				foreach (var hash in hashes)
+				{
+					yield return this[hash.atlas, hash.part];
+				}
+			}
 		}
 
 		public static implicit operator
@@ -25,7 +48,7 @@ namespace Abarabone.Geometry
 			HashToRect(Dictionary<(int atlas, int part), Rect> d) => d != null ? new HashToRect { dict=d } : null;
 	}
 
-    public struct TextureAtlasParameter
+    public struct TextureAtlasAndParameter
     {
         public Texture2D atlas;
         public IEnumerable<(int atlas, int part)> texhashes;
@@ -40,7 +63,7 @@ namespace Abarabone.Geometry
 		/// <summary>
 		/// 
 		/// </summary>
-		static public (Texture2D atlas, Rect[] uvRects) PackTexture(this IEnumerable<Texture2D> srcTextures)
+		static public (Texture2D atlas, Rect[] uvRects) ToAtlas(this IEnumerable<Texture2D> srcTextures)
 		{
 			//var dstTexture = new Texture2D( 0, 0 );
 			var dstTexture = new Texture2D
@@ -52,19 +75,22 @@ namespace Abarabone.Geometry
 			return (dstTexture, uvRects);
 		}
 
-		static public (Texture2D atlas, Rect[] uvRects) PackTextureOrPassThrough(this IEnumerable<Texture2D> srcTextures)
+		static public (Texture2D atlas, Rect[] uvRects) ToAtlasOrPassThrough(this IEnumerable<Texture2D> srcTextures)
 		=>
 			srcTextures.IsSingle()
 				? (srcTextures.First(), new Rect[] { new Rect(0, 0, 1, 1) })
-				: srcTextures.PackTexture();
+				: srcTextures.ToAtlas();
 
 
 
-		static public IEnumerable<Texture2D> QueryUniqueTextures(this IEnumerable<GameObject> objects) =>
-			objects.QueryMeshMatsTransform_IfHaving()
-				.Select(x => x.mats)
-				.SelectMany()
+		static public IEnumerable<Texture2D> QueryUniqueTextures(this GameObject obj) =>
+			obj.GetComponentsInChildren<Renderer>()
+				.SelectMany(r => r.sharedMaterials)
 				.QueryUniqueTextures();
+			//objects.QueryMeshMatsTransform_IfHaving()
+			//	.Select(x => x.mats)
+			//	.SelectMany()
+			//	.QueryUniqueTextures();
 
 		static public IEnumerable<Texture2D> QueryUniqueTextures(this IEnumerable<Material> mats) =>
 			mats.Select(mat => mat.mainTexture)
@@ -73,18 +99,18 @@ namespace Abarabone.Geometry
 				.Distinct();
 
 
-		static public TextureAtlasParameter PackTextureAndQueryHashAndUvRect(this IEnumerable<Texture2D> uniqueTextures)
+		static public TextureAtlasAndParameter ToAtlasAndParameter(this IEnumerable<Texture2D> uniqueTextures)
 		{
 			var texs = uniqueTextures.ToArray();
 
-			var (atlas, uvRects) = texs.PackTextureOrPassThrough();
+			var (atlas, uvRects) = texs.ToAtlasOrPassThrough();
 
 			var qKeyHash = texs.queryKeyHashes(atlas);
 
-			return new TextureAtlasParameter
+			return new TextureAtlasAndParameter
 			{
 				atlas = atlas,
-				texhashes = qKeyHash.Append((atlas.GetHashCode(), 0)),
+				texhashes = qKeyHash.Append((atlas.GetHashCode(), 0)).ToArray(),
 				uvRects = uvRects.Append(new Rect(0, 0, 1, 1)),
 			};
 		}

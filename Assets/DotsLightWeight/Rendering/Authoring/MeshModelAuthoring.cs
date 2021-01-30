@@ -56,8 +56,10 @@ namespace Abarabone.Particle.Aurthoring
                 (GameObjectConversionSystem gcs, GameObject top, Shader shader, ObjectAndDistance[] lodOpts)
             {
 
-                var atlasHolder = gcs.GetTextureAtlasHolder();
+                var atlasHolder = gcs.GetTextureAtlasDictionary();
                 var meshDict = gcs.GetMeshDictionary();
+
+                var objs = queryMeshTopObjects.ToArray();
 
                 var tex = packTextures_();
                 combineMeshes_();
@@ -66,7 +68,7 @@ namespace Abarabone.Particle.Aurthoring
                 return;
 
 
-                TextureAtlasParameter packTextures_()
+                TextureAtlasAndParameter packTextures_(IEnumerable<GameObject> objects)
                 {
                     if (atlasHolder.objectToAtlas.ContainsKey(top)) return default;
 
@@ -75,15 +77,10 @@ namespace Abarabone.Particle.Aurthoring
                         from mat in r.sharedMaterials
                         select mat
                         ;
-
-                    var tex = qMat.QueryUniqueTextures().PackTextureAndQueryHashAndUvRect();
+                    var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
 
                     atlasHolder.objectToAtlas[top] = tex.atlas;
-
-                    foreach (var (hash, rect) in (tex.texhashes, tex.uvRects).Zip())
-                    {
-                        atlasHolder.texHashToUvRect[hash.atlas, hash.part] = rect;
-                    }
+                    atlasHolder.texHashToUvRect[tex.texhashes] = tex.uvRects;
 
                     return tex;
                 }
@@ -125,7 +122,7 @@ namespace Abarabone.Particle.Aurthoring
                     return;
 
 
-                    void createModelEntity_(GameObject obj, Mesh mesh_, TextureAtlasParameter tex)
+                    void createModelEntity_(GameObject obj, Mesh mesh_, TextureAtlasAndParameter tex)
                     {
                         var mat = new Material(shader);
                         mat.mainTexture = atlasHolder.objectToAtlas[obj];
@@ -200,7 +197,6 @@ namespace Abarabone.Particle.Aurthoring
         }
 
 
-
         /// <summary>
         /// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
         /// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」のみを対象とする。
@@ -231,27 +227,28 @@ namespace Abarabone.Particle.Aurthoring
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
         public override (GameObject[] objs, Func<MeshElements<TIdx, TVtx>>[] fs) BuildMeshCombiners<TIdx, TVtx>
-            (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasParameter tex = default)
+            (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasAndParameter tex = default)
         {
-            if (this.LodOptionalMeshTops.Length == 0)
-            {
-                if (meshDictionary?.ContainsKey(this.gameObject) ?? false)
-                    return (new GameObject[0], new Func<MeshElements<TIdx, TVtx>>[0]);
-
-                var f = this.gameObject.BuildCombiner<TIdx, TVtx>(this.transform, tex);
-
-                return (this.gameObject.AsEnumerable().ToArray(), f.AsEnumerable().ToArray());
-            }
-
-            var objs = this.LodOptionalMeshTops
-                .Select(x => x.objectTop ?? this.gameObject)
-                .Distinct()
+            var objs = queryMeshTopObjects
                 .Where(x => !(meshDictionary?.ContainsKey(x) ?? false))
                 .ToArray();
             var fs = objs
                 .Select(obj => obj.BuildCombiner<TIdx, TVtx>(obj.transform, tex))
                 .ToArray();
             return (objs, fs);
+        }
+
+        IEnumerable<GameObject> queryMeshTopObjects
+        {
+            get
+            {
+                var qMain = this.gameObject.AsEnumerable()
+                    .Where(x => this.LodOptionalMeshTops.Length == 0);
+                var qLod = this.LodOptionalMeshTops
+                    .Select(x => x.objectTop ?? this.gameObject);
+                return qMain.Concat(qLod)
+                    .Distinct();
+            }
         }
     }
 

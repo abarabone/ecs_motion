@@ -33,7 +33,7 @@ namespace Abarabone.Model.Authoring
         public class ModelAuthoringBase : MonoBehaviour
         {
             public virtual (GameObject[] objs, Func<MeshElements<TIdx, TVtx>>[] fs) BuildMeshCombiners<TIdx, TVtx>
-                (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasParameter tex = default)
+                (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasAndParameter tex = default)
                 where TIdx : struct, IIndexUnit<TIdx>
                 where TVtx : struct, IVertexUnit<TVtx>
             =>
@@ -68,17 +68,14 @@ namespace Abarabone.Model.Authoring
                 select mat
                 ;
 
-            var tex = qMat.QueryUniqueTextures().PackTextureAndQueryHashAndUvRect();
+            var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
 
-            var holder = conversionSystem.GetTextureAtlasHolder();
+            var holder = conversionSystem.GetTextureAtlasDictionary();
+            holder.texHashToUvRect[tex.texhashes] = tex.uvRects;
             //foreach (var prefab in prefabsDistinct)
             //{
             //    holder.objectToAtlas.Add(prefab, tex.atlas);
             //}
-            foreach (var (hash, rect) in (tex.texhashes, tex.uvRects).Zip())
-            {
-                holder.texHashToUvRect[hash.atlas, hash.part] = rect;
-            }
 
 
             var meshDict = conversionSystem.GetMeshDictionary();
@@ -89,7 +86,9 @@ namespace Abarabone.Model.Authoring
                 select (obj: x.src0, f: x.src1)
                 ;
             var meshsrcs = qMeshSrc.ToArray();
-            var qObj = meshsrcs.Select(x => x.obj);
+
+            var qObj = meshsrcs
+                .Select(x => x.obj);
             var qMesh = meshsrcs
                 .Select(x => x.f.ToTask())
                 .WhenAll().Result

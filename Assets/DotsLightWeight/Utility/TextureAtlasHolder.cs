@@ -6,6 +6,7 @@ using Unity.Entities;
 
 namespace Abarabone.Geometry
 {
+    using Abarabone.Common.Extension;
 
     public class TextureAtlasDictionary : GameObjectConversionSystem
     {
@@ -35,7 +36,7 @@ namespace Abarabone.Geometry
     public static class TextureAtlasDictionaryExtension
     {
 
-        public static TextureAtlasDictionary.Data GetTextureAtlasHolder(this GameObjectConversionSystem gcs)
+        public static TextureAtlasDictionary.Data GetTextureAtlasDictionary(this GameObjectConversionSystem gcs)
         {
             if (!gcs.HasSingleton<TextureAtlasDictionary.Data>()) return create_();
 
@@ -54,6 +55,21 @@ namespace Abarabone.Geometry
                 return newholder;
             }
         }
+
+
+
+        //public static void SetAtlasToDictionary
+        //    (this GameObjectConversionSystem gcs, GameObject obj, TextureAtlasAndParameter atlasParams)
+        //{
+        //    var dict = gcs.GetTextureAtlasDictionary();
+
+        //    dict.objectToAtlas[obj] = atlasParams.atlas;
+
+        //    foreach (var (hash, uv) in (atlasParams.texhashes, atlasParams.uvRects).Zip())
+        //    {
+        //        dict.texHashToUvRect[hash.atlas, hash.part] = uv;
+        //    }
+        //}
 
     }
 }
