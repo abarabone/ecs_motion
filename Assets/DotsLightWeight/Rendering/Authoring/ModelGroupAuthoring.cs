@@ -56,55 +56,62 @@ namespace Abarabone.Model.Authoring
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
+            var meshDict = conversionSystem.GetMeshDictionary();
+            var atlasDict = conversionSystem.GetTextureAtlasDictionary();
 
-            var prefabsDistinct = this.ModelPrefabs
-                .Select(x => x.gameObject)
-                .Distinct()
-                .ToArray();
+            //var prefabsDistinct = this.ModelPrefabs
+            //    .Select(x => x.gameObject)
+            //    .Distinct()
+            //    .ToArray();
 
-            var prefabModelDisticts = this.ModelPrefabs
-                .Distinct()
-                .ToArray();
+            //var prefabModelDisticts = this.ModelPrefabs
+            //    .Distinct()
+            //    .Where(x => !meshDict.ContainsKey(x.gameObject))
+            //    .ToArray();
 
-            var xxx =
-                from model in prefabModelDisticts
-                from obj in model.QueryMeshTopObjects()
-                select obj.get
+            var qObj =
+                from model in this.ModelPrefabs.Distinct()
+                from objtop in model.QueryMeshTopObjects()
+                where !meshDict.ContainsKey(objtop)
+                select objtop
+                ;
+            var objs = qObj.ToArray();
 
 
-
+            // atlas
             var qMat =
-                from prefab in prefabsDistinct
-                from r in prefab.GetComponentsInChildren<Renderer>()
+                from obj in objs
+                from r in obj.GetComponentsInChildren<Renderer>()
                 from mat in r.sharedMaterials
                 select mat
                 ;
 
             var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
 
-            var holder = conversionSystem.GetTextureAtlasDictionary();
-            holder.texHashToUvRect[tex.texhashes] = tex.uvRects;
+            atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
 
 
-            var meshDict = conversionSystem.GetMeshDictionary();
+            // mesh
+            var qSrc =
+                from obj in objs
+                let mmt = obj.QueryMeshMatsTransform_IfHaving()
+                select (obj, mmt)
+                ;
+            var srcs = qSrc.ToArray();
 
             var qMeshSrc =
-                from prefab in this.ModelPrefabs
-                from x in prefab.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex).Zip()
-                select (obj: x.src0, f: x.src1)
+                from src in srcs
+                where !src.mmt.IsSingle()
+                select src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, tex).ToTask()
                 ;
-            var meshsrcs = qMeshSrc.ToArray();
-
-            var qObj = meshsrcs
-                .Select(x => x.obj);
-            var qMesh = meshsrcs
-                .Select(x => x.f.ToTask())
+            var qMesh = qMeshSrc
                 .WhenAll().Result
-                .Select(x => x.CreateMesh());
+                .Select(x => x.CreateMesh())
+                .ToArray();
 
             foreach (var obj in qObj)
             {
-                holder.objectToAtlas[obj] = tex.atlas;
+                atlasDict.objectToAtlas[obj] = tex.atlas;
             }
             foreach (var (obj, mesh) in (qObj, qMesh).Zip())
             {
