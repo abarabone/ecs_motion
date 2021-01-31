@@ -38,6 +38,8 @@ namespace Abarabone.Model.Authoring
                 where TVtx : struct, IVertexUnit<TVtx>
             =>
                 (null, null);
+
+            public virtual IEnumerable<GameObject> QueryMeshTopObjects() => new GameObject[0];
         }
 
 
@@ -59,6 +61,16 @@ namespace Abarabone.Model.Authoring
                 .Select(x => x.gameObject)
                 .Distinct()
                 .ToArray();
+
+            var prefabModelDisticts = this.ModelPrefabs
+                .Distinct()
+                .ToArray();
+
+            var xxx =
+                from model in prefabModelDisticts
+                from obj in model.QueryMeshTopObjects()
+                select obj.get
+
 
 
             var qMat =
