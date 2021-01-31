@@ -56,21 +56,33 @@ namespace Abarabone.Particle.Aurthoring
                 (GameObjectConversionSystem gcs, GameObject top, Shader shader, ObjectAndDistance[] lodOpts)
             {
 
-                var atlasHolder = gcs.GetTextureAtlasDictionary();
+                var atlasDict = gcs.GetTextureAtlasDictionary();
                 var meshDict = gcs.GetMeshDictionary();
 
-                var objs = queryMeshTopObjects.ToArray();
+                var objs = queryMeshTopObjects().ToArray();
 
-                var tex = packTextures_();
+                var tex = toAtlases_(objs);
                 combineMeshes_();
                 createModelEntities_();
 
                 return;
 
 
-                TextureAtlasAndParameter packTextures_(IEnumerable<GameObject> objects)
+
+
+                var q =
+                    from obj in objs
+                    select atlasDict.objectToAtlas.ContainsKey(obj) switch
+                    {
+                        true =>
+                            atlasDict.objectToAtlas[obj],
+                        false =>
+                            
+                    };
+
+                TextureAtlasAndParameter toAtlases_(IEnumerable<GameObject> objects)
                 {
-                    if (atlasHolder.objectToAtlas.ContainsKey(top)) return default;
+                    if (atlasDict.objectToAtlas.ContainsKey(top)) return default;
 
                     var qMat =
                         from r in this.GetComponentsInChildren<Renderer>()
@@ -79,8 +91,8 @@ namespace Abarabone.Particle.Aurthoring
                         ;
                     var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
 
-                    atlasHolder.objectToAtlas[top] = tex.atlas;
-                    atlasHolder.texHashToUvRect[tex.texhashes] = tex.uvRects;
+                    atlasDict.objectToAtlas[top] = tex.atlas;
+                    atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
 
                     return tex;
                 }
@@ -125,7 +137,7 @@ namespace Abarabone.Particle.Aurthoring
                     void createModelEntity_(GameObject obj, Mesh mesh_, TextureAtlasAndParameter tex)
                     {
                         var mat = new Material(shader);
-                        mat.mainTexture = atlasHolder.objectToAtlas[obj];
+                        mat.mainTexture = atlasDict.objectToAtlas[obj];
                         
                         const BoneType BoneType = BoneType.TR;
                         const int boneLength = 1;
@@ -229,7 +241,7 @@ namespace Abarabone.Particle.Aurthoring
         public override (GameObject[] objs, Func<MeshElements<TIdx, TVtx>>[] fs) BuildMeshCombiners<TIdx, TVtx>
             (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasAndParameter tex = default)
         {
-            var objs = queryMeshTopObjects
+            var objs = queryMeshTopObjects()
                 .Where(x => !(meshDictionary?.ContainsKey(x) ?? false))
                 .ToArray();
             var fs = objs
@@ -238,17 +250,20 @@ namespace Abarabone.Particle.Aurthoring
             return (objs, fs);
         }
 
-        IEnumerable<GameObject> queryMeshTopObjects
+        IEnumerable<GameObject> queryMeshTopObjects()
         {
-            get
-            {
-                var qMain = this.gameObject.AsEnumerable()
-                    .Where(x => this.LodOptionalMeshTops.Length == 0);
-                var qLod = this.LodOptionalMeshTops
-                    .Select(x => x.objectTop ?? this.gameObject);
-                return qMain.Concat(qLod)
-                    .Distinct();
-            }
+            var qMain = this.gameObject.AsEnumerable()
+                .Where(x => this.LodOptionalMeshTops.Length == 0);
+            var qLod = this.LodOptionalMeshTops
+                .Select(x => x.objectTop ?? this.gameObject);
+            return qMain.Concat(qLod)
+                .Distinct();
+        }
+
+
+        public void BuildMeshAndAtlasToDictionary()
+        {
+
         }
     }
 

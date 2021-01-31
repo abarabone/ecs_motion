@@ -72,10 +72,6 @@ namespace Abarabone.Model.Authoring
 
             var holder = conversionSystem.GetTextureAtlasDictionary();
             holder.texHashToUvRect[tex.texhashes] = tex.uvRects;
-            //foreach (var prefab in prefabsDistinct)
-            //{
-            //    holder.objectToAtlas.Add(prefab, tex.atlas);
-            //}
 
 
             var meshDict = conversionSystem.GetMeshDictionary();
@@ -96,11 +92,11 @@ namespace Abarabone.Model.Authoring
 
             foreach (var obj in qObj)
             {
-                holder.objectToAtlas.Add(obj, tex.atlas);
+                holder.objectToAtlas[obj] = tex.atlas;
             }
             foreach (var (obj, mesh) in (qObj, qMesh).Zip())
             {
-                conversionSystem.AddToMeshDictionary(obj, mesh);
+                meshDict[obj] = mesh;
             }
 
 
