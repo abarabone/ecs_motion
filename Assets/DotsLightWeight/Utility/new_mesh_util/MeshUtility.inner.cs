@@ -160,17 +160,23 @@ namespace Abarabone.Geometry.inner
             IEnumerable<T> getIndexDataNativeArray_(SubMeshDescriptor desc) =>
                 meshdata.indexFormat switch
                 {
-                    IndexFormat.UInt16 =>
-                        !(default(T) is ushort)
-                            ? meshdata.GetIndexData<ushort>().Select(x => new T().Add(x)).ToNativeArray<T>(Allocator.TempJob).rangeWithUsing(desc.indexStart, desc.indexCount)
-                            : meshdata.GetIndexData<T>().range(desc.indexStart, desc.indexCount),
-                    IndexFormat.UInt32 =>
-                        !(default(T) is uint)
-                            ? meshdata.GetIndexData<uint>().Select(x => new T().Add((int)x)).ToNativeArray<T>(Allocator.TempJob).rangeWithUsing(desc.indexStart, desc.indexCount)
-                            : meshdata.GetIndexData<T>().range(desc.indexStart, desc.indexCount),
+                    IndexFormat.UInt16 when !(default(T) is ushort) =>
+                        meshdata.GetIndexData<ushort>()
+                            .Select(x => new T().Add(x))
+                            .ToNativeArray(Allocator.TempJob)
+                            .rangeWithUsing(desc.indexStart, desc.indexCount),
+
+                    IndexFormat.UInt32 when !(default(T) is uint) =>
+                        meshdata.GetIndexData<uint>()
+                            .Select(x => new T().Add((int)x))
+                            .ToNativeArray(Allocator.TempJob)
+                            .rangeWithUsing(desc.indexStart, desc.indexCount),
+
+                    _ =>
+                        meshdata.GetIndexData<T>()
+                            .range(desc.indexStart, desc.indexCount),
                 };
         }
-
 
         static IEnumerable<T> rangeWithUsing<T>(this NativeArray<T> array, int first, int length) where T : struct
         {

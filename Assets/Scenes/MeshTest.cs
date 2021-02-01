@@ -15,9 +15,8 @@ public class MeshTest : MonoBehaviour
     void Start()
     {
         Debug.Log(this.name);
-        var objs = this.GetComponentsInChildren<Transform>().Select(x => x.gameObject);
-        var tex = objs.QueryUniqueTextures().ToAtlasAndParameter();
-        this.mesh = objs//.Do(x => Debug.Log(x))
+        var tex = this.gameObject.QueryUniqueTextures().ToAtlasAndParameter();
+        this.mesh = this.gameObject//.Do(x => Debug.Log(x))
             .BuildCombiner<UI32, PositionNormalUvVertex>(this.transform, tex)
             .ToTask().Result
             .CreateMesh();

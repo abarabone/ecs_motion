@@ -55,6 +55,24 @@ namespace Abarabone.Utilities
 
 
 
+        public static void AddRange<Tkey, Tvalue>
+            (this Dictionary<Tkey, Tvalue> dict, IEnumerable<Tkey> keys, IEnumerable<Tvalue> values)
+        {
+            foreach (var (key, value) in (keys, values).Zip())
+            {
+                dict.Add(key, value);
+            }
+        }
+        public static void AddRange<Tkey, Tvalue>
+            (this Dictionary<Tkey, Tvalue> dict, IEnumerable<Tkey> keys, Tvalue value)
+        {
+            foreach (var key in keys)
+            {
+                dict.Add(key, value);
+            }
+        }
+
+
 
         /// <summary>
         /// 値を取得、keyがなければデフォルト値を設定し、デフォルト値を取得

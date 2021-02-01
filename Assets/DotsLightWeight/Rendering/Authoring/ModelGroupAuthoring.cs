@@ -59,28 +59,20 @@ namespace Abarabone.Model.Authoring
             var meshDict = conversionSystem.GetMeshDictionary();
             var atlasDict = conversionSystem.GetTextureAtlasDictionary();
 
-            //var prefabsDistinct = this.ModelPrefabs
-            //    .Select(x => x.gameObject)
-            //    .Distinct()
-            //    .ToArray();
-
-            //var prefabModelDisticts = this.ModelPrefabs
-            //    .Distinct()
-            //    .Where(x => !meshDict.ContainsKey(x.gameObject))
-            //    .ToArray();
-
             var qObj =
                 from model in this.ModelPrefabs.Distinct()
                 from objtop in model.QueryMeshTopObjects()
-                where !meshDict.ContainsKey(objtop)
                 select objtop
                 ;
             var objs = qObj.ToArray();
 
 
             // atlas
+            var tobjs = objs
+                .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
+                .ToArray();
             var qMat =
-                from obj in objs
+                from obj in tobjs
                 from r in obj.GetComponentsInChildren<Renderer>()
                 from mat in r.sharedMaterials
                 select mat
@@ -92,8 +84,11 @@ namespace Abarabone.Model.Authoring
 
 
             // mesh
+            var mobjs = objs
+                .Where(x => !meshDict.ContainsKey(x))
+                .ToArray();
             var qSrc =
-                from obj in objs
+                from obj in mobjs
                 let mmt = obj.QueryMeshMatsTransform_IfHaving()
                 select (obj, mmt)
                 ;
@@ -109,14 +104,8 @@ namespace Abarabone.Model.Authoring
                 .Select(x => x.CreateMesh())
                 .ToArray();
 
-            foreach (var obj in qObj)
-            {
-                atlasDict.objectToAtlas[obj] = tex.atlas;
-            }
-            foreach (var (obj, mesh) in (qObj, qMesh).Zip())
-            {
-                meshDict[obj] = mesh;
-            }
+            atlasDict.objectToAtlas.AddRange(mobjs, tex.atlas);
+            meshDict.AddRange(mobjs, qMesh);
 
 
             // モデルグループ自体にはエンティティは不要

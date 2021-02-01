@@ -70,15 +70,61 @@ namespace Abarabone.Particle.Aurthoring
 
 
 
-                var q =
-                    from obj in objs
-                    select atlasDict.objectToAtlas.ContainsKey(obj) switch
-                    {
-                        true =>
-                            atlasDict.objectToAtlas[obj],
-                        false =>
-                            
-                    };
+
+                var qObj =
+                    from model in this.ModelPrefabs.Distinct()
+                    from objtop in model.QueryMeshTopObjects()
+                    select objtop
+                    ;
+                var objs = qObj.ToArray();
+
+
+                // atlas
+                var tobjs = objs
+                    .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
+                    .ToArray();
+                var qMat =
+                    from r in this.GetComponentsInChildren<Renderer>()
+                    from mat in r.sharedMaterials
+                    select mat
+                var qMat =
+                    from obj in tobjs
+                    from r in obj.GetComponentsInChildren<Renderer>()
+                    from mat in r.sharedMaterials
+                    select mat
+                    ;
+
+                var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
+
+                atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
+
+
+                // mesh
+                var mobjs = objs
+                    .Where(x => !meshDict.ContainsKey(x))
+                    .ToArray();
+                var qSrc =
+                    from obj in mobjs
+                    let mmt = obj.QueryMeshMatsTransform_IfHaving()
+                    select (obj, mmt)
+                    ;
+                var srcs = qSrc.ToArray();
+
+                var qMeshSrc =
+                    from src in srcs
+                    where !src.mmt.IsSingle()
+                    select src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, tex).ToTask()
+                    ;
+                var qMesh = qMeshSrc
+                    .WhenAll().Result
+                    .Select(x => x.CreateMesh())
+                    .ToArray();
+
+                atlasDict.objectToAtlas.AddRange(mobjs, tex.atlas);
+                meshDict.AddRange(mobjs, qMesh);
+
+
+
 
                 TextureAtlasAndParameter toAtlases_(IEnumerable<GameObject> objects)
                 {
@@ -254,8 +300,10 @@ namespace Abarabone.Particle.Aurthoring
         {
             var qMain = this.gameObject.AsEnumerable()
                 .Where(x => this.LodOptionalMeshTops.Length == 0);
+
             var qLod = this.LodOptionalMeshTops
                 .Select(x => x.objectTop ?? this.gameObject);
+
             return qMain.Concat(qLod)
                 .Distinct();
         }
