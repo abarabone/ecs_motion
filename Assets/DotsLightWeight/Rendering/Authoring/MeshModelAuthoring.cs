@@ -59,131 +59,98 @@ namespace Abarabone.Particle.Aurthoring
                 var atlasDict = gcs.GetTextureAtlasDictionary();
                 var meshDict = gcs.GetMeshDictionary();
 
-                var objs = queryMeshTopObjects().ToArray();
-
-                var tex = toAtlases_(objs);
-                combineMeshes_();
-                createModelEntities_();
-
-                return;
-
-
-
-
 
                 var qObj =
-                    from model in this.ModelPrefabs.Distinct()
-                    from objtop in model.QueryMeshTopObjects()
+                    from objtop in this.QueryMeshTopObjects()
                     select objtop
                     ;
                 var objs = qObj.ToArray();
 
 
-                // atlas
-                var tobjs = objs
-                    .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
-                    .ToArray();
-                var qMat =
-                    from r in this.GetComponentsInChildren<Renderer>()
-                    from mat in r.sharedMaterials
-                    select mat
-                var qMat =
-                    from obj in tobjs
-                    from r in obj.GetComponentsInChildren<Renderer>()
-                    from mat in r.sharedMaterials
-                    select mat
-                    ;
+                var tex = toAtlas_();
 
-                var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
+                if (tex.atlas != null) combineMeshes_(tex);
 
-                atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
+                createModelEntities_();
+
+                return;
 
 
-                // mesh
-                var mobjs = objs
-                    .Where(x => !meshDict.ContainsKey(x))
-                    .ToArray();
-                var qSrc =
-                    from obj in mobjs
-                    let mmt = obj.QueryMeshMatsTransform_IfHaving()
-                    select (obj, mmt)
-                    ;
-                var srcs = qSrc.ToArray();
-
-                var qMeshSrc =
-                    from src in srcs
-                    where !src.mmt.IsSingle()
-                    select src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, tex).ToTask()
-                    ;
-                var qMesh = qMeshSrc
-                    .WhenAll().Result
-                    .Select(x => x.CreateMesh())
-                    .ToArray();
-
-                atlasDict.objectToAtlas.AddRange(mobjs, tex.atlas);
-                meshDict.AddRange(mobjs, qMesh);
-
-
-
-
-                TextureAtlasAndParameter toAtlases_(IEnumerable<GameObject> objects)
+                TextureAtlasAndParameter toAtlas_()
                 {
-                    if (atlasDict.objectToAtlas.ContainsKey(top)) return default;
+                    var tobjs = objs
+                        .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
+                        //.Logging(x => x.name)
+                        .ToArray();
+
+                    if (tobjs.Length == 0) return default;
 
                     var qMat =
-                        from r in this.GetComponentsInChildren<Renderer>()
+                        from obj in tobjs
+                        from r in obj.GetComponentsInChildren<Renderer>()
                         from mat in r.sharedMaterials
                         select mat
                         ;
+
                     var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
 
-                    atlasDict.objectToAtlas[top] = tex.atlas;
                     atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
+                    atlasDict.objectToAtlas.AddRange(tobjs, tex.atlas);
 
                     return tex;
                 }
 
-                void combineMeshes_()
+                void combineMeshes_(TextureAtlasAndParameter tex)
                 {
-                    var combiner = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
-                    var qMesh = combiner.fs
-                        .Select(f => f.ToTask())
+                    var mobjs = objs
+                        .Where(x => !meshDict.ContainsKey(x))
+                        .ToArray();
+                    var qSrc =
+                        from obj in mobjs
+                        let mmt = obj.QueryMeshMatsTransform_IfHaving()
+                        select (obj, mmt)
+                        ;
+                    var srcs = qSrc.ToArray();
+
+                    var qMeshSingle =
+                        from src in srcs
+                        where src.mmt.IsSingle()
+                        select src.mmt.First().mesh
+                        ;
+                    var qMeshSrc =
+                        from src in srcs
+                        where !src.mmt.IsSingle()
+                        select src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, tex).ToTask()
+                        ;
+                    var qMesh = qMeshSrc
                         .WhenAll().Result
-                        .Select(m => m.CreateMesh());
-                    foreach (var (obj, mesh) in (combiner.objs, qMesh).Zip())
-                    {
-                        meshDict[obj] = mesh;
-                    }
+                        .Select(x => x.CreateMesh())
+                        .Concat(qMeshSingle);
+
+                    meshDict.AddRange(mobjs, qMesh);
                 }
 
                 void createModelEntities_()
                 {
-                    var qMain = top.AsEnumerable()
-                        .Where(_ => this.LodOptionalMeshTops.Length == 0);
-                    var qLod = this.LodOptionalMeshTops
-                        .Select(x => x.objectTop ?? top);
 
-                    var objs = qLod.Concat(qMain)
-                        .ToArray();
-                    var meshes = objs
-                        .Distinct()
-                        .Select(obj => meshDict[obj])
-                        .ToArray();
+                    var qObj = this.QueryMeshTopObjects();
 
-                    foreach (var (obj, mesh) in (objs, meshes).Zip())
+                    foreach (var obj in qObj)
                     {
                         Debug.Log($"{obj.name} model ent");
 
-                        createModelEntity_(obj, mesh, tex);
+                        var mesh = meshDict[obj];
+                        var atlas = atlasDict.objectToAtlas[obj];
+                        createModelEntity_(obj, mesh, atlas);
                     }
 
                     return;
 
 
-                    void createModelEntity_(GameObject obj, Mesh mesh_, TextureAtlasAndParameter tex)
+                    void createModelEntity_(GameObject obj, Mesh mesh_, Texture2D atlas)
                     {
                         var mat = new Material(shader);
-                        mat.mainTexture = atlasDict.objectToAtlas[obj];
+                        mat.mainTexture = atlas;
                         
                         const BoneType BoneType = BoneType.TR;
                         const int boneLength = 1;
@@ -255,48 +222,49 @@ namespace Abarabone.Particle.Aurthoring
         }
 
 
-        /// <summary>
-        /// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
-        /// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」のみを対象とする。
-        /// デフォルトメッシュは結合対象にはならない。
-        /// またＬＯＤに null を登録した場合は、ルートから検索して最初に発見したメッシュを
-        /// 加工せずに採用するため、この関数では配列に null を格納して返される。
-        /// 返される要素数は、 LodOptionalMeshTops.Length と同じ。
-        /// </summary>
-        public Func<MeshCombinerElements>[] GetMeshCombineFuncPerObjects()
-        {
-            var qResult = Enumerable.Empty<Func<MeshCombinerElements>>();
+        ///// <summary>
+        ///// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
+        ///// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」のみを対象とする。
+        ///// デフォルトメッシュは結合対象にはならない。
+        ///// またＬＯＤに null を登録した場合は、ルートから検索して最初に発見したメッシュを
+        ///// 加工せずに採用するため、この関数では配列に null を格納して返される。
+        ///// 返される要素数は、 LodOptionalMeshTops.Length と同じ。
+        ///// </summary>
+        //public Func<MeshCombinerElements>[] GetMeshCombineFuncPerObjects()
+        //{
+        //    var qResult = Enumerable.Empty<Func<MeshCombinerElements>>();
 
-            if (this.LodOptionalMeshTops.Length == 0) return qResult.ToArray();
+        //    if (this.LodOptionalMeshTops.Length == 0) return qResult.ToArray();
 
-            return this.LodOptionalMeshTops
-                .Select(x => x.objectTop)
-                .Select(lod => lod != null
-                   ? MeshCombiner.BuildNormalMeshElements(lod.ChildrenAndSelf(), this.transform)
-                   : null
-                )
-                .ToArray();
-        }
+        //    return this.LodOptionalMeshTops
+        //        .Select(x => x.objectTop)
+        //        .Select(lod => lod != null
+        //           ? MeshCombiner.BuildNormalMeshElements(lod.ChildrenAndSelf(), this.transform)
+        //           : null
+        //        )
+        //        .ToArray();
+        //}
 
-        /// <summary>
-        /// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
-        /// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」があれば、そちらを対象とする。
-        /// またＬＯＤに null を登録した場合は、この GameObject をルートとしたメッシュが対象となる。
-        /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
-        /// </summary>
-        public override (GameObject[] objs, Func<MeshElements<TIdx, TVtx>>[] fs) BuildMeshCombiners<TIdx, TVtx>
-            (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasAndParameter tex = default)
-        {
-            var objs = queryMeshTopObjects()
-                .Where(x => !(meshDictionary?.ContainsKey(x) ?? false))
-                .ToArray();
-            var fs = objs
-                .Select(obj => obj.BuildCombiner<TIdx, TVtx>(obj.transform, tex))
-                .ToArray();
-            return (objs, fs);
-        }
+        ///// <summary>
+        ///// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
+        ///// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」があれば、そちらを対象とする。
+        ///// またＬＯＤに null を登録した場合は、この GameObject をルートとしたメッシュが対象となる。
+        ///// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
+        ///// </summary>
+        //public override (GameObject[] objs, Func<MeshElements<TIdx, TVtx>>[] fs) BuildMeshCombiners<TIdx, TVtx>
+        //    (Dictionary<GameObject, Mesh> meshDictionary = null, TextureAtlasAndParameter tex = default)
+        //{
+        //    var objs = queryMeshTopObjects()
+        //        .Where(x => !(meshDictionary?.ContainsKey(x) ?? false))
+        //        .ToArray();
+        //    var fs = objs
+        //        .Select(obj => obj.BuildCombiner<TIdx, TVtx>(obj.transform, tex))
+        //        .ToArray();
+        //    return (objs, fs);
+        //}
 
-        IEnumerable<GameObject> queryMeshTopObjects()
+
+        public override IEnumerable<GameObject> QueryMeshTopObjects()
         {
             var qMain = this.gameObject.AsEnumerable()
                 .Where(x => this.LodOptionalMeshTops.Length == 0);
@@ -308,11 +276,6 @@ namespace Abarabone.Particle.Aurthoring
                 .Distinct();
         }
 
-
-        public void BuildMeshAndAtlasToDictionary()
-        {
-
-        }
     }
 
 }

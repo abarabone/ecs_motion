@@ -16,6 +16,15 @@ namespace Abarabone.Utilities
     static public class Extentions
     {
 
+        public static IEnumerable<T> Logging<T>(this IEnumerable<T> src) =>
+            src.Do(x => Debug.Log(x));
+
+        public static IEnumerable<T> Logging<T>(this IEnumerable<T> src, Func<T, String> toString) =>
+            src.Do(x => Debug.Log(toString(x)));
+
+
+
+
         public static IEnumerable<T> Using<T, Tsrc>(this Tsrc src) where Tsrc : IDisposable, IEnumerable<T>
         {
             using (src) foreach (var e in src) yield return e;
