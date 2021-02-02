@@ -21,6 +21,9 @@ namespace Abarabone.Particle.Aurthoring
     public class PsylliumAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
+        public override IEnumerable<(GameObject obj, Func<MeshElements<TIdx, TVtx>> f)> BuildMeshCombiners<TIdx, TVtx>
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
+        { }
 
 
         public Material Material;

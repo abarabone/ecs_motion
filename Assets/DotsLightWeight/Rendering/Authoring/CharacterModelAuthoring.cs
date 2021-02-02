@@ -24,6 +24,9 @@ namespace Abarabone.Model.Authoring
     public class CharacterModelAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
+        public override IEnumerable<(GameObject obj, Func<MeshElements<TIdx, TVtx>> f)> BuildMeshCombiners<TIdx, TVtx>
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
+        { }
 
         public Shader DrawShader;
 
