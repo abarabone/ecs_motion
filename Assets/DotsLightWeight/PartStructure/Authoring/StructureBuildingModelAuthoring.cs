@@ -32,9 +32,11 @@ namespace Abarabone.Structure.Authoring
     public class StructureBuildingModelAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
-        public override IEnumerable<(GameObject obj, Func<MeshElements<TIdx, TVtx>> f)> BuildMeshCombiners<TIdx, TVtx>
+        public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
-        { }
+        { throw new NotImplementedException(); }
+        public override IEnumerable<GameObject> QueryMeshTopObjects()
+        { throw new NotImplementedException(); }
 
         public Material NearMaterialToDraw;
         public Material FarMaterialToDraw;

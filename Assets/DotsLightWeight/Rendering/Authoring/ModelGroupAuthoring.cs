@@ -32,7 +32,7 @@ namespace Abarabone.Model.Authoring
         /// </summary>
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
-            public abstract IEnumerable<(GameObject obj, Func<MeshElements<TIdx, TVtx>> f)> BuildMeshCombiners<TIdx, TVtx>
+            public abstract (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
                 (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
                 where TIdx : struct, IIndexUnit<TIdx>
                 where TVtx : struct, IVertexUnit<TVtx>
@@ -57,15 +57,36 @@ namespace Abarabone.Model.Authoring
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
-            var meshDict = conversionSystem.GetMeshDictionary();
-            var atlasDict = conversionSystem.GetTextureAtlasDictionary();
+            //var meshDict = conversionSystem.GetMeshDictionary();
+            //var atlasDict = conversionSystem.GetTextureAtlasDictionary();
+
+            var prefabModels = this.ModelPrefabs.Distinct();
 
             var qObj =
-                from model in this.ModelPrefabs.Distinct()
+                from model in prefabModels
                 from objtop in model.QueryMeshTopObjects()
                 select objtop
                 ;
             var objs = qObj.ToArray();
+
+            var gcs = conversionSystem;
+
+            var atlasDict = gcs.GetTextureAtlasDictionary();
+            var tex = objs.ToAtlas(atlasDict);
+
+            var meshDict = gcs.GetMeshDictionary();
+            var ofss =
+                from model in prefabModels
+                select model.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
+            var qMObj =
+                from ofs in ofss
+                from of in ofs
+                select of.obj;
+            var qMesh =
+                from e in ofss.SelectMany().Select(x => x.f.ToTask()).WhenAll().Result
+                select e.CreateMesh()
+                ;
+            meshDict.AddRange(qMObj, qMesh);
 
 
             //var tex = toAtlas_();
@@ -185,7 +206,7 @@ namespace Abarabone.Model.Authoring
     {
 
         static public TextureAtlasAndParameter ToAtlas
-            (this TextureAtlasDictionary.Data atlasDict, IEnumerable<GameObject> objs)
+            (this IEnumerable<GameObject> objs, TextureAtlasDictionary.Data atlasDict)
         {
             var texobjs = objs
                 .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))

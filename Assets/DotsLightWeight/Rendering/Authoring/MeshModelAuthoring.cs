@@ -28,10 +28,6 @@ namespace Abarabone.Particle.Aurthoring
     public class MeshModelAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
-        public override IEnumerable<(GameObject obj, Func<MeshElements<TIdx, TVtx>> f)> BuildMeshCombiners<TIdx, TVtx>
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
-        { }
-
 
         public Material Material;
         public Shader ShaderToDraw;
@@ -59,13 +55,24 @@ namespace Abarabone.Particle.Aurthoring
                 (GameObjectConversionSystem gcs, GameObject top, Shader shader, ObjectAndDistance[] lodOpts)
             {
 
-                //var qObj =
-                //    from objtop in this.QueryMeshTopObjects()
-                //    select objtop
-                //    ;
-                //var objs = qObj.ToArray();
+                var qObj =
+                    from objtop in this.QueryMeshTopObjects()
+                    select objtop
+                    ;
+                var objs = qObj.ToArray();
 
 
+                var atlasDict = gcs.GetTextureAtlasDictionary();
+                var tex = objs.ToAtlas(atlasDict);
+
+                var meshDict = gcs.GetMeshDictionary();
+                var ofs = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
+                var qMObj = ofs.Select(x => x.obj);
+                var qMesh =
+                    from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
+                    select e.CreateMesh()
+                    ;
+                meshDict.AddRange(qMObj, qMesh);
 
                 createModelEntities_();
 
@@ -257,18 +264,44 @@ namespace Abarabone.Particle.Aurthoring
         /// またＬＯＤに null を登録した場合は、この GameObject をルートとしたメッシュが対象となる。
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
-        public override IEnumerable<(GameObject obj, Func<MeshElements<TIdx, TVtx>> f)> BuildMeshCombiners<TIdx, TVtx>
+        public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
         {
             var objs = QueryMeshTopObjects()
-                .Where(x => !(meshDictionary?.ContainsKey(x) ?? false))
+                .Where(x => !meshDictionary.ContainsKey(x))
                 .ToArray();
 
             var fs = objs
                 .Select(obj => obj.BuildCombiner<TIdx, TVtx>(obj.transform, tex))
                 .ToArray();
 
-            return (objs, fs).Zip();
+            var qSrc =
+                from obj in objs
+                let mmt = obj.QueryMeshMatsTransform_IfHaving()
+                select (obj, mmt)
+                ;
+            var srcs = qSrc.ToArray();
+
+            var qObjSingle =
+                from src in srcs
+                where src.mmt.IsSingle()
+                select src.obj
+                ;
+            var qMeshSingle =
+                from src in srcs
+                where src.mmt.IsSingle()
+                select src.mmt.First().mesh
+                ;
+            meshDictionary.AddRange(qObjSingle, qMeshSingle);
+
+            return (
+                from src in srcs
+                where !src.mmt.IsSingle()
+                select (
+                    src.obj,
+                    src.mmt.BuildCombiner<TIdx, TVtx>(src.obj.transform, tex)
+                )
+            ).ToArray();
         }
 
 

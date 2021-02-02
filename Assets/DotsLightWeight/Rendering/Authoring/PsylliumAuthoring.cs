@@ -14,6 +14,7 @@ namespace Abarabone.Particle.Aurthoring
     using Abarabone.Draw;
     using Abarabone.Model.Authoring;
     using Abarabone.Draw.Authoring;
+    using Abarabone.Geometry;
 
     /// <summary>
     /// 
@@ -21,9 +22,11 @@ namespace Abarabone.Particle.Aurthoring
     public class PsylliumAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
-        public override IEnumerable<(GameObject obj, Func<MeshElements<TIdx, TVtx>> f)> BuildMeshCombiners<TIdx, TVtx>
+        public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
-        { }
+        { throw new NotImplementedException(); }
+        public override IEnumerable<GameObject> QueryMeshTopObjects()
+        { throw new NotImplementedException(); }
 
 
         public Material Material;

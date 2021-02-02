@@ -16,6 +16,7 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.CharacterMotion.Authoring;
     using Abarabone.Geometry;
+    using Abarabone.Utilities;
 
     /// <summary>
     /// プライマリエンティティは LinkedEntityGroup のみとする。
@@ -24,9 +25,11 @@ namespace Abarabone.Model.Authoring
     public class CharacterModelAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
-        public override IEnumerable<(GameObject obj, Func<MeshElements<TIdx, TVtx>> f)> BuildMeshCombiners<TIdx, TVtx>
+        public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
-        { }
+        { throw new NotImplementedException(); }
+        public override IEnumerable<GameObject> QueryMeshTopObjects()
+        { throw new NotImplementedException(); }
 
         public Shader DrawShader;
 
