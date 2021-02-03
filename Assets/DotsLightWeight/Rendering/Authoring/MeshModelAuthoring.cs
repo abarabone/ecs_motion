@@ -63,9 +63,14 @@ namespace Abarabone.Particle.Aurthoring
 
 
                 var atlasDict = gcs.GetTextureAtlasDictionary();
-                var tex = objs.ToAtlas(atlasDict);
-
                 var meshDict = gcs.GetMeshDictionary();
+
+                var tex = objs.ToAtlas(atlasDict);// ?? new TextureAtlasAndParameter
+                //{
+                //    atlas = atlasDict.objectToAtlas[o],
+                    
+                //};
+
                 var ofs = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
                 var qMObj = ofs.Select(x => x.obj);
                 var qMesh =

@@ -72,9 +72,10 @@ namespace Abarabone.Model.Authoring
             var gcs = conversionSystem;
 
             var atlasDict = gcs.GetTextureAtlasDictionary();
+            var meshDict = gcs.GetMeshDictionary();
+
             var tex = objs.ToAtlas(atlasDict);
 
-            var meshDict = gcs.GetMeshDictionary();
             var ofss =
                 from model in prefabModels
                 select model.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
