@@ -292,21 +292,21 @@ namespace Abarabone.Particle.Aurthoring
                 ;
             var srcs = qSrc.ToArray();
 
-            var qObjSingle =
-                from src in srcs
-                where src.mmt.IsSingle()
-                select src.obj
-                ;
-            var qMeshSingle =
-                from src in srcs
-                where src.mmt.IsSingle()
-                select src.mmt.First().mesh
-                ;
-            meshDictionary.AddRange(qObjSingle, qMeshSingle);
+            //var qObjSingle =
+            //    from src in srcs
+            //    where src.mmt.IsSingle()
+            //    select src.obj
+            //    ;
+            //var qMeshSingle =
+            //    from src in srcs
+            //    where src.mmt.IsSingle()
+            //    select src.mmt.First().mesh
+            //    ;
+            //meshDictionary.AddRange(qObjSingle, qMeshSingle);
 
             return (
                 from src in srcs
-                where !src.mmt.IsSingle()
+                //where !src.mmt.IsSingle()
                 let atlas = atlasDictionary.objectToAtlas[src.obj]
                 let tex = new TextureAtlasAndParameter
                 {
