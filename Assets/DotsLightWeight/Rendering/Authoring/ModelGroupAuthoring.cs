@@ -33,7 +33,7 @@ namespace Abarabone.Model.Authoring
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
             public abstract (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
-                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
+                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
                 where TIdx : struct, IIndexUnit<TIdx>
                 where TVtx : struct, IVertexUnit<TVtx>
             ;
@@ -77,7 +77,7 @@ namespace Abarabone.Model.Authoring
             var meshDict = gcs.GetMeshDictionary();
             var ofss =
                 from model in prefabModels
-                select model.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
+                select model.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, atlasDict);
             var qMObj =
                 from ofs in ofss
                 from of in ofs

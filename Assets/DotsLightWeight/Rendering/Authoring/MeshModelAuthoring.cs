@@ -66,7 +66,7 @@ namespace Abarabone.Particle.Aurthoring
                 var tex = objs.ToAtlas(atlasDict);
 
                 var meshDict = gcs.GetMeshDictionary();
-                var ofs = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, tex);
+                var ofs = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, atlasDict);
                 var qMObj = ofs.Select(x => x.obj);
                 var qMesh =
                     from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
@@ -265,15 +265,25 @@ namespace Abarabone.Particle.Aurthoring
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
         public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
+            //(Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
             var objs = QueryMeshTopObjects()
                 .Where(x => !meshDictionary.ContainsKey(x))
                 .ToArray();
 
-            var fs = objs
-                .Select(obj => obj.BuildCombiner<TIdx, TVtx>(obj.transform, tex))
-                .ToArray();
+            //var qF =
+            //    from obj in objs
+            //    let atlas = atlasDictionary.objectToAtlas[obj]
+            //    let tex = new TextureAtlasAndParameter
+            //    {
+            //        atlas = atlas,
+            //        texhashes = atlasDictionary.texHashToUvRect.dict.Keys,
+            //        uvRects = atlasDictionary.texHashToUvRect.dict.Values,
+            //    }
+            //    select obj.BuildCombiner<TIdx, TVtx>(obj.transform, tex)
+            //    ;
+            //var fs = qF.ToArray();
 
             var qSrc =
                 from obj in objs
@@ -297,6 +307,13 @@ namespace Abarabone.Particle.Aurthoring
             return (
                 from src in srcs
                 where !src.mmt.IsSingle()
+                let atlas = atlasDictionary.objectToAtlas[src.obj]
+                let tex = new TextureAtlasAndParameter
+                {
+                    atlas = atlas,
+                    texhashes = atlasDictionary.texHashToUvRect.dict.Keys,
+                    uvRects = atlasDictionary.texHashToUvRect.dict.Values,
+                }
                 select (
                     src.obj,
                     src.mmt.BuildCombiner<TIdx, TVtx>(src.obj.transform, tex)

@@ -26,7 +26,7 @@ namespace Abarabone.Model.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
         public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         { throw new NotImplementedException(); }
         public override IEnumerable<GameObject> QueryMeshTopObjects()
         { throw new NotImplementedException(); }
