@@ -55,91 +55,28 @@ namespace Abarabone.Particle.Aurthoring
                 (GameObjectConversionSystem gcs, GameObject top, Shader shader, ObjectAndDistance[] lodOpts)
             {
 
-                var qObj =
-                    from objtop in this.QueryMeshTopObjects()
-                    select objtop
-                    ;
-                var objs = qObj.ToArray();
-
-
                 var atlasDict = gcs.GetTextureAtlasDictionary();
-                var tex = objs.ToAtlas(atlasDict);
-
                 var meshDict = gcs.GetMeshDictionary();
-                var ofs = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, atlasDict);
-                var qMObj = ofs.Select(x => x.obj);
-                var qMesh =
-                    from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
-                    select e.CreateMesh()
-                    ;
-                meshDict.AddRange(qMObj, qMesh);
+
+                this.QueryMeshTopObjects().PackTextureToDictionary(atlasDict);
+                
+                combineMeshToDictionary_();
 
                 createModelEntities_();
-
-                //var atlasDict = gcs.GetTextureAtlasDictionary();
-                //var meshDict = gcs.GetMeshDictionary();
-
-
-                //var tex = toAtlas_();
-
-                //if (tex.atlas != null) combineMeshes_(tex);
 
                 return;
 
 
-                //TextureAtlasAndParameter toAtlas_()
-                //{
-                //    var tobjs = objs
-                //        .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
-                //        //.Logging(x => x.name)
-                //        .ToArray();
-
-                //    if (tobjs.Length == 0) return default;
-
-                //    var qMat =
-                //        from obj in tobjs
-                //        from r in obj.GetComponentsInChildren<Renderer>()
-                //        from mat in r.sharedMaterials
-                //        select mat
-                //        ;
-
-                //    var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
-
-                //    atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-                //    atlasDict.objectToAtlas.AddRange(tobjs, tex.atlas);
-
-                //    return tex;
-                //}
-
-                //void combineMeshes_(TextureAtlasAndParameter tex)
-                //{
-                //    var mobjs = objs
-                //        .Where(x => !meshDict.ContainsKey(x))
-                //        .ToArray();
-                //    var qSrc =
-                //        from obj in mobjs
-                //        let mmt = obj.QueryMeshMatsTransform_IfHaving()
-                //        select (obj, mmt)
-                //        ;
-                //    var srcs = qSrc.ToArray();
-
-                //    var qMeshSingle =
-                //        from src in srcs
-                //        where src.mmt.IsSingle()
-                //        select src.mmt.First().mesh
-                //        ;
-                //    var qMeshSrc =
-                //        from src in srcs
-                //        where !src.mmt.IsSingle()
-                //        select src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, tex).ToTask()
-                //        ;
-                //    var qMesh = qMeshSrc
-                //        .WhenAll().Result
-                //        .Select(x => x.CreateMesh())
-                //        .Concat(qMeshSingle);
-
-                //    meshDict.AddRange(mobjs, qMesh);
-                //}
+                void combineMeshToDictionary_()
+                {
+                    var ofs = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, atlasDict);
+                    var qMObj = ofs.Select(x => x.obj);
+                    var qMesh =
+                        from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
+                        select e.CreateMesh()
+                        ;
+                    meshDict.AddRange(qMObj, qMesh);
+                }
 
                 void createModelEntities_()
                 {
@@ -265,7 +202,6 @@ namespace Abarabone.Particle.Aurthoring
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
         public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
-            //(Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasAndParameter tex = default)
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
             var objs = QueryMeshTopObjects()
@@ -282,10 +218,10 @@ namespace Abarabone.Particle.Aurthoring
             var qObjAndBuilder =
                 from src in srcs
                 let atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode()
-                let texf = (int hash) => atlasDictionary.texHashToUvRect[atlas, hash]
+                let dict = atlasDictionary.texHashToUvRect
                 select (
                     src.obj,
-                    src.mmt.BuildCombiner<TIdx, TVtx>(src.obj.transform, texf)
+                    src.mmt.BuildCombiner<TIdx, TVtx>(src.obj.transform, part => dict[atlas, part])
                 );
             return qObjAndBuilder.ToArray();
         }

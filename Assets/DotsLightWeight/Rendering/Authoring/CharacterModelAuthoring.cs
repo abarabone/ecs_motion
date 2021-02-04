@@ -25,11 +25,6 @@ namespace Abarabone.Model.Authoring
     public class CharacterModelAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
-        public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
-        { throw new NotImplementedException(); }
-        public override IEnumerable<GameObject> QueryMeshTopObjects()
-        { throw new NotImplementedException(); }
 
         public Shader DrawShader;
 
@@ -66,8 +61,15 @@ namespace Abarabone.Model.Authoring
             static (Texture2D atlas, Mesh[] meshes, Transform[] bones) buildGeometrySources_(GameObject go)
             {
                 var skinnedMeshRenderers = go.GetComponentsInChildren<SkinnedMeshRenderer>();
-                var (atlas, qMesh) = skinnedMeshRenderers.Select(x => x.gameObject).PackTextureAndTranslateMeshes();
-                var qBone = skinnedMeshRenderers.First().bones.Where(x => !x.name.StartsWith("_"));
+
+                var (atlas, qMesh) = skinnedMeshRenderers
+                    .Select(x => x.gameObject)
+                    .PackTextureAndTranslateMeshes();
+
+                var qBone = skinnedMeshRenderers
+                    .First().bones
+                    .Where(x => !x.name.StartsWith("_"));
+                
                 return (atlas, qMesh.ToArray(), qBone.ToArray());
             }
 
@@ -149,6 +151,16 @@ namespace Abarabone.Model.Authoring
             }
 
         }
+
+
+
+        public override IEnumerable<GameObject> QueryMeshTopObjects()
+        { throw new NotImplementedException(); }
+
+        public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+        { throw new NotImplementedException(); }
+
 
     }
 

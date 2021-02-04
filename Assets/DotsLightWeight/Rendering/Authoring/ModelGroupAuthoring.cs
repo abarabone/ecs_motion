@@ -57,139 +57,17 @@ namespace Abarabone.Model.Authoring
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
-            //var meshDict = conversionSystem.GetMeshDictionary();
-            //var atlasDict = conversionSystem.GetTextureAtlasDictionary();
+
+            var meshDict = conversionSystem.GetMeshDictionary();
+            var atlasDict = conversionSystem.GetTextureAtlasDictionary();
 
             var prefabModels = this.ModelPrefabs.Distinct();
 
-            var qObj =
-                from model in prefabModels
-                from objtop in model.QueryMeshTopObjects()
-                select objtop
-                ;
-            var objs = qObj.ToArray();
+            prefabModels
+                .SelectMany(model => model.QueryMeshTopObjects())
+                .PackTextureToDictionary(atlasDict);
 
-            var gcs = conversionSystem;
-
-            var atlasDict = gcs.GetTextureAtlasDictionary();
-            var meshDict = gcs.GetMeshDictionary();
-
-            var tex = objs.ToAtlas(atlasDict);
-
-            var ofss =
-                from model in prefabModels
-                select model.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, atlasDict);
-            var qMObj =
-                from ofs in ofss
-                from of in ofs
-                select of.obj;
-            var qMesh =
-                from e in ofss.SelectMany().Select(x => x.f.ToTask()).WhenAll().Result
-                select e.CreateMesh()
-                ;
-            meshDict.AddRange(qMObj, qMesh);
-
-
-            //var tex = toAtlas_();
-
-            //if (tex.atlas != null) combineMeshes_(tex);
-
-
-            //TextureAtlasAndParameter toAtlas_()
-            //{
-            //    var tobjs = objs
-            //        .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
-            //        //.Logging(x => x.name)
-            //        .ToArray();
-
-            //    if (tobjs.Length == 0) return default;
-
-            //    var qMat =
-            //        from obj in tobjs
-            //        from r in obj.GetComponentsInChildren<Renderer>()
-            //        from mat in r.sharedMaterials
-            //        select mat
-            //        ;
-
-            //    var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
-
-            //    atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-            //    atlasDict.objectToAtlas.AddRange(tobjs, tex.atlas);
-
-            //    return tex;
-            //}
-
-            //void combineMeshes_(TextureAtlasAndParameter tex)
-            //{
-            //    var mobjs = objs
-            //        .Where(x => !meshDict.ContainsKey(x))
-            //        .ToArray();
-            //    var qSrc =
-            //        from obj in mobjs
-            //        let mmt = obj.QueryMeshMatsTransform_IfHaving()
-            //        select (obj, mmt)
-            //        ;
-            //    var srcs = qSrc.ToArray();
-
-            //    var qMeshSingle =
-            //        from src in srcs
-            //        where src.mmt.IsSingle()
-            //        select src.mmt.First().mesh
-            //        ;
-            //    var qMeshSrc =
-            //        from src in srcs
-            //        where !src.mmt.IsSingle()
-            //        select src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, tex).ToTask()
-            //        ;
-            //    var qMesh = qMeshSrc
-            //        .WhenAll().Result
-            //        .Select(x => x.CreateMesh())
-            //        .Concat(qMeshSingle);
-
-            //    meshDict.AddRange(mobjs, qMesh);
-            //}
-
-
-
-            //// atlas
-            //var tobjs = objs
-            //    .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
-            //    .ToArray();
-            //var qMat =
-            //    from obj in tobjs
-            //    from r in obj.GetComponentsInChildren<Renderer>()
-            //    from mat in r.sharedMaterials
-            //    select mat
-            //    ;
-
-            //var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
-
-            //atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-            //atlasDict.objectToAtlas.AddRange(tobjs, tex.atlas);
-
-
-            //// mesh
-            //var mobjs = objs
-            //    .Where(x => !meshDict.ContainsKey(x))
-            //    .ToArray();
-            //var qSrc =
-            //    from obj in mobjs
-            //    let mmt = obj.QueryMeshMatsTransform_IfHaving()
-            //    select (obj, mmt)
-            //    ;
-            //var srcs = qSrc.ToArray();
-
-            //var qMeshSrc =
-            //    from src in srcs
-            //    where !src.mmt.IsSingle()
-            //    select src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, tex).ToTask()
-            //    ;
-            //var qMesh = qMeshSrc
-            //    .WhenAll().Result
-            //    .Select(x => x.CreateMesh())
-            //    .ToArray();
-
-            //meshDict.AddRange(mobjs, qMesh);
+            combineMeshToDictionary_();
 
 
             // モデルグループ自体にはエンティティは不要
@@ -197,6 +75,23 @@ namespace Abarabone.Model.Authoring
 
             return;
 
+
+            void combineMeshToDictionary_()
+            {
+                var qOfs =
+                    from model in prefabModels
+                    select model.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, atlasDict);
+                var ofss = qOfs.ToArray();
+                var qMObj =
+                    from ofs in ofss
+                    from of in ofs
+                    select of.obj;
+                var qMesh =
+                    from e in ofss.SelectMany().Select(x => x.f.ToTask()).WhenAll().Result
+                    select e.CreateMesh()
+                    ;
+                meshDict.AddRange(qMObj, qMesh);
+            }
         }
         
 
@@ -206,7 +101,7 @@ namespace Abarabone.Model.Authoring
     static public class aaa
     {
 
-        static public TextureAtlasAndParameter ToAtlas
+        static public void PackTextureToDictionary
             (this IEnumerable<GameObject> objs, TextureAtlasDictionary.Data atlasDict)
         {
             var texobjs = objs
@@ -214,7 +109,7 @@ namespace Abarabone.Model.Authoring
                 //.Logging(x => x.name)
                 .ToArray();
 
-            if (texobjs.Length == 0) return default;
+            if (texobjs.Length == 0) return;
 
             var qMat =
                 from obj in texobjs
@@ -223,12 +118,10 @@ namespace Abarabone.Model.Authoring
                 select mat
                 ;
 
-            var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
+            var tex = qMat.QueryUniqueTextures().ToAtlasOrPassThroughAndParameters();
 
             atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
             atlasDict.objectToAtlas.AddRange(texobjs, tex.atlas);
-
-            return tex;
         }
     }
 

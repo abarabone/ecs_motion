@@ -83,7 +83,7 @@ namespace Abarabone.Geometry.inner
             from xsub in x.submeshes
             from uv in xsub.submesh.Elements()
             select p.texHashToUvRect != null
-                ? uv.ScaleUv(p.texhashToUvRect(xsub.texhash))
+                ? uv.ScaleUv(p.texHashToUvRect(xsub.texhash))
                 : uv
             ;
 

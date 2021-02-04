@@ -49,7 +49,7 @@ namespace Abarabone.Geometry
 			HashToRect(Dictionary<(int atlas, int part), Rect> d) => d != null ? new HashToRect { dict=d } : null;
 	}
 
-    public struct TextureAtlasAndParameter
+    public struct TextureAtlasAndParameters
     {
         public Texture2D atlas;
         public IEnumerable<(int atlas, int part)> texhashes;
@@ -107,7 +107,8 @@ namespace Abarabone.Geometry
 				.Distinct();
 
 
-		static public TextureAtlasAndParameter ToAtlasAndParameter(this IEnumerable<Texture2D> uniqueTextures)
+		static public TextureAtlasAndParameters ToAtlasOrPassThroughAndParameters
+			(this IEnumerable<Texture2D> uniqueTextures)
 		{
 			var texs = uniqueTextures.ToArray();
 
@@ -115,7 +116,7 @@ namespace Abarabone.Geometry
 
 			var qKeyHash = texs.queryKeyHashes(atlas);
 
-			return new TextureAtlasAndParameter
+			return new TextureAtlasAndParameters
 			{
 				atlas = atlas,
 				texhashes = qKeyHash.Append((atlas.GetHashCode(), 0)).ToArray(),
