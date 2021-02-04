@@ -272,19 +272,6 @@ namespace Abarabone.Particle.Aurthoring
                 .Where(x => !meshDictionary.ContainsKey(x))
                 .ToArray();
 
-            //var qF =
-            //    from obj in objs
-            //    let atlas = atlasDictionary.objectToAtlas[obj]
-            //    let tex = new TextureAtlasAndParameter
-            //    {
-            //        atlas = atlas,
-            //        texhashes = atlasDictionary.texHashToUvRect.dict.Keys,
-            //        uvRects = atlasDictionary.texHashToUvRect.dict.Values,
-            //    }
-            //    select obj.BuildCombiner<TIdx, TVtx>(obj.transform, tex)
-            //    ;
-            //var fs = qF.ToArray();
-
             var qSrc =
                 from obj in objs
                 let mmt = obj.QueryMeshMatsTransform_IfHaving()
@@ -292,33 +279,15 @@ namespace Abarabone.Particle.Aurthoring
                 ;
             var srcs = qSrc.ToArray();
 
-            //var qObjSingle =
-            //    from src in srcs
-            //    where src.mmt.IsSingle()
-            //    select src.obj
-            //    ;
-            //var qMeshSingle =
-            //    from src in srcs
-            //    where src.mmt.IsSingle()
-            //    select src.mmt.First().mesh
-            //    ;
-            //meshDictionary.AddRange(qObjSingle, qMeshSingle);
-
-            return (
+            var qObjAndBuilder =
                 from src in srcs
-                //where !src.mmt.IsSingle()
-                let atlas = atlasDictionary.objectToAtlas[src.obj]
-                let tex = new TextureAtlasAndParameter
-                {
-                    atlas = atlas,
-                    texhashes = atlasDictionary.texHashToUvRect.dict.Keys,
-                    uvRects = atlasDictionary.texHashToUvRect.dict.Values,
-                }
+                let atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode()
+                let texf = (int hash) => atlasDictionary.texHashToUvRect[atlas, hash]
                 select (
                     src.obj,
-                    src.mmt.BuildCombiner<TIdx, TVtx>(src.obj.transform, tex)
-                )
-            ).ToArray();
+                    src.mmt.BuildCombiner<TIdx, TVtx>(src.obj.transform, texf)
+                );
+            return qObjAndBuilder.ToArray();
         }
 
 

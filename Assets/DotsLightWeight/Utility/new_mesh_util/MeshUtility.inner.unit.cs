@@ -23,9 +23,10 @@ namespace Abarabone.Geometry.inner.unit
         public Matrix4x4 mtBaseInv;
         public IEnumerable<Matrix4x4> mtsPerMesh;
         
-        public int atlasHash;
-        public IEnumerable<IEnumerable<int>> texhashPerSubMesh;
-        public HashToRect texhashToUvRect;
+        //public int atlasHash;
+        //public IEnumerable<IEnumerable<int>> texhashPerSubMesh;
+        //public HashToRect texhashToUvRect;
+        public Func<int, Rect> texHashToUvRect;
     }
 
 

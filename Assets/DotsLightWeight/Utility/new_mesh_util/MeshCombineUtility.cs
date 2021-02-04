@@ -25,7 +25,7 @@ namespace Abarabone.Geometry
         /// 
         /// </summary>
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
-            (this IEnumerable<GameObject> gameObjects, Transform tfBase, TextureAtlasAndParameter tex = default)
+            (this IEnumerable<GameObject> gameObjects, Transform tfBase, Func<int, Rect> texHashToUvRectFunc = null)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         =>
@@ -34,7 +34,7 @@ namespace Abarabone.Geometry
 
 
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
-            (this GameObject gameObjectTop, Transform tfBase, TextureAtlasAndParameter tex = default)
+            (this GameObject gameObjectTop, Transform tfBase, Func<int, Rect> texHashToUvRectFunc = null)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         =>
@@ -43,12 +43,11 @@ namespace Abarabone.Geometry
 
 
         public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
-            (this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts, Transform tfBase, TextureAtlasAndParameter tex = default)
+            (this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts, Transform tfBase, Func<int, Rect> texHashToUvRectFunc = null)
             where TIdx : struct, IIndexUnit<TIdx>
             where TVtx : struct, IVertexUnit<TVtx>
         {
-            var (srcmeshes, p) = mmts.calculateParametors
-                (tfBase, tex.atlas, (tex.texhashes, tex.uvRects).ToDictionaryOrNull());
+            var (srcmeshes, p) = mmts.calculateParametors(tfBase, tex.atlas, texHashToUvRect);
 
             return () => new TVtx().BuildCombiner<TIdx>(srcmeshes, p);
         }
@@ -68,7 +67,7 @@ namespace Abarabone.Geometry
         static (Mesh.MeshDataArray, AdditionalParameters) calculateParametors
             (
                 this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
-                Transform tfBase, Texture2D atlas, HashToRect texHashToUvRect
+                Transform tfBase, Func<int, Rect> texHashToUvRectFunc
             )
         {
             var mmts_ = mmts.ToArray();
@@ -89,10 +88,11 @@ namespace Abarabone.Geometry
             return (srcmeshes, new AdditionalParameters
             {
                 mtsPerMesh = mtsPerMesh,
-                texhashPerSubMesh = texhashesPerSubMesh,
-                atlasHash = atlas?.GetHashCode() ?? 0,
+                //texhashPerSubMesh = texhashesPerSubMesh,
+                //atlasHash = atlas?.GetHashCode() ?? 0,
                 mtBaseInv = mtBaseInv,
-                texhashToUvRect = texHashToUvRect,
+                //texhashToUvRect = texHashToUvRect,
+                texHashToUvRect = texHashToUvRectFunc,
             });
         }
 

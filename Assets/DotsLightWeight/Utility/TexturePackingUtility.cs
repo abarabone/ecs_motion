@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using System.Linq;
 
@@ -53,6 +54,13 @@ namespace Abarabone.Geometry
         public Texture2D atlas;
         public IEnumerable<(int atlas, int part)> texhashes;
         public IEnumerable<Rect> uvRects;
+
+		public Func<int, Rect> ToTexHashToUvRectFunc()
+		{
+			var dict = new HashToRect { dict = (texhashes, uvRects).ToDictionary() };
+			var atlashash = this.atlas.GetHashCode();
+			return hash => dict[atlashash, hash];
+		}
     }
 
 

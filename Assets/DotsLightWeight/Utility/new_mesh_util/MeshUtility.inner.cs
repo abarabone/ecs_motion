@@ -82,8 +82,8 @@ namespace Abarabone.Geometry.inner
             from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), VertexAttribute.TexCoord0)
             from xsub in x.submeshes
             from uv in xsub.submesh.Elements()
-            select p.texhashToUvRect != null
-                ? uv.ScaleUv(p.texhashToUvRect[p.atlasHash, xsub.texhash])
+            select p.texHashToUvRect != null
+                ? uv.ScaleUv(p.texhashToUvRect(xsub.texhash))
                 : uv
             ;
 
