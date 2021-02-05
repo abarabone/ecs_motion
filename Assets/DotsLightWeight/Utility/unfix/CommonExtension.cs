@@ -75,8 +75,29 @@ namespace Abarabone.Common.Extension
 			return src.Zip( (x,y,z,w)=>(x,y,z,w) );
 		}
 
+		public static IEnumerable<Tresult> Zip<T1, T2, T3, T4, T5, Tresult>(
+			this (IEnumerable<T1> e1, IEnumerable<T2> e2, IEnumerable<T3> e3, IEnumerable<T4> e4, IEnumerable<T5> e5) src,
+			Func<T1, T2, T3, T4, T5, Tresult> resultSelector
+		)
+		{
+			var etor1 = src.e1.GetEnumerator();
+			var etor2 = src.e2.GetEnumerator();
+			var etor3 = src.e3.GetEnumerator();
+			var etor4 = src.e4.GetEnumerator();
+			var etor5 = src.e5.GetEnumerator();
+			while (etor1.MoveNext() && etor2.MoveNext() && etor3.MoveNext() && etor4.MoveNext() && etor5.MoveNext())
+			{
+				yield return resultSelector(etor1.Current, etor2.Current, etor3.Current, etor4.Current, etor5);
+			}
+		}
+		public static IEnumerable<(T1 src0, T2 src1, T3 src2, T4 src3, T5 src4)> Zip<T1, T2, T3, T4, T5>
+			(in this (IEnumerable<T1> e1, IEnumerable<T2> e2, IEnumerable<T3> e3, IEnumerable<T4> e4, IEnumerable<T5> e5) src)
+		{
+			return src.Zip((x, y, z, w, a) => (x, y, z, w, a));
+		}
 
-        public static IEnumerable<T>
+
+		public static IEnumerable<T>
             Concat<T>( in this (IEnumerable<T> e1, IEnumerable<T> e2) src )
         {
             return Enumerable.Concat( src.e1, src.e2 );

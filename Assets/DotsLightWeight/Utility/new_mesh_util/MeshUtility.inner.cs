@@ -87,6 +87,15 @@ namespace Abarabone.Geometry.inner
                 : uv
             ;
 
+        static public IEnumerable<Vector3> QueryConvertBoneIndices
+            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+        =>
+            from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.get(arr), VertexAttribute.Normal)
+            from xsub in x.submeshes
+            from nm in xsub.submesh.Elements()
+            select (Vector3)math.mul(x.mt.rotation, nm)
+            ;
+
     }
 
 
