@@ -71,19 +71,18 @@ namespace Abarabone.Geometry
             )
         {
             var mmts_ = mmts.ToArray();
-
             var meshes = mmts_
                 .Select(x => x.mesh)
                 .ToArray();
-            var mtsPerMesh = mmts_
-                .Select(x => x.tf.localToWorldMatrix)
-                .ToArray();
-            var texhashesPerSubMesh = (
+
+            var qMtPerMesh = mmts_
+                .Select(x => x.tf.localToWorldMatrix);
+            var qTexhashPerSubMesh =
                 from mmt in mmts_
                 select
                     from mat in mmt.mats
                     select mat.mainTexture?.GetHashCode() ?? default
-            ).ToArrayRecursive2();
+                ;
 
             var mtBaseInv = tfBase.worldToLocalMatrix;
 
@@ -99,11 +98,11 @@ namespace Abarabone.Geometry
 
             return (srcmeshes, new AdditionalParameters
             {
-                mtsPerMesh = mtsPerMesh,
-                texhashPerSubMesh = texhashesPerSubMesh,
+                mtsPerMesh = qMtPerMesh.ToArray(),
+                texhashPerSubMesh = qTexhashPerSubMesh.ToArrayRecursive2(),
                 //atlasHash = atlas?.GetHashCode() ?? 0,
                 mtBaseInv = mtBaseInv,
-                qBoneWeight = qBoneWeight,
+                boneWeights = qBoneWeight.ToArray(),
                 mtInvs = mtInvs,
                 //texhashToUvRect = texHashToUvRect,
                 texHashToUvRect = texHashToUvRectFunc,

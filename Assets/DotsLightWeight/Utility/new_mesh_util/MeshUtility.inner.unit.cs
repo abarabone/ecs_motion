@@ -24,7 +24,7 @@ namespace Abarabone.Geometry.inner.unit
         public IEnumerable<Matrix4x4> mtsPerMesh;
 
         public Matrix4x4[] mtInvs;//
-        public IEnumerable<IEnumerable<BoneWeight>> qBoneWeight;//
+        public IEnumerable<IEnumerable<BoneWeight>> boneWeights;//
 
         //public int atlasHash;
         public IEnumerable<IEnumerable<int>> texhashPerSubMesh;

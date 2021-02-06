@@ -33,6 +33,12 @@ namespace Abarabone.Misc
 	public static class NativeArrayExtension
 	{
 		
+		static public IEnumerable<T> Enum<T>(this NativeArray<T> src) where T : struct
+        {
+			for (var i = 0; i < src.Length; i++) yield return src[i];
+        }
+
+
 		static public NativeArray<T> ToNativeArray<T>( this T[] array, Allocator allocator ) where T : struct
 		{
 			return new NativeArray<T>( array, allocator );
