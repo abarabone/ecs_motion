@@ -25,9 +25,9 @@ namespace Abarabone.Utilities
 
 
 
-        public static IEnumerable<T> Using<T, Tsrc>(this Tsrc src) where Tsrc : IDisposable, IEnumerable<T>
+        public static IEnumerable<T> Using<T>(this IEnumerable<T> src)
         {
-            using (src) foreach (var e in src) yield return e;
+            using ((IDisposable)src) foreach (var e in src) yield return e;// ボクシングすると思う…
         }
 
         public static IEnumerable<T> UsingEach<T>(this IEnumerable<T> src) where T : IDisposable

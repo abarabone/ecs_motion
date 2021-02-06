@@ -87,7 +87,7 @@ namespace Abarabone.Common.Extension
 			var etor5 = src.e5.GetEnumerator();
 			while (etor1.MoveNext() && etor2.MoveNext() && etor3.MoveNext() && etor4.MoveNext() && etor5.MoveNext())
 			{
-				yield return resultSelector(etor1.Current, etor2.Current, etor3.Current, etor4.Current, etor5);
+				yield return resultSelector(etor1.Current, etor2.Current, etor3.Current, etor4.Current, etor5.Current);
 			}
 		}
 		public static IEnumerable<(T1 src0, T2 src1, T3 src2, T4 src3, T5 src4)> Zip<T1, T2, T3, T4, T5>

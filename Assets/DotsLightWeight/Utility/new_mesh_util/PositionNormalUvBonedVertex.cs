@@ -26,8 +26,8 @@ namespace Abarabone.Geometry
         public Vector3 Position;
         public Vector3 Normal;
         public Vector2 Uv;
+        public Vector4 BoneWeight4;
         public uint BoneIndex4;
-        public uint BoneWeight4;
 
 
         public MeshElements<TIdx, PositionNormalUvBonedVertex> BuildCombiner<TIdx>(Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
@@ -36,24 +36,25 @@ namespace Abarabone.Geometry
             new MeshElements<TIdx, PositionNormalUvBonedVertex>
             {
                 idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtsPerMesh).ToArray(),
-                poss = srcmeshes.QueryConvertPositions(p).ToArray(),
+                poss = srcmeshes.QueryConvertPositionsWithBone(p).ToArray(),
                 nms = srcmeshes.QueryConvertNormals(p).ToArray(),
                 uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray(),
-                
+                bws = srcmeshes.QueryConvertBoneWeights(p).ToArray(),
+                bis = srcmeshes.QueryConvertBoneIndices(p).ToArray(),
             };
 
 
         public IEnumerable<PositionNormalUvBonedVertex> Packing<TIdx>(MeshElements<TIdx, PositionNormalUvBonedVertex> src)
             where TIdx : struct, IIndexUnit<TIdx>
         =>
-            from x in (src.poss, src.nms, src.uvs, src.bis, src.bws).Zip()
+            from x in (src.poss, src.nms, src.uvs, src.bws, src.bis).Zip()
             select new PositionNormalUvBonedVertex
             {
                 Position = x.src0,
                 Normal = x.src1,
                 Uv = x.src2,
-                BoneIndex4 = x.src3,
-                BoneWeight4 = x.src4,
+                BoneWeight4 = x.src3,
+                BoneIndex4 = x.src4,
             };
 
 
@@ -64,8 +65,8 @@ namespace Abarabone.Geometry
                 new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
                 new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
                 new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
+                new VertexAttributeDescriptor(VertexAttribute.BlendWeight, VertexAttributeFormat.Float32, 4),
                 new VertexAttributeDescriptor(VertexAttribute.BlendIndices, VertexAttributeFormat.UInt8, 4),
-                new VertexAttributeDescriptor(VertexAttribute.BlendWeight, VertexAttributeFormat.SNorm8, 4),
             };
             meshdata.SetVertexBufferParams(vertexLength, layout);
         }

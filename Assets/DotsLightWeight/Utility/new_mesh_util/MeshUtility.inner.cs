@@ -59,41 +59,76 @@ namespace Abarabone.Geometry.inner
         static public IEnumerable<Vector3> QueryConvertPositions
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
         =>
-            from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetVertices(arr), VertexAttribute.Position)
-            from xsub in x.submeshes
-            from vtx in xsub.submesh.Elements()
-            select (Vector3)math.transform(x.mt, vtx)
+            //from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetVertices(arr), VertexAttribute.Position)
+            //from xsub in x.submeshes
+            //from vtx in xsub.submesh.Elements()
+            //select (Vector3)math.transform(x.mt, vtx)
+            from permesh in (srcmeshes.AsEnumerable(), p.mtsPerMesh).Zip()
+            let mesh = permesh.src0.MeshData
+            let mt = permesh.src1 * p.mtBaseInv
+            from vtx in mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetVertices(arr), VertexAttribute.Position)
+            select(Vector3)math.transform(mt, vtx)
             ;
 
 
         static public IEnumerable<Vector3> QueryConvertNormals
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
         =>
-            from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetNormals(arr), VertexAttribute.Normal)
-            from xsub in x.submeshes
-            from nm in xsub.submesh.Elements()
-            select (Vector3)math.mul(x.mt.rotation, nm)
+            //from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetNormals(arr), VertexAttribute.Normal)
+            //from xsub in x.submeshes
+            //from nm in xsub.submesh.Elements()
+            //select (Vector3)math.mul(x.mt.rotation, nm)
+            from mesh in srcmeshes.AsEnumerable()
+            from nm in mesh.MeshData.QueryMeshVertices<Vector3>((md, arr) => md.GetNormals(arr), VertexAttribute.Normal)
+            select (Vector3)math.mul(p.mtBaseInv.rotation, nm)
             ;
 
 
         static public IEnumerable<Vector2> QueryConvertUvs
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p, int channel)
         =>
-            from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), VertexAttribute.TexCoord0)
-            from xsub in x.submeshes
-            from uv in xsub.submesh.Elements()
-            select p.texHashToUvRect != null
-                ? uv.ScaleUv(p.texHashToUvRect(xsub.texhash))
-                : uv
+            p.texHashToUvRect != null
+            ?
+                from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), VertexAttribute.TexCoord0)
+                from xsub in x.submeshes
+                from uv in xsub.submesh.Elements()
+                select uv.ScaleUv(p.texHashToUvRect(xsub.texhash))
+            :
+                from mesh in srcmeshes.AsEnumerable()
+                from uv in mesh.MeshData.QueryMeshVertices<Vector2>((md, arr) => md.GetUVs(channel, arr), VertexAttribute.TexCoord0)
+                select uv
             ;
 
-        static public IEnumerable<Vector3> QueryConvertBoneIndices
+
+        static public IEnumerable<Vector3> QueryConvertPositionsWithBone
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
         =>
-            from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.get(arr), VertexAttribute.Normal)
-            from xsub in x.submeshes
-            from nm in xsub.submesh.Elements()
-            select (Vector3)math.mul(x.mt.rotation, nm)
+            from permesh in (srcmeshes.AsEnumerable(), p.boneWeights, p.mtsPerMesh).Zip()
+            let mesh = permesh.src0.MeshData
+            let weis = permesh.src1
+            let mt = permesh.src2 * p.mtBaseInv
+            from x in (mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetVertices(arr), VertexAttribute.Position), weis).Zip()
+            let vtx = x.src0
+            let wei = x.src1
+            select (Vector3)math.transform(mt, vtx)//p.mtInvs[wei.boneIndex0] * mt, vtx)
+            ;
+        static public IEnumerable<uint> QueryConvertBoneIndices
+            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+        =>
+            from permesh in p.boneWeights
+            from w in permesh
+            select (uint)(
+                w.boneIndex0 << 0 & 0xff |
+                w.boneIndex1 << 8 & 0xff |
+                w.boneIndex2 << 16 & 0xff |
+                w.boneIndex3 << 24 & 0xff
+            );
+        static public IEnumerable<Vector4> QueryConvertBoneWeights
+            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+        =>
+            from permesh in p.boneWeights
+            from w in permesh
+            select new Vector4(w.weight0, w.weight1, w.weight2, w.weight3)
             ;
 
     }
@@ -141,6 +176,17 @@ namespace Abarabone.Geometry.inner
 
     static class MeshElementsSourceUtility
     {
+
+        public static IEnumerable<T> QueryMeshVertices<T>
+            (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr) where T : struct
+        {
+            var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
+            if (meshdata.GetVertexAttributeDimension(attr) > 0)
+            {
+                getElementSrc(meshdata, array);
+            }
+            return array.rangeWithUsing(0, array.Length);
+        }
 
         public static IEnumerable<SubMeshUnit<T>> QuerySubmeshesForVertices<T>
             (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr) where T : struct

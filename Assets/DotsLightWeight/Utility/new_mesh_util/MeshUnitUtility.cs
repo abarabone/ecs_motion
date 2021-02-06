@@ -29,7 +29,7 @@ namespace Abarabone.Geometry
         public Vector2[] uvs;
         public Vector3[] nms;
         public uint[] bis;
-        public uint[] bws;
+        public Vector4[] bws;
     }
 
 
