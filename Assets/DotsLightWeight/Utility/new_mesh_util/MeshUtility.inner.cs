@@ -59,10 +59,12 @@ namespace Abarabone.Geometry.inner
         static public IEnumerable<Vector3> QueryConvertPositions
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
         =>
-            from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetVertices(arr), VertexAttribute.Position)
-            from xsub in x.submeshes
-            from vtx in xsub.submesh.Elements()
-            select (Vector3)math.transform(x.mt, vtx)
+            //from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetVertices(arr), VertexAttribute.Position)
+            //from xsub in x.submeshes
+            //from vtx in xsub.submesh.Elements()
+            //select (Vector3)math.transform(x.mt, vtx)
+            from x in srcmeshes.QueryMeshVertices<Vector3>(p, (md, arr) =>{if(md.HasVertexAttribute(VertexAttribute.Position)) md.GetVertices(arr);}, VertexAttribute.Position)
+            select(Vector3)math.transform(x.mt, vtx)
             ;
 
 
@@ -79,7 +81,7 @@ namespace Abarabone.Geometry.inner
         static public IEnumerable<Vector2> QueryConvertUvs
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p, int channel)
         =>
-            from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), VertexAttribute.TexCoord0)
+            from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), TexCoord0)
             from xsub in x.submeshes
             from uv in xsub.submesh.Elements()
             select p.texHashToUvRect != null
@@ -141,6 +143,17 @@ namespace Abarabone.Geometry.inner
 
     static class MeshElementsSourceUtility
     {
+
+        public static IEnumerable<T> QueryMeshVertices<T>
+            (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr) where T : struct
+        {
+            var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
+            if (meshdata.GetVertexAttributeDimension(attr) > 0)
+            {
+                getElementSrc(meshdata, array);
+            }
+            return array.Using();
+        }
 
         public static IEnumerable<SubMeshUnit<T>> QuerySubmeshesForVertices<T>
             (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr) where T : struct

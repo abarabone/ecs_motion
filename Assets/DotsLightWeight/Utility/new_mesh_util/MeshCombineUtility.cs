@@ -72,8 +72,12 @@ namespace Abarabone.Geometry
         {
             var mmts_ = mmts.ToArray();
 
-            var meshesPerMesh = mmts_.Select(x => x.mesh).ToArray();
-            var mtsPerMesh = mmts_.Select(x => x.tf.localToWorldMatrix).ToArray();
+            var meshes = mmts_
+                .Select(x => x.mesh)
+                .ToArray();
+            var mtsPerMesh = mmts_
+                .Select(x => x.tf.localToWorldMatrix)
+                .ToArray();
             var texhashesPerSubMesh = (
                 from mmt in mmts_
                 select
@@ -83,7 +87,15 @@ namespace Abarabone.Geometry
 
             var mtBaseInv = tfBase.worldToLocalMatrix;
 
-            var srcmeshes = Mesh.AcquireReadOnlyMeshData(meshesPerMesh);
+            var srcmeshes = Mesh.AcquireReadOnlyMeshData(meshes);
+
+            var qBoneWeight =
+                from mesh in meshes
+                select
+                    from w in mesh.boneWeights
+                    select w
+                ;
+            var mtInvs = meshes.First().bindposes;
 
             return (srcmeshes, new AdditionalParameters
             {
@@ -91,6 +103,8 @@ namespace Abarabone.Geometry
                 texhashPerSubMesh = texhashesPerSubMesh,
                 //atlasHash = atlas?.GetHashCode() ?? 0,
                 mtBaseInv = mtBaseInv,
+                qBoneWeight = qBoneWeight,
+                mtInvs = mtInvs,
                 //texhashToUvRect = texHashToUvRect,
                 texHashToUvRect = texHashToUvRectFunc,
             });
