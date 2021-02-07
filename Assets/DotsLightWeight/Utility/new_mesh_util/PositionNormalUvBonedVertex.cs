@@ -35,7 +35,7 @@ namespace Abarabone.Geometry
         =>
             new MeshElements<TIdx, PositionNormalUvBonedVertex>
             {
-                idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtsPerMesh).ToArray(),
+                idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
                 poss = srcmeshes.QueryConvertPositionsWithBone(p).ToArray(),
                 nms = srcmeshes.QueryConvertNormals(p).ToArray(),
                 uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray(),

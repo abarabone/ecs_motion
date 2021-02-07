@@ -21,15 +21,20 @@ namespace Abarabone.Geometry.inner.unit
     public struct AdditionalParameters
     {
         public Matrix4x4 mtBaseInv;
-        public IEnumerable<Matrix4x4> mtsPerMesh;
+        public Matrix4x4[] mtPerMesh;
 
-        public Matrix4x4[] mtInvs;//
-        public IEnumerable<IEnumerable<BoneWeight>> boneWeights;//
+        public Matrix4x4[][] mtInvsPerMesh;//
+        public BoneWeight[][] boneWeightsPerMesh;//
+        public Dictionary<int, int> srcIndexToDstIndex;
 
         //public int atlasHash;
         public IEnumerable<IEnumerable<int>> texhashPerSubMesh;
         //public HashToRect texhashToUvRect;
         public Func<int, Rect> texHashToUvRect;
+    }
+    public struct SrcBoneIndexUnit
+    {
+        public int 
     }
 
 

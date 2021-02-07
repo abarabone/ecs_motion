@@ -88,22 +88,23 @@ namespace Abarabone.Geometry
 
             var srcmeshes = Mesh.AcquireReadOnlyMeshData(meshes);
 
-            var qBoneWeight =
+            var qBoneWeights =
                 from mesh in meshes
-                select
-                    from w in mesh.boneWeights
-                    select w
+                select mesh.boneWeights
                 ;
-            var mtInvs = meshes.First().bindposes;
+            var qMtInvs =
+                from mesh in meshes
+                select mesh.bindposes
+                ;
 
             return (srcmeshes, new AdditionalParameters
             {
-                mtsPerMesh = qMtPerMesh.ToArray(),
+                mtPerMesh = qMtPerMesh.ToArray(),
                 texhashPerSubMesh = qTexhashPerSubMesh.ToArrayRecursive2(),
                 //atlasHash = atlas?.GetHashCode() ?? 0,
                 mtBaseInv = mtBaseInv,
-                boneWeights = qBoneWeight.ToArray(),
-                mtInvs = mtInvs,
+                boneWeightsPerMesh = qBoneWeights.ToArray(),
+                mtInvsPerMesh = qMtInvs.ToArray(),
                 //texhashToUvRect = texHashToUvRect,
                 texHashToUvRect = texHashToUvRectFunc,
             });
