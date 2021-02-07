@@ -17,7 +17,6 @@ namespace Abarabone.Geometry.inner.unit
     using Abarabone.Utilities;
     using Abarabone.Geometry.inner;
 
-
     public struct AdditionalParameters
     {
         public Matrix4x4 mtBaseInv;
@@ -25,18 +24,13 @@ namespace Abarabone.Geometry.inner.unit
 
         public Matrix4x4[][] mtInvsPerMesh;//
         public BoneWeight[][] boneWeightsPerMesh;//
-        public Dictionary<int, int> srcIndexToDstIndex;
+        public BoneConversionUtility.BoneConversionDictionary srcBoneIndexToDstBoneIndex;//
 
         //public int atlasHash;
         public IEnumerable<IEnumerable<int>> texhashPerSubMesh;
         //public HashToRect texhashToUvRect;
         public Func<int, Rect> texHashToUvRect;
     }
-    public struct SrcBoneIndexUnit
-    {
-        public int 
-    }
-
 
     public struct MeshUnit
     {

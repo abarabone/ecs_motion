@@ -65,7 +65,7 @@ namespace Abarabone.Geometry.inner
             //select (Vector3)math.transform(x.mt, vtx)
             from permesh in (srcmeshes.AsEnumerable(), p.mtPerMesh).Zip()
             let mesh = permesh.src0.MeshData
-            let mt = p.mtBaseInv//permesh.src1// * p.mtBaseInv
+            let mt = permesh.src1// * p.mtBaseInv
             from vtx in mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetVertices(arr), VertexAttribute.Position)
             select(Vector3)math.transform(mt, vtx)
             ;
@@ -78,9 +78,11 @@ namespace Abarabone.Geometry.inner
             //from xsub in x.submeshes
             //from nm in xsub.submesh.Elements()
             //select (Vector3)math.mul(x.mt.rotation, nm)
-            from mesh in srcmeshes.AsEnumerable()
-            from nm in mesh.MeshData.QueryMeshVertices<Vector3>((md, arr) => md.GetNormals(arr), VertexAttribute.Normal)
-            select (Vector3)math.mul(p.mtBaseInv.rotation, nm)
+            from permesh in (srcmeshes.AsEnumerable(), p.mtPerMesh).Zip()
+            let mesh = permesh.src0.MeshData
+            let mt = permesh.src1// * p.mtBaseInv
+            from nm in mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetNormals(arr), VertexAttribute.Normal)
+            select (Vector3)math.mul(mt.rotation, nm)
             ;
 
 

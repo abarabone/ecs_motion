@@ -74,12 +74,35 @@ namespace Abarabone.Geometry
 
 
 
-    static public class BoneUtility
+    static public class BoneConversionUtility
     {
 
-        static public void bbb()
+        public struct BoneConversionDictionary
         {
+            Dictionary<(int mesh, int bone), int> dict;
 
+            public BoneConversionDictionary(Dictionary<(int mesh, int bone), int> dict) => this.dict = dict;
+            public int this[int meshIndex, int boneIndex]
+            {
+                get => this.dict[(meshIndex, boneIndex)];
+            }
+        }
+
+        public static BoneConversionDictionary ToBoneIndexConversionDictionary
+            (this (IEnumerable<Transform[]> tfSrcBonesPerMesh, Transform[] tfDstBones) src)
+        {
+            var qTfToMeshAndBoneIndex =
+                from m in src.tfSrcBonesPerMesh.WithIndex()
+                from b in m.x.WithIndex()
+                select (tf: b.x, index: (mesh: m.i, bone: b.i))
+                ;
+            var q =
+                from srcbone in qTfToMeshAndBoneIndex
+                join dstbone in src.tfDstBones.WithIndex()
+                on srcbone.tf equals dstbone.x
+                select (srcbone.index, dstbone.i)
+                ;
+            return new BoneConversionDictionary(q.ToDictionary());
         }
 
     }

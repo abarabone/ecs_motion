@@ -124,10 +124,20 @@ namespace Abarabone.Common.Extension
 			return src ?? Enumerable.Empty<T>();
 		}
 
+
+		public static IEnumerable<(T x, int i)> WithIndex<T>(this IEnumerable<T> src) =>
+			src.Select((x, i) => (x, i));
+
+
 		public static IEnumerable<T> SelectMany<T>( this IEnumerable<IEnumerable<T>> src )
 		{
 			return src.SelectMany( x => x );
 		}
+
+		public static Dictionary<Tkey, Tvalue> ToDictionary<Tkey, Tvalue>
+			(this IEnumerable<(Tkey k, Tvalue v)> src)
+		=>
+			src.ToDictionary(x => x.k, x => x.v);
 		
 		//public static IEnumerable<T> Prepend<T>( this IEnumerable<T> src, T element )
 		//{
@@ -243,6 +253,11 @@ namespace Abarabone.Common.Extension
 			var c = gameObject.GetComponent<T>();
 			if( c != null ) UnityEngine.Object.Destroy( c );
 		}
+
+		public static T GetComponentOrNull<T>(this GameObject gameObject) where T : Component =>
+			gameObject.TryGetComponent<T>(out var c) ? c : null;
+		public static T GetComponentOrNull<T>(this Transform tf) where T : Component =>
+			tf.TryGetComponent<T>(out var c) ? c : null;
 	}
 
 	public static class VectorExtension
