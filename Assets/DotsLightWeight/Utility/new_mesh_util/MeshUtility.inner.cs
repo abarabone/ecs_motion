@@ -110,7 +110,7 @@ namespace Abarabone.Geometry.inner
             from x in (mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetVertices(arr), VertexAttribute.Position), weis).Zip()
             let vtx = x.src0
             let wei = x.src1
-            select (Vector3)math.transform(mt, vtx)//p.mtInvs[wei.boneIndex0] * mt, vtx)
+            select (p.mtInvs[wei.boneIndex0] * mt).MultiplyPoint3x4(vtx)//(Vector3)math.transform(p.mtInvs[wei.boneIndex0] * mt, vtx)
             ;
         static public IEnumerable<uint> QueryConvertBoneIndices
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)

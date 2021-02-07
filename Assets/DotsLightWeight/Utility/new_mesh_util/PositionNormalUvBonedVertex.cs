@@ -72,4 +72,16 @@ namespace Abarabone.Geometry
         }
     }
 
+
+
+    static public class BoneUtility
+    {
+
+        static public void bbb()
+        {
+
+        }
+
+    }
+
 }
