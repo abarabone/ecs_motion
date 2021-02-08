@@ -97,6 +97,7 @@ namespace Abarabone.Particle.Aurthoring
                     void createModelEntity_(GameObject obj, Mesh mesh, Texture2D atlas)
                     {
                         var mat = new Material(shader);
+                        mat.enableInstancing = true;
                         mat.mainTexture = atlas;
                         
                         const BoneType BoneType = BoneType.TR;

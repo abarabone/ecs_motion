@@ -153,6 +153,7 @@ namespace Abarabone.Model.Authoring
                     void createModelEntity_(GameObject obj, Mesh mesh, Texture2D atlas)
                     {
                         var mat = new Material(shader);
+                        mat.enableInstancing = true;
                         mat.mainTexture = atlas;
 
                         const BoneType BoneType = BoneType.TR;
@@ -231,9 +232,7 @@ namespace Abarabone.Model.Authoring
 
 
         public override IEnumerable<GameObject> QueryMeshTopObjects() =>
-            this.gameObject
-                .GetComponentsInChildren<SkinnedMeshRenderer>()
-                .Select(x => x.gameObject);
+            this.gameObject.AsEnumerable();
 
         public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)

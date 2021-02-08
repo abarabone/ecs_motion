@@ -50,8 +50,8 @@ Shader "Custom/SkinnedMesh_1bone_nolit_cs"
 				float3	normal	: NORMAL;
 				float2	uv		: TEXCOORD0;
 
-				fixed4	boneIndex	: COLOR;
-				float4	weights		: TEXCOORD1;
+				float4	weights		: BLENDWEIGHTS;
+				uint4	boneIndex	: BLENDINDICES;
 
 				//UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
