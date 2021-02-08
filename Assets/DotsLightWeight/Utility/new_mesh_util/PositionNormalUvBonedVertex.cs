@@ -84,7 +84,7 @@ namespace Abarabone.Geometry
             public BoneConversionDictionary(Dictionary<(int mesh, int bone), int> dict) => this.dict = dict;
             public int this[int meshIndex, int boneIndex]
             {
-                get => this.dict[(meshIndex, boneIndex)];
+                get => this.dict.GetOrDefault((meshIndex, boneIndex), 0);
             }
         }
 
@@ -93,13 +93,13 @@ namespace Abarabone.Geometry
         {
             var qTfToMeshAndBoneIndex =
                 from m in src.tfSrcBonesPerMesh.WithIndex()
-                from b in m.x.WithIndex()
-                select (tf: b.x, index: (mesh: m.i, bone: b.i))
+                from b in m.src.WithIndex()
+                select (tf: b.src, index: (mesh: m.i, bone: b.i))
                 ;
             var q =
                 from srcbone in qTfToMeshAndBoneIndex
                 join dstbone in src.tfDstBones.WithIndex()
-                on srcbone.tf equals dstbone.x
+                on srcbone.tf equals dstbone.src
                 select (srcbone.index, dstbone.i)
                 ;
             return new BoneConversionDictionary(q.ToDictionary());

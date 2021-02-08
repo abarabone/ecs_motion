@@ -33,7 +33,7 @@ namespace Abarabone.Model.Authoring
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
             public abstract (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
-                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
                 where TIdx : struct, IIndexUnit<TIdx>
                 where TVtx : struct, IVertexUnit<TVtx>
             ;

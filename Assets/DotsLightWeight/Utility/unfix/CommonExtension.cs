@@ -125,7 +125,7 @@ namespace Abarabone.Common.Extension
 		}
 
 
-		public static IEnumerable<(T x, int i)> WithIndex<T>(this IEnumerable<T> src) =>
+		public static IEnumerable<(T src, int i)> WithIndex<T>(this IEnumerable<T> src) =>
 			src.Select((x, i) => (x, i));
 
 

@@ -42,7 +42,7 @@ namespace Abarabone.Particle.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            createModelEntities_(conversionSystem, this.gameObject, this.ShaderToDraw, this.LodOptionalMeshTops);
+            createModelEntities_(conversionSystem, this.ShaderToDraw, this.LodOptionalMeshTops);
 
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
 
@@ -52,7 +52,7 @@ namespace Abarabone.Particle.Aurthoring
 
 
             void createModelEntities_
-                (GameObjectConversionSystem gcs, GameObject top, Shader shader, ObjectAndDistance[] lodOpts)
+                (GameObjectConversionSystem gcs, Shader shader, ObjectAndDistance[] lodOpts)
             {
 
                 var atlasDict = gcs.GetTextureAtlasDictionary();
@@ -80,9 +80,6 @@ namespace Abarabone.Particle.Aurthoring
 
                 void createModelEntities_()
                 {
-                    var atlasDict = gcs.GetTextureAtlasDictionary();
-                    var meshDict = gcs.GetMeshDictionary();
-
                     var qObj = this.QueryMeshTopObjects();
 
                     foreach (var obj in qObj)
@@ -97,7 +94,7 @@ namespace Abarabone.Particle.Aurthoring
                     return;
 
 
-                    void createModelEntity_(GameObject obj, Mesh mesh_, Texture2D atlas)
+                    void createModelEntity_(GameObject obj, Mesh mesh, Texture2D atlas)
                     {
                         var mat = new Material(shader);
                         mat.mainTexture = atlas;
@@ -105,7 +102,7 @@ namespace Abarabone.Particle.Aurthoring
                         const BoneType BoneType = BoneType.TR;
                         const int boneLength = 1;
 
-                        gcs.CreateDrawModelEntityComponents(obj, mesh_, mat, BoneType, boneLength);
+                        gcs.CreateDrawModelEntityComponents(obj, mesh, mat, BoneType, boneLength);
                     }
                 }
 
@@ -202,7 +199,7 @@ namespace Abarabone.Particle.Aurthoring
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
         public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
         {
             var objs = QueryMeshTopObjects()
                 .Where(x => !meshDictionary.ContainsKey(x))

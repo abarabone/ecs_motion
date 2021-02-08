@@ -39,13 +39,14 @@ namespace Abarabone.Model.Authoring
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
 
-            var (atlas, meshes, bones) = buildGeometrySources_(this.gameObject);
-            var mat = createMaterial_(this.DrawShader, atlas);
+            //var (atlas, meshes, bones) = buildGeometrySources_(this.gameObject);
+            //var mat = createMaterial_(this.DrawShader, atlas);
 
             var top = this.gameObject;
             var main = top.Children().First();
+            var bones = queryBone_().ToArray();
 
-            createModelEntity_( conversionSystem, top, meshes, bones, mat );
+            createModelEntity_( conversionSystem, this.DrawShader, bones );
 
             initBinderEntity_( conversionSystem, top, main );
             initMainEntity_(conversionSystem, top, main);
@@ -58,40 +59,115 @@ namespace Abarabone.Model.Authoring
             return;
 
 
-            static (Texture2D atlas, Mesh[] meshes, Transform[] bones) buildGeometrySources_(GameObject go)
-            {
-                var skinnedMeshRenderers = go.GetComponentsInChildren<SkinnedMeshRenderer>();
+            //(Texture2D atlas, Mesh[] meshes, Transform[] bones) buildGeometrySources_(GameObject go)
+            //{
+            //    var skinnedMeshRenderers = go.GetComponentsInChildren<SkinnedMeshRenderer>();
 
-                var (atlas, qMesh) = skinnedMeshRenderers
-                    .Select(x => x.gameObject)
-                    .PackTextureAndTranslateMeshes();
+            //    var (atlas, qMesh) = skinnedMeshRenderers
+            //        .Select(x => x.gameObject)
+            //        .PackTextureAndTranslateMeshes();
+
+            //    var qBone = skinnedMeshRenderers
+            //        .First().bones
+            //        .Where(x => !x.name.StartsWith("_"));
+
+            //    return (atlas, qMesh.ToArray(), qBone.ToArray());
+            //}
+
+            //static Material createMaterial_(Shader srcShader, Texture2D tex)
+            //{
+            //    var mat = new Material( srcShader );
+            //    mat.mainTexture = tex;
+            //    return mat;
+            //}
+
+            //void createModelEntity_
+            //    (
+            //        GameObjectConversionSystem gcs_, GameObject top_,
+            //        IEnumerable<Mesh> srcMeshes, Transform[] bones_, Material mat
+            //    )
+            //{
+            //    var mesh = DrawModelEntityConvertUtility.CombineAndConvertMesh( srcMeshes, bones_ );
+
+            //    const BoneType BoneType = BoneType.TR;
+
+            //    gcs_.CreateDrawModelEntityComponents( top_, mesh, mat, BoneType, bones_.Length );
+            //}
+
+
+
+
+            IEnumerable<Transform> queryBone_()
+            {
+                var skinnedMeshRenderers = this.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
 
                 var qBone = skinnedMeshRenderers
                     .First().bones
                     .Where(x => !x.name.StartsWith("_"));
-                
-                return (atlas, qMesh.ToArray(), qBone.ToArray());
+
+                return qBone;
             }
 
-            static Material createMaterial_(Shader srcShader, Texture2D tex)
+            void createModelEntity_(GameObjectConversionSystem gcs, Shader shader, Transform[] bones)
             {
-                var mat = new Material( srcShader );
-                mat.mainTexture = tex;
-                return mat;
+
+                var atlasDict = gcs.GetTextureAtlasDictionary();
+                var meshDict = gcs.GetMeshDictionary();
+
+                this.QueryMeshTopObjects().PackTextureToDictionary(atlasDict);
+
+                combineMeshToDictionary_();
+
+                createModelEntities_();
+
+                return;
+
+
+                void combineMeshToDictionary_()
+                {
+                    var ofs = this.BuildMeshCombiners<UI32, PositionNormalUvBonedVertex>(meshDict, atlasDict, bones);
+                    var qMObj = ofs.Select(x => x.obj);
+                    var qMesh =
+                        from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
+                        select e.CreateMesh()
+                        ;
+                    meshDict.AddRange(qMObj, qMesh);
+                }
+
+                void createModelEntities_()
+                {
+                    var qObj = this.QueryMeshTopObjects();
+
+                    foreach (var obj in qObj)
+                    {
+                        Debug.Log($"{obj.name} model ent");
+
+                        var mesh = meshDict[obj];
+                        var atlas = atlasDict.objectToAtlas[obj];
+                        createModelEntity_(obj, mesh, atlas);
+                    }
+
+                    return;
+
+
+                    void createModelEntity_(GameObject obj, Mesh mesh, Texture2D atlas)
+                    {
+                        var mat = new Material(shader);
+                        mat.mainTexture = atlas;
+
+                        const BoneType BoneType = BoneType.TR;
+
+                        gcs.CreateDrawModelEntityComponents(top, mesh, mat, BoneType, bones.Length);
+                    }
+                }
+
             }
 
-            void createModelEntity_
-                (
-                    GameObjectConversionSystem gcs_, GameObject top_,
-                    IEnumerable<Mesh> srcMeshes, Transform[] bones_, Material mat
-                )
-            {
-                var mesh = DrawModelEntityConvertUtility.CombineAndConvertMesh( srcMeshes, bones_ );
 
-                const BoneType BoneType = BoneType.TR;
 
-                gcs_.CreateDrawModelEntityComponents( top_, mesh, mat, BoneType, bones_.Length );
-            }
+
+
+
 
 
             static void initBinderEntity_( GameObjectConversionSystem gcs_, GameObject top_, GameObject main_ )
@@ -154,12 +230,35 @@ namespace Abarabone.Model.Authoring
 
 
 
-        public override IEnumerable<GameObject> QueryMeshTopObjects()
-        { throw new NotImplementedException(); }
+        public override IEnumerable<GameObject> QueryMeshTopObjects() =>
+            this.gameObject
+                .GetComponentsInChildren<SkinnedMeshRenderer>()
+                .Select(x => x.gameObject);
 
         public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
-        { throw new NotImplementedException(); }
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
+        {
+            var objs = QueryMeshTopObjects()
+                .Where(x => !meshDictionary.ContainsKey(x))
+                .ToArray();
+
+            var qSrc =
+                from obj in objs
+                let mmt = obj.QueryMeshMatsTransform_IfHaving()
+                select (obj, mmt)
+                ;
+            var srcs = qSrc.ToArray();
+
+            var qObjAndBuilder =
+                from src in srcs
+                let atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode()
+                let dict = atlasDictionary.texHashToUvRect
+                select (
+                    src.obj,
+                    src.mmt.BuildCombiner<TIdx, TVtx>(src.obj.transform, part => dict[atlas, part], bones)
+                );
+            return qObjAndBuilder.ToArray();
+        }
 
 
     }

@@ -118,13 +118,13 @@ namespace Abarabone.Geometry.inner
         static public IEnumerable<uint> QueryConvertBoneIndices
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
         =>
-            from permesh in p.boneWeightsPerMesh
-            from w in permesh
+            from permesh in p.boneWeightsPerMesh.WithIndex()
+            from w in permesh.src
             select (uint)(
-                w.boneIndex0 << 0 & 0xff |
-                w.boneIndex1 << 8 & 0xff |
-                w.boneIndex2 << 16 & 0xff |
-                w.boneIndex3 << 24 & 0xff
+                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex0] << 0 & 0xff |
+                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex1] << 8 & 0xff |
+                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex2] << 16 & 0xff |
+                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex3] << 24 & 0xff
             );
         static public IEnumerable<Vector4> QueryConvertBoneWeights
             (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
