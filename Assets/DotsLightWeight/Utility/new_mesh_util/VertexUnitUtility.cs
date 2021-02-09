@@ -24,7 +24,7 @@ namespace Abarabone.Geometry
         MeshElements<TIdx, TVtx> BuildCombiner<TIdx>(Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>;
 
-        IEnumerable<TVtx> Packing<TIdx>(MeshElements<TIdx, TVtx> src)
+        IEnumerable<TVtx> Packing<TIdx>(IMeshElements src)
             where TIdx : struct, IIndexUnit<TIdx>;
     }
 }

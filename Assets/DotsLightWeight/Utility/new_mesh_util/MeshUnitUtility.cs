@@ -19,8 +19,12 @@ namespace Abarabone.Geometry
     using Abarabone.Geometry.inner.unit;
 
 
+    public interface IMeshElements
+    {
+        Mesh CreateMesh();
+    }
 
-    public struct MeshElements<TIdx, TVtx>
+    public class MeshElements<TIdx, TVtx> : IMeshElements
         where TIdx : struct, IIndexUnit<TIdx>
         where TVtx : struct, IVertexUnit<TVtx>
     {
@@ -30,6 +34,8 @@ namespace Abarabone.Geometry
         public Vector3[] nms;
         public uint[] bis;
         public Vector4[] bws;
+
+        public Mesh CreateMesh() => this.CreateMesh();
     }
 
 

@@ -125,7 +125,7 @@ namespace Abarabone.Model.Authoring
 
                 void combineMeshToDictionary_()
                 {
-                    var ofs = this.BuildMeshCombiners<UI32, PositionNormalUvBonedVertex>(meshDict, atlasDict, bones);
+                    var ofs = this.BuildMeshCombiners(meshDict, atlasDict, bones);
                     var qMObj = ofs.Select(x => x.obj);
                     var qMesh =
                         from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
@@ -234,7 +234,9 @@ namespace Abarabone.Model.Authoring
         public override IEnumerable<GameObject> QueryMeshTopObjects() =>
             this.gameObject.AsEnumerable();
 
-        public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
+
+
+        public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
         {
             var objs = QueryMeshTopObjects()
@@ -254,7 +256,7 @@ namespace Abarabone.Model.Authoring
                 let dict = atlasDictionary.texHashToUvRect
                 select (
                     src.obj,
-                    src.mmt.BuildCombiner<TIdx, TVtx>(src.obj.transform, part => dict[atlas, part], bones)
+                    src.mmt.BuildCombiner<UI32, PositionNormalUvBonedVertex>(src.obj.transform, part => dict[atlas, part], bones)
                 );
             return qObjAndBuilder.ToArray();
         }

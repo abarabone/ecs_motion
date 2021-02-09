@@ -24,7 +24,7 @@ namespace Abarabone.Geometry
         /// <summary>
         /// 
         /// </summary>
-        public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
+        public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>
             (
                 this IEnumerable<GameObject> gameObjects, Transform tfBase,
                 Func<int, Rect> texHashToUvRectFunc = null,
@@ -37,7 +37,7 @@ namespace Abarabone.Geometry
                 .BuildCombiner<TIdx, TVtx>(tfBase, texHashToUvRectFunc, tfBones);
 
 
-        public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
+        public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>
             (
                 this GameObject gameObjectTop, Transform tfBase,
                 Func<int, Rect> texHashToUvRectFunc = null,
@@ -50,7 +50,7 @@ namespace Abarabone.Geometry
                 .BuildCombiner<TIdx, TVtx>(tfBase, texHashToUvRectFunc, tfBones);
 
 
-        public static Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx, TVtx>
+        public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>
             (
                 this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts, Transform tfBase,
                 Func<int, Rect> texHashToUvRectFunc = null,
@@ -68,11 +68,7 @@ namespace Abarabone.Geometry
         /// <summary>
         /// 
         /// </summary>
-        public static Task<MeshElements<TIdx, TVtx>> ToTask<TIdx, TVtx>(this Func<MeshElements<TIdx, TVtx>> f)
-            where TIdx : struct, IIndexUnit<TIdx>
-            where TVtx : struct, IVertexUnit<TVtx>
-        =>
-            Task.Run(f);
+        public static Task<IMeshElements> ToTask(this Func<IMeshElements> f) => Task.Run(f);
 
 
 

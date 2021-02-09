@@ -35,7 +35,7 @@ namespace Abarabone.Geometry
             dst.setBufferParams<TIdx>(idxs.Length);
             dst.GetIndexData<TIdx>().CopyFrom(idxs);
 
-            var vtxs = meshElements.selectAll<TIdx, TVtx>().ToArray();
+            var vtxs = src.selectAll<TIdx, TVtx>().ToArray();
             dst.setBufferParams<TVtx>(vtxs.Length);
             dst.GetVertexData<TVtx>().CopyFrom(vtxs);
 

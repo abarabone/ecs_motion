@@ -69,7 +69,7 @@ namespace Abarabone.Particle.Aurthoring
 
                 void combineMeshToDictionary_()
                 {
-                    var ofs = this.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, atlasDict);
+                    var ofs = this.BuildMeshCombiners(meshDict, atlasDict);
                     var qMObj = ofs.Select(x => x.obj);
                     var qMesh =
                         from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
@@ -199,7 +199,7 @@ namespace Abarabone.Particle.Aurthoring
         /// またＬＯＤに null を登録した場合は、この GameObject をルートとしたメッシュが対象となる。
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
-        public override (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
+        public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
         {
             var objs = QueryMeshTopObjects()
@@ -219,7 +219,7 @@ namespace Abarabone.Particle.Aurthoring
                 let dict = atlasDictionary.texHashToUvRect
                 select (
                     src.obj,
-                    src.mmt.BuildCombiner<TIdx, TVtx>(src.obj.transform, part => dict[atlas, part])
+                    src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, part => dict[atlas, part])
                 );
             return qObjAndBuilder.ToArray();
         }

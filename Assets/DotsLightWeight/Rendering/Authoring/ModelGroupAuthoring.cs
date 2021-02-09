@@ -32,11 +32,8 @@ namespace Abarabone.Model.Authoring
         /// </summary>
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
-            public abstract (GameObject obj, Func<MeshElements<TIdx, TVtx>> f)[] BuildMeshCombiners<TIdx, TVtx>
-                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
-                where TIdx : struct, IIndexUnit<TIdx>
-                where TVtx : struct, IVertexUnit<TVtx>
-            ;
+            public abstract (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
+                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null);
 
             public abstract IEnumerable<GameObject> QueryMeshTopObjects();
 
@@ -82,14 +79,10 @@ namespace Abarabone.Model.Authoring
                     from model in prefabModels
                     select model.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, atlasDict);
                 var ofss = qOfs.ToArray();
-                var qMObj =
-                    from ofs in ofss
-                    from of in ofs
-                    select of.obj;
-                var qMesh =
-                    from e in ofss.SelectMany().Select(x => x.f.ToTask()).WhenAll().Result
-                    select e.CreateMesh()
-                    ;
+                var qMObj = ofss.SelectMany().Select(of => of.obj);
+                var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())
+                    .WhenAll().Result
+                    .Select(t => t.CreateMesh());
                 meshDict.AddRange(qMObj, qMesh);
             }
         }
