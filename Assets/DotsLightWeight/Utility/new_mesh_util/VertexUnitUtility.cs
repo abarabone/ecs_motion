@@ -19,12 +19,12 @@ namespace Abarabone.Geometry
     using Abarabone.Geometry.inner.unit;
 
     public interface IVertexUnit<TVtx>
-        where TVtx : struct, IVertexUnit<TVtx>
+        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
         MeshElements<TIdx, TVtx> BuildCombiner<TIdx>(Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>;
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;
 
-        IEnumerable<TVtx> Packing<TIdx>(IMeshElements src)
-            where TIdx : struct, IIndexUnit<TIdx>;
+        IEnumerable<TVtx> Packing<TIdx>(MeshElements<TIdx, TVtx> src)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;
     }
 }

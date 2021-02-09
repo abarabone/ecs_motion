@@ -25,9 +25,11 @@ namespace Abarabone.Geometry
     }
 
     public class MeshElements<TIdx, TVtx> : IMeshElements
-        where TIdx : struct, IIndexUnit<TIdx>
-        where TVtx : struct, IVertexUnit<TVtx>
+        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
+        public Mesh.MeshDataArray src;
+
         public TIdx[] idxs;
         public Vector3[] poss;
         public Vector2[] uvs;
@@ -35,7 +37,7 @@ namespace Abarabone.Geometry
         public uint[] bis;
         public Vector4[] bws;
 
-        public Mesh CreateMesh() => this.CreateMesh();
+        public Mesh CreateMesh() => MeshCreatorUtility.CreateMesh(this);
     }
 
 

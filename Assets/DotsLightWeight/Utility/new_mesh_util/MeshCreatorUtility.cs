@@ -45,14 +45,15 @@ namespace Abarabone.Geometry
             Mesh.ApplyAndDisposeWritableMeshData(dstmeshes, dstmesh);
             dstmesh.RecalculateBounds();
 
+            meshElements.src.Dispose();
             return dstmesh;
         }
 
 
 
         static IEnumerable<TVtx> selectAll<TIdx, TVtx>(this MeshElements<TIdx, TVtx> src)
-            where TIdx : struct, IIndexUnit<TIdx>
-            where TVtx : struct, IVertexUnit<TVtx>
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         =>
             new TVtx().Packing(src);
 

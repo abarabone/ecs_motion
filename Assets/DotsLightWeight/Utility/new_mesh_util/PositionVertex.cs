@@ -26,17 +26,18 @@ namespace Abarabone.Geometry
 
 
         public MeshElements<TIdx, PositionVertex> BuildCombiner<TIdx>(Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             new MeshElements<TIdx, PositionVertex>
             {
+                src = srcmeshes,
                 idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
                 poss = srcmeshes.QueryConvertPositions(p).ToArray(),
             };
 
 
         public IEnumerable<PositionVertex> Packing<TIdx>(MeshElements<TIdx, PositionVertex> src)
-            where TIdx : struct, IIndexUnit<TIdx>
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             from x in src.poss
             select new PositionVertex

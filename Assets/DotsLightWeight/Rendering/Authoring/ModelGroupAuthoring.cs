@@ -77,7 +77,7 @@ namespace Abarabone.Model.Authoring
             {
                 var qOfs =
                     from model in prefabModels
-                    select model.BuildMeshCombiners<UI32, PositionNormalUvVertex>(meshDict, atlasDict);
+                    select model.BuildMeshCombiners(meshDict, atlasDict);
                 var ofss = qOfs.ToArray();
                 var qMObj = ofss.SelectMany().Select(of => of.obj);
                 var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())

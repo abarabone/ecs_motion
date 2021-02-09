@@ -29,10 +29,11 @@ namespace Abarabone.Geometry
 
 
         public MeshElements<TIdx, PositionNormalUvVertex> BuildCombiner<TIdx>(Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             new MeshElements<TIdx, PositionNormalUvVertex>
             {
+                src = srcmeshes,
                 idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
                 poss = srcmeshes.QueryConvertPositions(p).ToArray(),
                 nms = srcmeshes.QueryConvertNormals(p).ToArray(),
@@ -41,7 +42,7 @@ namespace Abarabone.Geometry
 
 
         public IEnumerable<PositionNormalUvVertex> Packing<TIdx>(MeshElements<TIdx, PositionNormalUvVertex> src)
-            where TIdx : struct, IIndexUnit<TIdx>
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             from x in (src.poss, src.nms, src.uvs).Zip()
             select new PositionNormalUvVertex

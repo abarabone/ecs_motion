@@ -30,8 +30,8 @@ namespace Abarabone.Geometry
                 Func<int, Rect> texHashToUvRectFunc = null,
                 Transform[] tfBones = null
             )
-            where TIdx : struct, IIndexUnit<TIdx>
-            where TVtx : struct, IVertexUnit<TVtx>
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         =>
             gameObjects.QueryMeshMatsTransform_IfHaving()
                 .BuildCombiner<TIdx, TVtx>(tfBase, texHashToUvRectFunc, tfBones);
@@ -43,8 +43,8 @@ namespace Abarabone.Geometry
                 Func<int, Rect> texHashToUvRectFunc = null,
                 Transform[] tfBones = null
             )
-            where TIdx : struct, IIndexUnit<TIdx>
-            where TVtx : struct, IVertexUnit<TVtx>
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         =>
             gameObjectTop.QueryMeshMatsTransform_IfHaving()
                 .BuildCombiner<TIdx, TVtx>(tfBase, texHashToUvRectFunc, tfBones);
@@ -56,8 +56,8 @@ namespace Abarabone.Geometry
                 Func<int, Rect> texHashToUvRectFunc = null,
                 Transform[] tfBones = null
             )
-            where TIdx : struct, IIndexUnit<TIdx>
-            where TVtx : struct, IVertexUnit<TVtx>
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         {
             var (srcmeshes, p) = mmts.calculateParametors(tfBase, texHashToUvRectFunc, tfBones);
 
@@ -68,7 +68,16 @@ namespace Abarabone.Geometry
         /// <summary>
         /// 
         /// </summary>
-        public static Task<IMeshElements> ToTask(this Func<IMeshElements> f) => Task.Run(f);
+        public static Task<MeshElements<TIdx, TVtx>> ToTask<TIdx, TVtx>
+            (this Func<MeshElements<TIdx, TVtx>> f)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        =>
+            Task.Run(f);
+
+        public static Task<IMeshElements> ToTask(this Func<IMeshElements> f)
+        =>
+            Task.Run(f);
 
 
 
