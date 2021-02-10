@@ -58,9 +58,9 @@ namespace Abarabone.Particle.Aurthoring
                 var atlasDict = gcs.GetTextureAtlasDictionary();
                 var meshDict = gcs.GetMeshDictionary();
 
-                this.QueryMeshTopObjects().PackTextureToDictionary(atlasDict);
+                //this.QueryMeshTopObjects().PackTextureToDictionary(atlasDict);
                 
-                combineMeshToDictionary_();
+                //combineMeshToDictionary_();
 
                 createModelEntities_();
 
@@ -71,10 +71,10 @@ namespace Abarabone.Particle.Aurthoring
                 {
                     var ofs = this.BuildMeshCombiners(meshDict, atlasDict);
                     var qMObj = ofs.Select(x => x.obj);
-                    var qMesh =
-                        from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
-                        select e.CreateMesh()
-                        ;
+                    //var qMesh = ofs.Select(x => x.f.ToTask())
+                    //    .WhenAll().Result
+                    //    .Select(x => x.CreateMesh());
+                    var qMesh = ofs.Select(x => x.f().CreateMesh());
                     meshDict.AddRange(qMObj, qMesh);
                 }
 

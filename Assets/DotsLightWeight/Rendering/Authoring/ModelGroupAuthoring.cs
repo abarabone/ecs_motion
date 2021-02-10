@@ -48,7 +48,7 @@ namespace Abarabone.Model.Authoring
 
         public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
         {
-            referencedPrefabs.AddRange( this.ModelPrefabs.Select(x => x.gameObject) );
+            //referencedPrefabs.AddRange( this.ModelPrefabs.Select(x => x.gameObject) );
         }
 
 
@@ -80,9 +80,10 @@ namespace Abarabone.Model.Authoring
                     select model.BuildMeshCombiners(meshDict, atlasDict);
                 var ofss = qOfs.ToArray();
                 var qMObj = ofss.SelectMany().Select(of => of.obj);
-                var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())
-                    .WhenAll().Result
-                    .Select(t => t.CreateMesh());
+                //var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())
+                //    .WhenAll().Result
+                //    .Select(t => t.CreateMesh());
+                var qMesh = ofss.SelectMany().Select(of => of.f().CreateMesh());
                 meshDict.AddRange(qMObj, qMesh);
             }
         }
