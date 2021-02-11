@@ -30,12 +30,12 @@ namespace Abarabone.Geometry
         public uint BoneIndex4;
 
 
-        public MeshElements<TIdx, PositionNormalUvBonedVertex> BuildCombiner<TIdx>(Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+        public MeshElements<TIdx, PositionNormalUvBonedVertex> BuildCombiner<TIdx>
+            (IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             new MeshElements<TIdx, PositionNormalUvBonedVertex>
             {
-                src = srcmeshes,
                 idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
                 poss = srcmeshes.QueryConvertPositionsWithBone(p).ToArray(),
                 nms = srcmeshes.QueryConvertNormals(p).ToArray(),

@@ -48,7 +48,7 @@ namespace Abarabone.Model.Authoring
 
         public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
         {
-            //referencedPrefabs.AddRange( this.ModelPrefabs.Select(x => x.gameObject) );
+            referencedPrefabs.AddRange(this.ModelPrefabs.Select(x => x.gameObject));
         }
 
 

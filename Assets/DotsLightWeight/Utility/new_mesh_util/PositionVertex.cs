@@ -25,12 +25,12 @@ namespace Abarabone.Geometry
         public Vector3 Position;
 
 
-        public MeshElements<TIdx, PositionVertex> BuildCombiner<TIdx>(Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+        public MeshElements<TIdx, PositionVertex> BuildCombiner<TIdx>
+            (IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             new MeshElements<TIdx, PositionVertex>
             {
-                src = srcmeshes,
                 idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
                 poss = srcmeshes.QueryConvertPositions(p).ToArray(),
             };

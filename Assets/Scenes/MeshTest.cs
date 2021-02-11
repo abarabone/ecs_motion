@@ -18,8 +18,10 @@ public class MeshTest : MonoBehaviour
 
         Debug.Log(this.name);
         var tex = this.gameObject.QueryUniqueTextures().ToAtlasOrPassThroughAndParameters();
-        this.mesh = this.gameObject//.Do(x => Debug.Log(x))
-            .BuildCombiner<UI32, PositionNormalUvBonedVertex>(this.transform, tex.ToTexHashToUvRectFunc(), b)
+        var mmts = this.gameObject.QueryMeshMatsTransform_IfHaving().ToArray();
+        var qMesh = mmts.QueryMeshDataWithDisposingLast();
+        this.mesh = mmts//.Do(x => Debug.Log(x))
+            .BuildCombiner<UI32, PositionNormalUvBonedVertex>(this.transform, qMesh, tex.ToTexHashToUvRectFunc(), b)
             .ToTask().Result
             .CreateMesh();
 

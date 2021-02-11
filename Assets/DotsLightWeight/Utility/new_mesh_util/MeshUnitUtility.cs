@@ -28,8 +28,6 @@ namespace Abarabone.Geometry
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        public Mesh.MeshDataArray src;
-
         public TIdx[] idxs;
         public Vector3[] poss;
         public Vector2[] uvs;

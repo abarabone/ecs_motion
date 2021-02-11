@@ -45,7 +45,6 @@ namespace Abarabone.Geometry
             Mesh.ApplyAndDisposeWritableMeshData(dstmeshes, dstmesh);
             dstmesh.RecalculateBounds();
 
-            meshElements.src.Dispose();
             return dstmesh;
         }
 

@@ -232,31 +232,32 @@ namespace Abarabone.Model.Authoring
 
 
         public override IEnumerable<GameObject> QueryMeshTopObjects() =>
-            this.gameObject.AsEnumerable();
+            this.gameObject.AsEnumerable();// 後でLODに対応させよう、とりあえずは単体で
 
 
 
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
         {
-            var objs = QueryMeshTopObjects()
+            var objs = this.QueryMeshTopObjects()
                 .Where(x => !meshDictionary.ContainsKey(x))
                 .ToArray();
-
-            var qSrc =
-                from obj in objs
-                let mmt = obj.QueryMeshMatsTransform_IfHaving()
-                select (obj, mmt)
-                ;
-            var srcs = qSrc.ToArray();
+            var mmtss = objs
+                .Select(obj => obj.QueryMeshMatsTransform_IfHaving())
+                .ToArrayRecursive2();
+            var qMeshData = mmtss.QueryMeshDataWithDisposingLastIn();
 
             var qObjAndBuilder =
-                from src in srcs
-                let atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode()
+                from src in (objs, mmtss, qMeshData).Zip()
+                let obj = src.src0
+                let mmts = src.src1
+                let meshes = src.src2
+                let atlas = atlasDictionary.objectToAtlas[obj].GetHashCode()
                 let dict = atlasDictionary.texHashToUvRect
                 select (
-                    src.obj,
-                    src.mmt.BuildCombiner<UI32, PositionNormalUvBonedVertex>(src.obj.transform, part => dict[atlas, part], bones)
+                    obj,
+                    mmts.BuildCombiner<UI32, PositionNormalUvBonedVertex>
+                        (obj.transform, meshes, part => dict[atlas, part], bones)
                 );
             return qObjAndBuilder.ToArray();
         }

@@ -19,26 +19,26 @@ namespace Abarabone.Geometry.inner
     using Abarabone.Misc;
 
 
-    static class MeshQyeryUtility
-    {
-        static public IEnumerable<MeshUnit> AsEnumerable(this Mesh.MeshDataArray meshDataArray)
-        {
-            var baseVertex = 0;
-            for (var i = 0; i < meshDataArray.Length; i++)
-            {
-                yield return new MeshUnit(i, meshDataArray[i], baseVertex);
+    //static class MeshQyeryUtility
+    //{
+    //    static public IEnumerable<MeshUnit> AsEnumerable(this Mesh.MeshDataArray meshDataArray)
+    //    {
+    //        var baseVertex = 0;
+    //        for (var i = 0; i < meshDataArray.Length; i++)
+    //        {
+    //            yield return new MeshUnit(i, meshDataArray[i], baseVertex);
 
-                baseVertex += meshDataArray[i].vertexCount;
-            }
-        }
-    }
+    //            baseVertex += meshDataArray[i].vertexCount;
+    //        }
+    //    }
+    //}
 
 
     static partial class ConvertIndicesUtility
     {
 
         public static IEnumerable<TIdx> QueryConvertIndexData<TIdx>
-            (this Mesh.MeshDataArray srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
+            (this IEnumerable<MeshUnit> srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
             where TIdx : struct, IIndexUnit<TIdx>
         =>
             from x in srcmeshes.QuerySubMeshForIndexData<TIdx>(mtsPerMesh)
@@ -57,13 +57,9 @@ namespace Abarabone.Geometry.inner
     {
 
         static public IEnumerable<Vector3> QueryConvertPositions
-            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+            (this IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
         =>
-            //from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetVertices(arr), VertexAttribute.Position)
-            //from xsub in x.submeshes
-            //from vtx in xsub.submesh.Elements()
-            //select (Vector3)math.transform(x.mt, vtx)
-            from permesh in (srcmeshes.AsEnumerable(), p.mtPerMesh).Zip()
+            from permesh in (srcmeshes, p.mtPerMesh).Zip()
             let mesh = permesh.src0.MeshData
             let mt = permesh.src1// * p.mtBaseInv
             from vtx in mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetVertices(arr), VertexAttribute.Position)
@@ -72,13 +68,9 @@ namespace Abarabone.Geometry.inner
 
 
         static public IEnumerable<Vector3> QueryConvertNormals
-            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+            (this IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
         =>
-            //from x in srcmeshes.QuerySubMeshForVertices<Vector3>(p, (md, arr) => md.GetNormals(arr), VertexAttribute.Normal)
-            //from xsub in x.submeshes
-            //from nm in xsub.submesh.Elements()
-            //select (Vector3)math.mul(x.mt.rotation, nm)
-            from permesh in (srcmeshes.AsEnumerable(), p.mtPerMesh).Zip()
+            from permesh in (srcmeshes, p.mtPerMesh).Zip()
             let mesh = permesh.src0.MeshData
             let mt = permesh.src1// * p.mtBaseInv
             from nm in mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetNormals(arr), VertexAttribute.Normal)
@@ -87,7 +79,7 @@ namespace Abarabone.Geometry.inner
 
 
         static public IEnumerable<Vector2> QueryConvertUvs
-            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p, int channel)
+            (this IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p, int channel)
         =>
             p.texHashToUvRect != null
             ?
@@ -96,16 +88,16 @@ namespace Abarabone.Geometry.inner
                 from uv in xsub.submesh.Elements()
                 select uv.ScaleUv(p.texHashToUvRect(xsub.texhash))
             :
-                from mesh in srcmeshes.AsEnumerable()
+                from mesh in srcmeshes
                 from uv in mesh.MeshData.QueryMeshVertices<Vector2>((md, arr) => md.GetUVs(channel, arr), VertexAttribute.TexCoord0)
                 select uv
             ;
 
 
         static public IEnumerable<Vector3> QueryConvertPositionsWithBone
-            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+            (this IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
         =>
-            from permesh in (srcmeshes.AsEnumerable(), p.mtInvsPerMesh, p.boneWeightsPerMesh, p.mtPerMesh).Zip()
+            from permesh in (srcmeshes, p.mtInvsPerMesh, p.boneWeightsPerMesh, p.mtPerMesh).Zip()
             let mesh = permesh.src0.MeshData
             let mtInvs = permesh.src1
             let weis = permesh.src2
@@ -116,7 +108,7 @@ namespace Abarabone.Geometry.inner
             select (Vector3)math.transform(mtInvs[wei.boneIndex0] * mt, vtx)
             ;
         static public IEnumerable<uint> QueryConvertBoneIndices
-            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+            (this IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
         =>
             from permesh in p.boneWeightsPerMesh.WithIndex()
             from w in permesh.src
@@ -127,7 +119,7 @@ namespace Abarabone.Geometry.inner
                 p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex3] << 24 & 0xff
             );
         static public IEnumerable<Vector4> QueryConvertBoneWeights
-            (this Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+            (this IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
         =>
             from permesh in p.boneWeightsPerMesh
             from w in permesh
@@ -142,13 +134,13 @@ namespace Abarabone.Geometry.inner
 
         public static IEnumerable<(Matrix4x4 mt, IEnumerable<(SubMeshUnit<T> submesh, int texhash)> submeshes)>
             QuerySubMeshForVertices<T>(
-                this Mesh.MeshDataArray srcmeshes,
+                this IEnumerable<MeshUnit> srcmeshes,
                 AdditionalParameters p,
                 Action<Mesh.MeshData, NativeArray<T>> getElementSrc,
                 VertexAttribute attr
             ) where T : struct
         =>
-            from x in (srcmeshes.AsEnumerable(), p.mtPerMesh, p.texhashPerSubMesh).Zip()
+            from x in (srcmeshes, p.mtPerMesh, p.texhashPerSubMesh).Zip()
             let submeshes = x.src0.MeshData.QuerySubmeshesForVertices(getElementSrc, attr)
             let mt = p.mtBaseInv * x.src1
             let texhashes = x.src2
@@ -162,10 +154,10 @@ namespace Abarabone.Geometry.inner
 
 
         public static IEnumerable<(Matrix4x4 mt, MeshUnit mesh, IEnumerable<SubMeshUnit<T>> submeshes)>
-            QuerySubMeshForIndexData<T>(this Mesh.MeshDataArray srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
+            QuerySubMeshForIndexData<T>(this IEnumerable<MeshUnit> srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
             where T : struct, IIndexUnit<T>
         =>
-            from x in (srcmeshes.AsEnumerable(), mtsPerMesh).Zip()
+            from x in (srcmeshes, mtsPerMesh).Zip()
             let mesh = x.src0
             let mt = x.src1
             select (

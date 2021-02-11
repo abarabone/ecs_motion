@@ -28,12 +28,12 @@ namespace Abarabone.Geometry
         public Vector2 Uv;
 
 
-        public MeshElements<TIdx, PositionNormalUvVertex> BuildCombiner<TIdx>(Mesh.MeshDataArray srcmeshes, AdditionalParameters p)
+        public MeshElements<TIdx, PositionNormalUvVertex> BuildCombiner<TIdx>
+            (IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             new MeshElements<TIdx, PositionNormalUvVertex>
             {
-                src = srcmeshes,
                 idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
                 poss = srcmeshes.QueryConvertPositions(p).ToArray(),
                 nms = srcmeshes.QueryConvertNormals(p).ToArray(),
