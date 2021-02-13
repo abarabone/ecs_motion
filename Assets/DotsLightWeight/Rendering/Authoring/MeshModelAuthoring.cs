@@ -200,7 +200,7 @@ namespace Abarabone.Particle.Aurthoring
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
             var objs = this.QueryMeshTopObjects()
                 .Where(x => !meshDictionary.ContainsKey(x))

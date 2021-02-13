@@ -33,7 +33,7 @@ namespace Abarabone.Model.Authoring
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
             public abstract (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null);
+                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary);
 
             public abstract IEnumerable<GameObject> QueryMeshTopObjects();
 

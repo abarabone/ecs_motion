@@ -30,7 +30,7 @@ namespace Abarabone.Structure.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs//
     {
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         { throw new NotImplementedException(); }
         public override IEnumerable<GameObject> QueryMeshTopObjects()
         { throw new NotImplementedException(); }

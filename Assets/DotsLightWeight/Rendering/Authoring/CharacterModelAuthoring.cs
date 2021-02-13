@@ -32,6 +32,8 @@ namespace Abarabone.Model.Authoring
         public EnBoneType BoneMode;
 
 
+        Transform[] bones = new Lazy<trans();
+
 
         /// <summary>
         /// 描画関係はバインダーに、ボーン関係はメインに関連付ける
@@ -237,7 +239,7 @@ namespace Abarabone.Model.Authoring
 
 
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary, Transform[] bones = null)
+            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
             var objs = this.QueryMeshTopObjects()
                 .Where(x => !meshDictionary.ContainsKey(x))
