@@ -28,17 +28,25 @@ namespace Abarabone.Model.Authoring
 
         public Shader DrawShader;
 
-        
+
         public EnBoneType BoneMode;
 
 
-        Transform[] bones = new Lazy<trans();
+        Lazy<Transform[]> bones => new Lazy<Transform[]>(() =>
+        {
+            var skinnedMeshRenderers = this.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
 
+            var qBone = skinnedMeshRenderers
+                .First().bones
+                .Where(x => !x.name.StartsWith("_"));
+
+            return qBone.ToArray();
+        }, false);
 
         /// <summary>
         /// 描画関係はバインダーに、ボーン関係はメインに関連付ける
         /// </summary>
-        public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
             //var (atlas, meshes, bones) = buildGeometrySources_(this.gameObject);
@@ -46,17 +54,16 @@ namespace Abarabone.Model.Authoring
 
             var top = this.gameObject;
             var main = top.Children().First();
-            var bones = queryBone_().ToArray();
 
-            createModelEntity_( conversionSystem, this.DrawShader, bones );
+            createModelEntity_(conversionSystem, this.DrawShader, bones.Value);
 
-            initBinderEntity_( conversionSystem, top, main );
+            initBinderEntity_(conversionSystem, top, main);
             initMainEntity_(conversionSystem, top, main);
 
             conversionSystem.InitPostureEntity(main);//, bones);
-            conversionSystem.InitBoneEntities(main, bones, main.transform, this.BoneMode);
-            
-            conversionSystem.CreateDrawInstanceEntities( top, main, bones, this.BoneMode );
+            conversionSystem.InitBoneEntities(main, bones.Value, main.transform, this.BoneMode);
+
+            conversionSystem.CreateDrawInstanceEntities(top, main, bones.Value, this.BoneMode);
 
             return;
 
@@ -99,16 +106,6 @@ namespace Abarabone.Model.Authoring
 
 
 
-            IEnumerable<Transform> queryBone_()
-            {
-                var skinnedMeshRenderers = this.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
-
-                var qBone = skinnedMeshRenderers
-                    .First().bones
-                    .Where(x => !x.name.StartsWith("_"));
-
-                return qBone;
-            }
 
             void createModelEntity_(GameObjectConversionSystem gcs, Shader shader, Transform[] bones)
             {
@@ -116,7 +113,7 @@ namespace Abarabone.Model.Authoring
                 var atlasDict = gcs.GetTextureAtlasDictionary();
                 var meshDict = gcs.GetMeshDictionary();
 
-                this.QueryMeshTopObjects().PackTextureToDictionary(atlasDict);
+                this.MeshTopObjects.Value.PackTextureToDictionary(atlasDict);
 
                 combineMeshToDictionary_();
 
@@ -127,7 +124,7 @@ namespace Abarabone.Model.Authoring
 
                 void combineMeshToDictionary_()
                 {
-                    var ofs = this.BuildMeshCombiners(meshDict, atlasDict, bones);
+                    var ofs = this.BuildMeshCombiners(meshDict, atlasDict);
                     var qMObj = ofs.Select(x => x.obj);
                     var qMesh =
                         from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
@@ -138,9 +135,9 @@ namespace Abarabone.Model.Authoring
 
                 void createModelEntities_()
                 {
-                    var qObj = this.QueryMeshTopObjects();
+                    var objs = this.MeshTopObjects.Value;
 
-                    foreach (var obj in qObj)
+                    foreach (var obj in objs)
                     {
                         Debug.Log($"{obj.name} model ent");
 
@@ -173,7 +170,7 @@ namespace Abarabone.Model.Authoring
 
 
 
-            static void initBinderEntity_( GameObjectConversionSystem gcs_, GameObject top_, GameObject main_ )
+            static void initBinderEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
             {
                 var em_ = gcs_.DstEntityManager;
 
@@ -187,12 +184,12 @@ namespace Abarabone.Model.Authoring
                     typeof(ObjectBinder.MainEntityLinkData)
                 );
                 em_.AddComponents(binderEntity, binderAddtypes);
-                
-                em_.SetComponentData( binderEntity,
-                    new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity } );
+
+                em_.SetComponentData(binderEntity,
+                    new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
 
 
-                em_.SetName_( binderEntity, $"{top_.name} binder" );
+                em_.SetName_(binderEntity, $"{top_.name} binder");
             }
 
             static void initMainEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
@@ -233,15 +230,16 @@ namespace Abarabone.Model.Authoring
 
 
 
-        public override IEnumerable<GameObject> QueryMeshTopObjects() =>
-            this.gameObject.AsEnumerable();// 後でLODに対応させよう、とりあえずは単体で
+        public override Lazy<GameObject[]> MeshTopObjects => new Lazy<GameObject[]>(() =>
+            new [] { this.gameObject }// 後でLODに対応させよう、とりあえずは単体で
+        );
 
 
 
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
-            var objs = this.QueryMeshTopObjects()
+            var objs = this.MeshTopObjects.Value
                 .Where(x => !meshDictionary.ContainsKey(x))
                 .ToArray();
             var mmtss = objs
@@ -259,7 +257,7 @@ namespace Abarabone.Model.Authoring
                 select (
                     obj,
                     mmts.BuildCombiner<UI32, PositionNormalUvBonedVertex>
-                        (obj.transform, meshes, part => dict[atlas, part], bones)
+                        (obj.transform, meshes, part => dict[atlas, part], bones.Value)
                 );
             return qObjAndBuilder.ToArray();
         }

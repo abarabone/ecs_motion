@@ -29,11 +29,6 @@ namespace Abarabone.Structure.Authoring
     public class StructureBuildingModelAliasAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs//
     {
-        public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
-        { throw new NotImplementedException(); }
-        public override IEnumerable<GameObject> QueryMeshTopObjects()
-        { throw new NotImplementedException(); }
 
         public StructureBuildingModelAuthoring StructureModelPrefab;
 

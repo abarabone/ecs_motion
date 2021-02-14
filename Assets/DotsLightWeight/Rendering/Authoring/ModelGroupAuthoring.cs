@@ -32,10 +32,11 @@ namespace Abarabone.Model.Authoring
         /// </summary>
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
-            public abstract (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary);
+            public virtual (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
+                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+            { throw new NotImplementedException(); }
 
-            public abstract IEnumerable<GameObject> QueryMeshTopObjects();
+            public virtual Lazy<GameObject[]> MeshTopObjects => throw new NotImplementedException();
 
             //public virtual void BuildMeshAndAtlasToDictionary(GameObjectConversionSystem gcs, IEnumerable<GameObject> objs) { }
         }
@@ -61,7 +62,7 @@ namespace Abarabone.Model.Authoring
             var prefabModels = this.ModelPrefabs.Distinct();
 
             prefabModels
-                .SelectMany(model => model.QueryMeshTopObjects())
+                .SelectMany(model => model.MeshTopObjects.Value)
                 .PackTextureToDictionary(atlasDict);
 
             combineMeshToDictionary_();
@@ -75,15 +76,23 @@ namespace Abarabone.Model.Authoring
 
             void combineMeshToDictionary_()
             {
+                var qMmts =
+                    from model in prefabModels
+                    select model.MeshTopObjects.Value.QueryMeshMatsTransform_IfHaving()
+                    ;
+                var mmtss = qMmts.ToArray();
+                mmtss.QueryMeshDataWithDisposingLastIn();
+
+
                 var qOfs =
                     from model in prefabModels
                     select model.BuildMeshCombiners(meshDict, atlasDict);
                 var ofss = qOfs.ToArray();
                 var qMObj = ofss.SelectMany().Select(of => of.obj);
-                //var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())
-                //    .WhenAll().Result
-                //    .Select(t => t.CreateMesh());
-                var qMesh = ofss.SelectMany().Select(of => of.f().CreateMesh());
+                var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())
+                    .WhenAll().Result
+                    .Select(t => t.CreateMesh());
+                //var qMesh = ofss.SelectMany().Select(of => of.f().CreateMesh());
                 meshDict.AddRange(qMObj, qMesh);
             }
         }

@@ -58,7 +58,7 @@ namespace Abarabone.Particle.Aurthoring
                 var atlasDict = gcs.GetTextureAtlasDictionary();
                 var meshDict = gcs.GetMeshDictionary();
 
-                this.QueryMeshTopObjects().PackTextureToDictionary(atlasDict);
+                this.MeshTopObjects.Value.PackTextureToDictionary(atlasDict);
 
                 combineMeshToDictionary_();
 
@@ -80,9 +80,9 @@ namespace Abarabone.Particle.Aurthoring
 
                 void createModelEntities_()
                 {
-                    var qObj = this.QueryMeshTopObjects();
+                    var objs = this.MeshTopObjects.Value;
 
-                    foreach (var obj in qObj)
+                    foreach (var obj in objs)
                     {
                         Debug.Log($"{obj.name} model ent");
 
@@ -202,13 +202,13 @@ namespace Abarabone.Particle.Aurthoring
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
             (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
-            var objs = this.QueryMeshTopObjects()
+            var objs = this.MeshTopObjects.Value
                 .Where(x => !meshDictionary.ContainsKey(x))
                 .ToArray();
             var mmtss = objs
                 .Select(obj => obj.QueryMeshMatsTransform_IfHaving())
                 .ToArrayRecursive2();
-            var qMeshData = mmtss.QueryMeshDataWithDisposingLastIn();
+            var qMeshData = mmtss.QueryMeshDataWithDisposingLastIn().ToArray();
 
             var qObjAndBuilder =
                 from src in (objs, mmtss, qMeshData).Zip()
@@ -226,7 +226,7 @@ namespace Abarabone.Particle.Aurthoring
         }
 
 
-        public override IEnumerable<GameObject> QueryMeshTopObjects()
+        public override Lazy<GameObject[]> MeshTopObjects => new Lazy<GameObject[]>(() =>
         {
             var qMain = this.gameObject.AsEnumerable()
                 .Where(x => this.LodOptionalMeshTops.Length == 0);
@@ -235,8 +235,9 @@ namespace Abarabone.Particle.Aurthoring
                 .Select(x => x.objectTop ?? this.gameObject);
 
             return qMain.Concat(qLod)
-                .Distinct();
-        }
+                .Distinct()
+                .ToArray();
+        });
 
 
         //public override void BuildMeshAndAtlasToDictionary(GameObjectConversionSystem gcs, IEnumerable<GameObject> objs)

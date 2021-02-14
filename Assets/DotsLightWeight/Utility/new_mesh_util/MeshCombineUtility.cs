@@ -95,7 +95,7 @@ namespace Abarabone.Geometry
 
             IEnumerable<MeshUnit> query_()
             {
-                using (mesharr)
+                using (new DevUtil.dispona(mesharr))// mesharr)
                 {
                     var baseVertex = 0;
 
@@ -108,7 +108,17 @@ namespace Abarabone.Geometry
                 }
             }
         }
-
+        //public struct MeshUnitsWithDisposing : IDisposable
+        //{
+        //    Mesh.MeshDataArray arr;
+        //    public IEnumerable<MeshUnit> e { get; private set; }
+        //    public MeshUnitsWithDisposing(IEnumerable<MeshUnit> e, Mesh.MeshDataArray arr)
+        //    {
+        //        this.e = e;
+        //        this.arr = arr;
+        //    }
+        //    public void Dispose() => this.arr.Dispose();
+        //}
         public static IEnumerable<IEnumerable<MeshUnit>> QueryMeshDataWithDisposingLastIn
             (this IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>> mmtss)
         {
@@ -119,7 +129,7 @@ namespace Abarabone.Geometry
 
             IEnumerable<IEnumerable<MeshUnit>> query_()
             {
-                using (mesharr)
+                using (new DevUtil.dispona(mesharr))// mesharr)
                 {
                     var imesh = 0;
 

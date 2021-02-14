@@ -13,6 +13,27 @@ namespace Abarabone.Utilities
     using Abarabone.Common.Extension;
     using Abarabone.Geometry;
 
+
+    static class DevUtil
+    {
+
+        public struct dispo : IDisposable
+        {
+            Action act;
+            public dispo(Action act) => this.act = act;
+            public void Dispose() => this.act();
+        }
+
+        public struct dispona : IDisposable
+        {
+            string name;
+            IDisposable d;
+            public dispona(IDisposable d, string name = null) { this.d = d; this.name = name ?? Time.time.ToString(); Debug.Log($"{this.name} dispo st"); }
+            public void Dispose() { Debug.Log($"{this.name} dispo ed"); }
+        }
+    }
+
+
     static public class Extentions
     {
 
