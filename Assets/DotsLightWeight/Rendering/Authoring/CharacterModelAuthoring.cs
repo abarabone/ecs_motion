@@ -245,7 +245,7 @@ namespace Abarabone.Model.Authoring
             var mmtss = objs
                 .Select(obj => obj.QueryMeshMatsTransform_IfHaving())
                 .ToArrayRecursive2();
-            var qMeshData = mmtss.QueryMeshDataWithDisposingLastIn();
+            var qMeshData = mmtss.QueryMeshDataWithDisposingLast();
 
             var qObjAndBuilder =
                 from src in (objs, mmtss, qMeshData).Zip()

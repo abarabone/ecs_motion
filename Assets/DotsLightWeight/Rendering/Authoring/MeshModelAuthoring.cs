@@ -208,7 +208,7 @@ namespace Abarabone.Particle.Aurthoring
             var mmtss = objs
                 .Select(obj => obj.QueryMeshMatsTransform_IfHaving())
                 .ToArrayRecursive2();
-            var qMeshData = mmtss.QueryMeshDataWithDisposingLastIn().ToArray();
+            var qMeshData = mmtss.QueryMeshDataWithDisposingLast().ToArray();
 
             var qObjAndBuilder =
                 from src in (objs, mmtss, qMeshData).Zip()
@@ -226,15 +226,9 @@ namespace Abarabone.Particle.Aurthoring
         }
 
 
-        Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> _mmtss = new Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]>(() =>
-        {
-
-        });
-        public override Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> Mmtss = _m
-
         public override Lazy<GameObject[]> MeshTopObjects => new Lazy<GameObject[]>(() =>
         {
-            var qMain = this.gameObject.AsEnumerable()
+            var qMain = this.gameObject.WrapEnumerable()
                 .Where(x => this.LodOptionalMeshTops.Length == 0);
 
             var qLod = this.LodOptionalMeshTops

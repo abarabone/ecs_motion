@@ -59,7 +59,7 @@ namespace Abarabone.Utilities
             }
         }
 
-        public static IEnumerable<T> AsEnumerable<T>(this T src) =>
+        public static IEnumerable<T> WrapEnumerable<T>(this T src) =>
             Enumerable.Repeat(src, 1);
 
         /// <summary>

@@ -156,6 +156,12 @@ namespace Abarabone.Geometry
         //    }
         //}
 
+        public static IEnumerable<IEnumerable<SrcMeshUnit>> QueryMeshDataWithDisposingLast
+            (this IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>> mmtss)
+        =>
+            mmtss.WrapEnumerable().QueryMeshDataWithDisposingLast().First();
+
+
         public static IEnumerable<IEnumerable<IEnumerable<SrcMeshUnit>>> QueryMeshDataWithDisposingLast
             (this IEnumerable<IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>>> mmtsss)
         {
@@ -168,9 +174,12 @@ namespace Abarabone.Geometry
             {
                 var imesh = 0;
 
-                foreach (var mmtss in mmtsss)
+                using (new DevUtil.dispona(mesharr,"aaa"))
                 {
-                    yield return queryInModel_(mmtss);
+                    foreach (var mmtss in mmtsss)
+                    {
+                        yield return queryInModel_(mmtss);
+                    }
                 }
 
                 IEnumerable<IEnumerable<SrcMeshUnit>> queryInModel_
@@ -245,7 +254,7 @@ namespace Abarabone.Geometry
                 select mesh.bindposes
                 ;
             var qSrcBones = mmts_
-                .Select(x => x.tf.GetComponentOrNull<SkinnedMeshRenderer>()?.bones ?? x.tf.AsEnumerable().ToArray());
+                .Select(x => x.tf.GetComponentOrNull<SkinnedMeshRenderer>()?.bones ?? x.tf.WrapEnumerable().ToArray());
             ;
             result.boneWeightsPerMesh = qBoneWeights.ToArray();
             result.mtInvsPerMesh = qMtInvs.ToArray();
