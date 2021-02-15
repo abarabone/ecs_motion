@@ -32,11 +32,35 @@ namespace Abarabone.Geometry.inner.unit
         public Func<int, Rect> texHashToUvRect;
     }
 
-    public struct MeshUnit
+    //public struct MeshSourceUnit
+    //{
+    //    public MeshSourceUnit(IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> src)
+    //    {
+    //        this.e = src;
+    //    }
+    //    public IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> e { get; private set; }
+    //}
+    //public static class m
+    //{
+    //    public static MeshSourceUnit ToSourceUnit(this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> src) =>
+    //        new MeshSourceUnit(src);
+    //}
+
+
+    //public struct ModelUnit
+    //{
+    //    public ModelUnit(Abarabone.Model.Authoring.ModelGroupAuthoring.ModelAuthoringBase model)
+    //    {
+
+    //    }
+    //    public readonly IEnumerable<MeshUnit> meshes;
+    //}
+
+    public struct SrcMeshUnit
     {
-        public MeshUnit(int i, Mesh.MeshData meshdata, int baseVertex)
+        public SrcMeshUnit(int indexInCombined, Mesh.MeshData meshdata, int baseVertex)
         {
-            this.MeshIndex = i;
+            this.MeshIndex = indexInCombined;
             this.MeshData = meshdata;
             this.BaseVertex = baseVertex;
         }
@@ -46,9 +70,9 @@ namespace Abarabone.Geometry.inner.unit
     }
 
 
-    public struct SubMeshUnit<T> where T : struct
+    public struct SrcSubMeshUnit<T> where T : struct
     {
-        public SubMeshUnit(int i, SubMeshDescriptor descriptor, Func<IEnumerable<T>> elements)
+        public SrcSubMeshUnit(int i, SubMeshDescriptor descriptor, Func<IEnumerable<T>> elements)
         {
             this.SubMeshIndex = i;
             this.Descriptor = descriptor;

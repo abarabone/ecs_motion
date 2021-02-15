@@ -21,7 +21,7 @@ namespace Abarabone.Geometry
     public interface IVertexUnit<TVtx>
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        MeshElements<TIdx, TVtx> BuildCombiner<TIdx>(IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
+        MeshElements<TIdx, TVtx> BuildCombiner<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;
 
         IEnumerable<TVtx> Packing<TIdx>(MeshElements<TIdx, TVtx> src)

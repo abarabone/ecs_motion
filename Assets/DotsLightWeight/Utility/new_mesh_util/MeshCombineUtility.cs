@@ -55,7 +55,7 @@ namespace Abarabone.Geometry
         public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>
             (
                 this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts, Transform tfBase,
-                IEnumerable<MeshUnit> srcmeshes,
+                IEnumerable<SrcMeshUnit> srcmeshes,
                 Func<int, Rect> texHashToUvRectFunc = null,
                 Transform[] tfBones = null
             )
@@ -85,29 +85,29 @@ namespace Abarabone.Geometry
 
 
 
-        public static IEnumerable<MeshUnit> QueryMeshDataWithDisposingLast
-            (this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
-        {
-            var meshes = mmts.Select(x => x.mesh).ToArray();
-            var mesharr = Mesh.AcquireReadOnlyMeshData(meshes);
+        //public static IEnumerable<SrcMeshUnit> QueryMeshDataWithDisposingLast
+        //    (this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
+        //{
+        //    var meshes = mmts.Select(x => x.mesh).ToArray();
+        //    var mesharr = Mesh.AcquireReadOnlyMeshData(meshes);
 
-            return query_();
+        //    return query_();
 
-            IEnumerable<MeshUnit> query_()
-            {
-                using (new DevUtil.dispona(mesharr))// mesharr)
-                {
-                    var baseVertex = 0;
+        //    IEnumerable<SrcMeshUnit> query_()
+        //    {
+        //        using (new DevUtil.dispona(mesharr))// mesharr)
+        //        {
+        //            var baseVertex = 0;
 
-                    for (var i = 0; i < mesharr.Length; i++)
-                    {
-                        yield return new MeshUnit(i, mesharr[i], baseVertex);
+        //            for (var i = 0; i < mesharr.Length; i++)
+        //            {
+        //                yield return new SrcMeshUnit(i, mesharr[i], baseVertex);
 
-                        baseVertex += mesharr[i].vertexCount;
-                    }
-                }
-            }
-        }
+        //                baseVertex += mesharr[i].vertexCount;
+        //            }
+        //        }
+        //    }
+        //}
         //public struct MeshUnitsWithDisposing : IDisposable
         //{
         //    Mesh.MeshDataArray arr;
@@ -119,7 +119,7 @@ namespace Abarabone.Geometry
         //    }
         //    public void Dispose() => this.arr.Dispose();
         //}
-        public static IEnumerable<IEnumerable<MeshUnit>> QueryMeshDataWithDisposingLastIn
+        public static IEnumerable<IEnumerable<SrcMeshUnit>> QueryMeshDataWithDisposingLastIn
             (this IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>> mmtss)
         {
             var meshes = mmtss.SelectMany().Select(x => x.mesh).ToArray();
@@ -127,7 +127,7 @@ namespace Abarabone.Geometry
 
             return query_();
 
-            IEnumerable<IEnumerable<MeshUnit>> query_()
+            IEnumerable<IEnumerable<SrcMeshUnit>> query_()
             {
                 using (new DevUtil.dispona(mesharr))// mesharr)
                 {
@@ -143,19 +143,62 @@ namespace Abarabone.Geometry
                     }
                 }
             }
-            IEnumerable<MeshUnit> queryMesh_(int first, int length)
+            IEnumerable<SrcMeshUnit> queryMesh_(int first, int length)
             {
                 var baseVertex = 0;
 
                 for (var i = 0; i < length; i++)
                 {
-                    yield return new MeshUnit(i, mesharr[i + first], baseVertex);
+                    yield return new SrcMeshUnit(i, mesharr[i + first], baseVertex);
 
                     baseVertex += mesharr[i].vertexCount;
                 }
             }
         }
 
+        public static IEnumerable<IEnumerable<IEnumerable<SrcMeshUnit>>> QueryMeshDataWithDisposingLastIn2
+            (this IEnumerable<IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>>> mmtsss)
+        {
+            var meshes = mmtsss.SelectMany().SelectMany().Select(x => x.mesh).ToArray();
+            var mesharr = Mesh.AcquireReadOnlyMeshData(meshes);
+
+            return query_();
+
+            IEnumerable<IEnumerable<IEnumerable<SrcMeshUnit>>> query_()
+            {
+                var imesh = 0;
+
+                foreach (var mmtss in mmtsss)
+                {
+                    yield return query2_(mmtss);
+                }
+
+                IEnumerable<IEnumerable<SrcMeshUnit>> query2_
+                    (IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>> mmtss)
+                {
+                    foreach (var mmts in mmtss)
+                    {
+                        var len = mmts.Count();
+
+                        yield return queryMesh_(imesh, len);
+
+                        imesh += len;
+                    }
+                }
+
+                IEnumerable<SrcMeshUnit> queryMesh_(int first, int length)
+                {
+                    var baseVertex = 0;
+
+                    for (var i = 0; i < length; i++)
+                    {
+                        yield return new SrcMeshUnit(i, mesharr[i + first], baseVertex);
+
+                        baseVertex += mesharr[i].vertexCount;
+                    }
+                }
+            }
+        }
 
         static AdditionalParameters calculateParameters
             (

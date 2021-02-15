@@ -26,7 +26,7 @@ namespace Abarabone.Geometry
 
 
         public MeshElements<TIdx, PositionVertex> BuildCombiner<TIdx>
-            (IEnumerable<MeshUnit> srcmeshes, AdditionalParameters p)
+            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             new MeshElements<TIdx, PositionVertex>

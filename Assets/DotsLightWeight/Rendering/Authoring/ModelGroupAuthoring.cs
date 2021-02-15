@@ -38,6 +38,10 @@ namespace Abarabone.Model.Authoring
 
             public virtual Lazy<GameObject[]> MeshTopObjects => throw new NotImplementedException();
 
+            //public Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> Mmtss { get; }
+            //    = new Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]>(() => this.mmtss);
+            protected virtual (Mesh mesh, Material[] mats, Transform tf)[][] mmtss { get; }
+
             //public virtual void BuildMeshAndAtlasToDictionary(GameObjectConversionSystem gcs, IEnumerable<GameObject> objs) { }
         }
 
@@ -76,12 +80,12 @@ namespace Abarabone.Model.Authoring
 
             void combineMeshToDictionary_()
             {
-                var qMmts =
+                var qMmtsPerObj =
                     from model in prefabModels
-                    select model.MeshTopObjects.Value.QueryMeshMatsTransform_IfHaving()
+                    from obj in model.MeshTopObjects.Value
+                    select obj.QueryMeshMatsTransform_IfHaving()
                     ;
-                var mmtss = qMmts.ToArray();
-                mmtss.QueryMeshDataWithDisposingLastIn();
+                qMmtsPerObj.QueryMeshDataWithDisposingLastIn();
 
 
                 var qOfs =
