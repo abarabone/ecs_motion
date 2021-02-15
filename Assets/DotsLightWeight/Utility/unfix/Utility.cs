@@ -29,7 +29,7 @@ namespace Abarabone.Utilities
             string name;
             IDisposable d;
             public dispona(IDisposable d, string name = null) { this.d = d; this.name = name ?? Time.time.ToString(); Debug.Log($"{this.name} dispo st"); }
-            public void Dispose() { Debug.Log($"{this.name} dispo ed"); }
+            public void Dispose() { Debug.Log($"{this.name} dispo ed"); this.d.Dispose(); }
         }
     }
 

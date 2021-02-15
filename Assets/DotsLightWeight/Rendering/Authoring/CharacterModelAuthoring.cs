@@ -236,31 +236,31 @@ namespace Abarabone.Model.Authoring
 
 
 
-        public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-            (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
-        {
-            var objs = this.MeshTopObjects.Value
-                .Where(x => !meshDictionary.ContainsKey(x))
-                .ToArray();
-            var mmtss = objs
-                .Select(obj => obj.QueryMeshMatsTransform_IfHaving())
-                .ToArrayRecursive2();
-            var qMeshData = mmtss.QueryMeshDataWithDisposingLast();
+        //public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
+        //    (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+        //{
+        //    var objs = this.MeshTopObjects.Value
+        //        .Where(x => !meshDictionary.ContainsKey(x))
+        //        .ToArray();
+        //    var mmtss = objs
+        //        .Select(obj => obj.QueryMeshMatsTransform_IfHaving())
+        //        .ToArrayRecursive2();
+        //    var qMeshData = mmtss.QueryMeshDataWithDisposingLast();
 
-            var qObjAndBuilder =
-                from src in (objs, mmtss, qMeshData).Zip()
-                let obj = src.src0
-                let mmts = src.src1
-                let meshes = src.src2
-                let atlas = atlasDictionary.objectToAtlas[obj].GetHashCode()
-                let dict = atlasDictionary.texHashToUvRect
-                select (
-                    obj,
-                    mmts.BuildCombiner<UI32, PositionNormalUvBonedVertex>
-                        (obj.transform, meshes, part => dict[atlas, part], bones.Value)
-                );
-            return qObjAndBuilder.ToArray();
-        }
+        //    var qObjAndBuilder =
+        //        from src in (objs, mmtss, qMeshData).Zip()
+        //        let obj = src.src0
+        //        let mmts = src.src1
+        //        let meshes = src.src2
+        //        let atlas = atlasDictionary.objectToAtlas[obj].GetHashCode()
+        //        let dict = atlasDictionary.texHashToUvRect
+        //        select (
+        //            obj,
+        //            mmts.BuildCombiner<UI32, PositionNormalUvBonedVertex>
+        //                (obj.transform, meshes, part => dict[atlas, part], bones.Value)
+        //        );
+        //    return qObjAndBuilder.ToArray();
+        //}
 
 
     }

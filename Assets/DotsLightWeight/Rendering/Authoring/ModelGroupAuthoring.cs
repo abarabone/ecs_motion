@@ -82,13 +82,13 @@ namespace Abarabone.Model.Authoring
 
             void combineMeshToDictionary_()
             {
-                var qMmtsPerObj =
-                    from model in prefabModels
-                    from obj in model.MeshTopObjects.Value
-                    select obj.QueryMeshMatsTransform_IfHaving()
-                    ;
-                var q = qMmtsPerObj.QueryMeshDataWithDisposingLast();
-                q.ToArray();
+                //var qMmtsPerObj =
+                //    from model in prefabModels
+                //    from obj in model.MeshTopObjects.Value
+                //    select obj.QueryMeshMatsTransform_IfHaving()
+                //    ;
+                //var q = qMmtsPerObj.QueryMeshDataWithDisposingLast();
+                //q.ToArray();
 
                 //var qOfs =
                 //    from model in prefabModels
