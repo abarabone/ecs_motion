@@ -38,8 +38,10 @@ namespace Abarabone.Model.Authoring
 
             public virtual Lazy<GameObject[]> MeshTopObjects => throw new NotImplementedException();
 
-            //public Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> Mmtss { get; }
-            //    = new Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]>(() => this.mmtss);
+
+            public Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> Mmtss { get; }
+                = new Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]>(() => this.mm);
+
             protected virtual (Mesh mesh, Material[] mats, Transform tf)[][] mmtss { get; }
 
             //public virtual void BuildMeshAndAtlasToDictionary(GameObjectConversionSystem gcs, IEnumerable<GameObject> objs) { }

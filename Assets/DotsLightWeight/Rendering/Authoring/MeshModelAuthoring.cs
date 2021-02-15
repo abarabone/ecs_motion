@@ -99,7 +99,7 @@ namespace Abarabone.Particle.Aurthoring
                         var mat = new Material(shader);
                         mat.enableInstancing = true;
                         mat.mainTexture = atlas;
-                        
+
                         const BoneType BoneType = BoneType.TR;
                         const int boneLength = 1;
 
@@ -225,6 +225,12 @@ namespace Abarabone.Particle.Aurthoring
             return qObjAndBuilder.ToArray();
         }
 
+
+        Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> _mmtss = new Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]>(() =>
+        {
+
+        });
+        public override Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> Mmtss = _m
 
         public override Lazy<GameObject[]> MeshTopObjects => new Lazy<GameObject[]>(() =>
         {
