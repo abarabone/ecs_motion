@@ -58,7 +58,7 @@ namespace Abarabone.Particle.Aurthoring
                 var atlasDict = gcs.GetTextureAtlasDictionary();
                 var meshDict = gcs.GetMeshDictionary();
 
-                this.MeshTopObjects.Value.PackTextureToDictionary(atlasDict);
+                this.MeshTopObjects.PackTextureToDictionary(atlasDict);
 
                 combineMeshToDictionary_();
 
@@ -69,18 +69,24 @@ namespace Abarabone.Particle.Aurthoring
 
                 void combineMeshToDictionary_()
                 {
-                    var ofs = this.BuildMeshCombiners(meshDict, atlasDict);
+                    var qMmtsPerObj =
+                        from obj in this.MeshTopObjects
+                        select obj.QueryMeshMatsTransform_IfHaving()
+                        ;
+                    using var meshAll = qMmtsPerObj.QueryMeshDataWithDisposingLast();
+
+                    var ofs = this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
                     var qMObj = ofs.Select(x => x.obj);
-                    //var qMesh = ofs.Select(x => x.f.ToTask())
-                    //    .WhenAll().Result
-                    //    .Select(x => x.CreateMesh());
-                    var qMesh = ofs.Select(x => x.f().CreateMesh());
+                    var qMesh = ofs.Select(x => x.f.ToTask())
+                        .WhenAll().Result
+                        .Select(x => x.CreateMesh());
+                    //var qMesh = ofs.Select(x => x.f().CreateMesh());
                     meshDict.AddRange(qMObj, qMesh);
                 }
 
                 void createModelEntities_()
                 {
-                    var objs = this.MeshTopObjects.Value;
+                    var objs = this.MeshTopObjects;
 
                     foreach (var obj in objs)
                     {
@@ -170,29 +176,6 @@ namespace Abarabone.Particle.Aurthoring
         }
 
 
-        ///// <summary>
-        ///// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
-        ///// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」のみを対象とする。
-        ///// デフォルトメッシュは結合対象にはならない。
-        ///// またＬＯＤに null を登録した場合は、ルートから検索して最初に発見したメッシュを
-        ///// 加工せずに採用するため、この関数では配列に null を格納して返される。
-        ///// 返される要素数は、 LodOptionalMeshTops.Length と同じ。
-        ///// </summary>
-        //public Func<MeshCombinerElements>[] GetMeshCombineFuncPerObjects()
-        //{
-        //    var qResult = Enumerable.Empty<Func<MeshCombinerElements>>();
-
-        //    if (this.LodOptionalMeshTops.Length == 0) return qResult.ToArray();
-
-        //    return this.LodOptionalMeshTops
-        //        .Select(x => x.objectTop)
-        //        .Select(lod => lod != null
-        //           ? MeshCombiner.BuildNormalMeshElements(lod.ChildrenAndSelf(), this.transform)
-        //           : null
-        //        )
-        //        .ToArray();
-        //}
-
         /// <summary>
         /// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
         /// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」があれば、そちらを対象とする。
@@ -200,169 +183,43 @@ namespace Abarabone.Particle.Aurthoring
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-            (SrcMeshCombinePack meshpack, Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+            (
+                IEnumerable<SrcMeshCombinePack> meshpacks,
+                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
+            )
         {
-            var objs = this.MeshTopObjects.Value
-                .Where(x => !meshDictionary.ContainsKey(x))
-                .ToArray();
-            var mmtss = objs
-                .Select(obj => obj.QueryMeshMatsTransform_IfHaving())
-                .ToArrayRecursive2();
-
             var qObjAndBuilder =
-                from src in (objs, meshpack.AsEnumerable).Zip()
+                from src in (this.MeshTopObjects, meshpacks).Zip()
                 let obj = src.src0
-                let mmts = obj.QueryMeshMatsTransform_IfHaving()
-                let meshes = src.src2
+                let meshes = src.src1.AsEnumerable
+                let mmts =  src.src1.Mmts
                 let atlas = atlasDictionary.objectToAtlas[obj].GetHashCode()
-                let dict = atlasDictionary.texHashToUvRect
+                let texdict = atlasDictionary.texHashToUvRect
+                where !meshDictionary.ContainsKey(obj)
                 select (
                     obj,
                     mmts.BuildCombiner<UI32, PositionNormalUvVertex>
-                        (obj.transform, meshes, part => dict[atlas, part])
+                        (obj.transform, meshes, part => texdict[atlas, part])
                 );
             return qObjAndBuilder.ToArray();
         }
 
 
-        public override Lazy<GameObject[]> MeshTopObjects => new Lazy<GameObject[]>(() =>
+        public override GameObject[] MeshTopObjects
         {
-            var qMain = this.gameObject.WrapEnumerable()
-                .Where(x => this.LodOptionalMeshTops.Length == 0);
+            get
+            {
+                var qMain = this.gameObject.WrapEnumerable()
+                    .Where(x => this.LodOptionalMeshTops.Length == 0);
 
-            var qLod = this.LodOptionalMeshTops
-                .Select(x => x.objectTop ?? this.gameObject);
+                var qLod = this.LodOptionalMeshTops
+                    .Select(x => x.objectTop ?? this.gameObject);
 
-            return qMain.Concat(qLod)
-                .Distinct()
-                .ToArray();
-        });
-
-
-        //public override void BuildMeshAndAtlasToDictionary(GameObjectConversionSystem gcs, IEnumerable<GameObject> objs)
-        //{
-        //    var atlasDict = gcs.GetTextureAtlasDictionary();
-        //    var meshDict = gcs.GetMeshDictionary();
-
-
-        //    var tex = toAtlas_();
-
-        //    if (tex.atlas != null) combineMeshes_(tex);
-
-        //    return;
-
-
-        //    TextureAtlasAndParameter toAtlas_()
-        //    {
-        //        var tobjs = objs
-        //            .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
-        //            //.Logging(x => x.name)
-        //            .ToArray();
-
-        //        if (tobjs.Length == 0) return default;
-
-        //        var qMat =
-        //            from obj in tobjs
-        //            from r in obj.GetComponentsInChildren<Renderer>()
-        //            from mat in r.sharedMaterials
-        //            select mat
-        //            ;
-
-        //        var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
-
-        //        atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-        //        atlasDict.objectToAtlas.AddRange(tobjs, tex.atlas);
-
-        //        return tex;
-        //    }
-
-        //    void combineMeshes_(TextureAtlasAndParameter tex)
-        //    {
-        //        var mobjs = objs
-        //            .Where(x => !meshDict.ContainsKey(x))
-        //            .ToArray();
-        //        var qSrc =
-        //            from obj in mobjs
-        //            let mmt = obj.QueryMeshMatsTransform_IfHaving()
-        //            select (obj, mmt)
-        //            ;
-        //        var srcs = qSrc.ToArray();
-
-        //        var qMeshSingle =
-        //            from src in srcs
-        //            where src.mmt.IsSingle()
-        //            select src.mmt.First().mesh
-        //            ;
-        //        var qMeshSrc =
-        //            from src in srcs
-        //            where !src.mmt.IsSingle()
-        //            select src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, tex).ToTask()
-        //            ;
-        //        var qMesh = qMeshSrc
-        //            .WhenAll().Result
-        //            .Select(x => x.CreateMesh())
-        //            .Concat(qMeshSingle);
-
-        //        meshDict.AddRange(mobjs, qMesh);
-        //    }
-
-        //}
-
-
-        //public TextureAtlasAndParameter ToAtlas
-        //    (TextureAtlasDictionary.Data atlasDict, IEnumerable<GameObject> objs)
-        //{
-        //    var texobjs = objs
-        //        .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
-        //        //.Logging(x => x.name)
-        //        .ToArray();
-
-        //    if (texobjs.Length == 0) return default;
-
-        //    var qMat =
-        //        from obj in texobjs
-        //        from r in obj.GetComponentsInChildren<Renderer>()
-        //        from mat in r.sharedMaterials
-        //        select mat
-        //        ;
-
-        //    var tex = qMat.QueryUniqueTextures().ToAtlasAndParameter();
-
-        //    atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-        //    atlasDict.objectToAtlas.AddRange(texobjs, tex.atlas);
-
-        //    return tex;
-        //}
-
-        //void CombineMesh(TextureAtlasAndParameter tex)
-        //{
-        //    var mobjs = this.QueryMeshTopObjects()
-        //        .Where(x => !meshDict.ContainsKey(x))
-        //        .ToArray();
-        //    var qSrc =
-        //        from obj in mobjs
-        //        let mmt = obj.QueryMeshMatsTransform_IfHaving()
-        //        select (obj, mmt)
-        //        ;
-        //    var srcs = qSrc.ToArray();
-
-        //    var qMeshSingle =
-        //        from src in srcs
-        //        where src.mmt.IsSingle()
-        //        select src.mmt.First().mesh
-        //        ;
-        //    var qMeshSrc =
-        //        from src in srcs
-        //        where !src.mmt.IsSingle()
-        //        select src.mmt.BuildCombiner<UI32, PositionNormalUvVertex>(src.obj.transform, tex).ToTask()
-        //        ;
-        //    var qMesh = qMeshSrc
-        //        .WhenAll().Result
-        //        .Select(x => x.CreateMesh())
-        //        .Concat(qMeshSingle);
-
-        //    meshDict.AddRange(mobjs, qMesh);
-        //}
+                return qMain.Concat(qLod)
+                    .Distinct()
+                    .ToArray();
+            }
+        }
 
     }
 

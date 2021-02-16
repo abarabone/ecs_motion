@@ -110,56 +110,56 @@ namespace Abarabone.Model.Authoring
             void createModelEntity_(GameObjectConversionSystem gcs, Shader shader, Transform[] bones)
             {
 
-                var atlasDict = gcs.GetTextureAtlasDictionary();
-                var meshDict = gcs.GetMeshDictionary();
+                //var atlasDict = gcs.GetTextureAtlasDictionary();
+                //var meshDict = gcs.GetMeshDictionary();
 
-                this.MeshTopObjects.Value.PackTextureToDictionary(atlasDict);
+                //this.MeshTopObjects.PackTextureToDictionary(atlasDict);
 
-                combineMeshToDictionary_();
+                //combineMeshToDictionary_();
 
-                createModelEntities_();
+                //createModelEntities_();
 
-                return;
-
-
-                void combineMeshToDictionary_()
-                {
-                    var ofs = this.BuildMeshCombiners(meshDict, atlasDict);
-                    var qMObj = ofs.Select(x => x.obj);
-                    var qMesh =
-                        from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
-                        select e.CreateMesh()
-                        ;
-                    meshDict.AddRange(qMObj, qMesh);
-                }
-
-                void createModelEntities_()
-                {
-                    var objs = this.MeshTopObjects.Value;
-
-                    foreach (var obj in objs)
-                    {
-                        Debug.Log($"{obj.name} model ent");
-
-                        var mesh = meshDict[obj];
-                        var atlas = atlasDict.objectToAtlas[obj];
-                        createModelEntity_(obj, mesh, atlas);
-                    }
-
-                    return;
+                //return;
 
 
-                    void createModelEntity_(GameObject obj, Mesh mesh, Texture2D atlas)
-                    {
-                        var mat = new Material(shader);
-                        mat.enableInstancing = true;
-                        mat.mainTexture = atlas;
+                //void combineMeshToDictionary_()
+                //{
+                //    var ofs = this.BuildMeshCombiners(meshDict, atlasDict);
+                //    var qMObj = ofs.Select(x => x.obj);
+                //    var qMesh =
+                //        from e in ofs.Select(x => x.f.ToTask()).WhenAll().Result
+                //        select e.CreateMesh()
+                //        ;
+                //    meshDict.AddRange(qMObj, qMesh);
+                //}
 
-                        const BoneType BoneType = BoneType.TR;
+                //void createModelEntities_()
+                //{
+                //    var objs = this.MeshTopObjects.Value;
 
-                        gcs.CreateDrawModelEntityComponents(top, mesh, mat, BoneType, bones.Length);
-                    }
-                }
+                //    foreach (var obj in objs)
+                //    {
+                //        Debug.Log($"{obj.name} model ent");
+
+                //        var mesh = meshDict[obj];
+                //        var atlas = atlasDict.objectToAtlas[obj];
+                //        createModelEntity_(obj, mesh, atlas);
+                //    }
+
+                //    return;
+
+
+                //    void createModelEntity_(GameObject obj, Mesh mesh, Texture2D atlas)
+                //    {
+                //        var mat = new Material(shader);
+                //        mat.enableInstancing = true;
+                //        mat.mainTexture = atlas;
+
+                //        const BoneType BoneType = BoneType.TR;
+
+                //        gcs.CreateDrawModelEntityComponents(top, mesh, mat, BoneType, bones.Length);
+                //    }
+                //}
 
             }
 
@@ -230,9 +230,9 @@ namespace Abarabone.Model.Authoring
 
 
 
-        public override Lazy<GameObject[]> MeshTopObjects => new Lazy<GameObject[]>(() =>
-            new [] { this.gameObject }// 後でLODに対応させよう、とりあえずは単体で
-        );
+        //public override Lazy<GameObject[]> MeshTopObjects => new Lazy<GameObject[]>(() =>
+        //    new [] { this.gameObject }// 後でLODに対応させよう、とりあえずは単体で
+        //);
 
 
 

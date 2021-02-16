@@ -10,7 +10,6 @@ using Unity.Transforms;
 namespace Abarabone.Model.Authoring
 {
     using Abarabone.Geometry;
-    using Abarabone.Draw;
     using Abarabone.Utilities;
     using Abarabone.Common.Extension;
     using Abarabone.Draw.Authoring;
@@ -33,10 +32,13 @@ namespace Abarabone.Model.Authoring
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
             public virtual (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-                (SrcMeshCombinePack meshpack, Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+                (
+                    IEnumerable<SrcMeshCombinePack> meshpacks,
+                    Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
+                )
             { throw new NotImplementedException(); }
 
-            public virtual Lazy<GameObject[]> MeshTopObjects => throw new NotImplementedException();
+            public virtual GameObject[] MeshTopObjects => throw new NotImplementedException();
 
 
             //public Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> Mmtss { get; }
@@ -68,7 +70,7 @@ namespace Abarabone.Model.Authoring
             var prefabModels = this.ModelPrefabs.Distinct();
 
             prefabModels
-                .SelectMany(model => model.MeshTopObjects.Value)
+                .SelectMany(model => model.MeshTopObjects)
                 .PackTextureToDictionary(atlasDict);
 
             combineMeshToDictionary_();
@@ -82,24 +84,27 @@ namespace Abarabone.Model.Authoring
 
             void combineMeshToDictionary_()
             {
-                //var qMmtsPerObj =
-                //    from model in prefabModels
-                //    from obj in model.MeshTopObjects.Value
-                //    select obj.QueryMeshMatsTransform_IfHaving()
-                //    ;
-                //var q = qMmtsPerObj.QueryMeshDataWithDisposingLast();
-                //q.ToArray();
+                var qMmtssPerObj =
+                    from model in prefabModels
+                    select
+                        from obj in model.MeshTopObjects
+                        select obj.QueryMeshMatsTransform_IfHaving()
+                    ;
+                using var meshAll = qMmtssPerObj.QueryMeshDataWithDisposingLast();
 
-                //var qOfs =
-                //    from model in prefabModels
-                //    select model.BuildMeshCombiners(meshDict, atlasDict);
-                //var ofss = qOfs.ToArray();
-                //var qMObj = ofss.SelectMany().Select(of => of.obj);
-                //var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())
-                //    .WhenAll().Result
-                //    .Select(t => t.CreateMesh());
-                ////var qMesh = ofss.SelectMany().Select(of => of.f().CreateMesh());
-                //meshDict.AddRange(qMObj, qMesh);
+                var qOfs =
+                    from x in (prefabModels, meshAll.AsEnumerable).Zip()
+                    let model = x.src0
+                    let meshes = x.src1
+                    select model.BuildMeshCombiners(meshes, meshDict, atlasDict)
+                    ;
+                var ofss = qOfs.ToArray();
+                var qMObj = ofss.SelectMany().Select(of => of.obj);
+                var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())
+                    .WhenAll().Result
+                    .Select(t => t.CreateMesh());
+                //var qMesh = ofss.SelectMany().Select(of => of.f().CreateMesh());
+                meshDict.AddRange(qMObj, qMesh);
             }
         }
         
