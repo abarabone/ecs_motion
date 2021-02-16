@@ -33,7 +33,7 @@ namespace Abarabone.Model.Authoring
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
             public virtual (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-                (Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+                (SrcMeshCombinePack meshpack, Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
             { throw new NotImplementedException(); }
 
             public virtual Lazy<GameObject[]> MeshTopObjects => throw new NotImplementedException();
@@ -42,7 +42,7 @@ namespace Abarabone.Model.Authoring
             //public Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> Mmtss { get; }
             //    = new Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]>(() => this.mm);
 
-            //protected virtual (Mesh mesh, Material[] mats, Transform tf)[][] mmtss { get; }
+            //protected virtual (Mesh mesh, Material[] mats, Transform tf)[][] Mmtss => throw new NotImplementedException();
 
             //public virtual void BuildMeshAndAtlasToDictionary(GameObjectConversionSystem gcs, IEnumerable<GameObject> objs) { }
         }

@@ -200,7 +200,7 @@ namespace Abarabone.Particle.Aurthoring
         /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
         /// </summary>
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-            (IEnumerable<IEnumerable<>>, Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+            (SrcMeshCombinePack meshpack, Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
             var objs = this.MeshTopObjects.Value
                 .Where(x => !meshDictionary.ContainsKey(x))
@@ -208,24 +208,20 @@ namespace Abarabone.Particle.Aurthoring
             var mmtss = objs
                 .Select(obj => obj.QueryMeshMatsTransform_IfHaving())
                 .ToArrayRecursive2();
-            var (d, qMeshData) = mmtss.WrapEnumerable().QueryMeshDataWithDisposingLast();
-            using (d)
-            {
-                var qObjAndBuilder =
-                    from qm in qMeshData
-                    from src in (objs, mmtss, qm).Zip()
-                    let obj = src.src0
-                    let mmts = src.src1
-                    let meshes = src.src2
-                    let atlas = atlasDictionary.objectToAtlas[obj].GetHashCode()
-                    let dict = atlasDictionary.texHashToUvRect
-                    select (
-                        obj,
-                        mmts.BuildCombiner<UI32, PositionNormalUvVertex>
-                            (obj.transform, meshes, part => dict[atlas, part])
-                    );
-                return qObjAndBuilder.ToArray();
-            }
+
+            var qObjAndBuilder =
+                from src in (objs, meshpack.AsEnumerable).Zip()
+                let obj = src.src0
+                let mmts = obj.QueryMeshMatsTransform_IfHaving()
+                let meshes = src.src2
+                let atlas = atlasDictionary.objectToAtlas[obj].GetHashCode()
+                let dict = atlasDictionary.texHashToUvRect
+                select (
+                    obj,
+                    mmts.BuildCombiner<UI32, PositionNormalUvVertex>
+                        (obj.transform, meshes, part => dict[atlas, part])
+                );
+            return qObjAndBuilder.ToArray();
         }
 
 

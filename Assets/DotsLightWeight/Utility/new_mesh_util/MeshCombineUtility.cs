@@ -18,6 +18,26 @@ namespace Abarabone.Geometry
     using Abarabone.Geometry.inner;
     using Abarabone.Geometry.inner.unit;
 
+    public struct srcMeshAll : IDisposable
+    {
+        public srcMeshAll(Mesh.MeshDataArray marr, IEnumerable<IEnumerable<SrcMeshCombinePack>> e)
+        {
+            this.marr = marr;
+            this.AsEnumerable = e;
+        }
+        Mesh.MeshDataArray marr;
+        public IEnumerable<IEnumerable<SrcMeshCombinePack>> AsEnumerable { get; private set; }
+        public void Dispose() => this.marr.Dispose();
+    }
+    public struct SrcMeshCombinePack
+    {
+        public SrcMeshCombinePack(IEnumerable<SrcMeshUnit> e)
+        {
+            this.AsEnumerable = e;
+        }
+        public IEnumerable<SrcMeshUnit> AsEnumerable { get; private set; }
+    }
+
     public static class MeshCombineUtility
     {
 
@@ -162,19 +182,7 @@ namespace Abarabone.Geometry
         //    mmtss.WrapEnumerable().QueryMeshDataWithDisposingLast().First();
 
 
-        public struct aaa : IDisposable
-        {
-            public aaa(Mesh.MeshDataArray marr, IEnumerable<IEnumerable<IEnumerable<SrcMeshUnit>>> e)
-            {
-                this.marr = marr;
-                this.AsEnumerable = e;
-            }
-            Mesh.MeshDataArray marr;
-            public IEnumerable<IEnumerable<IEnumerable<SrcMeshUnit>>> AsEnumerable { get; private set; }
-            public void Dispose() => this.marr.Dispose();
-        }
-
-        public static aaa QueryMeshDataWithDisposingLast
+        public static srcMeshAll QueryMeshDataWithDisposingLast
             (this IEnumerable<IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>>> mmtsss)
         {
             var meshes = mmtsss.SelectMany().SelectMany().Select(x => x.mesh).ToArray();
@@ -186,7 +194,8 @@ namespace Abarabone.Geometry
                 select //queryInModel_(mmtss)
                     from mmts in mmtss
                     let len = mmts.Count()
-                    select queryMesh_(imesh, len)
+                    let meshs = queryMesh_(imesh, len)
+                    select new SrcMeshCombinePack( meshes )
                 ;
 
             return new aaa(mesharr, q);// query_());
