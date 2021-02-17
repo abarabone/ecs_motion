@@ -58,7 +58,7 @@ namespace Abarabone.Particle.Aurthoring
                 var atlasDict = gcs.GetTextureAtlasDictionary();
                 var meshDict = gcs.GetMeshDictionary();
 
-                this.MeshTopObjects.PackTextureToDictionary(atlasDict);
+                this.OmmtsEnumerable().Objs().PackTextureToDictionary(atlasDict);
 
                 combineMeshToDictionary_();
 
@@ -69,11 +69,7 @@ namespace Abarabone.Particle.Aurthoring
 
                 void combineMeshToDictionary_()
                 {
-                    var qMmtsPerObj =
-                        from obj in this.MeshTopObjects
-                        select obj.QueryMeshMatsTransform_IfHaving()
-                        ;
-                    using var meshAll = qMmtsPerObj.QueryMeshDataWithDisposingLast();
+                    using var meshAll = this.OmmtsEnumerable().QueryMeshDataWithDisposingLast();
 
                     var ofs = this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
                     var qMObj = ofs.Select(x => x.obj);
@@ -86,9 +82,9 @@ namespace Abarabone.Particle.Aurthoring
 
                 void createModelEntities_()
                 {
-                    var objs = this.MeshTopObjects;
+                    var qObj = this.OmmtsEnumerable().Objs();
 
-                    foreach (var obj in objs)
+                    foreach (var obj in qObj)
                     {
                         Debug.Log($"{obj.name} model ent");
 
@@ -189,36 +185,45 @@ namespace Abarabone.Particle.Aurthoring
             )
         {
             var qObjAndBuilder =
-                from src in (this.MeshTopObjects, meshpacks).Zip()
-                let obj = src.src0
-                let meshes = src.src1.AsEnumerable
-                let mmts =  src.src1.Mmts
+                from src in meshpacks
+                let meshes = src.AsEnumerable
+                let obj = src.Ommts.obj
+                let mmts =  src.Ommts.mmts
                 let atlas = atlasDictionary.objectToAtlas[obj].GetHashCode()
                 let texdict = atlasDictionary.texHashToUvRect
                 where !meshDictionary.ContainsKey(obj)
                 select (
                     obj,
-                    mmts.BuildCombiner<UI32, PositionNormalUvVertex>
-                        (obj.transform, meshes, part => texdict[atlas, part])
+                    //mmts.BuildCombiner<UI32, PositionNormalUvVertex>
+                    //    (obj.transform, meshes, part => texdict[atlas, part])
+                    src.build
                 );
             return qObjAndBuilder.ToArray();
         }
 
 
-        public override GameObject[] MeshTopObjects
+
+        IEnumerable<ObjectAndMmts> _ommtss = null;
+
+        public override IEnumerable<ObjectAndMmts> OmmtsEnumerable()
         {
-            get
-            {
-                var qMain = this.gameObject.WrapEnumerable()
-                    .Where(x => this.LodOptionalMeshTops.Length == 0);
+            var qMain = this.gameObject.WrapEnumerable()
+                .Where(x => this.LodOptionalMeshTops.Length == 0);
 
-                var qLod = this.LodOptionalMeshTops
-                    .Select(x => x.objectTop ?? this.gameObject);
+            var qLod = this.LodOptionalMeshTops
+                .Select(x => x.objectTop ?? this.gameObject);
 
-                return qMain.Concat(qLod)
-                    .Distinct()
-                    .ToArray();
-            }
+            var objs = qMain.Concat(qLod)
+                .Distinct()
+                .ToArray();
+
+            return this._ommtss ??=
+                from obj in objs
+                select new ObjectAndMmts
+                {
+                    obj = obj,
+                    mmts = obj.QueryMeshMatsTransform_IfHaving().ToArray(),
+                };
         }
 
     }

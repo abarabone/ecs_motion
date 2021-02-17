@@ -38,15 +38,9 @@ namespace Abarabone.Model.Authoring
                 )
             { throw new NotImplementedException(); }
 
-            public virtual GameObject[] MeshTopObjects => throw new NotImplementedException();
+            public virtual IEnumerable<ObjectAndMmts> OmmtsEnumerable()
+                { throw new NotImplementedException(); }
 
-
-            //public Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]> Mmtss { get; }
-            //    = new Lazy<(Mesh mesh, Material[] mats, Transform tf)[][]>(() => this.mm);
-
-            //protected virtual (Mesh mesh, Material[] mats, Transform tf)[][] Mmtss => throw new NotImplementedException();
-
-            //public virtual void BuildMeshAndAtlasToDictionary(GameObjectConversionSystem gcs, IEnumerable<GameObject> objs) { }
         }
 
 
@@ -70,7 +64,7 @@ namespace Abarabone.Model.Authoring
             var prefabModels = this.ModelPrefabs.Distinct();
 
             prefabModels
-                .SelectMany(model => model.MeshTopObjects)
+                .SelectMany(model => model.OmmtsEnumerable().Objs())
                 .PackTextureToDictionary(atlasDict);
 
             combineMeshToDictionary_();
@@ -84,12 +78,7 @@ namespace Abarabone.Model.Authoring
 
             void combineMeshToDictionary_()
             {
-                var qMmtssPerObj =
-                    from model in prefabModels
-                    select
-                        from obj in model.MeshTopObjects
-                        select obj.QueryMeshMatsTransform_IfHaving()
-                    ;
+                var qMmtssPerObj = prefabModels.Select(model => model.OmmtsEnumerable());
                 using var meshAll = qMmtssPerObj.QueryMeshDataWithDisposingLast();
 
                 var qOfs =
