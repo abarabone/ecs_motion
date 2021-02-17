@@ -19,80 +19,23 @@ namespace Abarabone.Geometry
     using Abarabone.Geometry.inner.unit;
 
 
-    public struct ObjectAndMmts
-    {
-        public GameObject obj;
-        public (Mesh mesh, Material[] mats, Transform tf)[] mmts;
-    }
-
-    public struct srcMeshFromAllModel : IDisposable
-    {
-        public srcMeshFromAllModel
-            (Mesh.MeshDataArray marr, IEnumerable<IEnumerable<SrcMeshCombinePack>> e)
-        {
-            this.marr = marr;
-            this.AsEnumerable = e;
-        }
-        Mesh.MeshDataArray marr;
-        public IEnumerable<IEnumerable<SrcMeshCombinePack>> AsEnumerable { get; private set; }
-        public void Dispose() => this.marr.Dispose();
-    }
-
-    public struct srcMeshFromSingleModel : IDisposable
-    {
-        public srcMeshFromSingleModel
-            (Mesh.MeshDataArray marr, IEnumerable<SrcMeshCombinePack> e)
-        {
-            this.marr = marr;
-            this.AsEnumerable = e;
-        }
-        Mesh.MeshDataArray marr;
-        public IEnumerable<SrcMeshCombinePack> AsEnumerable { get; private set; }
-        public void Dispose() => this.marr.Dispose();
-    }
-
-
-    public struct SrcMeshCombinePack
-    {
-        public SrcMeshCombinePack(IEnumerable<SrcMeshUnit> e, ObjectAndMmts ommts)
-        {
-            this.AsEnumerable = e;
-            //this.Ommts = ommts;
-            this.Mmts = ommts.mmts;
-            this.Obj = ommts.obj;
-        }
-        public IEnumerable<SrcMeshUnit> AsEnumerable { get; private set; }
-        //public ObjectAndMmts Ommts { get; private set; }
-        public GameObject Obj { get; private set; }
-        public (Mesh mesh, Material[] mats, Transform tf)[] Mmts { get; private set; }
-    }
-
 
     public static class MeshCombineUtility
     {
 
 
-        public static IEnumerable<GameObject> Objs(this IEnumerable<ObjectAndMmts> ommtss) =>
-            ommtss.Select(x => x.obj);
-
-
-
         public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>
             (
-                //this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
                 this SrcMeshCombinePack srcmeshpack,
-                //Transform tfBase,
-                //IEnumerable<SrcMeshUnit> srcmeshes,
                 Func<int, Rect> texHashToUvRectFunc = null,
                 Transform[] tfBones = null
             )
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
             where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         {
-            //var p = mmts.calculateParameters(tfBase, texHashToUvRectFunc, tfBones);
-            var p = srcmeshpack.Mmts.calculateParameters(srcmeshpack.Obj.transform, texHashToUvRectFunc, tfBones);
+            var p = srcmeshpack.mmts.calculateParameters(srcmeshpack.obj.transform, texHashToUvRectFunc, tfBones);
 
-            return () => new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable(), p);
+            return () => new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable, p);
         }
 
 
@@ -109,70 +52,6 @@ namespace Abarabone.Geometry
         public static Task<IMeshElements> ToTask(this Func<IMeshElements> f)
         =>
             Task.Run(f);
-
-
-        public static srcMeshFromAllModel QueryMeshDataWithDisposingLast
-            (this IEnumerable<IEnumerable<ObjectAndMmts>> ommtsss)
-        {
-            var srcmeshes = ommtsss.SelectMany().Select(x => x.mmts).SelectMany().Select(x => x.mesh).ToArray();
-            var mesharr = Mesh.AcquireReadOnlyMeshData(srcmeshes);
-
-            var imesh = 0;
-            var q =
-                from ommtss in ommtsss
-                select
-                    from ommts in ommtss
-                    let len = ommts.mmts.Count()
-                    let meshes = queryMesh_(imesh, len)
-                    select new SrcMeshCombinePack(meshes, ommts)
-                ;
-            return new srcMeshFromAllModel(mesharr, q);
-
-            IEnumerable<SrcMeshUnit> queryMesh_(int first, int length)
-            {
-                var baseVertex = 0;
-
-                for (var i = 0; i < length; i++)
-                {
-                    yield return new SrcMeshUnit(i, mesharr[i + first], baseVertex);
-
-                    baseVertex += mesharr[i].vertexCount;
-                }
-
-                imesh += length;
-            }
-        }
-
-        public static srcMeshFromSingleModel QueryMeshDataWithDisposingLast
-            (this IEnumerable<ObjectAndMmts> ommtss)
-        {
-            var srcmeshes = ommtss.Select(x => x.mmts).SelectMany().Select(x => x.mesh).ToArray();
-            var mesharr = Mesh.AcquireReadOnlyMeshData(srcmeshes);
-
-            var imesh = 0;
-            var q =
-                from ommts in ommtss
-                let len = ommts.mmts.Count()
-                let meshes = queryMesh_(imesh, len)
-                select new SrcMeshCombinePack(meshes, ommts)
-                ;
-            return new srcMeshFromSingleModel(mesharr, q);
-
-            IEnumerable<SrcMeshUnit> queryMesh_(int first, int length)
-            {
-                var baseVertex = 0;
-
-                for (var i = 0; i < length; i++)
-                {
-                    yield return new SrcMeshUnit(i, mesharr[i + first], baseVertex);
-
-                    baseVertex += mesharr[i].vertexCount;
-                }
-
-                imesh += length;
-            }
-        }
-
 
 
 

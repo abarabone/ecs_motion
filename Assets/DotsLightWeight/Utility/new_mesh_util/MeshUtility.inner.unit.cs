@@ -60,11 +60,11 @@ namespace Abarabone.Geometry.inner.unit
     {
         public SrcMeshUnit(int indexInCombined, Mesh.MeshData meshdata, int baseVertex)
         {
-            this.MeshIndex = indexInCombined;
+            //this.MeshIndex = indexInCombined;
             this.MeshData = meshdata;
             this.BaseVertex = baseVertex;
         }
-        public readonly int MeshIndex;
+        //public readonly int MeshIndex;
         public readonly Mesh.MeshData MeshData;
         public readonly int BaseVertex;
     }

@@ -14,6 +14,17 @@ using Abarabone.Misc;
 namespace Abarabone.Common.Extension
 {
 
+
+	public static class ArithmetichExtension
+    {
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int PostAdd(ref this int i, int value) { var res = i; i += value; return res; }
+
+	}
+
+
+
 	public static class LinqExtension
 	{
 

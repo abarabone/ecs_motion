@@ -38,8 +38,8 @@ namespace Abarabone.Model.Authoring
                 )
             { throw new NotImplementedException(); }
 
-            public virtual IEnumerable<ObjectAndMmts> OmmtsEnumerable()
-                { throw new NotImplementedException(); }
+            public virtual IEnumerable<ObjectAndMmts> OmmtsEnumerable =>
+                throw new NotImplementedException();
 
         }
 
@@ -64,7 +64,7 @@ namespace Abarabone.Model.Authoring
             var prefabModels = this.ModelPrefabs.Distinct();
 
             prefabModels
-                .SelectMany(model => model.OmmtsEnumerable().Objs())
+                .SelectMany(model => model.OmmtsEnumerable.Objs())
                 .PackTextureToDictionary(atlasDict);
 
             combineMeshToDictionary_();
@@ -78,8 +78,8 @@ namespace Abarabone.Model.Authoring
 
             void combineMeshToDictionary_()
             {
-                var qMmtssPerObj = prefabModels.Select(model => model.OmmtsEnumerable());
-                using var meshAll = qMmtssPerObj.QueryMeshDataWithDisposingLast();
+                var qOmmtssPerModel = prefabModels.Select(model => model.OmmtsEnumerable);
+                using var meshAll = qOmmtssPerModel.QueryMeshDataWithDisposingLast();
 
                 var qOfs =
                     from x in (prefabModels, meshAll.AsEnumerable).Zip()
@@ -101,7 +101,7 @@ namespace Abarabone.Model.Authoring
     }
 
 
-    static public class aaa
+    static public class ModelGroupTexturePackingUtility
     {
 
         static public void PackTextureToDictionary
