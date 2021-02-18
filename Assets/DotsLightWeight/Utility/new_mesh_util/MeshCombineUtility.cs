@@ -28,12 +28,15 @@ namespace Abarabone.Geometry
             (
                 this SrcMeshCombinePack srcmeshpack,
                 Func<int, Rect> texHashToUvRectFunc = null,
-                Transform[] tfBones = null
+                Transform[] tfBones = null,
+                Transform tfRoot = null
             )
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
             where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         {
-            var p = srcmeshpack.mmts.calculateParameters(srcmeshpack.obj.transform, texHashToUvRectFunc, tfBones);
+            var tf = tfRoot ?? srcmeshpack.obj.transform;
+
+            var p = srcmeshpack.mmts.calculateParameters(tf, texHashToUvRectFunc, tfBones);
 
             return () => new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable, p);
         }

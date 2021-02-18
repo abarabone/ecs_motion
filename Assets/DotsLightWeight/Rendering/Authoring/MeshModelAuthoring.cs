@@ -186,9 +186,9 @@ namespace Abarabone.Particle.Aurthoring
         {
             var qObjAndBuilder =
                 from src in meshpacks
+                where !meshDictionary.ContainsKey(src.obj)
                 let atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode()
                 let texdict = atlasDictionary.texHashToUvRect
-                where !meshDictionary.ContainsKey(src.obj)
                 select (
                     src.obj,
                     src.BuildCombiner<UI32, PositionNormalUvVertex>(part => texdict[atlas, part])

@@ -58,47 +58,113 @@ namespace Abarabone.Structure.Authoring
         }
 
 
-        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetFarMeshAndFunc()
+        //public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetFarMeshAndFunc()
+        //{
+        //    var top = this.gameObject;
+        //    var far = this.FarMeshObject.objectTop;
+
+        //    var children = far
+        //        .DescendantsAndSelf()
+        //        .Where(child => child.GetComponent<MeshFilter>() != null)
+        //        .ToArray();
+
+        //    var isFarSingle = children.Length == 1 && isSameTransform_(children.First(), far);
+
+        //    var f = !isFarSingle
+        //        ? MeshCombiner.BuildNormalMeshElements(children, top.transform)
+        //        : null;
+        //        //far.transform) : null;//
+
+        //    var mesh = isFarSingle
+        //        ? children.First().GetComponent<MeshFilter>().sharedMesh
+        //        : null;
+
+        //    Debug.Log($"far {far.name} {children.Length} {isFarSingle}");
+        //    return (far, f, mesh);
+
+
+        //    bool isSameTransform_(GameObject target_, GameObject top_) =>
+        //        (target_.transform.localToWorldMatrix * top_.transform.worldToLocalMatrix).isIdentity;
+        //}
+
+        //public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetNearMeshFunc()
+        //{
+        //    var top = this.gameObject;
+        //    var near = this.NearMeshObject.objectTop;
+
+        //    var objects = near.DescendantsAndSelf();
+
+        //    var f = MeshCombiner.BuildStructureMeshElements(objects, top.transform);//near.transform);//
+
+        //    Debug.Log($"near {near.name}");
+        //    return (near, f, null);
+        //}
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
+            (
+                IEnumerable<SrcMeshCombinePack> meshpacks,
+                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
+            )
         {
-            var top = this.gameObject;
-            var far = this.FarMeshObject.objectTop;
+            var tfTop = this.gameObject.transform;
 
-            var children = far
-                .DescendantsAndSelf()
-                .Where(child => child.GetComponent<MeshFilter>() != null)
-                .ToArray();
+            var far = build_<UI32, PositionNormalUvVertex>(meshpacks.ElementAt(0));
+            var near = build_<UI32, PositionNormalUvVertex>(meshpacks.ElementAt(1));
 
-            var isFarSingle = children.Length == 1 && isSameTransform_(children.First(), far);
+            var dstlist = new List<(GameObject obj, Func<IMeshElements> f)>();
+            if (far != default) dstlist.Add(far);
+            if (near != default) dstlist.Add(near);
 
-            var f = !isFarSingle
-                ? MeshCombiner.BuildNormalMeshElements(children, top.transform)
-                : null;
-                //far.transform) : null;//
-
-            var mesh = isFarSingle
-                ? children.First().GetComponent<MeshFilter>().sharedMesh
-                : null;
-
-            Debug.Log($"far {far.name} {children.Length} {isFarSingle}");
-            return (far, f, mesh);
+            return dstlist.ToArray();
 
 
-            bool isSameTransform_(GameObject target_, GameObject top_) =>
-                (target_.transform.localToWorldMatrix * top_.transform.worldToLocalMatrix).isIdentity;
+            (GameObject obj, Func<IMeshElements> f) build_<TIdx, TVtx>(SrcMeshCombinePack src)
+                where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+                where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+            {
+                if (!meshDictionary.ContainsKey(src.obj)) return default;
+
+                var atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode();
+                var texdict = atlasDictionary.texHashToUvRect;
+                return (
+                    src.obj,
+                    src.BuildCombiner<TIdx, TVtx>(part => texdict[atlas, part], null, tfTop)
+                );
+            }
         }
 
-        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetNearMeshFunc()
+
+
+        IEnumerable<ObjectAndMmts> _ommtss = null;
+
+        public override IEnumerable<ObjectAndMmts> OmmtsEnumerable => this._ommtss ??=
+            from obj in this.combineTargetObjects().ToArray()
+            select new ObjectAndMmts
+            {
+                obj = obj,
+                mmts = obj.QueryMeshMatsTransform_IfHaving().ToArray(),
+            };
+
+        IEnumerable<GameObject> combineTargetObjects()
         {
-            var top = this.gameObject;
+            var far = this.FarMeshObject.objectTop;
             var near = this.NearMeshObject.objectTop;
 
-            var objects = near.DescendantsAndSelf();
-
-            var f = MeshCombiner.BuildStructureMeshElements(objects, top.transform);//near.transform);//
-
-            Debug.Log($"near {near.name}");
-            return (near, f, null);
+            return new [] { far, near };
         }
+
+
     }
 
     static public class StructureConvertUtility
@@ -280,6 +346,7 @@ namespace Abarabone.Structure.Authoring
 
             gcs.InitBoneEntities(parent, qPart, root, EnBoneType.jobs_per_depth);
         }
+
 
     }
 }
