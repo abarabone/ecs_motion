@@ -33,7 +33,7 @@ namespace Abarabone.Model.Authoring
         {
             public virtual (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
                 (
-                    IEnumerable<SrcMeshCombinePack> meshpacks,
+                    IEnumerable<SrcMeshesModelCombinePack> meshpacks,
                     Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
                 )
             { throw new NotImplementedException(); }
@@ -79,7 +79,7 @@ namespace Abarabone.Model.Authoring
             void combineMeshToDictionary_()
             {
                 var qOmmtssPerModel = prefabModels.Select(model => model.OmmtsEnumerable);
-                using var meshAll = qOmmtssPerModel.QueryMeshDataWithDisposingLast();
+                using var meshAll = qOmmtssPerModel.QueryMeshDataFromModelGroup();
 
                 var qOfs =
                     from x in (prefabModels, meshAll.AsEnumerable).Zip()

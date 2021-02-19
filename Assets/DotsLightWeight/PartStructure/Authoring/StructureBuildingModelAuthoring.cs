@@ -118,11 +118,11 @@ namespace Abarabone.Structure.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            createModelEntities_(conversionSystem, this.ShaderToDraw, this.LodOptionalMeshTops);
+            //createModelEntities_(conversionSystem, this.ShaderToDraw, this.LodOptionalMeshTops);
 
-            var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
+            //var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
 
-            conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.LodOptionalMeshTops);
+            //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.LodOptionalMeshTops);
 
             return;
 
@@ -145,7 +145,7 @@ namespace Abarabone.Structure.Authoring
 
                 void combineMeshToDictionary_()
                 {
-                    using var meshAll = this.OmmtsEnumerable.QueryMeshDataWithDisposingLast();
+                    using var meshAll = this.OmmtsEnumerable.QueryMeshDataFromModel();
 
                     var ofs = this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
                     var qMObj = ofs.Select(x => x.obj);
@@ -194,7 +194,7 @@ namespace Abarabone.Structure.Authoring
         /// </summary>
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
             (
-                IEnumerable<SrcMeshCombinePack> meshpacks,
+                IEnumerable<SrcMeshesModelCombinePack> meshpacks,
                 Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
             )
         {
@@ -210,7 +210,7 @@ namespace Abarabone.Structure.Authoring
             return dstlist.ToArray();
 
 
-            (GameObject obj, Func<IMeshElements> f) build_<TIdx, TVtx>(SrcMeshCombinePack src)
+            (GameObject obj, Func<IMeshElements> f) build_<TIdx, TVtx>(SrcMeshesModelCombinePack src)
                 where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
                 where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
             {

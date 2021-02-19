@@ -26,7 +26,7 @@ namespace Abarabone.Geometry
 
         public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>
             (
-                this SrcMeshCombinePack srcmeshpack,
+                this SrcMeshesModelCombinePack srcmeshpack,
                 Func<int, Rect> texHashToUvRectFunc = null,
                 Transform[] tfBones = null,
                 Transform tfRoot = null
