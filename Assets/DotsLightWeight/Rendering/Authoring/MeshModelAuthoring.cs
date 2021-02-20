@@ -36,6 +36,9 @@ namespace Abarabone.Particle.Aurthoring
         public ObjectAndDistance[] LodOptionalMeshTops;
 
 
+        [SerializeReference]
+        public 
+
         /// <summary>
         /// 
         /// </summary>
@@ -220,6 +223,108 @@ namespace Abarabone.Particle.Aurthoring
                 .Distinct();
         }
 
+
     }
 
-}
+
+    public interface IMeshModel
+    {
+
+        void createModelEntity_(Mesh mesh, Texture2D atlas);
+    }
+
+    public class LodMeshModel<TIdx, TVtx> : IMeshModel
+        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+    {
+
+        public GameObject Obj;
+
+        public float Distance;
+
+        public Shader shader;
+
+
+        public void createModelEntity_(Mesh mesh, Texture2D atlas)
+        {
+            var mat = new Material(shader);
+            mat.enableInstancing = true;
+            mat.mainTexture = atlas;
+
+            const BoneType BoneType = BoneType.TR;
+            const int boneLength = 1;
+
+            //gcs.CreateDrawModelEntityComponents(obj, mesh, mat, BoneType, boneLength);
+        }
+    }
+
+
+    public static class aaa
+    {
+
+        public static (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
+            (
+                SrcMeshCombinePack meshpack,
+                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary,
+                Transform[] tfBones = null, Transform tfRoot = null
+            )
+        {
+            var src = meshpack;
+
+            if (!meshDictionary.ContainsKey(src.obj)) return default;
+
+            var atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode();
+            var texdict = atlasDictionary.texHashToUvRect;
+            return (
+                src.obj,
+                src.BuildCombiner<TIdx, TVtx>(part => texdict[atlas, part], tfBones, tfRoot)
+            );
+        }
+
+
+
+        static void createModelEntities_
+            (GameObjectConversionSystem gcs, Shader shader, ObjectAndDistance[] lodOpts)
+        {
+
+            var atlasDict = gcs.GetTextureAtlasDictionary();
+            var meshDict = gcs.GetMeshDictionary();
+
+            this.OmmtsEnumerable.Objs().PackTextureToDictionary(atlasDict);
+
+            combineMeshToDictionary_();
+
+            createModelEntities_();
+
+            return;
+
+
+            void combineMeshToDictionary_()
+            {
+                using var meshAll = this.OmmtsEnumerable.QueryMeshDataWithDisposingLast();
+
+                var ofs = this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
+                var qMObj = ofs.Select(x => x.obj);
+                var qMesh = ofs.Select(x => x.f.ToTask())
+                    .WhenAll().Result
+                    .Select(x => x.CreateMesh());
+                //var qMesh = ofs.Select(x => x.f().CreateMesh());
+                meshDict.AddRange(qMObj, qMesh);
+            }
+
+            void createModelEntities_()
+            {
+                var qObj = this.OmmtsEnumerable.Objs();
+
+                foreach (var obj in qObj)
+                {
+                    Debug.Log($"{obj.name} model ent");
+
+                    var mesh = meshDict[obj];
+                    var atlas = atlasDict.objectToAtlas[obj];
+                    createModelEntity_(obj, mesh, atlas);
+                }
+            }
+
+        }
+    }

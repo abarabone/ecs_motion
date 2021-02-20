@@ -12,29 +12,29 @@ using Unity.Linq;
 
 namespace Abarabone.Structure.Authoring
 {
-    //using Abarabone.Model;
-    //using Abarabone.Draw;
-    //using Abarabone.Model.Authoring;
-    //using Abarabone.Draw.Authoring;
-    //using Abarabone.Geometry;
-    //using Abarabone.Structure.Authoring;
-    //using Abarabone.Character;//ObjectMain はここにある、名前変えるべきか？
-
-    //using Abarabone.Common.Extension;
-    //using Abarabone.Structure;
-    //using Unity.Entities.UniversalDelegates;
-    //using Unity.Properties;
-    //using System.CodeDom;
-
     using Abarabone.Model;
     using Abarabone.Draw;
     using Abarabone.Model.Authoring;
     using Abarabone.Draw.Authoring;
     using Abarabone.Geometry;
     using Abarabone.Structure.Authoring;
-    using Abarabone.Utilities;
+    using Abarabone.Character;//ObjectMain はここにある、名前変えるべきか？
+
     using Abarabone.Common.Extension;
-    using Abarabone.Misc;
+    using Abarabone.Structure;
+    using Unity.Entities.UniversalDelegates;
+    using Unity.Properties;
+    using System.CodeDom;
+
+    //using Abarabone.Model;
+    //using Abarabone.Draw;
+    //using Abarabone.Model.Authoring;
+    //using Abarabone.Draw.Authoring;
+    //using Abarabone.Geometry;
+    //using Abarabone.Structure.Authoring;
+    using Abarabone.Utilities;
+    //using Abarabone.Common.Extension;
+    //using Abarabone.Misc;
 
 
     /// <summary>
@@ -118,13 +118,13 @@ namespace Abarabone.Structure.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            createModelEntities_(conversionSystem, this.ShaderToDraw, this.LodOptionalMeshTops);
+            //createModelEntities_(conversionSystem, this.ShaderToDraw, this.LodOptionalMeshTops);
 
-            var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
+            //var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
 
-            conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.LodOptionalMeshTops);
+            //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.LodOptionalMeshTops);
 
-            return;
+            //return;
 
 
             void createModelEntities_
