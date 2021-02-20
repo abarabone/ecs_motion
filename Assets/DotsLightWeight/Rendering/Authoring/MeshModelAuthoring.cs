@@ -72,7 +72,7 @@ namespace Abarabone.Particle.Aurthoring
 
                 void combineMeshToDictionary_()
                 {
-                    using var meshAll = this.OmmtsEnumerable.QueryMeshDataWithDisposingLast();
+                    using var meshAll = this.OmmtsEnumerable.QueryMeshDataFromModel();
 
                     var ofs = this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
                     var qMObj = ofs.Select(x => x.obj);
@@ -183,7 +183,7 @@ namespace Abarabone.Particle.Aurthoring
         /// </summary>
         public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
             (
-                IEnumerable<SrcMeshCombinePack> meshpacks,
+                IEnumerable<SrcMeshesModelCombinePack> meshpacks,
                 Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
             )
         {

@@ -20,37 +20,37 @@ namespace Abarabone.Geometry
 
 
 
-    public struct srcMeshFromAllModel : IDisposable
+    public struct srcMeshDataFromModelGroup : IDisposable
     {
-        public srcMeshFromAllModel
-            (Mesh.MeshDataArray marr, IEnumerable<IEnumerable<SrcMeshCombinePack>> e)
+        public srcMeshDataFromModelGroup
+            (Mesh.MeshDataArray marr, IEnumerable<IEnumerable<SrcMeshesModelCombinePack>> e)
         {
             this.marr = marr;
             this.AsEnumerable = e;
         }
         Mesh.MeshDataArray marr;
-        public IEnumerable<IEnumerable<SrcMeshCombinePack>> AsEnumerable { get; private set; }
+        public IEnumerable<IEnumerable<SrcMeshesModelCombinePack>> AsEnumerable { get; private set; }
         public void Dispose() => this.marr.Dispose();
     }
 
-    public struct srcMeshFromSingleModel : IDisposable
+    public struct srcMeshDataFromModel : IDisposable
     {
-        public srcMeshFromSingleModel
-            (Mesh.MeshDataArray marr, IEnumerable<SrcMeshCombinePack> e)
+        public srcMeshDataFromModel
+            (Mesh.MeshDataArray marr, IEnumerable<SrcMeshesModelCombinePack> e)
         {
             this.marr = marr;
             this.AsEnumerable = e;
         }
         Mesh.MeshDataArray marr;
-        public IEnumerable<SrcMeshCombinePack> AsEnumerable { get; private set; }
+        public IEnumerable<SrcMeshesModelCombinePack> AsEnumerable { get; private set; }
         public void Dispose() => this.marr.Dispose();
     }
 
 
 
-    public struct SrcMeshCombinePack
+    public struct SrcMeshesModelCombinePack
     {
-        public SrcMeshCombinePack(IEnumerable<SrcMeshUnit> e, ObjectAndMmts ommts)
+        public SrcMeshesModelCombinePack(IEnumerable<SrcMeshUnit> e, ObjectAndMmts ommts)
         {
             this.AsEnumerable = e;
             this.mmts = ommts.mmts;
@@ -72,7 +72,7 @@ namespace Abarabone.Geometry
     public static class MeshQueryUtility
     {
 
-        public static srcMeshFromAllModel QueryMeshDataWithDisposingLast
+        public static srcMeshDataFromModelGroup QueryMeshDataFromModelGroup
             (this IEnumerable<IEnumerable<ObjectAndMmts>> ommtsss)
         {
             var srcmeshes = ommtsss.SelectMany().Select(x => x.mmts).SelectMany().Select(x => x.mesh).ToArray();
@@ -85,9 +85,9 @@ namespace Abarabone.Geometry
                     from ommts in ommtss
                     let len = ommts.mmts.Count()
                     let meshes = queryMesh_(imesh.PostAdd(len), len)
-                    select new SrcMeshCombinePack(meshes, ommts)
+                    select new SrcMeshesModelCombinePack(meshes, ommts)
                 ;
-            return new srcMeshFromAllModel(mesharr, q);
+            return new srcMeshDataFromModelGroup(mesharr, q);
 
             IEnumerable<SrcMeshUnit> queryMesh_(int first, int length)
             {
@@ -102,7 +102,7 @@ namespace Abarabone.Geometry
             }
         }
         
-        public static srcMeshFromSingleModel QueryMeshDataWithDisposingLast
+        public static srcMeshDataFromModel QueryMeshDataFromModel
             (this IEnumerable<ObjectAndMmts> ommtss)
         {
             var srcmeshes = ommtss.Select(x => x.mmts).SelectMany().Select(x => x.mesh).ToArray();
@@ -113,9 +113,9 @@ namespace Abarabone.Geometry
                 from ommts in ommtss
                 let len = ommts.mmts.Count()
                 let meshes = queryMesh_(imesh.PostAdd(len), len)
-                select new SrcMeshCombinePack(meshes, ommts)
+                select new SrcMeshesModelCombinePack(meshes, ommts)
                 ;
-            return new srcMeshFromSingleModel(mesharr, q);
+            return new srcMeshDataFromModel(mesharr, q);
 
             IEnumerable<SrcMeshUnit> queryMesh_(int first, int length)
             {
