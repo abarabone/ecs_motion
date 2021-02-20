@@ -36,8 +36,8 @@ namespace Abarabone.Particle.Aurthoring
         public ObjectAndDistance[] LodOptionalMeshTops;
 
 
-        [SerializeReference]
-        public 
+        //[SerializeReference]
+        //public 
 
         /// <summary>
         /// 
@@ -45,7 +45,7 @@ namespace Abarabone.Particle.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            createModelEntities_(conversionSystem, this.ShaderToDraw, this.LodOptionalMeshTops);
+            createModelEntities_(conversionSystem, this.ShaderToDraw);
 
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
 
@@ -55,7 +55,7 @@ namespace Abarabone.Particle.Aurthoring
 
 
             void createModelEntities_
-                (GameObjectConversionSystem gcs, Shader shader, ObjectAndDistance[] lodOpts)
+                (GameObjectConversionSystem gcs, Shader shader)
             {
 
                 var atlasDict = gcs.GetTextureAtlasDictionary();
@@ -264,7 +264,7 @@ namespace Abarabone.Particle.Aurthoring
 
         public static (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
             (
-                SrcMeshCombinePack meshpack,
+                SrcMeshesModelCombinePack meshpack,
                 Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary,
                 Transform[] tfBones = null, Transform tfRoot = null
             )
@@ -301,7 +301,7 @@ namespace Abarabone.Particle.Aurthoring
 
             void combineMeshToDictionary_()
             {
-                using var meshAll = this.OmmtsEnumerable.QueryMeshDataWithDisposingLast();
+                using var meshAll = this.OmmtsEnumerable.QueryMeshDataFromModel();
 
                 var ofs = this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
                 var qMObj = ofs.Select(x => x.obj);
