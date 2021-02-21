@@ -50,14 +50,12 @@ namespace Abarabone.Geometry
 
     public struct SrcMeshesModelCombinePack
     {
-        public SrcMeshesModelCombinePack(IEnumerable<SrcMeshUnit> e, ObjectAndMmts ommts)
+        public SrcMeshesModelCombinePack(IEnumerable<SrcMeshUnit> e, IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
         {
             this.AsEnumerable = e;
-            this.mmts = ommts.mmts;
-            this.obj = ommts.obj;
+            this.mmts = mmts.ToArray();
         }
         public IEnumerable<SrcMeshUnit> AsEnumerable { get; private set; }
-        public GameObject obj { get; private set; }
         public (Mesh mesh, Material[] mats, Transform tf)[] mmts { get; private set; }
     }
 
@@ -73,19 +71,19 @@ namespace Abarabone.Geometry
     {
 
         public static srcMeshDataFromModelGroup QueryMeshDataFromModelGroup
-            (this IEnumerable<IEnumerable<ObjectAndMmts>> ommtsss)
+            (this IEnumerable<IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>>> mmtsss)
         {
-            var srcmeshes = ommtsss.SelectMany().Select(x => x.mmts).SelectMany().Select(x => x.mesh).ToArray();
+            var srcmeshes = mmtsss.SelectMany().SelectMany().Select(x => x.mesh).ToArray();
             var mesharr = Mesh.AcquireReadOnlyMeshData(srcmeshes);
 
             var imesh = 0;
             var q =
-                from ommtss in ommtsss
+                from mmtss in mmtsss
                 select
-                    from ommts in ommtss
-                    let len = ommts.mmts.Count()
+                    from mmts in mmtss
+                    let len = mmts.Count()
                     let meshes = queryMesh_(imesh.PostAdd(len), len)
-                    select new SrcMeshesModelCombinePack(meshes, ommts)
+                    select new SrcMeshesModelCombinePack(meshes, mmts)
                 ;
             return new srcMeshDataFromModelGroup(mesharr, q);
 
@@ -103,17 +101,17 @@ namespace Abarabone.Geometry
         }
         
         public static srcMeshDataFromModel QueryMeshDataFromModel
-            (this IEnumerable<ObjectAndMmts> ommtss)
+            (this IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>> mmtss)
         {
-            var srcmeshes = ommtss.Select(x => x.mmts).SelectMany().Select(x => x.mesh).ToArray();
+            var srcmeshes = mmtss.SelectMany().Select(x => x.mesh).ToArray();
             var mesharr = Mesh.AcquireReadOnlyMeshData(srcmeshes);
 
             var imesh = 0;
             var q =
-                from ommts in ommtss
-                let len = ommts.mmts.Count()
+                from mmts in mmtss
+                let len = mmts.Count()
                 let meshes = queryMesh_(imesh.PostAdd(len), len)
-                select new SrcMeshesModelCombinePack(meshes, ommts)
+                select new SrcMeshesModelCombinePack(meshes, mmts)
                 ;
             return new srcMeshDataFromModel(mesharr, q);
 

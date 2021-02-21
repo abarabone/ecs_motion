@@ -48,11 +48,11 @@ namespace Abarabone.Particle.Aurthoring
         {
 
             //createModelEntities_(conversionSystem, this.ShaderToDraw);
+            conversionSystem.CreateModelEntities(this.Models);
 
+            var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject);
 
-            var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
-
-            conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.LodOptionalMeshTops);
+            conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
 
             return;
 
@@ -117,7 +117,7 @@ namespace Abarabone.Particle.Aurthoring
 
             //}
 
-            Entity initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main, ObjectAndDistance[] lodOpts)
+            Entity initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
             {
                 dstManager.SetName_(entity, $"{this.name}");
 
@@ -178,63 +178,70 @@ namespace Abarabone.Particle.Aurthoring
         }
 
 
-        /// <summary>
-        /// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
-        /// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」があれば、そちらを対象とする。
-        /// またＬＯＤに null を登録した場合は、この GameObject をルートとしたメッシュが対象となる。
-        /// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
-        /// </summary>
-        public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-            (
-                IEnumerable<SrcMeshesModelCombinePack> meshpacks,
-                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
-            )
-        {
-            var qObjAndBuilder =
-                from src in meshpacks
-                where !meshDictionary.ContainsKey(src.obj)
-                let atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode()
-                let texdict = atlasDictionary.texHashToUvRect
-                select (
-                    src.obj,
-                    src.BuildCombiner<UI32, PositionNormalUvVertex>(part => texdict[atlas, part])
-                );
-            return qObjAndBuilder.ToArray();
-        }
+        ///// <summary>
+        ///// この GameObject をルートとしたメッシュを結合する、メッシュ生成デリゲートを列挙して返す。
+        ///// ただし LodOptionalMeshTops に登録した「ＬＯＤメッシュ」があれば、そちらを対象とする。
+        ///// またＬＯＤに null を登録した場合は、この GameObject をルートとしたメッシュが対象となる。
+        ///// なお、すでに ConvertedMeshDictionary に登録されている場合も除外される。
+        ///// </summary>
+        //public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
+        //    (
+        //        IEnumerable<SrcMeshesModelCombinePack> meshpacks,
+        //        Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
+        //    )
+        //{
+        //    var qObjAndBuilder =
+        //        from src in meshpacks
+        //        where !meshDictionary.ContainsKey(src.obj)
+        //        let atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode()
+        //        let texdict = atlasDictionary.texHashToUvRect
+        //        select (
+        //            src.obj,
+        //            src.BuildCombiner<UI32, PositionNormalUvVertex>(part => texdict[atlas, part])
+        //        );
+        //    return qObjAndBuilder.ToArray();
+        //}
 
 
 
-        IEnumerable<ObjectAndMmts> _ommtss = null;
+        //IEnumerable<ObjectAndMmts> _ommtss = null;
 
-        public override IEnumerable<ObjectAndMmts> OmmtsEnumerable => this._ommtss ??=
-            from obj in this.combineTargetObjects().ToArray()
-            select new ObjectAndMmts
-            {
-                obj = obj,
-                mmts = obj.QueryMeshMatsTransform_IfHaving().ToArray(),
-            };
+        //public override IEnumerable<ObjectAndMmts> OmmtsEnumerable => this._ommtss ??=
+        //    from obj in this.combineTargetObjects().ToArray()
+        //    select new ObjectAndMmts
+        //    {
+        //        obj = obj,
+        //        mmts = obj.QueryMeshMatsTransform_IfHaving().ToArray(),
+        //    };
 
-        IEnumerable<GameObject> combineTargetObjects()
-        {
-            var qMain = this.gameObject.WrapEnumerable()
-                .Where(x => this.LodOptionalMeshTops.Length == 0);
+        //IEnumerable<GameObject> combineTargetObjects()
+        //{
+        //    var qMain = this.gameObject.WrapEnumerable()
+        //        .Where(x => this.LodOptionalMeshTops.Length == 0);
 
-            var qLod = this.LodOptionalMeshTops
-                .Select(x => x.objectTop ?? this.gameObject);
+        //    var qLod = this.LodOptionalMeshTops
+        //        .Select(x => x.objectTop ?? this.gameObject);
 
-            return qMain.Concat(qLod)
-                .Distinct();
-        }
+        //    return qMain.Concat(qLod)
+        //        .Distinct();
+        //}
 
 
         //public IEnumerable<IMeshModel> QueryModel { get; }
 
     }
-
+}
+namespace Abarabone.Geometry
+{
+    using Abarabone.Model;
+    using Abarabone.Model.Authoring;
+    using Abarabone.Draw.Authoring;
+    using Abarabone.Common.Extension;
+    using Abarabone.Utilities;
 
     public interface IMeshModel
     {
-        public GameObject Obj { get; }
+        GameObject obj { get; }
 
         void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
 
@@ -246,8 +253,15 @@ namespace Abarabone.Particle.Aurthoring
             );
     }
 
+    public interface IMeshModelLod : IMeshModel
+    {
+        float limitDistance { get; }
+        float margin { get; }
+    }
+
+
     [Serializable]
-    public class LodMeshModel<TIdx, TVtx> : IMeshModel
+    public class LodMeshModel<TIdx, TVtx> : IMeshModelLod
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
@@ -260,7 +274,10 @@ namespace Abarabone.Particle.Aurthoring
         public Shader Shader;
 
 
-        public GameObject Obj { get; }
+        public GameObject obj => this.ObjectTop;
+        public float limitDistance => this.limitDistance;
+        public float margin => this.margin;
+
 
 
         public void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
@@ -272,7 +289,7 @@ namespace Abarabone.Particle.Aurthoring
             const BoneType BoneType = BoneType.TR;
             const int boneLength = 1;
 
-            gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
+            gcs.CreateDrawModelEntityComponents(this.obj, mesh, mat, BoneType, boneLength);
         }
 
         public (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
@@ -288,7 +305,7 @@ namespace Abarabone.Particle.Aurthoring
             var texdict = atlasDictionary.texHashToUvRect;
             return (
                 this.ObjectTop,
-                meshpack.BuildCombiner<TIdx, TVtx>(part => texdict[atlas, part], tfBones, tfRoot)
+                meshpack.BuildCombiner<TIdx, TVtx>(tfRoot, part => texdict[atlas, part], tfBones)
             );
         }
     }
@@ -298,12 +315,12 @@ namespace Abarabone.Particle.Aurthoring
     {
 
         public static IEnumerable<GameObject> Objs(this IEnumerable<IMeshModel> src) =>
-            src.Select(x => x.Obj);
+            src.Select(x => x.obj);
 
 
 
-        public static void createModelEntities_
-            (this GameObjectConversionSystem gcs, Shader shader, IEnumerable<IMeshModel> models)
+        public static void CreateModelEntities
+            (this GameObjectConversionSystem gcs, IEnumerable<IMeshModel> models)
         {
 
             var atlasDict = gcs.GetTextureAtlasDictionary();
@@ -312,19 +329,26 @@ namespace Abarabone.Particle.Aurthoring
             models.Objs().PackTextureToDictionary(atlasDict);
             //this.OmmtsEnumerable.Objs().PackTextureToDictionary(atlasDict);
 
-            //combineMeshToDictionary_();
+            combineMeshToDictionary_();
 
-            //createModelEntities_();
+            createModelEntities_();
 
-            //return;
+            return;
 
 
             void combineMeshToDictionary_()
             {
-                //using var meshAll = this.OmmtsEnumerable.QueryMeshDataFromModel();
-                using var meshAll = models.Objs()
+                var qMmts =
+                    from model in models
+                    select model.obj.QueryMeshMatsTransform_IfHaving();
 
-                var ofs = models.//this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
+                using var meshAll = qMmts.QueryMeshDataFromModel();
+
+                var qOfs =
+                    from x in (meshAll.AsEnumerable, models).Zip()
+                    select x.src1.BuildMeshCombiner(x.src0, meshDict, atlasDict);
+                var ofs = qOfs.ToArray();
+
                 var qMObj = ofs.Select(x => x.obj);
                 var qMesh = ofs.Select(x => x.f.ToTask())
                     .WhenAll().Result
@@ -335,15 +359,14 @@ namespace Abarabone.Particle.Aurthoring
 
             void createModelEntities_()
             {
-                var qObj = this.OmmtsEnumerable.Objs();
-
-                foreach (var obj in qObj)
+                foreach (var model in models)
                 {
+                    var obj = model.obj;
                     Debug.Log($"{obj.name} model ent");
 
                     var mesh = meshDict[obj];
                     var atlas = atlasDict.objectToAtlas[obj];
-                    createModelEntity_(obj, mesh, atlas);
+                    model.CreateModelEntity(gcs, mesh, atlas);
                 }
             }
 
