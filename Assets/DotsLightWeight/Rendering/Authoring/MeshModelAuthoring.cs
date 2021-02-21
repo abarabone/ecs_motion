@@ -224,12 +224,14 @@ namespace Abarabone.Particle.Aurthoring
         }
 
 
+        public IEnumerable<IMeshModel> QueryModel { get; }
+
     }
 
 
     public interface IMeshModel
     {
-
+        public GameObject Obj { get; }
         void createModelEntity_(Mesh mesh, Texture2D atlas);
     }
 
@@ -262,6 +264,10 @@ namespace Abarabone.Particle.Aurthoring
     public static class aaa
     {
 
+        public static IEnumerable<GameObject> Objs(this IEnumerable<IMeshModel> src) =>
+            src.Select(x => x.Obj);
+
+
         public static (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
             (
                 SrcMeshesModelCombinePack meshpack,
@@ -284,13 +290,14 @@ namespace Abarabone.Particle.Aurthoring
 
 
         static void createModelEntities_
-            (GameObjectConversionSystem gcs, Shader shader, ObjectAndDistance[] lodOpts)
+            (GameObjectConversionSystem gcs, Shader shader, IEnumerable<IMeshModel> models)
         {
 
             var atlasDict = gcs.GetTextureAtlasDictionary();
             var meshDict = gcs.GetMeshDictionary();
 
-            this.OmmtsEnumerable.Objs().PackTextureToDictionary(atlasDict);
+            models.Objs().PackTextureToDictionary(atlasDict);
+            //this.OmmtsEnumerable.Objs().PackTextureToDictionary(atlasDict);
 
             combineMeshToDictionary_();
 
