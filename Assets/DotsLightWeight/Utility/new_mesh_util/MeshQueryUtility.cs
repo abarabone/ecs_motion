@@ -20,18 +20,18 @@ namespace Abarabone.Geometry
 
 
 
-    public struct srcMeshDataFromModelGroup : IDisposable
-    {
-        public srcMeshDataFromModelGroup
-            (Mesh.MeshDataArray marr, IEnumerable<IEnumerable<SrcMeshesModelCombinePack>> e)
-        {
-            this.marr = marr;
-            this.AsEnumerable = e;
-        }
-        Mesh.MeshDataArray marr;
-        public IEnumerable<IEnumerable<SrcMeshesModelCombinePack>> AsEnumerable { get; private set; }
-        public void Dispose() => this.marr.Dispose();
-    }
+    //public struct srcMeshDataFromModelGroup : IDisposable
+    //{
+    //    public srcMeshDataFromModelGroup
+    //        (Mesh.MeshDataArray marr, IEnumerable<IEnumerable<SrcMeshesModelCombinePack>> e)
+    //    {
+    //        this.marr = marr;
+    //        this.AsEnumerable = e;
+    //    }
+    //    Mesh.MeshDataArray marr;
+    //    public IEnumerable<IEnumerable<SrcMeshesModelCombinePack>> AsEnumerable { get; private set; }
+    //    public void Dispose() => this.marr.Dispose();
+    //}
 
     public struct srcMeshDataFromModel : IDisposable
     {
@@ -70,35 +70,35 @@ namespace Abarabone.Geometry
     public static class MeshQueryUtility
     {
 
-        public static srcMeshDataFromModelGroup QueryMeshDataFromModelGroup
-            (this IEnumerable<IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>>> mmtsss)
-        {
-            var srcmeshes = mmtsss.SelectMany().SelectMany().Select(x => x.mesh).ToArray();
-            var mesharr = Mesh.AcquireReadOnlyMeshData(srcmeshes);
+        //public static srcMeshDataFromModelGroup QueryMeshDataFromModelGroup
+        //    (this IEnumerable<IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>>> mmtsss)
+        //{
+        //    var srcmeshes = mmtsss.SelectMany().SelectMany().Select(x => x.mesh).ToArray();
+        //    var mesharr = Mesh.AcquireReadOnlyMeshData(srcmeshes);
 
-            var imesh = 0;
-            var q =
-                from mmtss in mmtsss
-                select
-                    from mmts in mmtss
-                    let len = mmts.Count()
-                    let meshes = queryMesh_(imesh.PostAdd(len), len)
-                    select new SrcMeshesModelCombinePack(meshes, mmts)
-                ;
-            return new srcMeshDataFromModelGroup(mesharr, q);
+        //    var imesh = 0;
+        //    var q =
+        //        from mmtss in mmtsss
+        //        select
+        //            from mmts in mmtss
+        //            let len = mmts.Count()
+        //            let meshes = queryMesh_(imesh.PostAdd(len), len)
+        //            select new SrcMeshesModelCombinePack(meshes, mmts)
+        //        ;
+        //    return new srcMeshDataFromModelGroup(mesharr, q);
 
-            IEnumerable<SrcMeshUnit> queryMesh_(int first, int length)
-            {
-                var baseVertex = 0;
+        //    IEnumerable<SrcMeshUnit> queryMesh_(int first, int length)
+        //    {
+        //        var baseVertex = 0;
 
-                for (var i = 0; i < length; i++)
-                {
-                    yield return new SrcMeshUnit(i, mesharr[i + first], baseVertex);
+        //        for (var i = 0; i < length; i++)
+        //        {
+        //            yield return new SrcMeshUnit(i, mesharr[i + first], baseVertex);
 
-                    baseVertex += mesharr[i + first].vertexCount;
-                }
-            }
-        }
+        //            baseVertex += mesharr[i + first].vertexCount;
+        //        }
+        //    }
+        //}
         
         public static srcMeshDataFromModel QueryMeshDataFromModel
             (this IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>> mmtss)

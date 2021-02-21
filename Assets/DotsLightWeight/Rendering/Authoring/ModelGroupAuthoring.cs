@@ -38,9 +38,11 @@ namespace Abarabone.Model.Authoring
                 )
             { throw new NotImplementedException(); }
 
-            public virtual IEnumerable<ObjectAndMmts> OmmtsEnumerable =>
+            public virtual IEnumerable<ObjectAndMmts> QueryOmmts =>
                 throw new NotImplementedException();
 
+            public virtual IEnumerable<IMeshModel> QueryModel =>
+                throw new NotImplementedException();
         }
 
 
@@ -64,10 +66,21 @@ namespace Abarabone.Model.Authoring
             var prefabModels = this.ModelPrefabs.Distinct();
 
             prefabModels
-                .SelectMany(model => model.OmmtsEnumerable.Objs())
+                .SelectMany(model => model.QueryModel.Objs())
                 .PackTextureToDictionary(atlasDict);
 
-            combineMeshToDictionary_();
+            prefabModels
+                .SelectMany(model => model.QueryModel)
+                .CreateModelToDictionary(meshDict, atlasDict);
+
+
+
+
+            //prefabModels
+            //    .SelectMany(model => model.OmmtsEnumerable.Objs())
+            //    .PackTextureToDictionary(atlasDict);
+
+            //combineMeshToDictionary_();
 
 
             // モデルグループ自体にはエンティティは不要
@@ -76,32 +89,32 @@ namespace Abarabone.Model.Authoring
             return;
 
 
-            void combineMeshToDictionary_()
-            {
-                var qOmmtssPerModel = prefabModels.Select(model => model.OmmtsEnumerable);
-                using var meshAll = qOmmtssPerModel.QueryMeshDataFromModelGroup();
+            //void combineMeshToDictionary_()
+            //{
+            //    var qOmmtssPerModel = prefabModels.Select(model => model.OmmtsEnumerable);
+            //    using var meshAll = qOmmtssPerModel.QueryMeshDataFromModelGroup();
 
-                var qOfs =
-                    from x in (prefabModels, meshAll.AsEnumerable).Zip()
-                    let model = x.src0
-                    let meshes = x.src1
-                    select model.BuildMeshCombiners(meshes, meshDict, atlasDict)
-                    ;
-                var ofss = qOfs.ToArray();
-                var qMObj = ofss.SelectMany().Select(of => of.obj);
-                var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())
-                    .WhenAll().Result
-                    .Select(t => t.CreateMesh());
-                //var qMesh = ofss.SelectMany().Select(of => of.f().CreateMesh());
-                meshDict.AddRange(qMObj, qMesh);
-            }
+            //    var qOfs =
+            //        from x in (prefabModels, meshAll.AsEnumerable).Zip()
+            //        let model = x.src0
+            //        let meshes = x.src1
+            //        select model.BuildMeshCombiners(meshes, meshDict, atlasDict)
+            //        ;
+            //    var ofss = qOfs.ToArray();
+            //    var qMObj = ofss.SelectMany().Select(of => of.obj);
+            //    var qMesh = ofss.SelectMany().Select(of => of.f.ToTask())
+            //        .WhenAll().Result
+            //        .Select(t => t.CreateMesh());
+            //    //var qMesh = ofss.SelectMany().Select(of => of.f().CreateMesh());
+            //    meshDict.AddRange(qMObj, qMesh);
+            //}
         }
-        
+
 
     }
 
 
-    static public class ModelGroupTexturePackingUtility
+    static public class ModelTexturePackingUtility
     {
 
         static public void PackTextureToDictionary

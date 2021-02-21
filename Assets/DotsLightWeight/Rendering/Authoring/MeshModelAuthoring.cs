@@ -47,8 +47,13 @@ namespace Abarabone.Particle.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
+            var meshDict = conversionSystem.GetMeshDictionary();
+            var atlasDict = conversionSystem.GetTextureAtlasDictionary();
+
+            this.QueryModel.Objs().PackTextureToDictionary(atlasDict);
+            this.QueryModel.CreateModelToDictionary(meshDict, atlasDict);
+            this.QueryModel.CreateModelEntities(conversionSystem, meshDict, atlasDict);
             //createModelEntities_(conversionSystem, this.ShaderToDraw);
-            conversionSystem.CreateModelEntities(this.Models);
 
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject);
 
@@ -227,8 +232,26 @@ namespace Abarabone.Particle.Aurthoring
         //}
 
 
-        //public IEnumerable<IMeshModel> QueryModel { get; }
+        public override IEnumerable<IMeshModel> QueryModel
+        {
+            get
+            {
+                var qMain = this.gameObject.WrapEnumerable()
+                    .Select(x => new LodMeshModel<UI32, PositionNormalUvVertex>// 暫定
+                    {
+                        ObjectTop = x,
+                        Shader = this.ShaderToDraw,
+                    })
+                    .Cast<IMeshModel>()
+                    .Where(x => this.Models.Length == 0);
 
+                var qLod = this.Models
+                    .Cast<IMeshModel>();
+
+                return qMain.Concat(qLod)
+                    .Distinct();
+            }
+        }
     }
 }
 namespace Abarabone.Geometry
@@ -242,14 +265,16 @@ namespace Abarabone.Geometry
     public interface IMeshModel
     {
         GameObject obj { get; }
+        Transform[] bones { get; }
 
-        void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
+        void CreateModelEntity
+            (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
 
         (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
             (
                 SrcMeshesModelCombinePack meshpack,
                 Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary,
-                Transform[] tfBones = null, Transform tfRoot = null
+                Transform tfRoot = null
             );
     }
 
@@ -275,12 +300,14 @@ namespace Abarabone.Geometry
 
 
         public GameObject obj => this.ObjectTop;
+        public Transform[] bones => null;
         public float limitDistance => this.limitDistance;
         public float margin => this.margin;
 
 
 
-        public void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        public void CreateModelEntity
+            (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.Shader);
             mat.enableInstancing = true;
@@ -296,7 +323,7 @@ namespace Abarabone.Geometry
             (
                 SrcMeshesModelCombinePack meshpack,
                 Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary,
-                Transform[] tfBones = null, Transform tfRoot = null
+                Transform tfRoot = null
             )
         {
             //if (!meshDictionary.ContainsKey(this.ObjectTop)) return default;
@@ -305,7 +332,7 @@ namespace Abarabone.Geometry
             var texdict = atlasDictionary.texHashToUvRect;
             return (
                 this.ObjectTop,
-                meshpack.BuildCombiner<TIdx, TVtx>(tfRoot, part => texdict[atlas, part], tfBones)
+                meshpack.BuildCombiner<TIdx, TVtx>(tfRoot, part => texdict[atlas, part], this.bones)
             );
         }
     }
@@ -319,57 +346,53 @@ namespace Abarabone.Geometry
 
 
 
+        public static void CreateModelToDictionary
+            (
+                this IEnumerable<IMeshModel> models,
+                Dictionary<GameObject, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict
+            )
+        {
+            var qMmts =
+                from model in models
+                select model.obj.QueryMeshMatsTransform_IfHaving();
+
+            using var meshAll = qMmts.QueryMeshDataFromModel();
+
+            var qOfs =
+                from x in (meshAll.AsEnumerable, models).Zip()
+                let meshsrc = x.src0
+                let model = x.src1
+                where !meshDict.ContainsKey(model.obj)
+                select model.BuildMeshCombiner(meshsrc, meshDict, atlasDict);
+            var ofs = qOfs.ToArray();
+
+            var qMObj = ofs.Select(x => x.obj);
+            var qMesh = ofs.Select(x => x.f.ToTask())
+                .WhenAll().Result
+                .Select(x => x.CreateMesh());
+            //var qMesh = ofs.Select(x => x.f().CreateMesh());
+            meshDict.AddRange(qMObj, qMesh);
+        }
+
         public static void CreateModelEntities
-            (this GameObjectConversionSystem gcs, IEnumerable<IMeshModel> models)
+            (
+                this IEnumerable<IMeshModel> models,
+                GameObjectConversionSystem gcs,
+                Dictionary<GameObject, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict
+            )
         {
 
-            var atlasDict = gcs.GetTextureAtlasDictionary();
-            var meshDict = gcs.GetMeshDictionary();
-
-            models.Objs().PackTextureToDictionary(atlasDict);
-            //this.OmmtsEnumerable.Objs().PackTextureToDictionary(atlasDict);
-
-            combineMeshToDictionary_();
-
-            createModelEntities_();
-
-            return;
-
-
-            void combineMeshToDictionary_()
+            foreach (var model in models)
             {
-                var qMmts =
-                    from model in models
-                    select model.obj.QueryMeshMatsTransform_IfHaving();
+                var obj = model.obj;
+                Debug.Log($"{obj.name} model ent");
 
-                using var meshAll = qMmts.QueryMeshDataFromModel();
-
-                var qOfs =
-                    from x in (meshAll.AsEnumerable, models).Zip()
-                    select x.src1.BuildMeshCombiner(x.src0, meshDict, atlasDict);
-                var ofs = qOfs.ToArray();
-
-                var qMObj = ofs.Select(x => x.obj);
-                var qMesh = ofs.Select(x => x.f.ToTask())
-                    .WhenAll().Result
-                    .Select(x => x.CreateMesh());
-                //var qMesh = ofs.Select(x => x.f().CreateMesh());
-                meshDict.AddRange(qMObj, qMesh);
+                var mesh = meshDict[obj];
+                var atlas = atlasDict.objectToAtlas[obj];
+                model.CreateModelEntity(gcs, mesh, atlas);
             }
-
-            void createModelEntities_()
-            {
-                foreach (var model in models)
-                {
-                    var obj = model.obj;
-                    Debug.Log($"{obj.name} model ent");
-
-                    var mesh = meshDict[obj];
-                    var atlas = atlasDict.objectToAtlas[obj];
-                    model.CreateModelEntity(gcs, mesh, atlas);
-                }
-            }
-
         }
+
+
     }
 }

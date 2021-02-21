@@ -127,123 +127,123 @@ namespace Abarabone.Structure.Authoring
             //return;
 
 
-            void createModelEntities_
-                (GameObjectConversionSystem gcs, Shader shader, ObjectAndDistance[] lodOpts)
-            {
+            //void createModelEntities_
+            //    (GameObjectConversionSystem gcs, Shader shader, ObjectAndDistance[] lodOpts)
+            //{
 
-                var atlasDict = gcs.GetTextureAtlasDictionary();
-                var meshDict = gcs.GetMeshDictionary();
+            //    var atlasDict = gcs.GetTextureAtlasDictionary();
+            //    var meshDict = gcs.GetMeshDictionary();
 
-                this.OmmtsEnumerable.Objs().PackTextureToDictionary(atlasDict);
+            //    this.OmmtsEnumerable.Objs().PackTextureToDictionary(atlasDict);
 
-                combineMeshToDictionary_();
+            //    combineMeshToDictionary_();
 
-                createModelEntities_();
+            //    createModelEntities_();
 
-                return;
-
-
-                void combineMeshToDictionary_()
-                {
-                    using var meshAll = this.OmmtsEnumerable.QueryMeshDataFromModel();
-
-                    var ofs = this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
-                    var qMObj = ofs.Select(x => x.obj);
-                    var qMesh = ofs.Select(x => x.f.ToTask())
-                        .WhenAll().Result
-                        .Select(x => x.CreateMesh());
-                    //var qMesh = ofs.Select(x => x.f().CreateMesh());
-                    meshDict.AddRange(qMObj, qMesh);
-                }
-
-                void createModelEntities_()
-                {
-                    var qObj = this.OmmtsEnumerable.Objs();
-
-                    foreach (var obj in qObj)
-                    {
-                        Debug.Log($"{obj.name} model ent");
-
-                        var mesh = meshDict[obj];
-                        var atlas = atlasDict.objectToAtlas[obj];
-                        createModelEntity_(obj, mesh, atlas);
-                    }
-
-                    return;
+            //    return;
 
 
-                    void createModelEntity_(GameObject obj, Mesh mesh, Texture2D atlas)
-                    {
-                        var mat = new Material(shader);
-                        mat.enableInstancing = true;
-                        mat.mainTexture = atlas;
+            //    void combineMeshToDictionary_()
+            //    {
+            //        using var meshAll = this.OmmtsEnumerable.QueryMeshDataFromModel();
 
-                        const BoneType BoneType = BoneType.TR;
-                        const int boneLength = 1;
+            //        var ofs = this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
+            //        var qMObj = ofs.Select(x => x.obj);
+            //        var qMesh = ofs.Select(x => x.f.ToTask())
+            //            .WhenAll().Result
+            //            .Select(x => x.CreateMesh());
+            //        //var qMesh = ofs.Select(x => x.f().CreateMesh());
+            //        meshDict.AddRange(qMObj, qMesh);
+            //    }
 
-                        gcs.CreateDrawModelEntityComponents(obj, mesh, mat, BoneType, boneLength);
-                    }
-                }
+            //    void createModelEntities_()
+            //    {
+            //        var qObj = this.OmmtsEnumerable.Objs();
 
-            }
+            //        foreach (var obj in qObj)
+            //        {
+            //            Debug.Log($"{obj.name} model ent");
+
+            //            var mesh = meshDict[obj];
+            //            var atlas = atlasDict.objectToAtlas[obj];
+            //            createModelEntity_(obj, mesh, atlas);
+            //        }
+
+            //        return;
+
+
+            //        void createModelEntity_(GameObject obj, Mesh mesh, Texture2D atlas)
+            //        {
+            //            var mat = new Material(shader);
+            //            mat.enableInstancing = true;
+            //            mat.mainTexture = atlas;
+
+            //            const BoneType BoneType = BoneType.TR;
+            //            const int boneLength = 1;
+
+            //            gcs.CreateDrawModelEntityComponents(obj, mesh, mat, BoneType, boneLength);
+            //        }
+            //    }
+
+            //}
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-            (
-                IEnumerable<SrcMeshesModelCombinePack> meshpacks,
-                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
-            )
-        {
-            var tfTop = this.gameObject.transform;
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
+        //    (
+        //        IEnumerable<SrcMeshesModelCombinePack> meshpacks,
+        //        Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
+        //    )
+        //{
+        //    var tfTop = this.gameObject.transform;
 
-            var far = build_<UI32, PositionNormalUvVertex>(meshpacks.ElementAt(0));
-            var near = build_<UI32, PositionNormalUvVertex>(meshpacks.ElementAt(1));
+        //    var far = build_<UI32, PositionNormalUvVertex>(meshpacks.ElementAt(0));
+        //    var near = build_<UI32, PositionNormalUvVertex>(meshpacks.ElementAt(1));
 
-            var dstlist = new List<(GameObject obj, Func<IMeshElements> f)>();
-            if (far != default) dstlist.Add(far);
-            if (near != default) dstlist.Add(near);
+        //    var dstlist = new List<(GameObject obj, Func<IMeshElements> f)>();
+        //    if (far != default) dstlist.Add(far);
+        //    if (near != default) dstlist.Add(near);
 
-            return dstlist.ToArray();
-
-
-            (GameObject obj, Func<IMeshElements> f) build_<TIdx, TVtx>(SrcMeshesModelCombinePack src)
-                where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-                where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-            {
-                if (!meshDictionary.ContainsKey(src.obj)) return default;
-
-                var atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode();
-                var texdict = atlasDictionary.texHashToUvRect;
-                return (
-                    src.obj,
-                    src.BuildCombiner<TIdx, TVtx>(part => texdict[atlas, part], null, tfTop)
-                );
-            }
-        }
+        //    return dstlist.ToArray();
 
 
+        //    (GameObject obj, Func<IMeshElements> f) build_<TIdx, TVtx>(SrcMeshesModelCombinePack src)
+        //        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        //        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        //    {
+        //        if (!meshDictionary.ContainsKey(src.obj)) return default;
 
-        IEnumerable<ObjectAndMmts> _ommtss = null;
+        //        var atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode();
+        //        var texdict = atlasDictionary.texHashToUvRect;
+        //        return (
+        //            src.obj,
+        //            src.BuildCombiner<TIdx, TVtx>(part => texdict[atlas, part], null, tfTop)
+        //        );
+        //    }
+        //}
 
-        public override IEnumerable<ObjectAndMmts> OmmtsEnumerable => this._ommtss ??=
-            from obj in this.combineTargetObjects().ToArray()
-            select new ObjectAndMmts
-            {
-                obj = obj,
-                mmts = obj.QueryMeshMatsTransform_IfHaving().ToArray(),
-            };
 
-        IEnumerable<GameObject> combineTargetObjects()
-        {
-            var far = this.FarMeshObject.objectTop;
-            var near = this.NearMeshObject.objectTop;
 
-            return new [] { far, near };
-        }
+        //IEnumerable<ObjectAndMmts> _ommtss = null;
+
+        //public override IEnumerable<ObjectAndMmts> OmmtsEnumerable => this._ommtss ??=
+        //    from obj in this.combineTargetObjects().ToArray()
+        //    select new ObjectAndMmts
+        //    {
+        //        obj = obj,
+        //        mmts = obj.QueryMeshMatsTransform_IfHaving().ToArray(),
+        //    };
+
+        //IEnumerable<GameObject> combineTargetObjects()
+        //{
+        //    var far = this.FarMeshObject.objectTop;
+        //    var near = this.NearMeshObject.objectTop;
+
+        //    return new [] { far, near };
+        //}
 
 
     }
@@ -402,7 +402,7 @@ namespace Abarabone.Structure.Authoring
 
             var draw = mainEntity;
             var lods = new ObjectAndDistance[] { near, far };
-            gcs.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
+            //////gcs.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
 
 
             gcs.InitPostureEntity(main);//, far.objectTop.transform);
