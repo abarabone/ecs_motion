@@ -265,6 +265,7 @@ namespace Abarabone.Geometry
     public interface IMeshModel
     {
         GameObject obj { get; }
+        Transform tfroot { get; }
         Transform[] bones { get; }
 
         void CreateModelEntity
@@ -273,8 +274,7 @@ namespace Abarabone.Geometry
         (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
             (
                 SrcMeshesModelCombinePack meshpack,
-                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary,
-                Transform tfRoot = null
+                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
             );
     }
 
@@ -283,6 +283,49 @@ namespace Abarabone.Geometry
         float limitDistance { get; }
         float margin { get; }
     }
+
+
+
+    //public abstract class MeshModelBase<TIdx, TVtx> : IMeshModel
+    //    where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+    //    where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+    //{
+    //    public GameObject ObjectTop;
+
+    //    public float LimitDistance;
+    //    public float Margin;
+
+    //    public Shader Shader;
+
+
+    //    public GameObject obj => this.ObjectTop;
+    //    public Transform tfroot => this.ObjectTop.transform;
+    //    public Transform[] bones => null;
+    //    public float limitDistance => this.limitDistance;
+    //    public float margin => this.margin;
+
+
+    //    public virtual void CreateModelEntity
+    //        (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+    //    { throw new NotImplementedException(); }
+
+    //    public (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
+    //        (
+    //            SrcMeshesModelCombinePack meshpack,
+    //            Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
+    //        )
+    //    {
+    //        var atlas = atlasDictionary.objectToAtlas[this.ObjectTop].GetHashCode();
+    //        var texdict = atlasDictionary.texHashToUvRect;
+    //        return (
+    //            this.ObjectTop,
+    //            meshpack.BuildCombiner<TIdx, TVtx>(this.tfroot, part => texdict[atlas, part], this.bones)
+    //        );
+    //    }
+    //}
+
+
+
 
 
     [Serializable]
@@ -300,6 +343,7 @@ namespace Abarabone.Geometry
 
 
         public GameObject obj => this.ObjectTop;
+        public Transform tfroot => this.ObjectTop.transform;
         public Transform[] bones => null;
         public float limitDistance => this.limitDistance;
         public float margin => this.margin;
@@ -322,17 +366,14 @@ namespace Abarabone.Geometry
         public (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
             (
                 SrcMeshesModelCombinePack meshpack,
-                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary,
-                Transform tfRoot = null
+                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
             )
         {
-            //if (!meshDictionary.ContainsKey(this.ObjectTop)) return default;
-
             var atlas = atlasDictionary.objectToAtlas[this.ObjectTop].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             return (
                 this.ObjectTop,
-                meshpack.BuildCombiner<TIdx, TVtx>(tfRoot, part => texdict[atlas, part], this.bones)
+                meshpack.BuildCombiner<TIdx, TVtx>(this.tfroot, part => texdict[atlas, part], this.bones)
             );
         }
     }
@@ -343,6 +384,27 @@ namespace Abarabone.Geometry
 
         public static IEnumerable<GameObject> Objs(this IEnumerable<IMeshModel> src) =>
             src.Select(x => x.obj);
+
+
+
+
+
+        public static (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner<TIdx, TVtx>
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+            (
+                SrcMeshesModelCombinePack meshpack,
+                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary,
+                GameObject objectTop, Transform tfRoot, Transform[] tfBones
+            )
+        {
+            var atlas = atlasDictionary.objectToAtlas[objectTop].GetHashCode();
+            var texdict = atlasDictionary.texHashToUvRect;
+            return (
+                objectTop,
+                meshpack.BuildCombiner<TIdx, TVtx>(tfRoot, part => texdict[atlas, part], tfBones)
+            );
+        }
 
 
 

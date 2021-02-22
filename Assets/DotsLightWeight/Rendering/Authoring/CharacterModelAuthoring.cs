@@ -32,6 +32,19 @@ namespace Abarabone.Model.Authoring
         public EnBoneType BoneMode;
 
 
+        IEnumerable<IMeshModel> _models = null;
+
+        public override IEnumerable<IMeshModel> QueryModel => _models ??= new CharacterModel<UI32, PositionNormalUvBonedVertex>
+        {
+            ObjectTop = this.gameObject,
+            Shader = this.DrawShader,
+            BoneTop = this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First(),
+            //_bones = this.bones,
+        }
+        .WrapEnumerable();
+
+
+
 
         /// <summary>
         /// 描画関係はバインダーに、ボーン関係はメインに関連付ける
@@ -39,32 +52,41 @@ namespace Abarabone.Model.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
+            //var meshDict = conversionSystem.GetMeshDictionary();
+            //var atlasDict = conversionSystem.GetTextureAtlasDictionary();
+
+            //this.QueryModel.Objs().PackTextureToDictionary(atlasDict);
+            //this.QueryModel.CreateModelToDictionary(meshDict, atlasDict);
+            //this.QueryModel.CreateModelEntities(conversionSystem, meshDict, atlasDict);
+
+
             var top = this.gameObject;
             var main = top.Children().First();
+            var bones = this.bones;//this.QueryModel.First().bones;
 
-            createModelEntity_(conversionSystem, this.DrawShader, this.bones);
+            createModelEntity_(conversionSystem);
 
             initBinderEntity_(conversionSystem, top, main);
             initMainEntity_(conversionSystem, top, main);
 
             conversionSystem.InitPostureEntity(main);//, bones);
-            conversionSystem.InitBoneEntities(main, this.bones, main.transform, this.BoneMode);
+            conversionSystem.InitBoneEntities(main, bones, main.transform, this.BoneMode);
 
-            conversionSystem.CreateDrawInstanceEntities(top, main, this.bones, this.BoneMode);
+            conversionSystem.CreateDrawInstanceEntities(top, main, bones, this.BoneMode);
 
             return;
 
 
 
-            void createModelEntity_(GameObjectConversionSystem gcs, Shader shader, Transform[] bones)
+            void createModelEntity_(GameObjectConversionSystem gcs)
             {
 
                 var atlasDict = gcs.GetTextureAtlasDictionary();
                 var meshDict = gcs.GetMeshDictionary();
 
                 this.QueryModel.Objs().PackTextureToDictionary(atlasDict);
-                this.QueryModel.CreateModelToDictionary(meshDict, atlasDict, this.bones);
-                this.QueryModel.CreateModelEntities(conversionSystem, meshDict, atlasDict, this.bones);
+                this.QueryModel.CreateModelToDictionary(meshDict, atlasDict);
+                this.QueryModel.CreateModelEntities(gcs, meshDict, atlasDict);
 
 
                 //this.QueryOmmts.Objs().PackTextureToDictionary(atlasDict);
@@ -228,15 +250,6 @@ namespace Abarabone.Model.Authoring
 
 
 
-        public override IEnumerable<IMeshModel> QueryModel => new[]
-        {
-            new CharacterModel<UI32, PositionNormalUvBonedVertex>
-            {
-                ObjectTop = this.gameObject,
-                Shader = this.DrawShader,
-            }
-        };
-
 
 
 
@@ -244,7 +257,7 @@ namespace Abarabone.Model.Authoring
 
         Transform[] bones => this._bones ??=
             this.queryBones().ToArray();
-        
+
         IEnumerable<Transform> queryBones()
         {
             Debug.Log("lazy " + this.name);
@@ -260,26 +273,31 @@ namespace Abarabone.Model.Authoring
 
 
     [Serializable]
-    public class CharacterModel<TIdx, TVtx> : IMeshModel//IMeshModelLod
+    public class CharacterModel<TIdx, TVtx> : IMeshModel, IMeshModelLod
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
 
         public GameObject ObjectTop;
-        public Transform[] BoneRoot;
+        public Transform BoneTop;
 
         public float LimitDistance;
         public float Margin;
 
         public Shader Shader;
 
-
         public GameObject obj => this.ObjectTop;
-        public Transform[] bones => this.BoneRoot;
+        public Transform tfroot => this.ObjectTop.Children().First().transform;// これでいいのか？
+        public Transform[] bones => this._bones ??= this.ObjectTop.GetComponentInChildren<SkinnedMeshRenderer>().bones//this.BoneTop.gameObject.DescendantsAndSelf()
+            .Where(x => !x.name.StartsWith("_"))
+            .Select(x => x.transform)
+            .ToArray();
         public float limitDistance => this.limitDistance;
         public float margin => this.margin;
 
 
+        public
+        Transform[] _bones = null;
 
         public void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
@@ -297,17 +315,14 @@ namespace Abarabone.Model.Authoring
         public (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
             (
                 SrcMeshesModelCombinePack meshpack,
-                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary,
-                Transform tfRoot = null
+                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
             )
         {
-            //if (!meshDictionary.ContainsKey(this.ObjectTop)) return default;
-
             var atlas = atlasDictionary.objectToAtlas[this.ObjectTop].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             return (
                 this.ObjectTop,
-                meshpack.BuildCombiner<TIdx, TVtx>(tfRoot, part => texdict[atlas, part], this.bones)
+                meshpack.BuildCombiner<TIdx, TVtx>(this.tfroot, part => texdict[atlas, part], this.bones)
             );
         }
     }
