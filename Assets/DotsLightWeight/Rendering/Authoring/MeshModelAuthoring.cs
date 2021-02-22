@@ -237,15 +237,12 @@ namespace Abarabone.Particle.Aurthoring
             get
             {
                 var qMain = this.gameObject.WrapEnumerable()
-                    .Select(x => new LodMeshModel<UI32, PositionNormalUvVertex>// 暫定
-                    {
-                        ObjectTop = x,
-                        Shader = this.ShaderToDraw,
-                    })
+                    .Select(x => new LodMeshModel<UI32, PositionNormalUvVertex>(x, this.ShaderToDraw))//暫定
                     .Cast<IMeshModel>()
                     .Where(x => this.Models.Length == 0);
 
                 var qLod = this.Models
+                    //.Select(x => x.obj = x.obj ?? this.gameObject)
                     .Cast<IMeshModel>();
 
                 return qMain.Concat(qLod)
@@ -264,9 +261,9 @@ namespace Abarabone.Geometry
 
     public interface IMeshModel
     {
-        GameObject obj { get; }
-        Transform tfroot { get; }
-        Transform[] bones { get; }
+        GameObject Obj { get; }
+        Transform TfRoot { get; }
+        Transform[] Bones { get; }
 
         void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
@@ -280,8 +277,8 @@ namespace Abarabone.Geometry
 
     public interface IMeshModelLod : IMeshModel
     {
-        float limitDistance { get; }
-        float margin { get; }
+        float LimitDistance { get; }
+        float Margin { get; }
     }
 
 
@@ -333,34 +330,44 @@ namespace Abarabone.Geometry
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
+        public LodMeshModel(GameObject obj, Shader shader)
+        {
+            this.objectTop = obj;
+            this.shader = shader;
+        }
 
-        public GameObject ObjectTop;
+        [SerializeField]
+        GameObject objectTop;
 
-        public float LimitDistance;
-        public float Margin;
+        [SerializeField]
+        float limitDistance;
+        [SerializeField]
+        float margin;
 
-        public Shader Shader;
+
+        [SerializeField]
+        Shader shader;
 
 
-        public GameObject obj => this.ObjectTop;
-        public Transform tfroot => this.ObjectTop.transform;
-        public Transform[] bones => null;
-        public float limitDistance => this.limitDistance;
-        public float margin => this.margin;
+        public GameObject Obj => this.objectTop;
+        public Transform TfRoot => this.objectTop.transform;
+        public Transform[] Bones => null;
+        public float LimitDistance => this.limitDistance;
+        public float Margin => this.margin;
 
 
 
         public void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
-            var mat = new Material(this.Shader);
+            var mat = new Material(this.shader);
             mat.enableInstancing = true;
             mat.mainTexture = atlas;
 
             const BoneType BoneType = BoneType.TR;
             const int boneLength = 1;
 
-            gcs.CreateDrawModelEntityComponents(this.obj, mesh, mat, BoneType, boneLength);
+            gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
         }
 
         public (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
@@ -369,11 +376,11 @@ namespace Abarabone.Geometry
                 Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
             )
         {
-            var atlas = atlasDictionary.objectToAtlas[this.ObjectTop].GetHashCode();
+            var atlas = atlasDictionary.objectToAtlas[this.objectTop].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             return (
-                this.ObjectTop,
-                meshpack.BuildCombiner<TIdx, TVtx>(this.tfroot, part => texdict[atlas, part], this.bones)
+                this.objectTop,
+                meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, part => texdict[atlas, part], this.Bones)
             );
         }
     }
@@ -383,28 +390,9 @@ namespace Abarabone.Geometry
     {
 
         public static IEnumerable<GameObject> Objs(this IEnumerable<IMeshModel> src) =>
-            src.Select(x => x.obj);
+            src.Select(x => x.Obj);
 
 
-
-
-
-        public static (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner<TIdx, TVtx>
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-            (
-                SrcMeshesModelCombinePack meshpack,
-                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary,
-                GameObject objectTop, Transform tfRoot, Transform[] tfBones
-            )
-        {
-            var atlas = atlasDictionary.objectToAtlas[objectTop].GetHashCode();
-            var texdict = atlasDictionary.texHashToUvRect;
-            return (
-                objectTop,
-                meshpack.BuildCombiner<TIdx, TVtx>(tfRoot, part => texdict[atlas, part], tfBones)
-            );
-        }
 
 
 
@@ -416,7 +404,7 @@ namespace Abarabone.Geometry
         {
             var qMmts =
                 from model in models
-                select model.obj.QueryMeshMatsTransform_IfHaving();
+                select model.Obj.QueryMeshMatsTransform_IfHaving();
 
             using var meshAll = qMmts.QueryMeshDataFromModel();
 
@@ -424,7 +412,7 @@ namespace Abarabone.Geometry
                 from x in (meshAll.AsEnumerable, models).Zip()
                 let meshsrc = x.src0
                 let model = x.src1
-                where !meshDict.ContainsKey(model.obj)
+                where !meshDict.ContainsKey(model.Obj)
                 select model.BuildMeshCombiner(meshsrc, meshDict, atlasDict);
             var ofs = qOfs.ToArray();
 
@@ -446,7 +434,7 @@ namespace Abarabone.Geometry
 
             foreach (var model in models)
             {
-                var obj = model.obj;
+                var obj = model.Obj;
                 Debug.Log($"{obj.name} model ent");
 
                 var mesh = meshDict[obj];

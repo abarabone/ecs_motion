@@ -122,8 +122,8 @@ namespace Abarabone.Draw.Authoring
         {
             if (lods_.Length != 2) return;
 
-            var lod0_ = lods_[0].obj ?? top_;
-            var lod1_ = lods_[1].obj ?? top_;
+            var lod0_ = lods_[0].Obj ?? top_;
+            var lod1_ = lods_[1].Obj ?? top_;
 
             var em = gcs_.DstEntityManager;
 
@@ -132,10 +132,10 @@ namespace Abarabone.Draw.Authoring
                 {
                     DrawModelEntityNear = gcs_.GetFromModelEntityDictionary(lod0_),
                     DrawModelEntityFar = gcs_.GetFromModelEntityDictionary(lod1_),
-                    LimitDistanceSqrNear = pow2_(lods_[0].limitDistance),
-                    LimitDistanceSqrFar = pow2_(lods_[1].limitDistance),
-                    MarginDistanceSqrNear = pow2_(lods_[0].limitDistance + lods_[0].margin),
-                    MarginDistanceSqrFar = pow2_(lods_[1].limitDistance + lods_[1].margin),
+                    LimitDistanceSqrNear = pow2_(lods_[0].LimitDistance),
+                    LimitDistanceSqrFar = pow2_(lods_[1].LimitDistance),
+                    MarginDistanceSqrNear = pow2_(lods_[0].LimitDistance + lods_[0].Margin),
+                    MarginDistanceSqrFar = pow2_(lods_[1].LimitDistance + lods_[1].Margin),
                 }
             );
             

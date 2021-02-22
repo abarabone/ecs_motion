@@ -101,7 +101,7 @@ namespace Abarabone.Geometry.inner
             let mesh = permesh.src0.MeshData
             let mtInvs = permesh.src1
             let weis = permesh.src2
-            let mt = p.mtBaseInv//permesh.src3// * p.mtBaseInv
+            let mt = permesh.src3 * p.mtBaseInv//p.mtBaseInv
             from x in (mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetVertices(arr), VertexAttribute.Position), weis).Zip()
             let vtx = x.src0
             let wei = x.src1
