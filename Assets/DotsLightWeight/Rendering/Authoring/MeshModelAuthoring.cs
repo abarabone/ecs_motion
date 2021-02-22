@@ -47,7 +47,7 @@ namespace Abarabone.Model.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            this.QueryModel.CreateModelEntities(conversionSystem);
+            this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject);
 

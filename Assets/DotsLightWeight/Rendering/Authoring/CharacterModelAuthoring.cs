@@ -55,7 +55,7 @@ namespace Abarabone.Model.Authoring
             var main = top.Children().First();
             var bones = this.QueryModel.First().Bones;
 
-            this.QueryModel.CreateModelEntities(conversionSystem);
+            this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
             initBinderEntity_(conversionSystem, top, main);
             initMainEntity_(conversionSystem, top, main);

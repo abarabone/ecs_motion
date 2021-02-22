@@ -25,7 +25,7 @@ namespace Abarabone.Geometry
 
 
 
-        public static void CreateModelEntities
+        public static void CreateMeshAndModelEntitiesWithDictionary
             (this IEnumerable<IMeshModel> models, GameObjectConversionSystem gcs)
         {
             var meshDict = gcs.GetMeshDictionary();
