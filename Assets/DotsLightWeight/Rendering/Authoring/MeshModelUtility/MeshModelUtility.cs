@@ -46,8 +46,8 @@ namespace Abarabone.Geometry
         {
             var qMmts =
                 from model in models
-                select model.Obj.QueryMeshMatsTransform_IfHaving();
-
+                select model.QueryMmts
+                ;
             using var meshAll = qMmts.QueryMeshDataFromModel();
 
             var qOfs =

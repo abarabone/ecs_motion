@@ -52,6 +52,12 @@ namespace Abarabone.Model.Authoring
 
 
 
+        public IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
+            this.objectTop.GetComponentsInChildren<Renderer>()
+                .Select(x => x.gameObject)
+                .QueryMeshMatsTransform_IfHaving();
+
+
         public void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {

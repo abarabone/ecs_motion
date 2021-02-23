@@ -50,7 +50,8 @@ namespace Abarabone.Geometry
 
     public struct SrcMeshesModelCombinePack
     {
-        public SrcMeshesModelCombinePack(IEnumerable<SrcMeshUnit> e, IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
+        public SrcMeshesModelCombinePack
+            (IEnumerable<SrcMeshUnit> e, IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
         {
             this.AsEnumerable = e;
             this.mmts = mmts.ToArray();

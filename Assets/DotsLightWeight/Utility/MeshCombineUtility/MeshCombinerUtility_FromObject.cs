@@ -33,12 +33,12 @@ namespace Abarabone.Geometry
 		}
 
 
-		public static IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>
-			QueryMeshMatsTransform_IfHaving(this GameObject topGameObject)
-		=>
-			topGameObject.GetComponentsInChildren<Renderer>()
-				.Select(x => x.gameObject)
-				.QueryMeshMatsTransform_IfHaving();
+		//public static IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>
+		//	QueryMeshMatsTransform_IfHaving(this GameObject topGameObject)
+		//=>
+		//	topGameObject.GetComponentsInChildren<Renderer>()
+		//		.Select(x => x.gameObject)
+		//		.QueryMeshMatsTransform_IfHaving();
 
 
 	}

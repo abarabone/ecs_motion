@@ -40,12 +40,35 @@ namespace Abarabone.Structure.Aurthoring
 
 
         public GameObject Obj => this.objectTop;
-        public Transform TfRoot => this.objectTop.Children().First().transform;// これでいいのか？
+        public Transform TfRoot => this.objectTop.transform;
         public Transform[] Bones => null;
 
 
 
-        Transform[] _bones = null;
+
+        public IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts
+        {
+            get
+            {
+                var part = this.objectTop;
+                var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
+
+                return children.QueryMeshMatsTransform_IfHaving();
+
+
+                static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
+                {
+                    var q =
+                        from child in go.Children()
+                        where child.GetComponent<StructurePartAuthoring>() == null
+                        from x in queryPartBodyObjects_Recursive_(child)
+                        select x
+                        ;
+                    return q.Prepend(go);
+                }
+            }
+        }
+
 
         public void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)

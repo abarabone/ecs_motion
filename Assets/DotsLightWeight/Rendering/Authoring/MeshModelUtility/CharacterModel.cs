@@ -56,6 +56,14 @@ namespace Abarabone.Model.Authoring
 
 
 
+
+        public IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
+            this.objectTop.GetComponentsInChildren<SkinnedMeshRenderer>()
+                .Select(x => x.gameObject)
+                .QueryMeshMatsTransform_IfHaving();
+
+
+
         Transform[] _bones = null;
 
         public void CreateModelEntity

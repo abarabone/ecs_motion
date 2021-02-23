@@ -61,44 +61,45 @@ namespace Abarabone.Structure.Authoring
 
         (GameObject, Mesh)[] createMeshes(StructureBuildingModelAuthoring[] structureModelPrefabs)
         {
+            return default;
 
-            var qFar =
-                from st in structureModelPrefabs
-                    .Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
-                select st.GetFarMeshAndFunc()
-                ;
+            //var qFar =
+            //    from st in structureModelPrefabs
+            //        .Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
+            //    select st.GetFarMeshAndFunc()
+            //    ;
 
-            var farObjectsAndMeshes = qFar.QueryObjectAndMesh()
-                .ToArray();
+            //var farObjectsAndMeshes = qFar.QueryObjectAndMesh()
+            //    .ToArray();
 
-            var qFarObject = farObjectsAndMeshes
-                .Select(x => x.go);
-            var farMeshFunc = MeshCombiner.BuildStructureMeshElements(qFarObject, this.transform);
+            //var qFarObject = farObjectsAndMeshes
+            //    .Select(x => x.go);
+            //var farMeshFunc = MeshCombiner.BuildStructureMeshElements(qFarObject, this.transform);
 
-            var fars = (this.gameObject, farMeshFunc, null as Mesh);
+            //var fars = (this.gameObject, farMeshFunc, null as Mesh);
 
 
-            var qNear =
-                from st in structureModelPrefabs
-                    .Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
-                select st.GetNearMeshFunc()
-                ;
-            var qPartAll =
-                from st in structureModelPrefabs
-                from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
-                select pt
-                ;
-            var qPartDistinct =
-                from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
-                select pt.GetPartsMeshesAndFuncs()
-                ;
+            //var qNear =
+            //    from st in structureModelPrefabs
+            //        .Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
+            //    select st.GetNearMeshFunc()
+            //    ;
+            //var qPartAll =
+            //    from st in structureModelPrefabs
+            //    from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
+            //    select pt
+            //    ;
+            //var qPartDistinct =
+            //    from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
+            //    select pt.GetPartsMeshesAndFuncs()
+            //    ;
 
-            var qAllMeshFuncs = qNear
-                .Concat(qPartDistinct)
-                .Append(fars);
+            //var qAllMeshFuncs = qNear
+            //    .Concat(qPartDistinct)
+            //    .Append(fars);
             
-            return qAllMeshFuncs.QueryObjectAndMesh()
-                .ToArray();
+            //return qAllMeshFuncs.QueryObjectAndMesh()
+            //    .ToArray();
             
         }
 

@@ -71,47 +71,47 @@ namespace Abarabone.Structure.Authoring
 
 
 
-        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetFarMeshAndFunc()
-        {
-            var top = this.gameObject;
-            var far = this.FarMeshObject.objectTop;
+        //public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetFarMeshAndFunc()
+        //{
+        //    var top = this.gameObject;
+        //    var far = this.FarMeshObject.objectTop;
 
-            var children = far
-                .DescendantsAndSelf()
-                .Where(child => child.GetComponent<MeshFilter>() != null)
-                .ToArray();
+        //    var children = far
+        //        .DescendantsAndSelf()
+        //        .Where(child => child.GetComponent<MeshFilter>() != null)
+        //        .ToArray();
 
-            var isFarSingle = children.Length == 1 && isSameTransform_(children.First(), far);
+        //    var isFarSingle = children.Length == 1 && isSameTransform_(children.First(), far);
 
-            var f = !isFarSingle
-                ? MeshCombiner.BuildNormalMeshElements(children, top.transform)
-                : null;
-            //far.transform) : null;//
+        //    var f = !isFarSingle
+        //        ? MeshCombiner.BuildNormalMeshElements(children, top.transform)
+        //        : null;
+        //    //far.transform) : null;//
 
-            var mesh = isFarSingle
-                ? children.First().GetComponent<MeshFilter>().sharedMesh
-                : null;
+        //    var mesh = isFarSingle
+        //        ? children.First().GetComponent<MeshFilter>().sharedMesh
+        //        : null;
 
-            Debug.Log($"far {far.name} {children.Length} {isFarSingle}");
-            return (far, f, mesh);
+        //    Debug.Log($"far {far.name} {children.Length} {isFarSingle}");
+        //    return (far, f, mesh);
 
 
-            bool isSameTransform_(GameObject target_, GameObject top_) =>
-                (target_.transform.localToWorldMatrix * top_.transform.worldToLocalMatrix).isIdentity;
-        }
+        //    bool isSameTransform_(GameObject target_, GameObject top_) =>
+        //        (target_.transform.localToWorldMatrix * top_.transform.worldToLocalMatrix).isIdentity;
+        //}
 
-        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetNearMeshFunc()
-        {
-            var top = this.gameObject;
-            var near = this.NearMeshObject.objectTop;
+        //public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetNearMeshFunc()
+        //{
+        //    var top = this.gameObject;
+        //    var near = this.NearMeshObject.objectTop;
 
-            var objects = near.DescendantsAndSelf();
+        //    var objects = near.DescendantsAndSelf();
 
-            var f = MeshCombiner.BuildStructureMeshElements(objects, top.transform);//near.transform);//
+        //    var f = MeshCombiner.BuildStructureMeshElements(objects, top.transform);//near.transform);//
 
-            Debug.Log($"near {near.name}");
-            return (near, f, null);
-        }
+        //    Debug.Log($"near {near.name}");
+        //    return (near, f, null);
+        //}
 
 
 
@@ -205,20 +205,20 @@ namespace Abarabone.Structure.Authoring
         static public void CreateStructureEntitiesInArea
             (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring structureModel)
         {
-            var top = structureModel.gameObject;
-            var far = structureModel.FarMeshObject.objectTop;
-            var near = structureModel.NearMeshObject.objectTop;
-            var env = structureModel.Envelope;// main object
+            //var top = structureModel.gameObject;
+            //var far = structureModel.FarMeshObject.objectTop;
+            //var near = structureModel.NearMeshObject.objectTop;
+            //var env = structureModel.Envelope;// main object
 
-            createMeshAndSetToDictionary_(gcs, near, structureModel.GetNearMeshFunc);
+            //createMeshAndSetToDictionary_(gcs, near, structureModel.GetNearMeshFunc);
 
-            createModelEntity_IfNotExists_(gcs, near, structureModel.NearMaterialToDraw);
+            //createModelEntity_IfNotExists_(gcs, near, structureModel.NearMaterialToDraw);
 
-            initBinderEntity_(gcs, top, env);
-            initMainEntity_(gcs, top, env, structureModel.NearMeshObject, structureModel.FarMeshObject);
+            //initBinderEntity_(gcs, top, env);
+            //initMainEntity_(gcs, top, env, structureModel.NearMeshObject, structureModel.FarMeshObject);
 
-            setBoneForFarEntity_(gcs, env, far, top.transform);// far.transform.parent);
-            setBoneForPartEntities_(gcs, env, near, top.transform);// near.transform);
+            //setBoneForFarEntity_(gcs, env, far, top.transform);// far.transform.parent);
+            //setBoneForPartEntities_(gcs, env, near, top.transform);// near.transform);
         }
 
 

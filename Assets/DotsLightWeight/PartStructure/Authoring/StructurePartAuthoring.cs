@@ -60,6 +60,10 @@ namespace Abarabone.Structure.Authoring
 
 
 
+            //this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
+
+
+
 
             //initPartData_(conversionSystem, this.gameObject, this.PartId);
 
@@ -203,60 +207,60 @@ namespace Abarabone.Structure.Authoring
 
 
 
-        public override IEnumerable<IMeshModel> QueryModel
-        {
-            get
-            {
-                var part = this.MasterPrefab;
-                var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
-                return children;
+        //public override IEnumerable<IMeshModel> QueryModel
+        //{
+        //    get
+        //    {
+        //        var part = this.MasterPrefab;
+        //        var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
+        //        return children;
 
 
-                static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
-                {
-                    var q =
-                        from child in go.Children()
-                        where child.GetComponent<StructurePartAuthoring>() == null
-                        from x in queryPartBodyObjects_Recursive_(child)
-                        select x
-                        ;
-                    return q.Prepend(go);
-                }
-            }
-        }
+        //        static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
+        //        {
+        //            var q =
+        //                from child in go.Children()
+        //                where child.GetComponent<StructurePartAuthoring>() == null
+        //                from x in queryPartBodyObjects_Recursive_(child)
+        //                select x
+        //                ;
+        //            return q.Prepend(go);
+        //        }
+        //    }
+        //}
 
 
-        /// <summary>
-        /// 元となったプレハブから自身と子を合成する関数を取得する。ただし子からパーツは除外する。
-        /// また、オブジェクトが１つの時は直接メッシュを取得する。
-        /// </summary>
-        public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
-        {
+        ///// <summary>
+        ///// 元となったプレハブから自身と子を合成する関数を取得する。ただし子からパーツは除外する。
+        ///// また、オブジェクトが１つの時は直接メッシュを取得する。
+        ///// </summary>
+        //public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
+        //{
 
-            var part = this.MasterPrefab;
-            var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
+        //    var part = this.MasterPrefab;
+        //    var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
 
-            var isSingle = children.IsSingle();//children.Length == 1;
-            var f = !isSingle
-                ? MeshCombiner.BuildNormalMeshElements(children, part.transform)
-                : null;
-            var mesh = isSingle
-                ? children.First().GetComponent<MeshFilter>().sharedMesh
-                : null;
+        //    var isSingle = children.IsSingle();//children.Length == 1;
+        //    var f = !isSingle
+        //        ? MeshCombiner.BuildNormalMeshElements(children, part.transform)
+        //        : null;
+        //    var mesh = isSingle
+        //        ? children.First().GetComponent<MeshFilter>().sharedMesh
+        //        : null;
 
-            return (part, f, mesh);
+        //    return (part, f, mesh);
 
 
-            static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
-            {
-                var q =
-                    from child in go.Children()
-                    where child.GetComponent<StructurePartAuthoring>() == null
-                    from x in queryPartBodyObjects_Recursive_(child)
-                    select x
-                    ;
-                return q.Prepend(go);
-            }
-        }
+        //    static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
+        //    {
+        //        var q =
+        //            from child in go.Children()
+        //            where child.GetComponent<StructurePartAuthoring>() == null
+        //            from x in queryPartBodyObjects_Recursive_(child)
+        //            select x
+        //            ;
+        //        return q.Prepend(go);
+        //    }
+        //}
     }
 }

@@ -26,11 +26,10 @@ namespace Abarabone.Structure.Aurthoring
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        public StructureModel(GameObject obj, Shader shader, Transform boneTop)
+        public StructureModel(GameObject obj, Shader shader)
         {
             this.objectTop = obj;
             this.shader = shader;
-            this.BoneTop = boneTop;
         }
 
         [SerializeField]
@@ -45,21 +44,24 @@ namespace Abarabone.Structure.Aurthoring
         [SerializeField]
         Shader shader;
 
-        public Transform BoneTop;
-
 
         public GameObject Obj => this.objectTop;
-        public Transform TfRoot => this.objectTop.Children().First().transform;// これでいいのか？
-        public Transform[] Bones => this.BoneTop.gameObject.DescendantsAndSelf()
-            .Where(x => !x.name.StartsWith("_"))
-            .Select(x => x.transform)
-            .ToArray();
+        public Transform TfRoot => this.objectTop.transform;
+        public Transform[] Bones => null;
         public float LimitDistance => this.limitDistance;
         public float Margin => this.margin;
 
 
 
-        Transform[] _bones = null;
+
+
+        public IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
+            this.objectTop.GetComponentsInChildren<Renderer>()
+                .Select(x => x.gameObject)
+                .QueryMeshMatsTransform_IfHaving();
+
+
+
 
         public void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
@@ -68,10 +70,12 @@ namespace Abarabone.Structure.Aurthoring
             mat.enableInstancing = true;
             mat.mainTexture = atlas;
 
-            const BoneType BoneType = BoneType.TR;
-            var boneLength = Bones.Length;
+            const BoneType boneType = BoneType.TR;
+            const int boneLength = 1;
+            const int vectorOffsetPerInstance = 4;
 
-            gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
+            gcs.CreateDrawModelEntityComponents
+                (this.Obj, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
         }
 
         public (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner

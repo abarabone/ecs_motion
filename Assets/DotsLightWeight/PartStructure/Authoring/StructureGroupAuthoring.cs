@@ -73,50 +73,51 @@ namespace Abarabone.Structure.Authoring
 
         (GameObject, Mesh)[] createMeshes(StructureBuildingModelAuthoring[] structureModelPrefabs)
         {
+            return default;
 
-            var qNear =
-                from st in structureModelPrefabs
-                    .Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
-                select st.GetNearMeshFunc()
-                ;
-            var qFar =
-                from st in structureModelPrefabs
-                    .Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
-                select st.GetFarMeshAndFunc()
-                ;
-            var qPartAll =
-                from st in structureModelPrefabs
-                from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
-                select pt
-                ;
-            var qPartDistinct =
-                from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
-                select pt.GetPartsMeshesAndFuncs()
-                ;
-
-
-            var allMeshFuncs = qNear
-                .Concat(qFar)
-                .Concat(qPartDistinct)
-                .ToArray();
-
-            var qObjectAndMesh = allMeshFuncs
-                .Where(x => x.mesh != null)
-                .Select(x => (x.go, x.mesh));
-
-            var qObjectAndTask = allMeshFuncs
-                .Where(x => x.f != null)
-                .Select(x => (x.go, t: Task.Run(x.f)));
-            var qObjectAndMeshFromTask = qObjectAndTask
-                .Select(x => x.t)
-                .WhenAll()
-                .Result
-                .Select(x => x.CreateMesh())
-                .Zip(qObjectAndTask, (x, y) => (y.go, mesh: x));
+            //var qNear =
+            //    from st in structureModelPrefabs
+            //        .Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
+            //    select st.GetNearMeshFunc()
+            //    ;
+            //var qFar =
+            //    from st in structureModelPrefabs
+            //        .Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
+            //    select st.GetFarMeshAndFunc()
+            //    ;
+            //var qPartAll =
+            //    from st in structureModelPrefabs
+            //    from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
+            //    select pt
+            //    ;
+            //var qPartDistinct =
+            //    from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
+            //    select pt.GetPartsMeshesAndFuncs()
+            //    ;
 
 
-            return qObjectAndMesh.Concat(qObjectAndMeshFromTask)
-                .ToArray();
+            //var allMeshFuncs = qNear
+            //    .Concat(qFar)
+            //    .Concat(qPartDistinct)
+            //    .ToArray();
+
+            //var qObjectAndMesh = allMeshFuncs
+            //    .Where(x => x.mesh != null)
+            //    .Select(x => (x.go, x.mesh));
+
+            //var qObjectAndTask = allMeshFuncs
+            //    .Where(x => x.f != null)
+            //    .Select(x => (x.go, t: Task.Run(x.f)));
+            //var qObjectAndMeshFromTask = qObjectAndTask
+            //    .Select(x => x.t)
+            //    .WhenAll()
+            //    .Result
+            //    .Select(x => x.CreateMesh())
+            //    .Zip(qObjectAndTask, (x, y) => (y.go, mesh: x));
+
+
+            //return qObjectAndMesh.Concat(qObjectAndMeshFromTask)
+            //    .ToArray();
         }
 
         //(Texture2D, Dictionary<Mesh, Mesh>[]) convertNearTextureAndMesh
