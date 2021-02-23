@@ -10,8 +10,9 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace Abarabone.Model.Authoring
+namespace Abarabone.Structure.Aurthoring
 {
+    using Abarabone.Model;
     using Abarabone.Draw;
     using Abarabone.Draw.Authoring;
     using Abarabone.Geometry;
@@ -20,12 +21,11 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Common.Extension;
     using Abarabone.Misc;
 
-    [Serializable]
-    public class LodMeshModel<TIdx, TVtx> : IMeshModelLod
+    public class PartModel<TIdx, TVtx> : IMeshModel
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        public LodMeshModel(GameObject obj, Shader shader)
+        public PartModel(GameObject obj, Shader shader)
         {
             this.objectTop = obj;
             this.shader = shader;
@@ -35,22 +35,17 @@ namespace Abarabone.Model.Authoring
         GameObject objectTop;
 
         [SerializeField]
-        float limitDistance;
-        [SerializeField]
-        float margin;
-
-
-        [SerializeField]
         Shader shader;
 
 
+
         public GameObject Obj => this.objectTop;
-        public Transform TfRoot => this.objectTop.transform;
+        public Transform TfRoot => this.objectTop.Children().First().transform;// これでいいのか？
         public Transform[] Bones => null;
-        public float LimitDistance => this.limitDistance;
-        public float Margin => this.margin;
 
 
+
+        Transform[] _bones = null;
 
         public void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
@@ -60,7 +55,7 @@ namespace Abarabone.Model.Authoring
             mat.mainTexture = atlas;
 
             const BoneType BoneType = BoneType.TR;
-            const int boneLength = 1;
+            var boneLength = 1;
 
             gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
         }
@@ -71,10 +66,10 @@ namespace Abarabone.Model.Authoring
                 Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
             )
         {
-            var atlas = atlasDictionary.objectToAtlas[this.objectTop].GetHashCode();
+            var atlas = atlasDictionary.objectToAtlas[this.Obj].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             return (
-                this.objectTop,
+                this.Obj,
                 meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, part => texdict[atlas, part], this.Bones)
             );
         }

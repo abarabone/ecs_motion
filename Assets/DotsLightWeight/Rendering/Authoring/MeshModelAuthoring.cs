@@ -10,7 +10,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace Abarabone.Model.Aurthoring
+namespace Abarabone.Model.Authoring
 {
     using Abarabone.Model;
     using Abarabone.Draw;

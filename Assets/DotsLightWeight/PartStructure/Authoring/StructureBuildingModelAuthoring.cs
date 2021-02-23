@@ -25,16 +25,8 @@ namespace Abarabone.Structure.Authoring
     using Unity.Entities.UniversalDelegates;
     using Unity.Properties;
     using System.CodeDom;
-
-    //using Abarabone.Model;
-    //using Abarabone.Draw;
-    //using Abarabone.Model.Authoring;
-    //using Abarabone.Draw.Authoring;
-    //using Abarabone.Geometry;
-    //using Abarabone.Structure.Authoring;
     using Abarabone.Utilities;
-    //using Abarabone.Common.Extension;
-    //using Abarabone.Misc;
+    using Abarabone.Misc;
 
 
     /// <summary>
@@ -50,23 +42,33 @@ namespace Abarabone.Structure.Authoring
         public ObjectAndDistance NearMeshObject;
         public ObjectAndDistance FarMeshObject;
 
+        public LodMeshModel<UI32, PositionNormalUvVertex> NearModel;
+        public LodMeshModel<UI32, PositionNormalUvVertex> FarModel;
+
         public GameObject Envelope;
         public StructureBuildingModelAuthoring MasterPrefab;
 
 
 
-        ///// <summary>
-        ///// near と far のモデルエンティティを生成、
-        ///// </summary>
-        //public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
-        //{
-        //    conversionSystem.CreateStructureEntities(this);
-            
-        //    //var prefab = this.MasterPrefab;
-        //    //if (prefab == null) return;
+        /// <summary>
+        /// near と far のモデルエンティティを生成、
+        /// </summary>
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            conversionSystem.CreateStructureEntities(this);
 
-        //    //conversionSystem.CreateStructureEntities(prefab);
-        //}
+            //var prefab = this.MasterPrefab;
+            //if (prefab == null) return;
+
+            //conversionSystem.CreateStructureEntities(prefab);
+        }
+
+
+        public override IEnumerable<IMeshModel> QueryModel =>
+            new[] { this.NearModel, this.FarModel };
+
+
+
 
 
         public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetFarMeshAndFunc()
@@ -111,82 +113,6 @@ namespace Abarabone.Structure.Authoring
             return (near, f, null);
         }
 
-
-
-
-
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
-        {
-
-            //createModelEntities_(conversionSystem, this.ShaderToDraw, this.LodOptionalMeshTops);
-
-            //var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject, this.LodOptionalMeshTops);
-
-            //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.LodOptionalMeshTops);
-
-            //return;
-
-
-            //void createModelEntities_
-            //    (GameObjectConversionSystem gcs, Shader shader, ObjectAndDistance[] lodOpts)
-            //{
-
-            //    var atlasDict = gcs.GetTextureAtlasDictionary();
-            //    var meshDict = gcs.GetMeshDictionary();
-
-            //    this.OmmtsEnumerable.Objs().PackTextureToDictionary(atlasDict);
-
-            //    combineMeshToDictionary_();
-
-            //    createModelEntities_();
-
-            //    return;
-
-
-            //    void combineMeshToDictionary_()
-            //    {
-            //        using var meshAll = this.OmmtsEnumerable.QueryMeshDataFromModel();
-
-            //        var ofs = this.BuildMeshCombiners(meshAll.AsEnumerable, meshDict, atlasDict);
-            //        var qMObj = ofs.Select(x => x.obj);
-            //        var qMesh = ofs.Select(x => x.f.ToTask())
-            //            .WhenAll().Result
-            //            .Select(x => x.CreateMesh());
-            //        //var qMesh = ofs.Select(x => x.f().CreateMesh());
-            //        meshDict.AddRange(qMObj, qMesh);
-            //    }
-
-            //    void createModelEntities_()
-            //    {
-            //        var qObj = this.OmmtsEnumerable.Objs();
-
-            //        foreach (var obj in qObj)
-            //        {
-            //            Debug.Log($"{obj.name} model ent");
-
-            //            var mesh = meshDict[obj];
-            //            var atlas = atlasDict.objectToAtlas[obj];
-            //            createModelEntity_(obj, mesh, atlas);
-            //        }
-
-            //        return;
-
-
-            //        void createModelEntity_(GameObject obj, Mesh mesh, Texture2D atlas)
-            //        {
-            //            var mat = new Material(shader);
-            //            mat.enableInstancing = true;
-            //            mat.mainTexture = atlas;
-
-            //            const BoneType BoneType = BoneType.TR;
-            //            const int boneLength = 1;
-
-            //            gcs.CreateDrawModelEntityComponents(obj, mesh, mat, BoneType, boneLength);
-            //        }
-            //    }
-
-            //}
-        }
 
 
         ///// <summary>
@@ -252,21 +178,25 @@ namespace Abarabone.Structure.Authoring
     {
 
         static public void CreateStructureEntities
-            (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring structureModel)
+            (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
-            var top = structureModel.gameObject;
-            var far = structureModel.FarMeshObject.objectTop;
-            var near = structureModel.NearMeshObject.objectTop;
-            var env = structureModel.Envelope;// main object
+            var top = st.gameObject;
+            var far = st.FarMeshObject.objectTop;
+            var near = st.NearMeshObject.objectTop;
+            var env = st.Envelope;// main object
 
-            createMeshAndSetToDictionary_(gcs, far, structureModel.GetFarMeshAndFunc);
-            createMeshAndSetToDictionary_(gcs, near, structureModel.GetNearMeshFunc);
 
-            createModelEntity_IfNotExists_(gcs, far, structureModel.FarMaterialToDraw);
-            createModelEntity_IfNotExists_(gcs, near, structureModel.NearMaterialToDraw);
+            st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
+
+
+            //createMeshAndSetToDictionary_(gcs, far, structureModel.GetFarMeshAndFunc);
+            //createMeshAndSetToDictionary_(gcs, near, structureModel.GetNearMeshFunc);
+
+            //createModelEntity_IfNotExists_(gcs, far, structureModel.FarMaterialToDraw);
+            //createModelEntity_IfNotExists_(gcs, near, structureModel.NearMaterialToDraw);
 
             initBinderEntity_(gcs, top, env);
-            initMainEntity_(gcs, top, env, structureModel.NearMeshObject, structureModel.FarMeshObject);
+            initMainEntity_(gcs, top, env, st.NearMeshObject, st.FarMeshObject);
 
             setBoneForFarEntity_(gcs, env, far, top.transform);// far.transform.parent);
             setBoneForPartEntities_(gcs, env, near, top.transform);// near.transform);

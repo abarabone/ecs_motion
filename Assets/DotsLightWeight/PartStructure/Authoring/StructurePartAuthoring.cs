@@ -36,6 +36,7 @@ namespace Abarabone.Structure.Authoring
 
         public GameObject MasterPrefab;
 
+        public LodMeshModel<UI32, PositionNormalUvVertex> PartModel;
 
 
         /// <summary>
@@ -53,13 +54,18 @@ namespace Abarabone.Structure.Authoring
                 .Select(go => go.GetComponent<StructureBuildingModelAuthoring>())
                 .First(x => x != null);
             var top = topAuth.gameObject;
-            var main = topAuth.FarMeshObject.objectTop;
+            //var main = topAuth.FarMeshObject.objectTop;
+            var main = topAuth.FarModel.Obj;
 
-            initPartData_(conversionSystem, this.gameObject, this.PartId);
 
-            createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
-            createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
-            createDebrisPrefab_(conversionSystem, this.gameObject, this.MasterPrefab);
+
+
+
+            //initPartData_(conversionSystem, this.gameObject, this.PartId);
+
+            ////createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
+            ////createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
+            //createDebrisPrefab_(conversionSystem, this.gameObject, this.MasterPrefab);
 
             return;
 
@@ -89,33 +95,33 @@ namespace Abarabone.Structure.Authoring
             }
 
 
-            static void createMeshAndSetToDictionary_
-                (GameObjectConversionSystem gcs, GameObject go, Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshHolder)
-            {
-                if (gcs.IsExistingInMeshDictionary(go)) return;
+            //static void createMeshAndSetToDictionary_
+            //    (GameObjectConversionSystem gcs, GameObject go, Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshHolder)
+            //{
+            //    if (gcs.IsExistingInMeshDictionary(go)) return;
 
-                var x = meshHolder();
-                var newmesh = x.mesh ?? x.f().CreateMesh();
+            //    var x = meshHolder();
+            //    var newmesh = x.mesh ?? x.f().CreateMesh();
 
-                Debug.Log($"part model {go.name} - {newmesh.name}");
+            //    Debug.Log($"part model {go.name} - {newmesh.name}");
 
-                gcs.AddToMeshDictionary(go, newmesh);
-            }
+            //    gcs.AddToMeshDictionary(go, newmesh);
+            //}
 
 
-            static void createModelEntity_IfNotExists_
-                (GameObjectConversionSystem gcs, GameObject masterPrefab, Material shader)
-            {
-                if (gcs.IsExistsInModelEntityDictionary(masterPrefab)) return;
+            //static void createModelEntity_IfNotExists_
+            //    (GameObjectConversionSystem gcs, GameObject masterPrefab, Material shader)
+            //{
+            //    if (gcs.IsExistsInModelEntityDictionary(masterPrefab)) return;
 
-                var mesh = gcs.GetFromMeshDictionary(masterPrefab);
-                var mat = new Material(shader);
+            //    var mesh = gcs.GetFromMeshDictionary(masterPrefab);
+            //    var mat = new Material(shader);
 
-                const BoneType BoneType = BoneType.TR;// あとでＳもつける
-                const int boneLength = 1;
+            //    const BoneType BoneType = BoneType.TR;// あとでＳもつける
+            //    const int boneLength = 1;
 
-                var modelEntity_ = gcs.CreateDrawModelEntityComponents(masterPrefab, mesh, mat, BoneType, boneLength);
-            }
+            //    var modelEntity_ = gcs.CreateDrawModelEntityComponents(masterPrefab, mesh, mat, BoneType, boneLength);
+            //}
 
             // 同じプレハブをまとめることはできないだろうか？
             static void createDebrisPrefab_(GameObjectConversionSystem gcs, GameObject part, GameObject master)
@@ -192,6 +198,30 @@ namespace Abarabone.Structure.Authoring
 
 
                 em_.SetName_(prefabEnt, $"{part.name} debris");
+            }
+        }
+
+
+
+        public override IEnumerable<IMeshModel> QueryModel
+        {
+            get
+            {
+                var part = this.MasterPrefab;
+                var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
+                return children;
+
+
+                static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
+                {
+                    var q =
+                        from child in go.Children()
+                        where child.GetComponent<StructurePartAuthoring>() == null
+                        from x in queryPartBodyObjects_Recursive_(child)
+                        select x
+                        ;
+                    return q.Prepend(go);
+                }
             }
         }
 
