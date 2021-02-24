@@ -21,11 +21,11 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Misc;
 
     [Serializable]
-    public class LodMeshModel<TIdx, TVtx> : IMeshModelLod
+    public class MeshModel<TIdx, TVtx> : IMeshModel
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        public LodMeshModel(GameObject obj, Shader shader)
+        public MeshModel(GameObject obj, Shader shader)
         {
             this.objectTop = obj;
             this.shader = shader;
@@ -35,30 +35,20 @@ namespace Abarabone.Model.Authoring
         GameObject objectTop;
 
         [SerializeField]
-        float limitDistance;
-        [SerializeField]
-        float margin;
+        protected Shader shader;
 
 
-        [SerializeField]
-        Shader shader;
+        public virtual GameObject Obj => this.objectTop;
+        public virtual Transform TfRoot => this.objectTop.transform;
+        public virtual Transform[] Bones => null;
 
-
-        public GameObject Obj => this.objectTop;
-        public Transform TfRoot => this.objectTop.transform;
-        public Transform[] Bones => null;
-        public float LimitDistance => this.limitDistance;
-        public float Margin => this.margin;
-
-
-
-        public IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
+        public virtual IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
             this.objectTop.GetComponentsInChildren<Renderer>()
                 .Select(x => x.gameObject)
                 .QueryMeshMatsTransform_IfHaving();
 
 
-        public void CreateModelEntity
+        public virtual void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.shader);
@@ -71,7 +61,7 @@ namespace Abarabone.Model.Authoring
             gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
         }
 
-        public (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
+        public virtual (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
             (
                 SrcMeshesModelCombinePack meshpack,
                 Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
@@ -86,4 +76,23 @@ namespace Abarabone.Model.Authoring
         }
     }
 
+
+    [Serializable]
+    public class LodMeshModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>, IMeshModelLod
+        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+    {
+        public LodMeshModel(GameObject obj, Shader shader) : base(obj, shader)
+        { }
+
+        [SerializeField]
+        float limitDistance;
+
+        [SerializeField]
+        float margin;
+
+
+        public float LimitDistance => this.limitDistance;
+        public float Margin => this.margin;
+    }
 }

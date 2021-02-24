@@ -14,14 +14,18 @@ namespace Abarabone.Geometry
 
     public interface IMeshModel
     {
+
         GameObject Obj { get; }
         Transform TfRoot { get; }
         Transform[] Bones { get; }
 
+
         IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts { get; }
+
 
         void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
+
 
         (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
             (

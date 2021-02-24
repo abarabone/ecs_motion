@@ -25,7 +25,7 @@ namespace Abarabone.Structure.Authoring
     using Material = UnityEngine.Material;
     using Unity.Physics.Authoring;
 
-    public class StructurePartAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class StructurePartAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
 
@@ -37,6 +37,13 @@ namespace Abarabone.Structure.Authoring
         public GameObject MasterPrefab;
 
         public LodMeshModel<UI32, PositionNormalUvVertex> PartModel;
+
+
+
+        public override IEnumerable<IMeshModel> QueryModel =>
+            new PartModel<UI32, PositionNormalUvVertex>(this.MasterPrefab, this.MaterialToDraw.shader)
+            .WrapEnumerable();
+
 
 
         /// <summary>
@@ -60,7 +67,7 @@ namespace Abarabone.Structure.Authoring
 
 
 
-            //this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
+            this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
 
 
@@ -205,29 +212,6 @@ namespace Abarabone.Structure.Authoring
             }
         }
 
-
-
-        //public override IEnumerable<IMeshModel> QueryModel
-        //{
-        //    get
-        //    {
-        //        var part = this.MasterPrefab;
-        //        var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
-        //        return children;
-
-
-        //        static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
-        //        {
-        //            var q =
-        //                from child in go.Children()
-        //                where child.GetComponent<StructurePartAuthoring>() == null
-        //                from x in queryPartBodyObjects_Recursive_(child)
-        //                select x
-        //                ;
-        //            return q.Prepend(go);
-        //        }
-        //    }
-        //}
 
 
         ///// <summary>

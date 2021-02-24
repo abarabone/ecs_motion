@@ -10,7 +10,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace Abarabone.Structure.Aurthoring
+namespace Abarabone.Structure.Authoring
 {
     using Abarabone.Model;
     using Abarabone.Draw;
@@ -20,37 +20,25 @@ namespace Abarabone.Structure.Aurthoring
     using Abarabone.Utilities;
     using Abarabone.Common.Extension;
     using Abarabone.Misc;
+    using Abarabone.Model.Authoring;
 
-    public class PartModel<TIdx, TVtx> : IMeshModel
+    [Serializable]
+    public class PartModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        public PartModel(GameObject obj, Shader shader)
-        {
-            this.objectTop = obj;
-            this.shader = shader;
-        }
 
-        [SerializeField]
-        GameObject objectTop;
-
-        [SerializeField]
-        Shader shader;
-
-
-
-        public GameObject Obj => this.objectTop;
-        public Transform TfRoot => this.objectTop.transform;
-        public Transform[] Bones => null;
+        public PartModel(GameObject obj, Shader shader) : base(obj, shader)
+        { }
 
 
 
 
-        public IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts
+        public override IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts
         {
             get
             {
-                var part = this.objectTop;
+                var part = this.Obj;
                 var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
 
                 return children.QueryMeshMatsTransform_IfHaving();
@@ -70,25 +58,26 @@ namespace Abarabone.Structure.Aurthoring
         }
 
 
-        public void CreateModelEntity
-            (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
-        {
-            var mat = new Material(this.shader);
-            mat.enableInstancing = true;
-            mat.mainTexture = atlas;
+        //public override void CreateModelEntity
+        //    (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        //{
+        //    var mat = new Material(this.shader);
+        //    mat.enableInstancing = true;
+        //    mat.mainTexture = atlas;
 
-            const BoneType BoneType = BoneType.TR;
-            var boneLength = 1;
+        //    const BoneType BoneType = BoneType.TR;
+        //    var boneLength = 1;
 
-            gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
-        }
+        //    gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
+        //}
 
-        public (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
+        public override (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
             (
                 SrcMeshesModelCombinePack meshpack,
                 Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
             )
         {
+            Debug.Log("eeeeeee " + this.Obj.name);
             var atlas = atlasDictionary.objectToAtlas[this.Obj].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             return (

@@ -52,11 +52,13 @@ namespace Abarabone.Geometry
 
             var qOfs =
                 from x in (meshAll.AsEnumerable, models).Zip()
+                    .Do(x => Debug.Log($"ssefse {x.src1.Obj?.name} {x.src1.Obj?.GetHashCode()} {meshDict.ContainsKey(x.src1.Obj)}"))
                 let meshsrc = x.src0
                 let model = x.src1
                 where !meshDict.ContainsKey(model.Obj)
                 select model.BuildMeshCombiner(meshsrc, meshDict, atlasDict);
             var ofs = qOfs.ToArray();
+            Debug.Log(ofs.Length);
 
             var qMObj = ofs.Select(x => x.obj);
             var qMesh = ofs.Select(x => x.f.ToTask())

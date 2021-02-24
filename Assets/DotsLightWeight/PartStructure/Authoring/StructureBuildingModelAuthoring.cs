@@ -42,7 +42,7 @@ namespace Abarabone.Structure.Authoring
         public ObjectAndDistance NearMeshObject;
         public ObjectAndDistance FarMeshObject;
 
-        public LodMeshModel<UI32, PositionNormalUvVertex> NearModel;
+        public StructureModel<UI32, PositionNormalUvVertex> NearModel;
         public LodMeshModel<UI32, PositionNormalUvVertex> FarModel;
 
         public GameObject Envelope;
