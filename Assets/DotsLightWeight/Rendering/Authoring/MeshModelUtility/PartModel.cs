@@ -57,34 +57,6 @@ namespace Abarabone.Structure.Authoring
             }
         }
 
-
-        //public override void CreateModelEntity
-        //    (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
-        //{
-        //    var mat = new Material(this.shader);
-        //    mat.enableInstancing = true;
-        //    mat.mainTexture = atlas;
-
-        //    const BoneType BoneType = BoneType.TR;
-        //    var boneLength = 1;
-
-        //    gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
-        //}
-
-        public override (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
-            (
-                SrcMeshesModelCombinePack meshpack,
-                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
-            )
-        {
-            Debug.Log("eeeeeee " + this.Obj.name);
-            var atlas = atlasDictionary.objectToAtlas[this.Obj].GetHashCode();
-            var texdict = atlasDictionary.texHashToUvRect;
-            return (
-                this.Obj,
-                meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, part => texdict[atlas, part], this.Bones)
-            );
-        }
     }
 
 }

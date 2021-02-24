@@ -72,11 +72,11 @@ namespace Abarabone.Structure.Authoring
 
 
 
-            //initPartData_(conversionSystem, this.gameObject, this.PartId);
+            initPartData_(conversionSystem, this.gameObject, this.PartId);
 
-            ////createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
-            ////createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
-            //createDebrisPrefab_(conversionSystem, this.gameObject, this.MasterPrefab);
+            //createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
+            //createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
+            createDebrisPrefab_(conversionSystem, this.gameObject, this.MasterPrefab);
 
             return;
 

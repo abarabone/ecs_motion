@@ -77,9 +77,10 @@ namespace Abarabone.Geometry
                 Dictionary<GameObject, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict
             )
         {
-
             foreach (var model in models)
             {
+                if (gcs.IsExistsInModelEntityDictionary(model.Obj)) continue;
+
                 var obj = model.Obj;
                 Debug.Log($"{obj.name} model ent");
 

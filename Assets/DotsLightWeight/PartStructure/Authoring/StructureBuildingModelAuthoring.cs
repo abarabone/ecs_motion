@@ -225,36 +225,36 @@ namespace Abarabone.Structure.Authoring
         // ---------------------------------------------------------------------
 
 
-        static void createMeshAndSetToDictionary_
-            (GameObjectConversionSystem gcs, GameObject go, Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshHolder)
-        {
-            if (gcs.IsExistingInMeshDictionary(go)) return;
+        //static void createMeshAndSetToDictionary_
+        //    (GameObjectConversionSystem gcs, GameObject go, Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshHolder)
+        //{
+        //    if (gcs.IsExistingInMeshDictionary(go)) return;
             
-            var x = meshHolder();
-            var newmesh = x.mesh ?? x.f().CreateMesh();
+        //    var x = meshHolder();
+        //    var newmesh = x.mesh ?? x.f().CreateMesh();
 
-            Debug.Log($"st model {go.name} - {newmesh.name}");
+        //    Debug.Log($"st model {go.name} - {newmesh.name}");
 
-            gcs.AddToMeshDictionary(go, newmesh);
-        }
+        //    gcs.AddToMeshDictionary(go, newmesh);
+        //}
 
 
-        // メッシュの位置は、main object の位置となるようにすること
-        static void createModelEntity_IfNotExists_
-            (GameObjectConversionSystem gcs, GameObject go, Material srcMaterial)
-        {
-            if (gcs.IsExistsInModelEntityDictionary(go)) return;
+        //// メッシュの位置は、main object の位置となるようにすること
+        //static void createModelEntity_IfNotExists_
+        //    (GameObjectConversionSystem gcs, GameObject go, Material srcMaterial)
+        //{
+        //    if (gcs.IsExistsInModelEntityDictionary(go)) return;
 
-            var mesh = gcs.GetFromMeshDictionary(go);
-            var mat = new Material(srcMaterial);
+        //    var mesh = gcs.GetFromMeshDictionary(go);
+        //    var mat = new Material(srcMaterial);
 
-            const BoneType boneType = BoneType.TR;
-            const int boneLength = 1;
-            const int vectorOffsetPerInstance = 4;
+        //    const BoneType boneType = BoneType.TR;
+        //    const int boneLength = 1;
+        //    const int vectorOffsetPerInstance = 4;
 
-            gcs.CreateDrawModelEntityComponents
-                (go, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
-        }
+        //    gcs.CreateDrawModelEntityComponents
+        //        (go, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
+        //}
 
 
         static void initBinderEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
