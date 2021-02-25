@@ -30,6 +30,8 @@ namespace Abarabone.Geometry.inner.unit
         public IEnumerable<IEnumerable<int>> texhashPerSubMesh;
         //public HashToRect texhashToUvRect;
         public Func<int, Rect> texHashToUvRect;
+
+        public IEnumerable<int> partIdPerMesh;
     }
 
     //public struct MeshSourceUnit
