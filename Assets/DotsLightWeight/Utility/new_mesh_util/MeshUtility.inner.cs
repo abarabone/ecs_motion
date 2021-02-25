@@ -126,6 +126,12 @@ namespace Abarabone.Geometry.inner
             select new Vector4(w.weight0, w.weight1, w.weight2, w.weight3)
             ;
 
+
+        static public IEnumerable<Color32> QueryConvertPartId
+            (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        {
+
+        }
     }
 
 

@@ -36,12 +36,6 @@ namespace Abarabone.Structure.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public Material NearMaterialToDraw;
-        public Material FarMaterialToDraw;
-
-        public ObjectAndDistance NearMeshObject;
-        public ObjectAndDistance FarMeshObject;
-
         public StructureModel<UI32, PositionNormalUvVertex> NearModel;
         public LodMeshModel<UI32, PositionNormalUvVertex> FarModel;
 
@@ -57,119 +51,11 @@ namespace Abarabone.Structure.Authoring
         {
             conversionSystem.CreateStructureEntities(this);
 
-            //var prefab = this.MasterPrefab;
-            //if (prefab == null) return;
-
-            //conversionSystem.CreateStructureEntities(prefab);
         }
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
             new[] { this.NearModel, this.FarModel };
-
-
-
-
-
-        //public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetFarMeshAndFunc()
-        //{
-        //    var top = this.gameObject;
-        //    var far = this.FarMeshObject.objectTop;
-
-        //    var children = far
-        //        .DescendantsAndSelf()
-        //        .Where(child => child.GetComponent<MeshFilter>() != null)
-        //        .ToArray();
-
-        //    var isFarSingle = children.Length == 1 && isSameTransform_(children.First(), far);
-
-        //    var f = !isFarSingle
-        //        ? MeshCombiner.BuildNormalMeshElements(children, top.transform)
-        //        : null;
-        //    //far.transform) : null;//
-
-        //    var mesh = isFarSingle
-        //        ? children.First().GetComponent<MeshFilter>().sharedMesh
-        //        : null;
-
-        //    Debug.Log($"far {far.name} {children.Length} {isFarSingle}");
-        //    return (far, f, mesh);
-
-
-        //    bool isSameTransform_(GameObject target_, GameObject top_) =>
-        //        (target_.transform.localToWorldMatrix * top_.transform.worldToLocalMatrix).isIdentity;
-        //}
-
-        //public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetNearMeshFunc()
-        //{
-        //    var top = this.gameObject;
-        //    var near = this.NearMeshObject.objectTop;
-
-        //    var objects = near.DescendantsAndSelf();
-
-        //    var f = MeshCombiner.BuildStructureMeshElements(objects, top.transform);//near.transform);//
-
-        //    Debug.Log($"near {near.name}");
-        //    return (near, f, null);
-        //}
-
-
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //public override (GameObject obj, Func<IMeshElements> f)[] BuildMeshCombiners
-        //    (
-        //        IEnumerable<SrcMeshesModelCombinePack> meshpacks,
-        //        Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
-        //    )
-        //{
-        //    var tfTop = this.gameObject.transform;
-
-        //    var far = build_<UI32, PositionNormalUvVertex>(meshpacks.ElementAt(0));
-        //    var near = build_<UI32, PositionNormalUvVertex>(meshpacks.ElementAt(1));
-
-        //    var dstlist = new List<(GameObject obj, Func<IMeshElements> f)>();
-        //    if (far != default) dstlist.Add(far);
-        //    if (near != default) dstlist.Add(near);
-
-        //    return dstlist.ToArray();
-
-
-        //    (GameObject obj, Func<IMeshElements> f) build_<TIdx, TVtx>(SrcMeshesModelCombinePack src)
-        //        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        //        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-        //    {
-        //        if (!meshDictionary.ContainsKey(src.obj)) return default;
-
-        //        var atlas = atlasDictionary.objectToAtlas[src.obj].GetHashCode();
-        //        var texdict = atlasDictionary.texHashToUvRect;
-        //        return (
-        //            src.obj,
-        //            src.BuildCombiner<TIdx, TVtx>(part => texdict[atlas, part], null, tfTop)
-        //        );
-        //    }
-        //}
-
-
-
-        //IEnumerable<ObjectAndMmts> _ommtss = null;
-
-        //public override IEnumerable<ObjectAndMmts> OmmtsEnumerable => this._ommtss ??=
-        //    from obj in this.combineTargetObjects().ToArray()
-        //    select new ObjectAndMmts
-        //    {
-        //        obj = obj,
-        //        mmts = obj.QueryMeshMatsTransform_IfHaving().ToArray(),
-        //    };
-
-        //IEnumerable<GameObject> combineTargetObjects()
-        //{
-        //    var far = this.FarMeshObject.objectTop;
-        //    var near = this.NearMeshObject.objectTop;
-
-        //    return new [] { far, near };
-        //}
 
 
     }
@@ -181,22 +67,16 @@ namespace Abarabone.Structure.Authoring
             (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
             var top = st.gameObject;
-            var far = st.FarMeshObject.objectTop;
-            var near = st.NearMeshObject.objectTop;
+            var far = st.FarModel.Obj;
+            var near = st.NearModel.Obj;
             var env = st.Envelope;// main object
 
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
 
-            //createMeshAndSetToDictionary_(gcs, far, structureModel.GetFarMeshAndFunc);
-            //createMeshAndSetToDictionary_(gcs, near, structureModel.GetNearMeshFunc);
-
-            //createModelEntity_IfNotExists_(gcs, far, structureModel.FarMaterialToDraw);
-            //createModelEntity_IfNotExists_(gcs, near, structureModel.NearMaterialToDraw);
-
             initBinderEntity_(gcs, top, env);
-            initMainEntity_(gcs, top, env, st.NearMeshObject, st.FarMeshObject);
+            initMainEntity_(gcs, top, env, st.NearModel, st.FarModel);
 
             setBoneForFarEntity_(gcs, env, far, top.transform);// far.transform.parent);
             setBoneForPartEntities_(gcs, env, near, top.transform);// near.transform);
@@ -225,38 +105,6 @@ namespace Abarabone.Structure.Authoring
         // ---------------------------------------------------------------------
 
 
-        //static void createMeshAndSetToDictionary_
-        //    (GameObjectConversionSystem gcs, GameObject go, Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshHolder)
-        //{
-        //    if (gcs.IsExistingInMeshDictionary(go)) return;
-            
-        //    var x = meshHolder();
-        //    var newmesh = x.mesh ?? x.f().CreateMesh();
-
-        //    Debug.Log($"st model {go.name} - {newmesh.name}");
-
-        //    gcs.AddToMeshDictionary(go, newmesh);
-        //}
-
-
-        //// メッシュの位置は、main object の位置となるようにすること
-        //static void createModelEntity_IfNotExists_
-        //    (GameObjectConversionSystem gcs, GameObject go, Material srcMaterial)
-        //{
-        //    if (gcs.IsExistsInModelEntityDictionary(go)) return;
-
-        //    var mesh = gcs.GetFromMeshDictionary(go);
-        //    var mat = new Material(srcMaterial);
-
-        //    const BoneType boneType = BoneType.TR;
-        //    const int boneLength = 1;
-        //    const int vectorOffsetPerInstance = 4;
-
-        //    gcs.CreateDrawModelEntityComponents
-        //        (go, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
-        //}
-
-
         static void initBinderEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
         {
             var em_ = gcs_.DstEntityManager;
@@ -280,7 +128,7 @@ namespace Abarabone.Structure.Authoring
         }
 
         static void initMainEntity_
-            (GameObjectConversionSystem gcs, GameObject top, GameObject main, ObjectAndDistance near, ObjectAndDistance far)
+            (GameObjectConversionSystem gcs, GameObject top, GameObject main, IMeshModelLod near, IMeshModelLod far)
         {
             var em_ = gcs.DstEntityManager;
 
@@ -331,8 +179,8 @@ namespace Abarabone.Structure.Authoring
 
 
             var draw = mainEntity;
-            var lods = new ObjectAndDistance[] { near, far };
-            //////gcs.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
+            var lods = new IMeshModelLod[] { near, far };
+            gcs.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
 
 
             gcs.InitPostureEntity(main);//, far.objectTop.transform);
