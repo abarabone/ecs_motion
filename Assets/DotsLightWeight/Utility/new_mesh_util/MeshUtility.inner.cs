@@ -129,9 +129,17 @@ namespace Abarabone.Geometry.inner
 
         static public IEnumerable<Color32> QueryConvertPartId
             (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-        {
-
-        }
+        =>
+            from permesh in (p.partIdPerMesh, srcmeshes).Zip()
+            let pid = permesh.src0
+            let color = new Color32
+            {
+                r = (byte)(pid & 0xff),
+                g = (byte)(pid << 8 & 0xff00),
+            }
+            from vtx in Enumerable.Range(0, permesh.src1.MeshData.vertexCount)
+            select color
+            ;
     }
 
 

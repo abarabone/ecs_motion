@@ -17,7 +17,7 @@ namespace Abarabone.Geometry
     using Abarabone.Utilities;
     using Abarabone.Geometry.inner;
     using Abarabone.Geometry.inner.unit;
-
+    using Abarabone.Structure.Authoring;
 
 
     public static class MeshCombineUtility
@@ -89,6 +89,13 @@ namespace Abarabone.Geometry
                 //texhashToUvRect = texHashToUvRect,
                 texHashToUvRect = texHashToUvRectFunc,
             };
+
+            var qPartIdPerMesh =
+                from mmt in mmts_
+                select mmt.tf.GetComponentInParent<StructurePartAuthoring>()?.PartId ?? default
+                ;
+            result.partIdPerMesh = qPartIdPerMesh.ToArray();
+
             if (tfBones == null) return result;
 
 

@@ -36,7 +36,7 @@ namespace Abarabone.Structure.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public StructureModel<UI32, PositionNormalUvVertex> NearModel;
+        public StructureModel<UI32, StructureVertex> NearModel;
         public LodMeshModel<UI32, PositionNormalUvVertex> FarModel;
 
         public GameObject Envelope;
@@ -55,7 +55,7 @@ namespace Abarabone.Structure.Authoring
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
-            new[] { this.NearModel, this.FarModel };
+            new [] { this.NearModel as IMeshModel, this.FarModel };
 
 
     }

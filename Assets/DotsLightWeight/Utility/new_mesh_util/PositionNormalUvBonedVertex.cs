@@ -41,14 +41,14 @@ namespace Abarabone.Geometry
                 nms = srcmeshes.QueryConvertNormals(p).ToArray(),
                 uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray(),
                 bws = srcmeshes.QueryConvertBoneWeights(p).ToArray(),
-                bis = srcmeshes.QueryConvertBoneIndices(p).ToArray(),
+                bids = srcmeshes.QueryConvertBoneIndices(p).ToArray(),
             };
 
 
         public IEnumerable<PositionNormalUvBonedVertex> Packing<TIdx>(MeshElements<TIdx, PositionNormalUvBonedVertex> src)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
-            from x in (src.poss, src.nms, src.uvs, src.bws, src.bis).Zip()
+            from x in (src.poss, src.nms, src.uvs, src.bws, src.bids).Zip()
             select new PositionNormalUvBonedVertex
             {
                 Position = x.src0,

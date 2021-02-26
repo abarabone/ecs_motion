@@ -22,118 +22,81 @@ namespace Abarabone.Structure.Authoring
     using Unity.Physics.Authoring;
     using System.Runtime.InteropServices;
     using Abarabone.Common.Extension;
+    using Abarabone.Utilities;
     using Abarabone.Structure.Authoring;
 
-    public class StructureAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IStructureGroupAuthoring
+    public class StructureAreaAuthoring
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
-        public Material MaterialToDraw;
+        public Shader ShaderToDraw;
+
+
+
+        IEnumerable<IMeshModel> _model = null;
+
+        public override IEnumerable<IMeshModel> QueryModel => _model ??= new MeshModel<UI32, PositionNormalUvVertex>
+        (
+            this.gameObject,
+            this.ShaderToDraw
+        )
+        .WrapEnumerable();
+
+
+
+
+
+        StructureBuildingModelAliasAuthoring[] structures;
+
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            var qStructures = this.GetComponentsInChildren<StructureBuildingModelAliasAuthoring>();
+            this.structures = qStructures.ToArray();
+
+            var qPrefab = this.structures
+                .Select(x => x.StructureModelPrefab.gameObject)
+                .Distinct()
+                ;
+
+            referencedPrefabs.AddRange(qPrefab);
+        }
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var modelsFromDirect = this.GetComponentsInChildren<StructureBuildingModelAuthoring>();
-            var qModelFromAlias = this.GetComponentsInChildren<StructureBuildingModelAliasAuthoring>()
-                .Select(x => x.StructureModelPrefab)
-                .Distinct();
+            var top = this.gameObject;
+            var main = top.Children().First();
 
-            var models = modelsFromDirect
-                .Concat(qModelFromAlias)
-                .ToArray();
-            
-            var objectsAndMeshes = createMeshes(models);
+            this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
-            addToMeshDictionary_(objectsAndMeshes);
+            conversionSystem.CreateDrawInstanceEntities(top, main, bones, this.BoneMode);
+
+            createSpawnInstances(conversionSystem, dstManager, this.structures);
 
             return;
 
 
-            void addToMeshDictionary_((GameObject, Mesh)[] objectsAndMeshes_)
+            static void createSpawnInstances(GameObjectConversionSystem gcs, EntityManager em, StructureBuildingModelAliasAuthoring[] structures)
             {
-                foreach (var (go, mesh) in objectsAndMeshes_)
-                {
-                    Debug.Log($"to dict {go.name} - {mesh.name}");
-                    conversionSystem.AddToMeshDictionary(go, mesh);
-                }
+                var arch = em.CreateArchetype(typeof(Spawn.EntryData));
+                using var instances = em.CreateEntity(arch, structures.Length, Allocator.Temp);
+
+                var q =
+                    from st in structures
+                    let tf = st.transform
+                    let prefab = gcs.GetPrimaryEntity(st.StructureModelPrefab)
+                    select new Spawn.EntryData
+                    {
+                        prefab = prefab,
+                        pos = tf.position,
+                        rot = tf.rotation,
+                    };
+
+                em.SetComponentData(instances, q);
             }
+
         }
-
-        (GameObject, Mesh)[] createMeshes(StructureBuildingModelAuthoring[] structureModelPrefabs)
-        {
-            return default;
-
-            //var qFar =
-            //    from st in structureModelPrefabs
-            //        .Do(x => Debug.Log(x.FarMeshObject.objectTop.name))
-            //    select st.GetFarMeshAndFunc()
-            //    ;
-
-            //var farObjectsAndMeshes = qFar.QueryObjectAndMesh()
-            //    .ToArray();
-
-            //var qFarObject = farObjectsAndMeshes
-            //    .Select(x => x.go);
-            //var farMeshFunc = MeshCombiner.BuildStructureMeshElements(qFarObject, this.transform);
-
-            //var fars = (this.gameObject, farMeshFunc, null as Mesh);
-
-
-            //var qNear =
-            //    from st in structureModelPrefabs
-            //        .Do(x => Debug.Log(x.NearMeshObject.objectTop.name))
-            //    select st.GetNearMeshFunc()
-            //    ;
-            //var qPartAll =
-            //    from st in structureModelPrefabs
-            //    from pt in st.GetComponentsInChildren<StructurePartAuthoring>()
-            //    select pt
-            //    ;
-            //var qPartDistinct =
-            //    from pt in qPartAll.Distinct(pt => pt.MasterPrefab)
-            //    select pt.GetPartsMeshesAndFuncs()
-            //    ;
-
-            //var qAllMeshFuncs = qNear
-            //    .Concat(qPartDistinct)
-            //    .Append(fars);
-            
-            //return qAllMeshFuncs.QueryObjectAndMesh()
-            //    .ToArray();
-            
-        }
-
-
-
 
     }
-
-
-
-    static class StructureMeshCreateUtility
-    {
-
-        static public IEnumerable<(GameObject go, Mesh mesh)> QueryObjectAndMesh
-            (this IEnumerable<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> qObject_And_MeshOrFunc)
-        {
-            var objects_And_meshesOrFuncs = qObject_And_MeshOrFunc.ToArray();
-
-            var qObjectAndMesh = objects_And_meshesOrFuncs
-                .Where(x => x.mesh != null)
-                .Select(x => (x.go, x.mesh));
-
-            var qObjectAndTask = objects_And_meshesOrFuncs
-                .Where(x => x.f != null)
-                .Select(x => (x.go, t: Task.Run(x.f)));
-            var qObjectAndMeshFromTask = qObjectAndTask
-                .Select(x => x.t)
-                .WhenAll()
-                .Result
-                .Select(x => x.CreateMesh())
-                .Zip(qObjectAndTask, (x, y) => (y.go, mesh: x));
-
-            return qObjectAndMesh.Concat(qObjectAndMeshFromTask);
-        }
-    }
-
 }

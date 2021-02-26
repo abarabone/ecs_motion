@@ -32,8 +32,9 @@ namespace Abarabone.Geometry
         public Vector3[] poss;
         public Vector2[] uvs;
         public Vector3[] nms;
-        public uint[] bis;
+        public uint[] bids;
         public Vector4[] bws;
+        public Color32[] pids;
 
         public Mesh CreateMesh() => MeshCreatorUtility.CreateMesh(this);
     }

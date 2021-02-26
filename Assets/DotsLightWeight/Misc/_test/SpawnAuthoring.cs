@@ -35,28 +35,90 @@ public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
         var prefab_ent = conversionSystem.GetPrimaryEntity( this.prefab );
 
         dstManager.AddComponentData(entity,
-            new SpawnData
+            new Spawn.EntryData
             {
                 pos = this.transform.position,
-                ent = prefab_ent,
+                prefab = prefab_ent,
+            }
+        );
+        dstManager.AddComponentData(entity,
+            new Spawn.SpanData
+            {
                 length = this.Length,
                 span = this.span,
             }
         );
-        
+
     }
     
 
 }
 
-public struct SpawnData : IComponentData
+static class Spawn
 {
-    public float3 pos;
-    public quaternion rot;
-    public float3 span;
-    public Entity ent;
-    public int3 length;
-    public int i;
+    public struct EntryData : IComponentData
+    {
+        public float3 pos;
+        public quaternion rot;
+        public Entity prefab;
+    }
+    public struct SpanData : IComponentData
+    {
+        public float3 span;
+        public int3 length;
+        public int i;
+    }
+}
+
+[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateAfter(typeof(ObjectInitializeSystem))]
+public class SpawnFreqencySystem : SystemBase
+{
+
+    EntityCommandBufferSystem cmdSystem;
+
+
+    protected override void OnCreate()
+    {
+        base.OnCreate();
+
+        this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+    }
+
+
+    protected override void OnUpdate()
+    {
+        var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+
+        this.Entities
+            .WithBurst()
+            .ForEach(
+                (Entity spawnEntity, int entityInQueryIndex, Spawn.EntryData entry, ref Spawn.SpanData span) =>
+                {
+                    var ent = cmd.Instantiate(entityInQueryIndex, entry.prefab);
+
+                    var i = span.i;
+                    var l = span.length;
+                    var s = span.span;
+
+                    cmd.AddComponent(entityInQueryIndex, ent,
+                        new ObjectInitializeData
+                        {
+                            pos = entry.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z),
+                            rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
+                        }
+                    );
+
+                    if (++span.i >= l.x * l.y * l.z)
+                        cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
+                }
+            )
+            .ScheduleParallel();
+
+        // Make sure that the ECB system knows about our job
+        this.cmdSystem.AddJobHandleForProducer(this.Dependency);
+    }
+
 }
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
@@ -80,27 +142,22 @@ public class SpawnSystem : SystemBase
         var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
         this.Entities
-            //.WithoutBurst()
             .WithBurst()
+            .WithNone<Spawn.SpanData>()
             .ForEach(
-                (Entity spawnEntity, int entityInQueryIndex, ref SpawnData spawn) =>
+                (Entity spawnEntity, int entityInQueryIndex, Spawn.EntryData entry) =>
                 {
-                    var ent = cmd.Instantiate(entityInQueryIndex, spawn.ent);
-
-                    var i = spawn.i;
-                    var l = spawn.length;
-                    var s = spawn.span;
+                    var ent = cmd.Instantiate(entityInQueryIndex, entry.prefab);
 
                     cmd.AddComponent(entityInQueryIndex, ent,
                         new ObjectInitializeData
                         {
-                            pos = spawn.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z),
-                            rot = math.any(spawn.rot.value) ? spawn.rot : quaternion.identity,
+                            pos = entry.pos,
+                            rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
                         }
                     );
 
-                    if (++spawn.i >= l.x * l.y * l.z)
-                        cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
+                    cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
                 }
             )
             .ScheduleParallel();
@@ -110,7 +167,6 @@ public class SpawnSystem : SystemBase
     }
 
 }
-
 
 
 public struct ObjectInitializeData : IComponentData
