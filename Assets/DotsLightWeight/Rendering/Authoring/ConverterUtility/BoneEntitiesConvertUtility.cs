@@ -67,13 +67,13 @@ namespace Abarabone.Model.Authoring
             var em = gcs.DstEntityManager;
 
             var postureEntity = gcs.GetPrimaryEntity(mainGameObject);
-            var boneEntities = addComponentsBoneEntities( gcs, bones, addtypeComponentsChain_());
+            var boneEntities = addComponentsToBoneEntities( gcs, bones, addtypeComponentsChain_());
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
             initLocalPosition(em, boneEntities, mainGameObject, bones);
 
-            var paths = queryBonePath_(bones, root).Do(x => Debug.Log($"@ {x}"));
+            var paths = queryBonePath_(bones, root);//.Do(x => Debug.Log($"@ {x}"));
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
         }
 
@@ -83,13 +83,13 @@ namespace Abarabone.Model.Authoring
             var em = gcs.DstEntityManager;
 
             var postureEntity = gcs.GetPrimaryEntity(mainGameObject);
-            var boneEntities = addComponentsBoneEntities(gcs, bones, addtypeComponentsLeveled_());
+            var boneEntities = addComponentsToBoneEntities(gcs, bones, addtypeComponentsLeveled_());
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
             initLocalPosition(em, boneEntities, mainGameObject, bones);
 
-            var paths = queryBonePath_(bones, root).Do(x=>Debug.Log($"@ {x}"));
+            var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneLinksLeveled(em, postureEntity, boneEntities, paths);
         }
 
@@ -99,11 +99,12 @@ namespace Abarabone.Model.Authoring
 
         static IEnumerable<string> queryBonePath_(IEnumerable<Transform> bones_, Transform root_)
         {
-            return(
+            return (
                 from bone in bones_
                 where !bone.name.StartsWith("_")
                 select bone.gameObject.MakePath(root_.gameObject)
-                ).Do(x=>Debug.Log("~=) "+x));
+            )
+            ;//.Do(x=>Debug.Log("~=) "+x));
         }
 
 
@@ -131,7 +132,7 @@ namespace Abarabone.Model.Authoring
         /// ゲームオブジェクトとしての子オブジェクトは、変換プロセスにて、すべてエンティティとして生成されるようす。
         /// physics もそれをあてにするようなので、ボーンもそれに乗っかろうと思う。
         /// </summary>
-        static Entity[] addComponentsBoneEntities
+        static Entity[] addComponentsToBoneEntities
             ( GameObjectConversionSystem gcs, IEnumerable<Transform> bones, ComponentTypes addtypes )
         {
             var em = gcs.DstEntityManager;
@@ -181,7 +182,7 @@ namespace Abarabone.Model.Authoring
             var pathToEntDict =
                 (pathArray, boneEntityArray).Zip( ( x, y ) => (path: x, ent: y))
                 .Where(x => x.path != "")
-                .Do(x => Debug.Log($"x {x.path}"))
+                //.Do(x => Debug.Log($"x {x.path}"))
                 .Append( (path: "", ent: postureEntity) )
                 .Append( (path: "\0", ent: Entity.Null) )
                 .ToDictionary( x => x.path, x => x.ent );
@@ -216,13 +217,13 @@ namespace Abarabone.Model.Authoring
             var pathToEntDict =
                 (pathArray, boneEntityArray).Zip((x, y) => (path: x, ent: y))
                 .Where(x => x.path != "")
-                .Do(x=>Debug.Log($"x {x.path}"))
+                //.Do(x=>Debug.Log($"x {x.path}"))
                 .Append((path: "", ent: postureEntity))
                 .Append((path: "\0", ent: Entity.Null))
                 .ToDictionary(x => x.path, x => x.ent);
 
             var qParent = pathArray
-                .Select(x => x.GetParentPath()).Do(x => Debug.Log($"w {x}"))
+                .Select(x => x.GetParentPath())//.Do(x => Debug.Log($"w {x}"))
                 .Select(path => pathToEntDict[path]);
 
             var qPathDepthCount =
