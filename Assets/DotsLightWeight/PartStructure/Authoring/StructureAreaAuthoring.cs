@@ -70,9 +70,9 @@ namespace Abarabone.Structure.Authoring
 
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
-            conversionSystem.CreateDrawInstanceEntities(top, main, bones, this.BoneMode);
+            //conversionSystem.CreateDrawInstanceEntities(top, main, bones, this.BoneMode);
 
-            createSpawnInstances(conversionSystem, dstManager, this.structures);
+            //createSpawnInstances(conversionSystem, dstManager, this.structures);
 
             return;
 
