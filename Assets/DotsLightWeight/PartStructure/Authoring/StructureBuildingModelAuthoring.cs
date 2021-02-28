@@ -51,6 +51,20 @@ namespace Abarabone.Structure.Authoring
         {
             conversionSystem.CreateStructureEntities(this);
 
+            trimEntities_(conversionSystem, this);
+
+            return;
+
+
+            static void trimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+            {
+                var near = st.NearModel.Obj;
+                //gcs.DstEntityManager.DestroyEntity(gcs.GetPrimaryEntity(near));
+                gcs.DstEntityManager.RemoveComponent<Translation>(gcs.GetPrimaryEntity(near));
+                gcs.DstEntityManager.RemoveComponent<Rotation>(gcs.GetPrimaryEntity(near));
+                gcs.DstEntityManager.RemoveComponent<Scale>(gcs.GetPrimaryEntity(near));
+                gcs.DstEntityManager.RemoveComponent<NonUniformScale>(gcs.GetPrimaryEntity(near));
+            }
         }
 
 
@@ -71,15 +85,13 @@ namespace Abarabone.Structure.Authoring
             var near = st.NearModel.Obj;
             var env = st.Envelope;// main object
 
-
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
-
 
             initBinderEntity_(gcs, top, env);
             initMainEntity_(gcs, top, env, st.NearModel, st.FarModel);
 
             setBoneForFarEntity_(gcs, env, far, top.transform);// far.transform.parent);
-            setBoneForPartEntities_(gcs, env, near, top.transform);// near.transform);
+            setBoneForPartEntities_(gcs, env, near, near.transform);
         }
 
         static public void CreateStructureEntitiesInArea
@@ -200,11 +212,11 @@ namespace Abarabone.Structure.Authoring
         static void setBoneForPartEntities_(GameObjectConversionSystem gcs, GameObject parent, GameObject partTop, Transform root)
         {
             var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()
-                .Select(pt => pt.transform)
-                .Append(partTop.transform);// うまくできてない
+                .Select(pt => pt.transform);
 
             gcs.InitBoneEntities(parent, qPart, root, EnBoneType.jobs_per_depth);
         }
+
 
 
     }

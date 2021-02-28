@@ -47,6 +47,7 @@ namespace Abarabone.Model.Authoring
         // bones の GameObject に関連付けられた Entity に bone 関連コンポーネントを付与し、また親子構造をもとにしたリンク構造のコンポーネントを付加する。
         // またルートボーンは、mainGameObject に関連付けられた Entity を親としてリンクを張る。
         // bones の親子構造は、bones に含まれるエントリの中で構築される。エントリの中から親が見つからない場合はルートボーンとみなされ、親は mainGameObject となる。
+        // root 
         static public void InitBoneEntities
             (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root, EnBoneType boneMode)
         {
@@ -58,6 +59,7 @@ namespace Abarabone.Model.Authoring
                 gcs.initBoneEntitiesLeveled(mainGameObject, bones, root);
 
         }
+
 
         // - - - - - - - - - - - - - - - - - - - - -
 
@@ -73,7 +75,7 @@ namespace Abarabone.Model.Authoring
 
             initLocalPosition(em, boneEntities, mainGameObject, bones);
 
-            var paths = queryBonePath_(bones, root);//.Do(x => Debug.Log($"@ {x}"));
+            var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
         }
 
@@ -217,7 +219,7 @@ namespace Abarabone.Model.Authoring
             var pathToEntDict =
                 (pathArray, boneEntityArray).Zip((x, y) => (path: x, ent: y))
                 .Where(x => x.path != "")
-                //.Do(x=>Debug.Log($"x {x.path}"))
+                //.Do(x => Debug.Log($"x {x.path}"))
                 .Append((path: "", ent: postureEntity))
                 .Append((path: "\0", ent: Entity.Null))
                 .ToDictionary(x => x.path, x => x.ent);

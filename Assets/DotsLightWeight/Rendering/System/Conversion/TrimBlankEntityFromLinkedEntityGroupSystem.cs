@@ -46,7 +46,7 @@ namespace Abarabone.Model.Authoring
                         {
                             noneeds.Add(link);
                         }
-                        else
+                        else if (em.Exists(link.Value))
                         {
                             needs.Add(link);
                         }

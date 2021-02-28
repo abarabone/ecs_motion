@@ -113,14 +113,14 @@ namespace Abarabone.Utilities
 			return dic.TryGetValue(key, out var result) ? result : defaultValue;
 		}
 
-        static public IEnumerable<string> MakePath( this IEnumerable<GameObject> gameObjects, GameObject root )
-        {
-            return gameObjects.Select( go => go.MakePath(root) );
-        }
-        static public IEnumerable<string> MakePath( this IEnumerable<GameObject> gameObjects )
-		{
-			return gameObjects.Select( go => go.MakePath() );
-		}
+        //      static public IEnumerable<string> MakePath( this IEnumerable<GameObject> gameObjects, GameObject root )
+        //      {
+        //          return gameObjects.Select( go => go.MakePath(root) );
+        //      }
+        //      static public IEnumerable<string> MakePath( this IEnumerable<GameObject> gameObjects )
+        //{
+        //	return gameObjects.Select( go => go.MakePath() );
+        //}
 
         static public string MakePath( this GameObject gameObject, GameObject root )
         {

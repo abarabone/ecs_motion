@@ -75,7 +75,7 @@ namespace Abarabone.CharacterMotion
             return tfBones
                 .Select( tfBone => tfBone.gameObject )
                 .Where( go => !go.name.StartsWith( "_" ) )
-                .MakePath()
+                .Select(go => go.MakePath())
                 .ToArray();
         }
 
