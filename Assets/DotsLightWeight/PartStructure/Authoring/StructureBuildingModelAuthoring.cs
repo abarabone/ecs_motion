@@ -49,6 +49,7 @@ namespace Abarabone.Structure.Authoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+
             conversionSystem.CreateStructureEntities(this);
 
             trimEntities_(conversionSystem, this);
@@ -59,7 +60,7 @@ namespace Abarabone.Structure.Authoring
             static void trimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
             {
                 var near = st.NearModel.Obj;
-                //gcs.DstEntityManager.DestroyEntity(gcs.GetPrimaryEntity(near));
+                //gcs.DstEntityManager.DestroyEntity(gcs.GetPrimaryEntity(near));// エラーが出る（たぶん binder のリンク先が消えるから）
                 gcs.DstEntityManager.RemoveComponent<Translation>(gcs.GetPrimaryEntity(near));
                 gcs.DstEntityManager.RemoveComponent<Rotation>(gcs.GetPrimaryEntity(near));
                 gcs.DstEntityManager.RemoveComponent<Scale>(gcs.GetPrimaryEntity(near));
@@ -83,15 +84,16 @@ namespace Abarabone.Structure.Authoring
             var top = st.gameObject;
             var far = st.FarModel.Obj;
             var near = st.NearModel.Obj;
-            var env = st.Envelope;// main object
+            var env = st.Envelope;
+            var main = env;
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
-            initBinderEntity_(gcs, top, env);
-            initMainEntity_(gcs, top, env, st.NearModel, st.FarModel);
+            initBinderEntity_(gcs, top, main);
+            initMainEntity_(gcs, top, main, st.NearModel, st.FarModel);
 
-            setBoneForFarEntity_(gcs, env, far, top.transform);// far.transform.parent);
-            setBoneForPartEntities_(gcs, env, near, near.transform);
+            setBoneForFarEntity_(gcs, main, far, top.transform);
+            setBoneForPartEntities_(gcs, main, near, near.transform);
         }
 
         static public void CreateStructureEntitiesInArea
@@ -100,17 +102,18 @@ namespace Abarabone.Structure.Authoring
             //var top = structureModel.gameObject;
             //var far = structureModel.FarMeshObject.objectTop;
             //var near = structureModel.NearMeshObject.objectTop;
-            //var env = structureModel.Envelope;// main object
+            //var env = structureModel.Envelope;
+            //var main = env;
 
             //createMeshAndSetToDictionary_(gcs, near, structureModel.GetNearMeshFunc);
 
             //createModelEntity_IfNotExists_(gcs, near, structureModel.NearMaterialToDraw);
 
-            //initBinderEntity_(gcs, top, env);
-            //initMainEntity_(gcs, top, env, structureModel.NearMeshObject, structureModel.FarMeshObject);
+            //initBinderEntity_(gcs, top, main);
+            //initMainEntity_(gcs, top, main, structureModel.NearMeshObject, structureModel.FarMeshObject);
 
-            //setBoneForFarEntity_(gcs, env, far, top.transform);// far.transform.parent);
-            //setBoneForPartEntities_(gcs, env, near, top.transform);// near.transform);
+            //setBoneForFarEntity_(gcs, main, far, top.transform);
+            //setBoneForPartEntities_(gcs, main, near, near.transform);
         }
 
 
