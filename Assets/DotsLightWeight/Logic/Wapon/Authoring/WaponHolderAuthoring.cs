@@ -41,6 +41,12 @@ namespace Abarabone.Arms.Authoring
             var main = top.transform.GetChild(0).gameObject;
 
 
+            var holderEntity = entity;//conversionSystem.CreateAdditionalEntity(top);
+            dstManager.AddBuffer<WaponHolder.LinkData>(holderEntity);
+
+            var mainEntity = conversionSystem.GetPrimaryEntity(main);
+
+
             var wapons = this.GetComponentsInChildren<WaponAuthoring>();
             var qWaponInfos =
                 from wapon in wapons
@@ -59,13 +65,6 @@ namespace Abarabone.Arms.Authoring
 
                 select (muzzleEntity, unitEntity0, unitEntity1)
                 ;
-
-
-            var holderEntity = entity;//conversionSystem.CreateAdditionalEntity(top);
-            dstManager.AddBuffer<WaponHolder.LinkData>(holderEntity);
-
-            var mainEntity = conversionSystem.GetPrimaryEntity(main);
-
             foreach (var (muzzleEntity, unitEntity0, unitEntity1) in qWaponInfos)
             {
                 if (unitEntity0 != Entity.Null)
