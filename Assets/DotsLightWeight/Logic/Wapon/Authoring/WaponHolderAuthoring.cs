@@ -95,6 +95,14 @@ namespace Abarabone.Arms.Authoring
                 });
             }
 
+            dstManager.AddComponentData(holderEntity,
+                new WaponHolder.SelectorData
+                { 
+                    CurrentWaponIndex = 0,
+                    Length = wapons.Length,
+                }
+            );
+
         }
     }
 }

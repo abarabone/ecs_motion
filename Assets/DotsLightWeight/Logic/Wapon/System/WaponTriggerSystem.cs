@@ -39,18 +39,11 @@ namespace Abarabone.Arms
     public class WaponTriggerSystem : SystemBase
     {
 
-        //protected override void OnUpdate()
-        //{
-
-
-
-        //}
-
-
         protected override void OnUpdate()
         {
+
             var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
-            var selectors = this.GetComponentDataFromEntity<WaponSelector.ToggleModeData>(isReadOnly: true);
+            var selectors = this.GetComponentDataFromEntity<WaponHolder.SelectorData>(isReadOnly: true);
 
 
             this.Entities
@@ -60,23 +53,18 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         ref FunctionUnit.TriggerData trigger,
-                        in FunctionUnitWithWapon.WaponCarryIdData carryid,
                         in FunctionUnitWithWapon.TriggerTypeData triggerType,
-                        in FunctionUnitWithWapon.SelectorLinkData selectorLink,
                         in FunctionUnit.OwnerLinkData mainLink
                     ) =>
                     {
-                        if (selectorLink.SelectorEntity == Entity.Null) return;
-
-
-                        var selector = selectors[selectorLink.SelectorEntity];
-                        var isCurrentUsing = (selector.CurrentWaponCarryId == carryid.WaponCarryId);
+                        var selector = selectors[mainLink.OwnerMainEntity];
+                        var isCurrentUsing = (selector.CurrentWaponIndex == carryid.WaponCarryId);
 
 
                         var handle = handles[mainLink.OwnerMainEntity];
 
                         switch (triggerType.Type)// いずれは配列インデックスで取得できるようにしたい
-                        {
+                                {
                             case FunctionUnitWithWapon.TriggerType.main:
 
                                 trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsShooting;
@@ -93,9 +81,74 @@ namespace Abarabone.Arms
                 )
                 .ScheduleParallel();
 
+            ////var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+            //var units = this.GetComponentDataFromEntity<FunctionUnitWithWapon.TriggerTypeData>
+
+            //this.Entities
+            //    .ForEach(
+            //        (
+            //            in MoveHandlingData handle,
+            //            in WaponHolder.SelectorData selector,
+            //            in DynamicBuffer<WaponHolder.LinkData> holders
+            //        ) =>
+            //        {
+
+            //        }
+            //    )
+            //    .ScheduleParallel();
+
         }
 
 
-    }
+        //    protected override void OnUpdate()
+        //    {
+        //        var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+        //        var selectors = this.GetComponentDataFromEntity<WaponSelector.ToggleModeData>(isReadOnly: true);
 
-}
+
+        //        this.Entities
+        //            .WithBurst()
+        //            .WithReadOnly(handles)
+        //            .WithReadOnly(selectors)
+        //            .ForEach(
+        //                (
+        //                    ref FunctionUnit.TriggerData trigger,
+        //                    in FunctionUnitWithWapon.WaponCarryIdData carryid,
+        //                    in FunctionUnitWithWapon.TriggerTypeData triggerType,
+        //                    in FunctionUnitWithWapon.SelectorLinkData selectorLink,
+        //                    in FunctionUnit.OwnerLinkData mainLink
+        //                ) =>
+        //                {
+        //                    if (selectorLink.SelectorEntity == Entity.Null) return;
+
+
+        //                    var selector = selectors[selectorLink.SelectorEntity];
+        //                    var isCurrentUsing = (selector.CurrentWaponCarryId == carryid.WaponCarryId);
+
+
+        //                    var handle = handles[mainLink.OwnerMainEntity];
+
+        //                    switch (triggerType.Type)// いずれは配列インデックスで取得できるようにしたい
+        //                    {
+        //                        case FunctionUnitWithWapon.TriggerType.main:
+
+        //                            trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsShooting;
+
+        //                            break;
+        //                        case FunctionUnitWithWapon.TriggerType.sub:
+
+        //                            trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsTriggerdSub;
+
+        //                            break;
+        //                    }
+
+        //                }
+        //            )
+        //            .ScheduleParallel();
+
+        //    }
+
+
+        //}
+
+    }
