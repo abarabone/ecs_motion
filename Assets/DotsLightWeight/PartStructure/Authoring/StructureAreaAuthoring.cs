@@ -72,7 +72,7 @@ namespace Abarabone.Structure.Authoring
 
             //conversionSystem.CreateDrawInstanceEntities(top, main, bones, this.BoneMode);
 
-            //createSpawnInstances(conversionSystem, dstManager, this.structures);
+            createSpawnInstances(conversionSystem, dstManager, this.structures);
 
             return;
 
