@@ -30,7 +30,7 @@ namespace Abarabone.Arms
     using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateAfter(typeof(BulletHitSystem))]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
@@ -93,7 +93,7 @@ namespace Abarabone.Arms
                 .WithReadOnly(poss)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
-                .WithReadOnly(cmd)
+                //.WithReadOnly(cmd)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,

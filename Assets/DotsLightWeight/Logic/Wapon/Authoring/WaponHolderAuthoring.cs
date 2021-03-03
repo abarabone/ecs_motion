@@ -65,7 +65,7 @@ namespace Abarabone.Arms.Authoring
 
                 select (muzzleEntity, unitEntity0, unitEntity1)
                 ;
-            foreach (var (muzzleEntity, unitEntity0, unitEntity1) in qWaponInfos)
+            foreach (var ((muzzleEntity, unitEntity0, unitEntity1), i) in qWaponInfos.WithIndex())
             {
                 if (unitEntity0 != Entity.Null)
                 {
@@ -76,6 +76,13 @@ namespace Abarabone.Arms.Authoring
                             MuzzleBodyEntity = muzzleEntity,
                         }
                     );
+                    dstManager.AddComponentData(unitEntity0,
+                        new FunctionUnitWithWapon.TriggerSpecificData
+                        {
+                            Type = FunctionUnitWithWapon.TriggerType.main,
+                            WaponCarryId = i,
+                        }
+                    );
                 }
                 if (unitEntity1 != Entity.Null)
                 {
@@ -84,6 +91,13 @@ namespace Abarabone.Arms.Authoring
                         {
                             OwnerMainEntity = mainEntity,
                             MuzzleBodyEntity = muzzleEntity,
+                        }
+                    );
+                    dstManager.AddComponentData(unitEntity1,
+                        new FunctionUnitWithWapon.TriggerSpecificData
+                        {
+                            Type = FunctionUnitWithWapon.TriggerType.sub,
+                            WaponCarryId = i,
                         }
                     );
                 }

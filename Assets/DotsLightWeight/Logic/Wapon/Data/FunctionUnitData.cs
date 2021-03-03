@@ -69,9 +69,10 @@ namespace Abarabone.Arms
 
     static public partial class FunctionUnitWithWapon
     {
-        public struct TriggerTypeData : IComponentData
+        public struct TriggerSpecificData : IComponentData
         {
             public TriggerType Type;
+            public int WaponCarryId;
         }
         public enum TriggerType
         {

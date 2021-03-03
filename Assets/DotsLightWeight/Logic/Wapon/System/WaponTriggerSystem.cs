@@ -53,29 +53,25 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         ref FunctionUnit.TriggerData trigger,
-                        in FunctionUnitWithWapon.TriggerTypeData triggerType,
+                        in FunctionUnitWithWapon.TriggerSpecificData triggerType,
                         in FunctionUnit.OwnerLinkData mainLink
                     ) =>
                     {
                         var selector = selectors[mainLink.OwnerMainEntity];
-                        var isCurrentUsing = (selector.CurrentWaponIndex == carryid.WaponCarryId);
 
+                        //if (selector.CurrentWaponIndex != triggerType.WaponCarryId) return;
+                        // ここでショートカットすると、カレントではなくなった場合にオフにならなくなってしまう
 
-                        var handle = handles[mainLink.OwnerMainEntity];
+                        var isTriggeredCurrent = selector.CurrentWaponIndex == triggerType.WaponCarryId;
 
-                        switch (triggerType.Type)// いずれは配列インデックスで取得できるようにしたい
-                                {
-                            case FunctionUnitWithWapon.TriggerType.main:
+                        var act = handles[mainLink.OwnerMainEntity].ControlAction;
 
-                                trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsShooting;
-
-                                break;
-                            case FunctionUnitWithWapon.TriggerType.sub:
-
-                                trigger.IsTriggered = isCurrentUsing && handle.ControlAction.IsTriggerdSub;
-
-                                break;
-                        }
+                        trigger.IsTriggered = triggerType.Type switch// いずれは配列インデックスで取得できるようにしたい
+                        {
+                            FunctionUnitWithWapon.TriggerType.main => isTriggeredCurrent & act.IsShooting,
+                            FunctionUnitWithWapon.TriggerType.sub => isTriggeredCurrent & act.IsTriggerdSub,
+                            _ => false,
+                        };
 
                     }
                 )
@@ -149,6 +145,6 @@ namespace Abarabone.Arms
         //    }
 
 
-        //}
-
     }
+
+}

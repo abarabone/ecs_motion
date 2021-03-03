@@ -44,29 +44,27 @@ namespace Abarabone.Arms
             //var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
             //var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
 
-            //this.Entities
-            //    .WithBurst()
-            //    .WithReadOnly(handles)
-            //    .ForEach(
-            //        (
-            //            Entity entity, int entityInQueryIndex,
-            //            ref WaponSelector.ToggleModeData selector,
-            //            in WaponSelector.LinkData link,
-            //            in WaponSelector.WaponLink0 wapon0
-            //        ) =>
-            //        {
-            //            if (selector.WaponCarryLength == 0) return;
+            this.Entities
+                .WithBurst()
+                //.WithReadOnly(handles)
+                .ForEach(
+                    (
+                        ref WaponHolder.SelectorData selector,
+                        in MoveHandlingData handle
+                    ) =>
+                    {
+                        if (selector.Length == 0) return;
 
-            //            if (!handles[link.OwnerMainEntity].ControlAction.IsChangingWapon) return;
+                        if (!handle.ControlAction.IsChangingWapon) return;
 
 
-            //            var newCurrentId = (selector.CurrentWaponCarryId + 1) % selector.WaponCarryLength;
+                        var newCurrentId = (selector.CurrentWaponIndex + 1) % selector.Length;
 
-            //            selector.CurrentWaponCarryId = newCurrentId;
+                        selector.CurrentWaponIndex = newCurrentId;
 
-            //        }
-            //    )
-            //    .ScheduleParallel();
+                    }
+                )
+                .ScheduleParallel();
 
         }
 
