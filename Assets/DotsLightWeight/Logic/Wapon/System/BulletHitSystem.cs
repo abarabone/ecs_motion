@@ -65,7 +65,7 @@ namespace Abarabone.Arms
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 
-            this.Entities
+            this.Dependency = this.Entities
                 .WithBurst()
                 .WithReadOnly(mainLinks)
                 .WithReadOnly(parts)
@@ -84,7 +84,7 @@ namespace Abarabone.Arms
                         hit.postMessageToHitTarget(structureHitHolder, parts);
                     }
                 )
-                .ScheduleParallel();
+                .ScheduleParallel(this.Dependency);
 
         }
 

@@ -86,12 +86,12 @@ Shader "Custom/structure_nolit_cs"
 			
 			uint get_part_bit(int i_instance, uint2 part_id)
 			{
-				const int ioffset = part_id.x >> 2;
-				const int ielement = part_id.x & 0x3;
-				const uint bitmask = 1 << part_id.y;
+				const int ioffset = part_id.y >> 2;
+				const int ielement = part_id.y & 0x3;
+				const uint bitmask = 1 << part_id.x;
 				
 				const uint4 xyzw = asuint(BoneVectorBuffer[i_instance + ioffset]);
-				const uint element = asuint(BoneVectorBuffer[i_instance].x);//dot(xyzw, element_mask_table[ielement]);
+				const uint element = dot(xyzw, element_mask_table[ielement]);
 				return element & bitmask;
 			}
 			
@@ -112,7 +112,7 @@ Shader "Custom/structure_nolit_cs"
 				//const float4	wvt = mul(UNITY_MATRIX_VP, float4(tvt.xyz, 1.0f));
 				const float4	wvt = UnityObjectToClipPos(tvt.xyz);
 
-				const float alival = get_part_bit(i_vector_base, v.part_index.ba * 255) == 0 ? 1 : 0;
+				const float alival = get_part_bit(i_vector_base, uint2(0, 0)) == 0 ? 1 : 0;
 
 				o.vertex = wvt * alival;
 				o.uv = v.uv;

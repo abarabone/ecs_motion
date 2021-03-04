@@ -134,8 +134,8 @@ namespace Abarabone.Geometry.inner
             let pid = permesh.src0
             let color = new Color32
             {
-                r = (byte)(pid & 0xff),
-                g = (byte)(pid << 8 & 0xff00),
+                r = (byte)(pid & 0x1f),
+                g = (byte)(pid >> 5 & 0xff),
             }
             from vtx in Enumerable.Range(0, permesh.src1.MeshData.vertexCount)
             select color
