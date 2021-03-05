@@ -70,6 +70,8 @@ namespace Abarabone.Arms
                 .WithReadOnly(mainLinks)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
+                .WithNativeDisableContainerSafetyRestriction(structureHitHolder)
+                .WithNativeDisableParallelForRestriction(structureHitHolder)
                 .ForEach(
                     (
                         Entity fireEntity,// int entityInQueryIndex,

@@ -12,6 +12,7 @@ using Unity.Transforms;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine.InputSystem;
+using Unity.Collections.LowLevel.Unsafe;
 
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
@@ -34,6 +35,10 @@ namespace Abarabone.Structure
         public NativeMultiHashMap<Entity, StructureHitMessage> MsgHolder
         //= new NativeMultiHashMap<Entity, StructureHitMessage>(1000, Allocator.Persistent);
         = new NativeMultiHashMap<Entity, StructureHitMessage>(10000, Allocator.Persistent);
+
+        //public UnsafeMultiHashMap<Entity, StructureHitMessage> MsgHolder
+        ////= new NativeMultiHashMap<Entity, StructureHitMessage>(1000, Allocator.Persistent);
+        //= new UnsafeMultiHashMap<Entity, StructureHitMessage>(10000, Allocator.Persistent);
 
 
         protected override void OnUpdate()

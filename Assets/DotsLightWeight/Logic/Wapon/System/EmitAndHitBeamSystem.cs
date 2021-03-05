@@ -93,6 +93,8 @@ namespace Abarabone.Arms
                 .WithReadOnly(poss)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
+                .WithNativeDisableContainerSafetyRestriction(structureHitHolder)
+                .WithNativeDisableParallelForRestriction(structureHitHolder)
                 //.WithReadOnly(cmd)
                 .ForEach(
                     (
