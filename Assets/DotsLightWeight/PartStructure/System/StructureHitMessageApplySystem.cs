@@ -38,7 +38,6 @@ namespace Abarabone.Structure
     }
 
 
-    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class StructureHitMessageApplySystem : SystemBase
     {
@@ -79,7 +78,7 @@ namespace Abarabone.Structure
                 Rotations = rots,
                 Positions = poss,
             }
-            .Schedule(msgs, 0, this.Dependency);
+            .Schedule(msgs, 8, this.Dependency);
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
@@ -87,7 +86,7 @@ namespace Abarabone.Structure
 
 
         [BurstCompile]
-        struct StructureHitApplyJob : IJobNativeMultiHashMapVisitKeyMutableValue<Entity, StructureHitMessage>
+        struct StructureHitApplyJob : IJobNativeMultiHashMapVisitKeyValue<Entity, StructureHitMessage>
         {
 
             public EntityCommandBuffer.ParallelWriter Cmd;
@@ -105,7 +104,7 @@ namespace Abarabone.Structure
 
 
             //[BurstCompile]
-            public void ExecuteNext(int uniqueIndex, Entity key, ref StructureHitMessage value)
+            public void ExecuteNext(int uniqueIndex, Entity key, StructureHitMessage value)
             {
 
                 var destruction = this.Destructions[key];
@@ -159,20 +158,20 @@ namespace Abarabone.Structure
 
 
     
-    [JobProducerType(typeof(JobNativeMultiHashMapVisitKeyMutableValue.JobNativeMultiHashMapVisitKeyMutableValueProducer<,,>))]
-    public interface IJobNativeMultiHashMapVisitKeyMutableValue<TKey, TValue>
+    [JobProducerType(typeof(JobNativeMultiHashMapVisitKeyValue.JobNativeMultiHashMapVisitKeyValueProducer<,,>))]
+    public interface IJobNativeMultiHashMapVisitKeyValue<TKey, TValue>
         where TKey : struct, IEquatable<TKey>
         where TValue : struct
     {
-        void ExecuteNext(int uniqueIndex, TKey key, ref TValue value);
+        void ExecuteNext(int uniqueIndex, TKey key, TValue value);
     }
 
     [BurstCompile]
-    public static class JobNativeMultiHashMapVisitKeyMutableValue
+    public static class JobNativeMultiHashMapVisitKeyValue
     {
         //[BurstCompile]
-        internal struct JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue>
-            where TJob : struct, IJobNativeMultiHashMapVisitKeyMutableValue<TKey, TValue>
+        internal struct JobNativeMultiHashMapVisitKeyValueProducer<TJob, TKey, TValue>
+            where TJob : struct, IJobNativeMultiHashMapVisitKeyValue<TKey, TValue>
             where TKey : struct, IEquatable<TKey>
             where TValue : struct
         {
@@ -191,7 +190,7 @@ namespace Abarabone.Structure
                 {
                     s_JobReflectionData = JobsUtility.CreateJobReflectionData
                     (
-                        typeof(JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue>),
+                        typeof(JobNativeMultiHashMapVisitKeyValueProducer<TJob, TKey, TValue>),
                         typeof(TJob),
                         (ExecuteJobFunction)Execute
                     );
@@ -202,14 +201,14 @@ namespace Abarabone.Structure
 
 
             internal delegate void ExecuteJobFunction
-                (ref JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue> producer,
+                (ref JobNativeMultiHashMapVisitKeyValueProducer<TJob, TKey, TValue> producer,
                 IntPtr additionalPtr, IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex
             );
 
             //[BurstCompile]
             public static unsafe void Execute
                 (
-                    ref JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue> producer,
+                    ref JobNativeMultiHashMapVisitKeyValueProducer<TJob, TKey, TValue> producer,
                     IntPtr additionalPtr,
                     IntPtr bufferRangePatchData,
                     ref JobRanges ranges,
@@ -218,22 +217,19 @@ namespace Abarabone.Structure
             {
                 var uniqueIndex = 0;
 
+                var bucketData = producer.HashMap.GetUnsafeBucketData();
+                var buckets = (int*)bucketData.buckets;
+                var nextPtrs = (int*)bucketData.next;
+                var keys = bucketData.keys;
+                var values = bucketData.values;
+
                 while (true)
                 {
-                    int begin;
-                    int end;
-
-                    if (!JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out begin, out end))
+                    if (!JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out var begin, out var end))
                     {
                         return;
                     }
 
-                    var bucketData = producer.HashMap.GetUnsafeBucketData();
-                    var buckets = (int*)bucketData.buckets;
-                    var nextPtrs = (int*)bucketData.next;
-                    var keys = bucketData.keys;
-                    var values = bucketData.values;
-                    
                     for (int i = begin; i < end; i++)
                     {
                         int entryIndex = buckets[i];
@@ -241,8 +237,9 @@ namespace Abarabone.Structure
                         while (entryIndex != -1)
                         {
                             var key = UnsafeUtility.ReadArrayElement<TKey>(keys, entryIndex);
+                            var value = UnsafeUtility.ReadArrayElement<TValue>(values, entryIndex);
 
-                            producer.JobData.ExecuteNext(uniqueIndex++, key, ref UnsafeUtility.ArrayElementAsRef<TValue>(values, entryIndex));
+                            producer.JobData.ExecuteNext(uniqueIndex++, key, value);
 
                             entryIndex = nextPtrs[entryIndex];
                         }
@@ -255,11 +252,11 @@ namespace Abarabone.Structure
         //[BurstCompile]
         public static unsafe JobHandle Schedule<TJob, TKey, TValue>
             (this TJob jobData, NativeMultiHashMap<TKey, TValue> hashMap, int minIndicesPerJobCount, JobHandle dependsOn = new JobHandle())
-            where TJob : struct, IJobNativeMultiHashMapVisitKeyMutableValue<TKey, TValue>
+            where TJob : struct, IJobNativeMultiHashMapVisitKeyValue<TKey, TValue>
             where TKey : struct, IEquatable<TKey>
             where TValue : struct
         {
-            var jobProducer = new JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue>
+            var jobProducer = new JobNativeMultiHashMapVisitKeyValueProducer<TJob, TKey, TValue>
             {
                 HashMap = hashMap,
                 JobData = jobData
@@ -267,7 +264,7 @@ namespace Abarabone.Structure
 
             var scheduleParams = new JobsUtility.JobScheduleParameters(
                 UnsafeUtility.AddressOf(ref jobProducer)
-                , JobNativeMultiHashMapVisitKeyMutableValueProducer<TJob, TKey, TValue>.Initialize()
+                , JobNativeMultiHashMapVisitKeyValueProducer<TJob, TKey, TValue>.Initialize()
                 , dependsOn
                 , ScheduleMode.Parallel
             );
