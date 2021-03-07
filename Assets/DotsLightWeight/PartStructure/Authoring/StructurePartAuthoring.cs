@@ -32,16 +32,17 @@ namespace Abarabone.Structure.Authoring
         public int PartId;
         //public int Life;
 
-        public Material MaterialToDraw;
+        //public Material MaterialToDraw;
 
-        public GameObject MasterPrefab;
+        //public GameObject MasterPrefab;
 
-        public LodMeshModel<UI32, PositionNormalUvVertex> PartModel;
+        public PartModel<UI32, PositionNormalUvVertex> PartModelOfMasterPrefab;
 
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
-            new PartModel<UI32, PositionNormalUvVertex>(this.MasterPrefab, this.MaterialToDraw.shader)
+            //new PartModel<UI32, PositionNormalUvVertex>(this.MasterPrefab, this.MaterialToDraw.shader)
+            this.PartModelOfMasterPrefab
             .WrapEnumerable();
 
 
@@ -78,7 +79,7 @@ namespace Abarabone.Structure.Authoring
 
             //createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
             //createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
-            createDebrisPrefab_(conversionSystem, this.gameObject, this.MasterPrefab);
+            createDebrisPrefab_(conversionSystem, this.gameObject, this.PartModelOfMasterPrefab.Obj);
 
             return;
 

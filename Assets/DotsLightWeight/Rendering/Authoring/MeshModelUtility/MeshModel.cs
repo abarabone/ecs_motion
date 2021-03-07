@@ -32,7 +32,7 @@ namespace Abarabone.Model.Authoring
         }
 
         [SerializeField]
-        GameObject objectTop;
+        protected GameObject objectTop;
 
         [SerializeField]
         protected Shader shader;

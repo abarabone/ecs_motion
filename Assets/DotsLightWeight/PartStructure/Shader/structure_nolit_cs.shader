@@ -100,7 +100,9 @@ Shader "Custom/structure_nolit_cs"
 				v2f o;
 				
 				const int vector_offset_per_instance = 4;
-				const int i_vector_base = BoneVectorOffset + i * (2 + vector_offset_per_instance);
+				const int vector_length_in_bone = 2;
+				const int total_vector_length = vector_length_in_bone * 1 + vector_offset_per_instance;
+				const int i_vector_base = BoneVectorOffset + i * total_vector_length;
 				const int ivec = i_vector_base + vector_offset_per_instance;
 
 				const float4 wpos = BoneVectorBuffer[ivec + 0];

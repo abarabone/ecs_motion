@@ -43,6 +43,10 @@ namespace Abarabone.Structure.Authoring
         public StructureBuildingModelAuthoring MasterPrefab;
 
 
+        public override IEnumerable<IMeshModel> QueryModel =>
+            new[] { this.NearModel as IMeshModel, this.FarModel };
+
+
 
         /// <summary>
         /// near と far のモデルエンティティを生成、
@@ -67,10 +71,6 @@ namespace Abarabone.Structure.Authoring
                 gcs.DstEntityManager.RemoveComponent<NonUniformScale>(gcs.GetPrimaryEntity(near));
             }
         }
-
-
-        public override IEnumerable<IMeshModel> QueryModel =>
-            new [] { this.NearModel as IMeshModel, this.FarModel };
 
 
     }

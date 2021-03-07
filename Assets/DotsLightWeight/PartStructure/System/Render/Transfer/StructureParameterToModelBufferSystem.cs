@@ -37,7 +37,8 @@ namespace Abarabone.Draw
         protected unsafe override void OnUpdate()
         {
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
+            //var boneinfoOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneVectorSettingData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
@@ -54,13 +55,15 @@ namespace Abarabone.Draw
 
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
+                        //var boneInfo = boneinfoOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        var i = target.DrawInstanceId * (2 + offsetInfo.VectorOffsetPerInstance);
+                        var pDstBase = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        var boneVectorLength = 2;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
+                        var i = target.DrawInstanceId * (boneVectorLength + offsetInfo.VectorOffsetPerInstance);
                         var size = offsetInfo.VectorOffsetPerInstance * sizeof(float4);
                         fixed (void* pSrc = destruction.Destructions)
                         {
-                            UnsafeUtility.MemCpy(pModel + i, pSrc, size);
+                            UnsafeUtility.MemCpy(pDstBase + i, pSrc, size);
                         }
                     }
                 )

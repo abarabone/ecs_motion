@@ -5,6 +5,9 @@ using UnityEngine.Rendering;
 
 namespace Abarabone.Structure.Authoring
 {
+    using Abarabone.Geometry;
+
+
     /// <summary>
     /// すべてのパーツに、マスタープレハブへのリンクをセットする。
     /// 本当は実行時に取得できればいいんだが、プレイヤーでは取得できないし、そもそもプレハブは全部展開される。
@@ -28,8 +31,9 @@ namespace Abarabone.Structure.Authoring
                     .Select(pt => (pt, PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject)));
                 foreach ( var (pt, masterPrefab) in parts )
                 {
-                    pt.MasterPrefab = masterPrefab ?? pt.gameObject;
-                    Debug.Log($"{pt.name} <- {pt.MasterPrefab.name}");
+                    (pt.PartModelOfMasterPrefab as PartModel<UI32, PositionNormalUvVertex>)
+                        .SetObject(masterPrefab ?? pt.gameObject);
+                    Debug.Log($"{pt.name} <- {pt.PartModelOfMasterPrefab.Obj.name}");
 
                     EditorUtility.SetDirty(pt);
                 }

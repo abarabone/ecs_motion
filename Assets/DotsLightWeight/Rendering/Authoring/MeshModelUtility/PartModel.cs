@@ -32,6 +32,7 @@ namespace Abarabone.Structure.Authoring
         { }
 
 
+        public void SetObject(GameObject obj) => this.objectTop = obj;
 
 
         public override IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts

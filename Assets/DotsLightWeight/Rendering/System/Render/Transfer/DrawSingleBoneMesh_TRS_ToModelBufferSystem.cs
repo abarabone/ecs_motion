@@ -51,6 +51,7 @@ namespace Abarabone.Draw
                         in Translation pos,
                         in Rotation rot//,
                         //in NonUniformScale scl
+                        // ＴＲＳといいつつ、現状はＴＲ
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
