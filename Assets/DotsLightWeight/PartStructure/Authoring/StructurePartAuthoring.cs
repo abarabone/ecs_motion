@@ -56,13 +56,15 @@ namespace Abarabone.Structure.Authoring
 
             Debug.Log("pt auth "+this.name);
 
-            var topAuth = this.gameObject
-                .Ancestors()
-                .Select(go => go.GetComponent<StructureBuildingModelAuthoring>())
-                .First(x => x != null);
-            var top = topAuth.gameObject;
+            //var topAuth = this.gameObject
+            //    //.Ancestors()
+            //    //.Select(go => go.GetComponent<StructureBuildingModelAuthoring>())
+            //    //.First(x => x != null);
+            //    .GetComponentsInParent<StructureBuildingModelAuthoring>(true)
+            //    .FirstOrDefault();
+            //var top = topAuth.gameObject;
             //var main = topAuth.FarMeshObject.objectTop;
-            var main = topAuth.FarModel.Obj;
+            //var main = topAuth.FarModel.Obj;
 
 
 
@@ -188,7 +190,7 @@ namespace Abarabone.Structure.Authoring
                 //var mass = em_.GetComponentData<PhysicsCollider>(gcs_.GetPrimaryEntity(part_)).MassProperties;
                 em_.SetComponentData(prefabEnt,
                     //PhysicsMass.CreateDynamic( mass, 1.0f )
-                    PhysicsMass.CreateDynamic(MassProperties.UnitSphere, 1.0f)
+                    PhysicsMass.CreateDynamic(MassProperties.UnitSphere, 1.0f)// 暫定だっけ？
                 );
                 em_.SetComponentData(prefabEnt,
                     new PhysicsGravityFactor

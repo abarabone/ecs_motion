@@ -94,6 +94,7 @@ namespace Abarabone.Structure.Authoring
 
             setBoneForFarEntity_(gcs, main, far, top.transform);
             setBoneForPartEntities_(gcs, main, near, near.transform);
+            //setBoneForPartEntities_(gcs, main, main, near.transform);
         }
 
         static public void CreateStructureEntitiesInArea
@@ -214,7 +215,7 @@ namespace Abarabone.Structure.Authoring
 
         static void setBoneForPartEntities_(GameObjectConversionSystem gcs, GameObject parent, GameObject partTop, Transform root)
         {
-            var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()
+            var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>(true)
                 .Select(pt => pt.transform);
 
             gcs.InitBoneEntities(parent, qPart, root, EnBoneType.jobs_per_depth);

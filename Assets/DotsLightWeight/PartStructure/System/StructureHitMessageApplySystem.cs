@@ -110,17 +110,19 @@ namespace Abarabone.Structure
                 var destruction = this.Destructions[key];
 
                 // 複数の子パーツから１つの親構造物のフラグを立てることがあるので、並列化の際に注意が必要
+                // 今回は、同じ key は同じスレッドで処理されるようなので成立する。
                 destruction.SetDestroyed(value.PartId);
 
                 this.Destructions[key] = destruction;
 
 
-                var prefab = this.Prefabs[value.PartEntity].DebrisPrefab;
-                var rot = this.Rotations[value.PartEntity];
-                var pos = this.Positions[value.PartEntity];
+                var part = value.PartEntity;
+                var prefab = this.Prefabs[part].DebrisPrefab;
+                var rot = this.Rotations[part];
+                var pos = this.Positions[part];
                 createDebris_(this.Cmd, uniqueIndex, prefab, rot, pos);
 
-                destroyPart_(this.Cmd, uniqueIndex, value.PartEntity);
+                destroyPart_(this.Cmd, uniqueIndex, part);
 
             }
 
