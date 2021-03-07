@@ -92,7 +92,10 @@ namespace Abarabone.Geometry
 
             var qPartIdPerMesh =
                 from mmt in mmts_
-                select mmt.tf.GetComponentInParent<StructurePartAuthoring>()?.PartId ?? default
+                    .Do(x => Debug.Log($"part id is {x.tf.getInParent<StructurePartAuthoring>()?.PartId ?? -1} from {x.tf.getInParent<StructurePartAuthoring>()?.name ?? "null"}"))
+                    //.Do(x => Debug.Log($"part id is {x.tf.findInParent<StructurePartAuthoring>()?.PartId ?? -1} from {x.tf.findInParent<StructurePartAuthoring>()?.name ?? "null"}"))
+                select mmt.tf.getInParent<StructurePartAuthoring>()?.PartId ?? -1
+                //select mmt.tf.gameObject.GetComponentInParent<StructurePartAuthoring>()?.PartId ?? -1
                 ;
             result.partIdPerMesh = qPartIdPerMesh.ToArray();
 
@@ -109,12 +112,30 @@ namespace Abarabone.Geometry
                 ;
             var qSrcBones = mmts_
                 .Select(x => x.tf.GetComponentOrNull<SkinnedMeshRenderer>()?.bones ?? x.tf.WrapEnumerable().ToArray());
-            ;
+                ;
             result.boneWeightsPerMesh = qBoneWeights.ToArray();
             result.mtInvsPerMesh = qMtInvs.ToArray();
             result.srcBoneIndexToDstBoneIndex = (qSrcBones, tfBones).ToBoneIndexConversionDictionary();
             return result;
         }
+
+        //static T findInParent<T>(this GameObject obj)
+        //    where T : MonoBehaviour
+        //=> obj
+        //    .AncestorsAndSelf()
+        //    .Select(x => x.GetComponent<T>())
+        //    .FirstOrDefault()
+        //    ;
+
+        //static T findInParent<T>(this Transform tf) where T : MonoBehaviour => tf.gameObject.findInParent<T>();
+
+        static T getInParent<T>(this GameObject obj)
+            where T : MonoBehaviour
+        => obj.GetComponentsInParent<T>(true).FirstOrDefault();
+        
+        static T getInParent<T>(this Transform tf)
+            where T : MonoBehaviour
+        => tf.gameObject.getInParent<T>();
 
     }
 }

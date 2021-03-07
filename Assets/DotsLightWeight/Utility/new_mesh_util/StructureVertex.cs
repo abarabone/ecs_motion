@@ -36,23 +36,24 @@ namespace Abarabone.Geometry
             new MeshElements<TIdx, StructureVertex>
             {
                 idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
+
                 poss = srcmeshes.QueryConvertPositions(p).ToArray(),
                 nms = srcmeshes.QueryConvertNormals(p).ToArray(),
-                uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray(),
                 pids = srcmeshes.QueryConvertPartId(p).ToArray(),
+                uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray(),
             };
 
 
         public IEnumerable<StructureVertex> Packing<TIdx>(MeshElements<TIdx, StructureVertex> src)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
-            from x in (src.poss, src.nms, src.uvs, src.pids).Zip()
+            from x in (src.poss, src.nms, src.pids, src.uvs).Zip()
             select new StructureVertex
             {
                 Position = x.src0,
                 Normal = x.src1,
-                Uv = x.src2,
-                PardId = x.src3,
+                PardId = x.src2,
+                Uv = x.src3,
             };
 
 

@@ -78,7 +78,7 @@ namespace Abarabone.Structure
                 Rotations = rots,
                 Positions = poss,
             }
-            .Schedule(msgs, 8, this.Dependency);
+            .ScheduleParallel(msgs, 8, this.Dependency);
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
@@ -250,7 +250,7 @@ namespace Abarabone.Structure
 
 
         //[BurstCompile]
-        public static unsafe JobHandle Schedule<TJob, TKey, TValue>
+        public static unsafe JobHandle ScheduleParallel<TJob, TKey, TValue>
             (this TJob jobData, NativeMultiHashMap<TKey, TValue> hashMap, int minIndicesPerJobCount, JobHandle dependsOn = new JobHandle())
             where TJob : struct, IJobNativeMultiHashMapVisitKeyValue<TKey, TValue>
             where TKey : struct, IEquatable<TKey>

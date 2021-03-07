@@ -51,14 +51,16 @@ namespace Abarabone.Structure.Authoring
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
             var qStructures = this.GetComponentsInChildren<StructureBuildingModelAliasAuthoring>();
-            this.structures = qStructures.ToArray();
+            var stlist = qStructures.ToArray();
 
-            var qPrefab = this.structures
+            var qPrefab = stlist
                 .Select(x => x.StructureModelPrefab.gameObject)
                 .Distinct()
                 ;
 
             referencedPrefabs.AddRange(qPrefab);
+
+            this.structures = stlist;
         }
 
 
@@ -68,7 +70,7 @@ namespace Abarabone.Structure.Authoring
             var top = this.gameObject;
             var main = top.Children().First();
 
-            this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
+            //this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
             //conversionSystem.CreateDrawInstanceEntities(top, main, bones, this.BoneMode);
 

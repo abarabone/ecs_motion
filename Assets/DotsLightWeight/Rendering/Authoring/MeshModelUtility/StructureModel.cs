@@ -31,6 +31,10 @@ namespace Abarabone.Structure.Authoring
         { }
 
 
+        //public override Transform TfRoot => this.Obj.GetComponentsInParent<StructureBuildingModelAuthoring>(true)
+        //    .FirstOrDefault()
+        //    .transform;
+
         public override void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {

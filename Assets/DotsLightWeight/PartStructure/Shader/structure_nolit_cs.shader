@@ -49,7 +49,7 @@ Shader "Custom/structure_nolit_cs"
 				float4	vertex	: POSITION;
 				float3	normal	: NORMAL;
 				float2	uv		: TEXCOORD0;
-				fixed4	part_index : COLOR;
+				uint4	part_index : COLOR;
 			};
 			
 			struct v2f
@@ -112,7 +112,7 @@ Shader "Custom/structure_nolit_cs"
 				//const float4	wvt = mul(UNITY_MATRIX_VP, float4(tvt.xyz, 1.0f));
 				const float4	wvt = UnityObjectToClipPos(tvt.xyz);
 
-				const float alival = get_part_bit(i_vector_base, uint2(0, 0)) == 0 ? 1 : 0;
+				const float alival = get_part_bit(i_vector_base, v.part_index.rg) == 0 ? 1 : 0;
 
 				o.vertex = wvt * alival;
 				o.uv = v.uv;
