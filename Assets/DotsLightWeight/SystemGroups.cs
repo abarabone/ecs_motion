@@ -46,9 +46,9 @@ namespace Abarabone.SystemGroup
         {
             //[UpdateBefore(typeof(EndFramePhysicsSystem))]
             //[UpdateAfter(typeof(StepPhysicsWorld))]
-            [UpdateInGroup(typeof(SimulationSystemGroup))]
-            //[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-            [UpdateAfter(typeof(HitSystemGroup))]
+            //[UpdateInGroup(typeof(SimulationSystemGroup))]
+            [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+            //[UpdateAfter(typeof(HitSystemGroup))]
             //[DisableAutoCreation]
             public class ObjectMoveSystemGroup : ComponentSystemGroup
             { }

@@ -163,31 +163,31 @@ namespace Abarabone.Character
 
 
 
-        [BurstCompile, RequireComponentTag(typeof(PlayerTag))]
-        struct ContDevJob : IJobForEachWithEntity
-            <MoveHandlingData>
-        {
+        //[BurstCompile, RequireComponentTag(typeof(PlayerTag))]
+        //struct ContDevJob : IJobForEachWithEntity
+        //    <MoveHandlingData>
+        //{
 
-            //[ReadOnly] public EntityCommandBuffer.Concurrent Commands;
+        //    //[ReadOnly] public EntityCommandBuffer.Concurrent Commands;
 
-            [ReadOnly] public ControlActionUnit Acts;
+        //    [ReadOnly] public ControlActionUnit Acts;
 
 
-            public void Execute(
-                Entity entity, int index,
-                [WriteOnly] ref MoveHandlingData handler
-            )
-            {
-                //if( this.Acts.IsChangeMotion )
-                //{
-                //    var motionInfo = this.MotionInfos[ linker.MotionEntity ];
-                //    this.Commands.AddComponent( index, linker.MotionEntity, new Motion.InitializeData { MotionIndex = (motionInfo.MotionIndex+1) % 10 } );
-                //}
+        //    public void Execute(
+        //        Entity entity, int index,
+        //        [WriteOnly] ref MoveHandlingData handler
+        //    )
+        //    {
+        //        //if( this.Acts.IsChangeMotion )
+        //        //{
+        //        //    var motionInfo = this.MotionInfos[ linker.MotionEntity ];
+        //        //    this.Commands.AddComponent( index, linker.MotionEntity, new Motion.InitializeData { MotionIndex = (motionInfo.MotionIndex+1) % 10 } );
+        //        //}
 
-                handler.ControlAction = this.Acts;
+        //        handler.ControlAction = this.Acts;
 
-            }
-        }
+        //    }
+        //}
     }
 
 }
