@@ -24,31 +24,25 @@ namespace Abarabone.SystemGroup
     namespace Simulation
     {
 
-        //[DisableAutoCreation]
-        [UpdateInGroup(typeof(SimulationSystemGroup))]
-        //[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+        [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+        [UpdateBefore(typeof(BuildPhysicsWorld))]
         public class InitializeSystemGroup : ComponentSystemGroup
         { }
 
         namespace Move
         {
-            //[DisableAutoCreation]
-            [UpdateBefore(typeof(BuildPhysicsWorld))]
-            //[UpdateAfter(typeof(ExportPhysicsWorld))]
-            //[UpdateBefore(typeof(EndFramePhysicsSystem))]
-            //[UpdateInGroup(typeof(SimulationSystemGroup))]
             [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+            [UpdateBefore(typeof(BuildPhysicsWorld))]
+            [UpdateAfter(typeof(InitializeSystemGroup))]
             public class ObjectMoveSystemGroup : ComponentSystemGroup
             { }
         }
 
         namespace Hit
         {
-            //[DisableAutoCreation]
+            [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
             [UpdateAfter(typeof(ExportPhysicsWorld))]
             [UpdateBefore(typeof(EndFramePhysicsSystem))]
-            //[UpdateInGroup(typeof(SimulationSystemGroup))]
-            [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
             [UpdateAfter(typeof(Move.ObjectMoveSystemGroup))]
             public class HitSystemGroup : ComponentSystemGroup
             { }
@@ -63,7 +57,6 @@ namespace Abarabone.SystemGroup
         {
 
             [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-            //[DisableAutoCreation]
             public class ObjectLogicSystemGroup : ComponentSystemGroup
             { }
 
@@ -74,8 +67,6 @@ namespace Abarabone.SystemGroup
         {
 
             [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-            //[DisableAutoCreation]
-            //[UpdateAfter(typeof(ObjectLogicSystemGroup))]
             public class DrawPrevSystemGroup : ComponentSystemGroup
             {
                 [UpdateInGroup(typeof(DrawPrevSystemGroup))]
@@ -106,7 +97,6 @@ namespace Abarabone.SystemGroup
             {
 
                 [UpdateInGroup(typeof(PresentationSystemGroup))]
-                //[DisableAutoCreation]
                 [UpdateAfter(typeof(DrawPrevSystemGroup))]
                 public class MonolithicBoneTransformSystemGroup : ComponentSystemGroup
                 { }
@@ -117,7 +107,6 @@ namespace Abarabone.SystemGroup
             {
 
                 [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-                //[DisableAutoCreation]
                 [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
                 public class MotionSystemGroup : ComponentSystemGroup
                 { }
@@ -126,7 +115,6 @@ namespace Abarabone.SystemGroup
 
 
             [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-            //[DisableAutoCreation]
             [UpdateAfter(typeof(MotionBoneTransform.MotionSystemGroup))]
             [UpdateAfter(typeof(MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
             public class DrawSystemGroup : ComponentSystemGroup

@@ -30,7 +30,7 @@ namespace Abarabone.Character
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     public class IsGroundAroundSystem : SystemBase
     {
         
