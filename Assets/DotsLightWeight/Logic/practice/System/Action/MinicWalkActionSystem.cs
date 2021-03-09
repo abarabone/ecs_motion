@@ -100,7 +100,13 @@ namespace Abarabone.Character
                         {
                             if (motionInfo.MotionIndex != (int)Motion_minic.jumpdown)
                                 commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
-                                    new Motion.InitializeData { MotionIndex = 0, DelayTime = 0.1f, IsContinuous = true });
+                                    new Motion.InitializeData
+                                    {
+                                        MotionIndex = 0,
+                                        DelayTime = 0.1f,
+                                        IsContinuous = true,
+                                    }
+                                );
                             return;
                         }
 

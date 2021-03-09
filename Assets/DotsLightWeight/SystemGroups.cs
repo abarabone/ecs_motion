@@ -24,35 +24,34 @@ namespace Abarabone.SystemGroup
     namespace Simulation
     {
 
-        //[UpdateAfter(typeof(StepPhysicsWorld))]
+        //[DisableAutoCreation]
         [UpdateInGroup(typeof(SimulationSystemGroup))]
         //[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-        //[DisableAutoCreation]
         public class InitializeSystemGroup : ComponentSystemGroup
         { }
 
-
-
-        //[UpdateAfter(typeof(StepPhysicsWorld))]
-        [UpdateInGroup(typeof(SimulationSystemGroup))]
-        //[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-        [UpdateAfter(typeof(InitializeSystemGroup))]
-        //[DisableAutoCreation]
-        public class HitSystemGroup : ComponentSystemGroup
-        { }
-
-
         namespace Move
         {
+            //[DisableAutoCreation]
+            [UpdateBefore(typeof(BuildPhysicsWorld))]
+            //[UpdateAfter(typeof(ExportPhysicsWorld))]
             //[UpdateBefore(typeof(EndFramePhysicsSystem))]
-            //[UpdateAfter(typeof(StepPhysicsWorld))]
             //[UpdateInGroup(typeof(SimulationSystemGroup))]
             [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-            //[UpdateAfter(typeof(HitSystemGroup))]
-            //[DisableAutoCreation]
             public class ObjectMoveSystemGroup : ComponentSystemGroup
             { }
+        }
 
+        namespace Hit
+        {
+            //[DisableAutoCreation]
+            [UpdateAfter(typeof(ExportPhysicsWorld))]
+            [UpdateBefore(typeof(EndFramePhysicsSystem))]
+            //[UpdateInGroup(typeof(SimulationSystemGroup))]
+            [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+            [UpdateAfter(typeof(Move.ObjectMoveSystemGroup))]
+            public class HitSystemGroup : ComponentSystemGroup
+            { }
         }
 
     }

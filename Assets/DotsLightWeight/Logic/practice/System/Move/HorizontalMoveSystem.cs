@@ -28,8 +28,7 @@ namespace Abarabone.Character
     /// ジャンプが必要なら、地面と接触していればジャンプする。←暫定
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
-    //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     public class HorizontalMoveSystem : SystemBase
     {
 
@@ -62,6 +61,7 @@ namespace Abarabone.Character
             this.Entities
                 //.WithReadOnly(collisionWorld)
                 //.WithReadOnly(deltaTime)
+                .WithBurst()
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -77,7 +77,8 @@ namespace Abarabone.Character
 
                         var upf = math.select(0.0f, acts.JumpForce, ground.IsGround);
 
-                        var xzDir = acts.MoveDirection * (deltaTime * 300.0f * 3);
+                        var xzDir = acts.MoveDirection * (deltaTime * 300.0f);
+                        acts.JumpForce = 0.0f;//
 
                         xzDir.y = vlinear.y + upf;
 
