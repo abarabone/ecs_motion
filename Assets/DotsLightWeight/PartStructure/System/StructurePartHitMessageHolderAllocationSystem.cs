@@ -27,7 +27,8 @@ namespace Abarabone.Structure
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
+    //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class StructureHitMessageHolderAllocationSystem : SystemBase
     {
 

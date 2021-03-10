@@ -24,22 +24,36 @@ namespace Abarabone.SystemGroup
     namespace Simulation
     {
 
+        //namespace Hit
+        //{
+        //    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+        //    [UpdateBefore(typeof(BuildPhysicsWorld))]
+        //    [UpdateBefore(typeof(InitializeSystemGroup))]
+        //    public class HitSystemGroup : ComponentSystemGroup
+        //    { }
+        //}
+
+        //[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+        //[UpdateBefore(typeof(BuildPhysicsWorld))]
+        //public class InitializeSystemGroup : ComponentSystemGroup
+        //{ }
+
+        //namespace Move
+        //{
+        //    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+        //    [UpdateBefore(typeof(BuildPhysicsWorld))]
+        //    [UpdateAfter(typeof(Hit.HitSystemGroup))]
+        //    public class ObjectMoveSystemGroup : ComponentSystemGroup
+        //    { }
+        //}
+
+        //// PhysicsWorld
+
+
         [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
         [UpdateBefore(typeof(BuildPhysicsWorld))]
         public class InitializeSystemGroup : ComponentSystemGroup
         { }
-
-        namespace Hit
-        {
-            [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-            //[UpdateBefore(typeof(BuildPhysicsWorld))]
-            [UpdateAfter(typeof(ExportPhysicsWorld))]
-            [UpdateBefore(typeof(EndFramePhysicsSystem))]
-            //[UpdateAfter(typeof(Move.ObjectMoveSystemGroup))]
-            //[UpdateBefore(typeof(Move.ObjectMoveSystemGroup))]
-            public class HitSystemGroup : ComponentSystemGroup
-            { }
-        }
 
         namespace Move
         {
@@ -49,6 +63,18 @@ namespace Abarabone.SystemGroup
             public class ObjectMoveSystemGroup : ComponentSystemGroup
             { }
         }
+
+        // PhysicsWorld
+
+        namespace Hit
+        {
+            [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+            [UpdateAfter(typeof(ExportPhysicsWorld))]
+            [UpdateBefore(typeof(EndFramePhysicsSystem))]
+            public class HitSystemGroup : ComponentSystemGroup
+            { }
+        }
+
 
     }
 
