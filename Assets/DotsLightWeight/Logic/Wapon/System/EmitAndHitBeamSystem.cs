@@ -31,9 +31,9 @@ namespace Abarabone.Arms
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
+    //[UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     //[UpdateAfter(typeof(BulletHitSystem))]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class EmitAndHitBeamSystem : SystemBase
     {
 
@@ -66,7 +66,6 @@ namespace Abarabone.Arms
         {
             this.Dependency = JobHandle.CombineDependencies
                 (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
-
 
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
@@ -129,10 +128,7 @@ namespace Abarabone.Arms
 
             // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
-
-            return;
-
-
+            this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -45,9 +45,10 @@ namespace Abarabone.Character
 
         protected override void OnUpdate()
         {
+            this.Dependency = JobHandle.CombineDependencies
+                (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
 
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
-
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
 
 
@@ -80,73 +81,8 @@ namespace Abarabone.Character
                 )
                 .ScheduleParallel();
 
-
-            //var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
-
-            //inputDeps = new IsGroundAroundJob
-            //{
-            //    CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
-            //    MainEntities = mainEntities,
-            //}
-            //.Schedule( this, inputDeps );
-
-
-            //return inputDeps;
+            this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
         }
-
-
-
-
-        [BurstCompile]
-        struct IsGroundAroundJob : IJobForEachWithEntity
-            <GroundHitResultData, GroundHitSphereData, Translation, Rotation>
-        {
-
-            [ReadOnly] public PhysicsWorld CollisionWorld;
-
-            [ReadOnly] public ComponentDataFromEntity<Bone.MainEntityLinkData> MainEntities;
-
-
-            public unsafe void Execute(
-                Entity entity, int index,
-                [WriteOnly] ref GroundHitResultData ground,
-                [ReadOnly] ref GroundHitSphereData sphere,
-                [ReadOnly] ref Translation pos,
-                [ReadOnly] ref Rotation rot
-            )
-            {
-                //var a = new NativeList<DistanceHit>( Allocator.Temp );
-                var rtf = new RigidTransform( rot.Value, pos.Value );
-
-                var hitInput = new PointDistanceInput
-                {
-                    Position = math.transform( rtf, sphere.Center ),
-                    MaxDistance = sphere.Distance,
-                    Filter = sphere.Filter,
-                };
-                //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
-                var collector = new AnyHitExcludeSelfCollector<DistanceHit>( sphere.Distance, entity, this.MainEntities );
-                var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
-
-                //var castInput = new RaycastInput
-                //{
-                //    Start = math.transform( rtf, sphere.Center ),
-                //    End = math.transform( rtf, sphere.Center ) + ( math.up() * -sphere.Distance ),
-                //    Filter = sphere.filter,
-                //};
-                //var collector = new AnyHitExcludeSelfCollector2( 1.0f, entity, this.CollisionWorld.Bodies );
-                //var isHit = this.CollisionWorld.CastRay( castInput, ref collector );
-
-                //ground = new GroundHitResultData { IsGround = ( isHit && a.Length > 1 ) };
-                //ground.IsGround = a.Length > 1;
-                ground.IsGround = collector.NumHits > 0;
-                //ground.IsGround = isHit;
-
-                //a.Dispose();
-            }
-        }
-
-
     }
 
 }

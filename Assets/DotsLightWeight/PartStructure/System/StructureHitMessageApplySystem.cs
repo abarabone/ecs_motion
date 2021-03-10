@@ -61,7 +61,6 @@ namespace Abarabone.Structure
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
             //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
-
             var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);

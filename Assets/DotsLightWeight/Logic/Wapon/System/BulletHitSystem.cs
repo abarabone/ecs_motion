@@ -57,7 +57,6 @@ namespace Abarabone.Arms
             this.Dependency = JobHandle.CombineDependencies
                 (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
 
-
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
 
@@ -88,6 +87,7 @@ namespace Abarabone.Arms
                 )
                 .ScheduleParallel(this.Dependency);
 
+            this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
         }
 
     }

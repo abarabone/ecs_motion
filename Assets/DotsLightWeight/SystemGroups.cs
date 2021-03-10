@@ -29,22 +29,24 @@ namespace Abarabone.SystemGroup
         public class InitializeSystemGroup : ComponentSystemGroup
         { }
 
+        namespace Hit
+        {
+            [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+            //[UpdateBefore(typeof(BuildPhysicsWorld))]
+            [UpdateAfter(typeof(ExportPhysicsWorld))]
+            [UpdateBefore(typeof(EndFramePhysicsSystem))]
+            //[UpdateAfter(typeof(Move.ObjectMoveSystemGroup))]
+            //[UpdateBefore(typeof(Move.ObjectMoveSystemGroup))]
+            public class HitSystemGroup : ComponentSystemGroup
+            { }
+        }
+
         namespace Move
         {
             [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
             [UpdateBefore(typeof(BuildPhysicsWorld))]
             [UpdateAfter(typeof(InitializeSystemGroup))]
             public class ObjectMoveSystemGroup : ComponentSystemGroup
-            { }
-        }
-
-        namespace Hit
-        {
-            [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-            [UpdateAfter(typeof(ExportPhysicsWorld))]
-            [UpdateBefore(typeof(EndFramePhysicsSystem))]
-            [UpdateAfter(typeof(Move.ObjectMoveSystemGroup))]
-            public class HitSystemGroup : ComponentSystemGroup
             { }
         }
 
