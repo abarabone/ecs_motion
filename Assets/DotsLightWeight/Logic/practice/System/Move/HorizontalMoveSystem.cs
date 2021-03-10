@@ -44,17 +44,6 @@ namespace Abarabone.Character
 
         protected override void OnUpdate()
         {
-
-            //inputDeps = new HorizontalMoveJob
-            //{
-            //    CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
-            //    DeltaTime = this.Time.DeltaTime,//UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
-            //}
-            //.Schedule( this, inputDeps );
-            
-            //return inputDeps;
-
-
             //var collisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld;//.CollisionWorld,
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
 
@@ -73,55 +62,28 @@ namespace Abarabone.Character
                     {
                         ref var acts = ref handler.ControlAction;
 
-                        var vlinear = v.Linear;
+                        var vlinear = v.Linear.xz;
+                        var dir = acts.MoveDirection.xz;
 
-                        var upf = math.select(0.0f, acts.JumpForce, ground.IsGround);
+                        var d = dir * (deltaTime * 300.0f);
+                        v.Linear += new float3(d - vlinear, 0.0f).xzy * 0.9f;
 
-                        var xzDir = acts.MoveDirection * (deltaTime * 300.0f);
-                        acts.JumpForce = 0.0f;//
+                        //var d = dir * (deltaTime * 300.0f);
+                        //var l = math.length(vlinear + d);
+                        //var limit = 20.0f;
+                        //var limited = limit - math.min(l, limit);
+                        //var n = (vlinear + d) * math.select(math.rcp(l), 0.0f, l == 0.0f);
 
-                        xzDir.y = vlinear.y + upf;
+                        //var upf = math.select(0.0f, acts.JumpForce, ground.IsGround);
+                        //xzDir.y = vlinear.y + upf;
+                        //acts.JumpForce = 0.0f;//
 
-                        v.Linear = xzDir;//math.min( xyDir, new float3( 1000, 1000, 1000 ) );
+                        //v.Linear += new float3(limited * n - vlinear, 0.0f).xzy;
                     }
                 )
                 .ScheduleParallel();
         }
 
-
-
-        //[BurstCompile, RequireComponentTag(typeof(HorizontalMovingTag))]
-        //struct HorizontalMoveJob : IJobForEachWithEntity
-        //    <MoveHandlingData, GroundHitResultData, Translation, PhysicsVelocity>
-        //{
-
-        //    [ReadOnly] public float DeltaTime;
-
-        //    [ReadOnly] public PhysicsWorld CollisionWorld;
-
-
-        //    public unsafe void Execute(
-        //        Entity entity, int index,
-        //        [ReadOnly] ref MoveHandlingData handler,
-        //        [ReadOnly] ref GroundHitResultData ground,
-        //        [ReadOnly] ref Translation pos,
-        //        ref PhysicsVelocity v
-        //    )
-        //    {
-        //        ref var acts = ref handler.ControlAction;
-
-        //        var vlinear = v.Linear;
-
-        //        var upf = math.select( 0.0f, acts.JumpForce, ground.IsGround );
-
-        //        var xzDir = acts.MoveDirection * ( this.DeltaTime * 300.0f );
-                
-        //        xzDir.y = vlinear.y + upf;
-
-        //        v.Linear = xzDir;//math.min( xyDir, new float3( 1000, 1000, 1000 ) );
-
-        //    }
-        //}
 
     }
 }
