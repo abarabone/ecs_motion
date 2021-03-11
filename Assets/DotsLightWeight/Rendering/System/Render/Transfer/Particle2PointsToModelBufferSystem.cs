@@ -13,8 +13,6 @@ using System;
 
 namespace Abarabone.Draw
 {
-
-    
     using Abarabone.CharacterMotion;
     using Abarabone.SystemGroup;
     using Abarabone.Geometry;
@@ -22,11 +20,12 @@ namespace Abarabone.Draw
     using Abarabone.Particle;
 
 
+
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     //[UpdateAfter(typeof())]
-    [UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    public class Particle2PointsToModelBufferSystem : JobComponentSystem
+    [UpdateBefore(typeof(BeginDrawCsBarier))]
+    public class Particle2PointsToModelBufferSystem : SystemBase
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -37,14 +36,13 @@ namespace Abarabone.Draw
         }
 
 
-        protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
+        protected override unsafe void OnUpdate()
         {
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
 
-            inputDeps = this.Entities
-                //.WithoutBurst()
+            this.Entities
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.ParticleTag>()
@@ -56,7 +54,8 @@ namespace Abarabone.Draw
                         in DrawInstance.ModeLinkData linker,
                         in Particle.AdditionalData additional,
                         in Particle.TranslationPtoPData pos
-                    ) =>
+                    )
+                =>
                     {
                         if (target.DrawInstanceId == -1) return;
 
@@ -70,16 +69,14 @@ namespace Abarabone.Draw
                         var color = math.asfloat(additional.Color.ToUint());
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[ i + 0 ] = new float4( pos.Start, size );
-                        pModel[ i + 1 ] = new float4( pos.End, color );
-
+                        pModel[i + 0] = new float4(pos.Start, size);
+                        pModel[i + 1] = new float4(pos.End, color);
                     }
                 )
-                .Schedule( inputDeps );
+                .ScheduleParallel();
 
-
-            this.presentationBarier.AddJobHandleForProducer( inputDeps );
-            return inputDeps;
+            this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
     }
+
 }

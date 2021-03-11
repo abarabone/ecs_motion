@@ -12,8 +12,6 @@ using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices;
 using UnityEngine.Assertions.Must;
 using Unity.Physics;
-using Unity.Physics;
-using Unity.Physics.Systems;
 using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
 

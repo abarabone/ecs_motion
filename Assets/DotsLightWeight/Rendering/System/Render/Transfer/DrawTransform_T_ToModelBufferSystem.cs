@@ -17,10 +17,9 @@ namespace Abarabone.Draw
 {
 
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    //[UpdateAfter(typeof())]
-    [UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    public class DrawTransform_T_ToModelBufferSystem : JobComponentSystem
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
+    [UpdateBefore(typeof(BeginDrawCsBarier))]
+    public class DrawTransform_T_ToModelBufferSystem : SystemBase
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -30,13 +29,11 @@ namespace Abarabone.Draw
             this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
         }
 
-
-        protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
+        protected unsafe override void OnUpdate()
         {
-
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
-
-            inputDeps = this.Entities
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
+            
+            this.Entities
                 .WithBurst()
                 .WithNone<NonUniformScale, Rotation>()
                 .WithReadOnly(offsetsOfDrawModel)
@@ -46,7 +43,8 @@ namespace Abarabone.Draw
                         in BoneDraw.IndexData indexer,
                         in BoneDraw.TargetWorkData target,
                         in Translation pos
-                    ) =>
+                    )
+                =>
                     {
                         if (target.DrawInstanceId == -1) return;
 
@@ -59,18 +57,13 @@ namespace Abarabone.Draw
                         var i = boneOffset + vectorLengthInBone * indexer.BoneId + offsetInfo.VectorOffsetPerInstance;
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[ i ] = new float4( pos.Value, 1.0f );
+                        pModel[i] = new float4(pos.Value, 1.0f);
                     }
                 )
-                .Schedule( inputDeps );
+                .ScheduleParallel();
 
-
-            this.presentationBarier.AddJobHandleForProducer( inputDeps );
-            return inputDeps;
+            this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
-
-
-
     }
 
 }

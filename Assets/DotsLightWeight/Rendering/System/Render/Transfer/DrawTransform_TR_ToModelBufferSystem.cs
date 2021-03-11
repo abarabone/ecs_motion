@@ -16,11 +16,11 @@ using Unity.Transforms;
 namespace Abarabone.Draw
 {
 
+
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    //[UpdateAfter(typeof())]
-    [UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    public class DrawTransform_TR_ToModelBufferSystem : JobComponentSystem
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
+    [UpdateBefore(typeof(BeginDrawCsBarier))]
+    public class DrawTransform_TR_ToModelBufferSystem : SystemBase
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -31,15 +31,14 @@ namespace Abarabone.Draw
         }
 
 
-        protected unsafe override JobHandle OnUpdate( JobHandle inputDeps )
+        protected unsafe override void OnUpdate()
         {
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
-
-            inputDeps = this.Entities
+            this.Entities
                 .WithBurst()
                 .WithNone<NonUniformScale>()
-                .WithReadOnly( offsetsOfDrawModel )
+                .WithReadOnly(offsetsOfDrawModel)
                 .ForEach(
                     (
                         in BoneDraw.LinkData linker,
@@ -60,19 +59,14 @@ namespace Abarabone.Draw
                         var i = boneOffset + vectorLengthInBone * indexer.BoneId + offsetInfo.VectorOffsetPerInstance;
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[ i + 0 ] = new float4( pos.Value, 1.0f );
-                        pModel[ i + 1 ] = rot.Value.value;
+                        pModel[i + 0] = new float4(pos.Value, 1.0f);
+                        pModel[i + 1] = rot.Value.value;
                     }
                 )
-                .Schedule( inputDeps );
+                .ScheduleParallel();
 
-
-            this.presentationBarier.AddJobHandleForProducer( inputDeps );
-            return inputDeps;
+            this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
-
-
-
     }
 
 }

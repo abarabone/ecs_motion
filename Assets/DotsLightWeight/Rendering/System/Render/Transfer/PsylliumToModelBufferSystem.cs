@@ -27,7 +27,7 @@ namespace Abarabone.Draw
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
     [UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    public class PsylliumToDrawModelBufferSystem : JobComponentSystem
+    public class PsylliumToDrawModelBufferSystem : SystemBase
     {
 
         BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -38,14 +38,13 @@ namespace Abarabone.Draw
         }
 
 
-        protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
+        protected override unsafe void OnUpdate()
         {
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
 
-            inputDeps = this.Entities
-                //.WithoutBurst()
+            this.Entities
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.ParticleTag>()
@@ -70,14 +69,11 @@ namespace Abarabone.Draw
                         var pInstance = offsetsOfDrawModel[ linker.DrawModelEntityCurrent ].pVectorOffsetPerModelInBuffer;
                         pInstance[ i + 0 ] = new float4( pos.Value, size );
                         pInstance[ i + 1 ] = new float4( pos.Value + math.forward( rot.Value ), color );
-
                     }
                 )
-                .Schedule( inputDeps );
+                .ScheduleParallel();
 
-
-            this.presentationBarier.AddJobHandleForProducer( inputDeps );
-            return inputDeps;
+            this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
     }
 }

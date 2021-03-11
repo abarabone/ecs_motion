@@ -7,7 +7,7 @@ internal class CompactDrawer : PropertyDrawer
 {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        EditorGUIUtility.LookLikeControls();
+        //EditorGUIUtility.LookLikeControls();
 
         position.xMin += 4;
         position.xMax -= 4;
@@ -46,23 +46,23 @@ internal class CompactDrawer : PropertyDrawer
         {
 			case SerializedPropertyType.Quaternion:
             case SerializedPropertyType.Vector4:
-            //    extraHeight = 20;
+                //extraHeight = 20;
                 break;
 
             case SerializedPropertyType.Vector3:
-                extraHeight = 20;
+                //extraHeight = 20;
                 break;
 
             case SerializedPropertyType.Vector2:
-                extraHeight = 20;
+                //extraHeight = 20;
                 break;
 
             case SerializedPropertyType.Rect:
-                extraHeight = 40;
+                //extraHeight = 40;
                 break;
 
             case SerializedPropertyType.Bounds:
-                extraHeight = 40;
+                //extraHeight = 40;
                 break;
         }
         return base.GetPropertyHeight(prop, label) + extraHeight;
