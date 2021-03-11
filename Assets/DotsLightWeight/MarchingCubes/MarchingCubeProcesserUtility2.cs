@@ -29,7 +29,7 @@ namespace Abarabone.MarchingCubes
             (ref this DotGrid32x32x32Unsafe grid, int gridid, uint4 *pDst, uint *pOutput, ref int outputCounter)
         {
             var gptr = (uint4*)grid.pUnits;
-            var iDst = 0;
+            //var iDst = 0;
 
             for (var iy = 0; iy < 31; iy += 1*2)
             {

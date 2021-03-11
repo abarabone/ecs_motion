@@ -36,8 +36,7 @@ namespace Abarabone.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
-    //[UpdateInGroup( typeof( ObjectMoveSystemGroup ) )]
-    public class FreeFallWithHitSystem : JobComponentSystem
+    public class FreeFallWithHitSystem : SystemBase
     {
 
 
@@ -49,71 +48,55 @@ namespace Abarabone.Character
             this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
         }
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        protected override void OnUpdate()
         {
-            //return inputDeps;
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            var collisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld;
 
-            inputDeps = new FreeFallWithHitJob
-            {
-                CollisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld,//.CollisionWorld,
-                MainEntities = mainEntities,
-            }
-            .Schedule( this, inputDeps );
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(collisionWorld)
+                .ForEach(
+                    (
+                        Entity entity, int entityInQueryIndex,
+                        ref WallHitResultData result,
+                        ref Translation pos,
+                        ref Rotation rot,
+                        in GroundHitSphereData sphere
+                    )
+                =>
+                    {
+                        //var rtf = new RigidTransform( rot.Value, pos.Value );
 
-            return inputDeps;
+                        var hitInput = new PointDistanceInput
+                        {
+                            Position = pos.Value,//math.transform( rtf, sphere.Center ),
+                            MaxDistance = sphere.Distance,
+                            Filter = sphere.Filter,
+                        };
+                        //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
+
+                        var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(sphere.Distance, entity, mainEntities);
+                        //var collector = new ClosestHitCollector<DistanceHit>( sphere.Distance );
+                        var isHit = collisionWorld.CalculateDistance(hitInput, ref collector);
+
+                        if (collector.NumHits == 0) return;
+
+
+                        result.IsHit = true;
+
+                        var n = collector.ClosestHit.SurfaceNormal;
+                        var p = collector.ClosestHit.Position;
+                        pos.Value = p + n * sphere.Distance;
+
+                        var right = math.mul(rot.Value, new float3(1.0f, 0.0f, 0.0f));
+                        var forward = math.cross(n, right);
+                        var safe_forward = math.select(math.forward(rot.Value), forward, math.dot(right, n) > 0.001f);
+                        rot.Value = quaternion.LookRotation(safe_forward, n);
+                    }
+                )
+                .ScheduleParallel();
         }
 
-
-        [BurstCompile]
-        struct FreeFallWithHitJob : IJobForEachWithEntity
-            <WallHitResultData, GroundHitSphereData, Translation, Rotation>
-        {
-
-            [ReadOnly] public PhysicsWorld CollisionWorld;
-            //public PhysicsWorld PhysicsWorld;
-
-            [ReadOnly] public ComponentDataFromEntity<Bone.MainEntityLinkData> MainEntities;
-
-
-            public void Execute(
-                Entity entity, int jobIndex,
-                [WriteOnly] ref WallHitResultData result,
-                [ReadOnly] ref GroundHitSphereData sphere,
-                [WriteOnly] ref Translation pos,
-                [WriteOnly] ref Rotation rot
-            )
-            {
-
-                //var rtf = new RigidTransform( rot.Value, pos.Value );
-
-                var hitInput = new PointDistanceInput
-                {
-                    Position = pos.Value,//math.transform( rtf, sphere.Center ),
-                    MaxDistance = sphere.Distance,
-                    Filter = sphere.Filter,
-                };
-                //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
-
-                var collector = new ClosestHitExcludeSelfCollector<DistanceHit>( sphere.Distance, entity, this.MainEntities );
-                //var collector = new ClosestHitCollector<DistanceHit>( sphere.Distance );
-                var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref collector );
-
-                if( collector.NumHits == 0 ) return;
-
-
-                result.IsHit = true;
-
-                var n = collector.ClosestHit.SurfaceNormal;
-                var p = collector.ClosestHit.Position;
-                pos.Value = p + n * sphere.Distance;
-
-                var right = math.mul( rot.Value, new float3( 1.0f, 0.0f, 0.0f ) );
-                var forward = math.cross( n, right );
-                var safe_forward = math.select( math.forward(rot.Value), forward, math.dot(right, n) > 0.001f );
-                rot.Value = quaternion.LookRotation( safe_forward, n );
-                
-            }
-        }
     }
 }

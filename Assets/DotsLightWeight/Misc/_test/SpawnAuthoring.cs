@@ -93,7 +93,7 @@ public class SpawnFreqencySystem : SystemBase
         this.Entities
             .WithBurst()
             .ForEach(
-                (Entity spawnEntity, int entityInQueryIndex, Spawn.EntryData entry, ref Spawn.SpanData span) =>
+                (Entity spawnEntity, int entityInQueryIndex, ref Spawn.SpanData span, in Spawn.EntryData entry) =>
                 {
                     var ent = cmd.Instantiate(entityInQueryIndex, entry.prefab);
 
@@ -145,7 +145,7 @@ public class SpawnSystem : SystemBase
             .WithBurst()
             .WithNone<Spawn.SpanData>()
             .ForEach(
-                (Entity spawnEntity, int entityInQueryIndex, Spawn.EntryData entry) =>
+                (Entity spawnEntity, int entityInQueryIndex, in Spawn.EntryData entry) =>
                 {
                     var ent = cmd.Instantiate(entityInQueryIndex, entry.prefab);
 

@@ -46,11 +46,15 @@ namespace Abarabone.Model.Authoring
 
 
         public GameObject Obj => this.objectTop;
+        
         public Transform TfRoot => this.objectTop.Children().First().transform;// これでいいのか？
-        public Transform[] Bones => this.BoneTop.gameObject.DescendantsAndSelf()
+
+        Transform[] _bones = null;
+        public Transform[] Bones => this._bones ??= this.BoneTop.gameObject.DescendantsAndSelf()
             .Where(x => !x.name.StartsWith("_"))
             .Select(x => x.transform)
             .ToArray();
+        
         public float LimitDistance => this.limitDistance;
         public float Margin => this.margin;
 
@@ -63,8 +67,6 @@ namespace Abarabone.Model.Authoring
                 .QueryMeshMatsTransform_IfHaving();
 
 
-
-        Transform[] _bones = null;
 
         public void CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
