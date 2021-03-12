@@ -55,7 +55,7 @@ namespace Abarabone.Structure.Authoring
             (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            Debug.Log("pt auth "+this.name);
+            //Debug.Log("pt auth "+this.name);
 
             //var topAuth = this.gameObject
             //    //.Ancestors()

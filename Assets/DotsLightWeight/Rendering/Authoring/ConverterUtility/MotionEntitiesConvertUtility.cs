@@ -156,7 +156,7 @@ namespace Abarabone.CharacterMotion.Authoring
         static GameObject[] getEnabledBoneObjects( Transform[] bones, GameObject root, AvatarMask streamMask )
         {
             var enabledBoneHashSet = streamMask.ToEnabledBoneHashSet();
-            Debug.Log(root.MakePath());
+            //Debug.Log(root.MakePath());
 
             return bones
                 .Select( bone => bone.gameObject )

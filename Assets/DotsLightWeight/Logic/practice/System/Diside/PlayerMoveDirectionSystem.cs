@@ -50,7 +50,7 @@ namespace Abarabone.Character
 
             void setControllerFunc_()
             {
-                Debug.Log("Gamepad.current " + Gamepad.current);
+                //Debug.Log("Gamepad.current " + Gamepad.current);
                 if( Gamepad.current != null )
                 {
                     this.getControlUnitFunc = () =>
@@ -89,8 +89,8 @@ namespace Abarabone.Character
                     return;
                 }
 
-                Debug.Log("Mouse.current " + Mouse.current);
-                Debug.Log("Keyboard.current " + Keyboard.current);
+                //Debug.Log("Mouse.current " + Mouse.current);
+                //Debug.Log("Keyboard.current " + Keyboard.current);
                 if ( Mouse.current != null && Keyboard.current != null )
                 {
                     this.getControlUnitFunc = () =>

@@ -29,8 +29,8 @@ namespace Abarabone.Character
 
 
     [DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
-    public class AntMoveDirectionSystem : JobComponentSystem
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    public class AntMoveDirectionSystem : SystemBase
     {
 
 
@@ -39,38 +39,52 @@ namespace Abarabone.Character
         { }
 
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        protected override void OnUpdate()
         {
+            //inputDeps = new AiJob
+            //{ }
+            //.Schedule( this, inputDeps );
 
-
-            inputDeps = new AiJob
-            { }
-            .Schedule( this, inputDeps );
-
-            return inputDeps;
+            this.Entities
+                .WithBurst()
+                .WithAll<AntTag>()
+                .ForEach(
+                    (
+                        Entity entity, int entityInQueryIndex,
+                        ref MoveHandlingData handler,
+                        in Rotation rot
+                    )
+                =>
+                    {
+                        //handler.ControlAction.HorizontalRotation = quaternion.identity;
+                        //handler.ControlAction.LookRotation = quaternion.identity;
+                        //handler.ControlAction.MoveDirection = math.forward(rot.Value);
+                    }
+                )
+                .ScheduleParallel();
         }
 
 
 
-        [BurstCompile, RequireComponentTag(typeof(AntTag))]
-        struct AiJob : IJobForEachWithEntity
-            <MoveHandlingData, Rotation>//
-        {
+        //[BurstCompile, RequireComponentTag(typeof(AntTag))]
+        //struct AiJob : IJobForEachWithEntity
+        //    <MoveHandlingData, Rotation>//
+        //{
 
 
-            public void Execute(
-                Entity entity, int index,
-                [WriteOnly] ref MoveHandlingData handler,
-                [ReadOnly] ref Rotation rot
-            )
-            {
+        //    public void Execute(
+        //        Entity entity, int index,
+        //        [WriteOnly] ref MoveHandlingData handler,
+        //        [ReadOnly] ref Rotation rot
+        //    )
+        //    {
 
-                //handler.ControlAction.HorizontalRotation = quaternion.identity;
-                //handler.ControlAction.LookRotation = quaternion.identity;
-                //handler.ControlAction.MoveDirection = math.forward(rot.Value);
+        //        //handler.ControlAction.HorizontalRotation = quaternion.identity;
+        //        //handler.ControlAction.LookRotation = quaternion.identity;
+        //        //handler.ControlAction.MoveDirection = math.forward(rot.Value);
 
-            }
-        }
+        //    }
+        //}
 
 
     }

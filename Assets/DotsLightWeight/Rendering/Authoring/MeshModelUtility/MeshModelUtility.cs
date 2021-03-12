@@ -52,7 +52,7 @@ namespace Abarabone.Geometry
 
             var qOfs =
                 from x in (meshAll.AsEnumerable, models).Zip()
-                    .Do(x => Debug.Log($"create from {x.src1.Obj?.name} {x.src1.Obj?.GetHashCode()} {meshDict.ContainsKey(x.src1?.Obj)}"))
+                    //.Do(x => Debug.Log($"create from {x.src1.Obj?.name} {x.src1.Obj?.GetHashCode()} {meshDict.ContainsKey(x.src1?.Obj)}"))
                 let meshsrc = x.src0
                 let model = x.src1
                 where !meshDict.ContainsKey(model.Obj)
@@ -78,11 +78,11 @@ namespace Abarabone.Geometry
         {
             foreach (var model in models)
             {
-                Debug.Log($"{model.Obj.name} model ent");
+                //Debug.Log($"{model.Obj.name} model ent");
                 if (gcs.IsExistsInModelEntityDictionary(model.Obj)) continue;
 
                 var obj = model.Obj;
-                Debug.Log($"create");
+                //Debug.Log($"create");
 
                 var mesh = meshDict[obj];
                 var atlas = atlasDict.objectToAtlas[obj];

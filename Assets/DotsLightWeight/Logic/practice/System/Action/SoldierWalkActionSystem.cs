@@ -32,8 +32,8 @@ namespace Abarabone.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
-    public class SoldierWalkActionSystem : JobComponentSystem
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    public class SoldierWalkActionSystem : SystemBase
     {
 
         EntityCommandBufferSystem ecb;
@@ -43,106 +43,210 @@ namespace Abarabone.Character
         protected override void OnCreate()
         {
             this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-
         }
 
 
-        protected override JobHandle OnUpdate( JobHandle inputDeps )
+        protected override void OnUpdate()
         {
 
-            inputDeps = new SoldierWalkActionJob
-            {
-                Commands = this.ecb.CreateCommandBuffer().AsParallelWriter(),
-                MotionInfos = this.GetComponentDataFromEntity<Motion.InfoData>( isReadOnly: true ),
-                GroundResults = this.GetComponentDataFromEntity<GroundHitResultData>( isReadOnly: true ),
-                Rotations = this.GetComponentDataFromEntity<Rotation>(),
-                MotionCursors = this.GetComponentDataFromEntity<Motion.CursorData>(),
-                MotionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>(),
-            }
-            .Schedule( this, inputDeps );
-            this.ecb.AddJobHandleForProducer( inputDeps );
+            //inputDeps = new SoldierWalkActionJob
+            //{
+            //    Commands = this.ecb.CreateCommandBuffer().AsParallelWriter(),
+            //    MotionInfos = this.GetComponentDataFromEntity<Motion.InfoData>( isReadOnly: true ),
+            //    GroundResults = this.GetComponentDataFromEntity<GroundHitResultData>( isReadOnly: true ),
+            //    Rotations = this.GetComponentDataFromEntity<Rotation>(),
+            //    MotionCursors = this.GetComponentDataFromEntity<Motion.CursorData>(),
+            //    MotionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>(),
+            //}
+            //.Schedule( this, inputDeps );
+            //this.ecb.AddJobHandleForProducer( inputDeps );
 
-            return inputDeps;
+            var commands = this.ecb.CreateCommandBuffer().AsParallelWriter();
+            var motionInfos = this.GetComponentDataFromEntity<Motion.InfoData>(isReadOnly: true);
+            var groundResults = this.GetComponentDataFromEntity<GroundHitResultData>(isReadOnly: true);
+            var rotations = this.GetComponentDataFromEntity<Rotation>();
+            //var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>();
+            //var motionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(motionInfos)
+                .WithReadOnly(groundResults)
+                .WithNativeDisableParallelForRestriction(rotations)
+                //.WithNativeDisableParallelForRestriction(motionCursors)
+                //.WithNativeDisableParallelForRestriction(motionWeights)
+                .ForEach(
+                    (
+                        Entity entity, int entityInQueryIndex,
+                        ref SoldierWalkActionState state,
+                        in MoveHandlingData hander,
+                        in ObjectMainCharacterLinkData linker
+                    )
+                =>
+                    {
+                        //ref var acts = ref hander.ControlAction;
+                        var acts = hander.ControlAction;
+
+                        var motionInfo = motionInfos[linker.MotionEntity];
+
+                        if (acts.IsChangeMotion)
+                        {
+                            commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+                                new Motion.InitializeData
+                                {
+                                    MotionIndex = (motionInfo.MotionIndex + 1) % 10,
+                                    IsContinuous = true,
+                                }
+                            );
+                        }
+
+                        if (!groundResults[linker.PostureEntity].IsGround)
+                        {
+                            if (motionInfo.MotionIndex != Motion_riku.jump02)
+                                commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+                                    new Motion.InitializeData
+                                    {
+                                        MotionIndex = Motion_riku.jump02,
+                                        DelayTime = 0.1f,
+                                        IsContinuous = true,
+                                    }
+                                );
+                            return;
+                        }
+
+                        if (math.lengthsq(acts.MoveDirection) >= 0.01f)
+                        {
+                            if (motionInfo.MotionIndex != Motion_riku.walk_stance)
+                            {
+                                commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+                                    new Motion.InitializeData
+                                    {
+                                        MotionIndex = Motion_riku.walk_stance,
+                                        DelayTime = 0.1f,
+                                        IsContinuous = true,
+                                    }
+                                );
+                            }
+
+                            rotations[linker.PostureEntity] =
+                                new Rotation
+                                {
+                                    Value = quaternion.LookRotation(math.normalize(acts.MoveDirection), math.up()),
+                                };
+                        }
+                        else
+                        {
+                            if (motionInfo.MotionIndex != Motion_riku.stand_stance)
+                            {
+                                commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+                                    new Motion.InitializeData
+                                    {
+                                        MotionIndex = Motion_riku.stand_stance,
+                                        DelayTime = 0.2f,
+                                        IsContinuous = true,
+                                    }
+                                );
+                            }
+                            //rotations[ linker.PostureEntity ] =
+                            //    new Rotation { Value = acts.HorizontalRotation };
+                        }
+
+                        //var m = this.MotionWeights[ linker.MainMotionEntity ];
+                        //var l = math.length( acts.MoveDirection );
+                        //m.SetWeight( 1.0f - l, l );
+                        //this.MotionWeights[ linker.MainMotionEntity ] = m;
+
+                        //var motionCursor = this.MotionCursors[ linker.MotionEntity ];
+
+                        //motionCursor.Timer.TimeProgress = motionCursor.Timer.TimeLength * 0.5f;
+                        //motionCursor.Timer.TimeScale = 0.5f;
+
+                        //this.MotionCursors[ linker.MotionEntity ] = motionCursor;
+                    }
+                )
+                .ScheduleParallel();
+
+            this.ecb.AddJobHandleForProducer(this.Dependency);
         }
 
 
-        [BurstCompile]
-        struct SoldierWalkActionJob : IJobForEachWithEntity
-            <SoldierWalkActionState, MoveHandlingData, ObjectMainCharacterLinkData>
-        {
+        //[BurstCompile]
+        //struct SoldierWalkActionJob : IJobForEachWithEntity
+        //    <SoldierWalkActionState, MoveHandlingData, ObjectMainCharacterLinkData>
+        //{
 
-            public EntityCommandBuffer.ParallelWriter Commands;
+        //    public EntityCommandBuffer.ParallelWriter Commands;
 
-            [ReadOnly] public ComponentDataFromEntity<Motion.InfoData> MotionInfos;
-            [ReadOnly] public ComponentDataFromEntity<GroundHitResultData> GroundResults;
+        //    [ReadOnly] public ComponentDataFromEntity<Motion.InfoData> MotionInfos;
+        //    [ReadOnly] public ComponentDataFromEntity<GroundHitResultData> GroundResults;
 
-            [NativeDisableParallelForRestriction]
-            [WriteOnly] public ComponentDataFromEntity<Rotation> Rotations;
+        //    [NativeDisableParallelForRestriction]
+        //    [WriteOnly] public ComponentDataFromEntity<Rotation> Rotations;
 
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Motion.CursorData> MotionCursors;
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<MotionBlend2WeightData> MotionWeights;
+        //    [NativeDisableParallelForRestriction]
+        //    public ComponentDataFromEntity<Motion.CursorData> MotionCursors;
+        //    [NativeDisableParallelForRestriction]
+        //    public ComponentDataFromEntity<MotionBlend2WeightData> MotionWeights;
 
 
-            public void Execute(
-                Entity entity, int index,
-                ref SoldierWalkActionState state,
-                [ReadOnly] ref MoveHandlingData hander,
-                [ReadOnly] ref ObjectMainCharacterLinkData linker
-            )
-            {
-                ref var acts = ref hander.ControlAction;
+        //    public void Execute(
+        //        Entity entity, int index,
+        //        ref SoldierWalkActionState state,
+        //        [ReadOnly] ref MoveHandlingData hander,
+        //        [ReadOnly] ref ObjectMainCharacterLinkData linker
+        //    )
+        //    {
+        //        ref var acts = ref hander.ControlAction;
 
-                var motionInfo = this.MotionInfos[ linker.MotionEntity ];
+        //        var motionInfo = this.MotionInfos[ linker.MotionEntity ];
 
-                if( acts.IsChangeMotion )
-                {
-                    this.Commands.AddComponent( index, linker.MotionEntity,
-                        new Motion.InitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10, IsContinuous = true } );
-                }
+        //        if( acts.IsChangeMotion )
+        //        {
+        //            this.Commands.AddComponent( index, linker.MotionEntity,
+        //                new Motion.InitializeData { MotionIndex = ( motionInfo.MotionIndex + 1 ) % 10, IsContinuous = true } );
+        //        }
 
-                if( !GroundResults[linker.PostureEntity].IsGround )
-                {
-                    if( motionInfo.MotionIndex != Motion_riku.jump02 )
-                        this.Commands.AddComponent( index, linker.MotionEntity,
-                            new Motion.InitializeData { MotionIndex = Motion_riku.jump02, DelayTime = 0.1f, IsContinuous = true } );
-                    return;
-                }
+        //        if( !GroundResults[linker.PostureEntity].IsGround )
+        //        {
+        //            if( motionInfo.MotionIndex != Motion_riku.jump02 )
+        //                this.Commands.AddComponent( index, linker.MotionEntity,
+        //                    new Motion.InitializeData { MotionIndex = Motion_riku.jump02, DelayTime = 0.1f, IsContinuous = true } );
+        //            return;
+        //        }
 
-                if( math.lengthsq(acts.MoveDirection) >= 0.01f )
-                {
-                    if( motionInfo.MotionIndex != Motion_riku.walk_stance )
-                        this.Commands.AddComponent( index, linker.MotionEntity,
-                            new Motion.InitializeData { MotionIndex = Motion_riku.walk_stance, DelayTime = 0.1f, IsContinuous = true } );
+        //        if( math.lengthsq(acts.MoveDirection) >= 0.01f )
+        //        {
+        //            if( motionInfo.MotionIndex != Motion_riku.walk_stance )
+        //                this.Commands.AddComponent( index, linker.MotionEntity,
+        //                    new Motion.InitializeData { MotionIndex = Motion_riku.walk_stance, DelayTime = 0.1f, IsContinuous = true } );
 
-                    this.Rotations[ linker.PostureEntity ] =
-                        new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
-                }
-                else
-                {
-                    if( motionInfo.MotionIndex != Motion_riku.stand_stance )
-                        this.Commands.AddComponent( index, linker.MotionEntity,
-                            new Motion.InitializeData { MotionIndex = Motion_riku.stand_stance, DelayTime = 0.2f, IsContinuous = true } );
+        //            this.Rotations[ linker.PostureEntity ] =
+        //                new Rotation { Value = quaternion.LookRotation( math.normalize( acts.MoveDirection ), math.up() ) };
+        //        }
+        //        else
+        //        {
+        //            if( motionInfo.MotionIndex != Motion_riku.stand_stance )
+        //                this.Commands.AddComponent( index, linker.MotionEntity,
+        //                    new Motion.InitializeData { MotionIndex = Motion_riku.stand_stance, DelayTime = 0.2f, IsContinuous = true } );
 
-                    //this.Rotations[ linker.PostureEntity ] =
-                    //    new Rotation { Value = acts.HorizontalRotation };
-                }
+        //            //this.Rotations[ linker.PostureEntity ] =
+        //            //    new Rotation { Value = acts.HorizontalRotation };
+        //        }
 
-                //var m = this.MotionWeights[ linker.MainMotionEntity ];
-                //var l = math.length( acts.MoveDirection );
-                //m.SetWeight( 1.0f - l, l );
-                //this.MotionWeights[ linker.MainMotionEntity ] = m;
+        //        //var m = this.MotionWeights[ linker.MainMotionEntity ];
+        //        //var l = math.length( acts.MoveDirection );
+        //        //m.SetWeight( 1.0f - l, l );
+        //        //this.MotionWeights[ linker.MainMotionEntity ] = m;
 
-                //var motionCursor = this.MotionCursors[ linker.MotionEntity ];
+        //        //var motionCursor = this.MotionCursors[ linker.MotionEntity ];
 
-                //motionCursor.Timer.TimeProgress = motionCursor.Timer.TimeLength * 0.5f;
-                //motionCursor.Timer.TimeScale = 0.5f;
+        //        //motionCursor.Timer.TimeProgress = motionCursor.Timer.TimeLength * 0.5f;
+        //        //motionCursor.Timer.TimeScale = 0.5f;
 
-                //this.MotionCursors[ linker.MotionEntity ] = motionCursor;
+        //        //this.MotionCursors[ linker.MotionEntity ] = motionCursor;
 
-            }
-        }
+        //    }
+        //}
 
     }
 }

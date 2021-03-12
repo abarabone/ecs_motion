@@ -42,7 +42,7 @@ namespace Abarabone.Arms.Authoring
         }
 
 
-        public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
             dstManager.DestroyEntity(entity);

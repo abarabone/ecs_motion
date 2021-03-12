@@ -31,7 +31,7 @@ namespace Abarabone.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class AntrWalkActionSystem : SystemBase
     {
 
@@ -92,6 +92,8 @@ namespace Abarabone.Character
                     }
                 )
                 .ScheduleParallel();
+
+            this.ecb.AddJobHandleForProducer(this.Dependency);
         }
 
     }

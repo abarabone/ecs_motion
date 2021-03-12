@@ -24,7 +24,7 @@ namespace Abarabone.Draw.Authoring
         protected override void OnCreate()
         {
             base.OnCreate();
-            Debug.Log("dic on");
+            //Debug.Log("dic on");
 
             var dict = new Dictionary<GameObject, Mesh>();
             this.EntityManager.CreateEntity( typeof( Data ) );
@@ -37,7 +37,7 @@ namespace Abarabone.Draw.Authoring
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            Debug.Log("dic off");
+            //Debug.Log("dic off");
 
             this.GetSingleton<Data>().MeshDictionary.Clear();
             this.GetSingleton<Data>().MeshDictionary = null;
