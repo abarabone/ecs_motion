@@ -22,7 +22,54 @@
             "$type": "Unity.Build.Classic.ClassicBuildProfile, Unity.Build.Classic",
             "$version": 1,
             "Platform": "win",
-            "Configuration": 2
+            "Configuration": 1
+        },
+        {
+            "$type": "Unity.Build.Classic.ClassicCodeStrippingOptions, Unity.Build.Classic",
+            "StripEngineCode": true,
+            "ManagedStrippingLevel": 3
+        },
+        {
+            "$type": "Unity.Build.Classic.ClassicScriptingSettings, Unity.Build.Classic",
+            "ScriptingBackend": 0,
+            "Il2CppCompilerConfiguration": 1,
+            "UseIncrementalGC": true
+        },
+        {
+            "$type": "Unity.Build.Common.OutputBuildDirectory, Unity.Build",
+            "OutputDirectory": "C:\\Users\\abarabone\\Desktop\\exec\\ecs011+"
+        },
+        {
+            "$type": "RetainBlobAssetsSetting, Unity.Scenes.Editor",
+            "FramesToRetainBlobAssets": 0
+        },
+        {
+            "$type": "Unity.Build.Common.ApplicationIdentifier, Unity.Build",
+            "PackageName": "com.CompanyName.ProductName"
+        },
+        {
+            "$type": "Unity.Build.DotsRuntime.DotsRuntimeBuildProfile, Unity.Build.DotsRuntime",
+            "Target": {
+                "$type": "Unity.Build.Windows.DotsRuntime.DotNetTinyWindowsBuildTarget, Unity.Build.Windows.DotsRuntime"
+            },
+            "Configuration": 1,
+            "UseNewPipeline": false,
+            "PipelineConstructor": null
+        },
+        {
+            "$type": "Unity.Entities.Conversion.ConversionSystemFilterSettings, Unity.Entities.Hybrid",
+            "ExcludedConversionSystemAssemblies": [
+                "GlobalObjectId_V1-1-a5baed0c9693541a5bd947d336ec7659-5897886265953266890-0"
+            ]
+        },
+        {
+            "$type": "Unity.Build.Common.GraphicsSettings, Unity.Build",
+            "ColorSpace": 1
+        },
+        {
+            "$type": "Unity.Build.Classic.PlayerConnectionSettings, Unity.Build.Classic",
+            "Mode": 1,
+            "WaitForConnection": true
         }
     ]
 }

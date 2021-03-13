@@ -26,7 +26,7 @@ namespace Abarabone.Model
 
     using LeveledLinkData = Bone.Lv01LinkData;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
     [UpdateAfter(typeof(StreamToBoneSystem))]
     public class BoneTransformLeveld01System : SystemBase
@@ -36,8 +36,8 @@ namespace Abarabone.Model
 
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
-            var velocities = this.GetComponentDataFromEntity<PhysicsVelocity>();
-            var masses = this.GetComponentDataFromEntity<PhysicsMass>(isReadOnly: true);
+            //var velocities = this.GetComponentDataFromEntity<PhysicsVelocity>();
+            //var masses = this.GetComponentDataFromEntity<PhysicsMass>(isReadOnly: true);
 
             var deltaTime = this.Time.DeltaTime;
 
@@ -47,8 +47,8 @@ namespace Abarabone.Model
                 .WithNone<TransformOption.ExcludeTransformTag>()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
-                .WithReadOnly(masses)
-                .WithNativeDisableParallelForRestriction(velocities)
+                //.WithReadOnly(masses)
+                //.WithNativeDisableParallelForRestriction(velocities)
                 .WithNativeDisableContainerSafetyRestriction(poss)
                 .WithNativeDisableContainerSafetyRestriction(rots)
                 .ForEach(
@@ -62,17 +62,18 @@ namespace Abarabone.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
-                        if (im != 0.0f && velocities.HasComponent(entity))
-                        {
-                            var mass = masses[entity];
-                            velocities[entity] = BoneUtility.BoneTransform
-                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
-                        }
-                        else
-                        {
-                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
-                        }
+                        //var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        //if (im != 0.0f && velocities.HasComponent(entity))
+                        //{
+                        //    var mass = masses[entity];
+                        //    velocities[entity] = BoneUtility.BoneTransform
+                        //        (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+                        //}
+                        //else
+                        //{
+                        //    BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        //}
+                        BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
                     }
                 )
                 .ScheduleParallel();
