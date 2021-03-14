@@ -42,7 +42,11 @@ namespace Abarabone.Draw
 
         public void Dispose()
         {
+            if (this.pBuffer == null) return;
+
             UnsafeUtility.Free((void*)this.pBuffer, this.Allocator);
+
+            this.pBuffer = null;
         }
 
     }

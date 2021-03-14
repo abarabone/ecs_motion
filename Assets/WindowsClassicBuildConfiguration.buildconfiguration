@@ -3,7 +3,7 @@
     "Components": [
         {
             "$type": "Unity.Build.Common.GeneralSettings, Unity.Build",
-            "ProductName": "Product Name",
+            "ProductName": "ecs_practice",
             "CompanyName": "Company Name",
             "Version": "1.0.0"
         },
@@ -26,8 +26,8 @@
         },
         {
             "$type": "Unity.Build.Classic.ClassicCodeStrippingOptions, Unity.Build.Classic",
-            "StripEngineCode": true,
-            "ManagedStrippingLevel": 3
+            "StripEngineCode": false,
+            "ManagedStrippingLevel": 0
         },
         {
             "$type": "Unity.Build.Classic.ClassicScriptingSettings, Unity.Build.Classic",
@@ -37,7 +37,7 @@
         },
         {
             "$type": "Unity.Build.Common.OutputBuildDirectory, Unity.Build",
-            "OutputDirectory": "C:\\Users\\abarabone\\Desktop\\exec\\ecs011+"
+            "OutputDirectory": "C:\\Users\\abarabone\\Desktop\\exec\\ecs011"
         },
         {
             "$type": "RetainBlobAssetsSetting, Unity.Scenes.Editor",
@@ -58,9 +58,7 @@
         },
         {
             "$type": "Unity.Entities.Conversion.ConversionSystemFilterSettings, Unity.Entities.Hybrid",
-            "ExcludedConversionSystemAssemblies": [
-                "GlobalObjectId_V1-1-a5baed0c9693541a5bd947d336ec7659-5897886265953266890-0"
-            ]
+            "ExcludedConversionSystemAssemblies": []
         },
         {
             "$type": "Unity.Build.Common.GraphicsSettings, Unity.Build",
@@ -70,6 +68,9 @@
             "$type": "Unity.Build.Classic.PlayerConnectionSettings, Unity.Build.Classic",
             "Mode": 1,
             "WaitForConnection": true
+        },
+        {
+            "$type": "Unity.Scenes.Editor.Build.LiveLink, Unity.Scenes.Editor"
         }
     ]
 }
