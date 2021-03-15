@@ -54,7 +54,7 @@ namespace Abarabone.Model
                 .ForEach(
                     (
                         Entity entity,
-                        ref Translation pos, ref Rotation rot, ref PhysicsVelocity v,
+                        ref Translation pos, ref Rotation rot,// ref PhysicsVelocity v,
                         in LeveledLinkData link, in Bone.LocalValueData local
                     ) =>
                     {

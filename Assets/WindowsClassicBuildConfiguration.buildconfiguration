@@ -68,9 +68,6 @@
             "$type": "Unity.Build.Classic.PlayerConnectionSettings, Unity.Build.Classic",
             "Mode": 1,
             "WaitForConnection": true
-        },
-        {
-            "$type": "Unity.Scenes.Editor.Build.LiveLink, Unity.Scenes.Editor"
         }
     ]
 }
