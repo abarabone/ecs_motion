@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -23,17 +23,15 @@ namespace Abarabone.Draw
     using Abarabone.SystemGroup;
     using Abarabone.Character;
     using Abarabone.Structure;
+    using System.Runtime.CompilerServices;
 
 
-    //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
-    //[UpdateAfter(typeof())]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
-    public class StructurePartDebrisMoveSystem : SystemBase
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    public class StructureSleepSwitchingSystem : SystemBase
     {
-        
-        EntityCommandBufferSystem cmdSystem;
 
+        EntityCommandBufferSystem cmdSystem;
 
         protected override void OnCreate()
         {
@@ -42,17 +40,15 @@ namespace Abarabone.Draw
             this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
         }
 
-        /// <summary>
-        /// 現在は剛体に任せているが、いずれはここで計算したい
-        /// （現在は生存管理だけ）
-        /// </summary>
+
         protected override void OnUpdate()
         {
-
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
-
-            var deltaTime = this.Time.DeltaTime;
+            var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
+            //var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);
+            var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+            var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
 
             this.Entities
@@ -60,25 +56,17 @@ namespace Abarabone.Draw
 
                 .ForEach(
                     (
-                        Entity entity, int entityInQueryIndex,
-                        ref StructurePartDebris.Data debris
-                    ) =>
+                        Entity entity, int entityInQueryIndex
+                    )
+                =>
                     {
-
-                        debris.LifeTime -= deltaTime;
-
-                        if( debris.LifeTime <= 0.0f )
-                        {
-                            cmd.DestroyEntity(entityInQueryIndex, entity);
-                        }
 
                     }
                 )
                 .ScheduleParallel();
 
+            // Make sure that the ECB system knows about our job
             this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
-
     }
-
 }

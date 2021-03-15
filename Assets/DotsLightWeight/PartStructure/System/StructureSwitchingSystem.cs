@@ -28,7 +28,6 @@ namespace Abarabone.Draw
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    //[UpdateAfter(typeof())]
     public class StructureSwitchingSystem : SystemBase
     {
 
@@ -67,7 +66,8 @@ namespace Abarabone.Draw
                         in ObjectMain.BinderLinkData binder,
                         in DrawInstance.ModeLinkData model,
                         in DrawInstance.ModelLod2LinkData lod2
-                    ) =>
+                    )
+                =>
                     {
                         var children = linkedGroups[binder.BinderEntity];
                         
