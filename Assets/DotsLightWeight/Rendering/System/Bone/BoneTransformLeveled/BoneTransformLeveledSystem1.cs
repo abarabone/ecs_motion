@@ -54,7 +54,7 @@ namespace Abarabone.Model
                 .ForEach(
                     (
                         Entity entity,
-                        ref Translation pos, ref Rotation rot,
+                        ref Translation pos, ref Rotation rot, ref PhysicsVelocity v,
                         in LeveledLinkData link, in Bone.LocalValueData local
                     ) =>
                     {
@@ -73,6 +73,19 @@ namespace Abarabone.Model
                         {
                             BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
                         }
+
+                        //BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                        //var ppos = parentpos.Value;
+                        //var prot = parentrot.Value;
+
+                        //var lpos = local.Position;
+                        //var lrot = local.Rotation;
+
+                        //var newpos = math.mul(prot, lpos) + ppos;
+                        //var newrot = math.mul(prot, lrot);
+                        //pos = new Translation { Value = newpos };
+                        //rot = new Rotation { Value = newrot };
+                        //v.Linear = pos.Value
                     }
                 )
                 .ScheduleParallel();

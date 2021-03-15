@@ -144,41 +144,41 @@ namespace Abarabone.Draw.Authoring
 
 
 
-        // メッシュを結合する
-        static public Mesh CombineAndConvertMesh( IEnumerable<Mesh> meshes, Transform[] bones )
-        {
-            var qCis =
-                from mesh in meshes
-                select new CombineInstance
-                {
-                    mesh = mesh
-                };
+        //// メッシュを結合する
+        //static public Mesh CombineAndConvertMesh( IEnumerable<Mesh> meshes, Transform[] bones )
+        //{
+        //    var qCis =
+        //        from mesh in meshes
+        //        select new CombineInstance
+        //        {
+        //            mesh = mesh
+        //        };
 
-            //return ChMeshConverter.ConvertToChMesh( smrs_.ElementAt( 0 ).sharedMesh, smrs_.ElementAt(0).bones );
+        //    //return ChMeshConverter.ConvertToChMesh( smrs_.ElementAt( 0 ).sharedMesh, smrs_.ElementAt(0).bones );
 
-            var dstmesh = new Mesh();
-            var boneLength = meshes.First().bindposes.Length;
+        //    var dstmesh = new Mesh();
+        //    var boneLength = meshes.First().bindposes.Length;
 
-            // 後でちゃんとした結合に差し替えよう
-            dstmesh.CombineMeshes( qCis.ToArray(), mergeSubMeshes: true, useMatrices: false );
-            dstmesh.boneWeights = (
-                from w in dstmesh.boneWeights
-                select new BoneWeight
-                {
-                    boneIndex0 = w.boneIndex0 % boneLength,
-                    boneIndex1 = w.boneIndex1 % boneLength,
-                    boneIndex2 = w.boneIndex2 % boneLength,
-                    boneIndex3 = w.boneIndex3 % boneLength,
-                    weight0 = w.weight0,
-                    weight1 = w.weight1,
-                    weight2 = w.weight2,
-                    weight3 = w.weight3,
-                }
-            )
-            .ToArray();
+        //    // 後でちゃんとした結合に差し替えよう
+        //    dstmesh.CombineMeshes( qCis.ToArray(), mergeSubMeshes: true, useMatrices: false );
+        //    dstmesh.boneWeights = (
+        //        from w in dstmesh.boneWeights
+        //        select new BoneWeight
+        //        {
+        //            boneIndex0 = w.boneIndex0 % boneLength,
+        //            boneIndex1 = w.boneIndex1 % boneLength,
+        //            boneIndex2 = w.boneIndex2 % boneLength,
+        //            boneIndex3 = w.boneIndex3 % boneLength,
+        //            weight0 = w.weight0,
+        //            weight1 = w.weight1,
+        //            weight2 = w.weight2,
+        //            weight3 = w.weight3,
+        //        }
+        //    )
+        //    .ToArray();
 
-            return ChMeshConverter.ConvertToChMesh( dstmesh, bones );
-        }
+        //    return ChMeshConverter.ConvertToChMesh( dstmesh, bones );
+        //}
 
     }
 

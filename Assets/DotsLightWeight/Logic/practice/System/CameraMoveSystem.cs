@@ -30,6 +30,8 @@ namespace Abarabone.Character
 
         protected override void OnCreate()
         {
+            this.RequireSingletonForUpdate<CharacterFollowCameraPositionData>();
+
             this.eq = this.Entities
                 .WithAllReadOnly<Translation, Rotation, PlayerTag, MoveHandlingData>()
                 //.WithAllReadOnly<Translation, Rotation, PlayerTag, MoveHandlingData, GroundHitSphereData>()

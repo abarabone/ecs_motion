@@ -15,7 +15,9 @@ namespace Abarabone.Model.Authoring
     /// 正式に紹介された方法ではないので、いつまで通用するかはわからない。
     /// ハイブリッドレンダラも使えなくなるし、WithOutTransformConversionAttribute みたいなのが待たれる…。
     /// </summary>
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    [UpdateAfter(typeof(RemoveTransformComponentsConversion))]
     public class DisableTransformConversion : GameObjectConversionSystem
     {
         protected override void OnCreate()
@@ -24,14 +26,18 @@ namespace Abarabone.Model.Authoring
 
             foreach( var x in this.World.Systems )
             {
-                
-                if( x.ToString() == "TransformConversion")
+                //Debug.Log($"{x}");
+
+                if ( x.ToString() == "TransformConversion")
                 {
                     x.Enabled = false;
-                    
+
+                    //this.World.GetExistingSystem<RemoveTransformComponentsConversion>().Enabled = false;
+
+                    Debug.Log($"{x} disabled");
                     break;
                 }
-                
+
             }
         }
 
