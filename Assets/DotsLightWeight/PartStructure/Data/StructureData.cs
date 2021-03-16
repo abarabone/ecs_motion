@@ -32,8 +32,8 @@ namespace Abarabone.Structure
         public struct SleepingTag : IComponentData
         { }
 
-        public struct ShowNearTag : IComponentData
-        { }
+        //public struct ShowNearTag : IComponentData
+        //{ }
 
 
 
@@ -59,11 +59,15 @@ namespace Abarabone.Structure
             public uint IsDestroyed(int id) => (uint)( this.Destructions[id >> 5] & ~(1 << id) );
         }
 
-        public struct PartLinkData : IComponentData
-        {
-            public Entity NextEntity;
-        }
+        //public struct PartLinkData : IComponentData
+        //{
+        //    public Entity NextEntity;
+        //}
 
+        public struct SleepTimeData : IComponentData
+        {
+            public float StillnessTime;
+        }
 
     }
 

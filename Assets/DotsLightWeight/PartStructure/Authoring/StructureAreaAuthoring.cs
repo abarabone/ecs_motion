@@ -74,13 +74,17 @@ namespace Abarabone.Structure.Authoring
 
             //conversionSystem.CreateDrawInstanceEntities(top, main, bones, this.BoneMode);
 
-            createSpawnInstances(conversionSystem, dstManager, this.structures);
+            createSpawnInstances_(conversionSystem, this.structures);
+
+            trimEntities_(conversionSystem, this);
 
             return;
 
 
-            static void createSpawnInstances(GameObjectConversionSystem gcs, EntityManager em, StructureBuildingModelAliasAuthoring[] structures)
+            static void createSpawnInstances_(GameObjectConversionSystem gcs, StructureBuildingModelAliasAuthoring[] structures)
             {
+                var em = gcs.DstEntityManager;
+
                 var arch = em.CreateArchetype(typeof(Spawn.EntryData));
                 using var instances = em.CreateEntity(arch, structures.Length, Allocator.Temp);
 
@@ -98,6 +102,16 @@ namespace Abarabone.Structure.Authoring
                 em.SetComponentData(instances, q);
             }
 
+            static void trimEntities_(GameObjectConversionSystem gcs, StructureAreaAuthoring area)
+            {
+                var em = gcs.DstEntityManager;
+
+                foreach (var obj in area.gameObject.Descendants())
+                {
+                    var ent = gcs.GetPrimaryEntity(obj);
+                    em.DestroyEntity(ent);
+                }
+            }
         }
 
     }

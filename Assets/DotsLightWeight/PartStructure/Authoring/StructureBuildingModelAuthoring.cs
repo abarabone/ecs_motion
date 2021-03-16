@@ -65,21 +65,24 @@ namespace Abarabone.Structure.Authoring
             static void trimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
             {
                 var em = gcs.DstEntityManager;
-                var near = st.NearModel.Obj;
-                var nearent = gcs.GetPrimaryEntity(near);
-                em.RemoveComponent<Translation>(nearent);
-                em.RemoveComponent<Rotation>(nearent);
-                em.RemoveComponent<Scale>(nearent);
-                em.RemoveComponent<NonUniformScale>(nearent);
 
-                foreach (var obj in st.gameObject.Children())
+                //var top = st.gameObject;
+                var far = st.FarModel.Obj;
+                var near = st.NearModel.Obj;
+                var env = st.Envelope;
+                var main = env;
+
+                var needs = st.GetComponentsInChildren<StructurePartAuthoring>()
+                    .Select(x => x.gameObject)
+                    //.Append(top)
+                    .Append(main)
+                    .Append(near)
+                    .Append(far)
+                    ;
+                foreach (var obj in st.gameObject.Descendants().Except(needs))
                 {
                     var ent = gcs.GetPrimaryEntity(obj);
-                    var shouldRemoving =
-                        !em.HasComponent<LinkedEntityGroup>(ent) &&
-                        !em.HasComponent<PhysicsCollider>(ent)
-                        ;
-                    if (shouldRemoving) em.DestroyEntity(ent);
+                    em.DestroyEntity(ent);
                 }
             }
         }

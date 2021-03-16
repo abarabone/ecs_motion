@@ -24,11 +24,24 @@ namespace Abarabone.Model.Authoring
             var needs = new NativeList<LinkedEntityGroup>( Allocator.Temp );
             var noneeds = new NativeList<LinkedEntityGroup>( Allocator.Temp );
 
-            using (var q = em.CreateEntityQuery(
-                typeof(BinderTrimBlankLinkedEntityGroupTag),
-                typeof(LinkedEntityGroup),
-                typeof(Prefab)// ありでもなしでもかかるようにしたいが、方法がわからん
-            ))
+            var desc0 = new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    typeof(BinderTrimBlankLinkedEntityGroupTag),
+                    typeof(LinkedEntityGroup),
+                    typeof(Prefab)
+                }
+            };
+            var desc1 = new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    typeof(BinderTrimBlankLinkedEntityGroupTag),
+                    typeof(LinkedEntityGroup)
+                }
+            };
+            using (var q = em.CreateEntityQuery(desc0, desc1))
             using (var ents = q.ToEntityArray(Allocator.TempJob))
             {
                 foreach (var ent in ents)
@@ -42,7 +55,7 @@ namespace Abarabone.Model.Authoring
                         {
                             noneeds.Add(link);
                         }
-                        else if( em.GetComponentCount(link.Value) == 0 )
+                        else if (em.GetComponentCount(link.Value) == 0)
                         {
                             noneeds.Add(link);
                         }
