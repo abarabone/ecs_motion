@@ -25,9 +25,9 @@ namespace Abarabone.Model.Authoring
             var noneeds = new NativeList<LinkedEntityGroup>( Allocator.Temp );
 
             using (var q = em.CreateEntityQuery(
-                    typeof(BinderTrimBlankLinkedEntityGroupTag),
-                    typeof(LinkedEntityGroup),
-                    typeof(Prefab)// ありでもなしでもかかるようにしたいが、方法がわからん
+                typeof(BinderTrimBlankLinkedEntityGroupTag),
+                typeof(LinkedEntityGroup),
+                typeof(Prefab)// ありでもなしでもかかるようにしたいが、方法がわからん
             ))
             using (var ents = q.ToEntityArray(Allocator.TempJob))
             {
@@ -50,6 +50,10 @@ namespace Abarabone.Model.Authoring
                         {
                             needs.Add(link);
                         }
+                        //else if (!em.Exists(link.Value))
+                        //{
+                        //    noneeds.Add(link);
+                        //}
                     }
 
                     if (needs.Length > 0)
@@ -57,6 +61,7 @@ namespace Abarabone.Model.Authoring
                         buf.Clear();
                         buf.AddRange(needs.AsArray());
                     }
+
                     if (noneeds.Length > 0)
                     {
                         em.DestroyEntity(noneeds.AsArray().Reinterpret<Entity>());

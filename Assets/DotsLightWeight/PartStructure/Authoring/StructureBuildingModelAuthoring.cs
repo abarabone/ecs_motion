@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 using System.Threading.Tasks;
+using Unity.Physics;
 using Unity.Linq;
 
 namespace Abarabone.Structure.Authoring
@@ -63,12 +64,23 @@ namespace Abarabone.Structure.Authoring
 
             static void trimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
             {
+                var em = gcs.DstEntityManager;
                 var near = st.NearModel.Obj;
-                //gcs.DstEntityManager.DestroyEntity(gcs.GetPrimaryEntity(near));// エラーが出る（たぶん binder のリンク先が消えるから）
-                gcs.DstEntityManager.RemoveComponent<Translation>(gcs.GetPrimaryEntity(near));
-                gcs.DstEntityManager.RemoveComponent<Rotation>(gcs.GetPrimaryEntity(near));
-                gcs.DstEntityManager.RemoveComponent<Scale>(gcs.GetPrimaryEntity(near));
-                gcs.DstEntityManager.RemoveComponent<NonUniformScale>(gcs.GetPrimaryEntity(near));
+                var nearent = gcs.GetPrimaryEntity(near);
+                em.RemoveComponent<Translation>(nearent);
+                em.RemoveComponent<Rotation>(nearent);
+                em.RemoveComponent<Scale>(nearent);
+                em.RemoveComponent<NonUniformScale>(nearent);
+
+                foreach (var obj in st.gameObject.Children())
+                {
+                    var ent = gcs.GetPrimaryEntity(obj);
+                    var shouldRemoving =
+                        !em.HasComponent<LinkedEntityGroup>(ent) &&
+                        !em.HasComponent<PhysicsCollider>(ent)
+                        ;
+                    if (shouldRemoving) em.DestroyEntity(ent);
+                }
             }
         }
 
