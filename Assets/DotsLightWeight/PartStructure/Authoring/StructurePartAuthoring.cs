@@ -67,7 +67,8 @@ namespace Abarabone.Structure.Authoring
             //var main = topAuth.FarMeshObject.objectTop;
             //var main = topAuth.FarModel.Obj;
 
-
+            //return;
+            //if (!dstManager.Exists(entity)) return;//
 
 
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);

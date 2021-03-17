@@ -10,6 +10,7 @@ using Unity.Mathematics;
 using System.Threading.Tasks;
 using Unity.Physics;
 using Unity.Linq;
+using Unity.Physics.Authoring;
 
 namespace Abarabone.Structure.Authoring
 {
@@ -53,6 +54,7 @@ namespace Abarabone.Structure.Authoring
         {
             separate,
             compound,
+            mesh,
         }
 
 
@@ -62,12 +64,18 @@ namespace Abarabone.Structure.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            conversionSystem.CreateStructureEntities(this);
-
-            trimEntities_(conversionSystem, this);
-
-            return;
-
+            switch (this.ColliderMode)
+            {
+                case PartColliderMode.separate:
+                    conversionSystem.CreateStructureEntities(this);
+                    break;
+                case PartColliderMode.compound:
+                    conversionSystem.CreateStructureEntities_Compound(this);
+                    break;
+                case PartColliderMode.mesh:
+                    conversionSystem.CreateStructureEntities_MeshCollider(this);
+                    break;
+            }
 
         }
 
@@ -92,8 +100,9 @@ namespace Abarabone.Structure.Authoring
             initMainEntity_(gcs, top, main, st.NearModel, st.FarModel);
 
             setBoneForFarEntity_(gcs, main, far, top.transform);
-            setBoneForPartEntities_(gcs, main, near, near.transform);
-            //setBoneForPartEntities_(gcs, main, main, near.transform);
+            setBoneForPartMultiEntities_(gcs, main, near, near.transform);
+
+            trimEntities_(gcs, st);
         }
 
         static public void CreateStructureEntitiesInArea
@@ -117,7 +126,7 @@ namespace Abarabone.Structure.Authoring
         }
 
 
-        static public void CreateStructureEntities_Compound
+        static public void CreateStructureEntities_MeshCollider
             (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
             var top = st.gameObject;
@@ -132,6 +141,35 @@ namespace Abarabone.Structure.Authoring
             initMainEntity_(gcs, top, main, st.NearModel, st.FarModel);
 
             initMeshColliderEntity(gcs, near);
+
+            setBoneForFarEntity_(gcs, main, far, top.transform);
+            setBoneForNearSingleEntity_(gcs, main, near, near.transform);
+
+            trimEntities_(gcs, st);
+            //trimEntities_MeshCollider(gcs, st);
+        }
+
+        static public void CreateStructureEntities_Compound
+            (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+        {
+            var top = st.gameObject;
+            var far = st.FarModel.Obj;
+            var near = st.NearModel.Obj;
+            var env = st.Envelope;
+            var main = env;
+
+            st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
+
+            initBinderEntity_(gcs, top, main);
+            initMainEntity_(gcs, top, main, st.NearModel, st.FarModel);
+
+            initCompoundColliderEntity(gcs, near);
+
+            setBoneForFarEntity_(gcs, main, far, top.transform);
+            setBoneForNearSingleEntity_(gcs, main, near, near.transform);
+
+            trimEntities_(gcs, st);
+            //trimEntities_MeshCollider(gcs, st);
         }
 
 
@@ -171,8 +209,7 @@ namespace Abarabone.Structure.Authoring
             var env = st.Envelope;
             var main = env;
 
-            var needs = st.GetComponentsInChildren<StructurePartAuthoring>()
-                .Select(x => x.gameObject)
+            var needs = Enumerable.Empty<GameObject>()
                 //.Append(top)
                 .Append(main)
                 .Append(near)
@@ -269,21 +306,32 @@ namespace Abarabone.Structure.Authoring
             em.SetName_(mainEntity, $"{top.name} main");
         }
 
+
         static void setBoneForFarEntity_(GameObjectConversionSystem gcs, GameObject parent, GameObject far, Transform root)
         {
-            var qFar = Enumerable.Repeat(far.transform, 1);
+            var qFar = far.transform.WrapEnumerable();
 
             gcs.InitBoneEntities(parent, qFar, root, EnBoneType.jobs_per_depth);
         }
 
 
-        static void setBoneForPartEntities_(GameObjectConversionSystem gcs, GameObject parent, GameObject partTop, Transform root)
+        static void setBoneForPartMultiEntities_(GameObjectConversionSystem gcs, GameObject parent, GameObject partTop, Transform root)
         {
-            var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>(true)
+            var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()//true)
                 .Select(pt => pt.transform);
 
             gcs.InitBoneEntities(parent, qPart, root, EnBoneType.jobs_per_depth);
         }
+
+        static void setBoneForNearSingleEntity_(GameObjectConversionSystem gcs, GameObject parent, GameObject near, Transform root)
+        {
+            var qNear = near.transform.WrapEnumerable();
+
+            gcs.InitBoneEntities(parent, qNear, root, EnBoneType.jobs_per_depth);
+        }
+
+
+
 
 
         static void initMeshColliderEntity(GameObjectConversionSystem gcs, GameObject near)
@@ -291,26 +339,82 @@ namespace Abarabone.Structure.Authoring
             var em = gcs.DstEntityManager;
 
             var mesh = gcs.GetFromMeshDictionary(near);
-            var data = Mesh.AcquireReadOnlyMeshData(mesh);
-            var vtxs = new NativeArray<Vector3>();
-            var idxs = new NativeArray<int>();
+            using var data = Mesh.AcquireReadOnlyMeshData(mesh);
+            using var vtxs = new NativeArray<Vector3>(mesh.vertexCount, Allocator.Temp);
+            using var idxs = new NativeArray<int>((int)mesh.GetIndexCount(0) * 3, Allocator.Temp);
             data[0].GetVertices(vtxs);
             data[0].GetIndices(idxs, 0);
-            var collider = Unity.Physics.MeshCollider.Create(vtxs.Reinterpret<float3>(), idxs.Reinterpret<int3>());
+            var collider = Unity.Physics.MeshCollider.Create
+                (vtxs.Reinterpret<float3>(), idxs.Reinterpret<int3>(sizeof(int)));
 
             var ent = gcs.GetPrimaryEntity(near);
             em.AddComponentData(ent, new PhysicsCollider
-                {
-                    Value = collider,
-                }
-            );
+            {
+                Value = collider,
+            });
         }
 
-        static void initCompoundColliderEntity(GameObjectConversionSystem gcs, GameObject top, GameObject main)
+        static void initCompoundColliderEntity(GameObjectConversionSystem gcs, GameObject near)
         {
             var em = gcs.DstEntityManager;
 
+            var qPartCollider =
+                from pt in near.GetComponentsInChildren<StructurePartAuthoring>()
+                let tf = pt.transform
+                let shape = pt.GetComponentInChildren<PhysicsShapeAuthoring>()// 暫定でひとつ
+                select new CompoundCollider.ColliderBlobInstance
+                {
+                    Collider = shape.getProperty(),
+                    CompoundFromChild = new RigidTransform
+                    {
+                        pos = tf.localPosition,
+                        rot = tf.localRotation,
+                    },
+                };
+            using var arr = qPartCollider.ToNativeArray(Allocator.Temp);
+            var collider = CompoundCollider.Create(arr);
 
+            var ent = gcs.GetPrimaryEntity(near);
+            em.AddComponentData(ent, new PhysicsCollider
+            {
+                Value = collider,
+            });
         }
+
+        static BlobAssetReference<Unity.Physics.Collider> getProperty(this PhysicsShapeAuthoring shape)
+        {
+            switch (shape.ShapeType)
+            {
+                case Unity.Physics.Authoring.ShapeType.Box:
+                    return Unity.Physics.BoxCollider.Create(shape.GetBoxProperties());
+
+                case Unity.Physics.Authoring.ShapeType.Capsule:
+                    return Unity.Physics.CapsuleCollider.Create(shape.GetCapsuleProperties().ToRuntime());
+
+                case Unity.Physics.Authoring.ShapeType.ConvexHull:
+                    //=> Unity.Physics.ConvexCollider.Create(shape.GetConvexHullProperties()),
+                    break;
+
+                case Unity.Physics.Authoring.ShapeType.Cylinder:
+                    return Unity.Physics.CylinderCollider.Create(shape.GetCylinderProperties());
+
+                case Unity.Physics.Authoring.ShapeType.Mesh:
+                    {
+                        using var v = new NativeList<float3>(Allocator.Temp);
+                        using var t = new NativeList<int3>(Allocator.Temp);
+                        shape.GetMeshProperties(v, t);
+                        return Unity.Physics.MeshCollider.Create(v, t);
+                    }
+                case Unity.Physics.Authoring.ShapeType.Plane:
+                    //shape.GetPlaneProperties(out var c, out var s, out var o);
+                    //return Unity.Physics.PolygonCollider.CreateQuad(c, s, o);
+                    break;
+                case Unity.Physics.Authoring.ShapeType.Sphere:
+                    var g = shape.GetSphereProperties(out var o);
+                    return Unity.Physics.SphereCollider.Create(g);
+            }
+            return new BlobAssetReference<Unity.Physics.Collider>();
+        }
+
     }
 }
