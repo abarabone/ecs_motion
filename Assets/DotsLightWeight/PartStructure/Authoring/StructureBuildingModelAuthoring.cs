@@ -48,6 +48,13 @@ namespace Abarabone.Structure.Authoring
             new[] { this.NearModel as IMeshModel, this.FarModel };
 
 
+        public PartColliderMode ColliderMode;
+        public enum PartColliderMode
+        {
+            separate,
+            compound,
+        }
+
 
         /// <summary>
         /// near と far のモデルエンティティを生成、
@@ -62,29 +69,6 @@ namespace Abarabone.Structure.Authoring
             return;
 
 
-            static void trimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
-            {
-                var em = gcs.DstEntityManager;
-
-                //var top = st.gameObject;
-                var far = st.FarModel.Obj;
-                var near = st.NearModel.Obj;
-                var env = st.Envelope;
-                var main = env;
-
-                var needs = st.GetComponentsInChildren<StructurePartAuthoring>()
-                    .Select(x => x.gameObject)
-                    //.Append(top)
-                    .Append(main)
-                    .Append(near)
-                    .Append(far)
-                    ;
-                foreach (var obj in st.gameObject.Descendants().Except(needs))
-                {
-                    var ent = gcs.GetPrimaryEntity(obj);
-                    em.DestroyEntity(ent);
-                }
-            }
         }
 
 
@@ -133,15 +117,80 @@ namespace Abarabone.Structure.Authoring
         }
 
 
+        static public void CreateStructureEntities_Compound
+            (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+        {
+            var top = st.gameObject;
+            var far = st.FarModel.Obj;
+            var near = st.NearModel.Obj;
+            var env = st.Envelope;
+            var main = env;
+
+            st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
+
+            initBinderEntity_(gcs, top, main);
+            initMainEntity_(gcs, top, main, st.NearModel, st.FarModel);
+
+            initMeshColliderEntity(gcs, near);
+        }
+
+
+
         // ---------------------------------------------------------------------
 
-
-        static void initBinderEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
+        static void trimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
-            var em_ = gcs_.DstEntityManager;
+            var em = gcs.DstEntityManager;
 
-            var binderEntity = gcs_.GetPrimaryEntity(top_);
-            var mainEntity = gcs_.GetPrimaryEntity(main_);
+            //var top = st.gameObject;
+            var far = st.FarModel.Obj;
+            var near = st.NearModel.Obj;
+            var env = st.Envelope;
+            var main = env;
+
+            var needs = st.GetComponentsInChildren<StructurePartAuthoring>()
+                .Select(x => x.gameObject)
+                //.Append(top)
+                .Append(main)
+                .Append(near)
+                .Append(far)
+                ;
+            foreach (var obj in st.gameObject.Descendants().Except(needs))
+            {
+                var ent = gcs.GetPrimaryEntity(obj);
+                em.DestroyEntity(ent);
+            }
+        }
+        static void trimEntities_MeshCollider(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+        {
+            var em = gcs.DstEntityManager;
+
+            //var top = st.gameObject;
+            var far = st.FarModel.Obj;
+            var near = st.NearModel.Obj;
+            var env = st.Envelope;
+            var main = env;
+
+            var needs = st.GetComponentsInChildren<StructurePartAuthoring>()
+                .Select(x => x.gameObject)
+                //.Append(top)
+                .Append(main)
+                .Append(near)
+                .Append(far)
+                ;
+            foreach (var obj in st.gameObject.Descendants().Except(needs))
+            {
+                var ent = gcs.GetPrimaryEntity(obj);
+                em.DestroyEntity(ent);
+            }
+        }
+
+        static void initBinderEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject main)
+        {
+            var em_ = gcs.DstEntityManager;
+
+            var binderEntity = gcs.GetPrimaryEntity(top);
+            var mainEntity = gcs.GetPrimaryEntity(main);
 
 
             var binderAddtypes = new ComponentTypes
@@ -155,13 +204,13 @@ namespace Abarabone.Structure.Authoring
                 new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
 
 
-            em_.SetName_(binderEntity, $"{top_.name} binder");
+            em_.SetName_(binderEntity, $"{top.name} binder");
         }
 
         static void initMainEntity_
             (GameObjectConversionSystem gcs, GameObject top, GameObject main, IMeshModelLod near, IMeshModelLod far)
         {
-            var em_ = gcs.DstEntityManager;
+            var em = gcs.DstEntityManager;
 
             var binderEntity = gcs.GetPrimaryEntity(top);
             var mainEntity = gcs.GetPrimaryEntity(main);
@@ -171,17 +220,17 @@ namespace Abarabone.Structure.Authoring
             (
                 new ComponentType[]
                 {
-                        typeof(Structure.MainTag),
-                        typeof(DrawInstance.MeshTag),
-                        //typeof(NonUniformScale),//暫定
-                        typeof(ObjectMain.ObjectMainTag),
-                        typeof(ObjectMain.BinderLinkData),
-                        typeof(DrawInstance.ModeLinkData),
-                        typeof(DrawInstance.TargetWorkData),
-                        typeof(Structure.PartDestructionData),
+                    typeof(Structure.MainTag),
+                    typeof(DrawInstance.MeshTag),
+                    //typeof(NonUniformScale),//暫定
+                    typeof(ObjectMain.ObjectMainTag),
+                    typeof(ObjectMain.BinderLinkData),
+                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.TargetWorkData),
+                    typeof(Structure.PartDestructionData),
                 }
             );
-            em_.AddComponents(mainEntity, mainAddtypes);
+            em.AddComponents(mainEntity, mainAddtypes);
 
             //em_.SetComponentData(mainEntity,
             //    new NonUniformScale
@@ -189,19 +238,19 @@ namespace Abarabone.Structure.Authoring
             //        Value = new float3(1, 1, 1)
             //    }
             //);
-            em_.SetComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new ObjectMain.BinderLinkData
                 {
                     BinderEntity = binderEntity,
                 }
             );
-            em_.SetComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new DrawInstance.ModeLinkData
                 {
                     DrawModelEntityCurrent = Entity.Null,//gcs_.GetFromModelEntityDictionary(far_.objectTop),//(top_),
-                    }
+                }
             );
-            em_.SetComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new DrawInstance.TargetWorkData
                 {
                     DrawInstanceId = -1,
@@ -217,7 +266,7 @@ namespace Abarabone.Structure.Authoring
             gcs.InitPostureEntity(main);//, far.objectTop.transform);
 
 
-            em_.SetName_(mainEntity, $"{top.name} main");
+            em.SetName_(mainEntity, $"{top.name} main");
         }
 
         static void setBoneForFarEntity_(GameObjectConversionSystem gcs, GameObject parent, GameObject far, Transform root)
@@ -237,6 +286,31 @@ namespace Abarabone.Structure.Authoring
         }
 
 
+        static void initMeshColliderEntity(GameObjectConversionSystem gcs, GameObject near)
+        {
+            var em = gcs.DstEntityManager;
 
+            var mesh = gcs.GetFromMeshDictionary(near);
+            var data = Mesh.AcquireReadOnlyMeshData(mesh);
+            var vtxs = new NativeArray<Vector3>();
+            var idxs = new NativeArray<int>();
+            data[0].GetVertices(vtxs);
+            data[0].GetIndices(idxs, 0);
+            var collider = Unity.Physics.MeshCollider.Create(vtxs.Reinterpret<float3>(), idxs.Reinterpret<int3>());
+
+            var ent = gcs.GetPrimaryEntity(near);
+            em.AddComponentData(ent, new PhysicsCollider
+                {
+                    Value = collider,
+                }
+            );
+        }
+
+        static void initCompoundColliderEntity(GameObjectConversionSystem gcs, GameObject top, GameObject main)
+        {
+            var em = gcs.DstEntityManager;
+
+
+        }
     }
 }
