@@ -12,13 +12,13 @@ namespace Abarabone.Model.Authoring
 {
 
     /// <summary>
-    /// 空の子エンティティをトリムする。
+    /// 空の子エンティティや存在しないエンティティへのリンクをトリムする。
     /// LinkedEntityGroup のトリムと、子エンティティの破棄を行う。
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateBefore(typeof(NoNeedLinkedEntityGroupCleanSystem))]
+    //[UpdateBefore(typeof(NoNeedLinkedEntityGroupCleanUpConversion))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class TrimBlankEntityFromLinkedEntityGroupSystem : GameObjectConversionSystem
+    public class TrimBlankEntityFromLinkedEntityGroupConversion : GameObjectConversionSystem
     {
         //protected override void OnDestroy()
         protected override void OnUpdate()

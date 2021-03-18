@@ -9,10 +9,13 @@ using System.Linq;
 namespace Abarabone.Model.Authoring
 {
 
+    /// <summary>
+    /// TransformConversion によって付与される、トランスフォーム系のコンポーネントデータを削除する。
+    /// ExcludeTransformConversion とかはよ
+    /// </summary>
     //[DisableAutoCreation]
-    //[UpdateInGroup(typeof( GameObjectDeclareReferencedObjectsGroup ) )]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(TrimBlankEntityFromLinkedEntityGroupSystem))]
+    [UpdateBefore(typeof(TrimBlankEntityFromLinkedEntityGroupConversion))]
     public class RemoveTransformComponentsConversion : GameObjectConversionSystem
     {
         protected override void OnUpdate()
@@ -25,7 +28,7 @@ namespace Abarabone.Model.Authoring
                 {
                     foreach (var tf in c.GetComponentsInChildren<Transform>())
                     {
-                        Debug.Log(tf.name);
+                        //Debug.Log(tf.name);
                         var ent = this.GetPrimaryEntity(tf);
 
                         em.RemoveComponent<LocalToParent>(ent);

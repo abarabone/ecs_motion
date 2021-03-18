@@ -62,12 +62,6 @@ namespace Abarabone.Structure.Authoring
         }
 
 
-        public struct StructPartRemoveLateTag : IComponentData
-        { }
-
-        public struct BuildCompoundColliderLateTag : IComponentData
-        { }
-
 
         /// <summary>
         /// near と far のモデルエンティティを生成、
@@ -145,6 +139,7 @@ namespace Abarabone.Structure.Authoring
             var near = st.NearModel.Obj;
             var env = st.Envelope;
             var main = env;
+            //var patrs = near.GetComponentsInChildren<StructurePartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
@@ -157,10 +152,7 @@ namespace Abarabone.Structure.Authoring
             setBoneForNearSingleEntity_(gcs, main, near, near.transform);
 
             trimEntities_(gcs, st);
-            //trimEntities_MeshCollider(gcs, st);
-
-            var ent = gcs.GetPrimaryEntity(top);
-            gcs.DstEntityManager.AddComponentData(ent, new StructureBuildingModelAuthoring.StructPartRemoveLateTag { });
+            orderTrimEntities(gcs, st);
         }
 
         static public void CreateStructureEntities_Compound
@@ -171,6 +163,7 @@ namespace Abarabone.Structure.Authoring
             var near = st.NearModel.Obj;
             var env = st.Envelope;
             var main = env;
+            //var patrs = near.GetComponentsInChildren<StructurePartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
@@ -183,11 +176,7 @@ namespace Abarabone.Structure.Authoring
             setBoneForNearSingleEntity_(gcs, main, near, near.transform);
 
             trimEntities_(gcs, st);
-            //trimEntities_MeshCollider(gcs, st);
-
-            var ent = gcs.GetPrimaryEntity(top);
-            gcs.DstEntityManager.AddComponentData(ent, new StructureBuildingModelAuthoring.BuildCompoundColliderLateTag { });
-            gcs.DstEntityManager.AddComponentData(ent, new StructureBuildingModelAuthoring.StructPartRemoveLateTag { });
+            orderTrimEntities(gcs, st);
         }
 
 
@@ -217,27 +206,13 @@ namespace Abarabone.Structure.Authoring
                 em.DestroyEntity(ent);
             }
         }
-        static void trimEntities_MeshCollider(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+        static void orderTrimEntities(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
             var em = gcs.DstEntityManager;
 
-            //var top = st.gameObject;
-            var far = st.FarModel.Obj;
-            var near = st.NearModel.Obj;
-            var env = st.Envelope;
-            var main = env;
-
-            var needs = Enumerable.Empty<GameObject>()
-                //.Append(top)
-                .Append(main)
-                .Append(near)
-                .Append(far)
-                ;
-            foreach (var obj in st.gameObject.Descendants().Except(needs))
-            {
-                var ent = gcs.GetPrimaryEntity(obj);
-                em.DestroyEntity(ent);
-            }
+            var qEnt = st.GetComponentsInChildren<StructurePartAuthoring>()
+                .Select(x => gcs.GetPrimaryEntity(x));
+            em.AddComponentData(qEnt, new LateDestroyEntityConversion.TargetTag { });
         }
 
         static void initBinderEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject main)
@@ -376,63 +351,48 @@ namespace Abarabone.Structure.Authoring
         {
             var em = gcs.DstEntityManager;
 
-            var qPartCollider =
-                from pt in near.GetComponentsInChildren<StructurePartAuthoring>()
-                let tf = pt.transform
-                let shape = pt.GetComponentInChildren<PhysicsShapeAuthoring>()// 暫定でひとつ
-                select new CompoundCollider.ColliderBlobInstance
-                {
-                    Collider = shape.getProperty(),
-                    CompoundFromChild = new RigidTransform
-                    {
-                        pos = tf.localPosition,
-                        rot = tf.localRotation,
-                    },
-                };
-            using var arr = qPartCollider.ToNativeArray(Allocator.Temp);
-            var collider = CompoundCollider.Create(arr);
-
-            var ent = gcs.GetPrimaryEntity(near);
-            em.AddComponentData(ent, new PhysicsCollider
+            var nearent = gcs.GetPrimaryEntity(near);
+            em.AddComponentData(nearent, new LateBuildCompoundColliderConversion.TargetData
             {
-                Value = collider,
+                Dst = near,
+                Srcs = near.GetComponentsInChildren<StructurePartAuthoring>().Select(x => x.gameObject),
             });
         }
 
-        static BlobAssetReference<Unity.Physics.Collider> getProperty(this PhysicsShapeAuthoring shape)
-        {
-            switch (shape.ShapeType)
-            {
-                case Unity.Physics.Authoring.ShapeType.Box:
-                    return Unity.Physics.BoxCollider.Create(shape.GetBoxProperties());
+        //static BlobAssetReference<Unity.Physics.Collider> getProperty(this PhysicsShapeAuthoring shape)
+        //{
+        //    switch (shape.ShapeType)
+        //    {
+        //        case Unity.Physics.Authoring.ShapeType.Box:
+        //            return Unity.Physics.BoxCollider.Create(shape.GetBoxProperties());
 
-                case Unity.Physics.Authoring.ShapeType.Capsule:
-                    return Unity.Physics.CapsuleCollider.Create(shape.GetCapsuleProperties().ToRuntime());
+        //        case Unity.Physics.Authoring.ShapeType.Capsule:
+        //            return Unity.Physics.CapsuleCollider.Create(shape.GetCapsuleProperties().ToRuntime());
 
-                case Unity.Physics.Authoring.ShapeType.ConvexHull:
-                    //=> Unity.Physics.ConvexCollider.Create(shape.GetConvexHullProperties()),
-                    break;
+        //        case Unity.Physics.Authoring.ShapeType.ConvexHull:
+        //            //=> Unity.Physics.ConvexCollider.Create(shape.GetConvexHullProperties()),
+        //            break;
 
-                case Unity.Physics.Authoring.ShapeType.Cylinder:
-                    return Unity.Physics.CylinderCollider.Create(shape.GetCylinderProperties());
+        //        case Unity.Physics.Authoring.ShapeType.Cylinder:
+        //            return Unity.Physics.CylinderCollider.Create(shape.GetCylinderProperties());
 
-                case Unity.Physics.Authoring.ShapeType.Mesh:
-                    {
-                        using var v = new NativeList<float3>(Allocator.Temp);
-                        using var t = new NativeList<int3>(Allocator.Temp);
-                        shape.GetMeshProperties(v, t);
-                        return Unity.Physics.MeshCollider.Create(v, t);
-                    }
-                case Unity.Physics.Authoring.ShapeType.Plane:
-                    //shape.GetPlaneProperties(out var c, out var s, out var o);
-                    //return Unity.Physics.PolygonCollider.CreateQuad(c, s, o);
-                    break;
-                case Unity.Physics.Authoring.ShapeType.Sphere:
-                    var g = shape.GetSphereProperties(out var o);
-                    return Unity.Physics.SphereCollider.Create(g);
-            }
-            return new BlobAssetReference<Unity.Physics.Collider>();
-        }
+        //        case Unity.Physics.Authoring.ShapeType.Mesh:
+        //            {
+        //                using var v = new NativeList<float3>(Allocator.Temp);
+        //                using var t = new NativeList<int3>(Allocator.Temp);
+        //                shape.GetMeshProperties(v, t);
+        //                return Unity.Physics.MeshCollider.Create(v, t);
+        //            }
+        //        case Unity.Physics.Authoring.ShapeType.Plane:
+        //            //shape.GetPlaneProperties(out var c, out var s, out var o);
+        //            //return Unity.Physics.PolygonCollider.CreateQuad(c, s, o);
+        //            break;
+        //        case Unity.Physics.Authoring.ShapeType.Sphere:
+        //            var g = shape.GetSphereProperties(out var o);
+        //            return Unity.Physics.SphereCollider.Create(g);
+        //    }
+        //    return new BlobAssetReference<Unity.Physics.Collider>();
+        //}
 
     }
 }
