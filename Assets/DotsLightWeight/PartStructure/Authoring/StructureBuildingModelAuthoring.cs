@@ -31,6 +31,10 @@ namespace Abarabone.Structure.Authoring
     using Abarabone.Misc;
 
 
+
+
+
+
     /// <summary>
     /// 
     /// </summary>
@@ -56,6 +60,13 @@ namespace Abarabone.Structure.Authoring
             compound,
             mesh,
         }
+
+
+        public struct StructPartRemoveLateTag : IComponentData
+        { }
+
+        public struct BuildCompoundColliderLateTag : IComponentData
+        { }
 
 
         /// <summary>
@@ -147,6 +158,9 @@ namespace Abarabone.Structure.Authoring
 
             trimEntities_(gcs, st);
             //trimEntities_MeshCollider(gcs, st);
+
+            var ent = gcs.GetPrimaryEntity(top);
+            gcs.DstEntityManager.AddComponentData(ent, new StructureBuildingModelAuthoring.StructPartRemoveLateTag { });
         }
 
         static public void CreateStructureEntities_Compound
@@ -170,6 +184,10 @@ namespace Abarabone.Structure.Authoring
 
             trimEntities_(gcs, st);
             //trimEntities_MeshCollider(gcs, st);
+
+            var ent = gcs.GetPrimaryEntity(top);
+            gcs.DstEntityManager.AddComponentData(ent, new StructureBuildingModelAuthoring.BuildCompoundColliderLateTag { });
+            gcs.DstEntityManager.AddComponentData(ent, new StructureBuildingModelAuthoring.StructPartRemoveLateTag { });
         }
 
 

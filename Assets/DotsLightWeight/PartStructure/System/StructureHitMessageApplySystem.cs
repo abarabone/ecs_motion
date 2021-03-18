@@ -15,6 +15,9 @@ using UnityEngine.InputSystem;
 using Unity.Collections.LowLevel.Unsafe;
 using System;
 using Unity.Jobs.LowLevel.Unsafe;
+using System.Security.Cryptography;
+using UnityEngine.Video;
+using System.Runtime.CompilerServices;
 
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
@@ -25,9 +28,6 @@ namespace Abarabone.Structure
     using Abarabone.Utilities;
     using Abarabone.SystemGroup;
     using Abarabone.Character;
-    using System.Security.Cryptography;
-    using UnityEngine.Video;
-    using System.Runtime.CompilerServices;
 
     public struct StructureHitMessage
     {

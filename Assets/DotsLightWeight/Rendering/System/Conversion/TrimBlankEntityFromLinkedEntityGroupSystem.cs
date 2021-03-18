@@ -16,9 +16,12 @@ namespace Abarabone.Model.Authoring
     /// LinkedEntityGroup のトリムと、子エンティティの破棄を行う。
     /// </summary>
     //[DisableAutoCreation]
+    [UpdateBefore(typeof(NoNeedLinkedEntityGroupCleanSystem))]
+    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     public class TrimBlankEntityFromLinkedEntityGroupSystem : GameObjectConversionSystem
     {
-        protected override void OnDestroy()
+        //protected override void OnDestroy()
+        protected override void OnUpdate()
         {
             var em = this.DstEntityManager;
             var needs = new NativeList<LinkedEntityGroup>( Allocator.Temp );
@@ -41,6 +44,7 @@ namespace Abarabone.Model.Authoring
                     typeof(LinkedEntityGroup)
                 }
             };
+            
             using (var q = em.CreateEntityQuery(desc0, desc1))
             using (var ents = q.ToEntityArray(Allocator.TempJob))
             {
@@ -88,11 +92,11 @@ namespace Abarabone.Model.Authoring
             needs.Dispose();
             noneeds.Dispose();
 
-            base.OnDestroy();
+            //base.OnDestroy();
         }
 
-        protected override void OnUpdate()
-        { }
+        //protected override void OnUpdate()
+        //{ }
     }
 
 }

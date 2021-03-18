@@ -11,39 +11,39 @@ using System.Linq;
 namespace Abarabone.Model.Authoring
 {
 
-    /// <summary>
-    /// 単体のエンティティなのに LinkedEntityGroup がついてしまうのを避けたい
-    /// 今のところあとから消すくらししか思いつかない
-    /// </summary>
-    //[DisableAutoCreation]
-    //[UpdateAfter(typeof(TrimBlankEntityFromLinkedEntityGroupSystem))]
-    public class NoNeedLinkedEntityGroupCleanUpSystem : SystemBase
-    {
-        protected override void OnStartRunning()
-        {
-            var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+    ///// <summary>
+    ///// 単体のエンティティなのに LinkedEntityGroup がついてしまうのを避けたい
+    ///// 今のところあとから消すくらししか思いつかない
+    ///// </summary>
+    ////[DisableAutoCreation]
+    ////[UpdateAfter(typeof(TrimBlankEntityFromLinkedEntityGroupSystem))]
+    //public class NoNeedLinkedEntityGroupCleanUpSystem : SystemBase
+    //{
+    //    protected override void OnStartRunning()
+    //    {
+    //        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-            using( var q = em.CreateEntityQuery(
-                typeof( ModelPrefabNoNeedLinkedEntityGroupTag ),
-                typeof( LinkedEntityGroup ),
-                typeof( Prefab ) )
-            )
-            using( var ents = q.ToEntityArray( Allocator.TempJob ) )
-            {
-                foreach( var ent in ents )
-                {
-                    em.RemoveComponent<LinkedEntityGroup>( ent );
-                    em.RemoveComponent<ModelPrefabNoNeedLinkedEntityGroupTag>( ent );
-                }
-            }
+    //        using( var q = em.CreateEntityQuery(
+    //            typeof( ModelPrefabNoNeedLinkedEntityGroupTag ),
+    //            typeof( LinkedEntityGroup ),
+    //            typeof( Prefab ) )
+    //        )
+    //        using( var ents = q.ToEntityArray( Allocator.TempJob ) )
+    //        {
+    //            foreach( var ent in ents )
+    //            {
+    //                em.RemoveComponent<LinkedEntityGroup>( ent );
+    //                em.RemoveComponent<ModelPrefabNoNeedLinkedEntityGroupTag>( ent );
+    //            }
+    //        }
 
-            this.Enabled = false;
-            base.OnStartRunning();
-        }
+    //        this.Enabled = false;
+    //        base.OnStartRunning();
+    //    }
 
-        protected override void OnUpdate()
-        { }
-    }
+    //    protected override void OnUpdate()
+    //    { }
+    //}
 
 
     ///// <summary>
@@ -77,32 +77,32 @@ namespace Abarabone.Model.Authoring
     // これだと、.ForEach() でマネージャーが使えない、めんどくさい
 
 
-    ///// <summary>
-    ///// 単体のエンティティなのに LinkedEntityGroup がついてしまうのを避けたい
-    ///// 今のところあとから消すくらししか思いつかない
-    ///// </summary>
-    ////[DisableAutoCreation]
-    //[UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    //public class NoNeedLinkedEntityGroupCleanSystem : GameObjectConversionSystem
-    //{
-    //    protected override void OnUpdate()
-    //    { }
+    /// <summary>
+    /// 単体のエンティティなのに LinkedEntityGroup がついてしまうのを避けたい
+    /// 今のところあとから消すくらししか思いつかない
+    /// </summary>
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    public class NoNeedLinkedEntityGroupCleanSystem : GameObjectConversionSystem
+    {
+        protected override void OnUpdate()
+        //{ }
 
-    //    protected override void OnStopRunning()
-    //    {
-    //        this.Entities
-    //            .WithAll( typeof( ModelPrefabNoNeedLinkedEntityGroupTag ) )
-    //            .ForEach(
-    //                (Entity ent) =>
-    //                {
-    //                    this.EntityManager.RemoveComponent<LinkedEntityGroup>( ent );
-    //                    this.EntityManager.RemoveComponent<ModelPrefabNoNeedLinkedEntityGroupTag>( ent );
-    //                }
-    //            );
+        //protected override void OnStopRunning()
+        {
+            this.Entities
+                .WithAll(typeof(ModelPrefabNoNeedLinkedEntityGroupTag))
+                .ForEach(
+                    (Entity ent) =>
+                    {
+                        this.EntityManager.RemoveComponent<LinkedEntityGroup>(ent);
+                        this.EntityManager.RemoveComponent<ModelPrefabNoNeedLinkedEntityGroupTag>(ent);
+                    }
+                );
 
-    //        base.OnStopRunning();
-    //    }
-    //}
+            //base.OnStopRunning();
+        }
+    }
 
     // でもだめだった、ここでやっても消えてくれない
     // よく考えたら、コンバージョンワールドのマネージャーだからだろう…

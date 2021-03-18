@@ -16,7 +16,8 @@ namespace Abarabone.Model.Authoring
     /// ハイブリッドレンダラも使えなくなるし、WithOutTransformConversionAttribute みたいなのが待たれる…。
     /// </summary>
     [DisableAutoCreation]
-    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    [UpdateInGroup(typeof(GameObjectDeclareReferencedObjectsGroup))]
+    //[UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     [UpdateAfter(typeof(RemoveTransformComponentsConversion))]
     public class DisableTransformConversion : GameObjectConversionSystem
     {

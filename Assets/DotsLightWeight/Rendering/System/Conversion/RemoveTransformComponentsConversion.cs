@@ -12,6 +12,7 @@ namespace Abarabone.Model.Authoring
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof( GameObjectDeclareReferencedObjectsGroup ) )]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    [UpdateBefore(typeof(TrimBlankEntityFromLinkedEntityGroupSystem))]
     public class RemoveTransformComponentsConversion : GameObjectConversionSystem
     {
         protected override void OnUpdate()
@@ -24,7 +25,7 @@ namespace Abarabone.Model.Authoring
                 {
                     foreach (var tf in c.GetComponentsInChildren<Transform>())
                     {
-
+                        Debug.Log(tf.name);
                         var ent = this.GetPrimaryEntity(tf);
 
                         em.RemoveComponent<LocalToParent>(ent);
