@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: PhysicsCategoryNames
   m_EditorClassIdentifier: 
   m_CategoryNames:
-  - bg_field
-  - ch_detail
-  - ch_envelope
+  - bg_field_x
+  - ch_detail_x
+  - ch_envelope_x
   - 
   - 
   - 
@@ -37,7 +37,7 @@ MonoBehaviour:
   - envelope
   - field
   - detenv
-  - 
+  - item
   - 
   - 
   - 

@@ -107,14 +107,14 @@ namespace Abarabone.Arms
 
             var filter = new CollisionFilter
             {
-                BelongsTo = CatFlag.datail | CatFlag.ch_detail,
-                CollidesWith = CatFlag.bg_field | CatFlag.ch_detail | CatFlag.datail | CatFlag.field,
+                BelongsTo = CollisionFilter.Default.BelongsTo,
+                CollidesWith = CatFlag.datail | CatFlag.field,// | CatFlag.detenv,
             };
             var hitInput = new RaycastInput
             {
                 Start = start,
                 End = end,
-                Filter = CollisionFilter.Default,//filter,
+                Filter = filter,//CollisionFilter.Default,//
             };
             var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(distance, selfMainEntity, links);
             var isHit = cw.CastRay(hitInput, ref collector);
