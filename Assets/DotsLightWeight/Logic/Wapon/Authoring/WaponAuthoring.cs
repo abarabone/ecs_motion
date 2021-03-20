@@ -21,7 +21,7 @@ namespace Abarabone.Arms.Authoring
     using Unity.Physics.Authoring;
     using Abarabone.Model;
 
-    public partial class WaponAuthoring : MonoBehaviour, IWaponAuthoring//, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
+    public partial class WaponAuthoring : MonoBehaviour, IWaponAuthoring//, IDeclareReferencedPrefabs//, IConvertGameObjectToEntity//
     {
 
         //public IFunctionUnitAuthoring MainUnit;
@@ -29,8 +29,14 @@ namespace Abarabone.Arms.Authoring
 
         //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         //{
-        //    (this.MainUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
-        //    (this.SubUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
+        //    var units = this.GetComponentsInChildren<IFunctionUnitAuthoring>()
+        //        .Cast<MonoBehaviour>()
+        //        .Select(x => x.gameObject);
+
+        //    foreach (var unit in units)
+        //    {
+        //        referencedPrefabs.Add(unit);
+        //    }
         //}
 
         //public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)

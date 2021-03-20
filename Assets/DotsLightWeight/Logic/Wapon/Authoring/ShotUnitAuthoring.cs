@@ -29,7 +29,7 @@ namespace Abarabone.Arms.Authoring
 
         public int Id;
 
-        public IBulletAuthoring aaa;
+        //public IBulletAuthoring aaa;
         public ShotBulletAuthoring BulletPrefab;
 
         public GameObject MuzzleObject;
@@ -43,6 +43,7 @@ namespace Abarabone.Arms.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
+            Debug.Log(this.BulletPrefab.name);
             referencedPrefabs.Add(this.BulletPrefab.gameObject);
         }
 

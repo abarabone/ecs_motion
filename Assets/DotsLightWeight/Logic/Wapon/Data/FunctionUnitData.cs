@@ -67,7 +67,7 @@ namespace Abarabone.Arms
 
     }
 
-    static public partial class FunctionUnitWithWapon
+    static public partial class FunctionUnitInWapon
     {
         public struct TriggerSpecificData : IComponentData
         {

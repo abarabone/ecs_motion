@@ -53,7 +53,7 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         ref FunctionUnit.TriggerData trigger,
-                        in FunctionUnitWithWapon.TriggerSpecificData triggerType,
+                        in FunctionUnitInWapon.TriggerSpecificData triggerType,
                         in FunctionUnit.OwnerLinkData mainLink
                     ) =>
                     {
@@ -68,8 +68,8 @@ namespace Abarabone.Arms
 
                         trigger.IsTriggered = triggerType.Type switch// いずれは配列インデックスで取得できるようにしたい
                         {
-                            FunctionUnitWithWapon.TriggerType.main => isTriggeredCurrent & act.IsShooting,
-                            FunctionUnitWithWapon.TriggerType.sub => isTriggeredCurrent & act.IsTriggerdSub,
+                            FunctionUnitInWapon.TriggerType.main => isTriggeredCurrent & act.IsShooting,
+                            FunctionUnitInWapon.TriggerType.sub => isTriggeredCurrent & act.IsTriggerdSub,
                             _ => false,
                         };
                     }
