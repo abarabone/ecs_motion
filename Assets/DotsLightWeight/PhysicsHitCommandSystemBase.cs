@@ -16,7 +16,8 @@ using Unity.Physics.Systems;
 namespace Abarabone.Common
 {
 
-    public abstract class PhysicsHitSystemBase : SystemBase
+    public abstract class PhysicsHitCommandSystemBase<TEntityCommandBufferSystem> : CommandSystemBase<TEntityCommandBufferSystem>
+        where TEntityCommandBufferSystem : EntityCommandBufferSystem
     {
 
         BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
@@ -30,18 +31,19 @@ namespace Abarabone.Common
         }
         
 
-        protected override void OnUpdate()
+        protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
         {
             this.Dependency = JobHandle.CombineDependencies
                 (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
 
 
-            this.OnUpdateWith(this.buildPhysicsWorldSystem);
+            this.OnUpdateWith(this.buildPhysicsWorldSystem, commandBuffer);
 
 
             this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
         }
 
-        protected abstract void OnUpdateWith(BuildPhysicsWorld physicsWorld);
+        protected abstract void OnUpdateWith(BuildPhysicsWorld physicsWorld, EntityCommandBuffer commandBuffer);
     }
 }
+

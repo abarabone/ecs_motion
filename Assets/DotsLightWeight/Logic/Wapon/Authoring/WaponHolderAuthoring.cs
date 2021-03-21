@@ -44,9 +44,8 @@ namespace Abarabone.Arms.Authoring
             referencedPrefabs.AddRange(qWapon);
             //foreach (var w in qWapon)
             //{
-            //    referencedPrefabs.Add(w);
-            //    //(w.MainUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
-            //    //(w.SubUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
+            //    (w.MainUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
+            //    (w.SubUnit as IDeclareReferencedPrefabs)?.DeclareReferencedPrefabs(referencedPrefabs);
             //}
         }
 

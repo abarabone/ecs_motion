@@ -24,7 +24,7 @@ namespace Abarabone.Common
             var cmd = this.CommandSystem.CreateCommandBuffer();
 
 
-            this.OnUpdateWithCommandBuffer(cmd);
+            this.OnUpdateWith(cmd);
 
 
             // Make sure that the ECB system knows about our job
@@ -32,7 +32,8 @@ namespace Abarabone.Common
         }
 
 
-        protected abstract void OnUpdateWithCommandBuffer(EntityCommandBuffer commandBuffer);
+        protected abstract void OnUpdateWith(EntityCommandBuffer commandBuffer);
 
     }
 }
+

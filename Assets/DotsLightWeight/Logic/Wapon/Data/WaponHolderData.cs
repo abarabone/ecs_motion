@@ -47,5 +47,32 @@ namespace Abarabone.Arms
 
     }
 
+    static public partial class WaponTemplate
+    {
+
+
+        // 武器のテンプレート
+        [InternalBufferCapacity(4)]
+        public struct unitsData : IBufferElementData
+        {
+            public Entity FunctionEntity;
+        }
+        // ↓いずれ必要になれば作ろう
+        //public struct ModelLinkData : IComponentData
+        //{
+        //    public Entity DrawModelEntity;
+        //}
+
+
+        // WaponHolder.LinkData に追加する武器のひな型エンティティを指定する。
+        // 既存のエンティティに存在していてもよいし、
+        // エンティティを新設してくっつけてもよい（その場合は処理後にエンティティが破棄される）
+        public struct AddWaponData : IComponentData
+        {
+            public Entity DestinationHolderEntity;
+            public Entity TemplateWaponEntity;
+        }
+    }
+
 
 }

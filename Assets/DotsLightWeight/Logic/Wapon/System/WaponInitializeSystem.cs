@@ -1,18 +1,50 @@
-﻿//using System.Collections;
-//using System.Collections.Generic;
-//using System.Runtime.CompilerServices;
-//using UnityEngine;
-//using Unity.Entities;
-//using Unity.Collections;
-//using Unity.Jobs;
-//using Unity.Transforms;
-//using Unity.Mathematics;
-////using Microsoft.CSharp.RuntimeBinder;
-//using Unity.Entities.UniversalDelegates;
-//using System.Runtime.InteropServices.WindowsRuntime;
-//using UnityEngine.XR;
-//using Unity.Physics;
-//using Unity.Physics.Systems;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+using Unity.Entities;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Transforms;
+using Unity.Mathematics;
+using Unity.Entities.UniversalDelegates;
+using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEngine.XR;
+using Unity.Physics;
+using Unity.Physics.Systems;
+
+namespace Abarabone.Arms
+{
+    using Abarabone.Common;
+
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public class WaponInitializeSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
+    {
+        protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
+        {
+            var cmd = commandBuffer.AsParallelWriter();
+            var templates = this.GetBufferFromEntity<WaponTemplate.unitsData>(isReadOnly: true);
+            var dstHolders = this.GetBufferFromEntity<WaponHolder.LinkData>();
+
+            this.Entities
+                .WithBurst()
+                .WithReadOnly(templates)
+                .ForEach(
+                    (Entity ent, int entityInQueryIndex, in WaponTemplate.AddWaponData src)
+                =>
+                    {
+
+                        var template = templates[src.TemplateWaponEntity];
+                        var dst = dstHolders[src.DestinationHolderEntity];
+
+                        for
+
+                    }
+                );
+
+        }
+    }
+}
 
 //namespace Abarabone.Arms
 //{
