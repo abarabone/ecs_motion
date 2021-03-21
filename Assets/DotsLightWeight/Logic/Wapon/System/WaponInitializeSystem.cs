@@ -17,6 +17,7 @@ namespace Abarabone.Arms
 {
     using Abarabone.Common;
 
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class WaponInitializeSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
     {
@@ -28,32 +29,34 @@ namespace Abarabone.Arms
 
             var dstHolders = this.GetBufferFromEntity<WaponHolder.LinkData>();
 
+            //this.Entities
+            //    .WithBurst()
+            //    .WithNone<WaponHolder.LinkData>()
+            //    .WithReadOnly(templates)
+            //    .WithNativeDisableParallelForRestriction(dstHolders)
+            //    .ForEach(
+            //        (
+            //            Entity ent, int entityInQueryIndex,
+            //            in WaponTemplate.AddWaponData src
+            //        )
+            //    =>
+            //        {
+            //            var dst = dstHolders[src.DestinationHolderEntity];
+
+            //            addAndInit_(dst, entityInQueryIndex, src.TemplateWaponEntity0, src.OwnerEntity, src.MuzzleEntity0);
+            //            addAndInit_(dst, entityInQueryIndex, src.TemplateWaponEntity1, src.OwnerEntity, src.MuzzleEntity1);
+            //            addAndInit_(dst, entityInQueryIndex, src.TemplateWaponEntity2, src.OwnerEntity, src.MuzzleEntity2);
+            //            addAndInit_(dst, entityInQueryIndex, src.TemplateWaponEntity3, src.OwnerEntity, src.MuzzleEntity3);
+
+            //            cmd.DestroyEntity(entityInQueryIndex, ent);
+            //        }
+            //    )
+            //    .ScheduleParallel();
+
+
             this.Entities
                 .WithBurst()
-                .WithReadOnly(templates)
-                .ForEach(
-                    (
-                        Entity ent, int entityInQueryIndex,
-                        in WaponTemplate.AddWaponData src
-                    )
-                =>
-                    {
-
-                        var dst = dstHolders[src.DestinationHolderEntity];
-
-                        add_(dst, src.TemplateWaponEntity0);
-                        add_(dst, src.TemplateWaponEntity1);
-                        add_(dst, src.TemplateWaponEntity2);
-                        add_(dst, src.TemplateWaponEntity3);
-
-                        cmd.DestroyEntity(entityInQueryIndex, ent);
-                    }
-                )
-                .ScheduleParallel();
-
-
-            this.Entities
-                .WithBurst()
+                //.WithReadOnly(templates)
                 .ForEach(
                     (
                         Entity ent, int entityInQueryIndex,
@@ -62,10 +65,10 @@ namespace Abarabone.Arms
                     )
                 =>
                     {
-                        add_(dst, src.TemplateWaponEntity0);
-                        add_(dst, src.TemplateWaponEntity1);
-                        add_(dst, src.TemplateWaponEntity2);
-                        add_(dst, src.TemplateWaponEntity3);
+                        addAndInit_(dst, entityInQueryIndex, src.TemplateWaponEntity0, src.OwnerEntity, src.MuzzleEntity0);
+                        addAndInit_(dst, entityInQueryIndex, src.TemplateWaponEntity1, src.OwnerEntity, src.MuzzleEntity1);
+                        addAndInit_(dst, entityInQueryIndex, src.TemplateWaponEntity2, src.OwnerEntity, src.MuzzleEntity2);
+                        addAndInit_(dst, entityInQueryIndex, src.TemplateWaponEntity3, src.OwnerEntity, src.MuzzleEntity3);
 
                         cmd.RemoveComponent<WaponTemplate.AddWaponData>(entityInQueryIndex, ent);
                     }
@@ -73,19 +76,38 @@ namespace Abarabone.Arms
                 .ScheduleParallel();
 
             
-            void add_(DynamicBuffer<WaponHolder.LinkData> dst, Entity tw)
+            //[System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void addAndInit_
+                (DynamicBuffer<WaponHolder.LinkData> dst, int eqi, Entity tw, Entity owner, Entity muzzle)
             {
                 if (tw == default) return;
+
 
                 var t = templates[tw];
 
                 var data = new WaponHolder.LinkData
                 {
-                    FunctionEntity0 = t.FunctionEntity0,
-                    FunctionEntity1 = t.FunctionEntity1,
+                    FunctionEntity0 = initUnit_(t.FunctionEntity0),
+                    FunctionEntity1 = initUnit_(t.FunctionEntity1),
                 };
-
                 dst.Add(data);
+
+                return;
+
+
+                Entity initUnit_(Entity tu)
+                {
+                    if (tu == default) return default;
+
+                    var unit = cmd.Instantiate(eqi, tu);
+                    cmd.SetComponent(eqi, unit, new FunctionUnit.OwnerLinkData
+                    {
+                        OwnerMainEntity = owner,
+                        MuzzleBodyEntity = muzzle,
+                    });
+
+                    return unit;
+                }
             }
         }
     }

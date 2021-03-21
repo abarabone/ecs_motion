@@ -70,10 +70,15 @@ namespace Abarabone.Arms
         public struct AddWaponData : IComponentData
         {
             public Entity DestinationHolderEntity;
+            public Entity OwnerEntity;
             public Entity TemplateWaponEntity0;
+            public Entity MuzzleEntity0;
             public Entity TemplateWaponEntity1;
+            public Entity MuzzleEntity1;
             public Entity TemplateWaponEntity2;
+            public Entity MuzzleEntity2;
             public Entity TemplateWaponEntity3;
+            public Entity MuzzleEntity3;
         }
     }
 

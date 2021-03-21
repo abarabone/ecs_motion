@@ -32,7 +32,7 @@ namespace Abarabone.Arms.Authoring
         //public IBulletAuthoring aaa;
         public ShotBulletAuthoring BulletPrefab;
 
-        public GameObject MuzzleObject;
+        //public GameObject MuzzleObject;
         public float3 MuzzleLocalPosition;
 
         public int NumEmitMultiple;
@@ -43,7 +43,6 @@ namespace Abarabone.Arms.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            Debug.Log(this.BulletPrefab.name);
             referencedPrefabs.Add(this.BulletPrefab.gameObject);
         }
 
