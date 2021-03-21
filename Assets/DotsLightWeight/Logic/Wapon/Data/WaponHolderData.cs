@@ -52,10 +52,10 @@ namespace Abarabone.Arms
 
 
         // 武器のテンプレート
-        [InternalBufferCapacity(4)]
-        public struct unitsData : IBufferElementData
+        public struct UnitsData : IComponentData
         {
-            public Entity FunctionEntity;
+            public Entity FunctionEntity0;
+            public Entity FunctionEntity1;
         }
         // ↓いずれ必要になれば作ろう
         //public struct ModelLinkData : IComponentData
@@ -70,7 +70,10 @@ namespace Abarabone.Arms
         public struct AddWaponData : IComponentData
         {
             public Entity DestinationHolderEntity;
-            public Entity TemplateWaponEntity;
+            public Entity TemplateWaponEntity0;
+            public Entity TemplateWaponEntity1;
+            public Entity TemplateWaponEntity2;
+            public Entity TemplateWaponEntity3;
         }
     }
 

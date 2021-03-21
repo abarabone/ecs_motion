@@ -104,25 +104,50 @@ namespace Abarabone.Arms.Authoring
 
                 em.AddBuffer<WaponHolder.LinkData>(holder);
             }
-            static void initAllWapons_
+            //static void initAllWapons_
+            //    (GameObjectConversionSystem gcs, Entity holder, (Entity muzzle, Entity[] units)[] unitsList)
+            //{
+            //    var em = gcs.DstEntityManager;
+
+            //    foreach (var wapon in unitsList)
+            //    {
+            //        var unitPrefab0 = wapon.units.ElementAtOrDefault(0);
+            //        var unitPrefab1 = wapon.units.ElementAtOrDefault(1);
+            //        var unit0 = unitPrefab0;// != default ? em.Instantiate(unitPrefab0) : default;
+            //        var unit1 = unitPrefab1;// != default ? em.Instantiate(unitPrefab1) : default;
+            //        add2UnitsToHolder_(unit0, unit1);
+            //    }
+
+            //    void add2UnitsToHolder_(Entity unit0, Entity unit1)
+            //    {
+            //        var holderBuf = em.GetBuffer<WaponHolder.LinkData>(holder);
+
+            //        holderBuf.Add(new WaponHolder.LinkData
+            //        {
+            //            FunctionEntity0 = unit0,
+            //            FunctionEntity1 = unit1,
+            //        });
+            //    }
+            //}
+            static void createInitUnit2Entities_
                 (GameObjectConversionSystem gcs, Entity holder, (Entity muzzle, Entity[] units)[] unitsList)
             {
                 var em = gcs.DstEntityManager;
 
-                foreach (var wapon in unitsList)
-                {
-                    var unitPrefab0 = wapon.units.ElementAtOrDefault(0);
-                    var unitPrefab1 = wapon.units.ElementAtOrDefault(1);
-                    var unit0 = unitPrefab0;// != default ? em.Instantiate(unitPrefab0) : default;
-                    var unit1 = unitPrefab1;// != default ? em.Instantiate(unitPrefab1) : default;
-                    add2UnitsToHolder_(unit0, unit1);
-                }
+                var q =
+                    from w in unitsList
+                    let unitPrefab0 = w.units.ElementAtOrDefault(0)
+                    let unitPrefab1 = w.units.ElementAtOrDefault(1)
+                    select new WaponTemplate.AddWaponData
+                    {
+                        DestinationHolderEntity = ,
+                        TemplateWaponEntity0 = w
+                    };
 
-                void add2UnitsToHolder_(Entity unit0, Entity unit1)
-                {
-                    var holderBuf = em.GetBuffer<WaponHolder.LinkData>(holder);
 
-                    holderBuf.Add(new WaponHolder.LinkData
+                void createInitializer_(Entity unit0, Entity unit1)
+                {
+                    em.Add(new WaponHolder.LinkData
                     {
                         FunctionEntity0 = unit0,
                         FunctionEntity1 = unit1,

@@ -23,25 +23,70 @@ namespace Abarabone.Arms
         protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
         {
             var cmd = commandBuffer.AsParallelWriter();
-            var templates = this.GetBufferFromEntity<WaponTemplate.unitsData>(isReadOnly: true);
+            var templates = this.GetComponentDataFromEntity<WaponTemplate.UnitsData>(isReadOnly: true);
+
+
             var dstHolders = this.GetBufferFromEntity<WaponHolder.LinkData>();
 
             this.Entities
                 .WithBurst()
                 .WithReadOnly(templates)
                 .ForEach(
-                    (Entity ent, int entityInQueryIndex, in WaponTemplate.AddWaponData src)
+                    (
+                        Entity ent, int entityInQueryIndex,
+                        in WaponTemplate.AddWaponData src
+                    )
                 =>
                     {
 
-                        var template = templates[src.TemplateWaponEntity];
                         var dst = dstHolders[src.DestinationHolderEntity];
 
-                        for
+                        add_(dst, src.TemplateWaponEntity0);
+                        add_(dst, src.TemplateWaponEntity1);
+                        add_(dst, src.TemplateWaponEntity2);
+                        add_(dst, src.TemplateWaponEntity3);
 
+                        cmd.DestroyEntity(entityInQueryIndex, ent);
                     }
-                );
+                )
+                .ScheduleParallel();
 
+
+            this.Entities
+                .WithBurst()
+                .ForEach(
+                    (
+                        Entity ent, int entityInQueryIndex,
+                        ref DynamicBuffer<WaponHolder.LinkData> dst,
+                        in WaponTemplate.AddWaponData src
+                    )
+                =>
+                    {
+                        add_(dst, src.TemplateWaponEntity0);
+                        add_(dst, src.TemplateWaponEntity1);
+                        add_(dst, src.TemplateWaponEntity2);
+                        add_(dst, src.TemplateWaponEntity3);
+
+                        cmd.RemoveComponent<WaponTemplate.AddWaponData>(entityInQueryIndex, ent);
+                    }
+                )
+                .ScheduleParallel();
+
+            
+            void add_(DynamicBuffer<WaponHolder.LinkData> dst, Entity tw)
+            {
+                if (tw == default) return;
+
+                var t = templates[tw];
+
+                var data = new WaponHolder.LinkData
+                {
+                    FunctionEntity0 = t.FunctionEntity0,
+                    FunctionEntity1 = t.FunctionEntity1,
+                };
+
+                dst.Add(data);
+            }
         }
     }
 }
