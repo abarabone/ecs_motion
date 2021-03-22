@@ -38,8 +38,14 @@ namespace Abarabone.Arms
             public int CurrentWaponIndex;
         }
 
+        public struct OwnerLinkData : IComponentData
+        {
+            public Entity OwnerEntity;
+            public Entity MuzzleEntity;
+        }
+
         [InternalBufferCapacity(4)]
-        public struct LinkData : IBufferElementData
+        public struct UnitLinkData : IBufferElementData
         {
             public Entity FunctionEntity0;
             public Entity FunctionEntity1;
@@ -64,22 +70,17 @@ namespace Abarabone.Arms
         //}
 
 
-        // WaponHolder.LinkData に追加する武器のひな型エンティティを指定する。
-        // 既存のエンティティに存在していてもよいし、
-        // エンティティを新設してくっつけてもよい（その場合は処理後にエンティティが破棄される）
-        public struct AddWaponData : IComponentData
-        {
-            public Entity DestinationHolderEntity;
-            public Entity OwnerEntity;
-            public Entity TemplateWaponEntity0;
-            public Entity MuzzleEntity0;
-            public Entity TemplateWaponEntity1;
-            public Entity MuzzleEntity1;
-            public Entity TemplateWaponEntity2;
-            public Entity MuzzleEntity2;
-            public Entity TemplateWaponEntity3;
-            public Entity MuzzleEntity3;
-        }
+        //// WaponHolder.LinkData に追加する武器のひな型エンティティを指定する。
+        //// 既存のエンティティに存在していてもよいし、
+        //// エンティティを新設してくっつけてもよい（その場合は処理後にエンティティが破棄される）
+        //public struct AddWaponData : IComponentData
+        //{
+        //    public Entity HolderEntity;
+        //    public Entity TemplateWaponEntity0;
+        //    public Entity TemplateWaponEntity1;
+        //    public Entity TemplateWaponEntity2;
+        //    public Entity TemplateWaponEntity3;
+        //}
     }
 
 
