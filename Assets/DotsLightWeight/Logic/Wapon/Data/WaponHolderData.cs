@@ -44,6 +44,7 @@ namespace Abarabone.Arms
             public Entity MuzzleEntity;
         }
 
+        // ‚Á‚Ä‚¨‚­•K—v‚È‚¢‚©‚à
         [InternalBufferCapacity(4)]
         public struct UnitLinkData : IBufferElementData
         {

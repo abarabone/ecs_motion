@@ -57,7 +57,7 @@ namespace Abarabone.Arms
                         in FunctionUnit.OwnerLinkData mainLink
                     ) =>
                     {
-                        var selector = selectors[mainLink.OwnerMainEntity];
+                        var selector = selectors[mainLink.WaponHolderEntity];
 
                         //if (selector.CurrentWaponIndex != triggerType.WaponCarryId) return;
                         // ここでショートカットすると、カレントではなくなった場合にオフにならなくなってしまう

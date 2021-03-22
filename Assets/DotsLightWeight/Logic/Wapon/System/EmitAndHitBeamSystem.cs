@@ -109,8 +109,8 @@ namespace Abarabone.Arms
 
                         var i = entityInQueryIndex;
                         var prefab = emitter.BulletPrefab;
-                        var rot = rots[link.MuzzleBodyEntity];
-                        var pos = poss[link.MuzzleBodyEntity];
+                        var rot = rots[link.MuzzleEntity];
+                        var pos = poss[link.MuzzleEntity];
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
                         var hit = hitTest_(link.OwnerMainEntity, camrot, campos, range, ref cw, mainLinks);

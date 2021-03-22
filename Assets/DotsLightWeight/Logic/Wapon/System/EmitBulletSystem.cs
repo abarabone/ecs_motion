@@ -105,8 +105,8 @@ namespace Abarabone.Arms
                         var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(deltaTime) & 0x_7fff_ffff);
 
                         var bulletData = bullets[emitter.BulletPrefab];
-                        var rot = rots[link.MuzzleBodyEntity];
-                        var pos = poss[link.MuzzleBodyEntity];
+                        var rot = rots[link.MuzzleEntity];
+                        var pos = poss[link.MuzzleEntity];
 
                         var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;

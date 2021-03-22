@@ -18,11 +18,13 @@ namespace Abarabone.Arms.Authoring
             var units = this.GetComponentsInChildren<IFunctionUnitAuthoring>()
                 .Cast<MonoBehaviour>();
 
-            dstManager.AddComponentData(entity, new WaponTemplate.UnitsData
-            {
-                FunctionEntity0 = conversionSystem.GetPrimaryEntity(units.ElementAtOrDefault(0)),
-                FunctionEntity1 = conversionSystem.GetPrimaryEntity(units.ElementAtOrDefault(1)),
-            });
+            dstManager.AddComponentData(entity,
+                new WaponTemplate.UnitsData
+                {
+                    FunctionEntity0 = conversionSystem.GetPrimaryEntity(units.ElementAtOrDefault(0)),
+                    FunctionEntity1 = conversionSystem.GetPrimaryEntity(units.ElementAtOrDefault(1)),
+                }
+            );
         }
     }
 }

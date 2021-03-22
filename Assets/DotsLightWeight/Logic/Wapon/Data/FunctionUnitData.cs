@@ -26,8 +26,9 @@ namespace Abarabone.Arms
 
         public struct OwnerLinkData : IComponentData
         {
-            public Entity OwnerMainEntity;       // 当たり判定で自身を除外する、トリガー判定、など
-            public Entity MuzzleBodyEntity; // 射出の向きやエフェクトの位置のため
+            public Entity OwnerMainEntity;       // 当たり判定で自身を除外するなど
+            public Entity WaponHolderEntity;
+            public Entity MuzzleEntity; // 射出の向きやエフェクトの位置のため
         }
         public struct BulletEmittingData : IComponentData
         {
