@@ -68,12 +68,12 @@ AvatarMask:
   - m_Path: Mesh
     m_Weight: 0
   - m_Path: Mesh/chest 1
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Mesh/head
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Mesh/leg1
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Mesh/leg2
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Mesh/weist
-    m_Weight: 1
+    m_Weight: 0
