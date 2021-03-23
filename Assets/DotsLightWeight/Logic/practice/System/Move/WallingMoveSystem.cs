@@ -73,7 +73,7 @@ namespace Abarabone.Character
 
 
             this.Entities
-                .WithBurst()
+                .WithoutBurst()
                 .WithAll<WallingTag>()
                 .WithNone<WallHitResultData>()
                 .WithReadOnly(collisionWorld)
@@ -154,38 +154,38 @@ namespace Abarabone.Character
                     ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntities
                 )
             {
-                var h = raycast(ref collisionWorld, origin, gndray, ent, filter, mainEntities);
                 //var (isHit, hit) = raycast( ref this.CollisionWorld, origin, gndray, ent, filter );
+                var h = raycast(ref collisionWorld, origin, gndray, ent, filter, mainEntities);
 
                 if (h.isHit)
                 {
+                    //var (newpos, newrot) = caluclateWallPosture
                     var newposrot = caluclateWallPosture
-                        //var (newpos, newrot) = caluclateWallPosture
                         (origin, h.hit.Position, h.hit.SurfaceNormal, fwddir, bodySize);
 
                     var rdt = math.rcp(dt);
-                    //v.Linear = 0;// (newposrot.pos - pos) * rdt;
-                    //pos = newposrot.pos;
+                    v.Linear = (newposrot.pos - pos) * rdt;
+                    pos = newposrot.pos;
 
-                    //var invprev = math.inverse( newposrot.rot );
-                    //var drot = math.mul( invprev, rot );
-                    //var angle = math.acos( drot.value.w ) * 2.0f;
-                    //var sin = math.sin( angle );
-                    //var axis = drot.value.As_float3() * math.rcp( sin );
                     //var invprev = math.inverse(newposrot.rot);
                     //var drot = math.mul(invprev, rot);
-                    //var axis = drot.value.As_float3();
-                    //var angle = math.lengthsq(drot);
-                    //v.Angular = axis * (angle * rdt);
+                    //var angle = math.acos(drot.value.w) * 2.0f;
+                    //var sin = math.sin(angle);
+                    //var axis = drot.value.As_float3() * math.rcp(sin);
+                    var invprev = math.inverse(newposrot.rot);
+                    var drot = math.mul(invprev, rot);
+                    var axis = drot.value.As_float3();
+                    var angle = math.lengthsq(drot);
+                    v.Angular = axis * (angle * rdt);
                     //v.Angular = //float3.zero;
-                    //rot = newposrot.rot;
+                    rot = newposrot.rot;
                 }
 
                 return h.isHit;
 
 
+                //( bool isHit, RaycastHit hit) raycast
                 HitFlagAndResult raycast
-                    //( bool isHit, RaycastHit hit) raycast
                     (
                         ref PhysicsWorld cw, float3 origin_, float3 ray_, Entity ent_, CollisionFilter filter_,
                         ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntities_
@@ -206,8 +206,8 @@ namespace Abarabone.Character
                     //return (collector.NumHits > 0, collector.ClosestHit);
                 }
 
+                //( float3 newpos, quaternion newrot) caluclateWallPosture
                 PosAndRot caluclateWallPosture
-                    //( float3 newpos, quaternion newrot) caluclateWallPosture
                     (float3 o, float3 p, float3 n, float3 up, float r)
                 {
                     var f = p - o;
