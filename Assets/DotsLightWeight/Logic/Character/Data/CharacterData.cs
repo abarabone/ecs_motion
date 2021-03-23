@@ -80,7 +80,6 @@ namespace Abarabone.Character
     // 壁移動させたいメインエンティティに付けておく
     public struct WallingTag : IComponentData
     { }
-    // 壁などに接触している時に付く
     public struct WallHunggingData : IComponentData
     {
         public int State;
