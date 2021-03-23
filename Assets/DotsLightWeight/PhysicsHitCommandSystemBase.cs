@@ -43,7 +43,7 @@ namespace Abarabone.Common
             this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
         }
 
-        protected abstract void OnUpdateWith(BuildPhysicsWorld physicsWorld, EntityCommandBuffer commandBuffer);
+        protected abstract void OnUpdateWith(BuildPhysicsWorld physicsBuilder, EntityCommandBuffer commandBuffer);
     }
 }
 

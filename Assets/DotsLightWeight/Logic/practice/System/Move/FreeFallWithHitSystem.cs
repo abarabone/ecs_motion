@@ -19,7 +19,7 @@ using RaycastHit = Unity.Physics.RaycastHit;
 
 namespace Abarabone.Character
 {
-    
+    using Abarabone.Common;
     using Abarabone.Misc;
     using Abarabone.Utilities;
     using Abarabone.SystemGroup;
@@ -36,25 +36,17 @@ namespace Abarabone.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
-    public class FreeFallWithHitSystem : SystemBase
+    public class FreeFallWithHitSystem : PhysicsHitSystemBase
     {
 
-
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
-
-
-        protected override void OnCreate()
-        {
-            this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
-        }
-
-        protected override void OnUpdate()
+        protected override void OnUpdateWith(BuildPhysicsWorld physicsBuilder)
         {
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
-            var collisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld;
+            var collisionWorld = physicsBuilder.PhysicsWorld;
 
             this.Entities
                 .WithBurst()
+                .WithReadOnly(mainEntities)
                 .WithReadOnly(collisionWorld)
                 .ForEach(
                     (

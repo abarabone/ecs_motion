@@ -76,17 +76,23 @@ namespace Abarabone.Character
     //    public BlobAssetReference<Unity.Physics.Collider> Collider;
     //}
 
+
+    // 壁移動させたいメインエンティティに付けておく
     public struct WallingTag : IComponentData
     { }
+    // 壁などに接触している時に付く
     public struct WallHunggingData : IComponentData
     {
         public int State;
     }
+    // 接触していない時に付き、接触判定に使用される
     public struct WallHitResultData : IComponentData
     {
         public bool IsHit;
     }
 
+
+    // 水平移動させたいメインエンティティに付けておく
     public struct HorizontalMovingTag : IComponentData
     { }
 

@@ -57,10 +57,10 @@ namespace Abarabone.Character
     public class WallingMoveSystem : PhysicsHitSystemBase
     {
 
-        protected override void OnUpdateWith(BuildPhysicsWorld physicsWorld)
+        protected override void OnUpdateWith(BuildPhysicsWorld physicsBuilder)
         {
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
-            var collisionWorld = physicsWorld.PhysicsWorld;//.CollisionWorld;
+            var collisionWorld = physicsBuilder.PhysicsWorld;//.CollisionWorld;
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,
 
             //inputDeps = new HorizontalMoveJob

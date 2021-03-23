@@ -50,10 +50,9 @@ namespace Abarabone.Model.Authoring
                     typeof(AntTag),
 
                     typeof(WallingTag),
-                    typeof(MoveHandlingData),
-                    //typeof(GroundHitResultData),
                     typeof(WallHitResultData),
-                    typeof(WallHunggingData),
+                    
+                    typeof(MoveHandlingData),
 
                     typeof(AntWalkActionState)
                 });

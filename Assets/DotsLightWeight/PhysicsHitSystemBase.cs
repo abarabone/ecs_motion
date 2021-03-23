@@ -42,6 +42,6 @@ namespace Abarabone.Common
             this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
         }
 
-        protected abstract void OnUpdateWith(BuildPhysicsWorld physicsWorld);
+        protected abstract void OnUpdateWith(BuildPhysicsWorld physicsBuilder);
     }
 }
