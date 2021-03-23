@@ -52,7 +52,7 @@ namespace Abarabone.Model.Authoring
 
                     typeof(WallingTag),
                     typeof(WallHunggingData),
-                    typeof(WallHitResultData),
+                    //typeof(WallHitResultData),
                     typeof(PhysicsGravityFactor),// デフォルトでは付かないっぽい
                     
                     typeof(MoveHandlingData),
@@ -60,6 +60,10 @@ namespace Abarabone.Model.Authoring
                     typeof(AntWalkActionState)
                 });
                 em.AddComponents(mainEntity, types);
+                em.SetComponentData(mainEntity, new PhysicsGravityFactor
+                {
+                    Value = 1.0f,
+                });
             }
 
 

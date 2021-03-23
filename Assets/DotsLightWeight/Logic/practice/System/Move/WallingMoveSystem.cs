@@ -154,7 +154,6 @@ namespace Abarabone.Character
                     ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntities
                 )
             {
-
                 var h = raycast(ref collisionWorld, origin, gndray, ent, filter, mainEntities);
                 //var (isHit, hit) = raycast( ref this.CollisionWorld, origin, gndray, ent, filter );
 
@@ -165,7 +164,7 @@ namespace Abarabone.Character
                         (origin, h.hit.Position, h.hit.SurfaceNormal, fwddir, bodySize);
 
                     var rdt = math.rcp(dt);
-                    v.Linear = (newposrot.pos - pos) * rdt;
+                    //v.Linear = 0;// (newposrot.pos - pos) * rdt;
                     //pos = newposrot.pos;
 
                     //var invprev = math.inverse( newposrot.rot );
@@ -173,13 +172,13 @@ namespace Abarabone.Character
                     //var angle = math.acos( drot.value.w ) * 2.0f;
                     //var sin = math.sin( angle );
                     //var axis = drot.value.As_float3() * math.rcp( sin );
-                    //var invprev = math.inverse( newposrot.rot );
-                    //var drot = math.mul( invprev, rot );
+                    //var invprev = math.inverse(newposrot.rot);
+                    //var drot = math.mul(invprev, rot);
                     //var axis = drot.value.As_float3();
-                    //var angle = math.lengthsq( drot );
-                    //v.Angular = axis * ( angle * rdt );
-                    v.Angular = float3.zero;
-                    rot = newposrot.rot;
+                    //var angle = math.lengthsq(drot);
+                    //v.Angular = axis * (angle * rdt);
+                    //v.Angular = //float3.zero;
+                    //rot = newposrot.rot;
                 }
 
                 return h.isHit;
