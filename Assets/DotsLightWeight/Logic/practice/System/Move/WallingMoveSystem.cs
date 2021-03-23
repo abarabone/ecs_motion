@@ -19,7 +19,7 @@ using RaycastHit = Unity.Physics.RaycastHit;
 
 namespace Abarabone.Character
 {
-
+    using Abarabone.Common;
     using Abarabone.Misc;
     using Abarabone.Utilities;
     using Abarabone.SystemGroup;
@@ -54,23 +54,13 @@ namespace Abarabone.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
-    public class WallingMoveSystem : SystemBase
+    public class WallingMoveSystem : PhysicsHitSystemBase
     {
 
-
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
-
-
-        protected override void OnCreate()
-        {
-            this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
-        }
-
-
-        protected override void OnUpdate()
+        protected override void OnUpdateWith(BuildPhysicsWorld physicsWorld)
         {
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
-            var collisionWorld = this.buildPhysicsWorldSystem.PhysicsWorld;//.CollisionWorld,
+            var collisionWorld = physicsWorld.PhysicsWorld;//.CollisionWorld;
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,
 
             //inputDeps = new HorizontalMoveJob

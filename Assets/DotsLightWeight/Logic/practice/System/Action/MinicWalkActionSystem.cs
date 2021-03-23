@@ -16,7 +16,7 @@ using SphereCollider = Unity.Physics.SphereCollider;
 
 namespace Abarabone.Character
 {
-
+    using Abarabone.Common;
     using Abarabone.Misc;
     using Abarabone.Utilities;
     using Abarabone.SystemGroup;
@@ -32,24 +32,12 @@ namespace Abarabone.Character
     //[DisableAutoCreation]
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
-    public class MinicrWalkActionSystem : SystemBase
+    public class MinicrWalkActionSystem : CommandSystemBase<BeginFixedStepSimulationEntityCommandBufferSystem>
     {
 
-        EntityCommandBufferSystem ecb;
-
-
-
-        protected override void OnCreate()
+        protected override void OnUpdateWith(EntityCommandBuffer commandbuffer)
         {
-            this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-
-        }
-
-
-        protected override void OnUpdate()
-        {
-
-            var commands = this.ecb.CreateCommandBuffer().AsParallelWriter();
+            var commands = commandbuffer.AsParallelWriter();
 
             var motionInfos = this.GetComponentDataFromEntity<Motion.InfoData>(isReadOnly: true);
             var groundResults = this.GetComponentDataFromEntity<GroundHitResultData>(isReadOnly: true);
@@ -174,8 +162,6 @@ namespace Abarabone.Character
                     }
                 )
                 .ScheduleParallel();
-
-            this.ecb.AddJobHandleForProducer(this.Dependency);
         }
 
 

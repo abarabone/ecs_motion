@@ -48,9 +48,9 @@ namespace Abarabone.Character
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,//Time.DeltaTime,
 
             this.Entities
+                .WithBurst()
                 //.WithReadOnly(collisionWorld)
                 //.WithReadOnly(deltaTime)
-                .WithBurst()
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,

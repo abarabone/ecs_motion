@@ -44,16 +44,19 @@ namespace Abarabone.Model.Authoring
 
                 var mainEntity = gcs_.GetPrimaryEntity(main_);
 
-                var types = new ComponentTypes
-                (
+                var types = new ComponentTypes(new ComponentType []
+                {
                     //typeof(PlayerTag),
+                    typeof(AntTag),
 
-                    //typeof(HorizontalMovingTag),
-                    //typeof(MoveHandlingData),
-                    typeof(GroundHitResultData)
+                    typeof(WallingTag),
+                    typeof(MoveHandlingData),
+                    //typeof(GroundHitResultData),
+                    typeof(WallHitResultData),
+                    typeof(WallHunggingData),
 
-                    //typeof(MinicWalkActionState)
-                );
+                    typeof(AntWalkActionState)
+                });
                 em.AddComponents(mainEntity, types);
             }
 
