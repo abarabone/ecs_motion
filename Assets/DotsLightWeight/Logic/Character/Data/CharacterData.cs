@@ -76,6 +76,12 @@ namespace Abarabone.Character
     //    public BlobAssetReference<Unity.Physics.Collider> Collider;
     //}
 
+    public struct GroundHitWallingData : IComponentData
+    {
+        public float CenterHeight;
+        public float HungerRange;
+        public CollisionFilter Filter;
+    }
 
     // 壁移動させたいメインエンティティに付けておく
     public struct WallingTag : IComponentData

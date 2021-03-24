@@ -54,22 +54,20 @@ namespace Abarabone.Character
                         ref WallHitResultData result,
                         ref Translation pos,
                         ref Rotation rot,
-                        in GroundHitSphereData sphere
+                        in GroundHitWallingData hunger
                     )
                 =>
                     {
                         //var rtf = new RigidTransform( rot.Value, pos.Value );
+                        var center = pos.Value + hunger.CenterHeight * math.mul(rot.Value, math.up());
 
                         var hitInput = new PointDistanceInput
                         {
-                            Position = pos.Value,//math.transform( rtf, sphere.Center ),
-                            MaxDistance = sphere.Distance,
-                            Filter = sphere.Filter,
+                            Position = center,
+                            MaxDistance = hunger.HungerRange,
+                            Filter = hunger.Filter,
                         };
-                        //var isHit = this.CollisionWorld.CalculateDistance( hitInput, ref a );// 自身のコライダを除外できればシンプルになるんだが…
-
-                        var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(sphere.Distance, entity, mainEntities);
-                        //var collector = new ClosestHitCollector<DistanceHit>( sphere.Distance );
+                        var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(1.0f, entity, mainEntities);
                         var isHit = collisionWorld.CalculateDistance(hitInput, ref collector);
 
                         if (collector.NumHits == 0) return;
@@ -79,7 +77,7 @@ namespace Abarabone.Character
 
                         var n = collector.ClosestHit.SurfaceNormal;
                         var p = collector.ClosestHit.Position;
-                        pos.Value = p + n * sphere.Distance;
+                        pos.Value = p;
 
                         var right = math.mul(rot.Value, new float3(1.0f, 0.0f, 0.0f));
                         var forward = math.cross(n, right);
