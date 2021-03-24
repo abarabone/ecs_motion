@@ -95,6 +95,10 @@ namespace Abarabone.Character
                         var up = math.mul(rot.Value, math.up());
                         var fwd = math.forward(rot.Value);
 
+
+                        
+
+
                         switch (walling.State)
                         {
                             case 0:
@@ -235,8 +239,131 @@ namespace Abarabone.Character
         {
             public bool isHit;
             public RaycastHit hit;
+            public float3 n;
+            public float3 p;
         }
 
+        struct HitFlagAndResult2
+        {
+            public bool isHit;
+            public float3 pos;
+            public quaternion rot;
+            public float3 linear;
+            public float3 angular;
+        }
+
+
+        public enum WallState
+        {
+            stand,
+            front,
+        }
+        static RaycastInput makeGroundInput(WallState state, float3 pos, quaternion rot) =>
+            state switch
+            {
+                WallState.stand => new RaycastInput
+                {
+                    //Start = origin,
+                    //End = origin + ray,
+                    //Filter = filter,
+                },
+                WallState.front => new RaycastInput
+                {
+                    //Start = origin,
+                    //End = origin + ray,
+                    //Filter = filter,
+                },
+            };
+        static RaycastInput makeMoveInput(WallState state, float3 pos, quaternion rot) =>
+            state switch
+            {
+                WallState.stand => new RaycastInput
+                {
+                    //Start = origin,
+                    //End = origin + ray,
+                    //Filter = filter,
+                },
+                WallState.front => new RaycastInput
+                {
+                    //Start = origin,
+                    //End = origin + ray,
+                    //Filter = filter,
+                },
+            };
+
+
+        HitFlagAndResult2 raycastHitToWall
+            (
+                ref PhysicsWorld pw, WallState state,
+                float3 pos, quaternion rot, Entity self, ComponentDataFromEntity<Bone.MainEntityLinkData> mainlist, float bodySize, float dt
+            )
+        {
+
+            var gi = makeGroundInput(state, pos, rot);
+            var hitgnd = raycast(ref pw, gi, self, mainlist);
+
+            if (!hitgnd.isHit) return new HitFlagAndResult2 { isHit = false };
+
+
+            var mi = makeMoveInput(state, hitgnd.p, rot);
+            var hitmov = raycast(ref pw, mi, self, mainlist);
+
+            if (!hitmov.isHit) return new HitFlagAndResult2 { isHit = false };
+
+            var up = ;
+            var newposrot = caluclateWallPosture
+                (mi.Start, hitmov.p, hitmov.n, up, bodySize);
+
+            var rdt = math.rcp(dt);
+            var linear = (newposrot.pos - pos) * rdt;
+
+            //var invprev = math.inverse(newposrot.rot);
+            //var drot = math.mul(invprev, rot);
+            //var angle = math.acos(drot.value.w) * 2.0f;
+            //var sin = math.sin(angle);
+            //var axis = drot.value.As_float3() * math.rcp(sin);
+            //var invprev = math.inverse(newposrot.rot);
+            //var drot = math.mul(invprev, rot);
+            //var axis = drot.value.As_float3();
+            //var angle = math.lengthsq(drot);
+            //var angular = axis * (angle * rdt);
+
+            return new HitFlagAndResult2
+            {
+                isHit = true,
+                pos = newposrot.pos,
+                rot = newposrot.rot,
+                linear = linear,
+            };
+        }
+
+        //( bool isHit, RaycastHit hit) raycast
+        static HitFlagAndResult raycast
+            (ref PhysicsWorld pw, RaycastInput hitInput, Entity self, ComponentDataFromEntity<Bone.MainEntityLinkData> mainlist)
+        {
+            var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(maxFraction: 1.0f, self, mainlist);
+
+            var isHit = pw.CastRay(hitInput, ref collector);
+
+            return new HitFlagAndResult { isHit = collector.NumHits > 0, hit = collector.ClosestHit };
+        }
+
+
+        //( float3 newpos, quaternion newrot) caluclateWallPosture
+        PosAndRot caluclateWallPosture
+            (float3 o, float3 p, float3 n, float3 up, float r)
+        {
+            var f = p - o;
+            var w = f - math.dot(f, n) * n;
+
+            var newpos = w + n * r;
+
+            var newfwd = math.select(up, math.normalize(w), math.dot(n, up) > math.FLT_MIN_NORMAL);// 壁に垂直侵入した場合、up となる
+            var newrot = quaternion.LookRotation(newfwd, n);
+
+            //return (newpos, newrot);
+            return new PosAndRot { pos = newpos, rot = newrot };
+        }
 
 
         //[BurstCompile]
