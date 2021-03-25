@@ -91,6 +91,8 @@ namespace Abarabone.Character
                     )
                 =>
                     {
+                        if (hanging.State > WallHangingData.WallingState.front_45_rotating) return;
+
 
                         var dir = hanging.getDirection(pos.Value, rot.Value);
                         var bodysize = walling.CenterHeight;
@@ -108,22 +110,34 @@ namespace Abarabone.Character
                         }
 
 
-                        var moveRange = walling.HangerRange + 8.0f * deltaTime;
+                        var moveRange = (walling.HangerRange + 8.0f) * deltaTime;
+                        var movepos = hitgnd.p + dir.gnd * -bodysize;
 
-                        var mi = Walling.makeCastInput(hitgnd.p, dir.mov, bodysize, moveRange, walling.Filter);
+                        var mi = Walling.makeCastInput(movepos, dir.mov, bodysize, moveRange, walling.Filter);
                         var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
 
                         if (!hitmov.isHit)
                         {
+                            var newposrot_ = new Walling.PosAndRot
+                            {
+                                pos = hitgnd.p + dir.mov * moveRange,
+                                rot = rot.Value,
+                            };
+                            var res_ = newposrot_.makeResults(pos.Value, rot.Value, deltaTime);
+
+                            //pos.Value = res_.pos;
+                            rot.Value = res_.rot;
+                            v.Linear = res_.linear;
+                            v.Angular = 0;// res.angular;
+
                             hanging.State++;
                             return;
                         }
 
-
                         var newposrot = Walling.caluclateWallPosture(mi.Start, hitmov.p, hitmov.n, -dir.gnd, bodysize);
                         var res = newposrot.makeResults(pos.Value, rot.Value, deltaTime);
 
-                        pos.Value = res.pos;
+                        //pos.Value = res.pos;
                         rot.Value = res.rot;
                         v.Linear = res.linear;
                         v.Angular = 0;// res.angular;
@@ -239,7 +253,7 @@ namespace Abarabone.Character
             var f = p - o;
             var w = f - math.dot(f, n) * n;
 
-            var newpos = w;// + n * r;
+            var newpos = o + w;// + n * r;
 
             var newfwd = math.select(up, math.normalize(w), math.dot(n, up) > math.FLT_MIN_NORMAL);// 壁に垂直侵入した場合、up となる
             var newrot = quaternion.LookRotation(newfwd, n);

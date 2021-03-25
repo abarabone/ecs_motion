@@ -26,29 +26,20 @@ using Abarabone.Physics;
 
 namespace Abarabone.Character
 {
+    using Abarabone.Common;
 
     /// <summary>
     /// 
     /// </summary>
     //[DisableAutoCreation]
     [UpdateAfter(typeof(WallingMoveSystem))]
-    [UpdateAfter( typeof( FreeFallWithHitSystem ) )]
-    [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
-    public class SwitchWallingAndFreeFallWithHitSystem : SystemBase
+    [UpdateAfter(typeof(FreeFallWithHitSystem))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    public class SwitchWallingAndFreeFallWithHitSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
     {
 
-
-        EntityCommandBufferSystem ecb;
-
-
-
-        protected override void OnCreate()
-        {
-            this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-            //this.ecb = this.World.GetExistingSystem<EndSimulationEntityCommandBufferSystem>();
-        }
-
-        protected override void OnUpdate()
+        protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
         {
             //inputDeps = new SwitchWallingAndFreeFallWithHitJob
             //{
@@ -57,7 +48,7 @@ namespace Abarabone.Character
             //}
             //.Schedule( this, inputDeps );
 
-            var commands = this.ecb.CreateCommandBuffer().AsParallelWriter();
+            var commands = commandBuffer.AsParallelWriter();
             var wallHitResults = this.GetComponentDataFromEntity<WallHitResultData>(isReadOnly: true);
 
             this.Entities
