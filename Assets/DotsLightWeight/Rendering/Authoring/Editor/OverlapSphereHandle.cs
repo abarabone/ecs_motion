@@ -4,8 +4,10 @@ using UnityEngine;
 using UnityEditor;
 using Abarabone.Physics.Authoring;
 
-namespace Abarabone.Model.Authoring
+namespace Abarabone.Physics.Authoring
 {
+    using Abarabone.Model.Authoring;
+
     [CustomEditor(typeof(HitQueryOverlapSphereAuthoring))]
     public class OverlapSphereHandle : Editor
     {
@@ -21,6 +23,17 @@ namespace Abarabone.Model.Authoring
             {
                 Undo.RecordObject(target, "overlap sphere move center");
                 t.Center = center * 0.5f;
+
+                if (t.Useage == HitQueryOverlapSphereAuthoring.UseageType.RayForWalling)
+                {
+                    var top = t.GetComponentInParent<CharacterModelAuthoring>();
+                    if (top != null)
+                    {
+                        var p = top.transform.position;
+                        t.Center.x = p.x;
+                        t.Center.z = p.z;
+                    }
+                }
 
                 return;
             }

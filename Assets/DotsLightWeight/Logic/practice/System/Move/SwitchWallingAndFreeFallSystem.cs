@@ -67,7 +67,7 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref WallHunggingData walling,
+                        ref WallHangingData walling,
                         ref PhysicsGravityFactor g
                     )
                 =>
@@ -83,13 +83,13 @@ namespace Abarabone.Character
 
                                 //commands.AddComponent( jobIndex, entity, new WallHunggingData { } );
                                 g = new PhysicsGravityFactor { Value = 0.0f };
-                                walling.State = 0;
+                                walling.State = WallHangingData.WallingState.none_rotating;
                             }
                         }
 
                         if (!isFreeFalling)
                         {
-                            if (walling.State >= 2)
+                            if (walling.State > WallHangingData.WallingState.front_45_rotating)
                             {
                                 //commands.RemoveComponent<WallHunggingData>( entityInQueryIndex, entity );
 

@@ -60,7 +60,7 @@ namespace Abarabone.Character
         protected override void OnUpdateWith(BuildPhysicsWorld physicsBuilder)
         {
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
-            var collisionWorld = physicsBuilder.PhysicsWorld;//.CollisionWorld;
+            var physicsWorld = physicsBuilder.PhysicsWorld;//.CollisionWorld;
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,
 
             //inputDeps = new HorizontalMoveJob
@@ -76,14 +76,14 @@ namespace Abarabone.Character
                 .WithoutBurst()
                 .WithAll<WallingTag>()
                 .WithNone<WallHitResultData>()
-                .WithReadOnly(collisionWorld)
+                .WithReadOnly(physicsWorld)
                 .WithReadOnly(mainEntities)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
                         in MoveHandlingData handler,
-                        in GroundHitWallingData hanger,
-                        ref WallHunggingData walling,
+                        in GroundHitWallingData walling,
+                        ref WallHangingData hanging,
                         ref Translation pos,
                         ref Rotation rot,
                         //ref PhysicsGravityFactor g,
@@ -91,34 +91,58 @@ namespace Abarabone.Character
                     )
                 =>
                     {
-                        //var v = default(PhysicsVelocity);
-                        var up = math.mul(rot.Value, math.up());
-                        var fwd = math.forward(rot.Value);
+
+                        var dir = hanging.getDirection(pos.Value, rot.Value);
+                        var bodysize = walling.CenterHeight;
 
 
+                        var groundRange = walling.HangerRange;
 
-                        var gndst = pos.Value + up * hanger.CenterHeight;
-                        var gnded = gndst + up * -hanger.HungerRange;
+                        var gi = Walling.makeCastInput(pos.Value, dir.gnd, bodysize, groundRange, walling.Filter);
+                        var hitgnd = physicsWorld.raycast(gi, entity, mainEntities);
 
-                        var gndst_ = pos.Value + fwd * hanger.CenterHeight;
-                        var gnded_ = gndst_ + fwd * -hanger.HungerRange;
-                        
+                        if (!hitgnd.isHit)
+                        {
+                            hanging.State++;
+                            return;
+                        }
 
 
+                        var moveRange = walling.HangerRange + 8.0f * deltaTime;
 
+                        var mi = Walling.makeCastInput(hitgnd.p, dir.mov, bodysize, moveRange, walling.Filter);
+                        var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
+
+                        if (!hitmov.isHit)
+                        {
+                            hanging.State++;
+                            return;
+                        }
+
+
+                        var newposrot = Walling.caluclateWallPosture(mi.Start, hitmov.p, hitmov.n, -dir.gnd, bodysize);
+                        var res = newposrot.makeResults(pos.Value, rot.Value, deltaTime);
+
+                        pos.Value = res.pos;
+                        rot.Value = res.rot;
+                        v.Linear = res.linear;
+                        v.Angular = 0;// res.angular;
                     }
                 )
                 .ScheduleParallel();
         }
     }
 
+    static class Walling
+    {
         // burst でタプルが使えるようになるまでの代用
-        struct PosAndRot
+        public struct PosAndRot
         {
             public float3 pos;
             public quaternion rot;
         }
-        struct HitFlagAndResult
+
+        public struct HitFlagAndResult
         {
             public bool isHit;
             public RaycastHit hit;
@@ -126,80 +150,53 @@ namespace Abarabone.Character
             public float3 p;
         }
 
-        struct HitFlagAndResult2
+        public struct PostureResult
         {
-            public bool isHit;
             public float3 pos;
             public quaternion rot;
             public float3 linear;
             public float3 angular;
         }
 
-
-        public enum WallState
+        public struct DirectionUnit
         {
-            standard,
-            front_rolling,
+            public float3 gnd;
+            public float3 mov;
         }
-        static RaycastInput makeGroundInput
-            (WallState state, float3 pos, quaternion rot, GroundHitWallingData hanger)
+
+
+        public static DirectionUnit getDirection(this WallHangingData walling, float3 pos, quaternion rot)
         =>
-            state switch
+            walling.State switch
             {
-                WallState.standard => new RaycastInput
+                WallHangingData.WallingState.none_rotating => new DirectionUnit
                 {
-                    Start = pos + up * hanger.CenterHeight,
-                    End = gndst + up * -hanger.HungerRange,
-                    //Start = origin,
-                    //End = origin + ray,
-                    //Filter = filter,
+                    gnd = math.mul(rot, new float3(0, -1, 0)),
+                    mov = math.forward(rot),
                 },
-                WallState.front_rolling => new RaycastInput
+                WallHangingData.WallingState.front_45_rotating => new DirectionUnit
                 {
-                    //Start = origin,
-                    //End = origin + ray,
-                    //Filter = filter,
+                    gnd = math.mul(rot, new float3(0, 0, -1)),
+                    mov = math.mul(rot, new float3(0, -1, 0)),
                 },
-            };
-        static RaycastInput makeMoveInput(WallState state, float3 pos, quaternion rot) =>
-            state switch
-            {
-                WallState.standard => new RaycastInput
-                {
-                    //Start = origin,
-                    //End = origin + ray,
-                    //Filter = filter,
-                },
-                WallState.front_rolling => new RaycastInput
-                {
-                    //Start = origin,
-                    //End = origin + ray,
-                    //Filter = filter,
-                },
+                _ => default,
             };
 
-
-        HitFlagAndResult2 raycastHitToWall
-            (
-                ref PhysicsWorld pw, WallState state,
-                float3 pos, quaternion rot, Entity self, ComponentDataFromEntity<Bone.MainEntityLinkData> mainlist, float bodySize, float dt
-            )
+        public static RaycastInput makeCastInput
+            (float3 pos, float3 dir, float bodySize, float moveRange, CollisionFilter filter)
         {
+            var gndst = pos + dir * -bodySize;
+            var gnded = gndst + dir * moveRange;
+            return new RaycastInput
+            {
+                Start = gndst,
+                End = gnded,
+                Filter = filter,
+            };
+        }
 
-            var gi = makeGroundInput(state, pos, rot);
-            var hitgnd = raycast(ref pw, gi, self, mainlist);
-
-            if (!hitgnd.isHit) return new HitFlagAndResult2 { isHit = false };
-
-
-            var mi = makeMoveInput(state, hitgnd.p, rot);
-            var hitmov = raycast(ref pw, mi, self, mainlist);
-
-            if (!hitmov.isHit) return new HitFlagAndResult2 { isHit = false };
-
-            var up = ;
-            var newposrot = caluclateWallPosture
-                (mi.Start, hitmov.p, hitmov.n, up, bodySize);
+        public static PostureResult makeResults(this PosAndRot newposrot, float3 pos, quaternion rot, float dt)
+        {
 
             var rdt = math.rcp(dt);
             var linear = (newposrot.pos - pos) * rdt;
@@ -215,9 +212,8 @@ namespace Abarabone.Character
             //var angle = math.lengthsq(drot);
             //var angular = axis * (angle * rdt);
 
-            return new HitFlagAndResult2
+            return new PostureResult
             {
-                isHit = true,
                 pos = newposrot.pos,
                 rot = newposrot.rot,
                 linear = linear,
@@ -225,8 +221,8 @@ namespace Abarabone.Character
         }
 
         //( bool isHit, RaycastHit hit) raycast
-        static HitFlagAndResult raycast
-            (ref PhysicsWorld pw, RaycastInput hitInput, Entity self, ComponentDataFromEntity<Bone.MainEntityLinkData> mainlist)
+        public static HitFlagAndResult raycast
+            (ref this PhysicsWorld pw, RaycastInput hitInput, Entity self, ComponentDataFromEntity<Bone.MainEntityLinkData> mainlist)
         {
             var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(maxFraction: 1.0f, self, mainlist);
 
@@ -237,13 +233,13 @@ namespace Abarabone.Character
 
 
         //( float3 newpos, quaternion newrot) caluclateWallPosture
-        PosAndRot caluclateWallPosture
+        public static PosAndRot caluclateWallPosture
             (float3 o, float3 p, float3 n, float3 up, float r)
         {
             var f = p - o;
             var w = f - math.dot(f, n) * n;
 
-            var newpos = w + n * r;
+            var newpos = w;// + n * r;
 
             var newfwd = math.select(up, math.normalize(w), math.dot(n, up) > math.FLT_MIN_NORMAL);// 壁に垂直侵入した場合、up となる
             var newrot = quaternion.LookRotation(newfwd, n);
@@ -251,6 +247,7 @@ namespace Abarabone.Character
             //return (newpos, newrot);
             return new PosAndRot { pos = newpos, rot = newrot };
         }
+    }
 
 
         //[BurstCompile]
@@ -422,6 +419,5 @@ namespace Abarabone.Character
         //    }
         //}
 
-
-    }
+    //}
 }

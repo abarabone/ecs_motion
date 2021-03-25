@@ -54,23 +54,25 @@ namespace Abarabone.Character
                         ref WallHitResultData result,
                         ref Translation pos,
                         ref Rotation rot,
-                        in GroundHitWallingData hunger
+                        ref PhysicsVelocity v,
+                        in GroundHitWallingData walling
                     )
                 =>
                     {
                         //var rtf = new RigidTransform( rot.Value, pos.Value );
-                        var center = pos.Value + hunger.CenterHeight * math.mul(rot.Value, math.up());
+                        var center = pos.Value + walling.CenterHeight * math.mul(rot.Value, math.up());
 
                         var hitInput = new PointDistanceInput
                         {
                             Position = center,
-                            MaxDistance = hunger.HungerRange,
-                            Filter = hunger.Filter,
+                            MaxDistance = walling.HangerRange,
+                            Filter = walling.Filter,
                         };
                         var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(1.0f, entity, mainEntities);
                         var isHit = collisionWorld.CalculateDistance(hitInput, ref collector);
 
-                        if (collector.NumHits == 0) return;
+                        //if (collector.NumHits <= 0) return;
+                        if (!isHit) return;
 
 
                         result.IsHit = true;
@@ -83,6 +85,9 @@ namespace Abarabone.Character
                         var forward = math.cross(n, right);
                         var safe_forward = math.select(math.forward(rot.Value), forward, math.dot(right, n) > 0.001f);
                         rot.Value = quaternion.LookRotation(safe_forward, n);
+
+                        v.Linear = 0;
+                        v.Angular = 0;
                     }
                 )
                 .ScheduleParallel();

@@ -26,6 +26,7 @@ namespace Abarabone.Physics.Authoring
         {
             SphereForGround,
             RayForGround,
+            RayForWalling,
         }
         public UseageType Useage;
 
@@ -83,6 +84,19 @@ namespace Abarabone.Physics.Authoring
                     {
                         Start = this_.Center,
                         Ray = new DirectionAndLength { value = new float4(math.up() * -1, this_.Radius) },
+                        Filter = new CollisionFilter
+                        {
+                            BelongsTo = this_.BelongsTo.Value,
+                            CollidesWith = this_.CollidesWith.Value,
+                        }
+                    }
+                ),
+
+            (this_, em_, targetEntity_) => em_.AddComponentData(targetEntity_,
+                    new GroundHitWallingData
+                    {
+                        CenterHeight = this_.Center.y - this_.transform.position.y,
+                        HangerRange = this_.Radius,
                         Filter = new CollisionFilter
                         {
                             BelongsTo = this_.BelongsTo.Value,

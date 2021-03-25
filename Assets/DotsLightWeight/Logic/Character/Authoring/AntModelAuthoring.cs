@@ -51,8 +51,8 @@ namespace Abarabone.Model.Authoring
                     typeof(AntTag),
 
                     typeof(WallingTag),
-                    typeof(WallHunggingData),
-                    //typeof(WallHitResultData),
+                    typeof(WallHangingData),
+                    typeof(WallHitResultData),
                     typeof(PhysicsGravityFactor),// デフォルトでは付かないっぽい
                     
                     typeof(MoveHandlingData),

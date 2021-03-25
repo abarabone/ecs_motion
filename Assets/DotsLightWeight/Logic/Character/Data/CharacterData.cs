@@ -79,16 +79,21 @@ namespace Abarabone.Character
     public struct GroundHitWallingData : IComponentData
     {
         public float CenterHeight;
-        public float HungerRange;
+        public float HangerRange;
         public CollisionFilter Filter;
     }
 
     // 壁移動させたいメインエンティティに付けておく
     public struct WallingTag : IComponentData
     { }
-    public struct WallHunggingData : IComponentData
+    public struct WallHangingData : IComponentData
     {
-        public int State;
+        public WallingState State;
+        public enum WallingState
+        {
+            none_rotating,
+            front_45_rotating,
+        }
     }
     // 接触していない時に付き、接触判定に使用される
     public struct WallHitResultData : IComponentData
