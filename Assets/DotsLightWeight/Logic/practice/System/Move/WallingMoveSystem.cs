@@ -110,37 +110,35 @@ namespace Abarabone.Character
                         }
 
 
-                        var moveRange = (walling.HangerRange + 8.0f) * deltaTime;
-                        var movepos = hitgnd.p + dir.gnd * -bodysize;
+                        var n = hitgnd.n;
+                        var up = -dir.gnd;
+                        var f = hitgnd.p - gi.Start;
+                        var w_ = f - math.dot(f, n) * n;
+                        var w = math.select(math.normalize(w_), dir.mov, 1.0f - math.abs(math.dot(n, up)) < math.FLT_MIN_NORMAL);
 
-                        var mi = Walling.makeCastInput(movepos, dir.mov, bodysize, moveRange, walling.Filter);
+                        var moveRange = (walling.HangerRange + 8.0f) * deltaTime;
+                        //var movepos = hitgnd.p + dir.gnd * -bodysize;
+                        var movepos = hitgnd.p + n * bodysize;
+
+                        var mi = Walling.makeCastInput(movepos, w, bodysize, moveRange, walling.Filter);
+                        //var mi = Walling.makeCastInput(movepos, dir.mov, bodysize, moveRange, walling.Filter);
                         var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
 
-                        if (!hitmov.isHit)
+                        //if (!hitmov.isHit)
                         {
                             var newposrot_ = new Walling.PosAndRot
                             {
-                                pos = hitgnd.p + dir.mov * moveRange,
-                                rot = rot.Value,
+                                pos = pos.Value + w * moveRange,
+                                rot = quaternion.LookRotationSafe(w, n),
                             };
-                            var res_ = newposrot_.makeResults(pos.Value, rot.Value, deltaTime);
+                            newposrot_.setResultTo(ref pos, ref rot, ref v, deltaTime);
 
-                            //pos.Value = res_.pos;
-                            rot.Value = res_.rot;
-                            v.Linear = res_.linear;
-                            v.Angular = 0;// res.angular;
-
-                            hanging.State++;
+                            hanging.State = WallHangingData.WallingState.none_rotating;
                             return;
                         }
 
-                        var newposrot = Walling.caluclateWallPosture(mi.Start, hitmov.p, hitmov.n, -dir.gnd, bodysize);
-                        var res = newposrot.makeResults(pos.Value, rot.Value, deltaTime);
-
-                        //pos.Value = res.pos;
-                        rot.Value = res.rot;
-                        v.Linear = res.linear;
-                        v.Angular = 0;// res.angular;
+                        //var newposrot = Walling.caluclateWallPosture(mi.Start, hitmov.p, hitmov.n, hitgnd.n, bodysize);
+                        //newposrot.setResultTo(ref pos, ref rot, ref v, deltaTime);
                     }
                 )
                 .ScheduleParallel();
@@ -159,18 +157,18 @@ namespace Abarabone.Character
         public struct HitFlagAndResult
         {
             public bool isHit;
-            public RaycastHit hit;
+            //public RaycastHit hit;
             public float3 n;
             public float3 p;
         }
 
-        public struct PostureResult
-        {
-            public float3 pos;
-            public quaternion rot;
-            public float3 linear;
-            public float3 angular;
-        }
+        //public struct PostureResult
+        //{
+        //    public float3 pos;
+        //    public quaternion rot;
+        //    public float3 linear;
+        //    public float3 angular;
+        //}
 
         public struct DirectionUnit
         {
@@ -209,11 +207,12 @@ namespace Abarabone.Character
             };
         }
 
-        public static PostureResult makeResults(this PosAndRot newposrot, float3 pos, quaternion rot, float dt)
+        public static void setResultTo
+            (this PosAndRot newposrot, ref Translation pos, ref Rotation rot, ref PhysicsVelocity v, float dt)
         {
 
             var rdt = math.rcp(dt);
-            var linear = (newposrot.pos - pos) * rdt;
+            var linear = (newposrot.pos - pos.Value) * rdt;
 
             //var invprev = math.inverse(newposrot.rot);
             //var drot = math.mul(invprev, rot);
@@ -226,12 +225,10 @@ namespace Abarabone.Character
             //var angle = math.lengthsq(drot);
             //var angular = axis * (angle * rdt);
 
-            return new PostureResult
-            {
-                pos = newposrot.pos,
-                rot = newposrot.rot,
-                linear = linear,
-            };
+            pos.Value = newposrot.pos;
+            rot.Value = newposrot.rot;
+            v.Linear = 0;// linear;
+            v.Angular = 0;//
         }
 
         //( bool isHit, RaycastHit hit) raycast
@@ -242,7 +239,13 @@ namespace Abarabone.Character
 
             var isHit = pw.CastRay(hitInput, ref collector);
 
-            return new HitFlagAndResult { isHit = collector.NumHits > 0, hit = collector.ClosestHit };
+            return new HitFlagAndResult
+            {
+                isHit = isHit,//collector.NumHits > 0,
+                p = collector.ClosestHit.Position,
+                n = collector.ClosestHit.SurfaceNormal,
+                //hit = collector.ClosestHit
+            };
         }
 
 
@@ -253,10 +256,10 @@ namespace Abarabone.Character
             var f = p - o;
             var w = f - math.dot(f, n) * n;
 
-            var newpos = o + w;// + n * r;
+            var newpos = p + w;// + n * r;
 
-            var newfwd = math.select(up, math.normalize(w), math.dot(n, up) > math.FLT_MIN_NORMAL);// 壁に垂直侵入した場合、up となる
-            var newrot = quaternion.LookRotation(newfwd, n);
+            var newfwd = math.select(up, math.normalize(w), math.abs(math.dot(n, up)) > math.FLT_MIN_NORMAL);// 壁に垂直侵入した場合、up となる
+            var newrot = quaternion.LookRotationSafe(newfwd, n);
 
             //return (newpos, newrot);
             return new PosAndRot { pos = newpos, rot = newrot };
