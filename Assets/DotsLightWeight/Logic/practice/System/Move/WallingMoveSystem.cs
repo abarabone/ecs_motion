@@ -99,7 +99,7 @@ namespace Abarabone.Character
 
 
                         var gndRange = walling.HangerRange;
-                        var gndpos = pos.Value + dir.gnd * -bodysize;
+                        var gndpos = pos.Value;// + dir.gnd * -bodysize;
 
                         var gi = Walling.makeCastInput(gndpos, dir.gnd, bodysize, gndRange, walling.Filter);
                         var hitgnd = physicsWorld.raycast(gi, entity, mainEntities);
@@ -117,17 +117,17 @@ namespace Abarabone.Character
                         var w = f - math.dot(f, n) * n;
 
                         var moveRange = 4.0f * deltaTime;
-                        var movepos = hitgnd.p + n * bodysize;
+                        var movepos = hitgnd.p;// + n * bodysize;
                         var movedir = math.normalizesafe(w, dir.mov);
 
-                        //var mi = Walling.makeCastInput(movepos, movedir, bodysize, moveRange, walling.Filter);
-                        //var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
+                        var mi = Walling.makeCastInput(movepos, movedir, bodysize, moveRange, walling.Filter);
+                        var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
 
-                        //if (!hitmov.isHit)
+                        if (!hitmov.isHit)
                         {
                             var newposrot_ = new Walling.PosAndRot
                             {
-                                pos = hitgnd.p,// + movedir * moveRange,
+                                pos = hitgnd.p + movedir * moveRange + hitgnd.n * 0.1f,
                                 rot = quaternion.LookRotationSafe(movedir, n),
                             };
                             newposrot_.setResultTo(ref pos, ref rot, ref v, deltaTime);
@@ -135,9 +135,9 @@ namespace Abarabone.Character
                             return;
                         }
 
-                        //var newposrot = Walling.caluclateWallPosture
-                        //    (pos.Value, hitmov.p, hitmov.n, hitgnd.n, bodysize);
-                        //newposrot.setResultTo(ref pos, ref rot, ref v, deltaTime);
+                        var newposrot = Walling.caluclateWallPosture
+                            (pos.Value, hitmov.p, hitmov.n, hitgnd.n, bodysize);
+                        newposrot.setResultTo(ref pos, ref rot, ref v, deltaTime);
                     }
                 )
                 .ScheduleParallel();
@@ -240,7 +240,7 @@ namespace Abarabone.Character
 
             return new HitFlagAndResult
             {
-                isHit = isHit,//collector.NumHits > 0,
+                isHit = collector.NumHits > 0,
                 p = collector.ClosestHit.Position,
                 n = collector.ClosestHit.SurfaceNormal,
                 //hit = collector.ClosestHit

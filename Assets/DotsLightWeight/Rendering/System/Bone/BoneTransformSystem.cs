@@ -50,15 +50,19 @@ namespace Abarabone.Model
             this.Entities
                 .WithBurst()
                 .WithNone<TransformOption.ExcludeTransformTag>()
-                .WithReadOnly( boneLinkers )
-                .WithReadOnly( locals )
-                .WithReadOnly( masses )
-                .WithNativeDisableParallelForRestriction( poss )
-                .WithNativeDisableParallelForRestriction( rots )
+                .WithReadOnly(boneLinkers)
+                .WithReadOnly(locals)
+                .WithReadOnly(masses)
+                .WithNativeDisableParallelForRestriction(poss)
+                .WithNativeDisableParallelForRestriction(rots)
+                .WithNativeDisableContainerSafetyRestriction(poss)
+                .WithNativeDisableContainerSafetyRestriction(rots)
                 //.WithNativeDisableParallelForRestriction( velocities )
                 .ForEach(
                         (
-                            Entity drawent,
+                            //Entity drawent,
+                            ref Translation pos,
+                            ref Rotation rot,
                             in DrawInstance.BoneLinkData bonelink,
                             in DrawInstance.TargetWorkData target,
                             in DrawInstance.PostureLinkData posturelink,
@@ -70,10 +74,12 @@ namespace Abarabone.Model
 
 
 
-                        //var rootpos = poss[posturelink.PostureEntity];
-                        //var rootrot = rots[posturelink.PostureEntity];
-                        //poss[drawent] = rootpos;
-                        //rots[drawent] = rootrot;
+                        var rootpos = poss[posturelink.PostureEntity];
+                        var rootrot = rots[posturelink.PostureEntity];
+                        pos.Value = offset.Position + rootpos.Value;
+                        rot.Value = math.mul(offset.Rotation, rootrot.Value);
+                        //poss[drawent] = new Translation { Value = offset.Position + rootpos.Value };
+                        //rots[drawent] = new Rotation { Value = math.mul(offset.Rotation, rootrot.Value) };
 
 
 

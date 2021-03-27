@@ -65,14 +65,14 @@ namespace Abarabone.Character
                         var hitInput = new PointDistanceInput
                         {
                             Position = center,
-                            MaxDistance = walling.HangerRange,
+                            MaxDistance = walling.HangerRange,//.CenterHeight,//.HangerRange,
                             Filter = walling.Filter,
                         };
                         var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(1.0f, entity, mainEntities);
                         var isHit = collisionWorld.CalculateDistance(hitInput, ref collector);
 
-                        //if (collector.NumHits <= 0) return;
-                        if (!isHit) return;
+                        if (collector.NumHits <= 0) return;
+                        //if (!isHit) return;
 
 
                         result.IsHit = true;

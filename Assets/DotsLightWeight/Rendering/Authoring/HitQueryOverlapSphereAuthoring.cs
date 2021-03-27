@@ -95,7 +95,7 @@ namespace Abarabone.Physics.Authoring
             (this_, em_, targetEntity_) => em_.AddComponentData(targetEntity_,
                     new GroundHitWallingData
                     {
-                        CenterHeight = this_.Center.y - this_.transform.position.y,
+                        CenterHeight = this_.Center.y - this_.transform.parent.position.y,
                         HangerRange = this_.Radius,
                         Filter = new CollisionFilter
                         {

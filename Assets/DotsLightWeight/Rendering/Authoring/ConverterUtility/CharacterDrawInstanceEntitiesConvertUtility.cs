@@ -37,10 +37,11 @@ namespace Abarabone.Draw.Authoring
 
             setStreamComponentValues( gcs, bones, drawInstanceEntity );
 
+            //// ほんとはここでやりたいけど、motion entity を取る方法がわからない
             //setMotionComponentValues(gcs, top, drawInstanceEntity);
 
             // いずれはスイッチで必要か否か選択できるようにしたい
-            //gcs.InsertTransformOffsetLink(main, drawInstanceEntity, bones);
+            gcs.InsertTransformOffsetLink(main, drawInstanceEntity, bones);
 
         }
 

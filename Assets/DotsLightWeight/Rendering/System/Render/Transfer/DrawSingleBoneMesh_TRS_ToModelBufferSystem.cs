@@ -44,6 +44,7 @@ namespace Abarabone.Draw
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.MeshTag>()
+                .WithNone<DrawInstance.BoneModelTag>()
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,

@@ -80,7 +80,7 @@
 
                 o.vertex = mul(UNITY_MATRIX_VP, wvt);
                 o.uv = v.uv;
-                o.color = color * 3;//6;
+                o.color = color * 6;
                 UNITY_TRANSFER_FOG(o, o.vertex);
 
                 return o;
