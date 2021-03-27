@@ -39,6 +39,9 @@ namespace Abarabone.Draw.Authoring
 
             //setMotionComponentValues(gcs, top, drawInstanceEntity);
 
+            // いずれはスイッチで必要か否か選択できるようにしたい
+            //gcs.InsertTransformOffsetLink(main, drawInstanceEntity, bones);
+
         }
 
 
@@ -75,17 +78,25 @@ namespace Abarabone.Draw.Authoring
             EntityArchetype archetypeForReelupChain_() =>
                 em.CreateArchetype(
                     typeof(DrawInstance.MeshTag),
+                    typeof(DrawInstance.BoneModelTag),
                     typeof(DrawInstance.ModeLinkData),
                     typeof(DrawInstance.PostureLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(DrawInstance.BoneLinkData)
+                    typeof(DrawInstance.BoneLinkData),
+                    typeof(DrawInstance.TransformOffsetData),
+                    typeof(Translation),
+                    typeof(Rotation)
                 );
             EntityArchetype archetypeForJobPerDepth_() =>
                 em.CreateArchetype(
                     typeof(DrawInstance.MeshTag),
+                    typeof(DrawInstance.BoneModelTag),
                     typeof(DrawInstance.ModeLinkData),
                     typeof(DrawInstance.PostureLinkData),
-                    typeof(DrawInstance.TargetWorkData)
+                    typeof(DrawInstance.TargetWorkData),
+                    typeof(DrawInstance.TransformOffsetData),
+                    typeof(Translation),
+                    typeof(Rotation)
                 );
 
             void setDrawComponents_()
@@ -106,6 +117,14 @@ namespace Abarabone.Draw.Authoring
                     new DrawInstance.TargetWorkData
                     {
                         DrawInstanceId = -1,
+                    }
+                );
+                var tfmain = main.transform;
+                em.SetComponentData(ent,
+                    new DrawInstance.TransformOffsetData
+                    {
+                        Position = tfmain.localPosition,
+                        Rotation = tfmain.localRotation,
                     }
                 );
             }

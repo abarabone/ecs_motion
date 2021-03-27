@@ -43,6 +43,13 @@ namespace Abarabone.Draw
         public struct MeshTag : IComponentData
         { }
 
+        /// <summary>
+        /// トランスフォームが必要な draw instance であることを示す
+        /// </summary>
+        public struct BoneModelTag : IComponentData
+        { }
+
+
 
         /// <summary>
         /// 描画モデルの種類情報
@@ -59,6 +66,20 @@ namespace Abarabone.Draw
         {
             public Entity BoneRelationTop;
         }
+
+
+        // posture とルートボーンの間にかませる、ルート位置補正
+        // draw instance entity の translation/rotation に変換を持たせる
+        public struct TransformOffsetData : IComponentData
+        {
+            public float3 Position;
+            public quaternion Rotation;
+        }
+        // いずれはスケーリングに対応させるべく、マトリクス版も必要になるだろう
+        //public struct TransformOffsetMatrixData : IComponentData
+        //{
+        //    public float4x3 Matrix;
+        //}
 
 
 

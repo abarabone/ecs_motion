@@ -98,9 +98,10 @@ namespace Abarabone.Character
                         var bodysize = walling.CenterHeight;
 
 
-                        var groundRange = walling.HangerRange;
+                        var gndRange = walling.HangerRange;
+                        var gndpos = pos.Value + dir.gnd * -bodysize;
 
-                        var gi = Walling.makeCastInput(pos.Value, dir.gnd, bodysize, groundRange, walling.Filter);
+                        var gi = Walling.makeCastInput(gndpos, dir.gnd, bodysize, gndRange, walling.Filter);
                         var hitgnd = physicsWorld.raycast(gi, entity, mainEntities);
 
                         if (!hitgnd.isHit)
@@ -108,36 +109,34 @@ namespace Abarabone.Character
                             hanging.State++;
                             return;
                         }
-
+                        
+                        hanging.State = WallHangingData.WallingState.none_rotating;
 
                         var n = hitgnd.n;
-                        var up = -dir.gnd;
                         var f = hitgnd.p - gi.Start;
-                        var w_ = f - math.dot(f, n) * n;
-                        var w = math.select(math.normalize(w_), dir.mov, 1.0f - math.abs(math.dot(n, up)) < math.FLT_MIN_NORMAL);
+                        var w = f - math.dot(f, n) * n;
 
-                        var moveRange = (walling.HangerRange + 8.0f) * deltaTime;
-                        //var movepos = hitgnd.p + dir.gnd * -bodysize;
+                        var moveRange = 4.0f * deltaTime;
                         var movepos = hitgnd.p + n * bodysize;
+                        var movedir = math.normalizesafe(w, dir.mov);
 
-                        var mi = Walling.makeCastInput(movepos, w, bodysize, moveRange, walling.Filter);
-                        //var mi = Walling.makeCastInput(movepos, dir.mov, bodysize, moveRange, walling.Filter);
-                        var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
+                        //var mi = Walling.makeCastInput(movepos, movedir, bodysize, moveRange, walling.Filter);
+                        //var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
 
                         //if (!hitmov.isHit)
                         {
                             var newposrot_ = new Walling.PosAndRot
                             {
-                                pos = pos.Value + w * moveRange,
-                                rot = quaternion.LookRotationSafe(w, n),
+                                pos = hitgnd.p,// + movedir * moveRange,
+                                rot = quaternion.LookRotationSafe(movedir, n),
                             };
                             newposrot_.setResultTo(ref pos, ref rot, ref v, deltaTime);
 
-                            hanging.State = WallHangingData.WallingState.none_rotating;
                             return;
                         }
 
-                        //var newposrot = Walling.caluclateWallPosture(mi.Start, hitmov.p, hitmov.n, hitgnd.n, bodysize);
+                        //var newposrot = Walling.caluclateWallPosture
+                        //    (pos.Value, hitmov.p, hitmov.n, hitgnd.n, bodysize);
                         //newposrot.setResultTo(ref pos, ref rot, ref v, deltaTime);
                     }
                 )

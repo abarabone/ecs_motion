@@ -58,15 +58,27 @@ namespace Abarabone.Model
                 //.WithNativeDisableParallelForRestriction( velocities )
                 .ForEach(
                         (
-                            in DrawInstance.BoneLinkData linker,
-                            in DrawInstance.TargetWorkData target
+                            Entity drawent,
+                            in DrawInstance.BoneLinkData bonelink,
+                            in DrawInstance.TargetWorkData target,
+                            in DrawInstance.PostureLinkData posturelink,
+                            in DrawInstance.TransformOffsetData offset
                         ) =>
                     {
 
                         if (target.DrawInstanceId == -1) return;
 
-                        for(
-                            var entity = linker.BoneRelationTop;
+
+
+                        //var rootpos = poss[posturelink.PostureEntity];
+                        //var rootrot = rots[posturelink.PostureEntity];
+                        //poss[drawent] = rootpos;
+                        //rots[drawent] = rootrot;
+
+
+
+                        for (
+                            var entity = bonelink.BoneRelationTop;
                             entity != Entity.Null;
                             entity = boneLinkers[ entity ].NextBoneEntity
                         )
@@ -90,6 +102,8 @@ namespace Abarabone.Model
                                 continue;
                             }
 
+                            // キネマティックは未完成
+                            // とりあえず静的と一緒にしてある
                             var isKinematic = masses[entity].InverseMass == 0.0f;
                             if (isKinematic)
                             {

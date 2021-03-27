@@ -44,6 +44,7 @@ namespace Abarabone.Model.Authoring
     {
 
 
+
         // bones の GameObject に関連付けられた Entity に bone 関連コンポーネントを付与し、また親子構造をもとにしたリンク構造のコンポーネントを付加する。
         // またルートボーンは、mainGameObject に関連付けられた Entity を親としてリンクを張る。
         // bones の親子構造は、bones に含まれるエントリの中で構築される。エントリの中から親が見つからない場合はルートボーンとみなされ、親は mainGameObject となる。
@@ -60,6 +61,32 @@ namespace Abarabone.Model.Authoring
 
         }
 
+        // posture とルートボーンの間に、ルート位置補正をかませる
+        // ルート位置補正は draw instance entity に配置されるので、
+        // posture entity を draw instance entity に書き替えるだけでよい
+        static public void InsertTransformOffsetLink
+            (this GameObjectConversionSystem gcs, GameObject mainGameObject, Entity drawInstance, IEnumerable<Transform> bones)
+        {
+            var em = gcs.DstEntityManager;
+            var main = gcs.GetPrimaryEntity(mainGameObject);
+            var q =
+                from bone in bones
+                let ent = gcs.GetPrimaryEntity(bone)
+                let link = em.GetComponentData<Bone.RelationLinkData>(ent)
+                where link.ParentBoneEntity == main
+                select (ent, link)
+                ;
+            foreach (var (ent, link) in q)
+            {
+                em.SetComponentData(ent, new Bone.RelationLinkData
+                {
+                    ParentBoneEntity = drawInstance,
+                    NextBoneEntity = link.NextBoneEntity,
+                });
+            }
+        }
+
+
 
         // - - - - - - - - - - - - - - - - - - - - -
 
@@ -73,7 +100,7 @@ namespace Abarabone.Model.Authoring
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
-            initLocalPosition(em, boneEntities, mainGameObject, bones);
+            //initLocalPosition(em, boneEntities, mainGameObject, bones);
 
             var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
@@ -89,7 +116,7 @@ namespace Abarabone.Model.Authoring
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
-            initLocalPosition(em, boneEntities, mainGameObject, bones);
+            //initLocalPosition(em, boneEntities, mainGameObject, bones);
 
             var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneLinksLeveled(em, postureEntity, boneEntities, paths);
@@ -174,7 +201,7 @@ namespace Abarabone.Model.Authoring
 
         static void setBoneRelationLinksChain
         (
-            EntityManager em, Entity postureEntity,
+            EntityManager em, Entity parentEntity,
             IEnumerable<Entity> boneEntities, IEnumerable<string> paths
         )
         {
@@ -185,7 +212,7 @@ namespace Abarabone.Model.Authoring
                 (pathArray, boneEntityArray).Zip( ( x, y ) => (path: x, ent: y))
                 .Where(x => x.path != "")
                 //.Do(x => Debug.Log($"x {x.path}"))
-                .Append( (path: "", ent: postureEntity) )
+                .Append( (path: "", ent: parentEntity) )
                 .Append( (path: "\0", ent: Entity.Null) )
                 .ToDictionary( x => x.path, x => x.ent );
 
@@ -209,7 +236,7 @@ namespace Abarabone.Model.Authoring
 
         static void setBoneLinksLeveled
         (
-            EntityManager em, Entity postureEntity,
+            EntityManager em, Entity parentEntity,
             IEnumerable<Entity> boneEntities, IEnumerable<string> paths
         )
         {
@@ -220,7 +247,7 @@ namespace Abarabone.Model.Authoring
                 (pathArray, boneEntityArray).Zip((x, y) => (path: x, ent: y))
                 .Where(x => x.path != "")
                 //.Do(x => Debug.Log($"x {x.path}"))
-                .Append((path: "", ent: postureEntity))
+                .Append((path: "", ent: parentEntity))
                 .Append((path: "\0", ent: Entity.Null))
                 .ToDictionary(x => x.path, x => x.ent);
 
@@ -258,25 +285,26 @@ namespace Abarabone.Model.Authoring
             }
         }
 
-        static void initLocalPosition
-            (EntityManager em, IEnumerable<Entity> boneEntities, GameObject mainGameObject, IEnumerable<Transform> bones)
-        {
-            var mtInv = mainGameObject.transform.worldToLocalMatrix;
+        //// ストリームデータから上書きしてしまうので、入れても無駄
+        //static void initLocalPosition
+        //    (EntityManager em, IEnumerable<Entity> boneEntities, GameObject mainGameObject, IEnumerable<Transform> bones)
+        //{
+        //    var mtInv = mainGameObject.transform.worldToLocalMatrix;
 
-            var qLocal =
-                from bn in bones
-                let lpos = bn.transform.localPosition//mtInv.MultiplyPoint(bn.transform.position)
-                let lrot = bn.transform.localRotation//bn.transform.rotation * mtInv.rotation
-                select new Bone.LocalValueData
-                {
-                    Position = lpos,
-                    Rotation = lrot,
-                };
+        //    var qLocal =
+        //        from bn in bones
+        //        let lpos = bn.transform.localPosition//mtInv.MultiplyPoint(bn.transform.position)
+        //        let lrot = bn.transform.localRotation//bn.transform.rotation * mtInv.rotation
+        //        select new Bone.LocalValueData
+        //        {
+        //            Position = lpos,
+        //            Rotation = lrot,
+        //        };
 
-            foreach( var (ent, local) in (boneEntities, qLocal).Zip() )
-            {
-                em.SetComponentData(ent, local);
-            }
-        }
+        //    foreach (var (ent, local) in (boneEntities, qLocal).Zip())
+        //    {
+        //        em.SetComponentData(ent, local);
+        //    }
+        //}
     }
 }

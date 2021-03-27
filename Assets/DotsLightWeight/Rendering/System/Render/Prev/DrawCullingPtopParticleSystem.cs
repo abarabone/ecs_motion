@@ -53,6 +53,7 @@ namespace Abarabone.Draw
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
                 //.WithNone<Rotation, Translation, NonUniformScale>()
+                .WithNone<DrawInstance.BoneModelTag>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach(
                         (

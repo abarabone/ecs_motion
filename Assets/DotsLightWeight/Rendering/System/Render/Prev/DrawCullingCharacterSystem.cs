@@ -50,12 +50,13 @@ namespace Abarabone.Draw
 
             this.Entities
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
+                .WithAll<DrawInstance.BoneModelTag>()
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
                 .WithReadOnly(bboxes)
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
-                .WithNone<Rotation, Translation, NonUniformScale>()
+                //.WithNone<Rotation, Translation, NonUniformScale>()
                 .ForEach(
                         (
                             ref DrawInstance.TargetWorkData target,

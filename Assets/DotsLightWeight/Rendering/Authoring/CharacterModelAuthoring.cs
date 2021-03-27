@@ -61,7 +61,7 @@ namespace Abarabone.Model.Authoring
             initMainEntity_(conversionSystem, top, main);
 
             conversionSystem.InitPostureEntity(main);//, bones);
-            conversionSystem.InitBoneEntities(main, bones, main.transform, this.BoneMode);
+            conversionSystem.InitBoneEntities(main, bones, root: main.transform, this.BoneMode);
 
             conversionSystem.CreateDrawInstanceEntities(top, main, bones, this.BoneMode);
 

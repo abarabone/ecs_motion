@@ -83,8 +83,9 @@ namespace Abarabone.Character
 
                         var right = math.mul(rot.Value, new float3(1.0f, 0.0f, 0.0f));
                         var forward = math.cross(n, right);
-                        var safe_forward = math.select(math.forward(rot.Value), forward, math.dot(right, n) > 0.001f);
+                        var safe_forward = math.select(math.forward(rot.Value), forward, math.abs(math.dot(right, n)) > math.FLT_MIN_NORMAL);
                         rot.Value = quaternion.LookRotation(safe_forward, n);
+                        //rot.Value = quaternion.LookRotationSafe(forward, n);
 
                         v.Linear = 0;
                         v.Angular = 0;
