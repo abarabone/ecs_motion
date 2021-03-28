@@ -91,6 +91,7 @@ namespace Abarabone.Character
                     )
                 =>
                     {
+                        //if (hanging.State > WallHangingData.WallingState.none_rotating) return;
                         if (hanging.State > WallHangingData.WallingState.front_45_rotating) return;
 
 
@@ -99,7 +100,7 @@ namespace Abarabone.Character
 
 
                         var gndRange = walling.HangerRange;
-                        var gndpos = pos.Value;
+                        var gndpos = pos.Value + dir.mov * .05f;
 
                         var gi = Walling.makeCastInput(gndpos, dir.gnd, bodysize, gndRange, walling.Filter);
                         var hitgnd = physicsWorld.raycast(gi, entity, mainEntities);
@@ -113,21 +114,21 @@ namespace Abarabone.Character
                         hanging.State = WallHangingData.WallingState.none_rotating;
 
                         var n = hitgnd.n;
-                        var f = hitgnd.p - gi.Start;
-                        var w = f - math.dot(f, n) * n;
+                        //var f = hitgnd.p - gi.Start;
+                        //var w = f - math.dot(f, n) * n;
 
-                        var moveRange = 4.0f * deltaTime;
-                        var movepos = hitgnd.p;
-                        var movedir = math.normalizesafe(w, dir.mov);
+                        var moveRange = 8.0f * deltaTime;
+                        var movepos = hitgnd.p;// + dir.gnd * -0.1f;
+                        var movedir = math.cross(dir.right, n);//math.normalizesafe(w, dir.mov);
 
                         var mi = Walling.makeCastInput(movepos, movedir, bodysize, moveRange, walling.Filter);
                         var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
 
-                        if (!hitmov.isHit)
+                        if (true)//!hitmov.isHit)
                         {
                             var newposrot_ = new Walling.PosAndRot
                             {
-                                pos = hitgnd.p + movedir * moveRange + hitgnd.n * 0.1f,
+                                pos = movepos + movedir * moveRange,// + hitgnd.n * 0.1f,
                                 rot = quaternion.LookRotationSafe(movedir, n),
                             };
                             newposrot_.setResultTo(ref pos, ref rot, ref v, deltaTime);
@@ -135,8 +136,13 @@ namespace Abarabone.Character
                             return;
                         }
 
-                        var newposrot = Walling.caluclateWallPosture
-                            (pos.Value, hitmov.p, hitmov.n, hitgnd.n, bodysize);
+                        //var newposrot = Walling.caluclateWallPosture
+                        //    (pos.Value, hitmov.p, hitmov.n, hitgnd.n, dir.right, bodysize);
+                        var newposrot = new Walling.PosAndRot
+                        {
+                            pos = hitmov.p + movedir * moveRange,
+                            rot = quaternion.LookRotationSafe(movedir, n),
+                        };
                         newposrot.setResultTo(ref pos, ref rot, ref v, deltaTime);
                     }
                 )
@@ -173,6 +179,7 @@ namespace Abarabone.Character
         {
             public float3 gnd;
             public float3 mov;
+            public float3 right;
         }
 
 
@@ -184,11 +191,13 @@ namespace Abarabone.Character
                 {
                     gnd = math.mul(rot, new float3(0, -1, 0)),
                     mov = math.forward(rot),
+                    right = math.mul(rot, new float3(1, 0, 0)),
                 },
                 WallHangingData.WallingState.front_45_rotating => new DirectionUnit
                 {
                     gnd = math.mul(rot, new float3(0, 0, -1)),
                     mov = math.mul(rot, new float3(0, -1, 0)),
+                    right = math.mul(rot, new float3(1, 0, 0)),
                 },
                 _ => default,
             };
@@ -250,7 +259,7 @@ namespace Abarabone.Character
 
         //( float3 newpos, quaternion newrot) caluclateWallPosture
         public static PosAndRot caluclateWallPosture
-            (float3 o, float3 p, float3 n, float3 up, float r)
+            (float3 o, float3 p, float3 n, float3 up, float3 right, float r)
         {
             var f = p - o;
             var w = f - math.dot(f, n) * n;

@@ -76,7 +76,7 @@ namespace Abarabone.Model
 
                         var rootpos = poss[posturelink.PostureEntity];
                         var rootrot = rots[posturelink.PostureEntity];
-                        pos.Value = offset.Position + rootpos.Value;
+                        pos.Value = math.mul(rootrot.Value, offset.Position) + rootpos.Value;
                         rot.Value = math.mul(offset.Rotation, rootrot.Value);
                         //poss[drawent] = new Translation { Value = offset.Position + rootpos.Value };
                         //rots[drawent] = new Rotation { Value = math.mul(offset.Rotation, rootrot.Value) };

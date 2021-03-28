@@ -79,7 +79,7 @@ namespace Abarabone.Character
 
                         var n = collector.ClosestHit.SurfaceNormal;
                         var p = collector.ClosestHit.Position;
-                        pos.Value = p;
+                        //pos.Value = p;
 
                         var right = math.mul(rot.Value, new float3(1.0f, 0.0f, 0.0f));
                         var forward = math.cross(n, right);
