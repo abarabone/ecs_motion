@@ -99,7 +99,7 @@ namespace Abarabone.Character
 
 
                         var gndRange = walling.HangerRange;
-                        var gndpos = pos.Value;// + dir.gnd * -bodysize;
+                        var gndpos = pos.Value;
 
                         var gi = Walling.makeCastInput(gndpos, dir.gnd, bodysize, gndRange, walling.Filter);
                         var hitgnd = physicsWorld.raycast(gi, entity, mainEntities);
@@ -117,7 +117,7 @@ namespace Abarabone.Character
                         var w = f - math.dot(f, n) * n;
 
                         var moveRange = 4.0f * deltaTime;
-                        var movepos = hitgnd.p;// + n * bodysize;
+                        var movepos = hitgnd.p;
                         var movedir = math.normalizesafe(w, dir.mov);
 
                         var mi = Walling.makeCastInput(movepos, movedir, bodysize, moveRange, walling.Filter);
@@ -257,7 +257,7 @@ namespace Abarabone.Character
 
             var newpos = p + w;// + n * r;
 
-            var newfwd = math.select(up, math.normalize(w), math.abs(math.dot(n, up)) > math.FLT_MIN_NORMAL);// 壁に垂直侵入した場合、up となる
+            var newfwd = math.normalizesafe(w, up);
             var newrot = quaternion.LookRotationSafe(newfwd, n);
 
             //return (newpos, newrot);
