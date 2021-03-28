@@ -99,8 +99,11 @@ namespace Abarabone.Character
                         var bodysize = walling.CenterHeight;
 
 
+                        //var gndRange = walling.HangerRange - bodysize;// ボディ中心からだと込み入った地形で
+                        //var gndpos = pos.Value + dir.gnd * -0.05f + dir.mov * 0.05f;
                         var gndRange = walling.HangerRange;
-                        var gndpos = pos.Value + dir.mov * .05f;
+                        var gndpos = pos.Value + dir.gnd * -bodysize + dir.mov * 0.05f;
+
 
                         var gi = Walling.makeCastInput(gndpos, dir.gnd, bodysize, gndRange, walling.Filter);
                         var hitgnd = physicsWorld.raycast(gi, entity, mainEntities);
@@ -117,19 +120,19 @@ namespace Abarabone.Character
                         //var f = hitgnd.p - gi.Start;
                         //var w = f - math.dot(f, n) * n;
 
-                        var moveRange = 8.0f * deltaTime;
-                        var movepos = hitgnd.p;// + dir.gnd * -0.1f;
+                        var moveRange = 4.0f * deltaTime;
+                        var movepos = hitgnd.p + dir.gnd * -0.05f;//bodysize;// ボディだとワープした感じに見えてしまう
                         var movedir = math.cross(dir.right, n);//math.normalizesafe(w, dir.mov);
 
-                        var mi = Walling.makeCastInput(movepos, movedir, bodysize, moveRange, walling.Filter);
+                        var mi = Walling.makeCastInput(movepos, movedir, bodysize, moveRange + bodysize, walling.Filter);
                         var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
 
-                        if (true)//!hitmov.isHit)
+                        if (!hitmov.isHit)
                         {
                             var newposrot_ = new Walling.PosAndRot
                             {
-                                pos = movepos + movedir * moveRange,// + hitgnd.n * 0.1f,
-                                rot = quaternion.LookRotationSafe(movedir, n),
+                                pos = hitgnd.p + movedir * moveRange,// + hitgnd.n * 0.1f,
+                                rot = quaternion.LookRotation(movedir, n),
                             };
                             newposrot_.setResultTo(ref pos, ref rot, ref v, deltaTime);
 
@@ -138,10 +141,11 @@ namespace Abarabone.Character
 
                         //var newposrot = Walling.caluclateWallPosture
                         //    (pos.Value, hitmov.p, hitmov.n, hitgnd.n, dir.right, bodysize);
+                        var walldir = math.cross(dir.right, hitmov.n);
                         var newposrot = new Walling.PosAndRot
                         {
-                            pos = hitmov.p + movedir * moveRange,
-                            rot = quaternion.LookRotationSafe(movedir, n),
+                            pos = hitmov.p,// + movedir * moveRange,
+                            rot = quaternion.LookRotation(walldir, hitmov.n),
                         };
                         newposrot.setResultTo(ref pos, ref rot, ref v, deltaTime);
                     }
@@ -205,7 +209,7 @@ namespace Abarabone.Character
         public static RaycastInput makeCastInput
             (float3 pos, float3 dir, float bodySize, float moveRange, CollisionFilter filter)
         {
-            var gndst = pos + dir * -bodySize;
+            var gndst = pos;// + dir * -bodySize;
             var gnded = gndst + dir * moveRange;
             return new RaycastInput
             {

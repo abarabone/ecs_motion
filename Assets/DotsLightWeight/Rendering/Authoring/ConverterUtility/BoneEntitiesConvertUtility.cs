@@ -100,7 +100,7 @@ namespace Abarabone.Model.Authoring
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
-            //initLocalPosition(em, boneEntities, mainGameObject, bones);
+            initLocalPosition(em, boneEntities, mainGameObject, bones);
 
             var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
@@ -116,7 +116,7 @@ namespace Abarabone.Model.Authoring
 
             addMainEntityLinkForCollider(gcs, mainGameObject, bones);
 
-            //initLocalPosition(em, boneEntities, mainGameObject, bones);
+            initLocalPosition(em, boneEntities, mainGameObject, bones);
 
             var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneLinksLeveled(em, postureEntity, boneEntities, paths);
@@ -285,26 +285,27 @@ namespace Abarabone.Model.Authoring
             }
         }
 
-        //// ストリームデータから上書きしてしまうので、入れても無駄
-        //static void initLocalPosition
-        //    (EntityManager em, IEnumerable<Entity> boneEntities, GameObject mainGameObject, IEnumerable<Transform> bones)
-        //{
-        //    var mtInv = mainGameObject.transform.worldToLocalMatrix;
+        // ストリームデータから上書きしてしまうので、入れても無駄
+        // …と思ったが、アニメーションのないオブジェクトでは、必要になる
+        static void initLocalPosition
+            (EntityManager em, IEnumerable<Entity> boneEntities, GameObject mainGameObject, IEnumerable<Transform> bones)
+        {
+            var mtInv = mainGameObject.transform.worldToLocalMatrix;
 
-        //    var qLocal =
-        //        from bn in bones
-        //        let lpos = bn.transform.localPosition//mtInv.MultiplyPoint(bn.transform.position)
-        //        let lrot = bn.transform.localRotation//bn.transform.rotation * mtInv.rotation
-        //        select new Bone.LocalValueData
-        //        {
-        //            Position = lpos,
-        //            Rotation = lrot,
-        //        };
+            var qLocal =
+                from bn in bones
+                let lpos = bn.transform.localPosition//mtInv.MultiplyPoint(bn.transform.position)
+                let lrot = bn.transform.localRotation//bn.transform.rotation * mtInv.rotation
+                select new Bone.LocalValueData
+                {
+                    Position = lpos,
+                    Rotation = lrot,
+                };
 
-        //    foreach (var (ent, local) in (boneEntities, qLocal).Zip())
-        //    {
-        //        em.SetComponentData(ent, local);
-        //    }
-        //}
+            foreach (var (ent, local) in (boneEntities, qLocal).Zip())
+            {
+                em.SetComponentData(ent, local);
+            }
+        }
     }
 }
