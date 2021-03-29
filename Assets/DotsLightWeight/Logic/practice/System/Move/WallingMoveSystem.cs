@@ -73,7 +73,7 @@ namespace Abarabone.Character
 
 
             this.Entities
-                .WithoutBurst()
+                .WithBurst()
                 .WithAll<WallingTag>()
                 .WithNone<WallHitResultData>()
                 .WithReadOnly(physicsWorld)

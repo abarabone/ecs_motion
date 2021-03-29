@@ -79,7 +79,7 @@ namespace Abarabone.Character
 
                         var n = collector.ClosestHit.SurfaceNormal;
                         var p = collector.ClosestHit.Position;
-                        //pos.Value = p;
+                        pos.Value = p;
 
                         var right = math.mul(rot.Value, new float3(1.0f, 0.0f, 0.0f));
                         var forward = math.cross(right, n);
@@ -87,8 +87,8 @@ namespace Abarabone.Character
                         rot.Value = quaternion.LookRotation(safe_forward, n);
                         //rot.Value = quaternion.LookRotationSafe(forward, n);
 
-                        v.Linear = 0;
-                        v.Angular = 0;
+                        v.Linear *= 0.3f;
+                        v.Angular *= 0.3f;
                     }
                 )
                 .ScheduleParallel();

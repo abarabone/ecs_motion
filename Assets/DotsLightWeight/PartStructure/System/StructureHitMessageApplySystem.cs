@@ -24,6 +24,7 @@ using SphereCollider = Unity.Physics.SphereCollider;
 
 namespace Abarabone.Structure
 {
+    using Abarabone.Common;
     using Abarabone.Misc;
     using Abarabone.Utilities;
     using Abarabone.SystemGroup;
@@ -39,34 +40,28 @@ namespace Abarabone.Structure
 
 
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class StructureHitMessageApplySystem : SystemBase
+    public class StructureHitMessageApplySystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
     {
 
         StructureHitMessageHolderAllocationSystem messageSystem;
-
-        EntityCommandBufferSystem cmdSystem;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-
             this.messageSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
         }
 
-        protected override void OnUpdate()
+        protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
-
             //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
             var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
             
-
+            var cmd = commandBuffer.AsParallelWriter();
             var msgs = this.messageSystem.MsgHolder;
             
             this.Dependency = new StructureHitApplyJob
@@ -77,10 +72,7 @@ namespace Abarabone.Structure
                 Rotations = rots,
                 Positions = poss,
             }
-            .ScheduleParallel(msgs, 8, this.Dependency);
-
-            // Make sure that the ECB system knows about our job
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
+            .ScheduleParallel(msgs, 64, this.Dependency);
         }
 
 
@@ -88,9 +80,10 @@ namespace Abarabone.Structure
         struct StructureHitApplyJob : IJobNativeMultiHashMapVisitKeyValue<Entity, StructureHitMessage>
         {
 
+            [ReadOnly]
             public EntityCommandBuffer.ParallelWriter Cmd;
 
-
+            [ReadOnly]
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Structure.PartDestructionData> Destructions;
 
@@ -102,7 +95,7 @@ namespace Abarabone.Structure
             public ComponentDataFromEntity<Translation> Positions;
 
 
-            //[BurstCompile]
+            [BurstCompile]
             public void ExecuteNext(int uniqueIndex, Entity key, StructureHitMessage value)
             {
 
@@ -170,7 +163,7 @@ namespace Abarabone.Structure
     [BurstCompile]
     public static class JobNativeMultiHashMapVisitKeyValue
     {
-        //[BurstCompile]
+        [BurstCompile]
         internal struct JobNativeMultiHashMapVisitKeyValueProducer<TJob, TKey, TValue>
             where TJob : struct, IJobNativeMultiHashMapVisitKeyValue<TKey, TValue>
             where TKey : struct, IEquatable<TKey>
@@ -206,7 +199,8 @@ namespace Abarabone.Structure
                 IntPtr additionalPtr, IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex
             );
 
-            //[BurstCompile]
+            [BurstCompile]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static unsafe void Execute
                 (
                     ref JobNativeMultiHashMapVisitKeyValueProducer<TJob, TKey, TValue> producer,
@@ -250,7 +244,8 @@ namespace Abarabone.Structure
         }
 
 
-        //[BurstCompile]
+        [BurstCompile]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe JobHandle ScheduleParallel<TJob, TKey, TValue>
             (this TJob jobData, NativeMultiHashMap<TKey, TValue> hashMap, int minIndicesPerJobCount, JobHandle dependsOn = new JobHandle())
             where TJob : struct, IJobNativeMultiHashMapVisitKeyValue<TKey, TValue>

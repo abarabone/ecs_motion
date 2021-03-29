@@ -95,7 +95,7 @@ namespace Abarabone.Character
             front_45_rotating,
         }
     }
-    // 接触していない時に付き、接触判定に使用される
+    // 接触していない時に付き、接触判定に使用される（つけ外ししないほうがチャンク移動減ってよいか？？）
     public struct WallHitResultData : IComponentData
     {
         public bool IsHit;
@@ -124,4 +124,12 @@ namespace Abarabone.Character
         public int Phase;
     }
     
+
+    // ダメージなど -----------------------------------------------------
+
+    public struct SimpleDamageData : IComponentData
+    {
+        public float Durability;
+    }
+
 }
