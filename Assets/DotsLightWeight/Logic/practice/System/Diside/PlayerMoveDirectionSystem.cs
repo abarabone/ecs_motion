@@ -144,6 +144,7 @@ namespace Abarabone.Character
 
             this.Entities
                 .WithBurst()
+                .WithAll<PlayerTag>()
                 .ForEach(
                     (ref MoveHandlingData handler) =>
                     {

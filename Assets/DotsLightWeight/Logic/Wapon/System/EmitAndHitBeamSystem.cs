@@ -70,7 +70,7 @@ namespace Abarabone.Arms
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
-
+            
 
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);

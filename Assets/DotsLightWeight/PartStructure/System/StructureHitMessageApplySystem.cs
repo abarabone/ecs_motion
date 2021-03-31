@@ -1,34 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using UnityEngine;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Jobs;
 using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
-using Unity.Physics;
-using Unity.Physics.Systems;
-using UnityEngine.InputSystem;
 using Unity.Collections.LowLevel.Unsafe;
 using System;
 using Unity.Jobs.LowLevel.Unsafe;
-using System.Security.Cryptography;
-using UnityEngine.Video;
 using System.Runtime.CompilerServices;
-
-using Collider = Unity.Physics.Collider;
-using SphereCollider = Unity.Physics.SphereCollider;
 
 namespace Abarabone.Structure
 {
     using Abarabone.Common;
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
-    using Abarabone.SystemGroup;
-    using Abarabone.Character;
 
     public struct StructureHitMessage
     {
@@ -53,6 +36,33 @@ namespace Abarabone.Structure
             this.messageSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
         }
 
+
+
+        //protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
+        //{
+        //    //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+        //    var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
+        //    var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
+        //    var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+        //    var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+
+        //    var cmd = commandBuffer.AsParallelWriter();
+        //    var msgs = this.messageSystem.MsgHolder;
+
+
+        //    this.Job
+        //        .WithBurst()
+        //        .WithCode(
+        //        () =>
+        //        {
+        //            var keys = msgs.GetUniqueKeyArray(Allocator.Temp);
+
+        //            keys.Item1.Dispose();
+        //        }
+        //        ).Schedule();
+
+
+        //}
         protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
         {
             //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
@@ -60,10 +70,10 @@ namespace Abarabone.Structure
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
-            
+
             var cmd = commandBuffer.AsParallelWriter();
             var msgs = this.messageSystem.MsgHolder;
-            
+
             this.Dependency = new StructureHitApplyJob
             {
                 Cmd = cmd,
@@ -80,10 +90,8 @@ namespace Abarabone.Structure
         struct StructureHitApplyJob : IJobNativeMultiHashMapVisitKeyValue<Entity, StructureHitMessage>
         {
 
-            [ReadOnly]
             public EntityCommandBuffer.ParallelWriter Cmd;
 
-            [ReadOnly]
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Structure.PartDestructionData> Destructions;
 
