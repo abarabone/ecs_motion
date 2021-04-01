@@ -8,10 +8,15 @@ namespace Abarabone.Draw
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     [UpdateAfter( typeof( DrawMeshCsSystem ) )]
-    public class DrawInstanceTempBufferFreeSystem : ComponentSystem
+    public class DrawInstanceTempBufferFreeSystem : SystemBase
     {
 
+        protected override void OnCreate()
+        {
+            base.OnCreate();
 
+            this.RequireSingletonForUpdate<DrawSystem.TransformBufferUseTempJobTag>();
+        }
 
 
         protected override void OnUpdate()
@@ -23,7 +28,8 @@ namespace Abarabone.Draw
                     {
                         buf.Transforms.Dispose();
                     }
-                );
+                )
+                .Run();
 
         }
 

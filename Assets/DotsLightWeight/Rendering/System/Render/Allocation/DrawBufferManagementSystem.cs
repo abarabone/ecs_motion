@@ -33,37 +33,7 @@ namespace Abarabone.Draw
         {
             base.OnCreate();
 
-            initDrawSystemComponents_( this.EntityManager );
-
             this.Enabled = false;
-            return;
-
-
-            Entity initDrawSystemComponents_( EntityManager em_ )
-            {
-                var arch = em_.CreateArchetype(
-                    typeof( DrawSystem.ComputeTransformBufferData ),
-                    typeof( DrawSystem.NativeTransformBufferData )
-                );
-                var ent = em_.CreateEntity( arch );
-                em_.SetName_( ent, "draw system" );
-
-
-                const int maxBufferLength = 2000 * 16 * 2;//
-
-                var stride = Marshal.SizeOf( typeof( float4 ) );
-
-                em_.SetComponentData( ent,
-                    new DrawSystem.ComputeTransformBufferData
-                    {
-                        Transforms = new ComputeBuffer
-                            ( maxBufferLength, stride, ComputeBufferType.Default, ComputeBufferMode.Immutable ),
-                    }
-                );
-
-                return ent;
-            }
-
         }
 
 
@@ -79,7 +49,9 @@ namespace Abarabone.Draw
 
             disposeTransformComputeBuffer_();
             disposeComputeArgumentsBuffersAllModels_();
-            
+
+            disposeTransformNativeBuffer_();
+
             base.OnDestroy();
             return;
 
@@ -101,6 +73,12 @@ namespace Abarabone.Draw
                         arg.InstanceArgumentsBuffer.Dispose();
                     }
                 }
+            }
+
+            void disposeTransformNativeBuffer_()
+            {
+                var nb = this.GetSingleton<DrawSystem.NativeTransformBufferData>();
+                nb.Transforms.Dispose();
             }
         }
 

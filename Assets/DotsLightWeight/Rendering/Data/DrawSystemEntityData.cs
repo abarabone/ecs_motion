@@ -35,13 +35,16 @@ namespace Abarabone.Draw
         public struct NativeTransformBufferData : IComponentData
         {
             public SimpleNativeBuffer<float4> Transforms;
-            //public NativeArray<float4> aaa;
         }
 
         public struct TransformBufferInfoData : IComponentData
         {
             public int VectorLength;
         }
+
+
+        public struct TransformBufferUseTempJobTag : IComponentData
+        { }
     }
 
 }

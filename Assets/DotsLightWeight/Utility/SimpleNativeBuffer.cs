@@ -22,6 +22,7 @@ namespace Abarabone.Draw
     using Abarabone.Misc;
 
 
+    // UnsafeList とかを使ったほうがよさそう、たぶん同じ用途
     public unsafe struct SimpleNativeBuffer<T> : IDisposable
         where T : unmanaged
     {

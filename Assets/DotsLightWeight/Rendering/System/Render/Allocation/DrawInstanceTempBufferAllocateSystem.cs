@@ -17,7 +17,7 @@ namespace Abarabone.Draw
     ////[UpdateAfter(typeof(DrawCullingSystem))]
     ////[UpdateAfter(typeof(DrawCullingSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.TempAlloc))]
-    public class DrawInstanceTempBufferAllocateSystem : JobComponentSystem
+    public class DrawInstanceTempBufferAllocateSystem : SystemBase
     {
 
 
@@ -28,6 +28,11 @@ namespace Abarabone.Draw
 
         protected override void OnCreate()
         {
+            base.OnCreate();
+
+            //this.RequireSingletonForUpdate<DrawSystem.TransformBufferUseTempJobTag>();// なぜか機能しない
+            if (!this.HasSingleton<DrawSystem.TransformBufferUseTempJobTag>()) this.Enabled = false;
+
             this.drawQuery = this.GetEntityQuery(
                 ComponentType.ReadOnly<DrawModel.InstanceCounterData>(),
                 ComponentType.ReadWrite<DrawModel.InstanceOffsetData>(),
@@ -37,7 +42,7 @@ namespace Abarabone.Draw
 
 
 
-        protected override unsafe JobHandle OnUpdate( JobHandle inputDeps )
+        protected override unsafe void OnUpdate()
         {
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
@@ -48,7 +53,8 @@ namespace Abarabone.Draw
 
             var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 
-            inputDeps = this.Job
+
+            this.Job
                 .WithBurst()
                 .WithDisposeOnCompletion( chunks )
                 .WithNativeDisableParallelForRestriction( nativeBuffers )
@@ -57,18 +63,14 @@ namespace Abarabone.Draw
                     {
                         var totalVectorLength = sumAndSetVectorOffsets_();
 
-                        var nativeBuffer
-                            = new SimpleNativeBuffer<float4>( totalVectorLength, Allocator.TempJob );
+                        var nativeBuffer = allocateNativeBuffer_(totalVectorLength);
 
-                        nativeBuffers[ drawSysEnt ]
-                            = new DrawSystem.NativeTransformBufferData { Transforms = nativeBuffer };
-
-                        calculateVectorOffsetPointersInBuffer_( nativeBuffer.pBuffer );
+                        calculateVectorOffsetPointersInBuffer_(nativeBuffer.pBuffer);
                     }
                 )
-                .Schedule( inputDeps );
+                .Schedule();
 
-            return inputDeps;
+            return;
 
 
 
@@ -101,6 +103,17 @@ namespace Abarabone.Draw
                 }
 
                 return sum;
+            }
+
+            SimpleNativeBuffer<float4> allocateNativeBuffer_(int totalVectorLength)
+            {
+                var nativeBuffer
+                    = new SimpleNativeBuffer<float4>(totalVectorLength, Allocator.TempJob);
+
+                nativeBuffers[drawSysEnt]
+                    = new DrawSystem.NativeTransformBufferData { Transforms = nativeBuffer };
+
+                return nativeBuffer;
             }
 
             void calculateVectorOffsetPointersInBuffer_( float4* pBufferStart )
