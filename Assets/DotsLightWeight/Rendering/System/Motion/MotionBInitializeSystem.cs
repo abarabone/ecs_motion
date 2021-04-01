@@ -11,25 +11,16 @@ using Abarabone.SystemGroup;
 
 namespace Abarabone.CharacterMotion
 {
+    using Abarabone.Common;
 
     //[UpdateBefore( typeof( MotionProgressSystem ) )]// MotionB
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ))]
-    public class MotionBInitializeSystem : SystemBase//JobComponentSystem
+    public class MotionBInitializeSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>//SystemBase//JobComponentSystem
     {
 
-        EntityCommandBufferSystem ecb;
-
-
-        protected override void OnCreate()
+        protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
         {
-            base.OnCreate();
-
-            this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-        }
-
-        protected override void OnUpdate()
-        {
-            var commands = this.ecb.CreateCommandBuffer().AsParallelWriter();
+            var commands = commandBuffer.AsParallelWriter();
 
             var linkers = this.GetComponentDataFromEntity<Stream.RelationData>( isReadOnly: true );
             var shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>();

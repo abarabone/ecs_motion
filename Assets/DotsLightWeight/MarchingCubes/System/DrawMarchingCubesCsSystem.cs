@@ -15,7 +15,8 @@ namespace Abarabone.MarchingCubes
     using Abarabone.Utilities;
 
     //[DisableAutoCreation]
-    [UpdateAfter(typeof(BeginDrawCsBarier))]
+    //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
+    [UpdateBefore(typeof(DrawMeshCsSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     public class DrawMarchingCubeCsSystem : SystemBase
     {

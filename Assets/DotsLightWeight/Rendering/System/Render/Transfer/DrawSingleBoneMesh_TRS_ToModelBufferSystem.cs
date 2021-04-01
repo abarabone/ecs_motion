@@ -23,16 +23,17 @@ namespace Abarabone.Draw
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     //[UpdateAfter(typeof())]
-    [UpdateBefore( typeof( BeginDrawCsBarier ) )]
+    //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
+    [UpdateBefore(typeof(DrawMeshCsSystem))]
     public class DrawSingleBoneMesh_TRS_ToModelBufferSystem : SystemBase
     {
 
-        BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
+        //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
-        protected override void OnStartRunning()
-        {
-            this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
-        }
+        //protected override void OnStartRunning()
+        //{
+        //    this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
+        //}
 
 
         protected unsafe override void OnUpdate()
@@ -40,7 +41,7 @@ namespace Abarabone.Draw
 
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
 
-            var dependency = this.Entities
+            this.Entities
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.MeshTag>()
@@ -69,11 +70,10 @@ namespace Abarabone.Draw
 
                     }
                 )
-                .ScheduleParallel( this.Dependency );
-            this.Dependency = dependency;
+                .ScheduleParallel();
 
 
-            this.presentationBarier.AddJobHandleForProducer( dependency );
+            //this.presentationBarier.AddJobHandleForProducer( dependency );
 
         }
 

@@ -24,16 +24,17 @@ namespace Abarabone.Draw
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     //[UpdateAfter(typeof())]
-    [UpdateBefore(typeof(BeginDrawCsBarier))]
+    //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
+    [UpdateBefore(typeof(DrawMeshCsSystem))]
     public class Particle2PointsToModelBufferSystem : SystemBase
     {
 
-        BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
+        //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
-        protected override void OnStartRunning()
-        {
-            this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
-        }
+        //protected override void OnStartRunning()
+        //{
+        //    this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
+        //}
 
 
         protected override unsafe void OnUpdate()
@@ -75,7 +76,7 @@ namespace Abarabone.Draw
                 )
                 .ScheduleParallel();
 
-            this.presentationBarier.AddJobHandleForProducer(this.Dependency);
+            //this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
     }
 

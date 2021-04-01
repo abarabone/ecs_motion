@@ -17,17 +17,17 @@ namespace Abarabone.Draw
     using Abarabone.Utilities;
 
 
-    //[DisableAutoCreation]
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    public class BeginDrawCsBarier : EntityCommandBufferSystem
-    { }
+    ////[DisableAutoCreation]
+    //[UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
+    //public class BeginDrawCsBarier : EntityCommandBufferSystem
+    //{ }
 
 
     /// <summary>
     /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateAfter(typeof( BeginDrawCsBarier ) )]
+    //[UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     public class DrawMeshCsSystem : SystemBase
     {
@@ -35,7 +35,7 @@ namespace Abarabone.Draw
 
         protected override unsafe void OnUpdate()
         {
-            //this.Dependency.Complete();
+            this.Dependency.Complete();
 
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;

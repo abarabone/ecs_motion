@@ -17,11 +17,12 @@ namespace Abarabone.MarchingCubes
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
-    [UpdateBefore(typeof(BeginDrawCsBarier))]
+    //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
+    [UpdateBefore(typeof(DrawMeshCsSystem))]
     public class MakeCubeInstances2System : SystemBase
     {
 
-        BeginDrawCsBarier presentationBarier;
+        //BeginDrawCsBarier presentationBarier;
 
 
         protected override void OnCreate()
@@ -29,7 +30,7 @@ namespace Abarabone.MarchingCubes
             base.OnCreate();
 
             this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
-            this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
+            //this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
         }
         protected override unsafe void OnStartRunning()
         {
@@ -116,7 +117,7 @@ namespace Abarabone.MarchingCubes
                 .Schedule();
             //.ScheduleParallel();
 
-            this.presentationBarier.AddJobHandleForProducer(this.Dependency);
+            //this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
     }
 }

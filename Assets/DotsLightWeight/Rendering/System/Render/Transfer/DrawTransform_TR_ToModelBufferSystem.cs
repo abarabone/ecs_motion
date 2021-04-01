@@ -19,16 +19,17 @@ namespace Abarabone.Draw
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
-    [UpdateBefore(typeof(BeginDrawCsBarier))]
+    //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
+    [UpdateBefore(typeof(DrawMeshCsSystem))]
     public class DrawTransform_TR_ToModelBufferSystem : SystemBase
     {
 
-        BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
+        //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
-        protected override void OnStartRunning()
-        {
-            this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
-        }
+        //protected override void OnStartRunning()
+        //{
+        //    this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
+        //}
 
 
         protected unsafe override void OnUpdate()
@@ -65,7 +66,7 @@ namespace Abarabone.Draw
                 )
                 .ScheduleParallel();
 
-            this.presentationBarier.AddJobHandleForProducer(this.Dependency);
+            //this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
     }
 
