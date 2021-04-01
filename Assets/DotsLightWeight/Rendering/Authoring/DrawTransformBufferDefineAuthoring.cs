@@ -24,13 +24,13 @@ namespace Abarabone.Draw.Authoring
             {
                 case true:
                     initEntityTempJob_(entity, dstManager);
-                    initNativeBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength);
                     initComputeBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength);
                     removeComponents_(entity, dstManager);
                     break;
 
                 case false:
                     initEntityStatic_(entity, dstManager);
+                    initNativeBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength);
                     initComputeBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength);
                     removeComponents_(entity, dstManager);
                     break;

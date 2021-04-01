@@ -30,9 +30,6 @@ namespace Abarabone.Draw
         {
             base.OnCreate();
 
-            //this.RequireSingletonForUpdate<DrawSystem.TransformBufferUseTempJobTag>();// なぜか機能しない
-            if (!this.HasSingleton<DrawSystem.TransformBufferUseTempJobTag>()) this.Enabled = false;
-
             this.drawQuery = this.GetEntityQuery(
                 ComponentType.ReadOnly<DrawModel.InstanceCounterData>(),
                 ComponentType.ReadWrite<DrawModel.InstanceOffsetData>(),
@@ -53,6 +50,7 @@ namespace Abarabone.Draw
 
             var chunks = this.drawQuery.CreateArchetypeChunkArray( Allocator.TempJob );
 
+            var useTempJobBuffer = this.HasSingleton<DrawSystem.TransformBufferUseTempJobTag>();
 
             this.Job
                 .WithBurst()
@@ -63,7 +61,10 @@ namespace Abarabone.Draw
                     {
                         var totalVectorLength = sumAndSetVectorOffsets_();
 
-                        var nativeBuffer = allocateNativeBuffer_(totalVectorLength);
+                        var nativeBuffer = useTempJobBuffer
+                            ? allocateNativeBuffer_(totalVectorLength)
+                            : nativeBuffers[drawSysEnt].Transforms
+                            ;
 
                         calculateVectorOffsetPointersInBuffer_(nativeBuffer.pBuffer);
                     }

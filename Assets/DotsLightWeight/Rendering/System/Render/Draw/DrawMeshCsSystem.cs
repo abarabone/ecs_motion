@@ -35,6 +35,8 @@ namespace Abarabone.Draw
 
         protected override unsafe void OnUpdate()
         {
+            //this.Dependency.Complete();
+
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
             computeBuffer.SetData( nativeBuffer.AsNativeArray() );
