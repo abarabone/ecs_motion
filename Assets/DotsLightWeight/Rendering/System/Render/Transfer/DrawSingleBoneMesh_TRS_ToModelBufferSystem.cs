@@ -25,7 +25,7 @@ namespace Abarabone.Draw
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class DrawSingleBoneMesh_TRS_ToModelBufferSystem : SystemBase
+    public class DrawSingleBoneMesh_TRS_ToModelBufferSystem : DependsDrawCsSystemBase
     {
 
         //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -36,7 +36,7 @@ namespace Abarabone.Draw
         //}
 
 
-        protected unsafe override void OnUpdate()
+        protected unsafe override void OnUpdateWith()
         {
 
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );

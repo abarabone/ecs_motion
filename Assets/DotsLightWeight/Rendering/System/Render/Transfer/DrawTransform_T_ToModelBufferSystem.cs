@@ -20,7 +20,7 @@ namespace Abarabone.Draw
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class DrawTransform_T_ToModelBufferSystem : SystemBase
+    public class DrawTransform_T_ToModelBufferSystem : DependsDrawCsSystemBase
     {
 
         //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -30,7 +30,7 @@ namespace Abarabone.Draw
         //    this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
         //}
 
-        protected unsafe override void OnUpdate()
+        protected unsafe override void OnUpdateWith()
         {
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
             

@@ -33,9 +33,29 @@ namespace Abarabone.Draw
     {
 
 
+
+        NativeList<JobHandle> dependencyJobHandles = new NativeList<JobHandle>(32, Allocator.Persistent);
+
+        public void AddDependencyBeforeDraw(JobHandle jobHandle) => this.dependencyJobHandles.Add(jobHandle);
+        
+        void waitAllDependencyJobs()
+        {
+            JobHandle.CombineDependencies(this.dependencyJobHandles).Complete();
+
+            this.dependencyJobHandles.Clear();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            this.dependencyJobHandles.Dispose();
+        }
+
+
         protected override unsafe void OnUpdate()
         {
-            this.Dependency.Complete();
+            this.waitAllDependencyJobs();
 
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;

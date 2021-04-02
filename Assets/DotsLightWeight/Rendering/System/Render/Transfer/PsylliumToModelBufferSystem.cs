@@ -28,7 +28,7 @@ namespace Abarabone.Draw
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class PsylliumToDrawModelBufferSystem : SystemBase
+    public class PsylliumToDrawModelBufferSystem : DependsDrawCsSystemBase
     {
 
         //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -39,7 +39,7 @@ namespace Abarabone.Draw
         //}
 
 
-        protected override unsafe void OnUpdate()
+        protected override unsafe void OnUpdateWith()
         {
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );

@@ -8,7 +8,7 @@ namespace Abarabone.Draw
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
     [UpdateAfter( typeof( DrawMeshCsSystem ) )]
-    public class DrawInstanceTempBufferFreeSystem : SystemBase
+    public class DrawInstanceTempBufferFreeSystem : DependsDrawCsSystemBase
     {
 
         protected override void OnCreate()
@@ -19,7 +19,7 @@ namespace Abarabone.Draw
         }
 
 
-        protected override void OnUpdate()
+        protected override void OnUpdateWith()
         {
 
             this.Entities
