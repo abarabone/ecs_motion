@@ -154,7 +154,30 @@ namespace Abarabone.Arms
                     }
                 );
             }
+        }
+        static public void postMessageToHitTarget
+            (
+                this BulletHitUtility.BulletHit hit,
+                Abarabone.Character.Action.BulletHitApplyToCharacterSystem.ParallelWriter hitHolder,
+                ComponentDataFromEntity<StructurePart.PartData> parts
+            )
+        {
 
+            if (!hit.isHit) return;
+
+
+            if (parts.HasComponent(hit.hitEntity))
+            {
+                hitHolder.Add(hit.mainEntity,
+                    new StructureHitMessage
+                    {
+                        Position = hit.posision,
+                        Normale = hit.normal,
+                        PartEntity = hit.hitEntity,
+                        PartId = parts[hit.hitEntity].PartId,
+                    }
+                );
+            }
         }
 
     }

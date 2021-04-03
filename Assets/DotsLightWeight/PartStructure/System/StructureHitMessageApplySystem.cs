@@ -21,7 +21,7 @@ namespace Abarabone.Structure
         public float3 Normale;
     }
 
-
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class StructureHitMessageApplySystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
     {
@@ -65,6 +65,8 @@ namespace Abarabone.Structure
         //}
         protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
         {
+            return;
+
             //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
             var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);

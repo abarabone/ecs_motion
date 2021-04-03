@@ -14,7 +14,7 @@ using Unity.Physics.Systems;
 
 namespace Abarabone.Arms
 {
-
+    using Abarabone.Common;
     using Abarabone.Model;
     using Abarabone.Model.Authoring;
     using Abarabone.Arms;
@@ -24,6 +24,7 @@ namespace Abarabone.Arms
     using Abarabone.Geometry;
     using Unity.Physics;
     using Abarabone.Structure;
+    using Abarabone.Character.Action;
 
     using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
     using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
@@ -33,36 +34,32 @@ namespace Abarabone.Arms
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
-    public class BulletHitSystem : SystemBase
+    public class BulletHitSystem : PhysicsHitSystemBase
     {
 
 
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
-
         StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
+        BulletHitApplyToCharacterSystem hitChSystem;//
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.buildPhysicsWorldSystem = this.World.GetExistingSystem<BuildPhysicsWorld>();
-
             this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
+            this.hitChSystem = this.World.GetExistingSystem<BulletHitApplyToCharacterSystem>();//
         }
 
 
-        protected override void OnUpdate()
+        protected override void OnUpdateWith(BuildPhysicsWorld physicsBuilder)
         {
-            this.Dependency = JobHandle.CombineDependencies
-                (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
-
             var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
-            var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
+            var cw = physicsBuilder.PhysicsWorld.CollisionWorld;
 
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
+            var chhit_ = this.hitChSystem.GetParallelWriter();//
 
             this.Entities
                 .WithBurst()
@@ -83,11 +80,12 @@ namespace Abarabone.Arms
                             (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
 
                         hit.postMessageToHitTarget(structureHitHolder, parts);
+                        hit.postMessageToHitTarget(chhit_, parts);
                     }
                 )
                 .ScheduleParallel();
 
-            this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
+            this.hitChSystem.AddDependencyBeforeHitApply(this.Dependency);
         }
 
     }
