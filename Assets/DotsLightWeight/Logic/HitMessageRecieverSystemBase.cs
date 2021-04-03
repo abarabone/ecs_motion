@@ -14,25 +14,26 @@ namespace Abarabone.Character.Action
     }
 
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class HitMessageSystem : SystemBase
+    public abstract class HitMessageSystemBase<THitMessage> : SystemBase
+        where THitMessage : struct
     {
 
 
 
         NativeList<Entity> keyEntities;
-        NativeMultiHashMap<Entity, HitMessageUnit> messageHolder;
+        NativeMultiHashMap<Entity, THitMessage> messageHolder;
         ParallelWriter writer;
 
         public struct ParallelWriter
         {
             NativeList<Entity>.ParallelWriter nl;
-            NativeMultiHashMap<Entity, HitMessageUnit>.ParallelWriter hm;
-            public ParallelWriter(ref NativeList<Entity> nl, ref NativeMultiHashMap<Entity, HitMessageUnit> hm)
+            NativeMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
+            public ParallelWriter(ref NativeList<Entity> nl, ref NativeMultiHashMap<Entity, THitMessage> hm)
             {
                 this.nl = nl.AsParallelWriter();
                 this.hm = hm.AsParallelWriter();
             }
-            public void Add(Entity entity, HitMessageUnit hitMessage)
+            public void Add(Entity entity, THitMessage hitMessage)
             {
                 this.nl.AddNoResize(entity);
                 this.hm.Add(entity, hitMessage);
@@ -50,13 +51,21 @@ namespace Abarabone.Character.Action
 
             var capacity = 10000;
             this.keyEntities = new NativeList<Entity>(capacity, Allocator.Persistent);
-            this.messageHolder = new NativeMultiHashMap<Entity, HitMessageUnit>(capacity, Allocator.Persistent);
+            this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, Allocator.Persistent);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            this.keyEntities.Dispose();
+            this.messageHolder.Dispose();
         }
 
         protected override void OnUpdate()
         {
 
-            this.Dependency = new HitMessageApplyJob
+            this.Dependency = new HitMessageApplyJob<THitMessage>
             {
                 MessageHolder = this.messageHolder,
                 KeyEntities = this.keyEntities.AsDeferredJobArray(),
@@ -78,10 +87,11 @@ namespace Abarabone.Character.Action
         }
     }
 
-    struct HitMessageApplyJob : IJobParallelForDefer
+    struct HitMessageApplyJob<THitMessage> : IJobParallelForDefer
+        where THitMessage : struct
     {
         [ReadOnly]
-        public NativeMultiHashMap<Entity, HitMessageUnit> MessageHolder;
+        public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
 
         [ReadOnly]
         public NativeArray<Entity> KeyEntities;
