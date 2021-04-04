@@ -16,24 +16,25 @@ namespace Abarabone.Character.Action
 
 
 
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class BulletHitApplyToCharacterAllocationSystem : SystemBase
-    {
-        BulletHitApplyToCharacterSystem hitSystem;
+    //[UpdateInGroup(typeof(InitializationSystemGroup))]
+    //public class BulletHitApplyToCharacterAllocationSystem : SystemBase
+    //{
+    //    BulletHitApplyToCharacterSystem hitSystem;
 
-        protected override void OnCreate() =>
-            this.hitSystem = this.World.GetExistingSystem<BulletHitApplyToCharacterSystem>();
+    //    protected override void OnCreate() =>
+    //        this.hitSystem = this.World.GetExistingSystem<BulletHitApplyToCharacterSystem>();
 
-        protected override void OnUpdate()
-        {
-            this.hitSystem.Clear();
-        }
-    }
+    //    protected override void OnUpdate()
+    //    {
+    //        this.hitSystem.Clear();
+    //    }
+    //}
 
 
-
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class BulletHitApplyToCharacterSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
+    public class BulletHitApplyToCharacterSystem
+        : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
     {
 
 
@@ -124,17 +125,18 @@ namespace Abarabone.Character.Action
             .Schedule(this.keyEntities, 8, this.Dependency);
 
 
-            //var ke = this.keyEntities;
-            //var mh = this.messageHolder;
-            //this.Job
-            //    .WithCode(
-            //        () =>
-            //        {
-            //            ke.Clear();
-            //            mh.Clear();
-            //        }
-            //    )
-            //    .Schedule();
+            var ke = this.keyEntities;
+            var mh = this.messageHolder;
+            this.Job
+                .WithName("hitMessageClear")
+                .WithCode(
+                    () =>
+                    {
+                        ke.Clear();
+                        mh.Clear();
+                    }
+                )
+                .Schedule();
         }
 
         [BurstCompile]

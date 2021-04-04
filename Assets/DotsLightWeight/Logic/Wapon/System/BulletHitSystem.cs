@@ -38,7 +38,7 @@ namespace Abarabone.Arms
     {
 
 
-        StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
+        //StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
         BulletHitApplyToCharacterSystem hitChSystem;//
 
 
@@ -46,28 +46,28 @@ namespace Abarabone.Arms
         {
             base.OnCreate();
 
-            this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
+            //this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
             this.hitChSystem = this.World.GetExistingSystem<BulletHitApplyToCharacterSystem>();//
         }
 
 
         protected override void OnUpdateWith(BuildPhysicsWorld physicsBuilder)
         {
-            var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
+            //var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
+            var chhit_ = this.hitChSystem.GetParallelWriter();//
             var cw = physicsBuilder.PhysicsWorld.CollisionWorld;
 
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
-            var chhit_ = this.hitChSystem.GetParallelWriter();//
 
             this.Entities
                 .WithBurst()
                 .WithReadOnly(mainLinks)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
-                .WithNativeDisableContainerSafetyRestriction(structureHitHolder)
-                .WithNativeDisableParallelForRestriction(structureHitHolder)
+                //.WithNativeDisableContainerSafetyRestriction(structureHitHolder)
+                //.WithNativeDisableParallelForRestriction(structureHitHolder)
                 .ForEach(
                     (
                         Entity fireEntity,// int entityInQueryIndex,
@@ -79,7 +79,7 @@ namespace Abarabone.Arms
                         var hit = cw.BulletHitRay
                             (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
 
-                        hit.postMessageToHitTarget(structureHitHolder, parts);
+                        //hit.postMessageToHitTarget(structureHitHolder, parts);
                         hit.postMessageToHitTarget(chhit_, parts);
                     }
                 )
