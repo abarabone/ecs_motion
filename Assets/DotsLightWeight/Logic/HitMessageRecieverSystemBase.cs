@@ -1,11 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Jobs;
 
-namespace Abarabone.Character.Action
+namespace Abarabone.Common
 {
 
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
@@ -15,21 +17,62 @@ namespace Abarabone.Character.Action
     {
 
 
+        HitMessageHolder hitMessageHolder;
 
-        struct HitMessageHolder
+
+        public ParallelWriter GetParallelWriter() => hitMessageHolder.AsParallelWriter();
+
+
+
+
+
+
+        public struct HitMessageHolder : IDisposable
         {
             NativeList<Entity> keyEntities;
             NativeMultiHashMap<Entity, THitMessage> messageHolder;
             //ParallelWriter writer;
 
 
-            public ParallelWriter GetParallelWriter() =>
+            public HitMessageHolder(int capacity)
+            {
+                this.keyEntities = new NativeList<Entity>(capacity, Allocator.Persistent);
+                this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, Allocator.Persistent);
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public ParallelWriter AsParallelWriter() =>
                 new ParallelWriter(ref this.keyEntities, ref this.messageHolder);
 
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public JobHandle ExecuteJob(JobHandle dependency, IHitMessageApplyJobExecution<THitMessage> innerJob)
+            {
+
+                return new HitMessageApplyJob<THitMessage, IHitMessageApplyJobExecution<THitMessage>>
+                {
+                    MessageHolder = this.messageHolder,
+                    KeyEntities = this.keyEntities.AsDeferredJobArray(),
+                    InnerJob = innerJob,
+                }
+                .Schedule(this.keyEntities, 8, dependency);
+
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Clear()
             {
                 this.keyEntities.Clear();
                 this.messageHolder.Clear();
+            }
+
+
+            public void Dispose()
+            {
+                this.keyEntities.Dispose();
+                this.messageHolder.Dispose();
             }
         }
 
@@ -37,11 +80,13 @@ namespace Abarabone.Character.Action
         {
             NativeList<Entity>.ParallelWriter nl;
             NativeMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
+
             public ParallelWriter(ref NativeList<Entity> nl, ref NativeMultiHashMap<Entity, THitMessage> hm)
             {
                 this.nl = nl.AsParallelWriter();
                 this.hm = hm.AsParallelWriter();
             }
+
             public void Add(Entity entity, THitMessage hitMessage)
             {
                 this.nl.AddNoResize(entity);
@@ -50,7 +95,6 @@ namespace Abarabone.Character.Action
         }
 
 
-        public ParallelWriter GetParallelWriter() => new ParallelWriter(ref this.keyEntities, ref this.messageHolder);//this.writer;
 
 
 
@@ -60,39 +104,28 @@ namespace Abarabone.Character.Action
         {
             base.OnCreate();
 
-            var capacity = 10000;
-            this.keyEntities = new NativeList<Entity>(capacity, Allocator.Persistent);
-            this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, Allocator.Persistent);
+            var capacity = 10000;//
+            this.hitMessageHolder = new HitMessageHolder(capacity);
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
 
-            this.keyEntities.Dispose();
-            this.messageHolder.Dispose();
+            this.hitMessageHolder.Dispose();
         }
 
         protected override void OnUpdate()
         {
 
-            this.Dependency = new HitMessageApplyJob<THitMessage, IHitMessageApplyJobExecution<THitMessage>>
-            {
-                MessageHolder = this.messageHolder,
-                KeyEntities = this.keyEntities.AsDeferredJobArray(),
-                InnerJob = buildJob(),
-            }
-            .Schedule(this.keyEntities, 8, this.Dependency);
+            this.Dependency = this.hitMessageHolder.ExecuteJob(this.Dependency, this.buildJob());
 
-
-            var ke = this.keyEntities;
-            var mh = this.messageHolder;
+            var holder = this.hitMessageHolder;
             this.Job
                 .WithCode(
                     () =>
                     {
-                        ke.Clear();
-                        mh.Clear();
+                        holder.Clear();
                     }
                 )
                 .Schedule();
@@ -102,13 +135,15 @@ namespace Abarabone.Character.Action
 
     }
 
+
+
     public interface IHitMessageApplyJobExecution<THitMessage>
         where THitMessage : struct
     {
         void Execute(int index, Entity targetEntity, THitMessage hitMessage);
     }
 
-    struct HitMessageApplyJob<THitMessage, TApplier> : IJobParallelForDefer
+    public struct HitMessageApplyJob<THitMessage, TApplier> : IJobParallelForDefer
         where THitMessage : struct
         where TApplier : IHitMessageApplyJobExecution<THitMessage>
     {
