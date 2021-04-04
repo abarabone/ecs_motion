@@ -30,7 +30,7 @@ namespace Abarabone.Arms
     using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
