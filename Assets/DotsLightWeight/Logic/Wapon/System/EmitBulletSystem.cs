@@ -39,7 +39,7 @@ namespace Abarabone.Arms
 
         EntityCommandBufferSystem cmdSystem;
 
-        StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
+        //StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
 
 
         protected override void OnCreate()
@@ -48,7 +48,7 @@ namespace Abarabone.Arms
 
             this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
 
-            this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
+            //this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
         }
 
 
@@ -61,7 +61,7 @@ namespace Abarabone.Arms
         protected override void OnUpdate()
         {
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
-            var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
+            //var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
 
 
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);

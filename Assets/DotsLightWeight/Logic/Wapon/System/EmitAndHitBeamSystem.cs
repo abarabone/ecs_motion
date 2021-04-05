@@ -41,7 +41,9 @@ namespace Abarabone.Arms
 
         EntityCommandBufferSystem cmdSystem;
 
-        StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
+        StructureHitMessageApplySystem hitStSystem;
+        //StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
+
 
 
         protected override void OnCreate()
@@ -52,7 +54,8 @@ namespace Abarabone.Arms
 
             this.buildPhysicsWorldSystem = this.World.GetExistingSystem<BuildPhysicsWorld>();
 
-            this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
+            this.hitStSystem = this.World.GetExistingSystem<StructureHitMessageApplySystem>();
+            //this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
         }
 
 
@@ -69,8 +72,9 @@ namespace Abarabone.Arms
 
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
-            var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
-            
+            var sthit = this.hitStSystem.Reciever.AsParallelWriter();
+            //var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
+
 
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
@@ -92,8 +96,6 @@ namespace Abarabone.Arms
                 .WithReadOnly(poss)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
-                .WithNativeDisableContainerSafetyRestriction(structureHitHolder)
-                .WithNativeDisableParallelForRestriction(structureHitHolder)
                 //.WithReadOnly(cmd)
                 .ForEach(
                     (
@@ -115,7 +117,7 @@ namespace Abarabone.Arms
 
                         var hit = hitTest_(link.OwnerMainEntity, camrot, campos, range, ref cw, mainLinks);
 
-                        postMessageToHitTarget_(structureHitHolder, hit, parts);
+                        hit.postMessageToHitTarget(sthit, parts);
 
                         //var (start, end) = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
                         var ptop = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);

@@ -159,7 +159,7 @@ namespace Abarabone.Arms
         static public void postMessageToHitTarget<TJobInnerExecution>
             (
                 this BulletHitUtility.BulletHit hit,
-                HitMessageHolder<StructureHitMessage, TJobInnerExecution>.ParallelWriter hitHolder,
+                HitMessageReciever<StructureHitMessage, TJobInnerExecution>.ParallelWriter hitHolder,
                 ComponentDataFromEntity<StructurePart.PartData> parts
             )
             where TJobInnerExecution : struct, IHitMessageApplyJobExecution<StructureHitMessage>

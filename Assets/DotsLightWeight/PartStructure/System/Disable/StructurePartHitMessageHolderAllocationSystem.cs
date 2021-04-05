@@ -26,7 +26,10 @@ namespace Abarabone.Structure
     using Abarabone.Draw;
 
 
-    //[DisableAutoCreation]
+    /// <summary>
+    /// StructureHitMessageApplySystem_ とセットで使っていたが、やめる。
+    /// </summary>
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class StructureHitMessageHolderAllocationSystem : SystemBase
