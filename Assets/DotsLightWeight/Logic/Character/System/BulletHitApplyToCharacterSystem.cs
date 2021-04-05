@@ -31,7 +31,7 @@ namespace Abarabone.Character.Action
     //}
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class BulletHitApplyToCharacterSystem
         : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>

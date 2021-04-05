@@ -32,6 +32,7 @@ namespace Abarabone.Arms
     using Abarabone.Physics;
     using Abarabone.SystemGroup;
     using Abarabone.Structure;
+    using Abarabone.Common;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;
@@ -155,12 +156,13 @@ namespace Abarabone.Arms
                 );
             }
         }
-        static public void postMessageToHitTarget
+        static public void postMessageToHitTarget<TJobInnerExecution>
             (
                 this BulletHitUtility.BulletHit hit,
-                Abarabone.Character.Action.BulletHitApplyToCharacterSystem.ParallelWriter hitHolder,
+                HitMessageHolder<StructureHitMessage, TJobInnerExecution>.ParallelWriter hitHolder,
                 ComponentDataFromEntity<StructurePart.PartData> parts
             )
+            where TJobInnerExecution : struct, IHitMessageApplyJobExecution<StructureHitMessage>
         {
 
             if (!hit.isHit) return;

@@ -30,7 +30,7 @@ namespace Abarabone.Arms
     using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
@@ -39,7 +39,8 @@ namespace Abarabone.Arms
 
 
         //StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
-        BulletHitApplyToCharacterSystem hitChSystem;//
+        //BulletHitApplyToCharacterSystem hitChSystem;//
+        StructureHitMessageApplySystem_ hitStSystem;
 
 
         protected override void OnCreate()
@@ -47,14 +48,16 @@ namespace Abarabone.Arms
             base.OnCreate();
 
             //this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
-            this.hitChSystem = this.World.GetExistingSystem<BulletHitApplyToCharacterSystem>();//
+            //this.hitChSystem = this.World.GetExistingSystem<BulletHitApplyToCharacterSystem>();//
+            this.hitStSystem = this.World.GetExistingSystem<StructureHitMessageApplySystem_>();
         }
 
 
         protected override void OnUpdateWith(BuildPhysicsWorld physicsBuilder)
         {
             //var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
-            var chhit_ = this.hitChSystem.GetParallelWriter();//
+            var sthit = this.hitStSystem.Reciever.AsParallelWriter();
+            //var chhit_ = this.hitChSystem.GetParallelWriter();//
             var cw = physicsBuilder.PhysicsWorld.CollisionWorld;
 
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
@@ -80,12 +83,13 @@ namespace Abarabone.Arms
                             (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
 
                         //hit.postMessageToHitTarget(structureHitHolder, parts);
-                        hit.postMessageToHitTarget(chhit_, parts);
+                        hit.postMessageToHitTarget(sthit, parts);
                     }
                 )
                 .ScheduleParallel();
 
-            this.hitChSystem.AddDependencyBeforeHitApply(this.Dependency);
+            //this.hitChSystem.AddDependencyBeforeHitApply(this.Dependency);
+            this.hitStSystem.Reciever.AddDependencyBeforeHitApply(this.Dependency);
         }
 
     }
