@@ -22,6 +22,7 @@ namespace Abarabone.Character.Action
     using Abarabone.SystemGroup;
     using Abarabone.Character;
     using Abarabone.CharacterMotion;
+    using Abarabone.Dependency;
     using Motion = Abarabone.CharacterMotion.Motion;
 
 

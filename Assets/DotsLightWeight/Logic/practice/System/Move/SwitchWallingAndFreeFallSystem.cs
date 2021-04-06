@@ -26,7 +26,7 @@ using Abarabone.Physics;
 
 namespace Abarabone.Character
 {
-    using Abarabone.Common;
+    using Abarabone.Dependency;
 
     /// <summary>
     /// 

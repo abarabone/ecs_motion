@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 
 namespace Abarabone.Structure
 {
-    using Abarabone.Common;
+    using Abarabone.Dependency;
 
     public struct StructureHitMessage
     {
@@ -64,7 +64,7 @@ namespace Abarabone.Structure
                 Rotations = rots,
                 Positions = poss,
             }
-            .ScheduleParallel(this.Reciever, 8, this.Dependency);
+            .ScheduleParallel(this.Reciever, 32, this.Dependency);
         }
 
 
@@ -91,7 +91,7 @@ namespace Abarabone.Structure
                 var destruction = this.Destructions[targetEntity];
 
                 // 複数の子パーツから１つの親構造物のフラグを立てることがあるので、並列化の際に注意が必要
-                // 今回は、同じ key は同じスレッドで処理されるようなので成立する。
+                // 今回は、同じ key は同じスレッドで処理されるので成立する。
                 destruction.SetDestroyed(hitMessage.PartId);
 
                 this.Destructions[targetEntity] = destruction;
@@ -103,7 +103,7 @@ namespace Abarabone.Structure
                 var pos = this.Positions[part];
                 createDebris_(this.Cmd, index, prefab, rot, pos);
 
-                destroyPart_(this.Cmd, index, part);
+                //destroyPart_(this.Cmd, index, part);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 
-namespace Abarabone.Common
+namespace Abarabone.Dependency
 {
 
     public struct CommandBufferDependency<TEntityCommandBufferSystem>
@@ -34,8 +34,8 @@ namespace Abarabone.Common
         {
             public CommandBufferDependency<TEntityCommandBufferSystem> parent;
 
-            public void Dispose() => this.parent.commandSystem.AddJobHandleForProducer
-                (this.parent.dependentSystem.GetOutputDependency());
+            public void Dispose() => this.parent.commandSystem
+                .AddJobHandleForProducer(this.parent.dependentSystem.GetOutputDependency());
         }
     }
 

@@ -15,7 +15,7 @@ namespace Abarabone.Draw
     using Abarabone.Misc;
     using Abarabone.SystemGroup;
     using Abarabone.Utilities;
-
+    using Abarabone.Dependency;
 
     ////[DisableAutoCreation]
     //[UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
@@ -34,28 +34,21 @@ namespace Abarabone.Draw
 
 
 
-        NativeList<JobHandle> dependencyJobHandles = new NativeList<JobHandle>(32, Allocator.Persistent);
+        public DependencyWaiter Waiter { get; } = new DependencyWaiter(16);
 
-        public void AddDependencyBeforeDraw(JobHandle jobHandle) => this.dependencyJobHandles.Add(jobHandle);
-        
-        void waitAllDependencyJobs()
-        {
-            JobHandle.CombineDependencies(this.dependencyJobHandles).Complete();
 
-            this.dependencyJobHandles.Clear();
-        }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
 
-            this.dependencyJobHandles.Dispose();
+            this.Waiter.Dispose();
         }
 
 
         protected override unsafe void OnUpdate()
         {
-            this.waitAllDependencyJobs();
+            this.Waiter.WaitAllDependencyJobs();
 
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;

@@ -9,7 +9,7 @@ using Unity.Jobs;
 using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.Common
+namespace Abarabone.Dependency
 {
 
 
@@ -36,7 +36,7 @@ namespace Abarabone.Common
             where THitMessage : struct
             where TJobInnerExecution : struct, IHitMessageApplyJobExecution<THitMessage>
         =>
-            reciever.Schedule(dependency, innerLoopBatchCount, job);
+            reciever.ScheduleParallel(dependency, innerLoopBatchCount, job);
     }
 
 
@@ -71,11 +71,11 @@ namespace Abarabone.Common
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddDependencyBeforeHitApply(JobHandle jobHandle) =>
-            this.waiter.AddDependencyBeforeHitApply(jobHandle);
+            this.waiter.AddDependencyBefore(jobHandle);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JobHandle Schedule(JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
+        public JobHandle ScheduleParallel(JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
         {
             this.waiter.WaitAllDependencyJobs();
 

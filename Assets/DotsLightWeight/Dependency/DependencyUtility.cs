@@ -6,7 +6,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Collections;
 
-namespace Abarabone.Common
+namespace Abarabone.Dependency
 {
 
 
@@ -23,7 +23,7 @@ namespace Abarabone.Common
 
 
 
-    struct DependencyWaiter : IDisposable
+    public struct DependencyWaiter : IDisposable
     {
 
         NativeList<JobHandle> dependencyJobHandles;
@@ -35,7 +35,7 @@ namespace Abarabone.Common
         }
 
 
-        public void AddDependencyBeforeHitApply(JobHandle jobHandle) => this.dependencyJobHandles.Add(jobHandle);
+        public void AddDependencyBefore(JobHandle jobHandle) => this.dependencyJobHandles.Add(jobHandle);
 
 
         public void WaitAllDependencyJobs()

@@ -14,7 +14,7 @@ using Unity.Physics.Systems;
 
 namespace Abarabone.Arms
 {
-    using Abarabone.Common;
+    using Abarabone.Dependency;
     using Abarabone.Model;
     using Abarabone.Model.Authoring;
     using Abarabone.Arms;
@@ -25,6 +25,7 @@ namespace Abarabone.Arms
     using Unity.Physics;
     using Abarabone.Structure;
     using Abarabone.Character.Action;
+    using Abarabone.Structure;
 
     using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
     using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
@@ -39,6 +40,7 @@ namespace Abarabone.Arms
 
 
         StructureHitMessageApplySystem hitStSystem;
+
         PhysicsHitDependency physhit;
 
 

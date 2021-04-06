@@ -13,7 +13,7 @@ using UnityEngine.XR;
 using Unity.Physics;
 using Unity.Physics.Systems;
 
-namespace Abarabone.Common
+namespace Abarabone.Dependency
 {
 
     public abstract class PhysicsHitCommandSystemBase<TEntityCommandBufferSystem> : CommandSystemBase<TEntityCommandBufferSystem>

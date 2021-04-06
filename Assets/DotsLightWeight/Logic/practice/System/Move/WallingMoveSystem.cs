@@ -19,7 +19,7 @@ using RaycastHit = Unity.Physics.RaycastHit;
 
 namespace Abarabone.Character
 {
-    using Abarabone.Common;
+    using Abarabone.Dependency;
     using Abarabone.Misc;
     using Abarabone.Utilities;
     using Abarabone.SystemGroup;

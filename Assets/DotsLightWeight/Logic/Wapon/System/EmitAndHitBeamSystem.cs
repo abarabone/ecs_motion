@@ -55,7 +55,6 @@ namespace Abarabone.Arms
             this.buildPhysicsWorldSystem = this.World.GetExistingSystem<BuildPhysicsWorld>();
 
             this.hitStSystem = this.World.GetExistingSystem<StructureHitMessageApplySystem>();
-            //this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
         }
 
 
@@ -73,7 +72,6 @@ namespace Abarabone.Arms
             var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
             var sthit = this.hitStSystem.Reciever.AsParallelWriter();
-            //var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
 
 
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);

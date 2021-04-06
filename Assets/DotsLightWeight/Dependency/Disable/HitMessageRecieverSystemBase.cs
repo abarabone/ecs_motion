@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Burst;
 
-namespace Abarabone.Common
+namespace Abarabone.Dependency
 {
 
 

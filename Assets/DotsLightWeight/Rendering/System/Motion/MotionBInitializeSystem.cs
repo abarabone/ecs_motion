@@ -11,7 +11,7 @@ using Abarabone.SystemGroup;
 
 namespace Abarabone.CharacterMotion
 {
-    using Abarabone.Common;
+    using Abarabone.Dependency;
 
     //[UpdateBefore( typeof( MotionProgressSystem ) )]// MotionB
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ))]

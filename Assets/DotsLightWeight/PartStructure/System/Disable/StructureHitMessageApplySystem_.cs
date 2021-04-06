@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 
 namespace Abarabone.Structure
 {
-    using Abarabone.Common;
+    using Abarabone.Dependency;
 
     //public struct StructureHitMessage
     //{
@@ -33,6 +33,8 @@ namespace Abarabone.Structure
 
         StructureHitMessageHolderAllocationSystem messageSystem;
 
+        public NativeMultiHashMap<Entity, StructureHitMessage> Reciever => this.messageSystem.MsgHolder;
+
 
         protected override void OnCreate()
         {
@@ -45,8 +47,6 @@ namespace Abarabone.Structure
 
         protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
         {
-            return;
-
             //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
             var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);

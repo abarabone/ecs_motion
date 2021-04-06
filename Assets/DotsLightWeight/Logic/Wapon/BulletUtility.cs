@@ -32,7 +32,7 @@ namespace Abarabone.Arms
     using Abarabone.Physics;
     using Abarabone.SystemGroup;
     using Abarabone.Structure;
-    using Abarabone.Common;
+    using Abarabone.Dependency;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;

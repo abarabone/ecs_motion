@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 
 namespace Abarabone.Character.Action
 {
-    using Abarabone.Common;
+    using Abarabone.Dependency;
     using Abarabone.Structure;
     using HitMessageUnit = Structure.StructureHitMessage;
 
