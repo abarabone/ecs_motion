@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Collections.LowLevel;
 
 namespace Abarabone.Dependency
 {
@@ -97,7 +98,7 @@ namespace Abarabone.Dependency
     public partial struct HitMessageReciever<THitMessage, TJobInnerExecution> : IDisposable
     {
         /// <summary>
-        /// 
+        /// ハッシュマップでまともな巡回ができるようになるまでのつなぎ
         /// </summary>
         public struct HitMessageHolder : IDisposable
         {
@@ -105,16 +106,21 @@ namespace Abarabone.Dependency
             NativeList<Entity> keyEntities;
             NativeMultiHashMap<Entity, THitMessage> messageHolder;
 
+            NativeHashSet<Entity> uniqueKeys;
+
 
             public HitMessageHolder(int capacity)
             {
                 this.keyEntities = new NativeList<Entity>(capacity, Allocator.Persistent);
                 this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, Allocator.Persistent);
+
+                this.uniqueKeys = new NativeHashSet<Entity>(capacity, Allocator.Persistent);
             }
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public ParallelWriter AsParallelWriter() => new ParallelWriter(ref this.keyEntities, ref this.messageHolder);
+            public ParallelWriter AsParallelWriter() =>
+                new ParallelWriter(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,6 +140,7 @@ namespace Abarabone.Dependency
                 {
                     keyEntities = this.keyEntities,
                     messageHolder = this.messageHolder,
+                    uniqueKeys = this.uniqueKeys,
                 }
                 .Schedule(dependency);
 
@@ -142,6 +149,7 @@ namespace Abarabone.Dependency
             {
                 this.keyEntities.Dispose();
                 this.messageHolder.Dispose();
+                this.uniqueKeys.Dispose();
             }
 
         }
@@ -150,20 +158,33 @@ namespace Abarabone.Dependency
         public struct ParallelWriter
         {
             [NativeDisableContainerSafetyRestriction]
+            [NativeDisableParallelForRestriction]
             NativeList<Entity>.ParallelWriter nl;
+            
             [NativeDisableContainerSafetyRestriction]
+            [NativeDisableParallelForRestriction]
             NativeMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
 
-            public ParallelWriter(ref NativeList<Entity> nl, ref NativeMultiHashMap<Entity, THitMessage> hm)
+            [NativeDisableContainerSafetyRestriction]
+            [NativeDisableParallelForRestriction]
+            NativeHashSet<Entity>.ParallelWriter uk;
+
+            public ParallelWriter
+                (
+                    ref NativeList<Entity> nl,
+                    ref NativeMultiHashMap<Entity, THitMessage> hm,
+                    ref NativeHashSet<Entity> uk
+                )
             {
                 this.nl = nl.AsParallelWriter();
                 this.hm = hm.AsParallelWriter();
+                this.uk = uk.AsParallelWriter();
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Add(Entity entity, THitMessage hitMessage)
             {
-                this.nl.AddNoResize(entity);
+                if (this.uk.Add(entity)) this.nl.AddNoResize(entity);
                 this.hm.Add(entity, hitMessage);
             }
         }
@@ -177,11 +198,13 @@ namespace Abarabone.Dependency
         {
             public NativeList<Entity> keyEntities;
             public NativeMultiHashMap<Entity, THitMessage> messageHolder;
+            public NativeHashSet<Entity> uniqueKeys;
 
             public void Execute()
             {
                 this.keyEntities.Clear();
                 this.messageHolder.Clear();
+                this.uniqueKeys.Clear();
             }
         }
 
@@ -212,6 +235,7 @@ namespace Abarabone.Dependency
                 }
             }
         }
+
 
     }
 

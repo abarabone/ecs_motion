@@ -35,7 +35,7 @@ namespace Abarabone.Dependency
         public PhysicsWorld PhysicsWorld => this.buildPhysicsWorld.PhysicsWorld;
 
 
-        public DisposableDependency AsDependencyDisposable()
+        public DisposableDependency WithDependencyBarrier()
         {
             dependentSystem.AddInputDependency(this.buildPhysicsWorld.GetOutputDependency());
 

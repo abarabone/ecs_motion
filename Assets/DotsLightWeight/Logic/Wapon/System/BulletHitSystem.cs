@@ -55,7 +55,7 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
-            using var dp = this.physhit.AsDependencyDisposable();
+            using var dp = this.physhit.WithDependencyBarrier();
 
             var sthit = this.hitStSystem.Reciever.AsParallelWriter();
             var cw = this.physhit.PhysicsWorld.CollisionWorld;
@@ -69,6 +69,7 @@ namespace Abarabone.Arms
                 .WithReadOnly(mainLinks)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
+                .WithNativeDisableContainerSafetyRestriction(sthit)
                 .ForEach(
                     (
                         Entity fireEntity,// int entityInQueryIndex,

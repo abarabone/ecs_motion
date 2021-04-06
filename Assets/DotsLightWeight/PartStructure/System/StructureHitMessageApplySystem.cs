@@ -48,7 +48,7 @@ namespace Abarabone.Structure
 
         protected override void OnUpdate()
         {
-            using var dc = this.cmdbuf.AsDependencyDisposable();
+            using var dc = this.cmdbuf.WithDependencyBarrier();
             var cmd = this.cmdbuf.CreateCommandBuffer().AsParallelWriter();
 
             var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
@@ -103,7 +103,7 @@ namespace Abarabone.Structure
                 var pos = this.Positions[part];
                 createDebris_(this.Cmd, index, prefab, rot, pos);
 
-                //destroyPart_(this.Cmd, index, part);
+                destroyPart_(this.Cmd, index, part);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

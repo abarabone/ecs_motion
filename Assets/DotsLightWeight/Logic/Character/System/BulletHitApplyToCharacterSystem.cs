@@ -8,11 +8,11 @@ using Unity.Burst;
 using Unity.Transforms;
 using System.Runtime.CompilerServices;
 
-namespace Abarabone.Character.Action
+namespace Abarabone.Structure//Character.Action
 {
     using Abarabone.Dependency;
     using Abarabone.Structure;
-    using HitMessageUnit = Structure.StructureHitMessage;
+    using HitMessageUnit = StructureHitMessage;
 
 
 
@@ -33,7 +33,7 @@ namespace Abarabone.Character.Action
 
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class BulletHitApplyToCharacterSystem
+    public class StructureHitMessageApplySystem__
         : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
     {
 

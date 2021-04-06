@@ -26,7 +26,7 @@ namespace Abarabone.Dependency
             this.commandSystem.CreateCommandBuffer();
 
 
-        public DisposableDependency AsDependencyDisposable() =>
+        public DisposableDependency WithDependencyBarrier() =>
             new DisposableDependency { parent = this };
 
 

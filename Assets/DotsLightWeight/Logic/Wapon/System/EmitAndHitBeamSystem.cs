@@ -25,6 +25,7 @@ namespace Abarabone.Arms
     using Abarabone.SystemGroup;
     using Abarabone.Geometry;
     using Abarabone.Structure;
+    using Abarabone.Dependency;
 
     using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
     using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
@@ -95,6 +96,7 @@ namespace Abarabone.Arms
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
                 //.WithReadOnly(cmd)
+                .WithNativeDisableContainerSafetyRestriction(sthit)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
