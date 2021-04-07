@@ -9,6 +9,12 @@ using Unity.Collections;
 namespace Abarabone.Dependency
 {
 
+    
+    public interface IBarrierable
+    {
+        DependencyBarrier Barrier { get; }
+    }
+
 
 
     public struct DependencyBarrier : IDisposable

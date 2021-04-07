@@ -29,9 +29,8 @@ namespace Abarabone.Draw
     //[DisableAutoCreation]
     //[UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    public class DrawMeshCsSystem : SystemBase
+    public class DrawMeshCsSystem : SystemBase, IBarrierable
     {
-
 
 
         public DependencyBarrier Barrier { get; } = new DependencyBarrier(16);

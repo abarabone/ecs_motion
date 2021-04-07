@@ -18,7 +18,7 @@ namespace Abarabone.Draw
     using Abarabone.Geometry;
     using Abarabone.Character;
     using Abarabone.Particle;
-
+    using Abarabone.Dependency;
 
 
     //[DisableAutoCreation]
@@ -26,19 +26,23 @@ namespace Abarabone.Draw
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class Particle2PointsToModelBufferSystem : DependsDrawCsSystemBase
+    public class Particle2PointsToModelBufferSystem : DependencyAccessableSystemBase
     {
 
-        //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
-        //protected override void OnStartRunning()
-        //{
-        //    this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
-        //}
+        RegisterBarrier<DrawMeshCsSystem> bardep;
 
-
-        protected override unsafe void OnUpdateWith()
+        protected override void OnCreate()
         {
+            base.OnCreate();
+
+            this.bardep = new RegisterBarrier<DrawMeshCsSystem>(this);
+        }
+
+        protected unsafe override void OnUpdate()
+        {
+            using var barScope = bardep.WithDependencyScope();
+
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
@@ -75,8 +79,6 @@ namespace Abarabone.Draw
                     }
                 )
                 .ScheduleParallel();
-
-            //this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
     }
 

@@ -15,25 +15,30 @@ using Unity.Transforms;
 
 namespace Abarabone.Draw
 {
-
+    using Abarabone.Dependency;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class DrawTransform_TR_ToModelBufferSystem : DependsDrawCsSystemBase
+    public class DrawTransform_TR_ToModelBufferSystem : DependencyAccessableSystemBase
     {
 
-        //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
-        //protected override void OnStartRunning()
-        //{
-        //    this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
-        //}
+        RegisterBarrier<DrawMeshCsSystem> bardep;
 
-
-        protected unsafe override void OnUpdateWith()
+        protected override void OnCreate()
         {
+            base.OnCreate();
+
+            this.bardep = new RegisterBarrier<DrawMeshCsSystem>(this);
+        }
+
+        protected unsafe override void OnUpdate()
+        {
+            using var barScope = bardep.WithDependencyScope();
+
+
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
 
             this.Entities
@@ -65,8 +70,6 @@ namespace Abarabone.Draw
                     }
                 )
                 .ScheduleParallel();
-
-            //this.presentationBarier.AddJobHandleForProducer(this.Dependency);
         }
     }
 

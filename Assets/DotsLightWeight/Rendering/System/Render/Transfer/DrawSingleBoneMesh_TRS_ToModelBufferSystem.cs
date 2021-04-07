@@ -9,13 +9,9 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-
-using Abarabone.CharacterMotion;
-using Abarabone.SystemGroup;
-using Abarabone.Geometry;
-
 namespace Abarabone.Draw
 {
+    using Abarabone.Dependency;
 
     /// <summary>
     /// TRSだが、現在はTRのみ対応
@@ -25,19 +21,24 @@ namespace Abarabone.Draw
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class DrawSingleBoneMesh_TRS_ToModelBufferSystem : DependsDrawCsSystemBase
+    public class DrawSingleBoneMesh_TRS_ToModelBufferSystem : DependencyAccessableSystemBase
     {
 
-        //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
 
-        //protected override void OnStartRunning()
-        //{
-        //    this.presentationBarier = this.World.GetExistingSystem<BeginDrawCsBarier>();
-        //}
+        RegisterBarrier<DrawMeshCsSystem> bardep;
 
-
-        protected unsafe override void OnUpdateWith()
+        protected override void OnCreate()
         {
+            base.OnCreate();
+
+            this.bardep = new RegisterBarrier<DrawMeshCsSystem>(this);
+        }
+
+
+        protected unsafe override void OnUpdate()
+        {
+            using var barScope = bardep.WithDependencyScope();
+
 
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
 
@@ -71,10 +72,6 @@ namespace Abarabone.Draw
                     }
                 )
                 .ScheduleParallel();
-
-
-            //this.presentationBarier.AddJobHandleForProducer( dependency );
-
         }
 
 
