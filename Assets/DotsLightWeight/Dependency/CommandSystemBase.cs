@@ -12,10 +12,10 @@ namespace Abarabone.Dependency
     {
 
         EntityCommandBufferSystem commandSystem;
-        DependentableSystemBase dependentSystem;
+        DependencyAccessableSystemBase dependentSystem;
 
 
-        public CommandBufferDependency(DependentableSystemBase system)
+        public CommandBufferDependency(DependencyAccessableSystemBase system)
         {
             this.commandSystem = system.World.GetExistingSystem<TEntityCommandBufferSystem>();
             this.dependentSystem = system;
@@ -26,7 +26,7 @@ namespace Abarabone.Dependency
             this.commandSystem.CreateCommandBuffer();
 
 
-        public DisposableDependency WithDependencyBarrier() =>
+        public DisposableDependency WithDependencyScope() =>
             new DisposableDependency { parent = this };
 
 
@@ -34,8 +34,12 @@ namespace Abarabone.Dependency
         {
             public CommandBufferDependency<TEntityCommandBufferSystem> parent;
 
-            public void Dispose() => this.parent.commandSystem
-                .AddJobHandleForProducer(this.parent.dependentSystem.GetOutputDependency());
+            public void Dispose()
+            {
+                var cmd = this.parent.commandSystem;
+                var dep = this.parent.dependentSystem.GetOutputDependency();
+                cmd.AddJobHandleForProducer(dep);
+            }
         }
     }
 

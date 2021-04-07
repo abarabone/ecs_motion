@@ -35,7 +35,7 @@ namespace Abarabone.Arms
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
-    public class BulletHitSystem : DependentableSystemBase
+    public class BulletHitSystem : DependencyAccessableSystemBase
     {
 
 
@@ -55,7 +55,7 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
-            using var dp = this.physhit.WithDependencyBarrier();
+            using var dp = this.physhit.WithDependencyScope();
 
             var sthit = this.hitStSystem.Reciever.AsParallelWriter();
             var cw = this.physhit.PhysicsWorld.CollisionWorld;

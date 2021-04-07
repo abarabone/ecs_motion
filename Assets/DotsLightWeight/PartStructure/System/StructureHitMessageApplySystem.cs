@@ -24,7 +24,7 @@ namespace Abarabone.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class StructureHitMessageApplySystem : DependentableSystemBase
+    public class StructureHitMessageApplySystem : DependencyAccessableSystemBase
     {
 
 
@@ -48,7 +48,7 @@ namespace Abarabone.Structure
 
         protected override void OnUpdate()
         {
-            using var dc = this.cmdbuf.WithDependencyBarrier();
+            using var dc = this.cmdbuf.WithDependencyScope();
             var cmd = this.cmdbuf.CreateCommandBuffer().AsParallelWriter();
 
             var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();

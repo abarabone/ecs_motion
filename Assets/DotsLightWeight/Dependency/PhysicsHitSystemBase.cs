@@ -22,10 +22,10 @@ namespace Abarabone.Dependency
     {
 
         BuildPhysicsWorld buildPhysicsWorld;
-        DependentableSystemBase dependentSystem;
+        DependencyAccessableSystemBase dependentSystem;
 
 
-        public PhysicsHitDependency(DependentableSystemBase system)
+        public PhysicsHitDependency(DependencyAccessableSystemBase system)
         {
             this.buildPhysicsWorld = system.World.GetExistingSystem<BuildPhysicsWorld>();
             this.dependentSystem = system;
@@ -35,7 +35,7 @@ namespace Abarabone.Dependency
         public PhysicsWorld PhysicsWorld => this.buildPhysicsWorld.PhysicsWorld;
 
 
-        public DisposableDependency WithDependencyBarrier()
+        public DisposableDependency WithDependencyScope()
         {
             dependentSystem.AddInputDependency(this.buildPhysicsWorld.GetOutputDependency());
 

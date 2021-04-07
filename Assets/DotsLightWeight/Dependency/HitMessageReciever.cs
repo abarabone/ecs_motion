@@ -41,6 +41,42 @@ namespace Abarabone.Dependency
     }
 
 
+    public struct HitMessageRecieverParallelWriter<THitMessage>
+        where THitMessage : struct
+    {
+        [NativeDisableContainerSafetyRestriction]
+        [NativeDisableParallelForRestriction]
+        NativeList<Entity>.ParallelWriter nl;
+
+        [NativeDisableContainerSafetyRestriction]
+        [NativeDisableParallelForRestriction]
+        NativeMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
+
+        [NativeDisableContainerSafetyRestriction]
+        [NativeDisableParallelForRestriction]
+        NativeHashSet<Entity>.ParallelWriter uk;
+
+        public HitMessageRecieverParallelWriter
+            (
+                ref NativeList<Entity> nl,
+                ref NativeMultiHashMap<Entity, THitMessage> hm,
+                ref NativeHashSet<Entity> uk
+            )
+        {
+            this.nl = nl.AsParallelWriter();
+            this.hm = hm.AsParallelWriter();
+            this.uk = uk.AsParallelWriter();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Add(Entity entity, THitMessage hitMessage)
+        {
+            if (this.uk.Add(entity)) this.nl.AddNoResize(entity);
+            this.hm.Add(entity, hitMessage);
+        }
+    }
+
+
 
     /// <summary>
     /// ヒットした相手からのメッセージを受け取り、ためておく。
@@ -53,34 +89,32 @@ namespace Abarabone.Dependency
     {
 
         HitMessageHolder holder;
-        DependencyWaiter waiter;
+        DependencyBarrier barrier;
         //ParallelWriter writer;
 
 
         public HitMessageReciever(int capacity, int maxDependsSystem = 16)
         {
             this.holder = new HitMessageHolder(capacity);
-            this.waiter = new DependencyWaiter(maxDependsSystem);
+            this.barrier = new DependencyBarrier(maxDependsSystem);
             //this.writer = this.holder.AsParallelWriter();
         }
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ParallelWriter AsParallelWriter() => //this.writer;
-            this.holder.AsParallelWriter();
+        //public ParallelWriter AsParallelWriter() => //this.writer;
+        //    this.holder.AsParallelWriter();
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddDependencyBeforeHitApply(JobHandle jobHandle) =>
-            this.waiter.AddDependencyBefore(jobHandle);
+        //public void AddDependencyBeforeHitApply(JobHandle jobHandle) =>
+        //    this.barrier.AddDependencyBefore(jobHandle);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JobHandle ScheduleParallel(JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
         {
-            this.waiter.WaitAllDependencyJobs();
-
-            var dep0 = dependency;
+            //this.waiter.CompleteAllDependentJobs(dependency);
+            //var dep0 = dependency;
+            var dep0 = this.barrier.CombineAllDependentJobs(dependency);
             var dep1 = this.holder.ExecutionAndSchedule(dep0, innerLoopBatchCount, execution);
             var dep2 = this.holder.ClearAndSchedule(dep1);
 
@@ -91,11 +125,11 @@ namespace Abarabone.Dependency
         public void Dispose()
         {
             this.holder.Dispose();
-            this.waiter.Dispose();
+            this.barrier.Dispose();
         }
     }
 
-    public partial struct HitMessageReciever<THitMessage, TJobInnerExecution> : IDisposable
+    public partial struct HitMessageReciever<THitMessage, TJobInnerExecution>
     {
         /// <summary>
         /// ハッシュマップでまともな巡回ができるようになるまでのつなぎ
@@ -118,9 +152,8 @@ namespace Abarabone.Dependency
             }
 
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public ParallelWriter AsParallelWriter() =>
-                new ParallelWriter(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);
+            public HitMessageRecieverParallelWriter<THitMessage> AsParallelWriter() =>
+                new HitMessageRecieverParallelWriter<THitMessage>(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -154,40 +187,6 @@ namespace Abarabone.Dependency
 
         }
 
-
-        public struct ParallelWriter
-        {
-            [NativeDisableContainerSafetyRestriction]
-            [NativeDisableParallelForRestriction]
-            NativeList<Entity>.ParallelWriter nl;
-            
-            [NativeDisableContainerSafetyRestriction]
-            [NativeDisableParallelForRestriction]
-            NativeMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
-
-            [NativeDisableContainerSafetyRestriction]
-            [NativeDisableParallelForRestriction]
-            NativeHashSet<Entity>.ParallelWriter uk;
-
-            public ParallelWriter
-                (
-                    ref NativeList<Entity> nl,
-                    ref NativeMultiHashMap<Entity, THitMessage> hm,
-                    ref NativeHashSet<Entity> uk
-                )
-            {
-                this.nl = nl.AsParallelWriter();
-                this.hm = hm.AsParallelWriter();
-                this.uk = uk.AsParallelWriter();
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void Add(Entity entity, THitMessage hitMessage)
-            {
-                if (this.uk.Add(entity)) this.nl.AddNoResize(entity);
-                this.hm.Add(entity, hitMessage);
-            }
-        }
 
 
         /// <summary>
@@ -238,6 +237,7 @@ namespace Abarabone.Dependency
 
 
     }
+
 
 
 }
