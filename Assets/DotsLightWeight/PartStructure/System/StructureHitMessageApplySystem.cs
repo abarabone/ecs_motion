@@ -24,32 +24,37 @@ namespace Abarabone.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class StructureHitMessageApplySystem : DependencyAccessableSystemBase
+    public class StructureHitMessageApplySystem : DependencyAccessableSystemBase, IRecievable<StructureHitMessage>
     {
 
 
-        public HitMessageReciever<StructureHitMessage, JobExecution> Reciever { get; private set; }
+        public HitMessage<StructureHitMessage>.Reciever Reciever { get; private set; }
 
-        CommandBufferDependency<BeginInitializationEntityCommandBufferSystem> cmdbuf;
+        CommandBufferDependency<BeginInitializationEntityCommandBufferSystem> cmddep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
-            this.Reciever = new HitMessageReciever<StructureHitMessage, JobExecution>(10000);
-            this.cmdbuf = new CommandBufferDependency<BeginInitializationEntityCommandBufferSystem>(this);
+
+            this.Reciever = new HitMessage<StructureHitMessage>.Reciever(10000);
+            this.cmddep = new CommandBufferDependency
+                <BeginInitializationEntityCommandBufferSystem>(this);
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
+
             this.Reciever.Dispose();
         }
 
         protected override void OnUpdate()
         {
-            using var dc = this.cmdbuf.WithDependencyScope();
-            var cmd = this.cmdbuf.CreateCommandBuffer().AsParallelWriter();
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+            
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
@@ -69,7 +74,7 @@ namespace Abarabone.Structure
 
 
         [BurstCompile]
-        public struct JobExecution : IHitMessageApplyJobExecution<StructureHitMessage>
+        public struct JobExecution : HitMessage<StructureHitMessage>.IApplyJobExecution
         {
 
             public EntityCommandBuffer.ParallelWriter Cmd;

@@ -35,15 +35,14 @@ namespace Abarabone.Arms
     //[UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateBefore(typeof(StructureHitMessageApplySystem))]
-    public class EmitAndHitBeamSystem : SystemBase
+    public class EmitAndHitBeamSystem : DependencyAccessableSystemBase
     {
 
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
+        CommandBufferDependency<BeginInitializationEntityCommandBufferSystem> cmddep;
 
-        EntityCommandBufferSystem cmdSystem;
+        PhysicsHitDependency phydep;
 
-        StructureHitMessageApplySystem hitStSystem;
-        //StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
+        HitMessage<StructureHitMessage>.Sender<StructureHitMessageApplySystem> sender;
 
 
 
@@ -51,11 +50,13 @@ namespace Abarabone.Arms
         {
             base.OnCreate();
 
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            this.cmddep = new CommandBufferDependency
+                <BeginInitializationEntityCommandBufferSystem>(this);
 
-            this.buildPhysicsWorldSystem = this.World.GetExistingSystem<BuildPhysicsWorld>();
+            this.phydep = new PhysicsHitDependency(this);
 
-            this.hitStSystem = this.World.GetExistingSystem<StructureHitMessageApplySystem>();
+            this.sender = new HitMessage<StructureHitMessage>
+                .Sender<StructureHitMessageApplySystem>(this);
         }
 
 
@@ -67,12 +68,14 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
-            this.Dependency = JobHandle.CombineDependencies
-                (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
+            using var phyScope = this.phydep.WithDependencyScope();
+            using var hitScope = this.sender.WithDependencyScope();
+            using var cmdScope = this.cmddep.WithDependencyScope();
 
-            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
-            var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
-            var sthit = this.hitStSystem.Reciever.AsParallelWriter();
+
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cw = this.phydep.PhysicsWorld.CollisionWorld;
+            var sthit = this.sender.AsParallelWriter();
 
 
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
@@ -96,6 +99,7 @@ namespace Abarabone.Arms
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
                 //.WithReadOnly(cmd)
+                .WithNativeDisableParallelForRestriction(sthit)
                 .WithNativeDisableContainerSafetyRestriction(sthit)
                 .ForEach(
                     (
@@ -127,10 +131,6 @@ namespace Abarabone.Arms
                     }
                 )
                 .ScheduleParallel();// this.buildPhysicsWorldSystem.GetOutputDependency());
-
-            // Make sure that the ECB system knows about our job
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
-            this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

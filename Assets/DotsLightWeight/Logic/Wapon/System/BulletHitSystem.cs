@@ -39,26 +39,30 @@ namespace Abarabone.Arms
     {
 
 
-        StructureHitMessageApplySystem hitStSystem;
+        HitMessage<StructureHitMessage>.Sender<StructureHitMessageApplySystem> sender;
 
-        PhysicsHitDependency physhit;
+        PhysicsHitDependency phydep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.hitStSystem = this.World.GetExistingSystem<StructureHitMessageApplySystem>();
-            this.physhit = new PhysicsHitDependency(this);
+            this.sender = new HitMessage<StructureHitMessage>
+                .Sender<StructureHitMessageApplySystem>(this);
+
+            this.phydep = new PhysicsHitDependency(this);
         }
 
 
         protected override void OnUpdate()
         {
-            using var dp = this.physhit.WithDependencyScope();
+            using var phyScope = this.phydep.WithDependencyScope();
+            using var hitScope = this.sender.WithDependencyScope();
 
-            var sthit = this.hitStSystem.Reciever.AsParallelWriter();
-            var cw = this.physhit.PhysicsWorld.CollisionWorld;
+
+            var sthit = this.sender.AsParallelWriter();
+            var cw = this.phydep.PhysicsWorld.CollisionWorld;
 
             var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
@@ -69,6 +73,7 @@ namespace Abarabone.Arms
                 .WithReadOnly(mainLinks)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
+                .WithNativeDisableParallelForRestriction(sthit)
                 .WithNativeDisableContainerSafetyRestriction(sthit)
                 .ForEach(
                     (

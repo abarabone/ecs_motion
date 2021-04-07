@@ -15,13 +15,23 @@ namespace Abarabone.Dependency
 
 
 
-    /// <summary>
-    /// hit message を処理するジョブを構築する。
-    /// </summary>
-    public interface IHitMessageApplyJobExecution<THitMessage>
+    public static partial class HitMessage<THitMessage>
         where THitMessage : struct
     {
-        void Execute(int index, Entity targetEntity, THitMessage hitMessage);
+        /// <summary>
+        /// hit message を処理するジョブを構築する。
+        /// </summary>
+        public interface IApplyJobExecution
+        {
+            void Execute(int index, Entity targetEntity, THitMessage hitMessage);
+        }
+    }
+
+
+    public interface IRecievable<THitMessage>
+        where THitMessage : struct
+    {
+        HitMessage<THitMessage>.Reciever Reciever { get; }
     }
 
     public static class HitMessageApplyJobExtension
@@ -30,214 +40,225 @@ namespace Abarabone.Dependency
         public static JobHandle ScheduleParallel<THitMessage, TJobInnerExecution>
             (
                 this TJobInnerExecution job,
-                HitMessageReciever<THitMessage, TJobInnerExecution> reciever,
+                HitMessage<THitMessage>.Reciever reciever,
                 int innerLoopBatchCount,
                 JobHandle dependency
             )
             where THitMessage : struct
-            where TJobInnerExecution : struct, IHitMessageApplyJobExecution<THitMessage>
+            where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecution
         =>
             reciever.ScheduleParallel(dependency, innerLoopBatchCount, job);
     }
 
 
-    public struct HitMessageRecieverParallelWriter<THitMessage>
-        where THitMessage : struct
-    {
-        [NativeDisableContainerSafetyRestriction]
-        [NativeDisableParallelForRestriction]
-        NativeList<Entity>.ParallelWriter nl;
 
-        [NativeDisableContainerSafetyRestriction]
-        [NativeDisableParallelForRestriction]
-        NativeMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
-
-        [NativeDisableContainerSafetyRestriction]
-        [NativeDisableParallelForRestriction]
-        NativeHashSet<Entity>.ParallelWriter uk;
-
-        public HitMessageRecieverParallelWriter
-            (
-                ref NativeList<Entity> nl,
-                ref NativeMultiHashMap<Entity, THitMessage> hm,
-                ref NativeHashSet<Entity> uk
-            )
-        {
-            this.nl = nl.AsParallelWriter();
-            this.hm = hm.AsParallelWriter();
-            this.uk = uk.AsParallelWriter();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(Entity entity, THitMessage hitMessage)
-        {
-            if (this.uk.Add(entity)) this.nl.AddNoResize(entity);
-            this.hm.Add(entity, hitMessage);
-        }
-    }
-
-
-
-    /// <summary>
-    /// ヒットした相手からのメッセージを受け取り、ためておく。
-    /// メッセージは、IHitMessageApplyJobExecution<THitMessage> ジョブで処理する。
-    /// ヒット検出側システムには ParallelWriter を渡して、書き込んでもらう。
-    /// </summary>
-    public partial struct HitMessageReciever<THitMessage, TJobInnerExecution> : IDisposable
-        where THitMessage : struct
-        where TJobInnerExecution : struct, IHitMessageApplyJobExecution<THitMessage>
+    public static partial class HitMessage<THitMessage>
     {
 
-        HitMessageHolder holder;
-        DependencyBarrier barrier;
-        //ParallelWriter writer;
 
-
-        public HitMessageReciever(int capacity, int maxDependsSystem = 16)
-        {
-            this.holder = new HitMessageHolder(capacity);
-            this.barrier = new DependencyBarrier(maxDependsSystem);
-            //this.writer = this.holder.AsParallelWriter();
-        }
-
-
-        //public ParallelWriter AsParallelWriter() => //this.writer;
-        //    this.holder.AsParallelWriter();
-
-
-        //public void AddDependencyBeforeHitApply(JobHandle jobHandle) =>
-        //    this.barrier.AddDependencyBefore(jobHandle);
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JobHandle ScheduleParallel(JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
-        {
-            //this.waiter.CompleteAllDependentJobs(dependency);
-            //var dep0 = dependency;
-            var dep0 = this.barrier.CombineAllDependentJobs(dependency);
-            var dep1 = this.holder.ExecutionAndSchedule(dep0, innerLoopBatchCount, execution);
-            var dep2 = this.holder.ClearAndSchedule(dep1);
-
-            return dep2;
-        }
-
-
-        public void Dispose()
-        {
-            this.holder.Dispose();
-            this.barrier.Dispose();
-        }
-    }
-
-    public partial struct HitMessageReciever<THitMessage, TJobInnerExecution>
-    {
         /// <summary>
-        /// ハッシュマップでまともな巡回ができるようになるまでのつなぎ
+        /// ヒットした相手からのメッセージを受け取り、ためておく。
+        /// メッセージは、IHitMessageApplyJobExecution<THitMessage> ジョブで処理する。
+        /// ヒット検出側システムには ParallelWriter を渡して、書き込んでもらう。
         /// </summary>
-        public struct HitMessageHolder : IDisposable
+        public partial struct Reciever : IDisposable
         {
 
-            NativeList<Entity> keyEntities;
-            NativeMultiHashMap<Entity, THitMessage> messageHolder;
-
-            NativeHashSet<Entity> uniqueKeys;
+            public HitMessageHolder Holder { get; }
+            public DependencyBarrier Barrier { get; }
 
 
-            public HitMessageHolder(int capacity)
+            public Reciever(int capacity, int maxDependsSystem = 16)
             {
-                this.keyEntities = new NativeList<Entity>(capacity, Allocator.Persistent);
-                this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, Allocator.Persistent);
-
-                this.uniqueKeys = new NativeHashSet<Entity>(capacity, Allocator.Persistent);
+                this.Holder = new HitMessageHolder(capacity);
+                this.Barrier = new DependencyBarrier(maxDependsSystem);
             }
 
 
-            public HitMessageRecieverParallelWriter<THitMessage> AsParallelWriter() =>
-                new HitMessageRecieverParallelWriter<THitMessage>(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);
-
-
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public JobHandle ExecutionAndSchedule(JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution) =>
-                new HitMessageApplyJob
-                {
-                    MessageHolder = this.messageHolder,
-                    KeyEntities = this.keyEntities.AsDeferredJobArray(),
-                    InnerJob = execution,
-                }
-                .Schedule(this.keyEntities, innerLoopBatchCount, dependency);
+            public JobHandle ScheduleParallel<TJobInnerExecution>
+                (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
+                where TJobInnerExecution : struct, IApplyJobExecution
+            {
+                //this.waiter.CompleteAllDependentJobs(dependency);
+                //var dep0 = dependency;
+                var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
+                var dep1 = this.Holder.ExecutionAndSchedule(dep0, innerLoopBatchCount, execution);
+                var dep2 = this.Holder.ClearAndSchedule(dep1);
 
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public JobHandle ClearAndSchedule(JobHandle dependency) =>
-                new clearJob
-                {
-                    keyEntities = this.keyEntities,
-                    messageHolder = this.messageHolder,
-                    uniqueKeys = this.uniqueKeys,
-                }
-                .Schedule(dependency);
+                return dep2;
+            }
 
 
             public void Dispose()
             {
-                this.keyEntities.Dispose();
-                this.messageHolder.Dispose();
-                this.uniqueKeys.Dispose();
-            }
-
-        }
-
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [BurstCompile]
-        struct clearJob : IJob
-        {
-            public NativeList<Entity> keyEntities;
-            public NativeMultiHashMap<Entity, THitMessage> messageHolder;
-            public NativeHashSet<Entity> uniqueKeys;
-
-            public void Execute()
-            {
-                this.keyEntities.Clear();
-                this.messageHolder.Clear();
-                this.uniqueKeys.Clear();
+                this.Holder.Dispose();
+                this.Barrier.Dispose();
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        [BurstCompile]
-        struct HitMessageApplyJob : IJobParallelForDefer
+        public partial struct Reciever
         {
-            [ReadOnly]
-            public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
-
-            [ReadOnly]
-            public NativeArray<Entity> KeyEntities;
-
-
-            public TJobInnerExecution InnerJob;
-
-
-            public void Execute(int index)
+            /// <summary>
+            /// ハッシュマップでまともな巡回ができるようになるまでのつなぎ。
+            /// native list にユニークな entity を登録し、キーとして巡回する。
+            /// </summary>
+            public struct HitMessageHolder : IDisposable
             {
-                var key = this.KeyEntities[index];
-                var msgs = this.MessageHolder.GetValuesForKey(key);
 
-                foreach (var msg in msgs)
+                NativeMultiHashMap<Entity, THitMessage> messageHolder;
+
+                NativeList<Entity> keyEntities;
+                NativeHashSet<Entity> uniqueKeys;
+
+
+                //ParallelWriter writer;//
+
+
+                public HitMessageHolder(int capacity)
                 {
-                    this.InnerJob.Execute(index, key, msg);
+                    this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, Allocator.Persistent);
+
+                    this.keyEntities = new NativeList<Entity>(capacity, Allocator.Persistent);
+                    this.uniqueKeys = new NativeHashSet<Entity>(capacity, Allocator.Persistent);
+
+                    //this.writer = new ParallelWriter(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);//
                 }
+
+
+                public ParallelWriter AsParallelWriter() => //this.writer;
+                    new ParallelWriter(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);
+
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public JobHandle ExecutionAndSchedule<TJobInnerExecution>
+                    (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
+                    where TJobInnerExecution : struct, IApplyJobExecution
+                =>
+                    new HitMessageApplyJob<TJobInnerExecution>
+                    {
+                        MessageHolder = this.messageHolder,
+                        KeyEntities = this.keyEntities.AsDeferredJobArray(),
+                        InnerJob = execution,
+                    }
+                    .Schedule(this.keyEntities, innerLoopBatchCount, dependency);
+
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public JobHandle ClearAndSchedule(JobHandle dependency) =>
+                    new clearJob
+                    {
+                        keyEntities = this.keyEntities,
+                        messageHolder = this.messageHolder,
+                        uniqueKeys = this.uniqueKeys,
+                    }
+                    .Schedule(dependency);
+
+
+                public void Dispose()
+                {
+                    this.keyEntities.Dispose();
+                    this.messageHolder.Dispose();
+                    this.uniqueKeys.Dispose();
+                }
+
+            }
+
+
+
+            /// <summary>
+            /// 
+            /// </summary>
+            [BurstCompile]
+            struct clearJob : IJob
+            {
+                public NativeList<Entity> keyEntities;
+                public NativeMultiHashMap<Entity, THitMessage> messageHolder;
+                public NativeHashSet<Entity> uniqueKeys;
+
+                public void Execute()
+                {
+                    this.keyEntities.Clear();
+                    this.messageHolder.Clear();
+                    this.uniqueKeys.Clear();
+                }
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            [BurstCompile]
+            struct HitMessageApplyJob<TJobInnerExecution> : IJobParallelForDefer
+                where TJobInnerExecution : struct, IApplyJobExecution
+            {
+                [ReadOnly]
+                public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
+
+                [ReadOnly]
+                public NativeArray<Entity> KeyEntities;
+
+
+                [NativeDisableParallelForRestriction]
+                [NativeDisableContainerSafetyRestriction]
+                public TJobInnerExecution InnerJob;
+
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public void Execute(int index)
+                {
+                    var key = this.KeyEntities[index];
+                    var msgs = this.MessageHolder.GetValuesForKey(key);
+
+                    foreach (var msg in msgs)
+                    {
+                        this.InnerJob.Execute(index, key, msg);
+                    }
+                }
+            }
+
+
+        }
+
+
+
+
+        [BurstCompile]
+        public struct ParallelWriter
+        {
+            [NativeDisableParallelForRestriction]
+            [NativeDisableContainerSafetyRestriction]
+            NativeList<Entity>.ParallelWriter nl;
+
+            [NativeDisableParallelForRestriction]
+            [NativeDisableContainerSafetyRestriction]
+            NativeMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
+
+            [NativeDisableParallelForRestriction]
+            [NativeDisableContainerSafetyRestriction]
+            NativeHashSet<Entity>.ParallelWriter uk;
+
+            public ParallelWriter
+                (
+                    ref NativeList<Entity> nl,
+                    ref NativeMultiHashMap<Entity, THitMessage> hm,
+                    ref NativeHashSet<Entity> uk
+                )
+            {
+                this.nl = nl.AsParallelWriter();
+                this.hm = hm.AsParallelWriter();
+                this.uk = uk.AsParallelWriter();
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Add(Entity entity, THitMessage hitMessage)
+            {
+                if (this.uk.Add(entity)) this.nl.AddNoResize(entity);
+                this.hm.Add(entity, hitMessage);
             }
         }
 
 
     }
-
 
 
 }

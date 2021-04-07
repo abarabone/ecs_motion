@@ -32,7 +32,7 @@ namespace Abarabone.Character.Action
     //[DisableAutoCreation]
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class AntrWalkActionSystem : CommandSystemBase<BeginFixedStepSimulationEntityCommandBufferSystem>
+    public class AntrWalkActionSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
     {
 
 

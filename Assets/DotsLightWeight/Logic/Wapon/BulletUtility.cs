@@ -15,7 +15,7 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
-
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace Abarabone.Arms
 {
@@ -156,13 +156,12 @@ namespace Abarabone.Arms
                 );
             }
         }
-        static public void postMessageToHitTarget<TJobInnerExecution>
+        static public void postMessageToHitTarget
             (
                 this BulletHitUtility.BulletHit hit,
-                HitMessageReciever<StructureHitMessage, TJobInnerExecution>.ParallelWriter hitHolder,
+                HitMessage<StructureHitMessage>.ParallelWriter hitHolder,
                 ComponentDataFromEntity<StructurePart.PartData> parts
             )
-            where TJobInnerExecution : struct, IHitMessageApplyJobExecution<StructureHitMessage>
         {
 
             if (!hit.isHit) return;

@@ -22,7 +22,7 @@ namespace Abarabone.Draw
 
             this.OnUpdateWith();
 
-            this.drawSystem.Waiter.AddDependencyBefore(this.Dependency);
+            this.drawSystem.Barrier.AddDependencyBefore(this.Dependency);
         }
 
 

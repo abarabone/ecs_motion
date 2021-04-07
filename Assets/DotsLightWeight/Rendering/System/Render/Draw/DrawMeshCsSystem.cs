@@ -34,7 +34,7 @@ namespace Abarabone.Draw
 
 
 
-        public DependencyBarrier Waiter { get; } = new DependencyBarrier(16);
+        public DependencyBarrier Barrier { get; } = new DependencyBarrier(16);
 
 
 
@@ -42,13 +42,13 @@ namespace Abarabone.Draw
         {
             base.OnDestroy();
 
-            this.Waiter.Dispose();
+            this.Barrier.Dispose();
         }
 
 
         protected override unsafe void OnUpdate()
         {
-            this.Waiter.CompleteAllDependentJobs();
+            this.Barrier.CompleteAllDependentJobs(this.Dependency);
 
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;

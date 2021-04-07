@@ -13,57 +13,45 @@ using Unity.Collections.LowLevel;
 namespace Abarabone.Dependency
 {
 
-    public struct HitMessageSender<THitMessage>
-        where THitMessage : struct
+
+    public static partial class HitMessage<THitMessage>
     {
 
-        HitMessageRecieverReference<THitMessage> reciever;
-        DependencyAccessableSystemBase dependentSystem;
-
-
-        public HitMessageSender(DependencyAccessableSystemBase senderSystem, HitMessageRecieverReference<THitMessage> recieverReference)
+        public struct Sender<TRecievable>
+            where TRecievable : SystemBase, IRecievable<THitMessage>
         {
-            this.dependentSystem = senderSystem;
-            this.reciever = recieverReference;
-        }
+
+            IRecievable<THitMessage> recievable;
+            DependencyAccessableSystemBase dependentSystem;
 
 
-        public HitMessageRecieverParallelWriter<THitMessage> AsParallelWriter() =>
-            this.reciever.writer;
-
-
-        public DisposableDependency WithDependencyScope() =>
-            new DisposableDependency { barrier = this.reciever.barrier, dependentSystem = this.dependentSystem };
-
-
-        public struct DisposableDependency : IDisposable
-        {
-            public DependencyBarrier barrier;
-            public DependencyAccessableSystemBase dependentSystem;
-
-            public void Dispose()
+            public Sender(DependencyAccessableSystemBase senderSystem)
             {
-                var reciever = this.barrier;
-                var dep = this.dependentSystem;
-                barrier.AddDependencyBefore(dep.GetOutputDependency());
+                this.dependentSystem = senderSystem;
+                this.recievable = senderSystem.World.GetExistingSystem<TRecievable>();
+            }
+
+
+            public ParallelWriter AsParallelWriter() =>
+                this.recievable.Reciever.Holder.AsParallelWriter();
+
+
+            public DisposableDependency WithDependencyScope() =>
+                new DisposableDependency { parent = this };
+
+            public struct DisposableDependency : IDisposable
+            {
+                public Sender<TRecievable> parent;
+
+                public void Dispose()
+                {
+                    var barrier = this.parent.recievable.Reciever.Barrier;
+                    var dep = this.parent.dependentSystem;
+                    barrier.AddDependencyBefore(dep.GetOutputDependency());
+                }
             }
         }
+
     }
 
-    public partial struct HitMessageReciever<THitMessage, TJobInnerExecution>
-    {
-        HitMessageRecieverReference<THitMessage> CreateReference() =>
-            new HitMessageRecieverReference<THitMessage>
-            {
-                writer = this.holder.AsParallelWriter(),
-                barrier = this.barrier,
-            };
-    }
-
-    public struct HitMessageRecieverReference<THitMessage>
-        where THitMessage : struct
-    {
-        public HitMessageRecieverParallelWriter<THitMessage> writer;
-        public DependencyBarrier barrier;
-    }
 }

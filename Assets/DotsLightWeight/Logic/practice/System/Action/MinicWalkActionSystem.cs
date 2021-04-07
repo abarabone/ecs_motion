@@ -33,7 +33,7 @@ namespace Abarabone.Character.Action
     //[DisableAutoCreation]
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
-    public class MinicrWalkActionSystem : CommandSystemBase<BeginFixedStepSimulationEntityCommandBufferSystem>
+    public class MinicrWalkActionSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
     {
 
         protected override void OnUpdateWith(EntityCommandBuffer commandbuffer)
