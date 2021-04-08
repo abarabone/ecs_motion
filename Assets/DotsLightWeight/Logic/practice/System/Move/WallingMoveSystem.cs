@@ -54,13 +54,25 @@ namespace Abarabone.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
-    public class WallingMoveSystem : PhysicsHitSystemBase
+    public class WallingMoveSystem : DependencyAccessableSystemBase
     {
 
-        protected override void OnUpdateWith(BuildPhysicsWorld physicsBuilder)
+        PhysicsHitDependency phydep;
+
+        protected override void OnCreate()
         {
+            base.OnCreate();
+
+            this.phydep = PhysicsHitDependency.Create(this);
+        }
+
+        protected override void OnUpdate()
+        {
+            using var phyScope = this.phydep.WithDependencyScope();
+
+
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
-            var physicsWorld = physicsBuilder.PhysicsWorld;//.CollisionWorld;
+            var physicsWorld = this.phydep.PhysicsWorld;//.CollisionWorld;
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,
 
             //inputDeps = new HorizontalMoveJob

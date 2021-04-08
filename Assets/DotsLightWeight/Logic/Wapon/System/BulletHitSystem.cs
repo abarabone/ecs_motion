@@ -39,7 +39,7 @@ namespace Abarabone.Arms
     {
 
 
-        HitMessage<StructureHitMessage>.Sender<StructureHitMessageApplySystem> sender;
+        HitMessage<StructureHitMessage>.Sender sender;
 
         PhysicsHitDependency phydep;
 
@@ -48,10 +48,9 @@ namespace Abarabone.Arms
         {
             base.OnCreate();
 
-            this.sender = new HitMessage<StructureHitMessage>
-                .Sender<StructureHitMessageApplySystem>(this);
+            this.sender = HitMessage<StructureHitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
 
-            this.phydep = new PhysicsHitDependency(this);
+            this.phydep = PhysicsHitDependency.Create(this);
         }
 
 

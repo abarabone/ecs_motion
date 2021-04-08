@@ -16,7 +16,6 @@ namespace Abarabone.Dependency
 
 
     public static partial class HitMessage<THitMessage>
-        where THitMessage : struct
     {
         /// <summary>
         /// hit message を処理するジョブを構築する。
@@ -25,13 +24,6 @@ namespace Abarabone.Dependency
         {
             void Execute(int index, Entity targetEntity, THitMessage hitMessage);
         }
-    }
-
-
-    public interface IRecievable<THitMessage>
-        where THitMessage : struct
-    {
-        HitMessage<THitMessage>.Reciever Reciever { get; }
     }
 
     public static class HitMessageApplyJobExtension
@@ -44,7 +36,7 @@ namespace Abarabone.Dependency
                 int innerLoopBatchCount,
                 JobHandle dependency
             )
-            where THitMessage : struct
+            where THitMessage : struct, IHitMessage
             where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecution
         =>
             reciever.ScheduleParallel(dependency, innerLoopBatchCount, job);
@@ -61,7 +53,8 @@ namespace Abarabone.Dependency
         /// メッセージは、IHitMessageApplyJobExecution<THitMessage> ジョブで処理する。
         /// ヒット検出側システムには ParallelWriter を渡して、書き込んでもらう。
         /// </summary>
-        public partial struct Reciever : IDisposable
+        public partial class Reciever : IDisposable
+        //public partial struct Reciever : IDisposable
         {
 
             public HitMessageHolder Holder { get; }
@@ -71,7 +64,7 @@ namespace Abarabone.Dependency
             public Reciever(int capacity, int maxDependsSystem = 16)
             {
                 this.Holder = new HitMessageHolder(capacity);
-                this.Barrier = new DependencyBarrier(maxDependsSystem);
+                this.Barrier = DependencyBarrier.Create(maxDependsSystem);
             }
 
 
@@ -97,8 +90,10 @@ namespace Abarabone.Dependency
             }
         }
 
-        public partial struct Reciever
+        public partial class Reciever
+        //public partial struct Reciever
         {
+
             /// <summary>
             /// ハッシュマップでまともな巡回ができるようになるまでのつなぎ。
             /// native list にユニークな entity を登録し、キーとして巡回する。
@@ -110,7 +105,6 @@ namespace Abarabone.Dependency
 
                 NativeList<Entity> keyEntities;
                 NativeHashSet<Entity> uniqueKeys;
-
 
                 //ParallelWriter writer;//
 
@@ -163,7 +157,6 @@ namespace Abarabone.Dependency
                 }
 
             }
-
 
 
             /// <summary>
@@ -219,43 +212,6 @@ namespace Abarabone.Dependency
 
         }
 
-
-
-
-        [BurstCompile]
-        public struct ParallelWriter
-        {
-            [NativeDisableParallelForRestriction]
-            [NativeDisableContainerSafetyRestriction]
-            NativeList<Entity>.ParallelWriter nl;
-
-            [NativeDisableParallelForRestriction]
-            [NativeDisableContainerSafetyRestriction]
-            NativeMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
-
-            [NativeDisableParallelForRestriction]
-            [NativeDisableContainerSafetyRestriction]
-            NativeHashSet<Entity>.ParallelWriter uk;
-
-            public ParallelWriter
-                (
-                    ref NativeList<Entity> nl,
-                    ref NativeMultiHashMap<Entity, THitMessage> hm,
-                    ref NativeHashSet<Entity> uk
-                )
-            {
-                this.nl = nl.AsParallelWriter();
-                this.hm = hm.AsParallelWriter();
-                this.uk = uk.AsParallelWriter();
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void Add(Entity entity, THitMessage hitMessage)
-            {
-                if (this.uk.Add(entity)) this.nl.AddNoResize(entity);
-                this.hm.Add(entity, hitMessage);
-            }
-        }
 
 
     }

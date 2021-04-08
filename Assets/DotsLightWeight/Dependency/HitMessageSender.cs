@@ -17,35 +17,40 @@ namespace Abarabone.Dependency
     public static partial class HitMessage<THitMessage>
     {
 
-        public struct Sender<TRecievable>
-            where TRecievable : SystemBase, IRecievable<THitMessage>
+
+        public struct Sender
         {
 
-            IRecievable<THitMessage> recievable;
+            IRecievable<THitMessage> recievableSystem;
             DependencyAccessableSystemBase dependentSystem;
 
 
-            public Sender(DependencyAccessableSystemBase senderSystem)
-            {
-                this.dependentSystem = senderSystem;
-                this.recievable = senderSystem.World.GetExistingSystem<TRecievable>();
-            }
+
+            public static Sender Create<TRecievable>(DependencyAccessableSystemBase senderSystem)
+                where TRecievable : SystemBase, IRecievable<THitMessage>
+            =>
+                new HitMessage<THitMessage>.Sender
+                {
+                    dependentSystem = senderSystem,
+                    recievableSystem = senderSystem.World.GetExistingSystem<TRecievable>(),
+                };
 
 
             public ParallelWriter AsParallelWriter() =>
-                this.recievable.Reciever.Holder.AsParallelWriter();
+                this.recievableSystem.Reciever.Holder.AsParallelWriter();
 
 
             public DisposableDependency WithDependencyScope() =>
                 new DisposableDependency { parent = this };
 
+
             public struct DisposableDependency : IDisposable
             {
-                public Sender<TRecievable> parent;
+                public Sender parent;
 
                 public void Dispose()
                 {
-                    var barrier = this.parent.recievable.Reciever.Barrier;
+                    var barrier = this.parent.recievableSystem.Reciever.Barrier;
                     var dep = this.parent.dependentSystem;
                     barrier.AddDependencyBefore(dep.GetOutputDependency());
                 }

@@ -33,7 +33,7 @@ namespace Abarabone.Draw
     {
 
 
-        public DependencyBarrier Barrier { get; } = new DependencyBarrier(16);
+        public DependencyBarrier Barrier { get; } = DependencyBarrier.Create();
 
 
 
@@ -43,7 +43,6 @@ namespace Abarabone.Draw
 
             this.Barrier.Dispose();
         }
-
 
         protected override unsafe void OnUpdate()
         {

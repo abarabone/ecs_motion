@@ -32,13 +32,25 @@ namespace Abarabone.Character.Action
     //[DisableAutoCreation]
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class AntrWalkActionSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
+    public class AntrWalkActionSystem : DependencyAccessableSystemBase
     {
 
+        CommandBufferDependency cmddep;
 
-        protected override void OnUpdateWith(EntityCommandBuffer commandbuffer)
+
+        protected override void OnCreate()
         {
-            var commands = commandbuffer.AsParallelWriter();
+            base.OnCreate();
+
+            this.cmddep = CommandBufferDependency.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
+
+        protected override void OnUpdate()
+        {
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var motionInfos = this.GetComponentDataFromEntity<Motion.InfoData>(isReadOnly: true);
             var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>();

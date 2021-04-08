@@ -17,7 +17,8 @@ namespace Abarabone.Dependency
 
 
 
-    public struct DependencyBarrier : IDisposable
+    //public struct DependencyBarrier : IDisposable
+    public class DependencyBarrier : IDisposable
     {
 
 
@@ -27,10 +28,13 @@ namespace Abarabone.Dependency
 
 
 
-        public DependencyBarrier(int capacity)
-        {
-            this.dependencyJobHandles = new NativeList<JobHandle>(capacity, Allocator.Persistent);
-        }
+        public static DependencyBarrier Create(int capacity = 16) =>
+            new DependencyBarrier
+            {
+                dependencyJobHandles = new NativeList<JobHandle>(capacity, Allocator.Persistent),
+            };
+
+        public void Dispose() => this.dependencyJobHandles.Dispose();
 
 
 
@@ -66,8 +70,6 @@ namespace Abarabone.Dependency
         }
         
 
-
-        public void Dispose() => this.dependencyJobHandles.Dispose();
     }
 
 

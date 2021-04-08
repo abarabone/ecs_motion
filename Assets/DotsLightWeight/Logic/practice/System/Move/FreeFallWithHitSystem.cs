@@ -36,13 +36,26 @@ namespace Abarabone.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMoveSystemGroup ) )]
-    public class FreeFallWithHitSystem : PhysicsHitSystemBase
+    public class FreeFallWithHitSystem : DependencyAccessableSystemBase
     {
 
-        protected override void OnUpdateWith(BuildPhysicsWorld physicsBuilder)
+        PhysicsHitDependency phydep;
+
+        protected override void OnCreate()
         {
+            base.OnCreate();
+
+            this.phydep = PhysicsHitDependency.Create(this);
+        }
+
+
+        protected override void OnUpdate()
+        {
+            using var phyScope = this.phydep.WithDependencyScope();
+
+
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
-            var collisionWorld = physicsBuilder.PhysicsWorld;
+            var collisionWorld = this.phydep.PhysicsWorld.CollisionWorld;
 
             this.Entities
                 .WithBurst()

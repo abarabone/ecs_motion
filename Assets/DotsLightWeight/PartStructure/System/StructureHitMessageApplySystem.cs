@@ -13,7 +13,7 @@ namespace Abarabone.Structure
 {
     using Abarabone.Dependency;
 
-    public struct StructureHitMessage
+    public struct StructureHitMessage : IHitMessage
     {
         public int PartId;
         public Entity PartEntity;
@@ -30,7 +30,7 @@ namespace Abarabone.Structure
 
         public HitMessage<StructureHitMessage>.Reciever Reciever { get; private set; }
 
-        CommandBufferDependency<BeginInitializationEntityCommandBufferSystem> cmddep;
+        CommandBufferDependency cmddep;
 
 
         protected override void OnCreate()
@@ -38,8 +38,7 @@ namespace Abarabone.Structure
             base.OnCreate();
 
             this.Reciever = new HitMessage<StructureHitMessage>.Reciever(10000);
-            this.cmddep = new CommandBufferDependency
-                <BeginInitializationEntityCommandBufferSystem>(this);
+            this.cmddep = CommandBufferDependency.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
         protected override void OnDestroy()

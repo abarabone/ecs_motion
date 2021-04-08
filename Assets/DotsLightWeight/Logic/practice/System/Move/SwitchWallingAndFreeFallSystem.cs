@@ -36,11 +36,26 @@ namespace Abarabone.Character
     [UpdateAfter(typeof(FreeFallWithHitSystem))]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class SwitchWallingAndFreeFallWithHitSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>
+    public class SwitchWallingAndFreeFallWithHitSystem : DependencyAccessableSystemBase
     {
 
-        protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
+        CommandBufferDependency cmddep;
+
+
+        protected override void OnCreate()
         {
+            base.OnCreate();
+
+            this.cmddep = CommandBufferDependency.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
+
+        protected override void OnUpdate()
+        {
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+
             //inputDeps = new SwitchWallingAndFreeFallWithHitJob
             //{
             //    Commands = this.ecb.CreateCommandBuffer().AsParallelWriter(),
@@ -48,7 +63,6 @@ namespace Abarabone.Character
             //}
             //.Schedule( this, inputDeps );
 
-            var commands = commandBuffer.AsParallelWriter();
             var wallHitResults = this.GetComponentDataFromEntity<WallHitResultData>(isReadOnly: true);
 
             this.Entities

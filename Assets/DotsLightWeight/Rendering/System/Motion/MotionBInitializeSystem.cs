@@ -15,12 +15,25 @@ namespace Abarabone.CharacterMotion
 
     //[UpdateBefore( typeof( MotionProgressSystem ) )]// MotionB
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ))]
-    public class MotionBInitializeSystem : CommandSystemBase<BeginInitializationEntityCommandBufferSystem>//SystemBase//JobComponentSystem
+    public class MotionBInitializeSystem : DependencyAccessableSystemBase
     {
 
-        protected override void OnUpdateWith(EntityCommandBuffer commandBuffer)
+        CommandBufferDependency cmddep;
+
+
+        protected override void OnCreate()
         {
-            var commands = commandBuffer.AsParallelWriter();
+            base.OnCreate();
+
+            this.cmddep = CommandBufferDependency.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
+
+        protected override void OnUpdate()
+        {
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var linkers = this.GetComponentDataFromEntity<Stream.RelationData>( isReadOnly: true );
             var shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>();

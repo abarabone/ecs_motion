@@ -25,11 +25,12 @@ namespace Abarabone.Dependency
         DependencyAccessableSystemBase dependentSystem;
 
 
-        public PhysicsHitDependency(DependencyAccessableSystemBase system)
-        {
-            this.buildPhysicsWorld = system.World.GetExistingSystem<BuildPhysicsWorld>();
-            this.dependentSystem = system;
-        }
+        public static PhysicsHitDependency Create(DependencyAccessableSystemBase system) =>
+            new PhysicsHitDependency
+            {
+                buildPhysicsWorld = system.World.GetExistingSystem<BuildPhysicsWorld>(),
+                dependentSystem = system,
+            };
 
 
         public PhysicsWorld PhysicsWorld => this.buildPhysicsWorld.PhysicsWorld;
@@ -56,33 +57,4 @@ namespace Abarabone.Dependency
         }
     }
 
-
-    public abstract class PhysicsHitSystemBase : SystemBase
-    {
-
-        BuildPhysicsWorld buildPhysicsWorldSystem;// シミュレーショングループ内でないと実行時エラーになるみたい
-
-
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-
-            this.buildPhysicsWorldSystem = this.World.GetExistingSystem<BuildPhysicsWorld>();
-        }
-        
-
-        protected override void OnUpdate()
-        {
-            this.Dependency = JobHandle.CombineDependencies
-                (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
-
-
-            this.OnUpdateWith(this.buildPhysicsWorldSystem);
-
-
-            this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
-        }
-
-        protected abstract void OnUpdateWith(BuildPhysicsWorld physicsBuilder);
-    }
 }
