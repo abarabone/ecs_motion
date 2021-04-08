@@ -13,26 +13,31 @@ using Abarabone.SystemGroup;
 
 namespace Abarabone.CharacterMotion
 {
+    using Abarabone.Dependency;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
-    public class MotionInitializeSystem : SystemBase
+    public class MotionInitializeSystem : DependencyAccessableSystemBase
     {
 
-        EntityCommandBufferSystem buildPhysicsWorldSystem;
+
+        CommandBufferDependencySender cmddep;
 
 
         protected override void OnCreate()
         {
-            this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
-        }
-        
+            base.OnCreate();
 
+            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
 
         protected override void OnUpdate()
         {
-            var commands = this.buildPhysicsWorldSystem.CreateCommandBuffer().AsParallelWriter();
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
             var linkers = this.GetComponentDataFromEntity<Stream.RelationData>(isReadOnly: true);
             var shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>();
             var timers = this.GetComponentDataFromEntity<Stream.CursorData>();
@@ -70,8 +75,6 @@ namespace Abarabone.CharacterMotion
                     }
                 )
                 .ScheduleParallel();
-
-            this.buildPhysicsWorldSystem.AddJobHandleForProducer(this.Dependency);
 
             return;
 

@@ -30,6 +30,7 @@ namespace Abarabone.Arms
     using Abarabone.Utilities;
     using Abarabone.Physics;
     using Abarabone.SystemGroup;
+    using Abarabone.Dependency;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;
@@ -41,24 +42,26 @@ namespace Abarabone.Arms
     //[UpdateAfter(typeof(ObjectInitializeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     //[UpdateAfter(typeof())]
-    public class BulletLifeTimeSystem : SystemBase
+    public class BulletLifeTimeSystem : DependencyAccessableSystemBase
     {
 
 
-        EntityCommandBufferSystem cmdSystem;
+        CommandBufferDependencySender cmddep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
-
 
         protected override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var deltaTime = this.Time.DeltaTime;
 
@@ -86,9 +89,6 @@ namespace Abarabone.Arms
                     }
                 )
                 .ScheduleParallel();
-
-            // Make sure that the ECB system knows about our job
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
     }

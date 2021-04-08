@@ -33,7 +33,7 @@ namespace Abarabone.Draw
     {
 
 
-        public DependencyBarrier Barrier { get; } = DependencyBarrier.Create();
+        public BarrierDependencyReciever Barrier { get; } = BarrierDependencyReciever.Create();
 
 
 

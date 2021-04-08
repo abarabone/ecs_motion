@@ -58,13 +58,13 @@ namespace Abarabone.Dependency
         {
 
             public HitMessageHolder Holder { get; }
-            public DependencyBarrier Barrier { get; }
+            public BarrierDependencyReciever Barrier { get; }
 
 
             public Reciever(int capacity, int maxDependsSystem = 16)
             {
                 this.Holder = new HitMessageHolder(capacity);
-                this.Barrier = DependencyBarrier.Create(maxDependsSystem);
+                this.Barrier = BarrierDependencyReciever.Create(maxDependsSystem);
             }
 
 

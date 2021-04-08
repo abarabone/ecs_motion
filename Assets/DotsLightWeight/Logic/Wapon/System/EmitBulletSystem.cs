@@ -26,6 +26,7 @@ namespace Abarabone.Arms
     using Unity.Physics;
     using Abarabone.Structure;
     using UnityEngine.Rendering;
+    using Abarabone.Dependency;
 
     using Random = Unity.Mathematics.Random;
     using System;
@@ -34,23 +35,19 @@ namespace Abarabone.Arms
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class EmitBulletSystem : SystemBase
+    public class EmitBulletSystem : DependencyAccessableSystemBase
     {
 
-        EntityCommandBufferSystem cmdSystem;
 
-        //StructureHitMessageHolderAllocationSystem structureHitHolderSystem;
+        CommandBufferDependencySender cmddep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-
-            //this.structureHitHolderSystem = this.World.GetExistingSystem<StructureHitMessageHolderAllocationSystem>();
+            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
-
 
         struct PtoPUnit
         {
@@ -60,9 +57,10 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
-            //var structureHitHolder = this.structureHitHolderSystem.MsgHolder.AsParallelWriter();
+            using var cmdScope = this.cmddep.WithDependencyScope();
 
+
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
@@ -120,10 +118,6 @@ namespace Abarabone.Arms
                     }
                 )
                 .ScheduleParallel();
-
-            // Make sure that the ECB system knows about our job
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
-
         }
 
 

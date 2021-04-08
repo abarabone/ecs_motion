@@ -23,34 +23,37 @@ namespace Abarabone.Draw
     using Abarabone.SystemGroup;
     using Abarabone.Character;
     using Abarabone.Structure;
+    using Abarabone.Dependency;
 
 
+        /// <summary>
+        /// 現在は剛体に任せているが、いずれはここで計算したい
+        /// （現在は生存管理だけ）
+        /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     //[UpdateAfter(typeof())]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
-    public class StructurePartDebrisMoveSystem : SystemBase
+    public class StructurePartDebrisMoveSystem : DependencyAccessableSystemBase
     {
-        
-        EntityCommandBufferSystem cmdSystem;
+
+
+        CommandBufferDependencySender cmddep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
-        /// <summary>
-        /// 現在は剛体に任せているが、いずれはここで計算したい
-        /// （現在は生存管理だけ）
-        /// </summary>
         protected override void OnUpdate()
         {
+            using var cmdScope = this.cmddep.WithDependencyScope();
 
-            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
 
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var deltaTime = this.Time.DeltaTime;
 
@@ -75,8 +78,6 @@ namespace Abarabone.Draw
                     }
                 )
                 .ScheduleParallel();
-
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
     }

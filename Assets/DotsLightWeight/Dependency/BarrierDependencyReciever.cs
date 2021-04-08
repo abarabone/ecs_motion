@@ -12,13 +12,13 @@ namespace Abarabone.Dependency
     
     public interface IBarrierable
     {
-        DependencyBarrier Barrier { get; }
+        BarrierDependencyReciever Barrier { get; }
     }
 
 
 
     //public struct DependencyBarrier : IDisposable
-    public class DependencyBarrier : IDisposable
+    public class BarrierDependencyReciever : IDisposable
     {
 
 
@@ -28,8 +28,8 @@ namespace Abarabone.Dependency
 
 
 
-        public static DependencyBarrier Create(int capacity = 16) =>
-            new DependencyBarrier
+        public static BarrierDependencyReciever Create(int capacity = 16) =>
+            new BarrierDependencyReciever
             {
                 dependencyJobHandles = new NativeList<JobHandle>(capacity, Allocator.Persistent),
             };

@@ -39,13 +39,13 @@ namespace Abarabone.Character
     public class FreeFallWithHitSystem : DependencyAccessableSystemBase
     {
 
-        PhysicsHitDependency phydep;
+        PhysicsHitDependencySender phydep;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.phydep = PhysicsHitDependency.Create(this);
+            this.phydep = PhysicsHitDependencySender.Create(this);
         }
 
 

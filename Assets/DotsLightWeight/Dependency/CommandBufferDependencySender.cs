@@ -7,17 +7,17 @@ using Unity.Entities;
 namespace Abarabone.Dependency
 {
 
-    public struct CommandBufferDependency
+    public struct CommandBufferDependencySender
     {
 
         EntityCommandBufferSystem commandSystem;
         DependencyAccessableSystemBase dependentSystem;
 
 
-        public static CommandBufferDependency Create<TEntityCommandBufferSystem>(DependencyAccessableSystemBase system)
+        public static CommandBufferDependencySender Create<TEntityCommandBufferSystem>(DependencyAccessableSystemBase system)
             where TEntityCommandBufferSystem : EntityCommandBufferSystem
         =>
-            new CommandBufferDependency
+            new CommandBufferDependencySender
             {
                 commandSystem = system.World.GetExistingSystem<TEntityCommandBufferSystem>(),
                 dependentSystem = system,
@@ -35,7 +35,7 @@ namespace Abarabone.Dependency
 
         public struct DisposableDependency : IDisposable
         {
-            public CommandBufferDependency parent;
+            public CommandBufferDependencySender parent;
 
             public void Dispose()
             {

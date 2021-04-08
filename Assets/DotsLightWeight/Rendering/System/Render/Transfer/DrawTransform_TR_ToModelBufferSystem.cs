@@ -25,13 +25,13 @@ namespace Abarabone.Draw
     {
 
 
-        RegisterBarrier bardep;
+        BarrierDependencySender bardep;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.bardep = RegisterBarrier.Create<DrawMeshCsSystem>(this);
+            this.bardep = BarrierDependencySender.Create<DrawMeshCsSystem>(this);
         }
 
         protected unsafe override void OnUpdate()

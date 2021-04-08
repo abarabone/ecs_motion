@@ -18,15 +18,15 @@ namespace Abarabone.Dependency
 {
 
 
-    public struct PhysicsHitDependency
+    public struct PhysicsHitDependencySender
     {
 
         BuildPhysicsWorld buildPhysicsWorld;
         DependencyAccessableSystemBase dependentSystem;
 
 
-        public static PhysicsHitDependency Create(DependencyAccessableSystemBase system) =>
-            new PhysicsHitDependency
+        public static PhysicsHitDependencySender Create(DependencyAccessableSystemBase system) =>
+            new PhysicsHitDependencySender
             {
                 buildPhysicsWorld = system.World.GetExistingSystem<BuildPhysicsWorld>(),
                 dependentSystem = system,
@@ -46,7 +46,7 @@ namespace Abarabone.Dependency
 
         public struct DisposableDependency : IDisposable
         {
-            public PhysicsHitDependency parent;
+            public PhysicsHitDependencySender parent;
 
             public void Dispose()
             {

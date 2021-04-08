@@ -24,6 +24,7 @@ namespace Abarabone.Character
     using Abarabone.Character;
     using Abarabone.CharacterMotion;
     using Motion = Abarabone.CharacterMotion.Motion;
+    using Abarabone.Dependency;
 
 
     /// <summary>
@@ -33,21 +34,24 @@ namespace Abarabone.Character
     //[DisableAutoCreation]
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class SoldierWalkActionSystem : SystemBase
+    public class SoldierWalkActionSystem : DependencyAccessableSystemBase
     {
 
-        EntityCommandBufferSystem ecb;
 
+        CommandBufferDependencySender cmddep;
 
 
         protected override void OnCreate()
         {
-            this.ecb = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-        }
+            base.OnCreate();
 
+            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
 
         protected override void OnUpdate()
         {
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
 
             //inputDeps = new SoldierWalkActionJob
             //{
@@ -61,7 +65,7 @@ namespace Abarabone.Character
             //.Schedule( this, inputDeps );
             //this.ecb.AddJobHandleForProducer( inputDeps );
 
-            var commands = this.ecb.CreateCommandBuffer().AsParallelWriter();
+            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
             var motionInfos = this.GetComponentDataFromEntity<Motion.InfoData>(isReadOnly: true);
             var groundResults = this.GetComponentDataFromEntity<GroundHitResultData>(isReadOnly: true);
             var rotations = this.GetComponentDataFromEntity<Rotation>();
@@ -165,8 +169,6 @@ namespace Abarabone.Character
                     }
                 )
                 .ScheduleParallel();
-
-            this.ecb.AddJobHandleForProducer(this.Dependency);
         }
 
 

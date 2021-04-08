@@ -11,15 +11,32 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace Abarabone.MarchingCubes
 {
+    using Abarabone.Dependency;
+
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class DotGridFillingSystem : Common.BeginInitializationCommandSystemBase
+    public class DotGridFillingSystem : DependencyAccessableSystemBase
     {
+
+
+        CommandBufferDependencySender cmddep;
+
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
+
         protected override void OnUpdate()
         {
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+            var cmd = this.cmddep.CreateCommandBuffer();
+
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
             var defaults = globaldata.DefaultGrids;
-
-            var cmd = this.cmdSystem.CreateCommandBuffer();
 
             this.Entities
                 .WithBurst()

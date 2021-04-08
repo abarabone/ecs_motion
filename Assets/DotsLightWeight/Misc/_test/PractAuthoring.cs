@@ -11,6 +11,7 @@ using Abarabone.Model;
 using Abarabone.Model.Authoring;
 //using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
+using Abarabone.Dependency;
 
 public class PractAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {
@@ -49,23 +50,26 @@ public struct SingleSpawnData : IComponentData
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
-public class PracSpawnSystem : SystemBase
+public class PracSpawnSystem : DependencyAccessableSystemBase
 {
 
-    EntityCommandBufferSystem cmdSystem;
+
+    CommandBufferDependencySender cmddep;
 
 
     protected override void OnCreate()
     {
         base.OnCreate();
 
-        this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+        this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
     }
-
 
     protected override void OnUpdate()
     {
-        var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+        using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+        var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
         this.Entities
             //.WithoutBurst()
@@ -85,9 +89,6 @@ public class PracSpawnSystem : SystemBase
                 }
             )
             .ScheduleParallel();
-
-        // Make sure that the ECB system knows about our job
-        this.cmdSystem.AddJobHandleForProducer(this.Dependency);
     }
 
 }

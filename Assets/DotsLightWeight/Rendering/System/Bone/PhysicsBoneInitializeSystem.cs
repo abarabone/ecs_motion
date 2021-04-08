@@ -20,28 +20,33 @@ namespace Abarabone.Physics
     using Abarabone.Character;
     using Abarabone.CharacterMotion;//
     using Abarabone.Model;
-
+    using Abarabone.Dependency;
 
 
     //[DisableAutoCreation]
     //[UpdateInGroup( typeof( BonePhysicsSystemGroup ) )]
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
-    public class PhysicsBoneInitializeSystem : SystemBase
+    public class PhysicsBoneInitializeSystem : DependencyAccessableSystemBase
     {
 
-        EntityCommandBufferSystem cmdSystem;
+
+        CommandBufferDependencySender cmddep;
 
 
         protected override void OnCreate()
         {
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
-        }
+            base.OnCreate();
 
+            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
 
         protected override void OnUpdate()
         {
-            var commands = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
             var translations = this.GetComponentDataFromEntity<Translation>();// isReadOnly: true );
             var rotations = this.GetComponentDataFromEntity<Rotation>();// isReadOnly: true );
 
@@ -76,9 +81,6 @@ namespace Abarabone.Physics
                     }
                 )
                 .ScheduleParallel();
-
-            // Make sure that the ECB system knows about our job
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
     }

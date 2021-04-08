@@ -6,17 +6,17 @@ using System;
 namespace Abarabone.Dependency
 {
 
-    public struct RegisterBarrier
+    public struct BarrierDependencySender
     {
 
         IBarrierable barrierSystem;
         DependencyAccessableSystemBase dependentSystem;
 
 
-        public static RegisterBarrier Create<TBarrierableSystem>(DependencyAccessableSystemBase system)
+        public static BarrierDependencySender Create<TBarrierableSystem>(DependencyAccessableSystemBase system)
             where TBarrierableSystem : SystemBase, IBarrierable
         =>
-            new RegisterBarrier
+            new BarrierDependencySender
             {
                 barrierSystem = system.World.GetExistingSystem<TBarrierableSystem>(),
                 dependentSystem = system,
@@ -33,7 +33,7 @@ namespace Abarabone.Dependency
 
         public struct DependencyScope : IDisposable
         {
-            public RegisterBarrier parent;
+            public BarrierDependencySender parent;
 
             public void Dispose()
             {

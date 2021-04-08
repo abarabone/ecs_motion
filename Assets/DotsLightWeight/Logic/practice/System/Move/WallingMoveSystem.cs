@@ -57,13 +57,13 @@ namespace Abarabone.Character
     public class WallingMoveSystem : DependencyAccessableSystemBase
     {
 
-        PhysicsHitDependency phydep;
+        PhysicsHitDependencySender phydep;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.phydep = PhysicsHitDependency.Create(this);
+            this.phydep = PhysicsHitDependencySender.Create(this);
         }
 
         protected override void OnUpdate()
@@ -199,8 +199,7 @@ namespace Abarabone.Character
         }
 
 
-        public static DirectionUnit getDirection(this WallHangingData walling, float3 pos, quaternion rot)
-        =>
+        public static DirectionUnit getDirection(this WallHangingData walling, float3 pos, quaternion rot) =>
             walling.State switch
             {
                 WallHangingData.WallingState.none_rotating => new DirectionUnit
@@ -249,9 +248,9 @@ namespace Abarabone.Character
             //var angle = math.lengthsq(drot);
             //var angular = axis * (angle * rdt);
 
-            pos.Value = newposrot.pos;
+            //pos.Value = newposrot.pos;
             rot.Value = newposrot.rot;
-            v.Linear = 0;// linear;
+            v.Linear = linear;
             v.Angular = 0;//
         }
 

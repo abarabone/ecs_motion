@@ -24,28 +24,34 @@ namespace Abarabone.Draw
     using Abarabone.Character;
     using Abarabone.Structure;
     using System.Runtime.CompilerServices;
+    using Abarabone.Dependency;
 
 
+        /// <summary>
+        /// linked entity 番号を固定で使ってしまったので、問題でたらちゃんとなおさなければならない
+        /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class StructureSwitchingSystem : SystemBase
+    public class StructureSwitchingSystem : DependencyAccessableSystemBase
     {
 
-        EntityCommandBufferSystem cmdSystem;
+
+        CommandBufferDependencySender cmddep;
+
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
-        /// <summary>
-        /// linked entity 番号を固定で使ってしまったので、問題でたらちゃんとなおさなければならない
-        /// </summary>
         protected override void OnUpdate()
         {
-            var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             //var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);
@@ -91,9 +97,6 @@ namespace Abarabone.Draw
                     }
                 )
                 .ScheduleParallel();
-
-            // Make sure that the ECB system knows about our job
-            this.cmdSystem.AddJobHandleForProducer(this.Dependency);
         }
 
 

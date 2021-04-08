@@ -12,6 +12,7 @@ using Abarabone.Model.Authoring;
 //using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System;
+using Abarabone.Dependency;
 
 public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {
@@ -72,23 +73,26 @@ static class Spawn
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
-public class SpawnFreqencySystem : SystemBase
+public class SpawnFreqencySystem : DependencyAccessableSystemBase
 {
 
-    EntityCommandBufferSystem cmdSystem;
+
+    CommandBufferDependencySender cmddep;
 
 
     protected override void OnCreate()
     {
         base.OnCreate();
 
-        this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+        this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
     }
-
 
     protected override void OnUpdate()
     {
-        var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+        using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+        var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
         this.Entities
             .WithBurst()
@@ -114,32 +118,32 @@ public class SpawnFreqencySystem : SystemBase
                 }
             )
             .ScheduleParallel();
-
-        // Make sure that the ECB system knows about our job
-        this.cmdSystem.AddJobHandleForProducer(this.Dependency);
     }
 
 }
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
-public class SpawnSystem : SystemBase
+public class SpawnSystem : DependencyAccessableSystemBase
 {
 
-    EntityCommandBufferSystem cmdSystem;
+
+    CommandBufferDependencySender cmddep;
 
 
     protected override void OnCreate()
     {
         base.OnCreate();
 
-        this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+        this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
     }
-
 
     protected override void OnUpdate()
     {
-        var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+        using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+        var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
         this.Entities
             .WithBurst()
@@ -161,9 +165,6 @@ public class SpawnSystem : SystemBase
                 }
             )
             .ScheduleParallel();
-
-        // Make sure that the ECB system knows about our job
-        this.cmdSystem.AddJobHandleForProducer(this.Dependency);
     }
 
 }
@@ -176,23 +177,26 @@ public struct ObjectInitializeData : IComponentData
 }
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
-public class ObjectInitializeSystem : SystemBase
+public class ObjectInitializeSystem : DependencyAccessableSystemBase
 {
 
-    EntityCommandBufferSystem cmdSystem;
+
+    CommandBufferDependencySender cmddep;
 
 
     protected override void OnCreate()
     {
         base.OnCreate();
 
-        this.cmdSystem = this.World.GetExistingSystem<BeginInitializationEntityCommandBufferSystem>();
+        this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
     }
-
 
     protected override void OnUpdate()
     {
-        var cmd = this.cmdSystem.CreateCommandBuffer().AsParallelWriter();
+        using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+        var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
         this.Entities
             //.WithoutBurst()
@@ -237,9 +241,6 @@ public class ObjectInitializeSystem : SystemBase
                 }
             )
             .ScheduleParallel();
-
-        // Make sure that the ECB system knows about our job
-        this.cmdSystem.AddJobHandleForProducer(this.Dependency);
     }
 
 }

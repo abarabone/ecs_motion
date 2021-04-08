@@ -18,14 +18,14 @@ namespace Abarabone.CharacterMotion
     public class MotionBInitializeSystem : DependencyAccessableSystemBase
     {
 
-        CommandBufferDependency cmddep;
+        CommandBufferDependencySender cmddep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmddep = CommandBufferDependency.Create<BeginInitializationEntityCommandBufferSystem>(this);
+            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
         protected override void OnUpdate()

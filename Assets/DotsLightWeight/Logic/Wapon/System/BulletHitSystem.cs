@@ -27,9 +27,6 @@ namespace Abarabone.Arms
     using Abarabone.Character.Action;
     using Abarabone.Structure;
 
-    using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
-    using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
-
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
@@ -41,7 +38,7 @@ namespace Abarabone.Arms
 
         HitMessage<StructureHitMessage>.Sender sender;
 
-        PhysicsHitDependency phydep;
+        PhysicsHitDependencySender phydep;
 
 
         protected override void OnCreate()
@@ -50,7 +47,7 @@ namespace Abarabone.Arms
 
             this.sender = HitMessage<StructureHitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
 
-            this.phydep = PhysicsHitDependency.Create(this);
+            this.phydep = PhysicsHitDependencySender.Create(this);
         }
 
 
