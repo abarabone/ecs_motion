@@ -55,6 +55,11 @@ namespace Abarabone.Character
 
     // 当たり判定 -----------------------------------------------
 
+    static public class GroudHit
+    {
+
+    }
+
     public struct GroundHitResultData : IComponentData
     {
         public bool IsGround;
@@ -127,9 +132,28 @@ namespace Abarabone.Character
 
     // ダメージなど -----------------------------------------------------
 
-    public struct SimpleDamageData : IComponentData
+    public static class Life
     {
-        public float Durability;
+        public struct SimpleDamageData : IComponentData
+        {
+            public float Durability;
+        }
+    }
+
+
+    // 移動ターゲット -----------------------------------------------------------
+
+    public static class MoveTarget
+    {
+        public struct PositionData : IComponentData
+        {
+            public float3 Position;
+        }
+
+        public struct MainLinkData : IComponentData
+        {
+            Entity MainEntity;
+        }
     }
 
 }
