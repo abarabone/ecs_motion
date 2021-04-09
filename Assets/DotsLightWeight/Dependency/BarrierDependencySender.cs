@@ -5,45 +5,48 @@ using System;
 
 namespace Abarabone.Dependency
 {
-
-    public struct BarrierDependencySender
+    public static partial class BarrierDependency
     {
 
-        IBarrierable barrierSystem;
-        DependencyAccessableSystemBase dependentSystem;
-
-
-        public static BarrierDependencySender Create<TBarrierableSystem>(DependencyAccessableSystemBase system)
-            where TBarrierableSystem : SystemBase, IBarrierable
-        =>
-            new BarrierDependencySender
-            {
-                barrierSystem = system.World.GetExistingSystem<TBarrierableSystem>(),
-                dependentSystem = system,
-            };
-
-
-        public DependencyScope WithDependencyScope()
+        public struct Sender
         {
-            //dependentSystem.AddInputDependency(this.barrierSystem.GetOutputDependency());
 
-            return new DependencyScope { parent = this };
-        }
+            IRecievable barrierSystem;
+            DependencyAccessableSystemBase dependentSystem;
 
 
-        public struct DependencyScope : IDisposable
-        {
-            public BarrierDependencySender parent;
+            public static BarrierDependency.Sender Create<TBarrierableSystem>(DependencyAccessableSystemBase system)
+                where TBarrierableSystem : SystemBase, IRecievable
+            =>
+                new Sender
+                {
+                    barrierSystem = system.World.GetExistingSystem<TBarrierableSystem>(),
+                    dependentSystem = system,
+                };
 
-            public void Dispose()
+
+            public DependencyScope WithDependencyScope()
             {
-                var bar = this.parent.barrierSystem.Barrier;
-                var dep = this.parent.dependentSystem;
-                bar.AddDependencyBefore(dep.GetOutputDependency());
+                //dependentSystem.AddInputDependency(this.barrierSystem.GetOutputDependency());
+
+                return new DependencyScope { parent = this };
+            }
+
+
+            public struct DependencyScope : IDisposable
+            {
+                public Sender parent;
+
+                public void Dispose()
+                {
+                    var bar = this.parent.barrierSystem.Reciever;
+                    var dep = this.parent.dependentSystem;
+                    bar.AddDependencyBefore(dep.GetOutputDependency());
+                }
             }
         }
-    }
 
+    }
 }
 
 

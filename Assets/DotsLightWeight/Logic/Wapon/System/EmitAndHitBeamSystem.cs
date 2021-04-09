@@ -38,26 +38,26 @@ namespace Abarabone.Arms
     public class EmitAndHitBeamSystem : DependencyAccessableSystemBase
     {
 
-        CommandBufferDependencySender cmddep;
+        CommandBufferDependency.Sender cmddep;
 
-        PhysicsHitDependencySender phydep;
+        PhysicsHitDependency.Sender phydep;
 
         HitMessage<StructureHitMessage>.Sender sender;
 
-        //BarrierDependencyReciever bardep;
+        //BarrierDependency.Reciever bardep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
 
-            this.phydep = PhysicsHitDependencySender.Create(this);
+            this.phydep = PhysicsHitDependency.Sender.Create(this);
 
             this.sender = HitMessage<StructureHitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
 
-            //this.bardep = BarrierDependencyReciever.Create();
+            //this.bardep = BarrierDependency.Reciever.Create();
         }
 
 

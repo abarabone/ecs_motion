@@ -6,45 +6,48 @@ using Unity.Entities;
 
 namespace Abarabone.Dependency
 {
-
-    public struct CommandBufferDependencySender
+    public static partial class CommandBufferDependency
     {
 
-        EntityCommandBufferSystem commandSystem;
-        DependencyAccessableSystemBase dependentSystem;
-
-
-        public static CommandBufferDependencySender Create<TEntityCommandBufferSystem>(DependencyAccessableSystemBase system)
-            where TEntityCommandBufferSystem : EntityCommandBufferSystem
-        =>
-            new CommandBufferDependencySender
-            {
-                commandSystem = system.World.GetExistingSystem<TEntityCommandBufferSystem>(),
-                dependentSystem = system,
-            };
-        
-
-
-        public EntityCommandBuffer CreateCommandBuffer() =>
-            this.commandSystem.CreateCommandBuffer();
-
-
-        public DisposableDependency WithDependencyScope() =>
-            new DisposableDependency { parent = this };
-
-
-        public struct DisposableDependency : IDisposable
+        public struct Sender
         {
-            public CommandBufferDependencySender parent;
 
-            public void Dispose()
+            EntityCommandBufferSystem commandSystem;
+            DependencyAccessableSystemBase dependentSystem;
+
+
+            public static Sender Create<TEntityCommandBufferSystem>(DependencyAccessableSystemBase system)
+                where TEntityCommandBufferSystem : EntityCommandBufferSystem
+            =>
+                new Sender
+                {
+                    commandSystem = system.World.GetExistingSystem<TEntityCommandBufferSystem>(),
+                    dependentSystem = system,
+                };
+
+
+
+            public EntityCommandBuffer CreateCommandBuffer() =>
+                this.commandSystem.CreateCommandBuffer();
+
+
+            public DisposableDependency WithDependencyScope() =>
+                new DisposableDependency { parent = this };
+
+
+            public struct DisposableDependency : IDisposable
             {
-                var cmd = this.parent.commandSystem;
-                var dep = this.parent.dependentSystem.GetOutputDependency();
-                cmd.AddJobHandleForProducer(dep);
+                public Sender parent;
+
+                public void Dispose()
+                {
+                    var cmd = this.parent.commandSystem;
+                    var dep = this.parent.dependentSystem.GetOutputDependency();
+                    cmd.AddJobHandleForProducer(dep);
+                }
             }
         }
-    }
 
+    }
 }
 

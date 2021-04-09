@@ -18,12 +18,6 @@ namespace Abarabone.Dependency
     { }
 
 
-    public interface IRecievable<THitMessage>
-        where THitMessage : struct, IHitMessage
-    {
-        HitMessage<THitMessage>.Reciever Reciever { get; }
-    }
-
 
     public static partial class HitMessage<THitMessage>
         where THitMessage : struct, IHitMessage

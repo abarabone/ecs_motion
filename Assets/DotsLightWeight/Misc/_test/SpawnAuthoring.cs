@@ -77,14 +77,14 @@ public class SpawnFreqencySystem : DependencyAccessableSystemBase
 {
 
 
-    CommandBufferDependencySender cmddep;
+    CommandBufferDependency.Sender cmddep;
 
 
     protected override void OnCreate()
     {
         base.OnCreate();
 
-        this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
     }
 
     protected override void OnUpdate()
@@ -128,14 +128,14 @@ public class SpawnSystem : DependencyAccessableSystemBase
 {
 
 
-    CommandBufferDependencySender cmddep;
+    CommandBufferDependency.Sender cmddep;
 
 
     protected override void OnCreate()
     {
         base.OnCreate();
 
-        this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
     }
 
     protected override void OnUpdate()
@@ -181,14 +181,14 @@ public class ObjectInitializeSystem : DependencyAccessableSystemBase
 {
 
 
-    CommandBufferDependencySender cmddep;
+    CommandBufferDependency.Sender cmddep;
 
 
     protected override void OnCreate()
     {
         base.OnCreate();
 
-        this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
     }
 
     protected override void OnUpdate()

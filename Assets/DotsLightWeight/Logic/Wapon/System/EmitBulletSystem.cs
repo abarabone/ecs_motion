@@ -39,14 +39,14 @@ namespace Abarabone.Arms
     {
 
 
-        CommandBufferDependencySender cmddep;
+        CommandBufferDependency.Sender cmddep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
         struct PtoPUnit

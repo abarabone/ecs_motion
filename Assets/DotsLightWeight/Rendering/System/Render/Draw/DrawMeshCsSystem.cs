@@ -29,11 +29,11 @@ namespace Abarabone.Draw
     //[DisableAutoCreation]
     //[UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    public class DrawMeshCsSystem : SystemBase, IBarrierable
+    public class DrawMeshCsSystem : SystemBase, BarrierDependency.IRecievable
     {
 
 
-        public BarrierDependencyReciever Barrier { get; } = BarrierDependencyReciever.Create();
+        public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();
 
 
 
@@ -41,12 +41,12 @@ namespace Abarabone.Draw
         {
             base.OnDestroy();
 
-            this.Barrier.Dispose();
+            this.Reciever.Dispose();
         }
 
         protected override unsafe void OnUpdate()
         {
-            this.Barrier.CompleteAllDependentJobs(this.Dependency);
+            this.Reciever.CompleteAllDependentJobs(this.Dependency);
 
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;

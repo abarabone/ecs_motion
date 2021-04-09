@@ -24,13 +24,13 @@ namespace Abarabone.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class StructureHitMessageApplySystem : DependencyAccessableSystemBase, IRecievable<StructureHitMessage>
+    public class StructureHitMessageApplySystem : DependencyAccessableSystemBase, HitMessage<StructureHitMessage>.IRecievable
     {
 
 
         public HitMessage<StructureHitMessage>.Reciever Reciever { get; private set; }
 
-        CommandBufferDependencySender cmddep;
+        CommandBufferDependency.Sender cmddep;
 
 
         protected override void OnCreate()
@@ -38,7 +38,7 @@ namespace Abarabone.Structure
             base.OnCreate();
 
             this.Reciever = new HitMessage<StructureHitMessage>.Reciever(10000);
-            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
         protected override void OnDestroy()
@@ -68,12 +68,12 @@ namespace Abarabone.Structure
                 Rotations = rots,
                 Positions = poss,
             }
-            .ScheduleParallel(this.Reciever, 32, this.Dependency);
+            .ScheduleParallelEach(this.Reciever, 32, this.Dependency);
         }
 
 
         [BurstCompile]
-        public struct JobExecution : HitMessage<StructureHitMessage>.IApplyJobExecution
+        public struct JobExecution : HitMessage<StructureHitMessage>.IApplyJobExecutionForEach
         {
 
             public EntityCommandBuffer.ParallelWriter Cmd;

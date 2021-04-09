@@ -57,13 +57,13 @@ namespace Abarabone.Character
     public class WallingMoveSystem : DependencyAccessableSystemBase
     {
 
-        PhysicsHitDependencySender phydep;
+        PhysicsHitDependency.Sender phydep;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.phydep = PhysicsHitDependencySender.Create(this);
+            this.phydep = PhysicsHitDependency.Sender.Create(this);
         }
 
         protected override void OnUpdate()

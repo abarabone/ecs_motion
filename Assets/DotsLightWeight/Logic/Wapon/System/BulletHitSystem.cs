@@ -25,7 +25,6 @@ namespace Abarabone.Arms
     using Unity.Physics;
     using Abarabone.Structure;
     using Abarabone.Character.Action;
-    using Abarabone.Structure;
 
 
     //[DisableAutoCreation]
@@ -38,7 +37,7 @@ namespace Abarabone.Arms
 
         HitMessage<StructureHitMessage>.Sender sender;
 
-        PhysicsHitDependencySender phydep;
+        PhysicsHitDependency.Sender phydep;
 
 
         protected override void OnCreate()
@@ -47,7 +46,7 @@ namespace Abarabone.Arms
 
             this.sender = HitMessage<StructureHitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
 
-            this.phydep = PhysicsHitDependencySender.Create(this);
+            this.phydep = PhysicsHitDependency.Sender.Create(this);
         }
 
 

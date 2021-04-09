@@ -13,22 +13,17 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine.InputSystem;
 
-using Collider = Unity.Physics.Collider;
-using SphereCollider = Unity.Physics.SphereCollider;
-using RaycastHit = Unity.Physics.RaycastHit;
-
-using Abarabone.Misc;
-using Abarabone.Utilities;
-using Abarabone.SystemGroup;
-using Abarabone.Character;
-using Abarabone.CharacterMotion;
-
 namespace Abarabone.Character
 {
+    using Abarabone.Misc;
+    using Abarabone.Utilities;
+    using Abarabone.SystemGroup;
+    using Abarabone.Character;
+    using Abarabone.CharacterMotion;
 
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class AntMoveDirectionSystem : SystemBase
     {
@@ -41,24 +36,34 @@ namespace Abarabone.Character
 
         protected override void OnUpdate()
         {
-            //inputDeps = new AiJob
-            //{ }
-            //.Schedule( this, inputDeps );
+
+            var targets = this.GetComponentDataFromEntity<AttackTarget.PositionData>(isReadOnly: true);
+
 
             this.Entities
                 .WithBurst()
                 .WithAll<AntTag>()
+                .WithReadOnly(targets)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref MoveHandlingData handler,
-                        in Rotation rot
+                        ref Rotation rot,
+                        in Translation pos,
+                        in AttackTarget.MoveTargetLinkData link
                     )
                 =>
                     {
-                        //handler.ControlAction.HorizontalRotation = quaternion.identity;
-                        //handler.ControlAction.LookRotation = quaternion.identity;
-                        //handler.ControlAction.MoveDirection = math.forward(rot.Value);
+
+                        var target = targets[link.MoveTargetEnity];
+
+                        var dir = target.Position - pos.Value;
+                        var up = math.mul(rot.Value, math.up());
+
+                        if (math.dot(dir, up) < float.MinValue) return;
+
+
+                        rot.Value = quaternion.LookRotation(dir, up);
+
                     }
                 )
                 .ScheduleParallel();

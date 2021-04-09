@@ -8,69 +8,77 @@ using Unity.Collections;
 
 namespace Abarabone.Dependency
 {
-
-    
-    public interface IBarrierable
+    public static partial class BarrierDependency
     {
-        BarrierDependencyReciever Barrier { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public interface IRecievable
+        {
+            BarrierDependency.Reciever Reciever { get; }
+        }
+
     }
 
-
-
-    //public struct DependencyBarrier : IDisposable
-    public class BarrierDependencyReciever : IDisposable
+    public static partial class BarrierDependency
     {
 
 
+        //public struct DependencyBarrier : IDisposable
+        public class Reciever : IDisposable
+        {
 
-        NativeList<JobHandle> dependencyJobHandles;
+
+
+            NativeList<JobHandle> dependencyJobHandles;
 
 
 
 
-        public static BarrierDependencyReciever Create(int capacity = 16) =>
-            new BarrierDependencyReciever
+            public static Reciever Create(int capacity = 16) =>
+                new Reciever
+                {
+                    dependencyJobHandles = new NativeList<JobHandle>(capacity, Allocator.Persistent),
+                };
+
+            public void Dispose() => this.dependencyJobHandles.Dispose();
+
+
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public void AddDependencyBefore(JobHandle jobHandle) => this.dependencyJobHandles.Add(jobHandle);
+
+
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public JobHandle CombineAllDependentJobs(JobHandle prevDependency)
             {
-                dependencyJobHandles = new NativeList<JobHandle>(capacity, Allocator.Persistent),
-            };
+                this.dependencyJobHandles.Add(prevDependency);
 
-        public void Dispose() => this.dependencyJobHandles.Dispose();
+                var resultJob = JobHandle.CombineDependencies(this.dependencyJobHandles);
 
+                this.dependencyJobHandles.Clear();
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void AddDependencyBefore(JobHandle jobHandle) => this.dependencyJobHandles.Add(jobHandle);
+                return resultJob;
+            }
 
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public JobHandle CombineAllDependentJobs(JobHandle prevDependency)
-        {
-            this.dependencyJobHandles.Add(prevDependency);
+            /// <summary>
+            /// 
+            /// </summary>
+            public void CompleteAllDependentJobs(JobHandle prevDependency)
+            {
+                this.CombineAllDependentJobs(prevDependency).Complete();
+            }
 
-            var resultJob = JobHandle.CombineDependencies(this.dependencyJobHandles);
 
-            this.dependencyJobHandles.Clear();
-
-            return resultJob;
         }
-
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void CompleteAllDependentJobs(JobHandle prevDependency)
-        {
-            this.CombineAllDependentJobs(prevDependency).Complete();
-        }
-        
 
     }
-
-
 }

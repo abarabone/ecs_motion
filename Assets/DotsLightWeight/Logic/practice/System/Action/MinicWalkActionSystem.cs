@@ -36,14 +36,14 @@ namespace Abarabone.Character.Action
     public class MinicrWalkActionSystem : DependencyAccessableSystemBase
     {
 
-        CommandBufferDependencySender cmddep;
+        CommandBufferDependency.Sender cmddep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmddep = CommandBufferDependencySender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
         protected override void OnUpdate()

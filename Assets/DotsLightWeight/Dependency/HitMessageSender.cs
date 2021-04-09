@@ -21,15 +21,15 @@ namespace Abarabone.Dependency
         public struct Sender
         {
 
-            IRecievable<THitMessage> recievableSystem;
+            IRecievable recievableSystem;
             DependencyAccessableSystemBase dependentSystem;
 
 
 
             public static Sender Create<TRecievable>(DependencyAccessableSystemBase senderSystem)
-                where TRecievable : SystemBase, IRecievable<THitMessage>
+                where TRecievable : SystemBase, IRecievable
             =>
-                new HitMessage<THitMessage>.Sender
+                new Sender
                 {
                     dependentSystem = senderSystem,
                     recievableSystem = senderSystem.World.GetExistingSystem<TRecievable>(),

@@ -16,45 +16,47 @@ using Unity.Physics.Systems;
 
 namespace Abarabone.Dependency
 {
-
-
-    public struct PhysicsHitDependencySender
+    public static partial class PhysicsHitDependency
     {
 
-        BuildPhysicsWorld buildPhysicsWorld;
-        DependencyAccessableSystemBase dependentSystem;
-
-
-        public static PhysicsHitDependencySender Create(DependencyAccessableSystemBase system) =>
-            new PhysicsHitDependencySender
-            {
-                buildPhysicsWorld = system.World.GetExistingSystem<BuildPhysicsWorld>(),
-                dependentSystem = system,
-            };
-
-
-        public PhysicsWorld PhysicsWorld => this.buildPhysicsWorld.PhysicsWorld;
-
-
-        public DisposableDependency WithDependencyScope()
+        public struct Sender
         {
-            dependentSystem.AddInputDependency(this.buildPhysicsWorld.GetOutputDependency());
 
-            return new DisposableDependency { parent = this };
-        }
+            BuildPhysicsWorld buildPhysicsWorld;
+            DependencyAccessableSystemBase dependentSystem;
 
 
-        public struct DisposableDependency : IDisposable
-        {
-            public PhysicsHitDependencySender parent;
+            public static Sender Create(DependencyAccessableSystemBase system) =>
+                new Sender
+                {
+                    buildPhysicsWorld = system.World.GetExistingSystem<BuildPhysicsWorld>(),
+                    dependentSystem = system,
+                };
 
-            public void Dispose()
+
+            public PhysicsWorld PhysicsWorld => this.buildPhysicsWorld.PhysicsWorld;
+
+
+            public DisposableDependency WithDependencyScope()
             {
-                var phys = this.parent.buildPhysicsWorld;
-                var dep = this.parent.dependentSystem;
-                phys.AddInputDependencyToComplete(dep.GetOutputDependency());
+                dependentSystem.AddInputDependency(this.buildPhysicsWorld.GetOutputDependency());
+
+                return new DisposableDependency { parent = this };
+            }
+
+
+            public struct DisposableDependency : IDisposable
+            {
+                public Sender parent;
+
+                public void Dispose()
+                {
+                    var phys = this.parent.buildPhysicsWorld;
+                    var dep = this.parent.dependentSystem;
+                    phys.AddInputDependencyToComplete(dep.GetOutputDependency());
+                }
             }
         }
-    }
 
+    }
 }

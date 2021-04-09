@@ -14,22 +14,40 @@ namespace Abarabone.Dependency
 {
 
 
-
     public static partial class HitMessage<THitMessage>
     {
         /// <summary>
+        /// 
+        /// </summary>
+        public interface IRecievable
+        {
+            Reciever Reciever { get; }
+        }
+
+        /// <summary>
         /// hit message を処理するジョブを構築する。
         /// </summary>
-        public interface IApplyJobExecution
+        public interface IApplyJobExecutionForEach
         {
             void Execute(int index, Entity targetEntity, THitMessage hitMessage);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public interface IApplyJobExecutionForKey
+        {
+            void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, THitMessage>.Enumerator hitMessages);
+        }
     }
+
+
 
     public static class HitMessageApplyJobExtension
     {
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static JobHandle ScheduleParallel<THitMessage, TJobInnerExecution>
+        public static JobHandle ScheduleParallelEach<THitMessage, TJobInnerExecution>
             (
                 this TJobInnerExecution job,
                 HitMessage<THitMessage>.Reciever reciever,
@@ -37,9 +55,24 @@ namespace Abarabone.Dependency
                 JobHandle dependency
             )
             where THitMessage : struct, IHitMessage
-            where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecution
+            where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForEach
         =>
-            reciever.ScheduleParallel(dependency, innerLoopBatchCount, job);
+            reciever.ScheduleEachParallel(dependency, innerLoopBatchCount, job);
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static JobHandle ScheduleParallelKey<THitMessage, TJobInnerExecution>
+            (
+                this TJobInnerExecution job,
+                HitMessage<THitMessage>.Reciever reciever,
+                int innerLoopBatchCount,
+                JobHandle dependency
+            )
+            where THitMessage : struct, IHitMessage
+            where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForKey
+        =>
+            reciever.ScheduleKeyParallel(dependency, innerLoopBatchCount, job);
+
     }
 
 
@@ -58,25 +91,37 @@ namespace Abarabone.Dependency
         {
 
             public HitMessageHolder Holder { get; }
-            public BarrierDependencyReciever Barrier { get; }
+            public BarrierDependency.Reciever Barrier { get; }
 
 
             public Reciever(int capacity, int maxDependsSystem = 16)
             {
                 this.Holder = new HitMessageHolder(capacity);
-                this.Barrier = BarrierDependencyReciever.Create(maxDependsSystem);
+                this.Barrier = BarrierDependency.Reciever.Create(maxDependsSystem);
             }
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public JobHandle ScheduleParallel<TJobInnerExecution>
+            public JobHandle ScheduleEachParallel<TJobInnerExecution>
                 (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
-                where TJobInnerExecution : struct, IApplyJobExecution
+                where TJobInnerExecution : struct, IApplyJobExecutionForEach
             {
                 //this.waiter.CompleteAllDependentJobs(dependency);
                 //var dep0 = dependency;
                 var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
-                var dep1 = this.Holder.ExecutionAndSchedule(dep0, innerLoopBatchCount, execution);
+                var dep1 = this.Holder.ExecuteEachAndSchedule(dep0, innerLoopBatchCount, execution);
+                var dep2 = this.Holder.ClearAndSchedule(dep1);
+
+                return dep2;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public JobHandle ScheduleKeyParallel<TJobInnerExecution>
+                (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
+                where TJobInnerExecution : struct, IApplyJobExecutionForKey
+            {
+                var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
+                var dep1 = this.Holder.ExecuteKeyAndSchedule(dep0, innerLoopBatchCount, execution);
                 var dep2 = this.Holder.ClearAndSchedule(dep1);
 
                 return dep2;
@@ -125,11 +170,25 @@ namespace Abarabone.Dependency
 
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public JobHandle ExecutionAndSchedule<TJobInnerExecution>
+                public JobHandle ExecuteEachAndSchedule<TJobInnerExecution>
                     (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
-                    where TJobInnerExecution : struct, IApplyJobExecution
+                    where TJobInnerExecution : struct, IApplyJobExecutionForEach
                 =>
-                    new HitMessageApplyJob<TJobInnerExecution>
+                    new HitMessageApplyJobForEach<TJobInnerExecution>
+                    {
+                        MessageHolder = this.messageHolder,
+                        KeyEntities = this.keyEntities.AsDeferredJobArray(),
+                        InnerJob = execution,
+                    }
+                    .Schedule(this.keyEntities, innerLoopBatchCount, dependency);
+
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public JobHandle ExecuteKeyAndSchedule<TJobInnerExecution>
+                    (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
+                    where TJobInnerExecution : struct, IApplyJobExecutionForKey
+                =>
+                    new HitMessageApplyJobForKey<TJobInnerExecution>
                     {
                         MessageHolder = this.messageHolder,
                         KeyEntities = this.keyEntities.AsDeferredJobArray(),
@@ -177,12 +236,13 @@ namespace Abarabone.Dependency
                 }
             }
 
+
             /// <summary>
             /// 
             /// </summary>
             [BurstCompile]
-            struct HitMessageApplyJob<TJobInnerExecution> : IJobParallelForDefer
-                where TJobInnerExecution : struct, IApplyJobExecution
+            struct HitMessageApplyJobForEach<TJobInnerExecution> : IJobParallelForDefer
+                where TJobInnerExecution : struct, IApplyJobExecutionForEach
             {
                 [ReadOnly]
                 public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
@@ -210,6 +270,34 @@ namespace Abarabone.Dependency
             }
 
 
+            /// <summary>
+            /// 
+            /// </summary>
+            [BurstCompile]
+            struct HitMessageApplyJobForKey<TJobInnerExecution> : IJobParallelForDefer
+                where TJobInnerExecution : struct, IApplyJobExecutionForKey
+            {
+                [ReadOnly]
+                public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
+
+                [ReadOnly]
+                public NativeArray<Entity> KeyEntities;
+
+
+                [NativeDisableParallelForRestriction]
+                [NativeDisableContainerSafetyRestriction]
+                public TJobInnerExecution InnerJob;
+
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public void Execute(int index)
+                {
+                    var key = this.KeyEntities[index];
+                    var msgs = this.MessageHolder.GetValuesForKey(key);
+
+                    this.InnerJob.Execute(index, key, msgs);
+                }
+            }
         }
 
 
