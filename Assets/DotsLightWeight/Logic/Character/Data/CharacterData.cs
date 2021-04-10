@@ -20,15 +20,6 @@ namespace Abarabone.Character
 
 
 
-    public static class AttackTarget
-    {
-        public struct MoveTargetLinkData : IComponentData
-        {
-            public Entity MoveTargetEnity;
-        }
-    }
-
-
 
 
 
@@ -158,10 +149,36 @@ namespace Abarabone.Character
 
     // 移動先関連 -----------------------------------------------------------
 
-    public static partial class AttackTarget
+
+    //public static partial class TargetSensor
+    //{
+    //    public struct MoveTargetLinkData : IComponentData
+    //    {
+    //        public Entity MoveTargetEnity;
+    //    }
+    //}
+
+    public static partial class TargetSensorHolder
     {
         public struct PositionData : IComponentData
         {
+            public float3 Position;
+        }
+
+        public struct SensorLinkData : IBufferElementData
+        {
+            public Entity SensorEntity;
+        }
+
+        public struct MainHolderTag : IComponentData
+        { }
+    }
+
+    public static partial class TargetSensor
+    {
+        public struct CurrentData : IComponentData
+        {
+            public int LastFrame;
             public float3 Position;
         }
 

@@ -48,8 +48,8 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref AttackTarget.PositionData pos,
-                        in AttackTarget.MainLinkData mainlink
+                        ref TargetSensor.PositionData pos,
+                        in TargetSensor.MainLinkData mainlink
                     )
                 =>
                     {

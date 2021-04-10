@@ -54,15 +54,15 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in AttackTarget.MainLinkData mainlink,
-                        in AttackTarget.FindCollisionData collision
+                        in TargetSensor.MainLinkData mainlink,
+                        in TargetSensor.FindCollisionData collision
                     )
                 =>
                     {
 
                         var startpos = poss[mainlink.MainEntity].Value;
 
-                        cw.OverlapSphere(startpos, collision.Distance, );
+                        //cw.OverlapSphere(startpos, collision.Distance, );
 
 
                     }
