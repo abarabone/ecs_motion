@@ -19,58 +19,103 @@ namespace Abarabone.Character.Authoring
         public class SensorUnit
         {
             public float distance;
+            public float interval;
         }
         public SensorUnit[] Sensors;
 
         public CollisionFilter Filter;
+        public CollisionFilter Group;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            createSensorHolder_();
+            var holder = createSensorHolder_();
+            var buf = dstManager.GetBuffer<TargetSensorHolder.SensorsLinkData>(holder);
 
             foreach (var s in this.Sensors)
             {
-                createSensor_(s);
+                var sent = createSensor_(s);
+                addToHolder_(s, sent);
             }
 
             return;
 
 
-            void createSensorHolder_()
-            {
-                var types = new ComponentTypes(new ComponentType[]
-                {
-                    typeof(TargetSensorHolder.MainHolderTag),
-                    typeof(TargetSensorHolder.SensorLinkData),
-                    typeof(TargetSensorHolder.PositionData)
-                });
-                dstManager.AddComponents(entity, types);
-            }
-
-            void createSensor_(SensorUnit s)
+            Entity createSensorHolder_()
             {
                 var ent = conversionSystem.CreateAdditionalEntity(this);
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
-                    typeof(TargetSensor.MainLinkData),
-                    typeof(TargetSensor.FindCollisionData),
-                    typeof(TargetSensor.CurrentData)
+                    typeof(TargetSensorResponse.SensorMainTag),
+                    typeof(TargetSensorHolder.SensorsLinkData),
+                    typeof(TargetSensorResponse.PositionData)
                 });
                 dstManager.AddComponents(ent, types);
+
+                return ent;
             }
 
-            void createSingleSensor_()
+            Entity createSensor_(SensorUnit src)
             {
+                var ent = conversionSystem.CreateAdditionalEntity(this);
+
                 var types = new ComponentTypes(new ComponentType[]
                 {
-                    typeof(TargetSensorHolder.MainHolderTag),
-                    typeof(TargetSensorHolder.SensorLinkData),
-                    typeof(TargetSensorHolder.PositionData)
+                    typeof(TargetSensor.PollingTag),
+                    typeof(TargetSensor.LinkMainData),
+                    typeof(TargetSensor.CollisionData),
+                    typeof(TargetSensor.GroupFilterData),
+                    typeof(TargetSensorResponse.PositionData)
+                });
+                dstManager.AddComponents(ent, types);
+
+                dstManager.SetComponentData(ent, new TargetSensor.LinkMainData
+                {
+                    MainEntity = ent,
+
+                });
+
+                dstManager.SetComponentData(ent, new TargetSensor.CollisionData
+                {
+                    Distance = src.distance,
+                    Filter = this.Filter,
+                });
+
+                dstManager.SetComponentData(ent, new TargetSensor.GroupFilterData
+                {
+                    CollidesWith = this.Group.CollidesWith,
+                });
+
+                return ent;
+            }
+            void addToHolder_(SensorUnit src, Entity ent)
+            {
+                buf.Add(new TargetSensorHolder.SensorsLinkData
+                {
+                    SensorEntity = ent,
+                    Interval = src.interval,
+                    LastTime = src.interval > 0 ? 0.0f : float.MaxValue,
+                });
+            }
+
+            Entity createSingleSensor_()
+            {
+                var ent = conversionSystem.CreateAdditionalEntity(this);
+
+                var types = new ComponentTypes(new ComponentType[]
+                {
+                    typeof(TargetSensorResponse.SensorMainTag),
+                    typeof(TargetSensor.PollingTag),
+                    typeof(TargetSensor.LinkMainData),
+                    typeof(TargetSensor.CollisionData),
+                    typeof(TargetSensor.GroupFilterData),
+                    typeof(TargetSensorResponse.PositionData)
                 });
                 dstManager.AddComponents(entity, types);
+
+                return ent;
             }
 
         }

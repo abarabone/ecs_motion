@@ -50,7 +50,7 @@ namespace Abarabone.Character
                     (
                         Entity entity, int entityInQueryIndex,
                         ref TargetSensor.CurrentData current,
-                        in TargetSensor.MainLinkData mainlink
+                        in TargetSensor.LinkMainData mainlink
                     )
                 =>
                     {

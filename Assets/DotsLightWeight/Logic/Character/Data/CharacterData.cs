@@ -51,11 +51,12 @@ namespace Abarabone.Character
 
 
 
-    public static partial class TargetSensorHolder
+    // 所属グループ
+    public static partial class TargetGroup
     {
-        public struct MainLinkData : IComponentData
+        public struct BelongToData : IComponentData
         {
-            public Entity MainEntity;
+            public int BelongTo;
         }
     }
 
@@ -173,40 +174,55 @@ namespace Abarabone.Targeting
     //    }
     //}
 
+    // ホルダー
     public static partial class TargetSensorHolder
     {
-        public struct MainHolderTag : IComponentData
-        { }
-
-        public struct PositionData : IComponentData
-        {
-            public float3 Position;
-        }
-
-        public struct SensorLinkData : IBufferElementData
+        public struct SensorsLinkData : IBufferElementData
         {
             public Entity SensorEntity;
+            public float LastTime;
+            public float Interval;
         }
     }
 
+    // センサー
     public static partial class TargetSensor
     {
-        public struct CurrentData : IComponentData
+        public struct LinkMainData : IComponentData
         {
-            public int LastFrame;
-            public float3 Position;
+            public Entity MainEntity;
         }
 
-        public struct CollidesWithData : IComponentData
+        public struct PollingTag : IComponentData
+        { }
+
+        //public struct CurrentData : IComponentData
+        //{
+        //    public int LastFrame;
+        //    public float3 Position;
+        //}
+
+        public struct GroupFilterData : IComponentData
         {
             public int CollidesWith;
         }
 
-        public struct FindCollisionData : IComponentData
+        public struct CollisionData : IComponentData
         {
             public float Distance;
             public CollisionFilter Filter;
         }
     }
 
+    // センサー及びホルダー
+    public static partial class TargetSensorResponse
+    {
+        public struct SensorMainTag : IComponentData
+        { }
+
+        public struct PositionData : IComponentData
+        {
+            public float3 Position;
+        }
+    }
 }

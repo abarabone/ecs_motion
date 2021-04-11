@@ -49,25 +49,25 @@ namespace Abarabone.Character
             var cw = this.phydep.PhysicsWorld.CollisionWorld;
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
-            this.Entities
-                .WithBurst()
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        in TargetSensor.MainLinkData mainlink,
-                        in TargetSensor.FindCollisionData collision
-                    )
-                =>
-                    {
+            //this.Entities
+            //    .WithBurst()
+            //    .ForEach(
+            //        (
+            //            Entity entity, int entityInQueryIndex,
+            //            in TargetSensor.MainLinkData mainlink,
+            //            in TargetSensor.FindCollisionData collision
+            //        )
+            //    =>
+            //        {
 
-                        var startpos = poss[mainlink.MainEntity].Value;
+            //            var startpos = poss[mainlink.MainEntity].Value;
 
-                        cw.OverlapSphere(startpos, collision.Distance, );
+            //            //cw.OverlapSphere(startpos, collision.Distance, );
 
 
-                    }
-                )
-                .ScheduleParallel();
+            //        }
+            //    )
+            //    .ScheduleParallel();
         }
 
 
