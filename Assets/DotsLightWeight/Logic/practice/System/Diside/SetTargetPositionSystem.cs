@@ -20,7 +20,7 @@ namespace Abarabone.Character
     using Abarabone.SystemGroup;
     using Abarabone.Character;
     using Abarabone.CharacterMotion;
-
+    using Abarabone.Targeting;
 
 
     // メイン位置を持つ物体を、いったん単なる位置になおす
@@ -41,6 +41,7 @@ namespace Abarabone.Character
 
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
+            var currentFrame = UnityEngine.Time.frameCount;
 
             this.Entities
                 .WithBurst()
@@ -48,7 +49,7 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref TargetSensor.PositionData pos,
+                        ref TargetSensor.CurrentData current,
                         in TargetSensor.MainLinkData mainlink
                     )
                 =>
@@ -56,8 +57,8 @@ namespace Abarabone.Character
 
                         var targetPos = poss[mainlink.MainEntity];
 
-                        pos.Position = targetPos.Value;
-
+                        current.Position = targetPos.Value;
+                        current.LastFrame = currentFrame;
                     }
                 )
                 .ScheduleParallel();

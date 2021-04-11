@@ -20,7 +20,7 @@ namespace Abarabone.Character
     using Abarabone.SystemGroup;
     using Abarabone.Character;
     using Abarabone.CharacterMotion;
-
+    using Abarabone.Targeting;
 
 
     //[DisableAutoCreation]

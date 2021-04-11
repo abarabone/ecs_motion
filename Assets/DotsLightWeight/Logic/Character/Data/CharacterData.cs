@@ -25,7 +25,7 @@ namespace Abarabone.Character
 
     // 
 
-        public struct MoveHandlingData : IComponentData
+    public struct MoveHandlingData : IComponentData
     {
         public ControlActionUnit ControlAction;
     }
@@ -134,7 +134,11 @@ namespace Abarabone.Character
     {
         public int Phase;
     }
-    
+}
+
+
+namespace Abarabone.Targeting
+{
 
     // ダメージなど -----------------------------------------------------
 
