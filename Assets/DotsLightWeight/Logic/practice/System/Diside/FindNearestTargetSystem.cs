@@ -62,7 +62,7 @@ namespace Abarabone.Character
 
                         var startpos = poss[mainlink.MainEntity].Value;
 
-                        //cw.OverlapSphere(startpos, collision.Distance, );
+                        cw.OverlapSphere(startpos, collision.Distance, );
 
 
                     }

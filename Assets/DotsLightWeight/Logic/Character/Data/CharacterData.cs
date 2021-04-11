@@ -50,6 +50,17 @@ namespace Abarabone.Character
     }
 
 
+
+    public static partial class TargetSensorHolder
+    {
+        public struct MainLinkData : IComponentData
+        {
+            public Entity MainEntity;
+        }
+    }
+
+
+
     // 多種コンポーネント兼用 -------------------------------------
 
     public struct PlayerTag : IComponentData
@@ -164,6 +175,9 @@ namespace Abarabone.Targeting
 
     public static partial class TargetSensorHolder
     {
+        public struct MainHolderTag : IComponentData
+        { }
+
         public struct PositionData : IComponentData
         {
             public float3 Position;
@@ -173,9 +187,6 @@ namespace Abarabone.Targeting
         {
             public Entity SensorEntity;
         }
-
-        public struct MainHolderTag : IComponentData
-        { }
     }
 
     public static partial class TargetSensor
@@ -186,9 +197,9 @@ namespace Abarabone.Targeting
             public float3 Position;
         }
 
-        public struct MainLinkData : IComponentData
+        public struct CollidesWithData : IComponentData
         {
-            public Entity MainEntity;
+            public int CollidesWith;
         }
 
         public struct FindCollisionData : IComponentData
