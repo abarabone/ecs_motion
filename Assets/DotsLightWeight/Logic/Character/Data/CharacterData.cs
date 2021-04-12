@@ -51,6 +51,15 @@ namespace Abarabone.Character
 
 
 
+
+    public static partial class TargetSensorHolderLink
+    {
+        public struct HolderLinkData : IComponentData
+        {
+            public Entity HolderEntity;
+        }
+    }
+
     // 所属グループ
     public static partial class TargetGroup
     {
@@ -188,12 +197,12 @@ namespace Abarabone.Targeting
     // センサー
     public static partial class TargetSensor
     {
-        public struct LinkMainData : IComponentData
+        public struct LinkTargetMainData : IComponentData
         {
             public Entity MainEntity;
         }
 
-        public struct PollingTag : IComponentData
+        public struct WakeupFindTag : IComponentData
         { }
 
         //public struct CurrentData : IComponentData

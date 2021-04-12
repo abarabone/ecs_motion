@@ -31,6 +31,11 @@ namespace Abarabone.Character.Authoring
         {
 
             var holder = createSensorHolder_();
+            dstManager.AddComponentData(entity, new TargetSensorHolderLink.HolderLinkData
+            {
+                HolderEntity = holder,
+            });
+
             var buf = dstManager.GetBuffer<TargetSensorHolder.SensorsLinkData>(holder);
 
             foreach (var s in this.Sensors)
@@ -63,15 +68,15 @@ namespace Abarabone.Character.Authoring
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
-                    typeof(TargetSensor.PollingTag),
-                    typeof(TargetSensor.LinkMainData),
+                    typeof(TargetSensor.WakeupFindTag),
+                    typeof(TargetSensor.LinkTargetMainData),
                     typeof(TargetSensor.CollisionData),
                     typeof(TargetSensor.GroupFilterData),
                     typeof(TargetSensorResponse.PositionData)
                 });
                 dstManager.AddComponents(ent, types);
 
-                dstManager.SetComponentData(ent, new TargetSensor.LinkMainData
+                dstManager.SetComponentData(ent, new TargetSensor.LinkTargetMainData
                 {
                     MainEntity = ent,
 
@@ -85,7 +90,7 @@ namespace Abarabone.Character.Authoring
 
                 dstManager.SetComponentData(ent, new TargetSensor.GroupFilterData
                 {
-                    CollidesWith = this.Group.CollidesWith,
+                    //CollidesWith = this.Group.CollidesWith,
                 });
 
                 return ent;
@@ -107,8 +112,8 @@ namespace Abarabone.Character.Authoring
                 var types = new ComponentTypes(new ComponentType[]
                 {
                     typeof(TargetSensorResponse.SensorMainTag),
-                    typeof(TargetSensor.PollingTag),
-                    typeof(TargetSensor.LinkMainData),
+                    typeof(TargetSensor.WakeupFindTag),
+                    typeof(TargetSensor.LinkTargetMainData),
                     typeof(TargetSensor.CollisionData),
                     typeof(TargetSensor.GroupFilterData),
                     typeof(TargetSensorResponse.PositionData)

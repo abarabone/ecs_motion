@@ -37,7 +37,7 @@ namespace Abarabone.Character
         protected override void OnUpdate()
         {
 
-            var targets = this.GetComponentDataFromEntity<TargetSensor.PositionData>(isReadOnly: true);
+            var targets = this.GetComponentDataFromEntity<TargetSensorResponse.PositionData>(isReadOnly: true);
 
 
             this.Entities
@@ -49,12 +49,12 @@ namespace Abarabone.Character
                         Entity entity, int entityInQueryIndex,
                         ref Rotation rot,
                         in Translation pos,
-                        in TargetSensor.MoveTargetLinkData link
+                        in TargetSensorHolderLink.HolderLinkData link
                     )
                 =>
                     {
 
-                        var target = targets[link.MoveTargetEnity];
+                        var target = targets[link.HolderEntity];
 
                         var dir = target.Position - pos.Value;
                         var up = math.mul(rot.Value, math.up());

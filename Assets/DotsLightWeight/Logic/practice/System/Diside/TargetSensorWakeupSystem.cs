@@ -13,10 +13,6 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine.InputSystem;
 
-using Collider = Unity.Physics.Collider;
-using SphereCollider = Unity.Physics.SphereCollider;
-using RaycastHit = Unity.Physics.RaycastHit;
-
 namespace Abarabone.Character
 {
     using Abarabone.Misc;
@@ -24,47 +20,43 @@ namespace Abarabone.Character
     using Abarabone.SystemGroup;
     using Abarabone.Character;
     using Abarabone.CharacterMotion;
-    using Abarabone.Dependency;
     using Abarabone.Targeting;
 
 
-    //[DisableAutoCreation]
+    // ホルダーからセンサーを起動する
+    // センサーはインターバルごとに PollingTag をつけて起動する
+    // 
+
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class FindNearestTargeSystem : DependencyAccessableSystemBase
+    public class TargetSensorWakeSystem : SystemBase
     {
 
-        PhysicsHitDependency.Sender phydep;
+
 
         protected override void OnCreate()
-        {
-            base.OnCreate();
+        { }
 
-            this.phydep = PhysicsHitDependency.Sender.Create(this);
-        }
 
         protected override void OnUpdate()
         {
-            using var phyScope = this.phydep.WithDependencyScope();
 
-
-            var cw = this.phydep.PhysicsWorld.CollisionWorld;
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+
+            var currentFrame = UnityEngine.Time.frameCount;
 
             this.Entities
                 .WithBurst()
-                .WithAll<TargetSensor.WakeupFindTag>()
+                .WithReadOnly(poss)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in TargetSensor.LinkTargetMainData mainlink,
-                        in TargetSensor.CollisionData collision
+                        ref TargetSensorResponse.CurrentData current,
+                        in TargetSensor.LinkTargetMainData mainlink
                     )
                 =>
                     {
 
-                        var startpos = poss[mainlink.MainEntity].Value;
 
-                        //cw.OverlapSphere(startpos, collision.Distance, );
 
 
                     }

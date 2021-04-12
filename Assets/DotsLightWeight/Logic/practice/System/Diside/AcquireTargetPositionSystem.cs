@@ -27,7 +27,7 @@ namespace Abarabone.Character
     // ˆÚ“®ˆ—‚É”Ä—p«‚ð‚à‚½‚¹‚ç‚ê‚é
 
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class SetTargetPosiionSystem : SystemBase
+    public class AcquireTargetPosiionSystem : SystemBase
     {
         
 
@@ -49,8 +49,8 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref TargetSensor.CurrentData current,
-                        in TargetSensor.LinkMainData mainlink
+                        ref TargetSensorResponse.PositionData current,
+                        in TargetSensor.LinkTargetMainData mainlink
                     )
                 =>
                     {
@@ -58,7 +58,7 @@ namespace Abarabone.Character
                         var targetPos = poss[mainlink.MainEntity];
 
                         current.Position = targetPos.Value;
-                        current.LastFrame = currentFrame;
+                        //current.LastFrame = currentFrame;
                     }
                 )
                 .ScheduleParallel();
