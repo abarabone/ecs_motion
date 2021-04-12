@@ -26,6 +26,7 @@ namespace Abarabone.Character
     // メイン位置を持つ物体を、いったん単なる位置になおす
     // 移動処理に汎用性をもたせられる
 
+    [UpdateAfter(typeof(FindNearestTargeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class AcquireTargetPosiionSystem : SystemBase
     {
@@ -55,7 +56,7 @@ namespace Abarabone.Character
                 =>
                     {
 
-                        var targetPos = poss[mainlink.MainEntity];
+                        var targetPos = poss[mainlink.TargetMainEntity];
 
                         current.Position = targetPos.Value;
                         //current.LastFrame = currentFrame;

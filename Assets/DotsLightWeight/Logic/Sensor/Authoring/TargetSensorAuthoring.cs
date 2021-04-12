@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Physics;
@@ -13,18 +14,25 @@ namespace Abarabone.Character.Authoring
     using Abarabone.CharacterMotion;
     using Abarabone.Targeting;
 
+    /// <summary>
+    /// メインエンティティに付けておく
+    /// </summary>
     public class TargetSensorAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
+        [System.Serializable]
         public class SensorUnit
         {
             public float distance;
             public float interval;
         }
+        [SerializeField]
         public SensorUnit[] Sensors;
 
+        [SerializeField]
         public CollisionFilter Filter;
-        public CollisionFilter Group;
+        //[SerializeField]
+        //public CollisionFilter Group;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -35,8 +43,6 @@ namespace Abarabone.Character.Authoring
             {
                 HolderEntity = holder,
             });
-
-            var buf = dstManager.GetBuffer<TargetSensorHolder.SensorsLinkData>(holder);
 
             foreach (var s in this.Sensors)
             {
@@ -50,11 +56,13 @@ namespace Abarabone.Character.Authoring
             Entity createSensorHolder_()
             {
                 var ent = conversionSystem.CreateAdditionalEntity(this);
+                dstManager.SetName_(ent, "ant sensor holder");
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
                     typeof(TargetSensorResponse.SensorMainTag),
-                    typeof(TargetSensorHolder.SensorsLinkData),
+                    typeof(TargetSensorHolder.SensorLinkData),
+                    typeof(TargetSensorHolder.SensorNextTimeData),
                     typeof(TargetSensorResponse.PositionData)
                 });
                 dstManager.AddComponents(ent, types);
@@ -65,25 +73,28 @@ namespace Abarabone.Character.Authoring
             Entity createSensor_(SensorUnit src)
             {
                 var ent = conversionSystem.CreateAdditionalEntity(this);
+                dstManager.SetName_(ent, $"ant sensor {src.ToString().Split('+').Last()}");
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
-                    typeof(TargetSensor.WakeupFindTag),
+                    //typeof(TargetSensor.WakeupFindTag),
                     typeof(TargetSensor.LinkTargetMainData),
                     typeof(TargetSensor.CollisionData),
                     typeof(TargetSensor.GroupFilterData),
-                    typeof(TargetSensorResponse.PositionData)
+                    typeof(TargetSensorResponse.PositionData),
+                    typeof(Disabled)
                 });
                 dstManager.AddComponents(ent, types);
 
-                dstManager.SetComponentData(ent, new TargetSensor.LinkTargetMainData
-                {
-                    MainEntity = ent,
+                //dstManager.SetComponentData(ent, new TargetSensor.LinkTargetMainData
+                //{
+                //    TargetMainEntity = ent,
 
-                });
+                //});
 
                 dstManager.SetComponentData(ent, new TargetSensor.CollisionData
                 {
+                    PostureEntity = entity,
                     Distance = src.distance,
                     Filter = this.Filter,
                 });
@@ -97,31 +108,36 @@ namespace Abarabone.Character.Authoring
             }
             void addToHolder_(SensorUnit src, Entity ent)
             {
-                buf.Add(new TargetSensorHolder.SensorsLinkData
+                var linkbuf = dstManager.GetBuffer<TargetSensorHolder.SensorLinkData>(holder);
+                var nextbuf = dstManager.GetBuffer<TargetSensorHolder.SensorNextTimeData>(holder);
+                linkbuf.Add(new TargetSensorHolder.SensorLinkData
                 {
                     SensorEntity = ent,
                     Interval = src.interval,
-                    LastTime = src.interval > 0 ? 0.0f : float.MaxValue,
                 });
-            }
-
-            Entity createSingleSensor_()
-            {
-                var ent = conversionSystem.CreateAdditionalEntity(this);
-
-                var types = new ComponentTypes(new ComponentType[]
+                nextbuf.Add(new TargetSensorHolder.SensorNextTimeData
                 {
-                    typeof(TargetSensorResponse.SensorMainTag),
-                    typeof(TargetSensor.WakeupFindTag),
-                    typeof(TargetSensor.LinkTargetMainData),
-                    typeof(TargetSensor.CollisionData),
-                    typeof(TargetSensor.GroupFilterData),
-                    typeof(TargetSensorResponse.PositionData)
+                    nextTime = src.interval > 0 ? 0.0f : float.MaxValue,
                 });
-                dstManager.AddComponents(entity, types);
-
-                return ent;
             }
+
+            //Entity createSingleSensor_()
+            //{
+            //    var ent = conversionSystem.CreateAdditionalEntity(this);
+
+            //    var types = new ComponentTypes(new ComponentType[]
+            //    {
+            //        typeof(TargetSensorResponse.SensorMainTag),
+            //        typeof(TargetSensor.WakeupFindTag),
+            //        typeof(TargetSensor.LinkTargetMainData),
+            //        typeof(TargetSensor.CollisionData),
+            //        typeof(TargetSensor.GroupFilterData),
+            //        typeof(TargetSensorResponse.PositionData)
+            //    });
+            //    dstManager.AddComponents(entity, types);
+
+            //    return ent;
+            //}
 
         }
     }
