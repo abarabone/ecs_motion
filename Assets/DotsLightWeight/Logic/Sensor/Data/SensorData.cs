@@ -12,6 +12,7 @@ using Unity.Transforms;
 using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
+using Unity.Physics.Authoring;
 
 namespace Abarabone.Targeting
 {
@@ -70,7 +71,7 @@ namespace Abarabone.Targeting
         [InternalBufferCapacity(3)]
         public struct SensorNextTimeData : IBufferElementData
         {
-            public float nextTime;
+            public float NextTime;
         }
     }
 
@@ -93,7 +94,7 @@ namespace Abarabone.Targeting
 
         public struct GroupFilterData : IComponentData
         {
-            public int CollidesWith;
+            public uint CollidesWith;
         }
 
         public struct CollisionData : IComponentData

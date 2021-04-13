@@ -26,6 +26,7 @@ namespace Abarabone.Character
     // メイン位置を持つ物体を、いったん単なる位置になおす
     // 移動処理に汎用性をもたせられる
 
+    //[DisableAutoCreation]
     [UpdateAfter(typeof(FindNearestTargeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class AcquireTargetPosiionSystem : SystemBase

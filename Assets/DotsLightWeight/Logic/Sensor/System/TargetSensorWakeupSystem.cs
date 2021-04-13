@@ -28,6 +28,7 @@ namespace Abarabone.Character
     // センサーはインターバルごとに WakeupFindTag をつけて起動する
     // 
 
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class TargetSensorWakeSystem : DependencyAccessableSystemBase
     {
@@ -73,30 +74,33 @@ namespace Abarabone.Character
                             var link = links[i];
                             var sensor = link.SensorEntity;
 
-                            if (sensorLinks[sensor].TargetMainEntity != default)
-                            {
-                                response.Position = sensorPoss[sensor].Position;
-                            }
-
-
-                            var nexttime = nexts[i].nextTime;
+                            var nexttime = nexts[i].NextTime;
                             if (currentTime >= nexttime)
                             {
 
-                                cmd.AddComponent(entityInQueryIndex,
-                                    link.SensorEntity,
-                                    new TargetSensor.WakeupFindTag { }
-                                );
+                                cmd.AddComponent<TargetSensor.WakeupFindTag>(entityInQueryIndex, sensor);
 
-                                cmd.RemoveComponent<Disabled>(entityInQueryIndex, entity);
+                                cmd.RemoveComponent<Disabled>(entityInQueryIndex, sensor);
 
 
                                 nexts[i] = new TargetSensorHolder.SensorNextTimeData
                                 {
-                                    nextTime = nexttime + link.Interval,
+                                    NextTime = (float)(currentTime + link.Interval),
                                 };
                             }
-                            
+                        }
+
+                        for (var i = 0; i < links.Length; i++)
+                        {
+                            var link = links[i];
+                            var sensor = link.SensorEntity;
+
+                            if (sensorLinks[sensor].TargetMainEntity != default)
+                            {
+                                response.Position = sensorPoss[sensor].Position;
+
+                                break;
+                            }
                         }
 
                     }

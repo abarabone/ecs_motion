@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Physics;
+using Unity.Physics.Authoring;
 
 namespace Abarabone.Character.Authoring
 {
@@ -29,10 +30,14 @@ namespace Abarabone.Character.Authoring
         [SerializeField]
         public SensorUnit[] Sensors;
 
+        [System.Serializable]
+        public struct Filter
+        {
+            public PhysicsCategoryTags BelongsTo;
+            public PhysicsCategoryTags CollidesWith;
+        }
         [SerializeField]
-        public CollisionFilter Filter;
-        //[SerializeField]
-        //public CollisionFilter Group;
+        public Filter Collision;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -96,13 +101,17 @@ namespace Abarabone.Character.Authoring
                 {
                     PostureEntity = entity,
                     Distance = src.distance,
-                    Filter = this.Filter,
+                    Filter = new CollisionFilter
+                    {
+                        BelongsTo = this.Collision.BelongsTo.Value,
+                        CollidesWith = this.Collision.CollidesWith.Value,
+                    }
                 });
 
-                dstManager.SetComponentData(ent, new TargetSensor.GroupFilterData
-                {
-                    //CollidesWith = this.Group.CollidesWith,
-                });
+                //dstManager.SetComponentData(ent, new TargetSensor.GroupFilterData
+                //{
+                //    CollidesWith = this.Group.Value,
+                //});
 
                 return ent;
             }
@@ -117,7 +126,7 @@ namespace Abarabone.Character.Authoring
                 });
                 nextbuf.Add(new TargetSensorHolder.SensorNextTimeData
                 {
-                    nextTime = src.interval > 0 ? 0.0f : float.MaxValue,
+                    NextTime = src.interval > 0 ? 0.0f : float.MaxValue,
                 });
             }
 

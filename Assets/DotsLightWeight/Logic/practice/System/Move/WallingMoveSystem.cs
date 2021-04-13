@@ -34,16 +34,16 @@ namespace Abarabone.Character
     {
         // Declare the delegate that takes 12 parameters. T0 is used for the Entity argument
         [Unity.Entities.CodeGeneratedJobForEach.EntitiesForEachCompatible]
-        public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7>
+        public delegate void CustomForEachDelegate<T1, T2, T3, T4, T5, T6, T7>
             (
-                T0 t0, T1 t1,
-                in T2 t2, in T3 t3,
+                T1 t1, T2 t2,
+                in T3 t3,
                 ref T4 t4, ref T5 t5, ref T6 t6, ref T7 t7
             );
 
         // Declare the function overload
-        public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7>
-            (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7> codeToRun)
+        public static TDescription ForEach<TDescription, T1, T2, T3, T4, T5, T6, T7>
+            (this TDescription description, CustomForEachDelegate<T1, T2, T3, T4, T5, T6, T7> codeToRun)
             where TDescription : struct, Unity.Entities.CodeGeneratedJobForEach.ISupportForEachWithUniversalDelegate
         =>
             LambdaForEachDescriptionConstructionMethods.ThrowCodeGenException<TDescription>();
@@ -93,7 +93,7 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in MoveHandlingData handler,
+                        //in MoveHandlingData handler,
                         in GroundHitWallingData walling,
                         ref WallHangingData hanging,
                         ref Translation pos,

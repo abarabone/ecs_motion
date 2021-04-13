@@ -26,7 +26,7 @@ namespace Abarabone.Model.Authoring
     {
 
 
-        protected new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             base.Convert(entity, dstManager, conversionSystem);
 
