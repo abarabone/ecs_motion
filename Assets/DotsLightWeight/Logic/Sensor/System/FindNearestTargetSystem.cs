@@ -31,7 +31,7 @@ namespace Abarabone.Character
 
 
     //[DisableAutoCreation]
-    [UpdateAfter(typeof(TargetSensorWakeSystem))]
+    [UpdateAfter(typeof(TargetSensorWakeupAndCopyPositionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class FindNearestTargeSystem : DependencyAccessableSystemBase
     {
@@ -83,9 +83,9 @@ namespace Abarabone.Character
                         target.TargetMainEntity = collector.ClosestHit.Entity;
                         // ƒqƒbƒg‚µ‚È‚¯‚ê‚Î Entity.Null ‚Æ‚¢‚¤‘O’ñ
 
-                        if (!isHit) cmd.AddComponent<Disabled>(entityInQueryIndex, entity);
+                        //if (!isHit) cmd.AddComponent<Disabled>(entityInQueryIndex, entity);
 
-                        cmd.RemoveComponent<TargetSensor.WakeupFindTag>(entityInQueryIndex, entity);
+                        //cmd.RemoveComponent<TargetSensor.WakeupFindTag>(entityInQueryIndex, entity);
                     }
                 )
                 .ScheduleParallel();

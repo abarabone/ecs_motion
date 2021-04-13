@@ -31,8 +31,10 @@ namespace Abarabone.Dependency
                 this.commandSystem.CreateCommandBuffer();
 
 
-            public DisposableDependency WithDependencyScope() =>
-                new DisposableDependency { parent = this };
+            public DisposableDependency WithDependencyScope()
+            {
+                return new DisposableDependency { parent = this };
+            }
 
 
             public struct DisposableDependency : IDisposable

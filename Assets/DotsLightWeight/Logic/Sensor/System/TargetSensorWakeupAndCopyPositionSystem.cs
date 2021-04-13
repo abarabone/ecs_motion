@@ -30,7 +30,7 @@ namespace Abarabone.Character
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class TargetSensorWakeSystem : DependencyAccessableSystemBase
+    public class TargetSensorWakeupAndCopyPositionSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;
@@ -47,8 +47,9 @@ namespace Abarabone.Character
             var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var sensorLinks = this.GetComponentDataFromEntity<TargetSensor.LinkTargetMainData>(isReadOnly: true);
+            //var sensorLinks = this.GetComponentDataFromEntity<TargetSensor.LinkTargetMainData>(isReadOnly: true);
             var sensorPoss = this.GetComponentDataFromEntity<TargetSensorResponse.PositionData>(isReadOnly: true);
+            var disables = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
             var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
@@ -56,8 +57,9 @@ namespace Abarabone.Character
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(sensorLinks)
+                //.WithReadOnly(sensorLinks)
                 .WithReadOnly(sensorPoss)
+                .WithReadOnly(disables)
                 .WithNativeDisableContainerSafetyRestriction(sensorPoss)
                 .ForEach(
                     (
@@ -95,7 +97,7 @@ namespace Abarabone.Character
                             var link = links[i];
                             var sensor = link.SensorEntity;
 
-                            if (sensorLinks[sensor].TargetMainEntity != default)
+                            if (!disables.HasComponent(sensor))
                             {
                                 response.Position = sensorPoss[sensor].Position;
 

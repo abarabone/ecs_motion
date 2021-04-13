@@ -43,8 +43,6 @@ namespace Abarabone.Character
 
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
-            var currentFrame = UnityEngine.Time.frameCount;
-
             this.Entities
                 .WithBurst()
                 .WithReadOnly(poss)
@@ -60,7 +58,6 @@ namespace Abarabone.Character
                         var targetPos = poss[mainlink.TargetMainEntity];
 
                         current.Position = targetPos.Value;
-                        //current.LastFrame = currentFrame;
                     }
                 )
                 .ScheduleParallel();
