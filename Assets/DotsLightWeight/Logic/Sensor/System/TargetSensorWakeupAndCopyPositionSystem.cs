@@ -44,7 +44,7 @@ namespace Abarabone.Character
 
         protected override void OnUpdate()
         {
-            var cmdScope = this.cmddep.WithDependencyScope();
+            using var cmdScope = this.cmddep.WithDependencyScope();
 
 
             //var sensorLinks = this.GetComponentDataFromEntity<TargetSensor.LinkTargetMainData>(isReadOnly: true);
@@ -82,7 +82,7 @@ namespace Abarabone.Character
 
                                 cmd.AddComponent<TargetSensor.WakeupFindTag>(entityInQueryIndex, sensor);
 
-                                cmd.RemoveComponent<Disabled>(entityInQueryIndex, sensor);
+                                cmd.AddComponent<TargetSensor.AcqurireTag>(entityInQueryIndex, sensor);
 
 
                                 nexts[i] = new TargetSensorHolder.SensorNextTimeData

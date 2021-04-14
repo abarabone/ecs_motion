@@ -21,6 +21,7 @@ namespace Abarabone.Character
     using Abarabone.Character;
     using Abarabone.CharacterMotion;
     using Abarabone.Targeting;
+    using Abarabone.Dependency;
 
 
     // メイン位置を持つ物体を、いったん単なる位置になおす
@@ -29,22 +30,30 @@ namespace Abarabone.Character
     //[DisableAutoCreation]
     [UpdateAfter(typeof(FindNearestTargeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class AcquireTargetPosiionSystem : SystemBase
+    public class AcquireTargetPosiionSystem : DependencyAccessableSystemBase
     {
-        
 
-        
+
+        CommandBufferDependency.Sender cmddep;
+
         protected override void OnCreate()
-        { }
+        {
+            base.OnCreate();
 
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
 
         protected override void OnUpdate()
         {
+            using var cmdScope = this.cmddep.WithDependencyScope();
 
+
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
+                .WithAll<TargetSensor.AcqurireTag>()
                 .WithReadOnly(poss)
                 .ForEach(
                     (
@@ -54,6 +63,13 @@ namespace Abarabone.Character
                     )
                 =>
                     {
+
+                        if (mainlink.TargetMainEntity == Entity.Null)
+                        {
+                            cmd.RemoveComponent<TargetSensor.AcqurireTag>(entityInQueryIndex, entity);
+
+                            return;
+                        }
 
                         var targetPos = poss[mainlink.TargetMainEntity];
 

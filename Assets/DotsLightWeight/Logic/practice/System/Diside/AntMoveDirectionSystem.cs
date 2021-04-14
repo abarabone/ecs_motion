@@ -61,9 +61,10 @@ namespace Abarabone.Character
 
                         if (math.dot(dir, up) < float.MinValue) return;
 
+                        var targetrot = quaternion.LookRotation(dir, up);
+                        var oldrot = rot.Value;
 
-                        rot.Value = quaternion.LookRotation(dir, up);
-
+                        PhysicsVelocity.CalculateVelocityToTarget
                     }
                 )
                 .ScheduleParallel();

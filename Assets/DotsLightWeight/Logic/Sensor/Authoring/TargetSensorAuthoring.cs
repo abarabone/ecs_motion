@@ -86,8 +86,7 @@ namespace Abarabone.Character.Authoring
                     typeof(TargetSensor.LinkTargetMainData),
                     typeof(TargetSensor.CollisionData),
                     typeof(TargetSensor.GroupFilterData),
-                    typeof(TargetSensorResponse.PositionData),
-                    typeof(Disabled)
+                    typeof(TargetSensorResponse.PositionData)
                 });
                 dstManager.AddComponents(ent, types);
 

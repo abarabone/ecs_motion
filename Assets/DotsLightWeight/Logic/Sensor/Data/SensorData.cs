@@ -85,6 +85,8 @@ namespace Abarabone.Targeting
 
         public struct WakeupFindTag : IComponentData
         { }
+        public struct AcqurireTag : IComponentData
+        { }
 
         //public struct CurrentData : IComponentData
         //{

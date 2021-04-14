@@ -55,6 +55,7 @@ namespace Abarabone.Character
 
             var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
             var cw = this.phydep.PhysicsWorld.CollisionWorld;
+
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
@@ -73,19 +74,19 @@ namespace Abarabone.Character
                 =>
                     {
 
-                        var startpos = poss[collision.PostureEntity].Value;
-
                         // 暫定：あとでグループ対応コレクターにすること
-                        var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(1.0f, entity, mainEntities);
-                        
+                        var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(collision.Distance, collision.PostureEntity, mainEntities);
 
-                        var isHit = cw.OverlapSphereCustom(startpos, collision.Distance, ref collector, collision.Filter);
-                        target.TargetMainEntity = collector.ClosestHit.Entity;
+
+                        var startpos = poss[collision.PostureEntity].Value;
+                        cw.OverlapSphereCustom(startpos, collision.Distance, ref collector, collision.Filter);
+
                         // ヒットしなければ Entity.Null という前提
+                        target.TargetMainEntity = collector.ClosestHit.Entity;
 
-                        //if (!isHit) cmd.AddComponent<Disabled>(entityInQueryIndex, entity);
 
-                        //cmd.RemoveComponent<TargetSensor.WakeupFindTag>(entityInQueryIndex, entity);
+                        // 一回実行したらやめる
+                        cmd.RemoveComponent<TargetSensor.WakeupFindTag>(entityInQueryIndex, entity);
                     }
                 )
                 .ScheduleParallel();
