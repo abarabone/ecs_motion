@@ -39,6 +39,7 @@ namespace Abarabone.Character
 
             var targets = this.GetComponentDataFromEntity<TargetSensorResponse.PositionData>(isReadOnly: true);
 
+            var deltaTime = this.Time.DeltaTime;
 
             this.Entities
                 .WithBurst()
@@ -47,7 +48,8 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref Rotation rot,
+                        ref MoveHandlingData handle,
+                        in Rotation rot,
                         in Translation pos,
                         in TargetSensorHolderLink.HolderLinkData link
                     )
@@ -57,14 +59,44 @@ namespace Abarabone.Character
                         var target = targets[link.HolderEntity];
 
                         var dir = target.Position - pos.Value;
+                        var lensq = math.lengthsq(dir);
+
+                        if (lensq < float.MinValue)
+                        {
+                            handle.ControlAction.MoveDirection = math.forward(rot.Value);
+                            handle.ControlAction.LookRotation = rot.Value;
+                            handle.ControlAction.HorizontalRotation = rot.Value;
+                            handle.ControlAction.VerticalAngle = 0.0f;
+                            return;
+                        }
+
+
+                        var dirnm = dir / math.sqrt(lensq);
                         var up = math.mul(rot.Value, math.up());
 
-                        if (math.dot(dir, up) < float.MinValue) return;
+                        if (math.abs(math.dot(dirnm, up)) > 0.75f)
+                        {
+                            handle.ControlAction.MoveDirection = math.forward(rot.Value);
+                            handle.ControlAction.LookRotation = rot.Value;
+                            handle.ControlAction.HorizontalRotation = rot.Value;
+                            handle.ControlAction.VerticalAngle = 0.0f;
+                            return;
+                        }
 
-                        var targetrot = quaternion.LookRotation(dir, up);
+
+
+                        var right = math.normalize(math.cross(up, dirnm));
+                        var forward = math.normalize(math.cross(right, up));
+                        var targetrot = quaternion.LookRotation(forward, up);
                         var oldrot = rot.Value;
 
-                        PhysicsVelocity.CalculateVelocityToTarget
+                        var newrot = Quaternion.RotateTowards(oldrot, targetrot, 180.0f * deltaTime);
+
+
+                        handle.ControlAction.MoveDirection = forward;
+                        handle.ControlAction.LookRotation = newrot;
+                        handle.ControlAction.HorizontalRotation = newrot;
+                        handle.ControlAction.VerticalAngle = 0.0f;
                     }
                 )
                 .ScheduleParallel();
