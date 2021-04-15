@@ -34,16 +34,16 @@ namespace Abarabone.Character
     {
         // Declare the delegate that takes 12 parameters. T0 is used for the Entity argument
         [Unity.Entities.CodeGeneratedJobForEach.EntitiesForEachCompatible]
-        public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7>
+        public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8>
             (
                 T0 t0, T1 t1,
-                in T2 t2, in T3 t3,
-                ref T4 t4, ref T5 t5, ref T6 t6, ref T7 t7
+                in T2 t2, in T3 t3, in T4 t4,
+                ref T5 t5, ref T6 t6, ref T7 t7, ref T8 t8
             );
 
         // Declare the function overload
-        public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7>
-            (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7> codeToRun)
+        public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8>
+            (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8> codeToRun)
             where TDescription : struct, Unity.Entities.CodeGeneratedJobForEach.ISupportForEachWithUniversalDelegate
         =>
             LambdaForEachDescriptionConstructionMethods.ThrowCodeGenException<TDescription>();
@@ -74,6 +74,7 @@ namespace Abarabone.Character
             var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
             var physicsWorld = this.phydep.PhysicsWorld;//.CollisionWorld;
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,
+            var rdt = 1.0f / deltaTime;
 
             //inputDeps = new HorizontalMoveJob
             //{
@@ -95,10 +96,10 @@ namespace Abarabone.Character
                         Entity entity, int entityInQueryIndex,
                         in MoveHandlingData handler,
                         in GroundHitWallingData walling,
+                        in PhysicsMass phymass,
                         ref WallHangingData hanging,
                         ref Translation pos,
                         ref Rotation rot,
-                        //ref PhysicsGravityFactor g,
                         ref PhysicsVelocity v
                     )
                 =>
@@ -107,7 +108,7 @@ namespace Abarabone.Character
                         if (hanging.State > WallHangingData.WallingState.front_45_rotating) return;
 
 
-                        var dir = hanging.getDirection(handler.ControlAction.HorizontalRotation);// rot.Value);
+                        var dir = hanging.getDirection(in handler.ControlAction);// rot.Value);
                         var bodysize = walling.CenterHeight;
 
 
@@ -146,7 +147,7 @@ namespace Abarabone.Character
                                 pos = hitgnd.p + movedir * moveRange,// + hitgnd.n * 0.1f,
                                 rot = quaternion.LookRotation(movedir, n),
                             };
-                            newposrot_.setResultTo(ref pos, ref rot, ref v, deltaTime);
+                            v = newposrot_.setResultTo(in phymass, pos, rot, rdt);
 
                             return;
                         }
@@ -159,7 +160,7 @@ namespace Abarabone.Character
                             pos = hitmov.p,// + movedir * moveRange,
                             rot = quaternion.LookRotation(walldir, hitmov.n),
                         };
-                        newposrot.setResultTo(ref pos, ref rot, ref v, deltaTime);
+                        v = newposrot.setResultTo(in phymass, pos, rot, rdt);
                     }
                 )
                 .ScheduleParallel();
@@ -199,20 +200,20 @@ namespace Abarabone.Character
         }
 
 
-        public static DirectionUnit getDirection(this WallHangingData walling, quaternion rot) =>
+        public static DirectionUnit getDirection(this WallHangingData walling, in ControlActionUnit c) =>
             walling.State switch
             {
                 WallHangingData.WallingState.none_rotating => new DirectionUnit
                 {
-                    gnd = math.mul(rot, new float3(0, -1, 0)),
-                    mov = math.forward(rot),
-                    right = math.mul(rot, new float3(1, 0, 0)),
+                    gnd = math.mul(c.HorizontalRotation, new float3(0, -1, 0)),
+                    mov = c.MoveDirection,//math.forward(rot),
+                    right = math.mul(c.HorizontalRotation, new float3(1, 0, 0)),
                 },
                 WallHangingData.WallingState.front_45_rotating => new DirectionUnit
                 {
-                    gnd = math.mul(rot, new float3(0, 0, -1)),
-                    mov = math.mul(rot, new float3(0, -1, 0)),
-                    right = math.mul(rot, new float3(1, 0, 0)),
+                    gnd = -c.MoveDirection,//math.mul(c.HorizontalRotation, new float3(0, 0, -1)),
+                    mov = math.mul(c.HorizontalRotation, new float3(0, -1, 0)),
+                    right = math.mul(c.HorizontalRotation, new float3(1, 0, 0)),
                 },
                 _ => default,
             };
@@ -230,28 +231,13 @@ namespace Abarabone.Character
             };
         }
 
-        public static void setResultTo
-            (this PosAndRot newposrot, ref Translation pos, ref Rotation rot, ref PhysicsVelocity v, float dt)
+        public static PhysicsVelocity setResultTo
+            (this PosAndRot newposrot, in PhysicsMass m, Translation pos, Rotation rot, float rdt)
         {
 
-            var rdt = math.rcp(dt);
-            var linear = (newposrot.pos - pos.Value) * rdt;
+            var rgtf = new RigidTransform(newposrot.rot, newposrot.pos);
 
-            //var invprev = math.inverse(newposrot.rot);
-            //var drot = math.mul(invprev, rot);
-            //var angle = math.acos(drot.value.w) * 2.0f;
-            //var sin = math.sin(angle);
-            //var axis = drot.value.As_float3() * math.rcp(sin);
-            //var invprev = math.inverse(newposrot.rot);
-            //var drot = math.mul(invprev, rot);
-            //var axis = drot.value.As_float3();
-            //var angle = math.lengthsq(drot);
-            //var angular = axis * (angle * rdt);
-
-            //pos.Value = newposrot.pos;
-            rot.Value = newposrot.rot;
-            v.Linear = linear;
-            v.Angular = 0;//
+            return PhysicsVelocity.CalculateVelocityToTarget(in m, in pos, in rot, in rgtf, rdt);
         }
 
         //( bool isHit, RaycastHit hit) raycast

@@ -90,7 +90,13 @@ namespace Abarabone.Character
                         var targetrot = quaternion.LookRotation(forward, up);
                         var oldrot = rot.Value;
 
-                        var newrot = Quaternion.RotateTowards(oldrot, targetrot, 180.0f * deltaTime);
+                        var maxrad = math.radians(60.0f);
+                        var rad = math.acos(math.dot(dirnm, forward));
+                        var r = math.abs(rad);// math.min(math.abs(rad), maxrad);
+
+                    //var newrot = quaternion.AxisAngle(up, r * math.sign(rad));// * deltaTime);
+
+                    var newrot = Quaternion.RotateTowards(oldrot, targetrot, math.radians(60.0f));// * deltaTime);
 
 
                         handle.ControlAction.MoveDirection = forward;
