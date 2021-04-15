@@ -74,7 +74,7 @@ namespace Abarabone.Character
                         var dirnm = dir / math.sqrt(lensq);
                         var up = math.mul(rot.Value, math.up());
 
-                        if (math.abs(math.dot(dirnm, up)) > 0.75f)
+                        if (math.abs(math.dot(dirnm, up)) > 0.3f)
                         {
                             handle.ControlAction.MoveDirection = math.forward(rot.Value);
                             handle.ControlAction.LookRotation = rot.Value;
@@ -90,13 +90,13 @@ namespace Abarabone.Character
                         var targetrot = quaternion.LookRotation(forward, up);
                         var oldrot = rot.Value;
 
-                        var maxrad = math.radians(60.0f);
+                        var maxrad = math.radians(180.0f);
                         var rad = math.acos(math.dot(dirnm, forward));
                         var r = math.abs(rad);// math.min(math.abs(rad), maxrad);
 
-                    //var newrot = quaternion.AxisAngle(up, r * math.sign(rad));// * deltaTime);
+                        var newrot = quaternion.AxisAngle(up, r * math.sign(rad));// * deltaTime);
 
-                    var newrot = Quaternion.RotateTowards(oldrot, targetrot, math.radians(60.0f));// * deltaTime);
+                        //var newrot = Quaternion.RotateTowards(oldrot, targetrot, 180.0f * deltaTime);
 
 
                         handle.ControlAction.MoveDirection = forward;
