@@ -26,6 +26,12 @@ namespace Abarabone.Model.Authoring
     {
 
 
+        public float MoveSpeedPerSec;
+
+        public float TurnDegPerSec;
+
+
+
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             base.Convert(entity, dstManager, conversionSystem);
@@ -56,13 +62,24 @@ namespace Abarabone.Model.Authoring
                     typeof(PhysicsGravityFactor),// デフォルトでは付かないっぽい
                     
                     typeof(MoveHandlingData),
+                    typeof(Move.SpeedParamaterData),
+                    typeof(Move.TurnParamaterData),
 
                     typeof(AntWalkActionState)
                 });
                 em.AddComponents(mainEntity, types);
+
                 em.SetComponentData(mainEntity, new PhysicsGravityFactor
                 {
                     Value = 1.0f,
+                });
+                em.SetComponentData(mainEntity, new Move.SpeedParamaterData
+                {
+                    SpeedPerSec = this.MoveSpeedPerSec,
+                });
+                em.SetComponentData(mainEntity, new Move.TurnParamaterData
+                {
+                    TurnRadPerSec = math.radians(this.TurnDegPerSec),
                 });
             }
 

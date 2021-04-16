@@ -34,16 +34,16 @@ namespace Abarabone.Character
     {
         // Declare the delegate that takes 12 parameters. T0 is used for the Entity argument
         [Unity.Entities.CodeGeneratedJobForEach.EntitiesForEachCompatible]
-        public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8>
+        public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>
             (
                 T0 t0, T1 t1,
-                in T2 t2, in T3 t3, in T4 t4,
-                ref T5 t5, ref T6 t6, ref T7 t7, ref T8 t8
+                in T2 t2, in T3 t3, in T4 t4, in T5 t5,
+                ref T6 t6, ref T7 t7, ref T8 t8, ref T9 t9
             );
 
         // Declare the function overload
-        public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8>
-            (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8> codeToRun)
+        public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>
+            (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> codeToRun)
             where TDescription : struct, Unity.Entities.CodeGeneratedJobForEach.ISupportForEachWithUniversalDelegate
         =>
             LambdaForEachDescriptionConstructionMethods.ThrowCodeGenException<TDescription>();
@@ -97,6 +97,7 @@ namespace Abarabone.Character
                         in MoveHandlingData handler,
                         in GroundHitWallingData walling,
                         in PhysicsMass phymass,
+                        in Move.SpeedParamaterData param,
                         ref WallHangingData hanging,
                         ref Translation pos,
                         ref Rotation rot,
@@ -133,7 +134,7 @@ namespace Abarabone.Character
                         //var f = hitgnd.p - gi.Start;
                         //var w = f - math.dot(f, n) * n;
 
-                        var moveRange = 4.0f * deltaTime;
+                        var moveRange = param.SpeedPerSec * deltaTime;
                         var movepos = hitgnd.p + dir.gnd * -0.05f;//bodysize;// ボディだとワープした感じに見えてしまう
                         var movedir = math.cross(dir.right, n);//math.normalizesafe(w, dir.mov);
 

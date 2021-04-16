@@ -49,6 +49,7 @@ namespace Abarabone.Character
                     (
                         Entity entity, int entityInQueryIndex,
                         ref MoveHandlingData handle,
+                        in Move.TurnParamaterData param,
                         in Rotation rot,
                         in Translation pos,
                         in TargetSensorHolderLink.HolderLinkData link
@@ -58,8 +59,8 @@ namespace Abarabone.Character
 
                         var target = targets[link.HolderEntity];
 
-                        var dir = target.Position - pos.Value;
-                        var lensq = math.lengthsq(dir);
+                        var line = target.Position - pos.Value;
+                        var lensq = math.lengthsq(line);
 
                         if (lensq < float.MinValue)
                         {
@@ -71,10 +72,10 @@ namespace Abarabone.Character
                         }
 
 
-                        var dirnm = dir / math.sqrt(lensq);
+                        var dir = line / math.sqrt(lensq);
                         var up = math.mul(rot.Value, math.up());
 
-                        if (math.abs(math.dot(dirnm, up)) > 0.3f)
+                        if (math.abs(math.dot(dir, up)) > 0.3f)
                         {
                             handle.ControlAction.MoveDirection = math.forward(rot.Value);
                             handle.ControlAction.LookRotation = rot.Value;
@@ -85,21 +86,21 @@ namespace Abarabone.Character
 
 
 
-                        var right = math.normalize(math.cross(up, dirnm));
-                        var forward = math.normalize(math.cross(right, up));
-                        var targetrot = quaternion.LookRotation(forward, up);
+                        var right = math.normalize(math.cross(up, dir));
+                        var newforward = math.normalize(math.cross(right, up));
+                        var oldforward = math.forward(rot.Value);
                         var oldrot = rot.Value;
 
-                        var maxrad = math.radians(180.0f);
-                        var rad = math.acos(math.dot(dirnm, forward));
-                        var r = math.abs(rad);// math.min(math.abs(rad), maxrad);
+                        var maxrad = param.TurnRadPerSec * deltaTime;
+                        var rad = math.acos(math.dot(oldforward, newforward));
+                        var r = math.min(rad, maxrad);
 
-                        var newrot = quaternion.AxisAngle(up, r * math.sign(rad));// * deltaTime);
+                        var c = oldforward.zx * newforward.xz;
+                        var drot = quaternion.AxisAngle(up, r * math.sign(c.x - c.y));
+                        var newrot = math.mul(oldrot, drot);
 
-                        //var newrot = Quaternion.RotateTowards(oldrot, targetrot, 180.0f * deltaTime);
 
-
-                        handle.ControlAction.MoveDirection = forward;
+                        handle.ControlAction.MoveDirection = newforward;
                         handle.ControlAction.LookRotation = newrot;
                         handle.ControlAction.HorizontalRotation = newrot;
                         handle.ControlAction.VerticalAngle = 0.0f;

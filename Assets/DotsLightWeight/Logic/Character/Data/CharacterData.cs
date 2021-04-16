@@ -50,6 +50,18 @@ namespace Abarabone.Character
     }
 
 
+    static public partial class Move
+    {
+        public struct TurnParamaterData : IComponentData
+        {
+            public float TurnRadPerSec;
+        }
+        public struct SpeedParamaterData : IComponentData
+        {
+            public float SpeedPerSec;
+        }
+    }
+
 
 
 
@@ -64,7 +76,7 @@ namespace Abarabone.Character
 
     // 当たり判定 -----------------------------------------------
 
-    static public class GroudHit
+    static public partial class GroudHit
     {
 
     }
