@@ -57,7 +57,6 @@ namespace Abarabone.Character.Action
             var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>();
             //var motionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>();
 
-
             var targetposs = this.GetComponentDataFromEntity<TargetSensorResponse.PositionData>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
@@ -86,12 +85,62 @@ namespace Abarabone.Character.Action
                         motion.Start(Motion_ant.walking, isLooping: true, delayTime: 0.1f);
 
 
+                        var targetpos = targetposs[holderLink.HolderEntity].Position;
+                        var originpos = poss[link.PostureEntity].Value;
 
-
+                        if (math.distancesq(targetpos, originpos) <= 1.0f)
+                        {
+                            cmd.RemoveComponent<AntAction.WalkState>(entityInQueryIndex, entity);
+                            cmd.AddComponent<AntAction.AttackState>(entityInQueryIndex, entity);
+                        }
                     }
                 )
                 .ScheduleParallel();
         }
 
     }
+}
+
+namespace Abarabone.Character.Action
+{
+    using Unity.Entities.CodeGeneratedJobForEach;
+
+
+    public interface IEntityLink
+    {
+        Entity Entity { get; }
+    }
+    public struct Components<T0>
+        where T0 : struct, IComponentData
+    {
+        public static ComponentDataFromEntity<T0> Get(SystemBase sys)
+        {
+            var c0 = sys.GetComponentDataFromEntity<T0>();
+            return c0;
+        }
+    }
+    public static class ComponentExtension
+    {
+        public static ForEachLambdaJobDescription aaa<T0>(this ForEachLambdaJobDescription desc, ComponentDataFromEntity<T0> a)
+            where T0 : struct, IComponentData
+        {
+            return desc.WithReadOnly(a);
+        }
+
+        public static ComponentDataFromEntity<T0> Get<T0>(this SystemBase sys)
+            where T0 : struct, IComponentData
+        {
+            var c0 = sys.GetComponentDataFromEntity<T0>();
+            return c0;
+        }
+
+        public static ComponentDataFromEntity<T0> GetReadOnly<T0>(this SystemBase sys)
+            where T0 : struct, IComponentData
+        {
+            var c0 = sys.GetComponentDataFromEntity<T0>(isReadOnly: true);
+            return c0;
+        }
+    }
+
+
 }

@@ -27,7 +27,7 @@ namespace Abarabone.Character
             public int Phase;
         }
 
-        public struct AtackState : IComponentData
+        public struct AttackState : IComponentData
         {
             public int Phase;
         }

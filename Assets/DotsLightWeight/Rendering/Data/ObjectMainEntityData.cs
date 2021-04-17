@@ -54,15 +54,15 @@ namespace Abarabone.Character
         public Entity MotionEntity;
     }
 
-    // 以下は廃止予定
-    public struct CharacterSubMotion1LinkData : IComponentData
-    {
-        public Entity MotionEntity;
-    }
-    public struct CharacterSubMotion2LinkData : IComponentData
-    {
-        public Entity MotionEntity;
-    }
+    //// 以下は廃止予定
+    //public struct CharacterSubMotion1LinkData : IComponentData
+    //{
+    //    public Entity MotionEntity;
+    //}
+    //public struct CharacterSubMotion2LinkData : IComponentData
+    //{
+    //    public Entity MotionEntity;
+    //}
 
 
 }

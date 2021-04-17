@@ -219,7 +219,7 @@ namespace Abarabone.CharacterMotion.Authoring
         }
 
         static void setLinkForObjectEntity
-            ( GameObjectConversionSystem gcs, GameObject main, Entity motionEntity )
+            (GameObjectConversionSystem gcs, GameObject main, Entity motionEntity)
         {
             var em = gcs.DstEntityManager;
             var mainEntity = gcs.GetPrimaryEntity(main);

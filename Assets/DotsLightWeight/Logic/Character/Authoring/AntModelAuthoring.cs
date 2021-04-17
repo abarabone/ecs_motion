@@ -18,6 +18,7 @@ namespace Abarabone.Model.Authoring
     using Abarabone.Draw;
     using Abarabone.CharacterMotion;
     using Abarabone.Arms;
+    using Abarabone.Targeting;
 
     /// <summary>
     /// 
