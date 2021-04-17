@@ -206,15 +206,15 @@ namespace Abarabone.Character
             {
                 WallHangingData.WallingState.none_rotating => new DirectionUnit
                 {
-                    gnd = math.mul(c.HorizontalRotation, new float3(0, -1, 0)),
+                    gnd = math.mul(c.BodyRotation, new float3(0, -1, 0)),
                     mov = c.MoveDirection,//math.forward(rot),
-                    right = math.mul(c.HorizontalRotation, new float3(1, 0, 0)),
+                    right = math.mul(c.BodyRotation, new float3(1, 0, 0)),
                 },
                 WallHangingData.WallingState.front_45_rotating => new DirectionUnit
                 {
                     gnd = -c.MoveDirection,//math.mul(c.HorizontalRotation, new float3(0, 0, -1)),
-                    mov = math.mul(c.HorizontalRotation, new float3(0, -1, 0)),
-                    right = math.mul(c.HorizontalRotation, new float3(1, 0, 0)),
+                    mov = math.mul(c.BodyRotation, new float3(0, -1, 0)),
+                    right = math.mul(c.BodyRotation, new float3(1, 0, 0)),
                 },
                 _ => default,
             };

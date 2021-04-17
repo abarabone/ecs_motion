@@ -65,7 +65,7 @@ namespace Abarabone.Model.Authoring
                     typeof(Move.SpeedParamaterData),
                     typeof(Move.TurnParamaterData),
 
-                    typeof(AntWalkActionState)
+                    typeof(AntAction.WalkState)
                 });
                 em.AddComponents(mainEntity, types);
 

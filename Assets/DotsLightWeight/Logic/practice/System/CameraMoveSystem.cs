@@ -68,7 +68,7 @@ namespace Abarabone.Character
                         var camOffset = forwardpos + downpos * rate_forwardToDown + uppos * rate_forwardToUp;
 
                         tfCam.position = pos.Value +
-                            math.mul(acts.HorizontalRotation, rotcenter) + math.mul(acts.LookRotation, camOffset);
+                            math.mul(acts.BodyRotation, rotcenter) + math.mul(acts.LookRotation, camOffset);
 
                         tfCam.rotation = acts.LookRotation;
 

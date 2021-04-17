@@ -66,7 +66,7 @@ namespace Abarabone.Character
                         {
                             handle.ControlAction.MoveDirection = math.forward(rot.Value);
                             handle.ControlAction.LookRotation = rot.Value;
-                            handle.ControlAction.HorizontalRotation = rot.Value;
+                            handle.ControlAction.BodyRotation = rot.Value;
                             handle.ControlAction.VerticalAngle = 0.0f;
                             return;
                         }
@@ -79,7 +79,7 @@ namespace Abarabone.Character
                         {
                             handle.ControlAction.MoveDirection = math.forward(rot.Value);
                             handle.ControlAction.LookRotation = rot.Value;
-                            handle.ControlAction.HorizontalRotation = rot.Value;
+                            handle.ControlAction.BodyRotation = rot.Value;
                             handle.ControlAction.VerticalAngle = 0.0f;
                             return;
                         }
@@ -102,7 +102,7 @@ namespace Abarabone.Character
 
                         handle.ControlAction.MoveDirection = newforward;
                         handle.ControlAction.LookRotation = newrot;
-                        handle.ControlAction.HorizontalRotation = newrot;
+                        handle.ControlAction.BodyRotation = newrot;
                         handle.ControlAction.VerticalAngle = 0.0f;
                     }
                 )

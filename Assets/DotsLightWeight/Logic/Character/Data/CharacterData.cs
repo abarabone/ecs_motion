@@ -35,10 +35,12 @@ namespace Abarabone.Character
         public float3 MoveDirection;
 
         public quaternion LookRotation;
-        public quaternion HorizontalRotation;
+        public quaternion BodyRotation;
         public float VerticalAngle;
 
+        public float3 BodyUp;
         public float3 LookDirection => math.forward(this.LookRotation);
+        public float3 BodyDirection => math.forward(this.BodyRotation);
 
         public float JumpForce;
         public bool IsChangeMotion;
@@ -46,7 +48,6 @@ namespace Abarabone.Character
         public bool IsTriggerdSub;
         public bool IsChangingWapon;
 
-        public float3 Up;
     }
 
 
@@ -56,10 +57,40 @@ namespace Abarabone.Character
         {
             public float TurnRadPerSec;
         }
+
         public struct SpeedParamaterData : IComponentData
         {
             public float SpeedPerSec;
         }
+    }
+
+
+
+    // アクション ---------------------------------------------
+
+    public static partial class CharacterAction
+    {
+
+        public struct MainLinkData : IComponentData
+        {
+            public Entity MainEntity;
+        }
+
+
+
+    }
+
+
+    // キャラクタアクションのステート -------------------------------------
+
+    public struct MinicWalkActionState : IComponentData
+    {
+        public int Phase;
+    }
+
+    public struct SoldierWalkActionState : IComponentData
+    {
+        public int Phase;
     }
 
 
@@ -133,20 +164,4 @@ namespace Abarabone.Character
     { }
 
 
-    // キャラクタアクションのステート -------------------------------------
-
-    public struct MinicWalkActionState : IComponentData
-    {
-        public int Phase;
-    }
-
-    public struct SoldierWalkActionState : IComponentData
-    {
-        public int Phase;
-    }
-
-    public struct AntWalkActionState : IComponentData
-    {
-        public int Phase;
-    }
 }

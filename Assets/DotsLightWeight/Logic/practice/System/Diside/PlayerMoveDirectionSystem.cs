@@ -77,7 +77,7 @@ namespace Abarabone.Character
                         {
                             MoveDirection = ldir,
                             LookRotation = rRot,
-                            HorizontalRotation = this.hrot,
+                            BodyRotation = this.hrot,
                             VerticalAngle = this.vangle,
                             JumpForce = jumpForce,
                             IsChangeMotion = gp.rightShoulder.wasPressedThisFrame,
@@ -120,7 +120,7 @@ namespace Abarabone.Character
                         {
                             MoveDirection = ldir,
                             LookRotation = rRot,
-                            HorizontalRotation = this.hrot,
+                            BodyRotation = this.hrot,
                             VerticalAngle = this.vangle,
                             JumpForce = jumpForce,
                             IsChangeMotion = ms.rightButton.wasPressedThisFrame,
