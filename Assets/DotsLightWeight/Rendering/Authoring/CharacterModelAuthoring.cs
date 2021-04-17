@@ -77,13 +77,13 @@ namespace Abarabone.Model.Authoring
                 var binderEntity = gcs_.GetPrimaryEntity(top_);
                 var mainEntity = gcs_.GetPrimaryEntity(main_);
 
-
                 var binderAddtypes = new ComponentTypes
                 (
                     typeof(BinderTrimBlankLinkedEntityGroupTag),
                     typeof(ObjectBinder.MainEntityLinkData)
                 );
                 em_.AddComponents(binderEntity, binderAddtypes);
+
 
                 em_.SetComponentData(binderEntity,
                     new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
@@ -99,15 +99,15 @@ namespace Abarabone.Model.Authoring
                 var binderEntity = gcs_.GetPrimaryEntity(top_);
                 var mainEntity = gcs_.GetPrimaryEntity(main_);
 
-
                 var mainAddtypes = new ComponentTypes
                 (
                     typeof(ObjectMain.ObjectMainTag),
-                    typeof(ObjectMain.BinderLinkData),
-                    typeof(ObjectMainCharacterLinkData)
+                    typeof(ObjectMain.BinderLinkData)
+                    //typeof(ObjectMainCharacterLinkData)
                 //typeof(ObjectMain.MotionLinkDate)
                 );
                 em_.AddComponents(mainEntity, mainAddtypes);
+
 
                 em_.SetComponentData(mainEntity,
                     new ObjectMain.BinderLinkData
@@ -115,12 +115,12 @@ namespace Abarabone.Model.Authoring
                         BinderEntity = binderEntity,
                     }
                 );
-                em_.SetComponentData(mainEntity,
-                    new ObjectMainCharacterLinkData
-                    {
-                        PostureEntity = mainEntity,//
-                    }
-                );
+                //em_.SetComponentData(mainEntity,
+                //    new ObjectMainCharacterLinkData
+                //    {
+                //        PostureEntity = mainEntity,//
+                //    }
+                //);
 
 
                 em_.SetName_(mainEntity, $"{top_.name} main");

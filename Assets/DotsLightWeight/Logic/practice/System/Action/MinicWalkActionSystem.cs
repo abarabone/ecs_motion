@@ -54,36 +54,39 @@ namespace Abarabone.Character.Action
             var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var motionInfos = this.GetComponentDataFromEntity<Motion.InfoData>(isReadOnly: true);
-            var groundResults = this.GetComponentDataFromEntity<GroundHitResultData>(isReadOnly: true);
-            var rotations = this.GetComponentDataFromEntity<Rotation>();
+            //var groundResults = this.GetComponentDataFromEntity<GroundHitResultData>(isReadOnly: true);
+            //var rotations = this.GetComponentDataFromEntity<Rotation>();
             var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>();
             var motionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>();
 
             this.Entities
                 .WithReadOnly(motionInfos)
-                .WithReadOnly(groundResults)
-                .WithNativeDisableParallelForRestriction(rotations)
+                //.WithReadOnly(groundResults)
+                //.WithNativeDisableParallelForRestriction(rotations)
                 .WithNativeDisableParallelForRestriction(motionCursors)
                 //.WithNativeDisableParallelForRestriction(motionWeights)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
                         ref MinicWalkActionState state,
+                        ref Rotation rot,
                         in MoveHandlingData hander,
-                        in ObjectMainCharacterLinkData linker
+                        in ObjectMain.MotionLinkDate motionlink,
+                        in GroundHitResultData groundResult
+                        //in ObjectMainCharacterLinkData linker
                     )
                 =>
                     {
                         var acts = hander.ControlAction;
 
-                        var motionInfo = motionInfos[linker.MotionEntity];
+                        var motionInfo = motionInfos[motionlink.MotionEntity];
 
-                        var motion = new MotionOperator(commands, motionInfos, motionCursors, linker.MotionEntity, entityInQueryIndex);
+                        var motion = new MotionOperator(commands, motionInfos, motionCursors, motionlink.MotionEntity, entityInQueryIndex);
 
 
                         if (state.Phase == 1)
                         {
-                            var cursor = motionCursors[linker.MotionEntity];
+                            var cursor = motionCursors[motionlink.MotionEntity];
                             if (cursor.CurrentPosition > cursor.TotalLength)
                                 state.Phase = 0;
 
@@ -93,15 +96,15 @@ namespace Abarabone.Character.Action
 
                         if (acts.IsChangeMotion)
                         {
-                            MotionOp.Start(entityInQueryIndex, ref commands, linker.MotionEntity, motionInfo, Motion_minic.slash01VU, false, 0.1f);
+                            MotionOp.Start(entityInQueryIndex, ref commands, motionlink.MotionEntity, motionInfo, Motion_minic.slash01VU, false, 0.1f);
                             state.Phase = 1;
                             return;
                         }
 
-                        if (!groundResults[linker.PostureEntity].IsGround)
+                        if (!groundResult.IsGround)//groundResults[linker.PostureEntity].IsGround)
                         {
                             if (motionInfo.MotionIndex != (int)Motion_minic.jumpdown)
-                                commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+                                commands.AddComponent(entityInQueryIndex, motionlink.MotionEntity,
                                     new Motion.InitializeData
                                     {
                                         MotionIndex = 0,
@@ -118,7 +121,7 @@ namespace Abarabone.Character.Action
                                 {
                                     motion.Start(Motion_minic.run01, isLooping: true, delayTime: 0.05f);
 
-                                    rotations[linker.PostureEntity] =
+                                    rot =//rotations[linker.PostureEntity] =
                                         new Rotation
                                         {
                                             Value = quaternion.LookRotation(math.normalize(acts.MoveDirection), math.up()),
@@ -128,7 +131,7 @@ namespace Abarabone.Character.Action
                                 {
                                     if (motionInfo.MotionIndex != (int)Motion_minic.walk02)
                                     {
-                                        commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+                                        commands.AddComponent(entityInQueryIndex, motionlink.MotionEntity,
                                             new Motion.InitializeData
                                             {
                                                 MotionIndex = (int)Motion_minic.walk02,
@@ -137,7 +140,7 @@ namespace Abarabone.Character.Action
                                             }
                                         );
                                     }
-                                    rotations[linker.PostureEntity] =
+                                    rot =//rotations[linker.PostureEntity] =
                                         new Rotation
                                         {
                                             Value = quaternion.LookRotation(math.normalize(acts.MoveDirection), math.up()),
@@ -147,7 +150,7 @@ namespace Abarabone.Character.Action
                                 {
                                     if (motionInfo.MotionIndex != (int)Motion_minic.stand02)
                                     {
-                                        commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+                                        commands.AddComponent(entityInQueryIndex, motionlink.MotionEntity,
                                             new Motion.InitializeData
                                             {
                                                 MotionIndex = (int)Motion_minic.stand02,

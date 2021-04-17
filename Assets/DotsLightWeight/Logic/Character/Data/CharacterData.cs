@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Jobs;
 using Unity.Mathematics;
@@ -20,11 +22,44 @@ namespace Abarabone.Character
 
 
 
+    static public partial class Control
+    {
+        public struct Move : IComponentData
+        {
+            public float3 MoveDirection;
+            public float VerticalAngle;
 
+            public quaternion LookRotation;
+            public quaternion BodyRotation;
+            public float3 BodyUp;
+
+            public float3 LookDirection => math.forward(this.LookRotation);
+            public float3 BodyDirection => math.forward(this.BodyRotation);
+        }
+
+        public struct Action : IComponentData
+        {
+            public float JumpForce;
+            public int actionbits;
+
+            public bool IsChangeMotion { get => this.actionbits.get(0); set => this.actionbits.set(0, value); }
+            public bool IsShooting { get => this.actionbits.get(1); set => this.actionbits.set(1, value); }
+            public bool IsTriggerdSub { get => this.actionbits.get(2); set => this.actionbits.set(2, value); }
+            public bool IsChangingWapon { get => this.actionbits.get(3); set => this.actionbits.set(3, value); }
+        }
+    }
+
+    static class bits
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool get(ref this int f, int i) => Convert.ToBoolean(f & 1 << i);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void set(ref this int f, int i, bool value) => f |= Convert.ToInt32(value) << i;
+    }
 
 
     // 
-
     public struct MoveHandlingData : IComponentData
     {
         public ControlActionUnit ControlAction;
@@ -71,10 +106,12 @@ namespace Abarabone.Character
     public static partial class CharacterAction
     {
 
-        public struct MainLinkData : IComponentData
+        public struct LinkData : IComponentData
         {
             public Entity MainEntity;
+            public Entity MotionEntity;
         }
+            
 
 
 
@@ -107,7 +144,7 @@ namespace Abarabone.Character
 
     // 当たり判定 -----------------------------------------------
 
-    static public partial class GroudHit
+    static public partial class Grouding
     {
 
     }

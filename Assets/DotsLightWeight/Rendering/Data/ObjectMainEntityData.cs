@@ -42,17 +42,22 @@ namespace Abarabone.Character
             public Entity MotionEntity0;
             public Entity MotionEntity1;
         }
+        // ↓このほうがシステムの汎用性でるかも
+        //public struct Motion2LinkData : IComponentData
+        //{
+        //    public Entity MotionEntity;
+        //}
 
     }
 
 
-    //廃止予定
-    public struct ObjectMainCharacterLinkData : IComponentData
-    {
-        public Entity PostureEntity;
-        //public Entity DrawEntity;
-        public Entity MotionEntity;
-    }
+    ////廃止予定
+    //public struct ObjectMainCharacterLinkData : IComponentData
+    //{
+    //    public Entity PostureEntity;
+    //    //public Entity DrawEntity;
+    //    public Entity MotionEntity;
+    //}
 
     //// 以下は廃止予定
     //public struct CharacterSubMotion1LinkData : IComponentData

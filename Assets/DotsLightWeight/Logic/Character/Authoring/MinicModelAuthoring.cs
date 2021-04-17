@@ -36,14 +36,16 @@ namespace Abarabone.Model.Authoring
 
             initMain_(conversionSystem, main);
 
+            createStateEntity_(conversionSystem, main);
+
             return;
 
 
-            void initMain_( GameObjectConversionSystem gcs_, GameObject main_ )
+            static void initMain_(GameObjectConversionSystem gcs, GameObject main)
             {
-                var em = gcs_.DstEntityManager;
+                var em = gcs.DstEntityManager;
 
-                var mainEntity = gcs_.GetPrimaryEntity(main_);
+                var mainEntity = gcs.GetPrimaryEntity(main);
 
                 var types = new ComponentTypes
                 (
@@ -51,11 +53,32 @@ namespace Abarabone.Model.Authoring
 
                     typeof(HorizontalMovingTag),
                     typeof(MoveHandlingData),
-                    typeof(GroundHitResultData),
-
-                    typeof(MinicWalkActionState)
+                    typeof(GroundHitResultData)
                 );
                 em.AddComponents(mainEntity, types);
+            }
+
+            static void createStateEntity_(GameObjectConversionSystem gcs, GameObject main)
+            {
+                var em = gcs.DstEntityManager;
+
+                var types = em.CreateArchetype
+                (
+                    typeof(MinicWalkActionState),
+                    typeof(CharacterAction.LinkData)
+                );
+                var ent = em.CreateEntity(types);
+
+
+                var mainEntity = gcs.GetPrimaryEntity(main);
+                em.SetComponentData(ent, new CharacterAction.LinkData
+                { 
+                    MainEntity = mainEntity,
+
+                });
+
+
+                em.SetName_(ent, $"{main.transform.parent.name} state");
             }
 
 

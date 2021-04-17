@@ -147,7 +147,7 @@ namespace Abarabone.CharacterMotion.Authoring
 
             setBoneStreamLinks( gcs, posStreamEntities, rotStreamEntities, enabledBoneObjects );
 
-            setLinkForObjectEntity(gcs, motionMain, motionEntity);
+            //setLinkForObjectEntity(gcs, motionMain, motionEntity);
 
             setDrawLink(gcs, motionEntity, motionMain);
         }
@@ -218,16 +218,16 @@ namespace Abarabone.CharacterMotion.Authoring
             );
         }
 
-        static void setLinkForObjectEntity
-            (GameObjectConversionSystem gcs, GameObject main, Entity motionEntity)
-        {
-            var em = gcs.DstEntityManager;
-            var mainEntity = gcs.GetPrimaryEntity(main);
+        //static void setLinkForObjectEntity
+        //    (GameObjectConversionSystem gcs, GameObject main, Entity motionEntity)
+        //{
+        //    var em = gcs.DstEntityManager;
+        //    var mainEntity = gcs.GetPrimaryEntity(main);
 
-            var link = em.GetComponentData<ObjectMainCharacterLinkData>(mainEntity);
-            link.MotionEntity = motionEntity;
-            em.SetComponentData(mainEntity, link);
-        }
+        //    var link = em.GetComponentData<ObjectMainCharacterLinkData>(mainEntity);
+        //    link.MotionEntity = motionEntity;
+        //    em.SetComponentData(mainEntity, link);
+        //}
 
 
 
