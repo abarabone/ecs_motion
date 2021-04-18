@@ -47,6 +47,7 @@ namespace Abarabone.Model.Authoring
 
         /// <summary>
         /// 描画関係はバインダーに、ボーン関係はメインに関連付ける
+        /// ステートは Mesh に関連付ける（苦し紛れ）
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -58,7 +59,7 @@ namespace Abarabone.Model.Authoring
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
             initBinderEntity_(conversionSystem, top, main);
-            initMainEntity_(conversionSystem, top, main);
+            initPostureEntity_(conversionSystem, top, main);
 
             conversionSystem.InitPostureEntity(main);//, bones);
             conversionSystem.InitBoneEntities(main, bones, root: main.transform, this.BoneMode);
@@ -92,24 +93,39 @@ namespace Abarabone.Model.Authoring
                 em_.SetName_(binderEntity, $"{top_.name} binder");
             }
 
-            static void initMainEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
+            static void initPostureEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject main)
             {
-                var em_ = gcs_.DstEntityManager;
+                var em = gcs.DstEntityManager;
 
-                var binderEntity = gcs_.GetPrimaryEntity(top_);
-                var mainEntity = gcs_.GetPrimaryEntity(main_);
+                var binderEntity = gcs.GetPrimaryEntity(top);
+                var mainEntity = gcs.GetPrimaryEntity(main);
 
                 var mainAddtypes = new ComponentTypes
                 (
-                    typeof(ObjectMain.ObjectMainTag),
-                    typeof(ObjectMain.BinderLinkData)
-                    //typeof(ObjectMainCharacterLinkData)
-                //typeof(ObjectMain.MotionLinkDate)
+
                 );
-                em_.AddComponents(mainEntity, mainAddtypes);
+                em.AddComponents(mainEntity, mainAddtypes);
 
 
-                em_.SetComponentData(mainEntity,
+                em.SetName_(mainEntity, $"{top.name} main");
+            }
+
+            static void initStateEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject state)
+            {
+                var em = gcs.DstEntityManager;
+
+                var binderEntity = gcs.GetPrimaryEntity(top);
+                var stateEntity = gcs.GetPrimaryEntity(state);
+
+                var mainAddtypes = new ComponentTypes
+                (
+                    //typeof(ObjectMain.ObjectMainTag),
+                    typeof(ObjectMain.BinderLinkData)
+                );
+                em.AddComponents(stateEntity, mainAddtypes);
+
+
+                em.SetComponentData(stateEntity,
                     new ObjectMain.BinderLinkData
                     {
                         BinderEntity = binderEntity,
@@ -123,7 +139,7 @@ namespace Abarabone.Model.Authoring
                 //);
 
 
-                em_.SetName_(mainEntity, $"{top_.name} main");
+                em.SetName_(stateEntity, $"{top.name} state");
             }
 
         }

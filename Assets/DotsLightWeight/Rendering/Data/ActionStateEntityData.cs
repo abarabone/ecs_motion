@@ -22,13 +22,14 @@ namespace Abarabone.Character
     static public partial class ObjectMain
     {
 
+        // インスタンス破棄のときに必要（あったほうが楽）
         public struct BinderLinkData : IComponentData
         {
             public Entity BinderEntity;
         }
 
-        public struct ObjectMainTag : IComponentData
-        { }
+        //public struct ObjectMainTag : IComponentData
+        //{ }
 
 
 
