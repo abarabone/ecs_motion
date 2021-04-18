@@ -81,6 +81,8 @@ namespace Abarabone.Arms
                         var hit = cw.BulletHitRay
                             (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
 
+                        if (!hit.isHit) return;
+
                         hit.postMessageToHitTarget(sthit, parts);
                     }
                 )

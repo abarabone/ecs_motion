@@ -105,8 +105,8 @@ namespace Abarabone.Structure
                 var prefab = this.Prefabs[part].DebrisPrefab;
                 var rot = this.Rotations[part];
                 var pos = this.Positions[part];
-                createDebris_(this.Cmd, index, prefab, rot, pos);
 
+                createDebris_(this.Cmd, index, prefab, rot, pos);
                 destroyPart_(this.Cmd, index, part);
             }
 

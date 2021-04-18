@@ -132,30 +132,30 @@ namespace Abarabone.Arms
         }
 
 
-        static public void postMessageToHitTarget
-            (
-                this BulletHitUtility.BulletHit hit,
-                StructureHitHolder.ParallelWriter structureHitHolder,
-                ComponentDataFromEntity<StructurePart.PartData> parts
-            )
-        {
+        //static public void postMessageToHitTarget
+        //    (
+        //        this BulletHitUtility.BulletHit hit,
+        //        StructureHitHolder.ParallelWriter structureHitHolder,
+        //        ComponentDataFromEntity<StructurePart.PartData> parts
+        //    )
+        //{
 
-            if (!hit.isHit) return;
+        //    if (!hit.isHit) return;
 
 
-            if (parts.HasComponent(hit.hitEntity))
-            {
-                structureHitHolder.Add(hit.mainEntity,
-                    new StructureHitMessage
-                    {
-                        Position = hit.posision,
-                        Normale = hit.normal,
-                        PartEntity = hit.hitEntity,
-                        PartId = parts[hit.hitEntity].PartId,
-                    }
-                );
-            }
-        }
+        //    if (parts.HasComponent(hit.hitEntity))
+        //    {
+        //        structureHitHolder.Add(hit.mainEntity,
+        //            new StructureHitMessage
+        //            {
+        //                Position = hit.posision,
+        //                Normale = hit.normal,
+        //                PartEntity = hit.hitEntity,
+        //                PartId = parts[hit.hitEntity].PartId,
+        //            }
+        //        );
+        //    }
+        //}
         static public void postMessageToHitTarget
             (
                 this BulletHitUtility.BulletHit hit,
@@ -163,22 +163,17 @@ namespace Abarabone.Arms
                 ComponentDataFromEntity<StructurePart.PartData> parts
             )
         {
+            if (!parts.HasComponent(hit.hitEntity)) return;
 
-            if (!hit.isHit) return;
-
-
-            if (parts.HasComponent(hit.hitEntity))
-            {
-                hitHolder.Add(hit.mainEntity,
-                    new StructureHitMessage
-                    {
-                        Position = hit.posision,
-                        Normale = hit.normal,
-                        PartEntity = hit.hitEntity,
-                        PartId = parts[hit.hitEntity].PartId,
-                    }
-                );
-            }
+            hitHolder.Add(hit.mainEntity,
+                new StructureHitMessage
+                {
+                    Position = hit.posision,
+                    Normale = hit.normal,
+                    PartEntity = hit.hitEntity,
+                    PartId = parts[hit.hitEntity].PartId,
+                }
+            );
         }
 
     }

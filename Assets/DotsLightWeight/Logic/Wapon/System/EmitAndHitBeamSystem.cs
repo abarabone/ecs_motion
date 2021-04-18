@@ -113,7 +113,6 @@ namespace Abarabone.Arms
                     {
                         if (!trigger.IsTriggered) return;
 
-
                         var i = entityInQueryIndex;
                         var prefab = emitter.BulletPrefab;
                         var rot = rots[link.MuzzleEntity];
@@ -122,17 +121,25 @@ namespace Abarabone.Arms
 
                         var hit = hitTest_(link.OwnerMainEntity, camrot, campos, range, ref cw, mainLinks);
 
-                        hit.postMessageToHitTarget(sthit, parts);
+
 
                         //var (start, end) = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
                         var ptop = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
 
                         instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
 
+
+
+                        if (!hit.isHit) return;
+
+                        hit.postMessageToHitTarget(sthit, parts);
+
                     }
                 )
                 .ScheduleParallel();// this.buildPhysicsWorldSystem.GetOutputDependency());
         }
+
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static BulletHitUtility.BulletHit hitTest_
@@ -149,29 +156,33 @@ namespace Abarabone.Arms
             return cw_.BulletHitRay(mainEntity, hitStart, hitEnd, range, mainLinks_);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void postMessageToHitTarget_
-            (
-                StructureHitHolder.ParallelWriter structureHitHolder_,
-                BulletHitUtility.BulletHit hit,
-                ComponentDataFromEntity<StructurePart.PartData> parts_
-            )
-        {
-            if (!hit.isHit) return;
 
-            if (parts_.HasComponent(hit.hitEntity))
-            {
-                structureHitHolder_.Add(hit.mainEntity,
-                    new StructureHitMessage
-                    {
-                        Position = hit.posision,
-                        Normale = hit.normal,
-                        PartEntity = hit.hitEntity,
-                        PartId = parts_[hit.hitEntity].PartId,
-                    }
-                );
-            }
-        }
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static void postMessageToHitTarget_
+        //    (
+        //        StructureHitHolder.ParallelWriter structureHitHolder_,
+        //        BulletHitUtility.BulletHit hit,
+        //        ComponentDataFromEntity<StructurePart.PartData> parts_
+        //    )
+        //{
+        //    if (!hit.isHit) return;
+
+        //    if (parts_.HasComponent(hit.hitEntity))
+        //    {
+        //        structureHitHolder_.Add(hit.mainEntity,
+        //            new StructureHitMessage
+        //            {
+        //                Position = hit.posision,
+        //                Normale = hit.normal,
+        //                PartEntity = hit.hitEntity,
+        //                PartId = parts_[hit.hitEntity].PartId,
+        //            }
+        //        );
+        //    }
+        //}
+
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         //(float3 start, float3 end) calcBeamPosision_
@@ -194,6 +205,8 @@ namespace Abarabone.Arms
             //return (beamStart, beamEnd);
             return new PtoPUnit { start = beamStart, end = beamEnd };
         }
+
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void instantiateBullet_
