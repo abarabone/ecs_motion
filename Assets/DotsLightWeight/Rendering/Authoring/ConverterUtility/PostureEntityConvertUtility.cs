@@ -29,6 +29,7 @@ namespace Abarabone.Model.Authoring
             (this GameObjectConversionSystem gcs, GameObject mainGameObject)//, Transform topBone)
         {
 
+            //var postureEntity = createPostureEntity_(gcs, mainGameObject);
             var postureEntity = addComponentsPostureEntity_(gcs, mainGameObject);
 
             setPostureValue(gcs, postureEntity);//, topBone);
@@ -36,10 +37,12 @@ namespace Abarabone.Model.Authoring
             return;
 
 
-            Entity addComponentsPostureEntity_(GameObjectConversionSystem gcs_, GameObject main_)
+            //static Entity createPostureEntity_(GameObjectConversionSystem gcs, GameObject main)
+            Entity addComponentsPostureEntity_(GameObjectConversionSystem gcs, GameObject main)
             {
-                var ent = gcs_.GetPrimaryEntity(main_);
+                var ent = gcs.GetPrimaryEntity(main);
 
+                //var addtypes = gcs.DstEntityManager.CreateArchetype
                 var addtypes = new ComponentTypes
                 (
                     //typeof( Posture.NeedTransformTag ),
@@ -47,20 +50,21 @@ namespace Abarabone.Model.Authoring
                     typeof(Translation),
                     typeof(Rotation)
                 );
-                gcs_.DstEntityManager.AddComponents(ent, addtypes);
+                gcs.DstEntityManager.AddComponents(ent, addtypes);
+                //var ent = gcs.CreateAdditionalEntity(main, addtypes);
 
                 return ent;
             }
 
-            void setPostureValue(GameObjectConversionSystem gcs_, Entity postureEntity_)//, Transform tfbone_)
+            static void setPostureValue(GameObjectConversionSystem gcs, Entity postureEntity)//, Transform tfbone_)
             {
-                var em = gcs_.DstEntityManager;
+                var em = gcs.DstEntityManager;
 
                 //var boneEntity = gcs_.GetPrimaryEntity(tfbone_);
 
                 //em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
-                em.SetComponentData(postureEntity_, new Rotation { Value = quaternion.identity });
-                em.SetComponentData(postureEntity_, new Translation { Value = float3.zero });
+                em.SetComponentData(postureEntity, new Rotation { Value = quaternion.identity });
+                em.SetComponentData(postureEntity, new Translation { Value = float3.zero });
             }
         }
 

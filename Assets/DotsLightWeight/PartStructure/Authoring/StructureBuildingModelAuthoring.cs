@@ -253,7 +253,7 @@ namespace Abarabone.Structure.Authoring
                     typeof(Structure.MainTag),
                     typeof(DrawInstance.MeshTag),
                     //typeof(NonUniformScale),//暫定
-                    typeof(ObjectMain.ObjectMainTag),
+                    //typeof(ObjectMain.ObjectMainTag),
                     typeof(ObjectMain.BinderLinkData),
                     typeof(DrawInstance.ModeLinkData),
                     typeof(DrawInstance.TargetWorkData),
