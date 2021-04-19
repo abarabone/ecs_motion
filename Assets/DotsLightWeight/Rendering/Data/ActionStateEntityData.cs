@@ -19,7 +19,7 @@ namespace Abarabone.Character
     using Abarabone.Utilities;
 
 
-    static public partial class ObjectMain
+    static public partial class ActionState
     {
 
         // インスタンス破棄のときに必要（あったほうが楽）
@@ -30,6 +30,12 @@ namespace Abarabone.Character
 
         //public struct ObjectMainTag : IComponentData
         //{ }
+
+
+        public struct PostureLinkData : IComponentData
+        {
+            public Entity PostureEntity;
+        }
 
 
 

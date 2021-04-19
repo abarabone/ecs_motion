@@ -31,21 +31,21 @@ namespace Abarabone.Model.Authoring
             base.Convert(entity, dstManager, conversionSystem);
 
 
-            var top = this.gameObject;
-            var main = top.transform.GetChild(0).gameObject;
+            var state = this.GetComponentInChildren<ActionStateAuthoring>();
+            initState_(conversionSystem, state);
 
-            initMain_(conversionSystem, main);
-
-            createStateEntity_(conversionSystem, main);
+            var posture = this.GetComponentInChildren<PostureAuthoring>();
+            initPosture_(conversionSystem, posture);
 
             return;
 
 
-            static void initMain_(GameObjectConversionSystem gcs, GameObject main)
+            static void initPosture_
+                (GameObjectConversionSystem gcs, PostureAuthoring posture)
             {
                 var em = gcs.DstEntityManager;
 
-                var mainEntity = gcs.GetPrimaryEntity(main);
+                var postureEntity = gcs.GetPrimaryEntity(posture);
 
                 var types = new ComponentTypes
                 (
@@ -55,30 +55,31 @@ namespace Abarabone.Model.Authoring
                     typeof(MoveHandlingData),
                     typeof(GroundHitResultData)
                 );
-                em.AddComponents(mainEntity, types);
+                em.AddComponents(postureEntity, types);
             }
 
-            static void createStateEntity_(GameObjectConversionSystem gcs, GameObject main)
+            static void initState_
+                (GameObjectConversionSystem gcs, ActionStateAuthoring state)
             {
                 var em = gcs.DstEntityManager;
 
-                var types = em.CreateArchetype
+                var types = new ComponentTypes//em.CreateArchetype
                 (
-                    typeof(MinicWalkActionState),
-                    typeof(CharacterAction.LinkData)
+                    typeof(PlayerTag),
+
+                    typeof(MinicWalkActionState)
+                    //typeof(CharacterAction.LinkData)
                 );
-                var ent = em.CreateEntity(types);
+                var ent = gcs.GetEntityDictionary()[state];
+                em.AddComponents(ent, types);
 
 
-                var mainEntity = gcs.GetPrimaryEntity(main);
-                em.SetComponentData(ent, new CharacterAction.LinkData
-                { 
-                    MainEntity = mainEntity,
+                //var postureEntity = gcs.GetPrimaryEntity(posture);
+                //em.SetComponentData(ent, new CharacterAction.LinkData
+                //{ 
+                //    MainEntity = postureEntity,
 
-                });
-
-
-                em.SetName_(ent, $"{main.transform.parent.name} state");
+                //});
             }
 
 

@@ -71,7 +71,7 @@ namespace Abarabone.Character.Action
                         ref MinicWalkActionState state,
                         ref Rotation rot,
                         in MoveHandlingData hander,
-                        in ObjectMain.MotionLinkDate motionlink,
+                        in ActionState.MotionLinkDate motionlink,
                         in GroundHitResultData groundResult
                         //in ObjectMainCharacterLinkData linker
                     )

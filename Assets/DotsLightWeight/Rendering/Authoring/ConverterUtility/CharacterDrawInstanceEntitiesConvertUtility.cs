@@ -25,13 +25,15 @@ namespace Abarabone.Draw.Authoring
     static public class CharacterDrawInstanceEntitiesConvertUtility
     {
 
-        static public void CreateDrawInstanceEntities
-            ( this GameObjectConversionSystem gcs, GameObject top, GameObject main, Transform[] bones, EnBoneType boneMode)
+        static public void CreateDrawInstanceEntities(
+            this GameObjectConversionSystem gcs,
+            ModelGroupAuthoring.ModelAuthoringBase top, PostureAuthoring posture,
+            Transform[] bones, EnBoneType boneMode)
         {
 
             var em = gcs.DstEntityManager;
 
-            var drawInstanceEntity = createDrawInstanceEntity( gcs, top, main, bones, boneMode );
+            var drawInstanceEntity = createDrawInstanceEntity( gcs, top, posture, bones, boneMode );
 
             setBoneComponentValues( gcs, bones, drawInstanceEntity );
 
@@ -41,7 +43,7 @@ namespace Abarabone.Draw.Authoring
             //setMotionComponentValues(gcs, top, drawInstanceEntity);
 
             // いずれはスイッチで必要か否か選択できるようにしたい
-            gcs.InsertTransformOffsetLink(main, drawInstanceEntity, bones);
+            gcs.InsertTransformOffsetLink(posture, drawInstanceEntity, bones);
 
         }
 
@@ -49,8 +51,10 @@ namespace Abarabone.Draw.Authoring
         // ----------------------------------------------------------------------------------
 
         
-        static Entity createDrawInstanceEntity
-            ( GameObjectConversionSystem gcs, GameObject top, GameObject main, Transform[] bones, EnBoneType boneMode )
+        static Entity createDrawInstanceEntity(
+            GameObjectConversionSystem gcs,
+            ModelGroupAuthoring.ModelAuthoringBase top, PostureAuthoring posture,
+            Transform[] bones, EnBoneType boneMode )
         {
             var em = gcs.DstEntityManager;
 
@@ -59,14 +63,14 @@ namespace Abarabone.Draw.Authoring
             {
                 case EnBoneType.reelup_chain:
                 {
-                    ent = gcs.CreateAdditionalEntity(top, archetypeForReelupChain_());
+                    ent = gcs.CreateAdditionalEntity(top.gameObject, archetypeForReelupChain_());
                     setDrawComponents_();
                     setBoneTopLink_();
                 }
                 break;
                 case EnBoneType.jobs_per_depth:
                 {
-                    ent = gcs.CreateAdditionalEntity(top, archetypeForJobPerDepth_());
+                    ent = gcs.CreateAdditionalEntity(top.gameObject, archetypeForJobPerDepth_());
                     setDrawComponents_();
                 }
                 break;
@@ -105,13 +109,13 @@ namespace Abarabone.Draw.Authoring
                 em.SetComponentData(ent,
                     new DrawInstance.ModeLinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(top),
+                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(top.gameObject),
                     }
                 );
                 em.SetComponentData(ent,
                     new DrawInstance.PostureLinkData
                     {
-                        PostureEntity = gcs.GetPrimaryEntity(main),
+                        PostureEntity = gcs.GetPrimaryEntity(posture),
                     }
                 );
                 em.SetComponentData(ent,
@@ -120,7 +124,7 @@ namespace Abarabone.Draw.Authoring
                         DrawInstanceId = -1,
                     }
                 );
-                var tfmain = main.transform;
+                var tfmain = posture.transform;
                 em.SetComponentData(ent,
                     new DrawInstance.TransformOffsetData
                     {

@@ -69,7 +69,7 @@ namespace Abarabone.Draw
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in ObjectMain.BinderLinkData binder,
+                        in Structure.BinderLinkData binder,
                         in DrawInstance.ModeLinkData model,
                         in DrawInstance.ModelLod2LinkData lod2
                     )

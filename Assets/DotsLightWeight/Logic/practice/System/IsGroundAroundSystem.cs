@@ -49,7 +49,7 @@ namespace Abarabone.Character
                 (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
 
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
-            var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            var mainEntities = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
 
 
             this.Entities

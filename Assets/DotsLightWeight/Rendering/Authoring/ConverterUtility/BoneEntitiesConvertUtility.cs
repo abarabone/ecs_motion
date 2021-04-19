@@ -49,26 +49,28 @@ namespace Abarabone.Model.Authoring
         // またルートボーンは、mainGameObject に関連付けられた Entity を親としてリンクを張る。
         // bones の親子構造は、bones に含まれるエントリの中で構築される。エントリの中から親が見つからない場合はルートボーンとみなされ、親は mainGameObject となる。
         // root 
-        static public void InitBoneEntities
-            (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root, EnBoneType boneMode)
+        static public void InitBoneEntities(
+            this GameObjectConversionSystem gcs, PostureAuthoring posture,
+            IEnumerable<Transform> bones, Transform root, EnBoneType boneMode)
         {
 
             if (boneMode == EnBoneType.reelup_chain)
-                gcs.initBoneEntitiesChain(mainGameObject, bones, root);
+                gcs.initBoneEntitiesChain(posture, bones, root);
 
             if (boneMode == EnBoneType.jobs_per_depth)
-                gcs.initBoneEntitiesLeveled(mainGameObject, bones, root);
+                gcs.initBoneEntitiesLeveled(posture, bones, root);
 
         }
 
         // posture とルートボーンの間に、ルート位置補正をかませる
         // ルート位置補正は draw instance entity に配置されるので、
         // posture entity を draw instance entity に書き替えるだけでよい
-        static public void InsertTransformOffsetLink
-            (this GameObjectConversionSystem gcs, GameObject mainGameObject, Entity drawInstance, IEnumerable<Transform> bones)
+        static public void InsertTransformOffsetLink(
+            this GameObjectConversionSystem gcs,
+            PostureAuthoring posture, Entity drawInstance, IEnumerable<Transform> bones)
         {
             var em = gcs.DstEntityManager;
-            var main = gcs.GetPrimaryEntity(mainGameObject);
+            var main = gcs.GetPrimaryEntity(posture);
             var q =
                 from bone in bones
                 let ent = gcs.GetPrimaryEntity(bone)
@@ -91,32 +93,32 @@ namespace Abarabone.Model.Authoring
         // - - - - - - - - - - - - - - - - - - - - -
 
         static void initBoneEntitiesChain
-            ( this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root )
+            ( this GameObjectConversionSystem gcs, PostureAuthoring posture, IEnumerable<Transform> bones, Transform root )
         {
             var em = gcs.DstEntityManager;
 
-            var postureEntity = gcs.GetPrimaryEntity(mainGameObject);
+            var postureEntity = gcs.GetPrimaryEntity(posture);
             var boneEntities = addComponentsToBoneEntities( gcs, bones, addtypeComponentsChain_());
 
-            addMainEntityLinkForCollider(gcs, mainGameObject, bones);
+            addMainEntityLinkForCollider(gcs, posture, bones);
 
-            initLocalPosition(em, boneEntities, mainGameObject, bones);
+            initLocalPosition(em, boneEntities, posture, bones);
 
             var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
         }
 
         static void initBoneEntitiesLeveled
-            (this GameObjectConversionSystem gcs, GameObject mainGameObject, IEnumerable<Transform> bones, Transform root)
+            (this GameObjectConversionSystem gcs, PostureAuthoring posture, IEnumerable<Transform> bones, Transform root)
         {
             var em = gcs.DstEntityManager;
 
-            var postureEntity = gcs.GetPrimaryEntity(mainGameObject);
+            var postureEntity = gcs.GetPrimaryEntity(posture);
             var boneEntities = addComponentsToBoneEntities(gcs, bones, addtypeComponentsLeveled_());
 
-            addMainEntityLinkForCollider(gcs, mainGameObject, bones);
+            addMainEntityLinkForCollider(gcs, posture, bones);
 
-            initLocalPosition(em, boneEntities, mainGameObject, bones);
+            initLocalPosition(em, boneEntities, posture, bones);
 
             var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneLinksLeveled(em, postureEntity, boneEntities, paths);
@@ -138,19 +140,19 @@ namespace Abarabone.Model.Authoring
 
 
         static void addMainEntityLinkForCollider
-            (GameObjectConversionSystem gcs, GameObject main, IEnumerable<Transform> bones)
+            (GameObjectConversionSystem gcs, PostureAuthoring posture, IEnumerable<Transform> bones)
         {
             var em = gcs.DstEntityManager;
-            var mainEntity = gcs.GetPrimaryEntity(main);
+            var postureEntity = gcs.GetPrimaryEntity(posture);
 
             var qBoneWithCollider = bones
                 .Where(bone => bone.GetComponent<PhysicsBodyAuthoring>() != null)
                 .Select(bone => gcs.TryGetPrimaryEntity(bone));
 
             em.AddComponentData(qBoneWithCollider,
-                new Bone.MainEntityLinkData
+                new Bone.PostureLinkData
                 {
-                    MainEntity = mainEntity,
+                    PostureEntity = postureEntity,
                 }
             );
         }
@@ -288,9 +290,9 @@ namespace Abarabone.Model.Authoring
         // ストリームデータから上書きしてしまうので、入れても無駄
         // …と思ったが、アニメーションのないオブジェクトでは、必要になる
         static void initLocalPosition
-            (EntityManager em, IEnumerable<Entity> boneEntities, GameObject mainGameObject, IEnumerable<Transform> bones)
+            (EntityManager em, IEnumerable<Entity> boneEntities, PostureAuthoring posture, IEnumerable<Transform> bones)
         {
-            var mtInv = mainGameObject.transform.worldToLocalMatrix;
+            var mtInv = posture.transform.worldToLocalMatrix;
 
             var qLocal =
                 from bn in bones

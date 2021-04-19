@@ -71,7 +71,7 @@ namespace Abarabone.Character
             using var phyScope = this.phydep.WithDependencyScope();
 
 
-            var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            var mainEntities = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
             var physicsWorld = this.phydep.PhysicsWorld;//.CollisionWorld;
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,
             var rdt = 1.0f / deltaTime;
@@ -243,7 +243,7 @@ namespace Abarabone.Character
 
         //( bool isHit, RaycastHit hit) raycast
         public static HitFlagAndResult raycast
-            (ref this PhysicsWorld pw, RaycastInput hitInput, Entity self, ComponentDataFromEntity<Bone.MainEntityLinkData> mainlist)
+            (ref this PhysicsWorld pw, RaycastInput hitInput, Entity self, ComponentDataFromEntity<Bone.PostureLinkData> mainlist)
         {
             var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(maxFraction: 1.0f, self, mainlist);
 

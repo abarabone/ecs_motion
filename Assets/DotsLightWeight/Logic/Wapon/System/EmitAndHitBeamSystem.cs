@@ -79,7 +79,7 @@ namespace Abarabone.Arms
             var sthit = this.sender.AsParallelWriter();
 
 
-            var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            var mainLinks = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
@@ -146,7 +146,7 @@ namespace Abarabone.Arms
             (
                 Entity mainEntity, quaternion sightRot, float3 sightPos, float range,
                 ref CollisionWorld cw_,
-                ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks_
+                ComponentDataFromEntity<Bone.PostureLinkData> mainLinks_
             )
         {
             var sightDir = math.forward(sightRot);

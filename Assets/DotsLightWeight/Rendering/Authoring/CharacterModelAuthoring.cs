@@ -52,31 +52,33 @@ namespace Abarabone.Model.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var top = this.gameObject;
-            var main = top.Children().First();
+            var top = this;
+            var posture = this.GetComponentInChildren<PostureAuthoring>();
             var bones = this.QueryModel.First().Bones;
+            var state = this.GetComponentInChildren<ActionStateAuthoring>();
 
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
-            initBinderEntity_(conversionSystem, top, main);
-            initStateEntity_(conversionSystem, top, main);
+            initBinderEntity_(conversionSystem, top, posture);
+            createStateEntity_(conversionSystem, top, posture, state);
 
-            conversionSystem.InitPostureEntity(main);//, bones);
-            conversionSystem.InitBoneEntities(main, bones, root: main.transform, this.BoneMode);
+            conversionSystem.InitPostureEntity(posture);//, bones);
+            conversionSystem.InitBoneEntities(posture, bones, root: posture.transform, this.BoneMode);
 
-            conversionSystem.CreateDrawInstanceEntities(top, main, bones, this.BoneMode);
+            conversionSystem.CreateDrawInstanceEntities(top, posture, bones, this.BoneMode);
 
             return;
 
 
 
 
-            static void initBinderEntity_(GameObjectConversionSystem gcs_, GameObject top_, GameObject main_)
+            static void initBinderEntity_
+                (GameObjectConversionSystem gcs_, CharacterModelAuthoring top_, PostureAuthoring posture)
             {
                 var em_ = gcs_.DstEntityManager;
 
                 var binderEntity = gcs_.GetPrimaryEntity(top_);
-                var mainEntity = gcs_.GetPrimaryEntity(main_);
+                var mainEntity = gcs_.GetPrimaryEntity(posture);
 
                 var types = new ComponentTypes
                 (
@@ -93,53 +95,39 @@ namespace Abarabone.Model.Authoring
                 em_.SetName_(binderEntity, $"{top_.name} binder");
             }
 
-            //static void initPostureEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject main)
-            //{
-            //    var em = gcs.DstEntityManager;
-
-            //    var binderEntity = gcs.GetPrimaryEntity(top);
-            //    var mainEntity = gcs.GetPrimaryEntity(main);
-
-            //    var mainAddtypes = new ComponentTypes
-            //    (
-
-            //    );
-            //    em.AddComponents(mainEntity, mainAddtypes);
-
-
-            //    em.SetName_(mainEntity, $"{top.name} main");
-            //}
-
-            static void createStateEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject posture)
+            static void createStateEntity_(
+                GameObjectConversionSystem gcs, CharacterModelAuthoring top,
+                PostureAuthoring posture, ActionStateAuthoring state)
             {
                 var em = gcs.DstEntityManager;
 
                 var binderEntity = gcs.GetPrimaryEntity(top);
                 var postureEntity = gcs.GetPrimaryEntity(posture);
 
-                var types = em.CreateArchetype(//new ComponentTypes
+                var types = em.CreateArchetype//new ComponentTypes
                 (
                     //typeof(ObjectMain.ObjectMainTag),
-                    typeof(ObjectMain.BinderLinkData)
+                    typeof(ActionState.BinderLinkData),
+                    typeof(ActionState.PostureLinkData)
                 );
-                var ent = gcs.CreateAdditionalEntity(top, types);
+                var ent = gcs.CreateAdditionalEntity(top.gameObject, types);
 
 
                 em.SetComponentData(ent,
-                    new ObjectMain.BinderLinkData
+                    new ActionState.BinderLinkData
                     {
                         BinderEntity = binderEntity,
                     }
                 );
-                //em_.SetComponentData(mainEntity,
-                //    new ObjectMainCharacterLinkData
-                //    {
-                //        PostureEntity = mainEntity,//
-                //    }
-                //);
+                em.SetComponentData(ent,
+                    new ActionState.PostureLinkData
+                    {
+                        PostureEntity = postureEntity,
+                    }
+                );
 
-                gcs.GetEntityDictionary().Add(;
                 em.SetName_(ent, $"{top.name} state");
+                gcs.GetEntityDictionary().Add(state, ent);
             }
 
         }

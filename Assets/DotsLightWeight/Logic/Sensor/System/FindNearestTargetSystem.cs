@@ -56,7 +56,7 @@ namespace Abarabone.Character
             var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
             var cw = this.phydep.PhysicsWorld.CollisionWorld;
 
-            var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            var mainEntities = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             this.Entities

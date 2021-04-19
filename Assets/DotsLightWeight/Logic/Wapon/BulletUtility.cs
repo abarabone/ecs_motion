@@ -90,7 +90,7 @@ namespace Abarabone.Arms
             (
                 ref this CollisionWorld cw,
                 Entity selfMainEntity, float3 start, DirectionAndLength dir,
-                ComponentDataFromEntity<Bone.MainEntityLinkData> links
+                ComponentDataFromEntity<Bone.PostureLinkData> links
             )
         {
             var end = start + dir.Direction * dir.Length;
@@ -102,7 +102,7 @@ namespace Abarabone.Arms
             (
                 ref this CollisionWorld cw,
                 Entity selfMainEntity, float3 start, float3 end, float distance,
-                ComponentDataFromEntity<Bone.MainEntityLinkData> links
+                ComponentDataFromEntity<Bone.PostureLinkData> links
             )
         {
 

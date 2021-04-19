@@ -23,13 +23,13 @@ namespace Abarabone.Physics
         
         public Entity SelfMainEntity;
         public Entity TargetMainEntity;
-        ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntityLinks;
+        ComponentDataFromEntity<Bone.PostureLinkData> mainEntityLinks;
         
         T m_ClosestHit;
         public T ClosestHit => m_ClosestHit;
 
         public ClosestHitExcludeSelfCollector
-            ( float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks )
+            ( float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<Bone.PostureLinkData> mainLinks )
         {
             this.MaxFraction = maxFraction;
             this.m_ClosestHit = default( T );
@@ -42,7 +42,7 @@ namespace Abarabone.Physics
         public bool AddHit( T hit )
         {
             var ent = this.mainEntityLinks.HasComponent(hit.Entity)
-                ? this.mainEntityLinks[hit.Entity].MainEntity
+                ? this.mainEntityLinks[hit.Entity].PostureEntity
                 : hit.Entity;
             if( ent == this.SelfMainEntity ) return false;
 
@@ -66,10 +66,10 @@ namespace Abarabone.Physics
 
         public Entity SelfMainEntity;
         public Entity TargetMainEntity;
-        ComponentDataFromEntity<Bone.MainEntityLinkData> mainEntityLinks;
+        ComponentDataFromEntity<Bone.PostureLinkData> mainEntityLinks;
 
         public AnyHitExcludeSelfCollector
-            (float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<Bone.MainEntityLinkData> mainLinks)
+            (float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<Bone.PostureLinkData> mainLinks)
         {
             this.MaxFraction = maxFraction;
             this.SelfMainEntity = selfMainEntity;
@@ -81,7 +81,7 @@ namespace Abarabone.Physics
         public bool AddHit( T hit )
         {
             var ent = this.mainEntityLinks.HasComponent(hit.Entity)
-                ? this.mainEntityLinks[hit.Entity].MainEntity
+                ? this.mainEntityLinks[hit.Entity].PostureEntity
                 : hit.Entity;
             if (ent == this.SelfMainEntity) return false;
 

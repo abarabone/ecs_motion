@@ -80,9 +80,9 @@ namespace Abarabone.Model
     static public partial class Bone
     {
 
-        public struct MainEntityLinkData : IComponentData
+        public struct PostureLinkData : IComponentData
         {
-            public Entity MainEntity;
+            public Entity PostureEntity;
         }
 
 

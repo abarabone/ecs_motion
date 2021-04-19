@@ -54,7 +54,7 @@ namespace Abarabone.Character
             using var phyScope = this.phydep.WithDependencyScope();
 
 
-            var mainEntities = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            var mainEntities = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
             var collisionWorld = this.phydep.PhysicsWorld.CollisionWorld;
 
             this.Entities

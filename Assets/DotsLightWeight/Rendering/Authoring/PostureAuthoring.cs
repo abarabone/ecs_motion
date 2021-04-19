@@ -1,18 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 using UnityEngine;
+using Unity.Linq;
+using Unity.Entities;
+using Unity.Collections;
+using Unity.Transforms;
+using Unity.Mathematics;
 
-public class PostureAuthoring : MonoBehaviour
+namespace Abarabone.Model.Authoring
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    using Abarabone.Draw.Authoring;
+    using Abarabone.Character;
+    using Abarabone.Common.Extension;
+    using Abarabone.CharacterMotion.Authoring;
+    using Abarabone.Geometry;
+    using Abarabone.Utilities;
 
-    // Update is called once per frame
-    void Update()
+
+    public class PostureAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
-        
+
+
+        public EnBoneType BoneMode;
+
+
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+
+
+
+        }
     }
 }

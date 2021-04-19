@@ -59,7 +59,7 @@ namespace Abarabone.Arms
             var sthit = this.sender.AsParallelWriter();
             var cw = this.phydep.PhysicsWorld.CollisionWorld;
 
-            var mainLinks = this.GetComponentDataFromEntity<Bone.MainEntityLinkData>(isReadOnly: true);
+            var mainLinks = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
 

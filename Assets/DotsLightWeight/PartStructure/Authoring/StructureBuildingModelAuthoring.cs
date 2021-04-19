@@ -93,19 +93,19 @@ namespace Abarabone.Structure.Authoring
         static public void CreateStructureEntities
             (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
-            var top = st.gameObject;
+            var top = st;
             var far = st.FarModel.Obj;
             var near = st.NearModel.Obj;
             var env = st.Envelope;
-            var main = env;
+            var posture = st.GetComponentInChildren<PostureAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
-            initBinderEntity_(gcs, top, main);
-            initMainEntity_(gcs, top, main, st.NearModel, st.FarModel);
+            initBinderEntity_(gcs, top, posture);
+            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel);
 
-            setBoneForFarEntity_(gcs, main, far, top.transform);
-            setBoneForPartMultiEntities_(gcs, main, near, near.transform);
+            setBoneForFarEntity_(gcs, posture, far, top.transform);
+            setBoneForPartMultiEntities_(gcs, posture, near, near.transform);
 
             trimEntities_(gcs, st);
         }
@@ -134,22 +134,22 @@ namespace Abarabone.Structure.Authoring
         static public void CreateStructureEntities_MeshCollider
             (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
-            var top = st.gameObject;
+            var top = st;
             var far = st.FarModel.Obj;
             var near = st.NearModel.Obj;
             var env = st.Envelope;
-            var main = env;
+            var posture = st.GetComponentInChildren<PostureAuthoring>();
             //var patrs = near.GetComponentsInChildren<StructurePartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
-            initBinderEntity_(gcs, top, main);
-            initMainEntity_(gcs, top, main, st.NearModel, st.FarModel);
+            initBinderEntity_(gcs, top, posture);
+            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel);
 
             initMeshColliderEntity(gcs, near);
 
-            setBoneForFarEntity_(gcs, main, far, top.transform);
-            setBoneForNearSingleEntity_(gcs, main, near, near.transform);
+            setBoneForFarEntity_(gcs, posture, far, top.transform);
+            setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
 
             trimEntities_(gcs, st);
             orderTrimEntities(gcs, st);
@@ -158,22 +158,22 @@ namespace Abarabone.Structure.Authoring
         static public void CreateStructureEntities_Compound
             (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
-            var top = st.gameObject;
+            var top = st;
             var far = st.FarModel.Obj;
             var near = st.NearModel.Obj;
             var env = st.Envelope;
-            var main = env;
+            var posture = st.GetComponentInChildren<PostureAuthoring>();
             //var patrs = near.GetComponentsInChildren<StructurePartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
-            initBinderEntity_(gcs, top, main);
-            initMainEntity_(gcs, top, main, st.NearModel, st.FarModel);
+            initBinderEntity_(gcs, top, posture);
+            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel);
 
             initCompoundColliderEntity(gcs, near);
 
-            setBoneForFarEntity_(gcs, main, far, top.transform);
-            setBoneForNearSingleEntity_(gcs, main, near, near.transform);
+            setBoneForFarEntity_(gcs, posture, far, top.transform);
+            setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
 
             trimEntities_(gcs, st);
             orderTrimEntities(gcs, st);
@@ -215,7 +215,8 @@ namespace Abarabone.Structure.Authoring
             em.AddComponentData(qEnt, new LateDestroyEntityConversion.TargetTag { });
         }
 
-        static void initBinderEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject main)
+        static void initBinderEntity_
+            (GameObjectConversionSystem gcs, StructureBuildingModelAuthoring top, PostureAuthoring main)
         {
             var em_ = gcs.DstEntityManager;
 
@@ -238,7 +239,7 @@ namespace Abarabone.Structure.Authoring
         }
 
         static void initMainEntity_
-            (GameObjectConversionSystem gcs, GameObject top, GameObject main, IMeshModelLod near, IMeshModelLod far)
+            (GameObjectConversionSystem gcs, StructureBuildingModelAuthoring top, PostureAuthoring main, IMeshModelLod near, IMeshModelLod far)
         {
             var em = gcs.DstEntityManager;
 
@@ -254,7 +255,7 @@ namespace Abarabone.Structure.Authoring
                     typeof(DrawInstance.MeshTag),
                     //typeof(NonUniformScale),//暫定
                     //typeof(ObjectMain.ObjectMainTag),
-                    typeof(ObjectMain.BinderLinkData),
+                    typeof(Structure.BinderLinkData),//暫定
                     typeof(DrawInstance.ModeLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(Structure.PartDestructionData),
@@ -269,7 +270,7 @@ namespace Abarabone.Structure.Authoring
             //    }
             //);
             em.SetComponentData(mainEntity,
-                new ObjectMain.BinderLinkData
+                new Structure.BinderLinkData
                 {
                     BinderEntity = binderEntity,
                 }
@@ -290,7 +291,7 @@ namespace Abarabone.Structure.Authoring
 
             var draw = mainEntity;
             var lods = new IMeshModelLod[] { near, far };
-            gcs.AddLod2ComponentToDrawInstanceEntity(draw, top, lods);
+            gcs.AddLod2ComponentToDrawInstanceEntity(draw, top.gameObject, lods);
 
 
             gcs.InitPostureEntity(main);//, far.objectTop.transform);
@@ -300,7 +301,8 @@ namespace Abarabone.Structure.Authoring
         }
 
 
-        static void setBoneForFarEntity_(GameObjectConversionSystem gcs, GameObject parent, GameObject far, Transform root)
+        static void setBoneForFarEntity_
+            (GameObjectConversionSystem gcs, PostureAuthoring parent, GameObject far, Transform root)
         {
             var qFar = far.transform.WrapEnumerable();
 
@@ -308,7 +310,8 @@ namespace Abarabone.Structure.Authoring
         }
 
 
-        static void setBoneForPartMultiEntities_(GameObjectConversionSystem gcs, GameObject parent, GameObject partTop, Transform root)
+        static void setBoneForPartMultiEntities_
+            (GameObjectConversionSystem gcs, PostureAuthoring parent, GameObject partTop, Transform root)
         {
             var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()//true)
                 .Select(pt => pt.transform);
@@ -316,7 +319,8 @@ namespace Abarabone.Structure.Authoring
             gcs.InitBoneEntities(parent, qPart, root, EnBoneType.jobs_per_depth);
         }
 
-        static void setBoneForNearSingleEntity_(GameObjectConversionSystem gcs, GameObject parent, GameObject near, Transform root)
+        static void setBoneForNearSingleEntity_
+            (GameObjectConversionSystem gcs, PostureAuthoring parent, GameObject near, Transform root)
         {
             var qNear = near.transform.WrapEnumerable();
 

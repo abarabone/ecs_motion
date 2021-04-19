@@ -36,6 +36,12 @@ namespace Abarabone.Structure
         //{ }
 
 
+        // 暫定　後で直したい
+        public struct BinderLinkData : IComponentData
+        {
+            public Entity BinderEntity;
+        }
+
 
         /// <summary>
         /// 破壊したパーツのビットフラグがオンになる

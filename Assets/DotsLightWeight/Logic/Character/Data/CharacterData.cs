@@ -106,11 +106,11 @@ namespace Abarabone.Character
     public static partial class CharacterAction
     {
 
-        public struct LinkData : IComponentData
-        {
-            public Entity MainEntity;
-            public Entity MotionEntity;
-        }
+        //public struct LinkData : IComponentData
+        //{
+        //    public Entity MainEntity;
+        //    public Entity MotionEntity;
+        //}
             
 
 

@@ -26,21 +26,22 @@ namespace Abarabone.Model.Authoring
 
 
         static public void InitPostureEntity
-            (this GameObjectConversionSystem gcs, GameObject mainGameObject)//, Transform topBone)
+            (this GameObjectConversionSystem gcs, PostureAuthoring posture)//, Transform topBone)
         {
 
             //var postureEntity = createPostureEntity_(gcs, mainGameObject);
-            var postureEntity = addComponentsPostureEntity_(gcs, mainGameObject);
+            var postureEntity = addComponentsPostureEntity_(gcs, posture);
 
-            setPostureValue(gcs, postureEntity);//, topBone);
+            setPostureValue(gcs, postureEntity, posture);//, topBone);
 
             return;
 
 
             //static Entity createPostureEntity_(GameObjectConversionSystem gcs, GameObject main)
-            Entity addComponentsPostureEntity_(GameObjectConversionSystem gcs, GameObject main)
+            Entity addComponentsPostureEntity_(GameObjectConversionSystem gcs, PostureAuthoring postureObject)
             {
-                var ent = gcs.GetPrimaryEntity(main);
+                var em = gcs.DstEntityManager;
+                var ent = gcs.GetPrimaryEntity(postureObject);
 
                 //var addtypes = gcs.DstEntityManager.CreateArchetype
                 var addtypes = new ComponentTypes
@@ -50,21 +51,24 @@ namespace Abarabone.Model.Authoring
                     typeof(Translation),
                     typeof(Rotation)
                 );
-                gcs.DstEntityManager.AddComponents(ent, addtypes);
+                em.AddComponents(ent, addtypes);
                 //var ent = gcs.CreateAdditionalEntity(main, addtypes);
 
+                em.SetName_(ent, $"{postureObject.transform.parent.name} posture");
                 return ent;
             }
 
-            static void setPostureValue(GameObjectConversionSystem gcs, Entity postureEntity)//, Transform tfbone_)
+            static void setPostureValue
+                (GameObjectConversionSystem gcs, Entity postureEntity, PostureAuthoring postureObject)//, Transform tfbone_)
             {
                 var em = gcs.DstEntityManager;
 
                 //var boneEntity = gcs_.GetPrimaryEntity(tfbone_);
-
                 //em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
-                em.SetComponentData(postureEntity, new Rotation { Value = quaternion.identity });
-                em.SetComponentData(postureEntity, new Translation { Value = float3.zero });
+
+                var tf = postureObject.transform;
+                em.SetComponentData(postureEntity, new Rotation { Value = tf.rotation });
+                em.SetComponentData(postureEntity, new Translation { Value = tf.position });
             }
         }
 
