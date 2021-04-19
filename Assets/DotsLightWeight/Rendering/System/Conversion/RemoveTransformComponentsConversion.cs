@@ -11,11 +11,12 @@ namespace Abarabone.Model.Authoring
 
     /// <summary>
     /// TransformConversion によって付与される、トランスフォーム系のコンポーネントデータを削除する。
-    /// ExcludeTransformConversion とかはよ
+    /// ExcludeTransformConversion とか はよ
     /// </summary>
+    /// transform conversion は [UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     //[DisableAutoCreation]
+    //[UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(TrimBlankEntityFromLinkedEntityGroupConversion))]
     public class RemoveTransformComponentsConversion : GameObjectConversionSystem
     {
         protected override void OnUpdate()
@@ -36,6 +37,10 @@ namespace Abarabone.Model.Authoring
                         em.RemoveComponent<PreviousParent>(ent);
                         em.RemoveComponent<Parent>(ent);
                         em.RemoveComponent<Child>(ent);
+                        //em.RemoveComponent<Translation>(ent);
+                        //em.RemoveComponent<Rotation>(ent);
+                        //em.RemoveComponent<NonUniformScale>(ent);
+                        //em.RemoveComponent<Scale>(ent);
 
                     }
                 }

@@ -59,7 +59,7 @@ namespace Abarabone.Model.Authoring
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
             initBinderEntity_(conversionSystem, top, main);
-            initPostureEntity_(conversionSystem, top, main);
+            initStateEntity_(conversionSystem, top, main);
 
             conversionSystem.InitPostureEntity(main);//, bones);
             conversionSystem.InitBoneEntities(main, bones, root: main.transform, this.BoneMode);
@@ -78,12 +78,12 @@ namespace Abarabone.Model.Authoring
                 var binderEntity = gcs_.GetPrimaryEntity(top_);
                 var mainEntity = gcs_.GetPrimaryEntity(main_);
 
-                var binderAddtypes = new ComponentTypes
+                var types = new ComponentTypes
                 (
                     typeof(BinderTrimBlankLinkedEntityGroupTag),
                     typeof(ObjectBinder.MainEntityLinkData)
                 );
-                em_.AddComponents(binderEntity, binderAddtypes);
+                em_.AddComponents(binderEntity, types);
 
 
                 em_.SetComponentData(binderEntity,
@@ -93,39 +93,39 @@ namespace Abarabone.Model.Authoring
                 em_.SetName_(binderEntity, $"{top_.name} binder");
             }
 
-            static void initPostureEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject main)
+            //static void initPostureEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject main)
+            //{
+            //    var em = gcs.DstEntityManager;
+
+            //    var binderEntity = gcs.GetPrimaryEntity(top);
+            //    var mainEntity = gcs.GetPrimaryEntity(main);
+
+            //    var mainAddtypes = new ComponentTypes
+            //    (
+
+            //    );
+            //    em.AddComponents(mainEntity, mainAddtypes);
+
+
+            //    em.SetName_(mainEntity, $"{top.name} main");
+            //}
+
+            static void createStateEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject posture)
             {
                 var em = gcs.DstEntityManager;
 
                 var binderEntity = gcs.GetPrimaryEntity(top);
-                var mainEntity = gcs.GetPrimaryEntity(main);
+                var postureEntity = gcs.GetPrimaryEntity(posture);
 
-                var mainAddtypes = new ComponentTypes
-                (
-
-                );
-                em.AddComponents(mainEntity, mainAddtypes);
-
-
-                em.SetName_(mainEntity, $"{top.name} main");
-            }
-
-            static void initStateEntity_(GameObjectConversionSystem gcs, GameObject top, GameObject state)
-            {
-                var em = gcs.DstEntityManager;
-
-                var binderEntity = gcs.GetPrimaryEntity(top);
-                var stateEntity = gcs.GetPrimaryEntity(state);
-
-                var mainAddtypes = new ComponentTypes
+                var types = em.CreateArchetype(//new ComponentTypes
                 (
                     //typeof(ObjectMain.ObjectMainTag),
                     typeof(ObjectMain.BinderLinkData)
                 );
-                em.AddComponents(stateEntity, mainAddtypes);
+                var ent = gcs.CreateAdditionalEntity(top, types);
 
 
-                em.SetComponentData(stateEntity,
+                em.SetComponentData(ent,
                     new ObjectMain.BinderLinkData
                     {
                         BinderEntity = binderEntity,
@@ -138,8 +138,8 @@ namespace Abarabone.Model.Authoring
                 //    }
                 //);
 
-
-                em.SetName_(stateEntity, $"{top.name} state");
+                gcs.GetEntityDictionary().Add(;
+                em.SetName_(ent, $"{top.name} state");
             }
 
         }
