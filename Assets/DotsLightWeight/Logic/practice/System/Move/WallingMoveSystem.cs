@@ -12,6 +12,7 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Physics.Extensions;
 using UnityEngine.InputSystem;
+using System.Runtime.CompilerServices;
 
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
@@ -94,7 +95,8 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in MoveHandlingData handler,
+                        //in MoveHandlingData handler,
+                        in Control.MoveData handler,
                         in GroundHitWallingData walling,
                         in PhysicsMass phymass,
                         in Move.SpeedParamaterData param,
@@ -109,7 +111,7 @@ namespace Abarabone.Character
                         if (hanging.State > WallHangingData.WallingState.front_45_rotating) return;
 
 
-                        var dir = hanging.getDirection(in handler.ControlAction);// rot.Value);
+                        var dir = hanging.getDirection(in handler);// rot.Value);
                         var bodysize = walling.CenterHeight;
 
 
@@ -200,8 +202,8 @@ namespace Abarabone.Character
             public float3 right;
         }
 
-
-        public static DirectionUnit getDirection(this WallHangingData walling, in ControlActionUnit c) =>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DirectionUnit getDirection(this WallHangingData walling, in Control.MoveData c) =>
             walling.State switch
             {
                 WallHangingData.WallingState.none_rotating => new DirectionUnit
@@ -219,6 +221,7 @@ namespace Abarabone.Character
                 _ => default,
             };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RaycastInput makeCastInput
             (float3 pos, float3 dir, float bodySize, float moveRange, CollisionFilter filter)
         {
@@ -232,6 +235,7 @@ namespace Abarabone.Character
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static PhysicsVelocity setResultTo
             (this PosAndRot newposrot, in PhysicsMass m, Translation pos, Rotation rot, float rdt)
         {
@@ -241,6 +245,7 @@ namespace Abarabone.Character
             return PhysicsVelocity.CalculateVelocityToTarget(in m, in pos, in rot, in rgtf, rdt);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         //( bool isHit, RaycastHit hit) raycast
         public static HitFlagAndResult raycast
             (ref this PhysicsWorld pw, RaycastInput hitInput, Entity self, ComponentDataFromEntity<Bone.PostureLinkData> mainlist)
@@ -259,6 +264,7 @@ namespace Abarabone.Character
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         //( float3 newpos, quaternion newrot) caluclateWallPosture
         public static PosAndRot caluclateWallPosture
             (float3 o, float3 p, float3 n, float3 up, float3 right, float r)

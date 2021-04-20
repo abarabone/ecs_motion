@@ -35,27 +35,34 @@ namespace Abarabone.Model.Authoring
             initState_(conversionSystem, state);
 
             var posture = this.GetComponentInChildren<PostureAuthoring>();
-            initPosture_(conversionSystem, posture);
+            initPosture_(conversionSystem, posture, state);
 
             return;
 
 
             static void initPosture_
-                (GameObjectConversionSystem gcs, PostureAuthoring posture)
+                (GameObjectConversionSystem gcs, PostureAuthoring posture, ActionStateAuthoring state)
             {
                 var em = gcs.DstEntityManager;
 
-                var postureEntity = gcs.GetPrimaryEntity(posture);
+                var ent = gcs.GetPrimaryEntity(posture);
 
-                var types = new ComponentTypes
-                (
+                var types = new ComponentTypes(new ComponentType[]
+                {
                     typeof(PlayerTag),
 
                     typeof(HorizontalMovingTag),
-                    typeof(MoveHandlingData),
-                    typeof(GroundHitResultData)
-                );
-                em.AddComponents(postureEntity, types);
+                    //typeof(MoveHandlingData),
+                    typeof(GroundHitResultData),
+
+                    typeof(Control.MoveData),
+                    typeof(Control.WorkData),
+                    typeof(Control.ActionLinkData)
+                });
+                em.AddComponents(ent, types);
+
+                var stateEntity = gcs.GetEntityDictionary()[state];
+                em.SetComponentData(ent, new Control.ActionLinkData { ActionEntity = stateEntity });
             }
 
             static void initState_
@@ -67,19 +74,12 @@ namespace Abarabone.Model.Authoring
                 (
                     typeof(PlayerTag),
 
-                    typeof(MinicWalkActionState)
-                    //typeof(CharacterAction.LinkData)
+                    typeof(MinicWalkActionState),
+
+                    typeof(Control.ActionData)
                 );
                 var ent = gcs.GetEntityDictionary()[state];
                 em.AddComponents(ent, types);
-
-
-                //var postureEntity = gcs.GetPrimaryEntity(posture);
-                //em.SetComponentData(ent, new CharacterAction.LinkData
-                //{ 
-                //    MainEntity = postureEntity,
-
-                //});
             }
 
 

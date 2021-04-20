@@ -28,167 +28,149 @@ namespace Abarabone.Character
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
-    public class PlayerMoveDirectionSystem : SystemBase//JobComponentSystem
+    [UpdateInGroup( typeof(InitializationSystemGroup) )]
+    public class PlayerMoveDirectionSystem : SystemBase
     {
 
 
-        Func<ControlActionUnit> getControlUnitFunc;
 
-        //quaternion vrot = quaternion.identity;
-        quaternion hrot = quaternion.identity;
-        float vangle = 0.0f;
+        delegate (Control.MoveData move, Control.ActionData action) PlayerControlFunction(ref Control.WorkData work);
+
+        PlayerControlFunction playerControlFunction;
+
+
 
         // OnCreate() だと、ビルド版で失敗した。エディタ上との初期化タイミングの違いだろうか？
         protected override void OnStartRunning()
         {
 
-            setControllerFunc_();
+            this.playerControlFunction = setControllerFunc_();
 
             return;
 
 
-            void setControllerFunc_()
+            PlayerControlFunction setControllerFunc_()
             {
                 //Debug.Log("Gamepad.current " + Gamepad.current);
                 if( Gamepad.current != null )
                 {
-                    this.getControlUnitFunc = () =>
+                    return (ref Control.WorkData work) =>
                     {
                         var gp = Gamepad.current;
 
                         var rdir = gp.rightStick.ReadValue() * 5.0f * Time.DeltaTime;
                         //var rdir = new float3( rs.x, rs.y, 0.0f );
 
-                        this.vangle -= rdir.y;
-                        this.vangle = math.min( this.vangle, math.radians( 90.0f ) );
-                        this.vangle = math.max( this.vangle, math.radians( -90.0f ) );
+                        work.vangle -= rdir.y;
+                        work.vangle = math.min(work.vangle, math.radians( 90.0f ) );
+                        work.vangle = math.max(work.vangle, math.radians( -90.0f ) );
 
-                        this.hrot = math.mul( quaternion.RotateY( rdir.x ), this.hrot );
+                        work.hrot = math.mul( quaternion.RotateY( rdir.x ), work.hrot );
 
-                        var rRot = math.mul( this.hrot, quaternion.RotateX(this.vangle) );
+                        var rRot = math.mul(work.hrot, quaternion.RotateX(work.vangle) );
 
                         var ls = gp.leftStick.ReadValue();
-                        var ldir = math.mul( this.hrot, new float3( ls.x, 0.0f, ls.y ) );
+                        var ldir = math.mul(work.hrot, new float3( ls.x, 0.0f, ls.y ) );
 
                         var jumpForce = gp.leftShoulder.wasPressedThisFrame ? 5.0f : 0.0f;
 
-                        return new ControlActionUnit
-                        {
-                            MoveDirection = ldir,
-                            LookRotation = rRot,
-                            BodyRotation = this.hrot,
-                            VerticalAngle = this.vangle,
-                            JumpForce = jumpForce,
-                            IsChangeMotion = gp.rightShoulder.wasPressedThisFrame,
-                            IsShooting = gp.rightShoulder.isPressed,
-                            IsTriggerdSub = gp.leftTrigger.isPressed,
-                            IsChangingWapon = gp.rightTrigger.wasPressedThisFrame,
-                        };
+                        return (
+                            new Control.MoveData
+                            {
+                                MoveDirection = ldir,
+                                LookRotation = rRot,
+                                BodyRotation = work.hrot,
+                                VerticalAngle = work.vangle,
+                            },
+                            new Control.ActionData
+                            {
+                                JumpForce = jumpForce,
+                                IsChangeMotion = gp.rightShoulder.wasPressedThisFrame,
+                                IsShooting = gp.rightShoulder.isPressed,
+                                IsTriggerdSub = gp.leftTrigger.isPressed,
+                                IsChangingWapon = gp.rightTrigger.wasPressedThisFrame,
+                            }
+                        );
                     };
-                    return;
                 }
 
                 //Debug.Log("Mouse.current " + Mouse.current);
                 //Debug.Log("Keyboard.current " + Keyboard.current);
                 if ( Mouse.current != null && Keyboard.current != null )
                 {
-                    this.getControlUnitFunc = () =>
+                    return (ref Control.WorkData work) =>
                     {
                         
                         var ms = Mouse.current;
                         var rdir = ms.delta.ReadValue() * Time.DeltaTime;
 
-                        this.vangle -= rdir.y;
-                        this.vangle = math.min( this.vangle, math.radians( 90.0f ) );
-                        this.vangle = math.max( this.vangle, math.radians( -90.0f ) );
+                        work.vangle -= rdir.y;
+                        work.vangle = math.min(work.vangle, math.radians( 90.0f ) );
+                        work.vangle = math.max(work.vangle, math.radians( -90.0f ) );
 
-                        this.hrot = math.mul( quaternion.RotateY( rdir.x ), this.hrot );
+                        work.hrot = math.mul( quaternion.RotateY( rdir.x ), work.hrot );
 
-                        var rRot = math.mul( this.hrot, quaternion.RotateX( this.vangle ) );
+                        var rRot = math.mul( work.hrot, quaternion.RotateX(work.vangle ) );
 
                         var kb = Keyboard.current;
                         var l = kb.sKey.isPressed ? -1.0f : 0.0f;
                         var r = kb.fKey.isPressed ? 1.0f : 0.0f;
                         var u = kb.eKey.isPressed ? 1.0f : 0.0f;
                         var d = kb.dKey.isPressed ? -1.0f : 0.0f;
-                        var ldir = math.mul( this.hrot, new float3( l + r, 0.0f, u + d ) );
+                        var ldir = math.mul(work.hrot, new float3( l + r, 0.0f, u + d ) );
                         
                         var jumpForce = kb.spaceKey.wasPressedThisFrame ? 5.0f : 0.0f;
 
-                        return new ControlActionUnit
-                        {
-                            MoveDirection = ldir,
-                            LookRotation = rRot,
-                            BodyRotation = this.hrot,
-                            VerticalAngle = this.vangle,
-                            JumpForce = jumpForce,
-                            IsChangeMotion = ms.rightButton.wasPressedThisFrame,
-                            IsShooting = ms.rightButton.isPressed,
-                            IsTriggerdSub = ms.middleButton.isPressed,
-                            IsChangingWapon = kb.tabKey.wasPressedThisFrame,
-                        };
+                        return (
+                            new Control.MoveData
+                            {
+                                MoveDirection = ldir,
+                                LookRotation = rRot,
+                                BodyRotation = work.hrot,
+                                VerticalAngle = work.vangle,
+                            },
+                            new Control.ActionData
+                            {
+                                JumpForce = jumpForce,
+                                IsChangeMotion = ms.rightButton.wasPressedThisFrame,
+                                IsShooting = ms.rightButton.isPressed,
+                                IsTriggerdSub = ms.middleButton.isPressed,
+                                IsChangingWapon = kb.tabKey.wasPressedThisFrame,
+                            }
+                        );
                     };
-                    return;
                 }
+
+                return default;
             }
             
         }
 
 
-        //protected override JobHandle OnUpdate( JobHandle inputDeps )
         protected override void OnUpdate()
         {
-
-            var acts = this.getControlUnitFunc();
+            
+            var actions = this.GetComponentDataFromEntity<Control.ActionData>();
 
             this.Entities
-                .WithBurst()
+                .WithoutBurst()
                 .WithAll<PlayerTag>()
+                .WithNativeDisableParallelForRestriction(actions)
                 .ForEach(
-                    (ref MoveHandlingData handler) =>
+                    (ref Control.MoveData move, ref Control.WorkData work, in Control.ActionLinkData link) =>
                     {
-                        handler.ControlAction = acts;
+
+                        var c = this.playerControlFunction(ref work);
+
+                        move = c.move;
+
+                        actions[link.ActionEntity] = c.action;
+
                     }
                 )
-                .ScheduleParallel();
-            
-            //inputDeps = new ContDevJob
-            //{
-            //    Acts = acts,
-            //}
-            //.Schedule( this, inputDeps );
-
-            //return inputDeps;
+                .Run();
         }
 
-
-
-        //[BurstCompile, RequireComponentTag(typeof(PlayerTag))]
-        //struct ContDevJob : IJobForEachWithEntity
-        //    <MoveHandlingData>
-        //{
-
-        //    //[ReadOnly] public EntityCommandBuffer.Concurrent Commands;
-
-        //    [ReadOnly] public ControlActionUnit Acts;
-
-
-        //    public void Execute(
-        //        Entity entity, int index,
-        //        [WriteOnly] ref MoveHandlingData handler
-        //    )
-        //    {
-        //        //if( this.Acts.IsChangeMotion )
-        //        //{
-        //        //    var motionInfo = this.MotionInfos[ linker.MotionEntity ];
-        //        //    this.Commands.AddComponent( index, linker.MotionEntity, new Motion.InitializeData { MotionIndex = (motionInfo.MotionIndex+1) % 10 } );
-        //        //}
-
-        //        handler.ControlAction = this.Acts;
-
-        //    }
-        //}
     }
 
 }

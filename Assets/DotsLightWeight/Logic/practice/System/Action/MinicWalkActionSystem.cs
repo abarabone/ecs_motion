@@ -31,7 +31,7 @@ namespace Abarabone.Character.Action
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
+    //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
     public class MinicrWalkActionSystem : DependencyAccessableSystemBase
     {
@@ -59,25 +59,33 @@ namespace Abarabone.Character.Action
             var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>();
             var motionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>();
 
+            var movess = this.GetComponentDataFromEntity<Control.MoveData>(isReadOnly: true);
+            var rotations = this.GetComponentDataFromEntity<Rotation>();
+
             this.Entities
                 .WithReadOnly(motionInfos)
                 //.WithReadOnly(groundResults)
                 //.WithNativeDisableParallelForRestriction(rotations)
                 .WithNativeDisableParallelForRestriction(motionCursors)
                 //.WithNativeDisableParallelForRestriction(motionWeights)
+                .WithNativeDisableParallelForRestriction(rotations)
+                .WithReadOnly(movess)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
                         ref MinicWalkActionState state,
-                        ref Rotation rot,
-                        in MoveHandlingData hander,
+                        //ref Rotation rot,
+                        //in MoveHandlingData hander,
+                        in Control.ActionData acts,
                         in ActionState.MotionLinkDate motionlink,
+                        in ActionState.PostureLinkData postlink,
                         in GroundHitResultData groundResult
                         //in ObjectMainCharacterLinkData linker
                     )
                 =>
                     {
-                        var acts = hander.ControlAction;
+                        //var acts = hander.ControlAction;
+                        var moves = movess[postlink.PostureEntity];
 
                         var motionInfo = motionInfos[motionlink.MotionEntity];
 
@@ -115,16 +123,16 @@ namespace Abarabone.Character.Action
                             return;
                         }
 
-                        switch (math.lengthsq(acts.MoveDirection))
+                        switch (math.lengthsq(moves.MoveDirection))
                         {
                             case var distsq when distsq >= 0.5f * 0.5f:
                                 {
                                     motion.Start(Motion_minic.run01, isLooping: true, delayTime: 0.05f);
 
-                                    rot =//rotations[linker.PostureEntity] =
+                                    rotations[postlink.PostureEntity] =
                                         new Rotation
                                         {
-                                            Value = quaternion.LookRotation(math.normalize(acts.MoveDirection), math.up()),
+                                            Value = quaternion.LookRotation(math.normalize(moves.MoveDirection), math.up()),
                                         };
                                 } break;
                             case var distsq when distsq >= 0.01f:
@@ -140,10 +148,10 @@ namespace Abarabone.Character.Action
                                             }
                                         );
                                     }
-                                    rot =//rotations[linker.PostureEntity] =
+                                    rotations[postlink.PostureEntity] =
                                         new Rotation
                                         {
-                                            Value = quaternion.LookRotation(math.normalize(acts.MoveDirection), math.up()),
+                                            Value = quaternion.LookRotation(math.normalize(moves.MoveDirection), math.up()),
                                         };
                                 } break;
                             default:

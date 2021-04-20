@@ -62,7 +62,7 @@ namespace Abarabone.Model.Authoring
                     typeof(WallHitResultData),
                     typeof(PhysicsGravityFactor),// デフォルトでは付かないっぽい
                     
-                    typeof(MoveHandlingData),
+                    //typeof(MoveHandlingData),
                     typeof(Move.SpeedParamaterData),
                     typeof(Move.TurnParamaterData),
 

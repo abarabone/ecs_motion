@@ -50,9 +50,16 @@ namespace Abarabone.Arms.Authoring
                 .gameObject;
 
             var wapons = this.GetComponentsInChildren<WaponAuthoring>();
+            var state = this.gameObject.Ancestors()
+                .Where(x => x.GetComponent<ActionStateAuthoring>() != null)
+                .First()
+                .GetComponent<ActionStateAuthoring>();
+                //this.GetComponentInParent<ActionStateAuthoring>();// wapon holder を独立させるべきか…？
+            dstManager.DestroyEntity(entity);//
+            Debug.Log(state.name);
 
-
-            var holderEntity = entity;
+            var holderEntity = conversionSystem.GetEntityDictionary()[state];//
+            //var holderEntity = entity;
             var mainEntity = conversionSystem.GetPrimaryEntity(main);
             var muzzleEntity = conversionSystem.GetPrimaryEntity(this.Muzzle);
 

@@ -48,7 +48,8 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref MoveHandlingData handle,
+                        //ref MoveHandlingData handle,
+                        ref Control.MoveData moves,
                         in Move.TurnParamaterData param,
                         in Rotation rot,
                         in Translation pos,
@@ -64,10 +65,10 @@ namespace Abarabone.Character
 
                         if (lensq < float.MinValue)
                         {
-                            handle.ControlAction.MoveDirection = math.forward(rot.Value);
-                            handle.ControlAction.LookRotation = rot.Value;
-                            handle.ControlAction.BodyRotation = rot.Value;
-                            handle.ControlAction.VerticalAngle = 0.0f;
+                            moves.MoveDirection = math.forward(rot.Value);
+                            moves.LookRotation = rot.Value;
+                            moves.BodyRotation = rot.Value;
+                            moves.VerticalAngle = 0.0f;
                             return;
                         }
 
@@ -77,10 +78,10 @@ namespace Abarabone.Character
 
                         if (math.abs(math.dot(dir, up)) > 0.3f)
                         {
-                            handle.ControlAction.MoveDirection = math.forward(rot.Value);
-                            handle.ControlAction.LookRotation = rot.Value;
-                            handle.ControlAction.BodyRotation = rot.Value;
-                            handle.ControlAction.VerticalAngle = 0.0f;
+                            moves.MoveDirection = math.forward(rot.Value);
+                            moves.LookRotation = rot.Value;
+                            moves.BodyRotation = rot.Value;
+                            moves.VerticalAngle = 0.0f;
                             return;
                         }
 
@@ -100,10 +101,10 @@ namespace Abarabone.Character
                         var newrot = math.mul(oldrot, drot);
 
 
-                        handle.ControlAction.MoveDirection = newforward;
-                        handle.ControlAction.LookRotation = newrot;
-                        handle.ControlAction.BodyRotation = newrot;
-                        handle.ControlAction.VerticalAngle = 0.0f;
+                        moves.MoveDirection = newforward;
+                        moves.LookRotation = newrot;
+                        moves.BodyRotation = newrot;
+                        moves.VerticalAngle = 0.0f;
                     }
                 )
                 .ScheduleParallel();

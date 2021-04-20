@@ -20,23 +20,24 @@ namespace Abarabone.Character
 {
 
     [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
-    [UpdateInGroup(typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
-    public class CameraMoveSystem : ComponentSystem
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    //[UpdateInGroup(typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
+    public class CameraMoveSystem : SystemBase//ComponentSystem
     {
 
 
-        EntityQuery eq;
+        //EntityQuery eq;
 
 
         protected override void OnCreate()
         {
             this.RequireSingletonForUpdate<CharacterFollowCameraPositionData>();
 
-            this.eq = this.Entities
-                .WithAllReadOnly<Translation, Rotation, PlayerTag, MoveHandlingData>()
-                //.WithAllReadOnly<Translation, Rotation, PlayerTag, MoveHandlingData, GroundHitSphereData>()
-                //.WithAll<GroundHitResultData>()
-                .ToEntityQuery();
+            //this.eq = this.Entities
+            //    .WithAllReadOnly<Translation, Rotation, PlayerTag, MoveHandlingData>()
+            //    //.WithAllReadOnly<Translation, Rotation, PlayerTag, MoveHandlingData, GroundHitSphereData>()
+            //    //.WithAll<GroundHitResultData>()
+            //    .ToEntityQuery();
         }
 
 
@@ -48,34 +49,55 @@ namespace Abarabone.Character
             var campos = this.GetSingleton<CharacterFollowCameraPositionData>();
 
 
-            this.Entities.With( this.eq )
+            this.Entities//.With( this.eq )
+                .WithoutBurst()
+                .WithAll<PlayerTag>()
                 .ForEach(
-                    ( ref Translation pos, ref Rotation rot, ref MoveHandlingData handler ) =>
+                    ( in Translation pos, in Rotation rot, in Control.MoveData moves ) =>
                     {
 
-                        ref var acts = ref handler.ControlAction;
+                        //var forwardpos = campos.lookForwardPosition;
+                        //var downpos = campos.lookDownPosition - campos.lookForwardPosition;
+                        //var uppos = campos.lookUpPosition - campos.lookForwardPosition;
+                        //var rotcenter = campos.RotationCenter;
 
+                        //var vdeg = math.degrees(moves.VerticalAngle);
+                        //const float invDeg = 1.0f / 90.0f;
+                        //var rate_forwardToDown = math.max(vdeg, 0.0f) * invDeg;
+                        //var rate_forwardToUp = -math.min(vdeg, 0.0f) * invDeg;
+                        //var camOffset = forwardpos + downpos * rate_forwardToDown + uppos * rate_forwardToUp;
 
-                        var forwardpos = campos.lookForwardPosition;
-                        var downpos = campos.lookDownPosition - campos.lookForwardPosition;
-                        var uppos = campos.lookUpPosition - campos.lookForwardPosition;
-                        var rotcenter = campos.RotationCenter;
+                        //tfCam.position = pos.Value +
+                        //    math.mul(moves.BodyRotation, rotcenter) + math.mul(moves.LookRotation, camOffset);
 
-                        var vdeg = math.degrees(acts.VerticalAngle);
-                        const float invDeg = 1.0f / 90.0f;
-                        var rate_forwardToDown = math.max(vdeg, 0.0f) * invDeg;
-                        var rate_forwardToUp = -math.min(vdeg, 0.0f) * invDeg;
-                        var camOffset = forwardpos + downpos * rate_forwardToDown + uppos * rate_forwardToUp;
+                        //tfCam.rotation = moves.LookRotation;
 
-                        tfCam.position = pos.Value +
-                            math.mul(acts.BodyRotation, rotcenter) + math.mul(acts.LookRotation, camOffset);
+                        var posOffset = new float3();
+                        calc_cam(campos, moves, ref posOffset);
 
-                        tfCam.rotation = acts.LookRotation;
-
+                        tfCam.position = pos.Value + posOffset;
+                        tfCam.rotation = moves.LookRotation;
                     }
-                );
+                )
+                .Run();
 
         }
 
+        [BurstCompile]
+        static void calc_cam(CharacterFollowCameraPositionData campos, Control.MoveData moves, ref float3 posOffset)
+        {
+            var forwardpos = campos.lookForwardPosition;
+            var downpos = campos.lookDownPosition - campos.lookForwardPosition;
+            var uppos = campos.lookUpPosition - campos.lookForwardPosition;
+            var rotcenter = campos.RotationCenter;
+
+            var vdeg = math.degrees(moves.VerticalAngle);
+            const float invDeg = 1.0f / 90.0f;
+            var rate_forwardToDown = math.max(vdeg, 0.0f) * invDeg;
+            var rate_forwardToUp = -math.min(vdeg, 0.0f) * invDeg;
+            var camOffset = forwardpos + downpos * rate_forwardToDown + uppos * rate_forwardToUp;
+
+            posOffset = math.mul(moves.BodyRotation, rotcenter) + math.mul(moves.LookRotation, camOffset);
+        }
     }
 }

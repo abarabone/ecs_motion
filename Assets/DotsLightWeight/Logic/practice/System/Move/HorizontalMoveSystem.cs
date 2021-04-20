@@ -54,16 +54,17 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref MoveHandlingData handler,
+                        //ref MoveHandlingData handler,
                         ref GroundHitResultData ground,
                         ref Translation pos,
-                        ref PhysicsVelocity v
+                        ref PhysicsVelocity v,
+                        in Control.MoveData moves
                     ) =>
                     {
-                        ref var acts = ref handler.ControlAction;
+                        //ref var acts = ref handler.ControlAction;
 
                         var vlinear = v.Linear.xz;
-                        var dir = acts.MoveDirection.xz;
+                        var dir = moves.MoveDirection.xz;
 
                         var d = dir * (deltaTime * 300.0f);
                         v.Linear += new float3(d - vlinear, 0.0f).xzy * 0.9f;

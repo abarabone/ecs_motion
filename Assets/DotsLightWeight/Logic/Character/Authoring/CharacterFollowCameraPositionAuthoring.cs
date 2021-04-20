@@ -21,7 +21,8 @@ namespace Abarabone.Character
 
 
     [GenerateAuthoringComponent]
-    public class CharacterFollowCameraPositionData : IComponentData
+    //public class CharacterFollowCameraPositionData : IComponentData
+    public struct CharacterFollowCameraPositionData : IComponentData
     {
 
         public float3 RotationCenter;

@@ -24,7 +24,7 @@ namespace Abarabone.Character
 
     static public partial class Control
     {
-        public struct Move : IComponentData
+        public struct MoveData : IComponentData
         {
             public float3 MoveDirection;
             public float VerticalAngle;
@@ -37,7 +37,7 @@ namespace Abarabone.Character
             public float3 BodyDirection => math.forward(this.BodyRotation);
         }
 
-        public struct Action : IComponentData
+        public struct ActionData : IComponentData
         {
             public float JumpForce;
             public int actionbits;
@@ -46,6 +46,17 @@ namespace Abarabone.Character
             public bool IsShooting { get => this.actionbits.get(1); set => this.actionbits.set(1, value); }
             public bool IsTriggerdSub { get => this.actionbits.get(2); set => this.actionbits.set(2, value); }
             public bool IsChangingWapon { get => this.actionbits.get(3); set => this.actionbits.set(3, value); }
+        }
+
+        public struct WorkData : IComponentData
+        {
+            public quaternion hrot;
+            public float vangle;
+        }
+
+        public struct ActionLinkData : IComponentData
+        {
+            public Entity ActionEntity;
         }
     }
 
@@ -60,30 +71,30 @@ namespace Abarabone.Character
 
 
     // 
-    public struct MoveHandlingData : IComponentData
-    {
-        public ControlActionUnit ControlAction;
-    }
+    //public struct MoveHandlingData : IComponentData
+    //{
+    //    public ControlActionUnit ControlAction;
+    //}
 
-    public struct ControlActionUnit
-    {
-        public float3 MoveDirection;
+    //public struct ControlActionUnit
+    //{
+    //    public float3 MoveDirection;
 
-        public quaternion LookRotation;
-        public quaternion BodyRotation;
-        public float VerticalAngle;
+    //    public quaternion LookRotation;
+    //    public quaternion BodyRotation;
+    //    public float VerticalAngle;
 
-        public float3 BodyUp;
-        public float3 LookDirection => math.forward(this.LookRotation);
-        public float3 BodyDirection => math.forward(this.BodyRotation);
+    //    public float3 BodyUp;
+    //    public float3 LookDirection => math.forward(this.LookRotation);
+    //    public float3 BodyDirection => math.forward(this.BodyRotation);
 
-        public float JumpForce;
-        public bool IsChangeMotion;
-        public bool IsShooting;
-        public bool IsTriggerdSub;
-        public bool IsChangingWapon;
+    //    public float JumpForce;
+    //    public bool IsChangeMotion;
+    //    public bool IsShooting;
+    //    public bool IsTriggerdSub;
+    //    public bool IsChangingWapon;
 
-    }
+    //}
 
 
     static public partial class Move

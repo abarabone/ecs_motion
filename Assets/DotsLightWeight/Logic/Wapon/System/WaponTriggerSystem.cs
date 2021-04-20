@@ -35,20 +35,20 @@ namespace Abarabone.Arms
     //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(WaponSelectorSystem))]
-    [UpdateAfter(typeof(PlayerMoveDirectionSystem))]//
+    //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]//
     public class WaponTriggerSystem : SystemBase
     {
 
         protected override void OnUpdate()
         {
 
-            var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+            var actions = this.GetComponentDataFromEntity<Control.ActionData>(isReadOnly: true);
             var selectors = this.GetComponentDataFromEntity<WaponHolder.SelectorData>(isReadOnly: true);
 
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(handles)
+                .WithReadOnly(actions)
                 .WithReadOnly(selectors)
                 .ForEach(
                     (
@@ -64,7 +64,7 @@ namespace Abarabone.Arms
 
                         var isTriggeredCurrent = selector.CurrentWaponIndex == triggerType.WaponCarryId;
 
-                        var act = handles[mainLink.OwnerMainEntity].ControlAction;
+                        var act = actions[mainLink.OwnerMainEntity];
 
                         trigger.IsTriggered = triggerType.Type switch// いずれは配列インデックスで取得できるようにしたい
                         {
