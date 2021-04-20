@@ -28,6 +28,57 @@ namespace Abarabone.Model.Authoring
         {
 
 
+            var top = this.GetComponentInChildren<ModelGroupAuthoring.ModelAuthoringBase>(); 
+            var posture = this.GetComponentInChildren<PostureAuthoring>();
+            var state = this;//.GetComponentInChildren<ActionStateAuthoring>();
+            var motion = this.GetComponentInChildren<MotionAuthoring>();
+
+            createStateEntity_(conversionSystem, top, posture, state, motion);
+
+            return;
+
+
+
+
+
+            static void createStateEntity_(
+                GameObjectConversionSystem gcs,
+                ModelGroupAuthoring.ModelAuthoringBase top,
+                PostureAuthoring posture, ActionStateAuthoring state, MotionAuthoring motion)
+            {
+                var em = gcs.DstEntityManager;
+
+                var types = em.CreateArchetype//new ComponentTypes
+                (
+                    typeof(ActionState.BinderLinkData),
+                    typeof(ActionState.PostureLinkData),
+                    typeof(ActionState.MotionLinkDate)
+                );
+                var ent = gcs.CreateAdditionalEntity(top.gameObject, types);
+
+
+                em.SetComponentData(ent,
+                    new ActionState.BinderLinkData
+                    {
+                        BinderEntity = gcs.GetPrimaryEntity(top),
+                    }
+                );
+                em.SetComponentData(ent,
+                    new ActionState.PostureLinkData
+                    {
+                        PostureEntity = gcs.GetPrimaryEntity(posture),
+                    }
+                );
+                em.SetComponentData(ent,
+                    new ActionState.MotionLinkDate
+                    {
+                        MotionEntity = gcs.GetEntityDictionary()[motion],
+                    }
+                );
+
+                em.SetName_(ent, $"{top.name} state");
+                gcs.GetEntityDictionary().Add(state, ent);
+            }
 
         }
     }

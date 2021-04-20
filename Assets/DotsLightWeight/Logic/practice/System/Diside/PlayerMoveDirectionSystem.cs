@@ -34,7 +34,7 @@ namespace Abarabone.Character
 
 
 
-        delegate (Control.MoveData move, Control.ActionData action) PlayerControlFunction(ref Control.WorkData work);
+        delegate (Control.MoveData move, Control.ActionData action) PlayerControlFunction(ref Control.WorkData work, float dt);
 
         PlayerControlFunction playerControlFunction;
 
@@ -43,6 +43,19 @@ namespace Abarabone.Character
         // OnCreate() だと、ビルド版で失敗した。エディタ上との初期化タイミングの違いだろうか？
         protected override void OnStartRunning()
         {
+
+            base.OnCreate();
+
+            this.Entities
+                .WithoutBurst()
+                .ForEach(
+                    (ref Control.WorkData work) =>
+                    {
+                        work.hrot = quaternion.identity;
+                        work.vangle = 0.0f;
+                    }
+                )
+                .Run();
 
             this.playerControlFunction = setControllerFunc_();
 
@@ -54,11 +67,11 @@ namespace Abarabone.Character
                 //Debug.Log("Gamepad.current " + Gamepad.current);
                 if( Gamepad.current != null )
                 {
-                    return (ref Control.WorkData work) =>
+                    return (ref Control.WorkData work, float dt) =>
                     {
                         var gp = Gamepad.current;
 
-                        var rdir = gp.rightStick.ReadValue() * 5.0f * Time.DeltaTime;
+                        var rdir = gp.rightStick.ReadValue() * 5.0f * dt;
                         //var rdir = new float3( rs.x, rs.y, 0.0f );
 
                         work.vangle -= rdir.y;
@@ -98,11 +111,11 @@ namespace Abarabone.Character
                 //Debug.Log("Keyboard.current " + Keyboard.current);
                 if ( Mouse.current != null && Keyboard.current != null )
                 {
-                    return (ref Control.WorkData work) =>
+                    return (ref Control.WorkData work, float dt) =>
                     {
                         
                         var ms = Mouse.current;
-                        var rdir = ms.delta.ReadValue() * Time.DeltaTime;
+                        var rdir = ms.delta.ReadValue() * dt;
 
                         work.vangle -= rdir.y;
                         work.vangle = math.min(work.vangle, math.radians( 90.0f ) );
@@ -152,6 +165,8 @@ namespace Abarabone.Character
             
             var actions = this.GetComponentDataFromEntity<Control.ActionData>();
 
+            var dt = this.Time.DeltaTime;
+
             this.Entities
                 .WithoutBurst()
                 .WithAll<PlayerTag>()
@@ -160,7 +175,7 @@ namespace Abarabone.Character
                     (ref Control.MoveData move, ref Control.WorkData work, in Control.ActionLinkData link) =>
                     {
 
-                        var c = this.playerControlFunction(ref work);
+                        var c = this.playerControlFunction(ref work, dt);
 
                         move = c.move;
 

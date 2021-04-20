@@ -54,19 +54,20 @@ namespace Abarabone.Arms.Authoring
                 .Where(x => x.GetComponent<ActionStateAuthoring>() != null)
                 .First()
                 .GetComponent<ActionStateAuthoring>();
-                //this.GetComponentInParent<ActionStateAuthoring>();// wapon holder を独立させるべきか…？
-            dstManager.DestroyEntity(entity);//
-            Debug.Log(state.name);
+            //this.GetComponentInParent<ActionStateAuthoring>();// wapon holder を独立させるべきか…？
 
-            var holderEntity = conversionSystem.GetEntityDictionary()[state];//
-            //var holderEntity = entity;
+            //dstManager.DestroyEntity(entity);//
+
+            //var holderEntity = conversionSystem.GetEntityDictionary()[state];//
+            var holderEntity = entity;
             var mainEntity = conversionSystem.GetPrimaryEntity(main);
             var muzzleEntity = conversionSystem.GetPrimaryEntity(this.Muzzle);
+            var stateEntity = conversionSystem.GetEntityDictionary()[state];
 
             var unitsEntities = listupMuzzleAndUnitsEntities_(conversionSystem, wapons);
-            initHolder_(conversionSystem, holderEntity, mainEntity, muzzleEntity, wapons.Length, startSelectedId: 0);
+            initHolder_(conversionSystem, holderEntity, mainEntity, muzzleEntity, stateEntity, wapons.Length, startSelectedId: 0);
             initAllWapons_(conversionSystem, holderEntity, unitsEntities);
-            initAllUnits_(conversionSystem, holderEntity, mainEntity, muzzleEntity, unitsEntities);
+            initAllUnits_(conversionSystem, holderEntity, mainEntity, muzzleEntity, stateEntity, unitsEntities);
             //createInitUnit2Entities_(conversionSystem, holderEntity, this.Wapons);
 
             return;
@@ -91,29 +92,47 @@ namespace Abarabone.Arms.Authoring
                 return qWaponEntities.ToArray();
             }
 
-            static void initHolder_
-                (GameObjectConversionSystem gcs, Entity holder, Entity main, Entity muzzle, int waponsLength, int startSelectedId)
+
+            static void initHolder_(
+                GameObjectConversionSystem gcs,
+                Entity holder, Entity main, Entity muzzle, Entity state,
+                int waponsLength, int startSelectedId)
             {
                 var em = gcs.DstEntityManager;
 
-                em.AddComponentData(holder,
-                    new WaponHolder.OwnerLinkData
-                    {
-                        OwnerEntity = main,
-                        MuzzleEntity = muzzle,
-                    }
+                var types = new ComponentTypes(
+                    typeof(WaponHolder.SelectorData),
+                    typeof(WaponHolder.UnitLinkData),
+                    typeof(WaponHolder.OwnerLinkData),
+                    typeof(WaponHolder.StateLinkData)
                 );
+                em.AddComponents(holder, types);
 
-                em.AddComponentData(holder,
+                em.SetComponentData(holder,
                     new WaponHolder.SelectorData
                     {
                         CurrentWaponIndex = startSelectedId,
                         Length = waponsLength,
                     }
                 );
-
                 em.AddBuffer<WaponHolder.UnitLinkData>(holder);
+
+                em.SetComponentData(holder,
+                    new WaponHolder.OwnerLinkData
+                    {
+                        //OwnerEntity = main,
+                        MuzzleEntity = muzzle,
+                    }
+                );
+                em.SetComponentData(holder,
+                    new WaponHolder.StateLinkData
+                    {
+                        StateEntity = state,
+                    }
+                );
             }
+
+
             static void initAllWapons_
                 (GameObjectConversionSystem gcs, Entity holder, IEnumerable<IEnumerable<Entity>> unitss)
             {
@@ -137,6 +156,8 @@ namespace Abarabone.Arms.Authoring
                     });
                 }
             }
+
+
             //static void createInitUnit2Entities_
             //    (GameObjectConversionSystem gcs, Entity holder, IEnumerable<WaponAuthoring> wapons)
             //{
@@ -156,8 +177,12 @@ namespace Abarabone.Arms.Authoring
             //        TemplateWaponEntity3 = wents.ElementAtOrDefault(3),
             //    });
             //}
-            static void initAllUnits_
-                (GameObjectConversionSystem gcs, Entity holder, Entity main, Entity muzzle, IEnumerable<IEnumerable<Entity>> unitss)
+
+
+            static void initAllUnits_(
+                GameObjectConversionSystem gcs,
+                Entity holder, Entity main, Entity muzzle, Entity state,
+                IEnumerable<IEnumerable<Entity>> unitss)
             {
                 var em = gcs.DstEntityManager;
 
@@ -175,15 +200,28 @@ namespace Abarabone.Arms.Authoring
                 void addFunctionUnitComponents_
                     (Entity muzzle, Entity unit, int waponId, int unitId)
                 {
-                    em.AddComponentData(unit,
+                    var types = new ComponentTypes(
+                        typeof(FunctionUnit.OwnerLinkData),
+                        typeof(FunctionUnit.StateLinkData),
+                        typeof(FunctionUnitInWapon.TriggerSpecificData)
+                    );
+                    em.AddComponents(unit, types);
+                    
+                    em.SetComponentData(unit,
                         new FunctionUnit.OwnerLinkData
                         {
                             OwnerMainEntity = main,
-                            WaponHolderEntity = holder,
                             MuzzleEntity = muzzle,
                         }
                     );
-                    em.AddComponentData(unit,
+                    em.SetComponentData(unit,
+                        new FunctionUnit.StateLinkData
+                        {
+                            WaponHolderEntity = holder,
+                            StateEntity = state,
+                        }
+                    );
+                    em.SetComponentData(unit,
                         new FunctionUnitInWapon.TriggerSpecificData
                         {
                             Type = (FunctionUnitInWapon.TriggerType)unitId,

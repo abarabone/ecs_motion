@@ -72,10 +72,9 @@ namespace Abarabone.Character
 
                         //tfCam.rotation = moves.LookRotation;
 
-                        var posOffset = new float3();
-                        calc_cam(campos, moves, ref posOffset);
+                        var newpos = calc_cam(campos, moves, pos.Value);
 
-                        tfCam.position = pos.Value + posOffset;
+                        tfCam.position = newpos;
                         tfCam.rotation = moves.LookRotation;
                     }
                 )
@@ -84,7 +83,8 @@ namespace Abarabone.Character
         }
 
         [BurstCompile]
-        static void calc_cam(CharacterFollowCameraPositionData campos, Control.MoveData moves, ref float3 posOffset)
+        static float3 calc_cam
+            (CharacterFollowCameraPositionData campos, Control.MoveData moves, float3 pos)
         {
             var forwardpos = campos.lookForwardPosition;
             var downpos = campos.lookDownPosition - campos.lookForwardPosition;
@@ -97,7 +97,7 @@ namespace Abarabone.Character
             var rate_forwardToUp = -math.min(vdeg, 0.0f) * invDeg;
             var camOffset = forwardpos + downpos * rate_forwardToDown + uppos * rate_forwardToUp;
 
-            posOffset = math.mul(moves.BodyRotation, rotcenter) + math.mul(moves.LookRotation, camOffset);
+            return pos + math.mul(moves.BodyRotation, rotcenter) + math.mul(moves.LookRotation, camOffset);
         }
     }
 }

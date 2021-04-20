@@ -54,22 +54,22 @@ namespace Abarabone.Arms
                     (
                         ref FunctionUnit.TriggerData trigger,
                         in FunctionUnitInWapon.TriggerSpecificData triggerType,
-                        in FunctionUnit.OwnerLinkData mainLink
+                        in FunctionUnit.StateLinkData link
                     ) =>
                     {
-                        var selector = selectors[mainLink.WaponHolderEntity];
+                        var selector = selectors[link.WaponHolderEntity];
 
                         //if (selector.CurrentWaponIndex != triggerType.WaponCarryId) return;
                         // ここでショートカットすると、カレントではなくなった場合にオフにならなくなってしまう
 
                         var isTriggeredCurrent = selector.CurrentWaponIndex == triggerType.WaponCarryId;
 
-                        var act = actions[mainLink.OwnerMainEntity];
+                        var action = actions[link.StateEntity];
 
                         trigger.IsTriggered = triggerType.Type switch// いずれは配列インデックスで取得できるようにしたい
                         {
-                            FunctionUnitInWapon.TriggerType.main => isTriggeredCurrent & act.IsShooting,
-                            FunctionUnitInWapon.TriggerType.sub => isTriggeredCurrent & act.IsTriggerdSub,
+                            FunctionUnitInWapon.TriggerType.main => isTriggeredCurrent & action.IsShooting,
+                            FunctionUnitInWapon.TriggerType.sub => isTriggeredCurrent & action.IsTriggerdSub,
                             _ => false,
                         };
                     }

@@ -55,12 +55,10 @@ namespace Abarabone.Model.Authoring
             var top = this;
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             var bones = this.QueryModel.First().Bones;
-            var state = this.GetComponentInChildren<ActionStateAuthoring>();
 
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 
             initBinderEntity_(conversionSystem, top, posture);
-            createStateEntity_(conversionSystem, top, posture, state);
 
             conversionSystem.InitPostureEntity(posture);//, bones);
             conversionSystem.InitBoneEntities(posture, bones, root: posture.transform, this.BoneMode);
@@ -93,41 +91,6 @@ namespace Abarabone.Model.Authoring
 
 
                 em_.SetName_(binderEntity, $"{top_.name} binder");
-            }
-
-            static void createStateEntity_(
-                GameObjectConversionSystem gcs, CharacterModelAuthoring top,
-                PostureAuthoring posture, ActionStateAuthoring state)
-            {
-                var em = gcs.DstEntityManager;
-
-                var binderEntity = gcs.GetPrimaryEntity(top);
-                var postureEntity = gcs.GetPrimaryEntity(posture);
-
-                var types = em.CreateArchetype//new ComponentTypes
-                (
-                    //typeof(ObjectMain.ObjectMainTag),
-                    typeof(ActionState.BinderLinkData),
-                    typeof(ActionState.PostureLinkData)
-                );
-                var ent = gcs.CreateAdditionalEntity(top.gameObject, types);
-
-
-                em.SetComponentData(ent,
-                    new ActionState.BinderLinkData
-                    {
-                        BinderEntity = binderEntity,
-                    }
-                );
-                em.SetComponentData(ent,
-                    new ActionState.PostureLinkData
-                    {
-                        PostureEntity = postureEntity,
-                    }
-                );
-
-                em.SetName_(ent, $"{top.name} state");
-                gcs.GetEntityDictionary().Add(state, ent);
             }
 
         }

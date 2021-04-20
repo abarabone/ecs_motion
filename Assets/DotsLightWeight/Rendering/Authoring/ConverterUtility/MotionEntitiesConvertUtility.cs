@@ -122,15 +122,16 @@ namespace Abarabone.CharacterMotion.Authoring
 
         static public void ConvertMotionEntities
             (
-                this GameObjectConversionSystem gcs, GameObject motionMain, Transform[] bones,
+                this GameObjectConversionSystem gcs,
+                MotionAuthoring motionMain, PostureAuthoring posture, Transform[] bones,
                 ComponentType[] motionTypes, ComponentType[] streamTypes,
                 MotionClip motionClip, AvatarMask streamMask
             )
         {
 
             var em = gcs.DstEntityManager;
-            var enabledBoneObjects = getEnabledBoneObjects( bones, motionMain, streamMask );
-            var enabledBoneIds = getEnabledBoneIds( bones, motionMain, streamMask );
+            var enabledBoneObjects = getEnabledBoneObjects( bones, posture.gameObject, streamMask );
+            var enabledBoneIds = getEnabledBoneIds( bones, posture.gameObject, streamMask );
 
 
             var motionEntity = createMotionEntity( gcs, motionMain, motionTypes );
@@ -179,15 +180,16 @@ namespace Abarabone.CharacterMotion.Authoring
         // モーションエンティティ生成
         // メインオブジェクトの関連エンティティとして生成し、リンクもここでつける。
         static Entity createMotionEntity
-            ( GameObjectConversionSystem gcs, GameObject motionMain, ComponentType[] motionTypes )
+            ( GameObjectConversionSystem gcs, MotionAuthoring motionMain, ComponentType[] motionTypes )
         {
             var em = gcs.DstEntityManager;
 
             var motionArchetype = em.CreateArchetype( motionTypes );
-            var motionEntity = gcs.CreateAdditionalEntity( motionMain, motionArchetype );
+            var motionEntity = gcs.CreateAdditionalEntity( motionMain.gameObject, motionArchetype );
 
             em.SetName_( motionEntity, $"{motionMain.name} motion" );
 
+            gcs.GetEntityDictionary()[motionMain] = motionEntity;
             return motionEntity;
         }
 
@@ -323,13 +325,13 @@ namespace Abarabone.CharacterMotion.Authoring
         static void setDrawLink
             (
                 GameObjectConversionSystem gcs, Entity motionEntity,
-                GameObject motionMain
+                MotionAuthoring motionMain
             )
         {
 
             var em = gcs.DstEntityManager;
 
-            var top = motionMain
+            var top = motionMain.gameObject
                 .AncestorsAndSelf().Where(go => go.GetComponent<ModelGroupAuthoring.ModelAuthoringBase>())
                 .First();
                 

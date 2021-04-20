@@ -40,9 +40,14 @@ namespace Abarabone.Arms
 
         public struct OwnerLinkData : IComponentData
         {
-            public Entity OwnerEntity;
+            //public Entity OwnerEntity;
             public Entity MuzzleEntity;
         }
+        public struct StateLinkData : IComponentData
+        {
+            public Entity StateEntity;
+        }
+
 
         // ‚Á‚Ä‚¨‚­•K—v‚È‚¢‚©‚à
         [InternalBufferCapacity(4)]

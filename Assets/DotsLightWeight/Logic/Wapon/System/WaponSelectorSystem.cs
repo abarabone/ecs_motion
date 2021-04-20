@@ -41,31 +41,27 @@ namespace Abarabone.Arms
         protected override void OnUpdate()
         {
 
-            //var handles = this.GetComponentDataFromEntity<MoveHandlingData>(isReadOnly: true);
+            var actions = this.GetComponentDataFromEntity<Control.ActionData>(isReadOnly: true);
             //var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
 
             this.Entities
                 .WithBurst()
-                //.WithReadOnly(handles)
+                .WithReadOnly(actions)
                 .ForEach(
                     (
                         ref WaponHolder.SelectorData selector,
-                        in WaponHolder.OwnerLinkData link,
-                        in Control.ActionData action
-                        //in MoveHandlingData handle
+                        in WaponHolder.StateLinkData link
                     ) =>
                     {
                         if (selector.Length == 0) return;
 
-                        //var handle = handles[link.OwnerEntity];
-                        //if (!handle.ControlAction.IsChangingWapon) return;
+                        var action = actions[link.StateEntity];
                         if (!action.IsChangingWapon) return;
 
 
                         var newCurrentId = (selector.CurrentWaponIndex + 1) % selector.Length;
 
                         selector.CurrentWaponIndex = newCurrentId;
-
                     }
                 )
                 .ScheduleParallel();

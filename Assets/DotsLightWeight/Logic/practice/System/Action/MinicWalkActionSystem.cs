@@ -51,45 +51,43 @@ namespace Abarabone.Character.Action
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var motionInfos = this.GetComponentDataFromEntity<Motion.InfoData>(isReadOnly: true);
-            //var groundResults = this.GetComponentDataFromEntity<GroundHitResultData>(isReadOnly: true);
-            //var rotations = this.GetComponentDataFromEntity<Rotation>();
             var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>();
-            var motionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>();
+            //var motionWeights = this.GetComponentDataFromEntity<MotionBlend2WeightData>();
 
-            var movess = this.GetComponentDataFromEntity<Control.MoveData>(isReadOnly: true);
+            var groundResults = this.GetComponentDataFromEntity<GroundHitResultData>(isReadOnly: true);
+            var moves = this.GetComponentDataFromEntity<Control.MoveData>(isReadOnly: true);
             var rotations = this.GetComponentDataFromEntity<Rotation>();
 
             this.Entities
                 .WithReadOnly(motionInfos)
-                //.WithReadOnly(groundResults)
-                //.WithNativeDisableParallelForRestriction(rotations)
+                .WithReadOnly(groundResults)
                 .WithNativeDisableParallelForRestriction(motionCursors)
                 //.WithNativeDisableParallelForRestriction(motionWeights)
                 .WithNativeDisableParallelForRestriction(rotations)
-                .WithReadOnly(movess)
+                .WithReadOnly(moves)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
                         ref MinicWalkActionState state,
                         //ref Rotation rot,
                         //in MoveHandlingData hander,
-                        in Control.ActionData acts,
+                        in Control.ActionData action,
                         in ActionState.MotionLinkDate motionlink,
-                        in ActionState.PostureLinkData postlink,
-                        in GroundHitResultData groundResult
+                        in ActionState.PostureLinkData postlink
+                        //in GroundHitResultData groundResult
                         //in ObjectMainCharacterLinkData linker
                     )
                 =>
                     {
-                        //var acts = hander.ControlAction;
-                        var moves = movess[postlink.PostureEntity];
+                        var move = moves[postlink.PostureEntity];
+                        var groundResult = groundResults[postlink.PostureEntity];
 
                         var motionInfo = motionInfos[motionlink.MotionEntity];
 
-                        var motion = new MotionOperator(commands, motionInfos, motionCursors, motionlink.MotionEntity, entityInQueryIndex);
+                        var motion = new MotionOperator(cmd, motionInfos, motionCursors, motionlink.MotionEntity, entityInQueryIndex);
 
 
                         if (state.Phase == 1)
@@ -102,9 +100,9 @@ namespace Abarabone.Character.Action
                         }
 
 
-                        if (acts.IsChangeMotion)
+                        if (action.IsChangeMotion)
                         {
-                            MotionOp.Start(entityInQueryIndex, ref commands, motionlink.MotionEntity, motionInfo, Motion_minic.slash01VU, false, 0.1f);
+                            MotionOp.Start(entityInQueryIndex, ref cmd, motionlink.MotionEntity, motionInfo, Motion_minic.slash01VU, false, 0.1f);
                             state.Phase = 1;
                             return;
                         }
@@ -112,7 +110,7 @@ namespace Abarabone.Character.Action
                         if (!groundResult.IsGround)//groundResults[linker.PostureEntity].IsGround)
                         {
                             if (motionInfo.MotionIndex != (int)Motion_minic.jumpdown)
-                                commands.AddComponent(entityInQueryIndex, motionlink.MotionEntity,
+                                cmd.AddComponent(entityInQueryIndex, motionlink.MotionEntity,
                                     new Motion.InitializeData
                                     {
                                         MotionIndex = 0,
@@ -123,7 +121,7 @@ namespace Abarabone.Character.Action
                             return;
                         }
 
-                        switch (math.lengthsq(moves.MoveDirection))
+                        switch (math.lengthsq(move.MoveDirection))
                         {
                             case var distsq when distsq >= 0.5f * 0.5f:
                                 {
@@ -132,14 +130,14 @@ namespace Abarabone.Character.Action
                                     rotations[postlink.PostureEntity] =
                                         new Rotation
                                         {
-                                            Value = quaternion.LookRotation(math.normalize(moves.MoveDirection), math.up()),
+                                            Value = quaternion.LookRotation(math.normalize(move.MoveDirection), math.up()),
                                         };
                                 } break;
                             case var distsq when distsq >= 0.01f:
                                 {
                                     if (motionInfo.MotionIndex != (int)Motion_minic.walk02)
                                     {
-                                        commands.AddComponent(entityInQueryIndex, motionlink.MotionEntity,
+                                        cmd.AddComponent(entityInQueryIndex, motionlink.MotionEntity,
                                             new Motion.InitializeData
                                             {
                                                 MotionIndex = (int)Motion_minic.walk02,
@@ -151,14 +149,14 @@ namespace Abarabone.Character.Action
                                     rotations[postlink.PostureEntity] =
                                         new Rotation
                                         {
-                                            Value = quaternion.LookRotation(math.normalize(moves.MoveDirection), math.up()),
+                                            Value = quaternion.LookRotation(math.normalize(move.MoveDirection), math.up()),
                                         };
                                 } break;
                             default:
                                 {
                                     if (motionInfo.MotionIndex != (int)Motion_minic.stand02)
                                     {
-                                        commands.AddComponent(entityInQueryIndex, motionlink.MotionEntity,
+                                        cmd.AddComponent(entityInQueryIndex, motionlink.MotionEntity,
                                             new Motion.InitializeData
                                             {
                                                 MotionIndex = (int)Motion_minic.stand02,

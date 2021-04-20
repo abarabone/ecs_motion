@@ -9,6 +9,8 @@ using Unity.Transforms;
 
 namespace Abarabone.CharacterMotion.Authoring
 {
+    using Abarabone.Model.Authoring;
+
     /// <summary>
     /// Animator と同じオブジェクトに付ける。
     /// 複数つけてもよい。
@@ -33,8 +35,10 @@ namespace Abarabone.CharacterMotion.Authoring
             var motionTypes = ArchetypeB.Motion;
             var streamTypes = ArchetypeB.Stream;
 
+            var posture = this.GetComponentInChildren<PostureAuthoring>();
+
             conversionSystem.ConvertMotionEntities
-                ( this.gameObject, bones, motionTypes, streamTypes, this.MotionClip, this.StreamMask );
+                ( this, posture, bones, motionTypes, streamTypes, this.MotionClip, this.StreamMask );
 
             return;
 
