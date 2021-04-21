@@ -50,5 +50,33 @@ namespace Abarabone.Common.Extension
             }
         }
 
+        public static Entity GetOrCreateEntity(this GameObjectConversionSystem gcs, GameObject top, MonoBehaviour key)
+        {
+            var dict = gcs.GetEntityDictionary();
+
+            var isSuccess = dict.TryGetValue(key, out var entity);
+            if (isSuccess) return entity;
+
+            var newentity = gcs.CreateAdditionalEntity(top);
+            dict[key] = newentity;
+            return newentity;
+        }
+
+        public static Entity GetOrCreateEntity(this GameObjectConversionSystem gcs, MonoBehaviour top, MonoBehaviour key)
+            => gcs.GetOrCreateEntity(top.gameObject, key);
+
+        public static Entity GetOrCreateEntity(this GameObjectConversionSystem gcs, MonoBehaviour key)
+            => gcs.GetOrCreateEntity(key, key);
+
+        public static Entity GetOrCreateEntity
+            (this GameObjectConversionSystem gcs, MonoBehaviour top, MonoBehaviour key, ComponentTypes types)
+        {
+            var ent = gcs.GetOrCreateEntity(top, key);
+            gcs.DstEntityManager.AddComponents(ent, types);
+            return ent;
+        }
+
+        public static Entity GetOrCreateEntity(this GameObjectConversionSystem gcs, MonoBehaviour key, ComponentTypes types) =>
+            gcs.GetOrCreateEntity(key, key, types);
     }
 }

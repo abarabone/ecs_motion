@@ -185,7 +185,8 @@ namespace Abarabone.CharacterMotion.Authoring
             var em = gcs.DstEntityManager;
 
             var motionArchetype = em.CreateArchetype( motionTypes );
-            var motionEntity = gcs.CreateAdditionalEntity( motionMain.gameObject, motionArchetype );
+            //var motionEntity = gcs.CreateAdditionalEntity( motionMain.gameObject, motionArchetype );
+            var motionEntity = gcs.GetOrCreateEntity(motionMain, new ComponentTypes(motionTypes));// motionArchetype);
 
             em.SetName_( motionEntity, $"{motionMain.name} motion" );
 

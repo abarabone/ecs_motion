@@ -48,13 +48,14 @@ namespace Abarabone.Model.Authoring
             {
                 var em = gcs.DstEntityManager;
 
-                var types = em.CreateArchetype//new ComponentTypes
+                var types = new ComponentTypes
                 (
                     typeof(ActionState.BinderLinkData),
                     typeof(ActionState.PostureLinkData),
                     typeof(ActionState.MotionLinkDate)
                 );
-                var ent = gcs.CreateAdditionalEntity(top.gameObject, types);
+                //var ent = gcs.CreateAdditionalEntity(top.gameObject, types);
+                var ent = gcs.GetOrCreateEntity(state, types);
 
 
                 em.SetComponentData(ent,
@@ -72,12 +73,11 @@ namespace Abarabone.Model.Authoring
                 em.SetComponentData(ent,
                     new ActionState.MotionLinkDate
                     {
-                        MotionEntity = gcs.GetEntityDictionary()[motion],
+                        MotionEntity = gcs.GetOrCreateEntity(motion),
                     }
                 );
 
                 em.SetName_(ent, $"{top.name} state");
-                gcs.GetEntityDictionary().Add(state, ent);
             }
 
         }

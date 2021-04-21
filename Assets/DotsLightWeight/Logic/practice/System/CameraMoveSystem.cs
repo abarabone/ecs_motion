@@ -19,9 +19,11 @@ using Abarabone.SystemGroup;
 namespace Abarabone.Character
 {
 
-    [UpdateAfter(typeof(PlayerMoveDirectionSystem))]
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
-    //[UpdateInGroup(typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
+    //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]
+    //[UpdateInGroup(typeof(InitializationSystemGroup))]
+    ////[UpdateInGroup(typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
+    //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class CameraMoveSystem : SystemBase//ComponentSystem
     {
 

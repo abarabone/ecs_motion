@@ -61,8 +61,10 @@ namespace Abarabone.Model.Authoring
                 });
                 em.AddComponents(ent, types);
 
-                var stateEntity = gcs.GetEntityDictionary()[state];
-                em.SetComponentData(ent, new Control.ActionLinkData { ActionEntity = stateEntity });
+                em.SetComponentData(ent, new Control.ActionLinkData
+                {
+                    ActionEntity = gcs.GetOrCreateEntity(state),
+                });
             }
 
             static void initState_
@@ -70,7 +72,7 @@ namespace Abarabone.Model.Authoring
             {
                 var em = gcs.DstEntityManager;
 
-                var types = new ComponentTypes//em.CreateArchetype
+                var types = new ComponentTypes
                 (
                     typeof(PlayerTag),
 
@@ -78,8 +80,7 @@ namespace Abarabone.Model.Authoring
 
                     typeof(Control.ActionData)
                 );
-                var ent = gcs.GetEntityDictionary()[state];
-                em.AddComponents(ent, types);
+                var ent = gcs.GetOrCreateEntity(state, types);
             }
 
 

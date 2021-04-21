@@ -38,23 +38,63 @@ namespace Abarabone.Model.Authoring
             base.Convert(entity, dstManager, conversionSystem);
 
 
-            var top = this.gameObject;
-            var main = top.transform.GetChild(0).gameObject;
+            var state = this.GetComponentInChildren<ActionStateAuthoring>();
+            initState_(conversionSystem, state);
 
-            initMain_(conversionSystem, main);
+            var posture = this.GetComponentInChildren<PostureAuthoring>();
+            initPosture_(conversionSystem, posture, state);
 
             return;
 
 
-            void initMain_( GameObjectConversionSystem gcs_, GameObject main_ )
+            //void initPosture_( GameObjectConversionSystem gcs_, GameObject main_ )
+            //{
+            //    var em = gcs_.DstEntityManager;
+
+            //    var mainEntity = gcs_.GetPrimaryEntity(main_);
+
+            //    var types = new ComponentTypes(new ComponentType []
+            //    {
+            //        //typeof(PlayerTag),
+            //        typeof(AntTag),
+
+            //        typeof(WallingTag),
+            //        typeof(WallHangingData),
+            //        typeof(WallHitResultData),
+            //        typeof(PhysicsGravityFactor),// デフォルトでは付かないっぽい
+                    
+            //        //typeof(MoveHandlingData),
+            //        typeof(Move.SpeedParamaterData),
+            //        typeof(Move.TurnParamaterData),
+
+            //        typeof(AntAction.WalkState)
+            //    });
+            //    em.AddComponents(mainEntity, types);
+
+            //    em.SetComponentData(mainEntity, new PhysicsGravityFactor
+            //    {
+            //        Value = 1.0f,
+            //    });
+            //    em.SetComponentData(mainEntity, new Move.SpeedParamaterData
+            //    {
+            //        SpeedPerSec = this.MoveSpeedPerSec,
+            //    });
+            //    em.SetComponentData(mainEntity, new Move.TurnParamaterData
+            //    {
+            //        TurnRadPerSec = math.radians(this.TurnDegPerSec),
+            //    });
+            //}
+
+
+            void initPosture_
+                (GameObjectConversionSystem gcs, PostureAuthoring posture, ActionStateAuthoring state)
             {
-                var em = gcs_.DstEntityManager;
+                var em = gcs.DstEntityManager;
 
-                var mainEntity = gcs_.GetPrimaryEntity(main_);
+                var ent = gcs.GetPrimaryEntity(posture);
 
-                var types = new ComponentTypes(new ComponentType []
+                var types = new ComponentTypes(new ComponentType[]
                 {
-                    //typeof(PlayerTag),
                     typeof(AntTag),
 
                     typeof(WallingTag),
@@ -62,28 +102,48 @@ namespace Abarabone.Model.Authoring
                     typeof(WallHitResultData),
                     typeof(PhysicsGravityFactor),// デフォルトでは付かないっぽい
                     
-                    //typeof(MoveHandlingData),
                     typeof(Move.SpeedParamaterData),
                     typeof(Move.TurnParamaterData),
 
-                    typeof(AntAction.WalkState)
+                    typeof(Control.MoveData),
+                    typeof(Control.WorkData),
+                    typeof(Control.ActionLinkData)
                 });
-                em.AddComponents(mainEntity, types);
+                em.AddComponents(ent, types);
 
-                em.SetComponentData(mainEntity, new PhysicsGravityFactor
+                em.SetComponentData(ent, new Control.ActionLinkData
+                {
+                    ActionEntity = gcs.GetOrCreateEntity(state) 
+                });
+
+                em.SetComponentData(ent, new PhysicsGravityFactor
                 {
                     Value = 1.0f,
                 });
-                em.SetComponentData(mainEntity, new Move.SpeedParamaterData
+
+                em.SetComponentData(ent, new Move.SpeedParamaterData
                 {
                     SpeedPerSec = this.MoveSpeedPerSec,
                 });
-                em.SetComponentData(mainEntity, new Move.TurnParamaterData
+                em.SetComponentData(ent, new Move.TurnParamaterData
                 {
                     TurnRadPerSec = math.radians(this.TurnDegPerSec),
                 });
             }
 
+            static void initState_
+                (GameObjectConversionSystem gcs, ActionStateAuthoring state)
+            {
+                var em = gcs.DstEntityManager;
+
+                var types = new ComponentTypes
+                (
+                    typeof(AntAction.WalkState),
+
+                    typeof(Control.ActionData)
+                );
+                var ent = gcs.GetOrCreateEntity(state, types);
+            }
 
         }
 

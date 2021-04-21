@@ -62,7 +62,7 @@ namespace Abarabone.Arms.Authoring
             var holderEntity = entity;
             var mainEntity = conversionSystem.GetPrimaryEntity(main);
             var muzzleEntity = conversionSystem.GetPrimaryEntity(this.Muzzle);
-            var stateEntity = conversionSystem.GetEntityDictionary()[state];
+            var stateEntity = conversionSystem.GetOrCreateEntity(state);
 
             var unitsEntities = listupMuzzleAndUnitsEntities_(conversionSystem, wapons);
             initHolder_(conversionSystem, holderEntity, mainEntity, muzzleEntity, stateEntity, wapons.Length, startSelectedId: 0);
