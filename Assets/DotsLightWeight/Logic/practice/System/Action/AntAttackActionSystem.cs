@@ -94,7 +94,7 @@ namespace Abarabone.Character.Action
                         var motion = new MotionOperator
                             (cmd, motionInfos, motionCursors, mlink.MotionEntity, entityInQueryIndex);
 
-                        motion.Start(Motion_ant.attack01, isLooping: true, delayTime: 0.1f);
+                        motion.Start(Motion_ant.attack02, isLooping: true, delayTime: 0.1f);
 
 
 

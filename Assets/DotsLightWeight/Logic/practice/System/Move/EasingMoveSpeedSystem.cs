@@ -68,12 +68,13 @@ namespace Abarabone.Character
                 =>
                     {
 
-                        var newspd = speed.SpeedPerSec + (ease.TargetSpeedPerSec - speed.SpeedPerSec) * ease.Rate * dt;
+                        var newspd = speed.SpeedPerSec +
+                            (ease.TargetSpeedPerSec - speed.SpeedPerSec);// * ease.Rate * dt;
 
-                        speed.SpeedPerSec = math.clamp(newspd, speed.SpeedPerSecMax, 0.0f);
+                        speed.SpeedPerSec = math.clamp(newspd, 0.0f, speed.SpeedPerSecMax);
 
 
-                        if (math.abs(speed.SpeedPerSec - ease.TargetSpeedPerSec) <= float.MinValue)
+                        if (math.abs(speed.SpeedPerSec - ease.TargetSpeedPerSec) <= 0.01f)//float.MinValue)
                         {
                             cmd.RemoveComponent<Move.EasingSpeedData>(entityInQueryIndex, entity);
                         }
