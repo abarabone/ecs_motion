@@ -95,8 +95,7 @@ namespace Abarabone.Character
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        //in MoveHandlingData handler,
-                        in Control.MoveData handler,
+                        in Control.MoveData move,
                         in GroundHitWallingData walling,
                         in PhysicsMass phymass,
                         in Move.SpeedParamaterData param,
@@ -111,7 +110,7 @@ namespace Abarabone.Character
                         if (hanging.State > WallHangingData.WallingState.front_45_rotating) return;
 
 
-                        var dir = hanging.getDirection(in handler);// rot.Value);
+                        var dir = hanging.getDirection(in move);// rot.Value);
                         var bodysize = walling.CenterHeight;
 
 

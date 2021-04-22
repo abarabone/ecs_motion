@@ -106,7 +106,14 @@ namespace Abarabone.Character
 
         public struct SpeedParamaterData : IComponentData
         {
+            public float SpeedPerSecMax;
             public float SpeedPerSec;
+        }
+
+        public struct EasingSpeedData : IComponentData
+        {
+            public float TargetSpeedPerSec;
+            public float Rate;
         }
     }
 

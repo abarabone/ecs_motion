@@ -102,8 +102,9 @@ namespace Abarabone.Model.Authoring
                     typeof(WallHitResultData),
                     typeof(PhysicsGravityFactor),// デフォルトでは付かないっぽい
                     
-                    typeof(Move.SpeedParamaterData),
                     typeof(Move.TurnParamaterData),
+                    typeof(Move.SpeedParamaterData),
+                    typeof(Move.EasingSpeedData),
 
                     typeof(Control.MoveData),
                     typeof(Control.WorkData),
@@ -121,13 +122,19 @@ namespace Abarabone.Model.Authoring
                     Value = 1.0f,
                 });
 
-                em.SetComponentData(ent, new Move.SpeedParamaterData
-                {
-                    SpeedPerSec = this.MoveSpeedPerSec,
-                });
                 em.SetComponentData(ent, new Move.TurnParamaterData
                 {
                     TurnRadPerSec = math.radians(this.TurnDegPerSec),
+                });
+                em.SetComponentData(ent, new Move.SpeedParamaterData
+                {
+                    SpeedPerSecMax = this.MoveSpeedPerSec,
+                    SpeedPerSec = 0.0f,//this.MoveSpeedPerSec,
+                });
+                em.SetComponentData(ent, new Move.EasingSpeedData
+                {
+                    TargetSpeedPerSec = this.MoveSpeedPerSec,
+                    Rate = 0.5f,
                 });
             }
 
@@ -138,6 +145,8 @@ namespace Abarabone.Model.Authoring
 
                 var types = new ComponentTypes
                 (
+                    typeof(AntTag),
+
                     typeof(AntAction.WalkState),
 
                     typeof(Control.ActionData)

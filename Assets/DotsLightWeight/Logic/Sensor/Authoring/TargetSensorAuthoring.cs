@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Physics.Authoring;
+using Unity.Linq;
 
 namespace Abarabone.Character.Authoring
 {
@@ -14,6 +15,16 @@ namespace Abarabone.Character.Authoring
     using Abarabone.Character;
     using Abarabone.CharacterMotion;
     using Abarabone.Targeting;
+    using Abarabone.Model.Authoring;
+    using Abarabone.Common.Extension;
+
+    public static class FindObject
+    {
+        public static T FindParent<T>(this MonoBehaviour x)
+            where T : MonoBehaviour
+        =>
+            x.gameObject.AncestorsAndSelf().Where(x => x.GetComponent<T>() != null).First().GetComponent<T>();
+    }
 
     /// <summary>
     /// メインエンティティに付けておく
@@ -43,25 +54,39 @@ namespace Abarabone.Character.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var holder = createSensorHolder_();
-            dstManager.AddComponentData(entity, new TargetSensorHolderLink.HolderLinkData
+            var top = this.FindParent<ModelGroupAuthoring.ModelAuthoringBase>();
+            var state = top.GetComponentInChildren<ActionStateAuthoring>();
+            var posture = top.GetComponentInChildren<PostureAuthoring>();
+            var holder = this;
+
+
+            var holderEntity = createSensorHolder_(conversionSystem, holder);
+            var stateEntity = conversionSystem.GetOrCreateEntity(state);
+            dstManager.AddComponentData(stateEntity, new TargetSensorHolderLink.HolderLinkData
             {
-                HolderEntity = holder,
+                HolderEntity = holderEntity,
+            });
+            var postureEntity = conversionSystem.GetPrimaryEntity(posture);
+            dstManager.AddComponentData(postureEntity, new TargetSensorHolderLink.HolderLinkData
+            {
+                HolderEntity = holderEntity,
             });
 
-            foreach (var s in this.Sensors)
+            foreach (var src in this.Sensors)
             {
-                var sent = createSensor_(s);
-                addToHolder_(s, sent);
+                var sent = createSensor_(conversionSystem, src, holder, posture);
+                addToHolder_(conversionSystem, src, sent, holderEntity);
             }
 
             return;
 
 
-            Entity createSensorHolder_()
+            static Entity createSensorHolder_(GameObjectConversionSystem gcs, TargetSensorAuthoring holder)
             {
-                var ent = conversionSystem.CreateAdditionalEntity(this);
-                dstManager.SetName_(ent, "ant sensor holder");
+                var em = gcs.DstEntityManager;
+
+                var ent = gcs.CreateAdditionalEntity(holder);
+                em.SetName_(ent, "ant sensor holder");
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
@@ -70,15 +95,17 @@ namespace Abarabone.Character.Authoring
                     typeof(TargetSensorHolder.SensorNextTimeData),
                     typeof(TargetSensorResponse.PositionData)
                 });
-                dstManager.AddComponents(ent, types);
+                em.AddComponents(ent, types);
 
                 return ent;
             }
 
-            Entity createSensor_(SensorUnit src)
+            static Entity createSensor_(GameObjectConversionSystem gcs, SensorUnit src, TargetSensorAuthoring holder, PostureAuthoring posture)
             {
-                var ent = conversionSystem.CreateAdditionalEntity(this);
-                dstManager.SetName_(ent, $"ant sensor {src.ToString().Split('+').Last()}");
+                var em = gcs.DstEntityManager;
+
+                var ent = gcs.CreateAdditionalEntity(holder);
+                em.SetName_(ent, $"ant sensor {src.ToString().Split('+').Last()}");
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
@@ -88,7 +115,7 @@ namespace Abarabone.Character.Authoring
                     typeof(TargetSensor.GroupFilterData),
                     typeof(TargetSensorResponse.PositionData)
                 });
-                dstManager.AddComponents(ent, types);
+                em.AddComponents(ent, types);
 
                 //dstManager.SetComponentData(ent, new TargetSensor.LinkTargetMainData
                 //{
@@ -96,14 +123,14 @@ namespace Abarabone.Character.Authoring
 
                 //});
 
-                dstManager.SetComponentData(ent, new TargetSensor.CollisionData
+                em.SetComponentData(ent, new TargetSensor.CollisionData
                 {
-                    PostureEntity = entity,
+                    PostureEntity = gcs.GetPrimaryEntity(posture),
                     Distance = src.distance,
                     Filter = new CollisionFilter
                     {
-                        BelongsTo = this.Collision.BelongsTo.Value,
-                        CollidesWith = this.Collision.CollidesWith.Value,
+                        BelongsTo = holder.Collision.BelongsTo.Value,
+                        CollidesWith = holder.Collision.CollidesWith.Value,
                     }
                 });
 
@@ -114,13 +141,15 @@ namespace Abarabone.Character.Authoring
 
                 return ent;
             }
-            void addToHolder_(SensorUnit src, Entity ent)
+            static void addToHolder_(GameObjectConversionSystem gcs, SensorUnit src, Entity sent, Entity holderEntity)
             {
-                var linkbuf = dstManager.GetBuffer<TargetSensorHolder.SensorLinkData>(holder);
-                var nextbuf = dstManager.GetBuffer<TargetSensorHolder.SensorNextTimeData>(holder);
+                var em = gcs.DstEntityManager;
+
+                var linkbuf = em.GetBuffer<TargetSensorHolder.SensorLinkData>(holderEntity);
+                var nextbuf = em.GetBuffer<TargetSensorHolder.SensorNextTimeData>(holderEntity);
                 linkbuf.Add(new TargetSensorHolder.SensorLinkData
                 {
-                    SensorEntity = ent,
+                    SensorEntity = sent,
                     Interval = src.interval,
                 });
                 nextbuf.Add(new TargetSensorHolder.SensorNextTimeData

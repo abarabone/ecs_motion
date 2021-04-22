@@ -54,7 +54,7 @@ namespace Abarabone.Character
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             //inputDeps = new SwitchWallingAndFreeFallWithHitJob
             //{
@@ -73,7 +73,8 @@ namespace Abarabone.Character
                     (
                         Entity entity, int entityInQueryIndex,
                         ref WallHangingData walling,
-                        ref PhysicsGravityFactor g
+                        ref PhysicsGravityFactor g,
+                        ref Move.SpeedParamaterData speed
                     )
                 =>
                     {
@@ -84,11 +85,18 @@ namespace Abarabone.Character
                             if (wallHitResults[entity].IsHit)
                             {
                                 //commands.RemoveComponent<PhysicsVelocity>(entityInQueryIndex, entity);
-                                commands.RemoveComponent<WallHitResultData>(entityInQueryIndex, entity);
+                                cmd.RemoveComponent<WallHitResultData>(entityInQueryIndex, entity);
 
                                 //commands.AddComponent( jobIndex, entity, new WallHunggingData { } );
                                 g = new PhysicsGravityFactor { Value = 0.0f };
                                 walling.State = WallHangingData.WallingState.none_rotating;
+
+                                cmd.AddComponent(entityInQueryIndex, entity, new Move.EasingSpeedData
+                                {
+                                    Rate = 0.5f,
+                                    TargetSpeedPerSec = speed.SpeedPerSecMax,
+                                });
+                                speed.SpeedPerSec = 0.0f;
                             }
                         }
 
@@ -99,8 +107,10 @@ namespace Abarabone.Character
                                 //commands.RemoveComponent<WallHunggingData>( entityInQueryIndex, entity );
 
                                 //commands.AddComponent( jobIndex, entity, new PhysicsVelocity { } );
-                                commands.AddComponent(entityInQueryIndex, entity, new WallHitResultData { });
+                                cmd.AddComponent(entityInQueryIndex, entity, new WallHitResultData { });
                                 g = new PhysicsGravityFactor { Value = 1.0f };
+
+                                cmd.RemoveComponent<Move.EasingSpeedData>(entityInQueryIndex, entity);
                             }
                         }
                     }
