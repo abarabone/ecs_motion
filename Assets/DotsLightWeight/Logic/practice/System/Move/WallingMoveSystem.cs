@@ -146,7 +146,7 @@ namespace Abarabone.Character
                         {
                             var newposrot_ = new Walling.PosAndRot
                             {
-                                pos = hitgnd.p + movedir * moveRange,// + hitgnd.n * 0.1f,
+                                pos = pos.Value + (hitgnd.p + movedir * param.SpeedPerSecMax - pos.Value) * moveRange,// + hitgnd.n * 0.1f,
                                 rot = quaternion.LookRotation(movedir, n),
                             };
                             v = newposrot_.setResultTo(in phymass, pos, rot, rdt);

@@ -91,12 +91,12 @@ namespace Abarabone.Character
                                 g = new PhysicsGravityFactor { Value = 0.0f };
                                 walling.State = WallHangingData.WallingState.none_rotating;
 
-                                //cmd.AddComponent(entityInQueryIndex, entity, new Move.EasingSpeedData
-                                //{
-                                //    Rate = 0.5f,
-                                //    TargetSpeedPerSec = speed.SpeedPerSecMax,
-                                //});
-                                //speed.SpeedPerSec = 0.0f;
+                                cmd.AddComponent(entityInQueryIndex, entity, new Move.EasingSpeedData
+                                {
+                                    Rate = 0.5f,
+                                    TargetSpeedPerSec = speed.SpeedPerSecMax,
+                                });
+                                speed.SpeedPerSec = 0.0f;
                             }
                         }
 
@@ -110,7 +110,7 @@ namespace Abarabone.Character
                                 cmd.AddComponent(entityInQueryIndex, entity, new WallHitResultData { });
                                 g = new PhysicsGravityFactor { Value = 1.0f };
 
-                                //cmd.RemoveComponent<Move.EasingSpeedData>(entityInQueryIndex, entity);
+                                cmd.RemoveComponent<Move.EasingSpeedData>(entityInQueryIndex, entity);
                             }
                         }
                     }
