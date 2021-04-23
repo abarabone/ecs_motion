@@ -79,15 +79,15 @@ namespace Abarabone.Character.Action
                 =>
                     {
 
-                        if (state.Phase == 0)
-                        {
-                            cmd.AddComponent(entityInQueryIndex, plink.PostureEntity, new Move.EasingSpeedData
-                            {
-                                Rate = 0.5f,
-                                TargetSpeedPerSec = 0.0f,
-                            });
-                            state.Phase++;
-                        }
+                        //if (state.Phase == 0)
+                        //{
+                        //    cmd.AddComponent(entityInQueryIndex, plink.PostureEntity, new Move.EasingSpeedData
+                        //    {
+                        //        Rate = 0.5f,
+                        //        TargetSpeedPerSec = 0.0f,
+                        //    });
+                        //    state.Phase++;
+                        //}
 
 
 
@@ -106,8 +106,13 @@ namespace Abarabone.Character.Action
                             cmd.RemoveComponent<AntAction.AttackState>(entityInQueryIndex, entity);
                             cmd.AddComponent<AntAction.WalkState>(entityInQueryIndex, entity);
 
-                            // いったん落下状態にして、スピードを調整する
-                            cmd.AddComponent(entityInQueryIndex, plink.PostureEntity, new WallHitResultData { });
+                            ////// いったん落下状態にして、スピードを調整する
+                            ////cmd.AddComponent(entityInQueryIndex, plink.PostureEntity, new WallHitResultData { });
+                            //cmd.AddComponent(entityInQueryIndex, plink.PostureEntity, new Move.EasingSpeedData
+                            //{
+                            //    Rate = 0.5f,
+                            //    TargetSpeedPerSec = 2.0f,
+                            //});
                         }
                     }
                 )

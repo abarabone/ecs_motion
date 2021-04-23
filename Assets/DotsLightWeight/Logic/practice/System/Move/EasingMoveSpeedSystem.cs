@@ -69,7 +69,7 @@ namespace Abarabone.Character
                     {
 
                         var newspd = speed.SpeedPerSec +
-                            (ease.TargetSpeedPerSec - speed.SpeedPerSec);// * ease.Rate * dt;
+                            (ease.TargetSpeedPerSec - speed.SpeedPerSec) * ease.Rate * dt;
 
                         speed.SpeedPerSec = math.clamp(newspd, 0.0f, speed.SpeedPerSecMax);
 

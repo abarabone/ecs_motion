@@ -84,7 +84,7 @@ namespace Abarabone.Character
 
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         static float3 calc_cam
             (CharacterFollowCameraPositionData campos, Control.MoveData moves, float3 pos)
         {

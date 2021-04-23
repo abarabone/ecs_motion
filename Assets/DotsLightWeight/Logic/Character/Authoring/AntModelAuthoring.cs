@@ -129,7 +129,7 @@ namespace Abarabone.Model.Authoring
                 em.SetComponentData(ent, new Move.SpeedParamaterData
                 {
                     SpeedPerSecMax = this.MoveSpeedPerSec,
-                    SpeedPerSec = 0.0f,//this.MoveSpeedPerSec,
+                    SpeedPerSec = 0.0f,//this.MoveSpeedPerSec,//
                 });
                 em.SetComponentData(ent, new Move.EasingSpeedData
                 {
