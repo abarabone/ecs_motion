@@ -59,12 +59,10 @@ namespace Abarabone.Character
 
             this.Entities
                 .WithBurst()
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        ref Move.SpeedParamaterData speed,
-                        ref Move.EasingSpeedData ease
-                    )
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    ref Move.SpeedParamaterData speed,
+                    ref Move.EasingSpeedData ease)
                 =>
                     {
 
@@ -74,8 +72,10 @@ namespace Abarabone.Character
                         speed.SpeedPerSec = math.clamp(newspd, 0.0f, speed.SpeedPerSecMax);
 
 
-                        if (math.abs(speed.SpeedPerSec - ease.TargetSpeedPerSec) <= 0.01f)//float.MinValue)
+                        if (math.abs(speed.SpeedPerSec - ease.TargetSpeedPerSec) <= math.abs(speed.SpeedPerSecMax * 0.01f))
                         {
+                            speed.SpeedPerSec = ease.TargetSpeedPerSec;
+
                             cmd.RemoveComponent<Move.EasingSpeedData>(entityInQueryIndex, entity);
                         }
 

@@ -45,29 +45,21 @@ namespace Abarabone.Arms.Authoring
             var top = this.gameObject
                 .Ancestors()
                 .First(go => go.GetComponent<CharacterModelAuthoring>());
-            var main = top.transform
-                .GetChild(0)
-                .gameObject;
 
             var wapons = this.GetComponentsInChildren<WaponAuthoring>();
-            var state = this.gameObject.Ancestors()
-                .Where(x => x.GetComponent<ActionStateAuthoring>() != null)
-                .First()
-                .GetComponent<ActionStateAuthoring>();
-            //this.GetComponentInParent<ActionStateAuthoring>();// wapon holder を独立させるべきか…？
+            var posture = top.GetComponentInChildren<PostureAuthoring>();
+            var state = top.GetComponentInChildren<ActionStateAuthoring>();
 
-            //dstManager.DestroyEntity(entity);//
-
-            //var holderEntity = conversionSystem.GetEntityDictionary()[state];//
-            var holderEntity = entity;
-            var mainEntity = conversionSystem.GetPrimaryEntity(main);
-            var muzzleEntity = conversionSystem.GetPrimaryEntity(this.Muzzle);
+            var postureEntity = conversionSystem.GetPrimaryEntity(posture);
             var stateEntity = conversionSystem.GetOrCreateEntity(state);
 
+            var holderEntity = entity;
+            var muzzleEntity = conversionSystem.GetPrimaryEntity(this.Muzzle);
+
             var unitsEntities = listupMuzzleAndUnitsEntities_(conversionSystem, wapons);
-            initHolder_(conversionSystem, holderEntity, mainEntity, muzzleEntity, stateEntity, wapons.Length, startSelectedId: 0);
+            initHolder_(conversionSystem, holderEntity, postureEntity, muzzleEntity, stateEntity, wapons.Length, startSelectedId: 0);
             initAllWapons_(conversionSystem, holderEntity, unitsEntities);
-            initAllUnits_(conversionSystem, holderEntity, mainEntity, muzzleEntity, stateEntity, unitsEntities);
+            initAllUnits_(conversionSystem, holderEntity, postureEntity, muzzleEntity, stateEntity, unitsEntities);
             //createInitUnit2Entities_(conversionSystem, holderEntity, this.Wapons);
 
             return;
@@ -137,6 +129,7 @@ namespace Abarabone.Arms.Authoring
                 (GameObjectConversionSystem gcs, Entity holder, IEnumerable<IEnumerable<Entity>> unitss)
             {
                 var em = gcs.DstEntityManager;
+                var holderBuf = em.GetBuffer<WaponHolder.UnitLinkData>(holder);
 
                 foreach (var w in unitss)
                 {
@@ -147,8 +140,6 @@ namespace Abarabone.Arms.Authoring
 
                 void add2UnitsToHolder_(Entity unit0, Entity unit1)
                 {
-                    var holderBuf = em.GetBuffer<WaponHolder.UnitLinkData>(holder);
-
                     holderBuf.Add(new WaponHolder.UnitLinkData
                     {
                         FunctionEntity0 = unit0,

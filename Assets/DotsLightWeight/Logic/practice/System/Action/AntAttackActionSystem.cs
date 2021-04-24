@@ -59,6 +59,7 @@ namespace Abarabone.Character.Action
 
             var targetposs = this.GetComponentDataFromEntity<TargetSensorResponse.PositionData>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            var mvspds = this.GetComponentDataFromEntity<Move.SpeedParamaterData>(isReadOnly: true);
 
 
             this.Entities
@@ -67,6 +68,7 @@ namespace Abarabone.Character.Action
                 .WithReadOnly(motionInfos)
                 .WithReadOnly(targetposs)
                 .WithReadOnly(poss)
+                .WithReadOnly(mvspds)
                 .WithNativeDisableParallelForRestriction(motionCursors)
                 .ForEach(
                     (
@@ -109,7 +111,7 @@ namespace Abarabone.Character.Action
                             cmd.AddComponent(entityInQueryIndex, plink.PostureEntity, new Move.EasingSpeedData
                             {
                                 Rate = 5.0f,
-                                TargetSpeedPerSec = 2.0f,
+                                TargetSpeedPerSec = mvspds[plink.PostureEntity].SpeedPerSecMax,
                             });
                         }
                     }
