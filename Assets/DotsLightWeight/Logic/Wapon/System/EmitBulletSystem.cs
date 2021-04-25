@@ -95,30 +95,43 @@ namespace Abarabone.Arms
                     {
                         if (!trigger.IsTriggered) return;
 
-                        trigger.IsTriggered = false;// 逐一オフにする
+                        trigger.IsTriggered = false;// 一発ずつオフにする
 
 
                         if (currentTime < state.NextEmitableTime) return;
-                        state.NextEmitableTime = currentTime + emitter.EmittingInterval;
 
+                        var elapsed = 0.0f;
+                        var frameBaseTime = currentTime - deltaTime;
+                        var isEmitPrevFrame = state.NextEmitableTime > frameBaseTime;
+                        var baseTime = math.select(frameBaseTime, state.NextEmitableTime, isEmitPrevFrame);
 
                         var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(deltaTime) & 0x_7fff_ffff);
 
-                        var bulletData = bullets[emitter.BulletPrefab];
-                        var rot = rots[link.MuzzleEntity];
-                        var pos = poss[link.MuzzleEntity];
-
-                        //var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
-                        var bulletPos = calcBulletPosition_(rot, pos, in emitter, in bulletData);
-                        var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
-
-                        for (var i=0; i<emitter.NumEmitMultiple; i++)
+                        do
                         {
-                            //var bulletDir = calcBulletDirection_(camrot, bulletPos, ref rnd, emitter.AccuracyRad);
-                            var bulletDir = calcBulletDirection_(rot.Value, bulletPos, ref rnd, emitter.AccuracyRad);
+                            //state.NextEmitableTime = currentTime + emitter.EmittingInterval;
+                            elapsed += emitter.EmittingInterval;
+                            state.NextEmitableTime = baseTime + elapsed;
 
-                            emit_(cmd, entityInQueryIndex, emitter.BulletPrefab, bulletPos, bulletDir, range );
+
+                            var bulletData = bullets[emitter.BulletPrefab];
+                            var rot = rots[link.MuzzleEntity];
+                            var pos = poss[link.MuzzleEntity];
+
+                            //var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
+                            var bulletPos = calcBulletPosition_(rot, pos, in emitter, in bulletData);
+                            var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
+
+                            // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも
+                            for (var i = 0; i < emitter.NumEmitMultiple; i++)
+                            {
+                                //var bulletDir = calcBulletDirection_(camrot, bulletPos, ref rnd, emitter.AccuracyRad);
+                                var bulletDir = calcBulletDirection_(rot.Value, bulletPos, ref rnd, emitter.AccuracyRad);
+
+                                emit_(cmd, entityInQueryIndex, emitter.BulletPrefab, bulletPos, bulletDir, range);
+                            }
                         }
+                        while (currentTime >= state.NextEmitableTime);
                     }
                 )
                 .ScheduleParallel();
@@ -149,8 +162,7 @@ namespace Abarabone.Arms
             )
         {
 
-            var muzzleDir = math.forward(rot.Value);
-            var muzpos = pos.Value + muzzleDir * emitter.MuzzlePositionLocal;
+            var muzpos = pos.Value + math.mul(rot.Value, emitter.MuzzlePositionLocal);
             //var muzzleDir = math.forward(camrot);
             //var muzpos = campos + muzzleDir * 0.5f;
 
