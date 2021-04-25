@@ -105,13 +105,16 @@ namespace Abarabone.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
+                        ref FunctionUnit.TriggerData trigger,
                         in FunctionUnit.BulletEmittingData emitter,
-                        in FunctionUnit.TriggerData trigger,
                         in FunctionUnit.OwnerLinkData link,
                         in Bullet.SpecData bulletData
                     ) =>
                     {
                         if (!trigger.IsTriggered) return;
+
+                        trigger.IsTriggered = false;// 逐一オフにする
+
 
                         var i = entityInQueryIndex;
                         var prefab = emitter.BulletPrefab;

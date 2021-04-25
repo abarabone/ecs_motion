@@ -43,7 +43,7 @@ namespace Abarabone.Arms.Authoring
         {
 
             var top = this.gameObject
-                .Ancestors()
+                .AncestorsAndSelf()
                 .First(go => go.GetComponent<CharacterModelAuthoring>());
 
             var wapons = this.GetComponentsInChildren<WaponAuthoring>();

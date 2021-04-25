@@ -32,6 +32,11 @@ namespace Abarabone.Character
             public int Phase;
         }
 
+        public struct AttackTimeRange : IComponentData
+        {
+            public float st;
+            public float ed;
+        }
 
     }
 

@@ -39,6 +39,7 @@ namespace Abarabone.CharacterMotion
                         timer.Cursor.Progress(deltaTime);
 
                         nearKeys.ShiftKeysIfOverKeyTimeForLooping(ref shiftInfo, ref timer.Cursor);
+                        //nearKeys.ShiftKeysIfOverKeyTime(ref shiftInfo, in timer.Cursor);
 
                         var timeProgressNormalized = nearKeys.CaluclateTimeNormalized(timer.Cursor.CurrentPosition);
 

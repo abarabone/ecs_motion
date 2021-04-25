@@ -31,6 +31,8 @@ namespace Abarabone.Model.Authoring
 
         public float TurnDegPerSec;
 
+        public float st;
+        public float ed;
 
 
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -138,7 +140,7 @@ namespace Abarabone.Model.Authoring
                 });
             }
 
-            static void initState_
+            void initState_
                 (GameObjectConversionSystem gcs, ActionStateAuthoring state)
             {
                 var em = gcs.DstEntityManager;
@@ -148,10 +150,17 @@ namespace Abarabone.Model.Authoring
                     typeof(AntTag),
 
                     typeof(AntAction.WalkState),
+                    typeof(AntAction.AttackTimeRange),
 
                     typeof(Control.ActionData)
                 );
                 var ent = gcs.GetOrCreateEntity(state, types);
+
+                em.SetComponentData(ent, new AntAction.AttackTimeRange
+                {
+                    st = st,
+                    ed = ed,
+                });
             }
 
         }

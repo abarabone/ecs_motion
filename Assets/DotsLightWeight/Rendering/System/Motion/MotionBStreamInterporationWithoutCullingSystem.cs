@@ -50,6 +50,8 @@ namespace Abarabone.CharacterMotion
                         var cursor = motionCursors[linker.MotionEntity];
 
                         nearKeys.ShiftKeysIfOverKeyTimeForLooping(ref shiftInfo, ref cursor);
+                        //nearKeys.ShiftKeysIfOverKeyTime(ref shiftInfo, in cursor);
+
 
                         var timeProgressNormalized = nearKeys.CaluclateTimeNormalized(cursor.CurrentPosition);
 

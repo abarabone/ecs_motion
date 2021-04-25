@@ -23,6 +23,7 @@ namespace Abarabone.Character.Action
     using Abarabone.Character;
     using Abarabone.CharacterMotion;
     using Abarabone.Targeting;
+    using Abarabone.Arms;
     using Motion = Abarabone.CharacterMotion.Motion;
 
 
@@ -61,6 +62,8 @@ namespace Abarabone.Character.Action
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
             var mvspds = this.GetComponentDataFromEntity<Move.SpeedParamaterData>(isReadOnly: true);
 
+            var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
+
 
             this.Entities
                 .WithBurst()
@@ -70,53 +73,146 @@ namespace Abarabone.Character.Action
                 .WithReadOnly(poss)
                 .WithReadOnly(mvspds)
                 .WithNativeDisableParallelForRestriction(motionCursors)
+                .WithNativeDisableParallelForRestriction(triggers)// ƒ„ƒo‚¢‚©‚à
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
                         ref AntAction.AttackState state,
                         in ActionState.MotionLinkDate mlink,
                         in ActionState.PostureLinkData plink,
-                        in TargetSensorHolderLink.HolderLinkData holderLink
+                        in TargetSensorHolderLink.HolderLinkData holderLink,
+                        in AntAction.AttackTimeRange tr_,
+                        in DynamicBuffer<FunctionHolder.LinkData> flinks
                     )
                 =>
                     {
+                        var tr = tr_;
 
-                        if (state.Phase == 0)
+                        switch (state.Phase)
                         {
-                            cmd.AddComponent(entityInQueryIndex, plink.PostureEntity, new Move.EasingSpeedData
-                            {
-                                Rate = 3.0f,
-                                TargetSpeedPerSec = 0.0f,
-                            });
+                            case 0:
+                                initPhase_(ref state, in mlink, in plink);
+                                break;
+                            case 1:
+                                prevShotPhase_(ref state, in mlink);
+                                break;
+                            case 2:
+                                shotPhase_(ref state, in mlink, flinks);
+                                break;
+                            case 3:
+                                afterShotPhase_(ref state, in mlink, in plink, in holderLink);
+                                break;
+                        }
+
+                        return;
+
+
+                        void initPhase_(
+                            ref AntAction.AttackState state,
+                            in ActionState.MotionLinkDate mlink,
+                            in ActionState.PostureLinkData plink)
+                        {
+
+                            cmd.AddComponent(entityInQueryIndex, plink.PostureEntity,
+                                new Move.EasingSpeedData
+                                {
+                                    Rate = 3.0f,
+                                    TargetSpeedPerSec = 0.0f,
+                                }
+                            );
+
+
+                            var motion = new MotionOperator
+                                (cmd, motionInfos, motionCursors, mlink.MotionEntity, entityInQueryIndex);
+
+                            motion.Start(Motion_ant.attack02, isLooping: true, delayTime: 0.1f);
+                            
+
                             state.Phase++;
                         }
 
 
-
-                        var motion = new MotionOperator
-                            (cmd, motionInfos, motionCursors, mlink.MotionEntity, entityInQueryIndex);
-
-                        motion.Start(Motion_ant.attack02, isLooping: true, delayTime: 0.1f);
-
-
-
-                        var targetpos = targetposs[holderLink.HolderEntity].Position;
-                        var originpos = poss[plink.PostureEntity].Value;
-
-                        if (math.distancesq(targetpos, originpos) > 15.0f * 15.0f)
+                        void prevShotPhase_(
+                            ref AntAction.AttackState state,
+                            in ActionState.MotionLinkDate mlink)
                         {
-                            cmd.RemoveComponent<AntAction.AttackState>(entityInQueryIndex, entity);
-                            cmd.AddComponent<AntAction.WalkState>(entityInQueryIndex, entity);
+                            var cursor = motionCursors[mlink.MotionEntity];
 
-                            cmd.AddComponent(entityInQueryIndex, plink.PostureEntity, new Move.EasingSpeedData
+                            var normalPosision = cursor.CurrentPosition * math.rcp(cursor.TotalLength);
+
+                            if (normalPosision >= tr.st)//0.2f)
                             {
-                                Rate = 5.0f,
-                                TargetSpeedPerSec = mvspds[plink.PostureEntity].SpeedPerSecMax,
-                            });
+                                state.Phase++;
+                            }
+                        }
+
+
+                        void shotPhase_(
+                            ref AntAction.AttackState state,
+                            in ActionState.MotionLinkDate mlink,
+                            in DynamicBuffer<FunctionHolder.LinkData> flinks)
+                        {
+
+                            var acidgun = flinks[0].FunctionEntity;
+
+                            triggers[acidgun] = new FunctionUnit.TriggerData
+                            {
+                                IsTriggered = true,
+                            };
+
+
+                            var cursor = motionCursors[mlink.MotionEntity];
+
+                            var normalPosision = cursor.CurrentPosition * math.rcp(cursor.TotalLength);
+
+                            if (normalPosision >= tr.ed)//0.3f)
+                            {
+                                state.Phase++;
+                            }
+                        }
+
+
+                        void afterShotPhase_(
+                            ref AntAction.AttackState state,
+                            in ActionState.MotionLinkDate mlink,
+                            in ActionState.PostureLinkData plink,
+                            in TargetSensorHolderLink.HolderLinkData holderLink)
+                        {
+                            var targetpos = targetposs[holderLink.HolderEntity].Position;
+                            var originpos = poss[plink.PostureEntity].Value;
+
+                            if (math.distancesq(targetpos, originpos) > 15.0f * 15.0f)
+                            {
+                                cmd.RemoveComponent<AntAction.AttackState>(entityInQueryIndex, entity);
+                                cmd.AddComponent<AntAction.WalkState>(entityInQueryIndex, entity);
+
+                                cmd.AddComponent(entityInQueryIndex, plink.PostureEntity,
+                                    new Move.EasingSpeedData
+                                    {
+                                        Rate = 5.0f,
+                                        TargetSpeedPerSec = mvspds[plink.PostureEntity].SpeedPerSecMax,
+                                    }
+                                );
+
+                                return;
+                            }
+
+
+                            var cursor = motionCursors[mlink.MotionEntity];
+
+                            var normalPosision = cursor.CurrentPosition * math.rcp(cursor.TotalLength);
+
+                            if (normalPosision > 0.95f)
+                            {
+                                state.Phase = 0;
+                            }
+
                         }
                     }
                 )
                 .ScheduleParallel();
+                
+
         }
 
     }

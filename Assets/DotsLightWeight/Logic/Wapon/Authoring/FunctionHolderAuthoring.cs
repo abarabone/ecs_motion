@@ -26,7 +26,7 @@ namespace Abarabone.Arms.Authoring
             var funits = this.GetComponentsInChildren<IFunctionUnitAuthoring>();
 
             var top = this.gameObject
-                .Ancestors()
+                .AncestorsAndSelf()
                 .First(go => go.GetComponent<CharacterModelAuthoring>());
 
             var posture = top.GetComponentInChildren<PostureAuthoring>();
@@ -37,6 +37,7 @@ namespace Abarabone.Arms.Authoring
 
 
             initHolder_(conversionSystem, stateEntity);
+            initAllUnits_(conversionSystem, stateEntity, postureEntity, funits);
 
             return;
 
@@ -55,72 +56,46 @@ namespace Abarabone.Arms.Authoring
             }
 
 
-            static void initAllUnits_
-                (GameObjectConversionSystem gcs, Entity holder, IEnumerable<IFunctionUnitAuthoring> units)
+            static void initAllUnits_(GameObjectConversionSystem gcs,
+                Entity holderEntity, Entity postureEntity,
+                IEnumerable<IFunctionUnitAuthoring> units)
             {
                 var em = gcs.DstEntityManager;
-                var holderBuf = em.GetBuffer<FunctionHolder.LinkData>(holder);
 
                 foreach (var unit in units)
                 {
-                    var u = unit as MonoBehaviour;
+                    var src = unit as MonoBehaviour;
+
+                    var unitEntity = gcs.GetPrimaryEntity(src);
+                    var muzzleEntity = gcs.GetPrimaryEntity(src.transform.parent);
+
+                    initUnit_(gcs, unitEntity, postureEntity, muzzleEntity);
+
+                    var holderBuf = em.GetBuffer<FunctionHolder.LinkData>(holderEntity);
 
                     holderBuf.Add(new FunctionHolder.LinkData
                     {
-                        FunctionEntity = gcs.GetPrimaryEntity(u),
+                        FunctionEntity = unitEntity,
                     });
                 }
             }
 
-            static void initAllUnits_(
-                GameObjectConversionSystem gcs,
-                Entity holder, Entity muzzle, IEnumerable<IFunctionUnitAuthoring> units)
+            static void initUnit_(GameObjectConversionSystem gcs, Entity unit, Entity posture, Entity muzzle)
             {
                 var em = gcs.DstEntityManager;
 
-                var qUnit =
-                    from w in unitss.WithIndex()
-                    from unit in w.src.WithIndex()
-                    where unit.src != default
-                    select (unit.src, w.i, unit.i)
-                    ;
-                foreach (var (unit, wid, uid) in qUnit)
-                {
-                    addFunctionUnitComponents_(muzzle, unit, wid, uid);
-                }
+                var types = new ComponentTypes(
+                    typeof(FunctionUnit.OwnerLinkData)
+                );
+                em.AddComponents(unit, types);
 
-                void addFunctionUnitComponents_
-                    (Entity muzzle, Entity unit, int waponId, int unitId)
-                {
-                    var types = new ComponentTypes(
-                        typeof(FunctionUnit.OwnerLinkData),
-                        typeof(FunctionUnit.StateLinkData),
-                        typeof(FunctionUnitInWapon.TriggerSpecificData)
-                    );
-                    em.AddComponents(unit, types);
-
-                    em.SetComponentData(unit,
-                        new FunctionUnit.OwnerLinkData
-                        {
-                            OwnerMainEntity = main,
-                            MuzzleEntity = muzzle,
-                        }
-                    );
-                    em.SetComponentData(unit,
-                        new FunctionUnit.StateLinkData
-                        {
-                            WaponHolderEntity = holder,
-                            StateEntity = state,
-                        }
-                    );
-                    em.SetComponentData(unit,
-                        new FunctionUnitInWapon.TriggerSpecificData
-                        {
-                            Type = (FunctionUnitInWapon.TriggerType)unitId,
-                            WaponCarryId = waponId,
-                        }
-                    );
-                }
+                em.SetComponentData(unit,
+                    new FunctionUnit.OwnerLinkData
+                    {
+                        OwnerMainEntity = posture,
+                        MuzzleEntity = muzzle,
+                    }
+                );
             }
 
         }

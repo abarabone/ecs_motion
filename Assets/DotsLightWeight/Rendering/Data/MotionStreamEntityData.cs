@@ -308,10 +308,10 @@ namespace Abarabone.CharacterMotion
             var progress = timeProgress - nearKeys.Time_From;
             var length = nearKeys.Time_To - nearKeys.Time_From;
 
-            var progress_div_length = math.saturate( progress * math.rcp( length ) );
-            //var progress_div_length = progress * math.rcp( length );
+            var progress_div_length = math.saturate(progress * math.rcp(length));
+            //var progress_div_length = progress * math.rcp(length);
 
-            return math.select( progress_div_length, 1.0f, length == 0.0f );// select( 偽, 真, 条件 );
+            return progress_div_length;// math.select( progress_div_length, 1.0f, length == 0.0f );// select( 偽, 真, 条件 );
         }
 
         /// <summary>

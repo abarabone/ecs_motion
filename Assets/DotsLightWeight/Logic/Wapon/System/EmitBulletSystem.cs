@@ -88,12 +88,14 @@ namespace Abarabone.Arms
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         ref FunctionUnit.EmittingStateData state,
-                        in FunctionUnit.TriggerData trigger,
+                        ref FunctionUnit.TriggerData trigger,
                         in FunctionUnit.BulletEmittingData emitter,
                         in FunctionUnit.OwnerLinkData link
                     ) =>
                     {
                         if (!trigger.IsTriggered) return;
+
+                        trigger.IsTriggered = false;// 逐一オフにする
 
 
                         if (currentTime < state.NextEmitableTime) return;
@@ -106,12 +108,14 @@ namespace Abarabone.Arms
                         var rot = rots[link.MuzzleEntity];
                         var pos = poss[link.MuzzleEntity];
 
-                        var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
+                        //var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
+                        var bulletPos = calcBulletPosition_(rot, pos, in emitter, in bulletData);
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
                         for (var i=0; i<emitter.NumEmitMultiple; i++)
                         {
-                            var bulletDir = calcBulletDirection_(camrot, bulletPos, ref rnd, emitter.AccuracyRad);
+                            //var bulletDir = calcBulletDirection_(camrot, bulletPos, ref rnd, emitter.AccuracyRad);
+                            var bulletDir = calcBulletDirection_(rot.Value, bulletPos, ref rnd, emitter.AccuracyRad);
 
                             emit_(cmd, entityInQueryIndex, emitter.BulletPrefab, bulletPos, bulletDir, range );
                         }
@@ -139,17 +143,18 @@ namespace Abarabone.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float3 calcBulletPosition_
             (
-                quaternion camrot, float3 campos, 
+                //quaternion camrot, float3 campos,
+                Rotation rot, Translation pos,
                 in FunctionUnit.BulletEmittingData emitter, in Bullet.SpecData bulletData
             )
         {
 
-            //var muzzleDir = math.forward(rot.Value);
-            //var start = pos.Value + muzzleDir * emitter.MuzzlePositionLocal;
-            var muzzleDir = math.forward(camrot);
-            var pos = campos + muzzleDir * 0.5f;
+            var muzzleDir = math.forward(rot.Value);
+            var muzpos = pos.Value + muzzleDir * emitter.MuzzlePositionLocal;
+            //var muzzleDir = math.forward(camrot);
+            //var muzpos = campos + muzzleDir * 0.5f;
 
-            return pos;
+            return muzpos;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
