@@ -48,6 +48,11 @@ namespace Abarabone.Arms
         {
             public float3 Direction;
         }
+        public struct VelocityData : IComponentData
+        {
+            public float3 Velocity;
+            public float3 Acceleration;
+        }
 
         public struct DistanceData : IComponentData
         {
