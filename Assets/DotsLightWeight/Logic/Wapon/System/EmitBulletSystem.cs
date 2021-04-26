@@ -120,7 +120,7 @@ namespace Abarabone.Arms
 
                         var g = new DirectionAndLength { Value = gravity.As_float4(bulletData.GravityFactor) };
                         var aim = new DirectionAndLength { Value = float3.zero.As_float4(bulletData.AimFactor) };
-                        var acc = math.normalizesafe(g.Ray + aim.Ray);
+                        var acc = g.Ray + aim.Ray;
 
                         do
                         {
@@ -133,7 +133,7 @@ namespace Abarabone.Arms
                             {
                                 //var bulletDir = calcBulletDirection_(camrot, bulletPos, ref rnd, emitter.AccuracyRad);
                                 var bulletDir = calcBulletDirection_(rot.Value, bulletPos, ref rnd, emitter.AccuracyRad);
-                                var speed = bulletDir.As_float4(bulletData.BulletSpeed);
+                                var speed = bulletDir * bulletData.BulletSpeed;
 
                                 emit_(cmd, entityInQueryIndex, emitter.BulletPrefab, bulletPos, range, speed, acc);
                             }
@@ -158,6 +158,8 @@ namespace Abarabone.Arms
             return bulletDir;
         }
 
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float3 calcBulletPosition_(
             //quaternion camrot, float3 campos,
@@ -172,10 +174,12 @@ namespace Abarabone.Arms
             return muzpos;
         }
 
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void emit_(
             EntityCommandBuffer.ParallelWriter cmd, int entityInQueryIndex, Entity bulletPrefab,
-            float3 bulletPosition, float range, float4 speed, float3 acc)
+            float3 bulletPosition, float range, float3 speed, float3 acc)
         {
 
             var newBullet = cmd.Instantiate(entityInQueryIndex, bulletPrefab);
@@ -190,8 +194,7 @@ namespace Abarabone.Arms
             cmd.SetComponent(entityInQueryIndex, newBullet,
                 new Bullet.VelocityData
                 {
-                    //Velocity = (bulletDirection * speed).As_float4(),
-                    DirAndLen = speed,
+                    Velocity = speed.As_float4(),
                 }
             );
             cmd.SetComponent(entityInQueryIndex, newBullet,

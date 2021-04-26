@@ -63,18 +63,18 @@ namespace Abarabone.Arms
                         in Bullet.AccelerationData acc
                     ) =>
                     {
-                        var a = acc.Acceleration.xyz * dt;
-                        var d = v.DirAndLen.Length * dt;
-                        var speed = v.DirAndLen.Direction * d;
+                        var d = v.Velocity.xyz * dt;
 
                         ptop.Start = ptop.End;
 
-                        ptop.End += speed;
+                        ptop.End += d;
 
-                        dist.RestRangeDistance -= d;
+                        dist.RestRangeDistance -= math.length(d);
 
 
-                        v.DirAndLen.Length += a;
+                        var a = acc.Acceleration.xyz * dt;
+
+                        v.Velocity += a.As_float4();
                     }
                 )
                 .ScheduleParallel();

@@ -93,7 +93,7 @@ namespace Abarabone.Arms.Authoring
                 );
 
                 // phyllium authoring で
-                em.SetComponentData(bulletEntity,
+                em.AddComponentData(bulletEntity,
                     new Particle.AdditionalData
                     {
                         Color = this.BulletColor,

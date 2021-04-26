@@ -49,7 +49,7 @@ namespace Abarabone.Arms
         protected override void OnUpdate()
         {
 
-            var deltaTime = this.Time.DeltaTime;
+            var dt = this.Time.DeltaTime;
 
 
             this.Entities
@@ -60,24 +60,51 @@ namespace Abarabone.Arms
                         Entity entity, int entityInQueryIndex,
                         ref Particle.TranslationPtoPData ptop,
                         ref Bullet.DistanceData dist,
-                        //in Bullet.SpecData bullet,
                         in Bullet.VelocityData v
                     ) =>
                     {
 
-                        //var d = bullet.BulletSpeed * deltaTime;
-                        var d = v.DirAndLen.Length * deltaTime;
+                        var d = v.Velocity.xyz * dt;
 
                         ptop.Start = ptop.End;
 
-                        ptop.End += v.DirAndLen.Direction * d;
-                        //ptop.End += v.DirAndLen.Ray * deltaTime;
+                        ptop.End += d;
 
-                        dist.RestRangeDistance -= d;
+                        dist.RestRangeDistance -= math.length(d);
 
                     }
                 )
                 .ScheduleParallel();
+
+
+
+            //this.Entities
+            //    .WithBurst()
+            //    .WithNone<Bullet.AccelerationData>()
+            //    .ForEach(
+            //        (
+            //            Entity entity, int entityInQueryIndex,
+            //            ref Particle.TranslationPtoPData ptop,
+            //            ref Bullet.DistanceData dist,
+            //            //in Bullet.SpecData bullet,
+            //            in Bullet.VelocityData v
+            //        ) =>
+            //        {
+
+            //            //var d = bullet.BulletSpeed * deltaTime;
+            //            var d = v.DirAndLen.Length * deltaTime;
+
+            //            ptop.Start = ptop.End;
+
+            //            ptop.End += v.DirAndLen.Direction * d;
+            //            //ptop.End += v.DirAndLen.Ray * deltaTime;
+
+            //            dist.RestRangeDistance -= d;
+
+            //        }
+            //    )
+            //    .ScheduleParallel();
+
 
         }
 
