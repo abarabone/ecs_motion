@@ -54,21 +54,24 @@ namespace Abarabone.Arms
 
             this.Entities
                 .WithBurst()
+                .WithNone<Bullet.AccelerationData>()
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
                         ref Particle.TranslationPtoPData ptop,
                         ref Bullet.DistanceData dist,
-                        in Bullet.SpecData bullet,
-                        in Bullet.DirectionData dir
+                        //in Bullet.SpecData bullet,
+                        in Bullet.VelocityData v
                     ) =>
                     {
 
-                        var d = bullet.BulletSpeed * deltaTime;
+                        //var d = bullet.BulletSpeed * deltaTime;
+                        var d = v.DirAndLen.Length * deltaTime;
 
                         ptop.Start = ptop.End;
 
-                        ptop.End += dir.Direction * d;
+                        ptop.End += v.DirAndLen.Direction * d;
+                        //ptop.End += v.DirAndLen.Ray * deltaTime;
 
                         dist.RestRangeDistance -= d;
 

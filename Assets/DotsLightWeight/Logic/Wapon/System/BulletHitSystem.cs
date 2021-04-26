@@ -62,6 +62,7 @@ namespace Abarabone.Arms
             var mainLinks = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
+            var dt = this.Time.DeltaTime;
 
             this.Entities
                 .WithBurst()
@@ -75,11 +76,14 @@ namespace Abarabone.Arms
                         Entity fireEntity,// int entityInQueryIndex,
                         in Particle.TranslationPtoPData ptop,
                         in Bullet.SpecData bullet,
-                        in Bullet.DistanceData dist
+                        //in Bullet.DistanceData dist
+                        in Bullet.VelocityData v
                     ) =>
                     {
+                        //var hit = cw.BulletHitRay
+                        //    (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
                         var hit = cw.BulletHitRay
-                            (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
+                            (bullet.MainEntity, ptop.Start, ptop.End, 1.0f, mainLinks);
 
                         if (!hit.isHit) return;
 

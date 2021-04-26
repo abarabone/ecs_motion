@@ -83,7 +83,7 @@ namespace Abarabone.Physics.Authoring
                     new GroundHitRayData
                     {
                         Start = this_.Center,
-                        Ray = new DirectionAndLength { value = new float4(math.up() * -1, this_.Radius) },
+                        Ray = new DirectionAndLength { Value = new float4(math.up() * -1, this_.Radius) },
                         Filter = new CollisionFilter
                         {
                             BelongsTo = this_.BelongsTo.Value,

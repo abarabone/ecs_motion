@@ -16,6 +16,9 @@ using Unity.Physics;
 namespace Abarabone.Arms
 {
 
+    using Abarabone.Utilities;
+
+
     static public partial class Bullet
     {
 
@@ -42,16 +45,20 @@ namespace Abarabone.Arms
 
             public float RangeDistanceFactor;
             public float BulletSpeed;
+            public float GravityFactor;
+            public float AimFactor;
         }
 
-        public struct DirectionData : IComponentData
-        {
-            public float3 Direction;
-        }
         public struct VelocityData : IComponentData
         {
-            public float3 Velocity;
-            public float3 Acceleration;
+            //public float3 Direction;
+            //public DirectionAndLength DirAndLen;
+            public float4 Velocity;
+        }
+        public struct AccelerationData : IComponentData
+        {
+            //public DirectionAndLength DirAndLen;
+            public float4 Acceleration;
         }
 
         public struct DistanceData : IComponentData

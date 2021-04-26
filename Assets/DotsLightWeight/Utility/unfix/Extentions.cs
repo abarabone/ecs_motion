@@ -76,73 +76,6 @@ namespace Abarabone.Geometry
 			}
 		}
 
-		/*
-		static public Vector4 ToVector4( this Quaternion q )
-		{
-			return new Vector4( q.x, q.y, q.z, q.w );
-		}
-		
-		static public Quaternion ToQuaternion( this float4 v )
-		{
-			return new Quaternion( v.x, v.y, v.z, v.w );
-		}
-		static public Vector4 ToPosition( this Vector4 v )
-		{
-			return new Vector4( v.x, v.y, v.z, 0.0f );
-		}
-		*/
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		static public float4 As_float4( this Quaternion q )
-		{
-			return new float4( q.x, q.y, q.z, q.w );
-		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		static public float4 As_float4( this Vector4 v )
-		{
-			return new float4( v.x, v.y, v.z, v.w );
-		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		static public float3 As_float3( this Vector3 v )
-		{
-			return new float3( v.x, v.y, v.z );
-		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		static public float3 As_float3( this Vector4 v )
-		{
-			return new float3( v.x, v.y, v.z );
-		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		static public quaternion As_quaternion( this Vector4 v )
-		{
-			return new quaternion( v.x, v.y, v.z, v.w );
-		}
-		
-		
-		//static public Vector4 ToVector4( this float3 v, float w = 0.0f )
-		//{
-		//	return new Vector4( v.x, v.y, v.z, w );
-		//}
-		//static public Vector4 ToVector4( this quaternion q )
-		//{
-		//	var v = q.value;
-		//	return new Vector4( v.x, v.y, v.z, v.w );
-		//}
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		static public float4 As_float4( this float3 v, float w = 0.0f )
-		{
-			return new float4( v, w );
-		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		static public float3 As_float3( this float4 v )
-		{
-			return new float3( v.x, v.y, v.z );
-		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		static public quaternion As_quaternion( this float4 v )
-		{
-			return new quaternion( v.x, v.y, v.z, v.w );
-		}
 
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -155,16 +88,5 @@ namespace Abarabone.Geometry
 		}
 	}
 
-	static class VectorUtility
-	{
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float4 Interpolate( float4 v0, float4 v1, float4 v2, float4 v3, float t )
-		{
-			//return Quaternion.Slerp( new quaternion(v1), new quaternion(v2), Mathf.Clamp01(t) ).ToFloat4();
-			return v1 + 0.5f * t * ( ( v2 - v0 ) + ( ( 2.0f * v0 - 5.0f * v1 + 4.0f * v2 - v3 ) + ( -v0 + 3.0f * v1 - 3.0f * v2 + v3 ) * t ) * t );
-		}
-        
-	}
 
 }

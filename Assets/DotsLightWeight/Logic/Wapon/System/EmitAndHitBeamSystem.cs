@@ -26,6 +26,7 @@ namespace Abarabone.Arms
     using Abarabone.Geometry;
     using Abarabone.Structure;
     using Abarabone.Dependency;
+    using Abarabone.Utilities;
 
     using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
     using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;

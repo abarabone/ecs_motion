@@ -33,6 +33,8 @@ namespace Abarabone.Arms.Authoring
         public float BulletSize;
         public float BulletSpeed;
 
+        public float GravityFactor;
+        public float AimFactor;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -49,20 +51,31 @@ namespace Abarabone.Arms.Authoring
 
 
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
-                var beemTypes = new ComponentTypes
-                (
-                    typeof(Bullet.SpecData),
-                    typeof(Bullet.DirectionData),
-                    typeof(Bullet.DistanceData),
-                    typeof(Bullet.LifeTimeData)
-                );
-                em.AddComponents(bulletEntity, beemTypes);
+                var types = (this.GravityFactor != 0.0f || this.AimFactor != 0.0f || true)//
+                    ? new ComponentTypes
+                    (
+                        typeof(Bullet.SpecData),
+                        typeof(Bullet.VelocityData),
+                        typeof(Bullet.AccelerationData),
+                        typeof(Bullet.DistanceData),
+                        typeof(Bullet.LifeTimeData)
+                    )
+                    : new ComponentTypes
+                    (
+                        typeof(Bullet.SpecData),
+                        typeof(Bullet.VelocityData),
+                        typeof(Bullet.DistanceData),
+                        typeof(Bullet.LifeTimeData)
+                    );
+                em.AddComponents(bulletEntity, types);
 
                 em.SetComponentData(bulletEntity,
                     new Bullet.SpecData
                     {
                         BulletSpeed = this.BulletSpeed,
                         RangeDistanceFactor = this.RangeDistance,
+                        GravityFactor = this.GravityFactor,
+                        AimFactor = this.AimFactor,
                     }
                 );
                 em.SetComponentData(bulletEntity,
@@ -78,6 +91,8 @@ namespace Abarabone.Arms.Authoring
                         InvTotalTime = 1.0f / this.LifeTime,
                     }
                 );
+
+                // phyllium authoring で
                 em.SetComponentData(bulletEntity,
                     new Particle.AdditionalData
                     {

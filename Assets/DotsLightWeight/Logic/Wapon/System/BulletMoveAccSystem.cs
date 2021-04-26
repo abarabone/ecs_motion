@@ -49,7 +49,7 @@ namespace Abarabone.Arms
         protected override void OnUpdate()
         {
 
-            var deltaTime = this.Time.DeltaTime;
+            var dt = this.Time.DeltaTime;
 
 
             this.Entities
@@ -59,19 +59,22 @@ namespace Abarabone.Arms
                         Entity entity, int entityInQueryIndex,
                         ref Particle.TranslationPtoPData ptop,
                         ref Bullet.DistanceData dist,
-                        in Bullet.SpecData bullet,
-                        in Bullet.DirectionData dir
+                        ref Bullet.VelocityData v,
+                        in Bullet.AccelerationData acc
                     ) =>
                     {
-
-                        var d = bullet.BulletSpeed * deltaTime;
+                        var a = acc.Acceleration.xyz * dt;
+                        var d = v.DirAndLen.Length * dt;
+                        var speed = v.DirAndLen.Direction * d;
 
                         ptop.Start = ptop.End;
 
-                        ptop.End += dir.Direction * d;
+                        ptop.End += speed;
 
                         dist.RestRangeDistance -= d;
 
+
+                        v.DirAndLen.Length += a;
                     }
                 )
                 .ScheduleParallel();

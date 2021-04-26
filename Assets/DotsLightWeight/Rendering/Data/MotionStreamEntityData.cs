@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 namespace Abarabone.CharacterMotion
 {
     using Abarabone.Geometry;
+    using Abarabone.Utilities;
 
 
     static public partial class Stream

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
@@ -50,11 +51,10 @@ namespace Abarabone.Arms
     static public class Bulletss
     {
 
-        static public void InstantiateBullet
-            (
-                this ref EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
-                Entity bulletPrefab, float3 start, float3 end
-            )
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public void InstantiateBullet(
+            this ref EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
+            Entity bulletPrefab, float3 start, float3 end)
         {
             var newBeamEntity = cmd.Instantiate(uniqueIndex, bulletPrefab);
 
@@ -86,24 +86,25 @@ namespace Abarabone.Arms
         }
 
 
-        static public BulletHit BulletHitRay
-            (
-                ref this CollisionWorld cw,
-                Entity selfMainEntity, float3 start, DirectionAndLength dir,
-                ComponentDataFromEntity<Bone.PostureLinkData> links
-            )
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public BulletHit BulletHitRay(
+            ref this CollisionWorld cw,
+            Entity selfMainEntity, float3 start, DirectionAndLength dir,
+            ComponentDataFromEntity<Bone.PostureLinkData> links)
         {
             var end = start + dir.Direction * dir.Length;
 
             return cw.BulletHitRay(selfMainEntity, start, end, dir.Length, links);
         }
 
-        static public BulletHit BulletHitRay
-            (
-                ref this CollisionWorld cw,
-                Entity selfMainEntity, float3 start, float3 end, float distance,
-                ComponentDataFromEntity<Bone.PostureLinkData> links
-            )
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public BulletHit BulletHitRay(
+            ref this CollisionWorld cw,
+            Entity selfMainEntity, float3 start, float3 end, float distance,
+            ComponentDataFromEntity<Bone.PostureLinkData> links)
         {
 
             var filter = new CollisionFilter
@@ -111,13 +112,16 @@ namespace Abarabone.Arms
                 BelongsTo = CollisionFilter.Default.BelongsTo,
                 CollidesWith = CatFlag.datail | CatFlag.field,// | CatFlag.detenv,
             };
+
             var hitInput = new RaycastInput
             {
                 Start = start,
                 End = end,
                 Filter = filter,//CollisionFilter.Default,//
             };
+
             var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(distance, selfMainEntity, links);
+
             var isHit = cw.CastRay(hitInput, ref collector);
 
 
@@ -156,6 +160,7 @@ namespace Abarabone.Arms
         //        );
         //    }
         //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void postMessageToHitTarget
             (
                 this BulletHitUtility.BulletHit hit,

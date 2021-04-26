@@ -48,13 +48,13 @@ namespace Abarabone.Arms.Authoring
 
 
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
-                var beemTypes = new ComponentTypes
+                var types = new ComponentTypes
                 (
                     typeof(Bullet.LifeTimeData),
                     typeof(Bullet.DistanceData),
-                    typeof(Bullet.DirectionData)
+                    typeof(Bullet.VelocityData)
                 );
-                em.AddComponents(bulletEntity, beemTypes);
+                em.AddComponents(bulletEntity, types);
 
                 em.SetComponentData(bulletEntity,
                     new Bullet.LifeTimeData

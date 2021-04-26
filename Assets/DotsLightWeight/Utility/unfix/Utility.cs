@@ -215,18 +215,6 @@ namespace Abarabone.Utilities
             new ComputeBuffer( 1, sizeof( uint ) * 5, ComputeBufferType.IndirectArguments, ComputeBufferMode.Immutable );
     }
 
-
-    /// <summary>
-    /// 方向と長さを、4 floats で管理する。
-    /// </summary>
-    public struct DirectionAndLength
-    {
-        public float4 value;
-
-        public float3 Ray { get => this.Direction * this.Length; }
-        public float3 Direction { get => value.As_float3(); set => this.value = new float4(value, this.value.w); }
-        public float Length { get => value.w; set => this.value.w = value; }
-    }
 }
 
 
