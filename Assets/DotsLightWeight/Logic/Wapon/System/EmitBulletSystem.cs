@@ -36,6 +36,7 @@ namespace Abarabone.Arms
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateAfter(typeof(CameraMoveSystem))]
     public class EmitBulletSystem : DependencyAccessableSystemBase
     {
 
@@ -69,10 +70,10 @@ namespace Abarabone.Arms
             var bullets = this.GetComponentDataFromEntity<Bullet.SpecData>(isReadOnly: true);
 
 
-            // カメラは暫定
-            var tfcam = Camera.main.transform;
-            var campos = tfcam.position.As_float3();
-            var camrot = new quaternion( tfcam.rotation.As_float4() );
+            //// カメラは暫定
+            //var tfcam = Camera.main.transform;
+            //var campos = tfcam.position.As_float3();
+            //var camrot = new quaternion( tfcam.rotation.As_float4() );
 
 
             var deltaTime = this.Time.DeltaTime;
@@ -92,7 +93,7 @@ namespace Abarabone.Arms
                         ref FunctionUnit.EmittingStateData state,
                         ref FunctionUnit.TriggerData trigger,
                         in FunctionUnit.BulletEmittingData emitter,
-                        in FunctionUnit.OwnerLinkData link
+                        in FunctionUnit.MuzzleLinkData muzzle
                     ) =>
                     {
                         if (!trigger.IsTriggered) return;
@@ -111,8 +112,8 @@ namespace Abarabone.Arms
                         var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(deltaTime) & 0x_7fff_ffff);
 
                         var bulletData = bullets[emitter.BulletPrefab];
-                        var rot = rots[link.MuzzleEntity];
-                        var pos = poss[link.MuzzleEntity];
+                        var rot = rots[muzzle.EmitterEntity];
+                        var pos = poss[muzzle.EmitterEntity];
 
                         //var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
                         var bulletPos = calcBulletPosition_(rot, pos, in emitter, in bulletData);

@@ -28,6 +28,7 @@ namespace Abarabone.Character
     using Abarabone.Targeting;
     using Abarabone.Physics;
     using Abarabone.Model;
+    using Abarabone.Hit;
 
 
     //[DisableAutoCreation]
@@ -56,13 +57,13 @@ namespace Abarabone.Character
             var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
             var cw = this.phydep.PhysicsWorld.CollisionWorld;
 
-            var mainEntities = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
+            var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
                 .WithAll<TargetSensor.WakeupFindTag>()
-                .WithReadOnly(mainEntities)
+                .WithReadOnly(targets)
                 .WithReadOnly(poss)
                 .WithReadOnly(cw)
                 .ForEach(
@@ -75,7 +76,7 @@ namespace Abarabone.Character
                     {
 
                         // 暫定：あとでグループ対応コレクターにすること
-                        var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(collision.Distance, collision.PostureEntity, mainEntities);
+                        var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(collision.Distance, collision.PostureEntity, targets);
 
 
                         var startpos = poss[collision.PostureEntity].Value;

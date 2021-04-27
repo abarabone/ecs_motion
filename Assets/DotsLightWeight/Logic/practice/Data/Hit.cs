@@ -19,7 +19,7 @@ namespace Abarabone.Hit
     static public partial class Hit
     {
 
-        public enum Type
+        public enum HitType
         {
             charactor,
             part,
@@ -27,9 +27,11 @@ namespace Abarabone.Hit
         }
 
 
-        public struct TypeData : IComponentData
+        // コリジョンを持つエンティティに付け、ヒット処理の適用対象に誘導する。
+        public struct TargetData : IComponentData
         {
-            public Type type;
+            public Entity StateEntity;
+            public HitType HitType;
         }
 
 

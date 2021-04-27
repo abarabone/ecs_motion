@@ -62,7 +62,7 @@ namespace Abarabone.Arms.Authoring
                     typeof(FunctionUnit.BulletEmittingData),
                     typeof(Bullet.SpecData), // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
                     typeof(FunctionUnit.TriggerData),
-                    typeof(FunctionUnit.OwnerLinkData),
+                    //typeof(FunctionUnit.OwnerLinkData),
                     typeof(FunctionUnit.ActivateData)
                 });
                 em.AddComponents(ent, types);

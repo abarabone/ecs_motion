@@ -69,9 +69,7 @@ namespace Abarabone.Arms.Authoring
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                     typeof(FunctionUnit.BulletEmittingData),
                     typeof(FunctionUnit.EmittingStateData),
-                    typeof(FunctionUnit.SightModeData),
                     typeof(FunctionUnit.TriggerData),
-                    typeof(FunctionUnit.OwnerLinkData),
                     typeof(FunctionUnit.ActivateData)
                 });
                 em.AddComponents(ent, types);

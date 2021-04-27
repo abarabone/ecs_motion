@@ -11,6 +11,7 @@ using Unity.Transforms;
 //using Unity.Rendering;
 using Unity.Properties;
 using Unity.Burst;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System;
 
@@ -28,6 +29,7 @@ namespace Abarabone.CharacterMotion
             public float TimeScale;
             public bool IsLooping;
             public bool IsContinuous;
+            public bool IsChangeMotion;
         }
 
 
@@ -99,6 +101,7 @@ namespace Abarabone.CharacterMotion
         Entity entity;
         int jobIndex;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MotionOperator(
             EntityCommandBuffer.ParallelWriter command,
             ComponentDataFromEntity<Motion.InfoData> motionInfos,
@@ -117,7 +120,9 @@ namespace Abarabone.CharacterMotion
         /// <summary>
         /// モーション初期化セット
         /// </summary>
-        public void Start( int motionIndex, bool isLooping, float delayTime = 0.0f, bool isContinuous = true )
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Start(
+            int motionIndex, bool isLooping, float delayTime = 0.0f, bool isContinuous = true, float scale = 1.0f )
         {
             if( this.info.MotionIndex == motionIndex ) return;
 
@@ -130,6 +135,7 @@ namespace Abarabone.CharacterMotion
                     DelayTime = delayTime,
                     IsContinuous = isContinuous,
                     IsLooping = isLooping,
+                    TimeScale = scale,
                 }
             );
         }
@@ -137,6 +143,7 @@ namespace Abarabone.CharacterMotion
         /// <summary>
         /// 
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Stop()
         {
             this.cmd.RemoveComponent<Motion.ProgressTimerTag>( this.jobIndex, this.entity );
@@ -145,6 +152,7 @@ namespace Abarabone.CharacterMotion
         /// <summary>
         /// 
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Change( int motionIndex, bool isContinuous = true )
         {
             cmd.AddComponent( this.jobIndex, this.entity,
@@ -152,6 +160,7 @@ namespace Abarabone.CharacterMotion
                 {
                     MotionIndex = motionIndex,
                     IsContinuous = isContinuous,
+                    IsChangeMotion = true,
                 }
             );
         }
@@ -162,9 +171,10 @@ namespace Abarabone.CharacterMotion
         /// <summary>
         /// モーション初期化セット、disable があれば消す
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void Start( int entityIndex,
             ref EntityCommandBuffer.ParallelWriter cmd, Entity motinEntity, Motion.InfoData motionInfo,
-            int motionIndex, bool isLooping, float delayTime = 0.0f, bool isContinuous = true
+            int motionIndex, bool isLooping, float delayTime = 0.0f, bool isContinuous = true, float scale = 1.0f
         )
         {
             if( motionInfo.MotionIndex == motionIndex ) return;
@@ -176,6 +186,7 @@ namespace Abarabone.CharacterMotion
                     DelayTime = delayTime,
                     IsContinuous = isContinuous,
                     IsLooping = isLooping,
+                    TimeScale = scale,
                 }
             );
             cmd.AddComponent( entityIndex, motinEntity, new Motion.ProgressTimerTag { } );
@@ -183,6 +194,7 @@ namespace Abarabone.CharacterMotion
         /// <summary>
         /// モーションとストリームに disable
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void Stop( int entityIndex, ref EntityCommandBuffer.ParallelWriter cmd, Entity motionEntity )
         {
             cmd.RemoveComponent<Motion.ProgressTimerTag>( entityIndex, motionEntity );
@@ -190,6 +202,7 @@ namespace Abarabone.CharacterMotion
         /// <summary>
         /// 
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void Change( int entityIndex,
             ref EntityCommandBuffer.ParallelWriter cmd, Entity motinEntity, int motionIndex, bool isContinuous = true
         )
@@ -199,16 +212,19 @@ namespace Abarabone.CharacterMotion
                 {
                     MotionIndex = motionIndex,
                     IsContinuous = isContinuous,
+                    IsChangeMotion = true,
                 }
             );
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void SetWeight( ref MotionBlend2WeightData data, float weight0, float weight1 )
         {
             data.WeightNormalized0 = weight0 / ( weight0 + weight1 );
             data.WeightNormalized1 = 1.0f - data.WeightNormalized0;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void SetWeight( ref MotionBlend3WeightData data, float weight0, float weight1, float weight2 )
         {
             var totalWeight = weight0 + weight1 + weight2;
@@ -223,6 +239,7 @@ namespace Abarabone.CharacterMotion
     {
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void InitializeCursor(
             ref this Motion.CursorData motionCursor, ref MotionBlobUnit motionClip,
             float delayTime = 0.0f, float scale = 1.0f

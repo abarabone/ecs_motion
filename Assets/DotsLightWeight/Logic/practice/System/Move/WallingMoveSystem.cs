@@ -29,6 +29,7 @@ namespace Abarabone.Character
     using Abarabone.Physics;
     using Abarabone.CharacterMotion;
     using Abarabone.Model;
+    using Abarabone.Hit;
 
 
     static class BringYourOwnDelegate
@@ -72,7 +73,7 @@ namespace Abarabone.Character
             using var phyScope = this.phydep.WithDependencyScope();
 
 
-            var mainEntities = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
+            var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var physicsWorld = this.phydep.PhysicsWorld;//.CollisionWorld;
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,
             var rdt = 1.0f / deltaTime;
@@ -91,7 +92,7 @@ namespace Abarabone.Character
                 .WithAll<WallingTag>()
                 .WithNone<WallHitResultData>()
                 .WithReadOnly(physicsWorld)
-                .WithReadOnly(mainEntities)
+                .WithReadOnly(targets)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -121,7 +122,7 @@ namespace Abarabone.Character
 
 
                         var gi = Walling.makeCastInput(gndpos, dir.gnd, bodysize, gndRange, walling.Filter);
-                        var hitgnd = physicsWorld.raycast(gi, entity, mainEntities);
+                        var hitgnd = physicsWorld.raycast(gi, entity, targets);
 
                         if (!hitgnd.isHit)
                         {
@@ -140,7 +141,7 @@ namespace Abarabone.Character
                         var movedir = math.cross(dir.right, n);//math.normalizesafe(w, dir.mov);
 
                         var mi = Walling.makeCastInput(movepos, movedir, bodysize, moveRange + bodysize, walling.Filter);
-                        var hitmov = physicsWorld.raycast(mi, entity, mainEntities);
+                        var hitmov = physicsWorld.raycast(mi, entity, targets);
 
                         if (!hitmov.isHit)
                         {
@@ -247,7 +248,7 @@ namespace Abarabone.Character
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         //( bool isHit, RaycastHit hit) raycast
         public static HitFlagAndResult raycast
-            (ref this PhysicsWorld pw, RaycastInput hitInput, Entity self, ComponentDataFromEntity<Bone.PostureLinkData> mainlist)
+            (ref this PhysicsWorld pw, RaycastInput hitInput, Entity self, ComponentDataFromEntity<Hit.TargetData> mainlist)
         {
             var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(maxFraction: 1.0f, self, mainlist);
 

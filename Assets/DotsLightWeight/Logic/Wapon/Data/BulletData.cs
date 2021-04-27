@@ -41,7 +41,8 @@ namespace Abarabone.Arms
 
         public struct SpecData : IComponentData
         {
-            public Entity MainEntity;
+            //public Entity MainEntity;
+            public Entity StateEntity;
 
             public float RangeDistanceFactor;
             public float BulletSpeed;

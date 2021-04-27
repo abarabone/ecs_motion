@@ -27,6 +27,7 @@ namespace Abarabone.Character
     using Abarabone.Physics;
     using Abarabone.SystemGroup;
     using Abarabone.Model;
+    using Abarabone.Hit;
 
 
     //[DisableAutoCreation]
@@ -49,12 +50,12 @@ namespace Abarabone.Character
                 (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
 
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
-            var mainEntities = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
+            var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
 
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(mainEntities)
+                .WithReadOnly(targets)
                 .WithReadOnly(cw)
                 .ForEach(
                     (
@@ -73,7 +74,7 @@ namespace Abarabone.Character
                             MaxDistance = sphere.Distance,
                             Filter = sphere.Filter,
                         };
-                        var collector = new AnyHitExcludeSelfCollector<DistanceHit>(sphere.Distance, entity, mainEntities);
+                        var collector = new AnyHitExcludeSelfCollector<DistanceHit>(sphere.Distance, entity, targets);
                         var isHit = cw.CalculateDistance(hitInput, ref collector);
 
                         ground.IsGround = collector.NumHits > 0;

@@ -18,14 +18,6 @@ namespace Abarabone.Character.Authoring
     using Abarabone.Model.Authoring;
     using Abarabone.Common.Extension;
 
-    public static class FindObject
-    {
-        public static T FindParent<T>(this MonoBehaviour x)
-            where T : MonoBehaviour
-        =>
-            x.gameObject.AncestorsAndSelf().Where(x => x.GetComponent<T>() != null).First().GetComponent<T>();
-    }
-
     /// <summary>
     /// メインエンティティに付けておく
     /// </summary>

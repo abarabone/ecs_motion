@@ -102,7 +102,12 @@ namespace Abarabone.Character.Action
 
                         if (action.IsChangeMotion)
                         {
-                            MotionOp.Start(entityInQueryIndex, ref cmd, motionlink.MotionEntity, motionInfo, Motion_minic.slash01VU, false, 0.1f);
+                            var mtid = math.select(
+                                Motion_minic.slash01HL,
+                                Motion_minic.slash01VU,
+                                math.abs(move.VerticalAngle) > math.radians(30.0f));
+                            MotionOp.Start(entityInQueryIndex, ref cmd,
+                                motionlink.MotionEntity, motionInfo, mtid, false, 0.1f);
                             state.Phase = 1;
                             return;
                         }
@@ -116,6 +121,7 @@ namespace Abarabone.Character.Action
                                         MotionIndex = 0,
                                         DelayTime = 0.1f,
                                         IsContinuous = true,
+                                        IsChangeMotion = true,
                                     }
                                 );
                             return;
@@ -143,6 +149,7 @@ namespace Abarabone.Character.Action
                                                 MotionIndex = (int)Motion_minic.walk02,
                                                 DelayTime = 0.1f,
                                                 IsContinuous = true,
+                                                IsChangeMotion = true,
                                             }
                                         );
                                     }
@@ -162,6 +169,7 @@ namespace Abarabone.Character.Action
                                                 MotionIndex = (int)Motion_minic.stand02,
                                                 DelayTime = 0.2f,
                                                 IsContinuous = true,
+                                                IsChangeMotion = true,
                                             }
                                         );
 

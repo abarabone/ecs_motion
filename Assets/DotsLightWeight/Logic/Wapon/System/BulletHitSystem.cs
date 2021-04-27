@@ -25,6 +25,7 @@ namespace Abarabone.Arms
     using Unity.Physics;
     using Abarabone.Structure;
     using Abarabone.Character.Action;
+    using Abarabone.Hit;
 
 
     //[DisableAutoCreation]
@@ -35,7 +36,7 @@ namespace Abarabone.Arms
     {
 
 
-        HitMessage<StructureHitMessage>.Sender sender;
+        HitMessage<Abarabone.Structure.HitMessage>.Sender sender;
 
         PhysicsHitDependency.Sender phydep;
 
@@ -44,7 +45,7 @@ namespace Abarabone.Arms
         {
             base.OnCreate();
 
-            this.sender = HitMessage<StructureHitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
+            this.sender = HitMessage<Abarabone.Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
         }
@@ -59,14 +60,15 @@ namespace Abarabone.Arms
             var sthit = this.sender.AsParallelWriter();
             var cw = this.phydep.PhysicsWorld.CollisionWorld;
 
-            var mainLinks = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
+            var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+            var hitTargets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
 
             var dt = this.Time.DeltaTime;
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(mainLinks)
+                .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
                 .WithNativeDisableParallelForRestriction(sthit)
@@ -83,9 +85,12 @@ namespace Abarabone.Arms
                         //var hit = cw.BulletHitRay
                         //    (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
                         var hit = cw.BulletHitRay
-                            (bullet.MainEntity, ptop.Start, ptop.End, 1.0f, mainLinks);
+                            (bullet.StateEntity, ptop.Start, ptop.End, 1.0f, targets);
 
                         if (!hit.isHit) return;
+
+
+                        //var ht = hitTargets[hit.]
 
                         hit.postMessageToHitTarget(sthit, parts);
                     }

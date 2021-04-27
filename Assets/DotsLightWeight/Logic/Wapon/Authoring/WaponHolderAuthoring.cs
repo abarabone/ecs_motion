@@ -23,20 +23,9 @@ namespace Abarabone.Arms.Authoring
     public class WaponHolderAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
     {
 
-        //public WaponAuthoring[] Wapons;
         public GameObject Muzzle;
 
-
-        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        //{
-        //    var qWapon = this.Wapons
-        //        //.Select(x => x.wapon)
-        //        //.Cast<MonoBehaviour>()
-        //        .Select(x => x.gameObject);
-
-        //    referencedPrefabs.AddRange(qWapon);
-        //}
-
+        public bool UseCameraSite;
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -55,11 +44,12 @@ namespace Abarabone.Arms.Authoring
 
             var holderEntity = entity;
             var muzzleEntity = conversionSystem.GetPrimaryEntity(this.Muzzle);
+            var emitterEntity = this.UseCameraSite ? conversionSystem.GetPrimaryEntity(Camera.main) : muzzleEntity;
 
             var unitsEntities = listupMuzzleAndUnitsEntities_(conversionSystem, wapons);
             initHolder_(conversionSystem, holderEntity, postureEntity, muzzleEntity, stateEntity, wapons.Length, startSelectedId: 0);
             initAllWapons_(conversionSystem, holderEntity, unitsEntities);
-            initAllUnits_(conversionSystem, holderEntity, postureEntity, muzzleEntity, stateEntity, unitsEntities);
+            initAllUnits_(conversionSystem, holderEntity, postureEntity, stateEntity, muzzleEntity, emitterEntity, unitsEntities);
             //createInitUnit2Entities_(conversionSystem, holderEntity, this.Wapons);
 
             return;
@@ -172,7 +162,7 @@ namespace Abarabone.Arms.Authoring
 
             static void initAllUnits_(
                 GameObjectConversionSystem gcs,
-                Entity holder, Entity main, Entity muzzle, Entity state,
+                Entity holder, Entity main, Entity state, Entity muzzle, Entity emitter,
                 IEnumerable<IEnumerable<Entity>> unitss)
             {
                 var em = gcs.DstEntityManager;
@@ -192,24 +182,30 @@ namespace Abarabone.Arms.Authoring
                     (Entity muzzle, Entity unit, int waponId, int unitId)
                 {
                     var types = new ComponentTypes(
-                        typeof(FunctionUnit.OwnerLinkData),
+                        typeof(FunctionUnit.MuzzleLinkData),
                         typeof(FunctionUnit.StateLinkData),
+                        typeof(FunctionUnit.holderLinkData),
                         typeof(FunctionUnitInWapon.TriggerSpecificData)
                     );
                     em.AddComponents(unit, types);
-                    
+
                     em.SetComponentData(unit,
-                        new FunctionUnit.OwnerLinkData
+                        new FunctionUnit.MuzzleLinkData
                         {
-                            OwnerMainEntity = main,
+                            EmitterEntity = emitter,
                             MuzzleEntity = muzzle,
                         }
                     );
                     em.SetComponentData(unit,
                         new FunctionUnit.StateLinkData
                         {
-                            WaponHolderEntity = holder,
                             StateEntity = state,
+                        }
+                    );
+                    em.SetComponentData(unit,
+                        new FunctionUnit.holderLinkData
+                        {
+                            WaponHolderEntity = holder,
                         }
                     );
                     em.SetComponentData(unit,

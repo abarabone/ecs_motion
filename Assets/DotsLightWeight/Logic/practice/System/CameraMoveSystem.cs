@@ -49,11 +49,16 @@ namespace Abarabone.Character
             var tfCam = Camera.main.transform;
 
             var campos = this.GetSingleton<CharacterFollowCameraPositionData>();
+            var poss = this.GetComponentDataFromEntity<Translation>();
+            var rots = this.GetComponentDataFromEntity<Rotation>();
+            var cament = this.GetSingletonEntity<CharacterFollowCameraPositionData>();
 
 
             this.Entities//.With( this.eq )
                 .WithoutBurst()
                 .WithAll<PlayerTag>()
+                .WithNativeDisableParallelForRestriction(poss)
+                .WithNativeDisableParallelForRestriction(rots)
                 .ForEach(
                     ( in Translation pos, in Rotation rot, in Control.MoveData moves ) =>
                     {
@@ -78,6 +83,9 @@ namespace Abarabone.Character
 
                         tfCam.position = newpos;
                         tfCam.rotation = moves.LookRotation;
+
+                        poss[cament] = new Translation { Value = newpos };
+                        rots[cament] = new Rotation { Value = moves.LookRotation };
                     }
                 )
                 .Run();

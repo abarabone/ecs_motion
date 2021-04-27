@@ -54,17 +54,18 @@ namespace Abarabone.Arms
                     (
                         ref FunctionUnit.TriggerData trigger,
                         in FunctionUnitInWapon.TriggerSpecificData triggerType,
-                        in FunctionUnit.StateLinkData link
+                        in FunctionUnit.StateLinkData slink,
+                        in FunctionUnit.holderLinkData hlink
                     ) =>
                     {
-                        var selector = selectors[link.WaponHolderEntity];
+                        var selector = selectors[hlink.WaponHolderEntity];
 
                         //if (selector.CurrentWaponIndex != triggerType.WaponCarryId) return;
                         // ここでショートカットすると、カレントではなくなった場合にオフにならなくなってしまう
 
                         var isTriggeredCurrent = selector.CurrentWaponIndex == triggerType.WaponCarryId;
 
-                        var action = actions[link.StateEntity];
+                        var action = actions[slink.StateEntity];
 
                         trigger.IsTriggered = triggerType.Type switch// いずれは配列インデックスで取得できるようにしたい
                         {

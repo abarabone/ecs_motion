@@ -9,22 +9,22 @@ using System;
 using Unity.Jobs.LowLevel.Unsafe;
 using System.Runtime.CompilerServices;
 
-namespace Abarabone.Structure
+namespace Abarabone.Character
 {
     using Abarabone.Dependency;
 
     public struct HitMessage : IHitMessage
     {
-        public int PartId;
-        public Entity PartEntity;
         public float3 Position;
         public float3 Normale;
+        public float3 Force;
+        public float Damage;
     }
 
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class StructureHitMessageApplySystem : DependencyAccessableSystemBase, HitMessage<HitMessage>.IRecievable
+    public class CharacterHitMessageApplySystem : DependencyAccessableSystemBase, HitMessage<HitMessage>.IRecievable
     {
 
 
@@ -55,16 +55,12 @@ namespace Abarabone.Structure
             
             var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
-            var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
-            var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             this.Dependency = new JobExecution
             {
                 Cmd = cmd,
-                Destructions = destructions,
-                Prefabs = prefabs,
                 Rotations = rots,
                 Positions = poss,
             }
@@ -78,11 +74,6 @@ namespace Abarabone.Structure
 
             public EntityCommandBuffer.ParallelWriter Cmd;
 
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Structure.PartDestructionData> Destructions;
-
-            [ReadOnly]
-            public ComponentDataFromEntity<StructurePart.DebrisPrefabData> Prefabs;
             [ReadOnly]
             public ComponentDataFromEntity<Rotation> Rotations;
             [ReadOnly]
@@ -92,22 +83,9 @@ namespace Abarabone.Structure
             [BurstCompile]
             public void Execute(int index, Entity targetEntity, HitMessage hitMessage)
             {
-                var destruction = this.Destructions[targetEntity];
-
-                // 複数の子パーツから１つの親構造物のフラグを立てることがあるので、並列化の際に注意が必要
-                // 今回は、同じ key は同じスレッドで処理されるので成立する。
-                destruction.SetDestroyed(hitMessage.PartId);
-
-                this.Destructions[targetEntity] = destruction;
 
 
-                var part = hitMessage.PartEntity;
-                var prefab = this.Prefabs[part].DebrisPrefab;
-                var rot = this.Rotations[part];
-                var pos = this.Positions[part];
 
-                createDebris_(this.Cmd, index, prefab, rot, pos);
-                destroyPart_(this.Cmd, index, part);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

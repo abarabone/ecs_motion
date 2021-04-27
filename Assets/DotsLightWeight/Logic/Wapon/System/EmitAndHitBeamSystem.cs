@@ -27,9 +27,7 @@ namespace Abarabone.Arms
     using Abarabone.Structure;
     using Abarabone.Dependency;
     using Abarabone.Utilities;
-
-    using StructureHitHolder = NativeMultiHashMap<Entity, Structure.StructureHitMessage>;
-    using Abarabone.SystemGroup.Presentation.DrawModel.MotionBoneTransform;
+    using Abarabone.Hit;
 
 
     //[DisableAutoCreation]
@@ -43,7 +41,7 @@ namespace Abarabone.Arms
 
         PhysicsHitDependency.Sender phydep;
 
-        HitMessage<StructureHitMessage>.Sender sender;
+        HitMessage<Abarabone.Structure.HitMessage>.Sender sender;
 
         //BarrierDependency.Reciever bardep;
 
@@ -56,7 +54,7 @@ namespace Abarabone.Arms
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
 
-            this.sender = HitMessage<StructureHitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
+            this.sender = HitMessage<Abarabone.Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
 
             //this.bardep = BarrierDependency.Reciever.Create();
         }
@@ -80,7 +78,7 @@ namespace Abarabone.Arms
             var sthit = this.sender.AsParallelWriter();
 
 
-            var mainLinks = this.GetComponentDataFromEntity<Bone.PostureLinkData>(isReadOnly: true);
+            var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
@@ -95,7 +93,7 @@ namespace Abarabone.Arms
             //this.Dependency =
             this.Entities
                 .WithBurst()
-                .WithReadOnly(mainLinks)
+                .WithReadOnly(targets)
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
                 .WithReadOnly(parts)
@@ -108,7 +106,8 @@ namespace Abarabone.Arms
                         Entity fireEntity, int entityInQueryIndex,
                         ref FunctionUnit.TriggerData trigger,
                         in FunctionUnit.BulletEmittingData emitter,
-                        in FunctionUnit.OwnerLinkData link,
+                        in FunctionUnit.MuzzleLinkData mlink,
+                        in FunctionUnit.StateLinkData slink,
                         in Bullet.SpecData bulletData
                     ) =>
                     {
@@ -119,11 +118,11 @@ namespace Abarabone.Arms
 
                         var i = entityInQueryIndex;
                         var prefab = emitter.BulletPrefab;
-                        var rot = rots[link.MuzzleEntity];
-                        var pos = poss[link.MuzzleEntity];
+                        var rot = rots[mlink.MuzzleEntity];
+                        var pos = poss[mlink.MuzzleEntity];
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
-                        var hit = hitTest_(link.OwnerMainEntity, camrot, campos, range, ref cw, mainLinks);
+                        var hit = hitTest_(slink.StateEntity, camrot, campos, range, ref cw, targets);
 
 
 
@@ -148,16 +147,16 @@ namespace Abarabone.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static BulletHitUtility.BulletHit hitTest_
             (
-                Entity mainEntity, quaternion sightRot, float3 sightPos, float range,
+                Entity stateEntity, quaternion sightRot, float3 sightPos, float range,
                 ref CollisionWorld cw_,
-                ComponentDataFromEntity<Bone.PostureLinkData> mainLinks_
+                ComponentDataFromEntity<Hit.TargetData> targets
             )
         {
             var sightDir = math.forward(sightRot);
             var hitStart = sightPos + sightDir * 1.0f;
             var hitEnd = sightPos + sightDir * range;
 
-            return cw_.BulletHitRay(mainEntity, hitStart, hitEnd, range, mainLinks_);
+            return cw_.BulletHitRay(stateEntity, hitStart, hitEnd, range, targets);
         }
 
 

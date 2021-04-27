@@ -13,6 +13,7 @@ namespace Abarabone.Physics
     using SphereCollider = Unity.Physics.SphereCollider;
     using RaycastHit = Unity.Physics.RaycastHit;
     using Abarabone.Model;
+    using Abarabone.Hit;
 
 
     public struct ClosestHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
@@ -21,32 +22,32 @@ namespace Abarabone.Physics
         public float MaxFraction { get; private set; }
         public int NumHits { get; private set; }
         
-        public Entity SelfMainEntity;
-        public Entity TargetMainEntity;
-        ComponentDataFromEntity<Bone.PostureLinkData> mainEntityLinks;
+        public Entity SelfStateEntity;
+        public Entity TargetStateEntity;
+        ComponentDataFromEntity<Hit.TargetData> Targets;
         
         T m_ClosestHit;
         public T ClosestHit => m_ClosestHit;
 
         public ClosestHitExcludeSelfCollector
-            ( float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<Bone.PostureLinkData> mainLinks )
+            ( float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets )
         {
             this.MaxFraction = maxFraction;
             this.m_ClosestHit = default( T );
-            this.SelfMainEntity = selfMainEntity;
-            this.TargetMainEntity = Entity.Null;
+            this.SelfStateEntity = selfStateEntity;
+            this.TargetStateEntity = Entity.Null;
             this.NumHits = 0;
-            this.mainEntityLinks = mainLinks;
+            this.Targets = targets;
         }
 
         public bool AddHit( T hit )
         {
-            var ent = this.mainEntityLinks.HasComponent(hit.Entity)
-                ? this.mainEntityLinks[hit.Entity].PostureEntity
+            var ent = this.Targets.HasComponent(hit.Entity)
+                ? this.Targets[hit.Entity].StateEntity
                 : hit.Entity;
-            if( ent == this.SelfMainEntity ) return false;
+            if( ent == this.SelfStateEntity ) return false;
 
-            this.TargetMainEntity = ent;
+            this.TargetStateEntity = ent;
             //if( hit.Fraction >= m_ClosestHit.Fraction ) return false;
             this.MaxFraction = hit.Fraction;
             this.m_ClosestHit = hit;
@@ -64,28 +65,28 @@ namespace Abarabone.Physics
         public float MaxFraction { get; }
         public int NumHits { get; private set; }
 
-        public Entity SelfMainEntity;
-        public Entity TargetMainEntity;
-        ComponentDataFromEntity<Bone.PostureLinkData> mainEntityLinks;
+        public Entity SelfStateEntity;
+        public Entity TargetStateEntity;
+        ComponentDataFromEntity<Hit.TargetData> Targets;
 
         public AnyHitExcludeSelfCollector
-            (float maxFraction, Entity selfMainEntity, ComponentDataFromEntity<Bone.PostureLinkData> mainLinks)
+            (float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets)
         {
             this.MaxFraction = maxFraction;
-            this.SelfMainEntity = selfMainEntity;
-            this.TargetMainEntity = Entity.Null;
+            this.SelfStateEntity = selfStateEntity;
+            this.TargetStateEntity = Entity.Null;
             this.NumHits = 0;
-            this.mainEntityLinks = mainLinks;
+            this.Targets = targets;
         }
 
         public bool AddHit( T hit )
         {
-            var ent = this.mainEntityLinks.HasComponent(hit.Entity)
-                ? this.mainEntityLinks[hit.Entity].PostureEntity
+            var ent = this.Targets.HasComponent(hit.Entity)
+                ? this.Targets[hit.Entity].StateEntity
                 : hit.Entity;
-            if (ent == this.SelfMainEntity) return false;
+            if (ent == this.SelfStateEntity) return false;
 
-            this.TargetMainEntity = ent;
+            this.TargetStateEntity = ent;
             this.NumHits = 1;
             return true;
         }

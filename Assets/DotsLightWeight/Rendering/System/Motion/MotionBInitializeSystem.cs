@@ -63,7 +63,8 @@ namespace Abarabone.CharacterMotion
                         initSection( ref motionClip, linker.PositionStreamTop, KeyStreamSection.positions, in init );
                         initSection( ref motionClip, linker.RotationStreamTop, KeyStreamSection.rotations, in init );
 
-                        cursor.InitializeCursor( ref motionClip, init.DelayTime );
+                        var timeScale = math.select(init.TimeScale, cursor.Scale, init.IsChangeMotion);
+                        cursor.InitializeCursor( ref motionClip, init.DelayTime, timeScale );
 
                         makeEnableSection( entityInQueryIndex, linker.PositionStreamTop );
                         makeEnableSection( entityInQueryIndex, linker.RotationStreamTop );

@@ -13,6 +13,7 @@ namespace Abarabone.Arms.Authoring
 {
     public partial class WaponAuthoring : MonoBehaviour, IWaponAuthoring, IConvertGameObjectToEntity
     {
+
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             var units = this.GetComponentsInChildren<IFunctionUnitAuthoring>()

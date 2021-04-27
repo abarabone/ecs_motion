@@ -24,15 +24,23 @@ namespace Abarabone.Arms
     static public partial class FunctionUnit
     {
 
-        public struct OwnerLinkData : IComponentData
-        {
-            public Entity OwnerMainEntity;  // 当たり判定で自身を除外するなど
-            public Entity MuzzleEntity;     // 射出の向きやエフェクトの位置のため
-        }
+        //public struct OwnerLinkData : IComponentData
+        //{
+        //    //public Entity OwnerMainEntity;  // 当たり判定で自身を除外するなど
+        //    public Entity MuzzleEntity;     // 射出の向きやエフェクトの位置のため
+        //}
         public struct StateLinkData : IComponentData
         {
-            public Entity WaponHolderEntity;
             public Entity StateEntity;
+        }
+        public struct MuzzleLinkData : IComponentData
+        {
+            public Entity EmitterEntity;    // 射出の向き
+            public Entity MuzzleEntity;     // エフェクトの位置
+        }
+        public struct holderLinkData : IComponentData
+        {
+            public Entity WaponHolderEntity;
         }
         public struct BulletEmittingData : IComponentData
         {
@@ -51,10 +59,10 @@ namespace Abarabone.Arms
             public bool IsTriggered;
         }
 
-        public struct SightModeData : IComponentData
-        {
-            public bool IsCameraSight;
-        }
+        //public struct SightModeData : IComponentData
+        //{
+        //    public bool IsCameraSight;
+        //}
         public struct EmittingStateData : IComponentData
         {
             public double NextEmitableTime;
