@@ -32,6 +32,9 @@ namespace Abarabone.Character
         //       public int UniqueId;
         //   }
 
+
+
+
     }
 
 }

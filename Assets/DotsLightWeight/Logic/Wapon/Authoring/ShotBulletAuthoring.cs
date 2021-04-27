@@ -53,19 +53,21 @@ namespace Abarabone.Arms.Authoring
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
                 var types = (this.GravityFactor != 0.0f || this.AimFactor != 0.0f || true)//
                     ? new ComponentTypes
-                    (
+                    (new ComponentType[] {
                         typeof(Bullet.SpecData),
                         typeof(Bullet.VelocityData),
                         typeof(Bullet.AccelerationData),
                         typeof(Bullet.DistanceData),
-                        typeof(Bullet.LifeTimeData)
-                    )
+                        typeof(Bullet.LifeTimeData),
+                        typeof(Particle.AdditionalData)
+                    })
                     : new ComponentTypes
                     (
                         typeof(Bullet.SpecData),
                         typeof(Bullet.VelocityData),
                         typeof(Bullet.DistanceData),
-                        typeof(Bullet.LifeTimeData)
+                        typeof(Bullet.LifeTimeData),
+                        typeof(Particle.AdditionalData)
                     );
                 em.AddComponents(bulletEntity, types);
 
@@ -93,7 +95,7 @@ namespace Abarabone.Arms.Authoring
                 );
 
                 // phyllium authoring で
-                em.AddComponentData(bulletEntity,
+                em.SetComponentData(bulletEntity,
                     new Particle.AdditionalData
                     {
                         Color = this.BulletColor,
