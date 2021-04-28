@@ -45,6 +45,7 @@ namespace Abarabone.Arms
         public struct BulletEmittingData : IComponentData
         {
             public Entity BulletPrefab;
+            public Entity EffectPrefab;
 
             public float3 MuzzlePositionLocal;
 
@@ -91,6 +92,20 @@ namespace Abarabone.Arms
         {
             main,
             sub
+        }
+    }
+
+    static public partial class FunctionUnitAiming
+    {
+
+        public struct ParentBoneLinkData : IComponentData
+        {
+            public Entity ParentEntity;
+        }
+
+        public struct HighAngleShotData : IComponentData
+        {
+            public Entity TargetPostureEntity;
         }
     }
 

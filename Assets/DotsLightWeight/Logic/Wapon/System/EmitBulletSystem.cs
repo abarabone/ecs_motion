@@ -70,13 +70,7 @@ namespace Abarabone.Arms
             var bullets = this.GetComponentDataFromEntity<Bullet.SpecData>(isReadOnly: true);
 
 
-            //// カメラは暫定
-            //var tfcam = Camera.main.transform;
-            //var campos = tfcam.position.As_float3();
-            //var camrot = new quaternion( tfcam.rotation.As_float4() );
-
-
-            var deltaTime = this.Time.DeltaTime;
+            var dt = this.Time.DeltaTime;
             var currentTime = this.Time.ElapsedTime;
             var gravity = UnityEngine.Physics.gravity.As_float3();// とりあえず
 
@@ -105,17 +99,16 @@ namespace Abarabone.Arms
 
                         // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射感覚になる
                         var elapsed = 0.0f;
-                        var frameBaseTime = currentTime - deltaTime;
+                        var frameBaseTime = currentTime - dt;
                         var isEmitPrevFrame = state.NextEmitableTime > frameBaseTime;
                         var baseTime = math.select(frameBaseTime, state.NextEmitableTime, isEmitPrevFrame);
 
-                        var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(deltaTime) & 0x_7fff_ffff);
+                        var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(dt) & 0x_7fff_ffff);
 
                         var bulletData = bullets[emitter.BulletPrefab];
-                        var rot = rots[muzzle.EmitterEntity];
-                        var pos = poss[muzzle.EmitterEntity];
+                        var rot = rots[muzzle.EmitterEntity].Value;
+                        var pos = poss[muzzle.EmitterEntity].Value;
 
-                        //var bulletPos = calcBulletPosition_(camrot, campos, in emitter, in bulletData);
                         var bulletPos = calcBulletPosition_(rot, pos, in emitter, in bulletData);
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
@@ -132,8 +125,7 @@ namespace Abarabone.Arms
                             // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
                             for (var i = 0; i < emitter.NumEmitMultiple; i++)
                             {
-                                //var bulletDir = calcBulletDirection_(camrot, bulletPos, ref rnd, emitter.AccuracyRad);
-                                var bulletDir = calcBulletDirection_(rot.Value, bulletPos, ref rnd, emitter.AccuracyRad);
+                                var bulletDir = calcBulletDirection_(rot, ref rnd, emitter.AccuracyRad);
                                 var speed = bulletDir * bulletData.BulletSpeed;
 
                                 emit_(cmd, entityInQueryIndex, emitter.BulletPrefab, bulletPos, range, speed, acc);
@@ -149,7 +141,7 @@ namespace Abarabone.Arms
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float3 calcBulletDirection_(
-            quaternion dirrot, float3 start, ref Random rnd, float accuracyRad)
+            quaternion dirrot, ref Random rnd, float accuracyRad)
         {
 
             var yrad = rnd.NextFloat(accuracyRad);
@@ -163,14 +155,11 @@ namespace Abarabone.Arms
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float3 calcBulletPosition_(
-            //quaternion camrot, float3 campos,
-            Rotation rot, Translation pos,
+            quaternion rot, float3 pos,
             in FunctionUnit.BulletEmittingData emitter, in Bullet.SpecData bulletData)
         {
 
-            var muzpos = pos.Value + math.mul(rot.Value, emitter.MuzzlePositionLocal);
-            //var muzzleDir = math.forward(camrot);
-            //var muzpos = campos + muzzleDir * 0.5f;
+            var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
 
             return muzpos;
         }

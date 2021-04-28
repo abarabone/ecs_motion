@@ -22,10 +22,6 @@ namespace Abarabone.Arms.Authoring
     {
 
 
-        public bool UseCameraSite;
-
-
-
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
@@ -40,11 +36,10 @@ namespace Abarabone.Arms.Authoring
 
             //var postureEntity = conversionSystem.GetPrimaryEntity(posture);
             var stateEntity = conversionSystem.GetOrCreateEntity(state);
-            var emitterEntity = this.UseCameraSite ? conversionSystem.GetPrimaryEntity(Camera.main) : Entity.Null;
 
 
             initHolder_(conversionSystem, stateEntity);
-            initAllUnits_(conversionSystem, stateEntity, stateEntity, emitterEntity, funits);
+            initAllUnits_(conversionSystem, stateEntity, stateEntity, entity, funits);
 
             return;
 
@@ -74,13 +69,11 @@ namespace Abarabone.Arms.Authoring
                     var src = unit as MonoBehaviour;
 
                     var unitEntity = gcs.GetPrimaryEntity(src);
-                    var muzzleEntity = gcs.GetPrimaryEntity(src.transform.parent);
-                    var emitterEntity = emitter != Entity.Null ? emitter : muzzleEntity;
+                    var parentEntity = gcs.GetPrimaryEntity(src.transform.parent);
 
-                    initUnit_(gcs, unitEntity, stateEntity, muzzleEntity, emitterEntity);
+                    initUnit_(gcs, unitEntity, stateEntity, stateEntity, parentEntity);
 
                     var holderBuf = em.GetBuffer<FunctionHolder.LinkData>(holderEntity);
-
                     holderBuf.Add(new FunctionHolder.LinkData
                     {
                         FunctionEntity = unitEntity,
@@ -88,13 +81,16 @@ namespace Abarabone.Arms.Authoring
                 }
             }
 
-            static void initUnit_(GameObjectConversionSystem gcs, Entity unit, Entity state, Entity muzzle, Entity emitter)
+            static void initUnit_(GameObjectConversionSystem gcs, Entity unit, Entity state, Entity holder, Entity parent)
             {
                 var em = gcs.DstEntityManager;
 
                 var types = new ComponentTypes(
                     typeof(FunctionUnit.StateLinkData),
-                    typeof(FunctionUnit.MuzzleLinkData)
+                    typeof(FunctionUnit.MuzzleLinkData),
+                    typeof(FunctionUnitAiming.ParentBoneLinkData),
+                    typeof(Rotation),
+                    typeof(Translation)
                 );
                 em.AddComponents(unit, types);
 
@@ -107,8 +103,14 @@ namespace Abarabone.Arms.Authoring
                 em.SetComponentData(unit,
                     new FunctionUnit.MuzzleLinkData
                     {
-                        EmitterEntity = emitter,
-                        MuzzleEntity = muzzle,
+                        EmitterEntity = unit,
+                        MuzzleEntity = unit,
+                    }
+                );
+                em.SetComponentData(unit,
+                    new FunctionUnitAiming.ParentBoneLinkData
+                    {
+                        ParentEntity = parent,
                     }
                 );
             }

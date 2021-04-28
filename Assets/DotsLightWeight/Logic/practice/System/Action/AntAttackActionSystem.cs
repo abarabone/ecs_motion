@@ -62,7 +62,7 @@ namespace Abarabone.Character.Action
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
             var mvspds = this.GetComponentDataFromEntity<Move.SpeedParamaterData>(isReadOnly: true);
 
-            var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
+            //var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
 
 
             this.Entities
@@ -73,14 +73,14 @@ namespace Abarabone.Character.Action
                 .WithReadOnly(poss)
                 .WithReadOnly(mvspds)
                 .WithNativeDisableParallelForRestriction(motionCursors)
-                .WithNativeDisableParallelForRestriction(triggers)// ƒ„ƒo‚¢‚©‚à
+                //.WithNativeDisableParallelForRestriction(triggers)// ƒ„ƒo‚¢‚©‚à
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
                         ref AntAction.AttackState state,
                         in ActionState.MotionLinkDate mlink,
                         in ActionState.PostureLinkData plink,
-                        in TargetSensorHolderLink.HolderLinkData holderLink,
+                        in TargetSensorHolderLink.HolderLinkData sensorHolderLink,
                         in AntAction.AttackTimeRange tr_,
                         in DynamicBuffer<FunctionHolder.LinkData> flinks
                     )
@@ -94,13 +94,13 @@ namespace Abarabone.Character.Action
                                 initPhase_(ref state, in mlink, in plink);
                                 break;
                             case 1:
-                                prevShotPhase_(ref state, in mlink);
+                                prevShotPhase_(ref state, in mlink, in sensorHolderLink, in flinks);
                                 break;
                             case 2:
                                 shotPhase_(ref state, in mlink, flinks);
                                 break;
                             case 3:
-                                afterShotPhase_(ref state, in mlink, in plink, in holderLink);
+                                afterShotPhase_(ref state, in mlink, in plink, in sensorHolderLink, in flinks);
                                 break;
                         }
 
@@ -134,15 +134,23 @@ namespace Abarabone.Character.Action
 
                         void prevShotPhase_(
                             ref AntAction.AttackState state,
-                            in ActionState.MotionLinkDate mlink)
+                            in ActionState.MotionLinkDate mlink,
+                            in TargetSensorHolderLink.HolderLinkData sensorHolderLink,
+                            in DynamicBuffer<FunctionHolder.LinkData> flinks)
                         {
                             var cursor = motionCursors[mlink.MotionEntity];
-
                             var normalPosision = cursor.CurrentPosition * math.rcp(cursor.TotalLength);
 
                             if (normalPosision >= tr.st)//0.2f)
                             {
                                 state.Phase++;
+
+                                cmd.AddComponent(entityInQueryIndex, flinks[0].FunctionEntity,
+                                    new FunctionUnitAiming.HighAngleShotData
+                                    {
+                                        TargetPostureEntity = sensorHolderLink.HolderEntity,
+                                    }
+                                );
                             }
                         }
 
@@ -155,19 +163,20 @@ namespace Abarabone.Character.Action
 
                             var acidgun = flinks[0].FunctionEntity;
 
-                            triggers[acidgun] = new FunctionUnit.TriggerData
-                            {
-                                IsTriggered = true,
-                            };
+                            //triggers[acidgun] = new FunctionUnit.TriggerData
+                            //{
+                            //    IsTriggered = true,
+                            //};
 
 
                             var cursor = motionCursors[mlink.MotionEntity];
-
                             var normalPosision = cursor.CurrentPosition * math.rcp(cursor.TotalLength);
 
                             if (normalPosision >= tr.ed)//0.3f)
                             {
                                 state.Phase++;
+
+                                cmd.RemoveComponent<FunctionUnitAiming.HighAngleShotData>(entityInQueryIndex, flinks[0].FunctionEntity);
                             }
                         }
 
@@ -176,9 +185,10 @@ namespace Abarabone.Character.Action
                             ref AntAction.AttackState state,
                             in ActionState.MotionLinkDate mlink,
                             in ActionState.PostureLinkData plink,
-                            in TargetSensorHolderLink.HolderLinkData holderLink)
+                            in TargetSensorHolderLink.HolderLinkData sensorHolderLink,
+                            in DynamicBuffer<FunctionHolder.LinkData> flinks)
                         {
-                            var targetpos = targetposs[holderLink.HolderEntity].Position;
+                            var targetpos = targetposs[sensorHolderLink.HolderEntity].Position;
                             var originpos = poss[plink.PostureEntity].Value;
 
                             if (math.distancesq(targetpos, originpos) > 15.0f * 15.0f)
@@ -194,12 +204,12 @@ namespace Abarabone.Character.Action
                                     }
                                 );
 
+                                cmd.RemoveComponent<FunctionUnitAiming.HighAngleShotData>(entityInQueryIndex, flinks[0].FunctionEntity);
                                 return;
                             }
 
 
                             var cursor = motionCursors[mlink.MotionEntity];
-
                             var normalPosision = cursor.CurrentPosition * math.rcp(cursor.TotalLength);
 
                             if (normalPosision > 0.95f)

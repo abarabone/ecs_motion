@@ -59,7 +59,7 @@ namespace Abarabone.Arms.Authoring
 
                 var em = gcs_.DstEntityManager;
 
-                var beamPrefab = gcs_.GetPrimaryEntity(this.BulletPrefab.gameObject);
+                var bulletPrefab = gcs_.GetPrimaryEntity(this.BulletPrefab.gameObject);
 
                 var ent = emitter_;
 
@@ -77,7 +77,8 @@ namespace Abarabone.Arms.Authoring
                 em.SetComponentData(ent,
                     new FunctionUnit.BulletEmittingData
                     {
-                        BulletPrefab = beamPrefab,
+                        BulletPrefab = bulletPrefab,
+                        EffectPrefab = Entity.Null,// 
                         MuzzlePositionLocal = this.MuzzleLocalPosition,
                         EmittingInterval = this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,
