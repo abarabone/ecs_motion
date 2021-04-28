@@ -106,6 +106,7 @@ namespace Abarabone.Arms
         public struct HighAngleShotData : IComponentData
         {
             public Entity TargetPostureEntity;
+            public float EndTime;
         }
     }
 

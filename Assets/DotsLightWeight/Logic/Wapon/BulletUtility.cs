@@ -83,7 +83,7 @@ namespace Abarabone.Arms
             public float3 posision;
             public float3 normal;
             public Entity hitEntity;
-            public Entity mainEntity;
+            public Entity stateEntity;
         }
 
 
@@ -132,7 +132,7 @@ namespace Abarabone.Arms
                 posision = collector.ClosestHit.Position,
                 normal = collector.ClosestHit.SurfaceNormal,
                 hitEntity = collector.ClosestHit.Entity,
-                mainEntity = collector.TargetStateEntity,
+                stateEntity = collector.TargetStateEntity,
             };
         }
 
@@ -162,22 +162,36 @@ namespace Abarabone.Arms
         //    }
         //}
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public void postMessageToHitTarget
-            (
-                this BulletHitUtility.BulletHit hit,
-                HitMessage<Abarabone.Structure.HitMessage>.ParallelWriter hitHolder,
-                ComponentDataFromEntity<StructurePart.PartData> parts
-            )
+        static public void PostStructureHitMessage(
+            this BulletHit hit,
+            HitMessage<Structure.HitMessage>.ParallelWriter hitHolder,
+            ComponentDataFromEntity<StructurePart.PartData> parts)
         {
             if (!parts.HasComponent(hit.hitEntity)) return;
 
-            hitHolder.Add(hit.mainEntity,
-                new Abarabone.Structure.HitMessage
+            hitHolder.Add(hit.stateEntity,
+                new Structure.HitMessage
                 {
                     Position = hit.posision,
                     Normale = hit.normal,
                     PartEntity = hit.hitEntity,
                     PartId = parts[hit.hitEntity].PartId,
+                }
+            );
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public void PostCharacterHitMessage(
+            this BulletHit hit,
+            HitMessage<Character.HitMessage>.ParallelWriter hitHolder,
+            float damage, float3 force)
+        {
+            hitHolder.Add(hit.stateEntity,
+                new Character.HitMessage
+                {
+                    Position = hit.posision,
+                    Normale = hit.normal,
+                    Damage = damage,
+                    Force = force,
                 }
             );
         }

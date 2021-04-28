@@ -63,9 +63,11 @@ namespace Abarabone.Character.Action
             var mvspds = this.GetComponentDataFromEntity<Move.SpeedParamaterData>(isReadOnly: true);
 
 
+            var currentTime = this.Time.ElapsedTime;
+
             this.Entities
                 .WithBurst()
-                .WithAll<AntTag>()
+                //.WithAll<AntTag>()
                 .WithReadOnly(motionInfos)
                 //.WithReadOnly(targetposs)
                 //.WithReadOnly(poss)
@@ -94,6 +96,11 @@ namespace Abarabone.Character.Action
                                 break;
                         }
 
+
+                        if (currentTime <= state.EntTime) return;
+
+                        cmd.RemoveComponent<AntAction.DamageState>(entityInQueryIndex, entity);
+
                         return;
 
 
@@ -119,7 +126,6 @@ namespace Abarabone.Character.Action
 
                             state.Phase++;
                         }
-
 
                     }
                 )

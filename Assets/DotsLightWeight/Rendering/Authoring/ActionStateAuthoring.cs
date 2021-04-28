@@ -35,6 +35,15 @@ namespace Abarabone.Model.Authoring
 
             createStateEntity_(conversionSystem, top, posture, state, motion);
 
+            top.GetComponentsInChildren<Unity.Physics.Authoring.PhysicsBodyAuthoring>()
+                .Select(x => conversionSystem.GetPrimaryEntity(x))
+                .ForEach(x => dstManager.AddComponentData(x, new Hit.Hit.TargetData
+                    {
+                        HitType = Hit.Hit.HitType.charactor,
+                        StateEntity = conversionSystem.GetOrCreateEntity(state),
+                    })
+                );
+
             return;
 
 

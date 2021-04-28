@@ -55,7 +55,7 @@ namespace Abarabone.Draw
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModeLinkData linker,
-                        in Structure.PartDestructionData destruction
+                        in StructureMain.PartDestructionData destruction
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;

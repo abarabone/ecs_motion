@@ -39,11 +39,13 @@ namespace Abarabone.Arms
         //    public float InvTotalTime;
         //}
 
+        public struct LinkData : IComponentData
+        {
+            public Entity StateEntity;
+        }
+
         public struct SpecData : IComponentData
         {
-            //public Entity MainEntity;
-            public Entity StateEntity;
-
             public float RangeDistanceFactor;
             public float BulletSpeed;
             public float GravityFactor;
@@ -72,6 +74,8 @@ namespace Abarabone.Arms
             public float LifeTime;
             public float InvTotalTime;
         }
+        // 残り時間は、できれば終了時刻に変更する
+        // 残り距離は、時間に換算できないか検討する
 
     }
 

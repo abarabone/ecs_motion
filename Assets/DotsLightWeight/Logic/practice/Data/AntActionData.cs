@@ -42,6 +42,7 @@ namespace Abarabone.Character
         public struct DamageState : IComponentData
         {
             public int Phase;
+            public float EntTime;
         }
 
     }

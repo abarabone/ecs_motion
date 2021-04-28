@@ -52,7 +52,8 @@ namespace Abarabone.Arms.Authoring
                 (
                     typeof(Bullet.LifeTimeData),
                     typeof(Bullet.DistanceData),
-                    typeof(Bullet.VelocityData)
+                    typeof(Bullet.VelocityData),
+                    typeof(Bullet.LinkData)
                 );
                 em.AddComponents(bulletEntity, types);
 

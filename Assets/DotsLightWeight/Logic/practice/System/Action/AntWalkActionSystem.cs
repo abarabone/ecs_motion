@@ -64,6 +64,7 @@ namespace Abarabone.Character.Action
             this.Entities
                 .WithBurst()
                 .WithAll<AntTag>()
+                .WithNone<AntAction.DamageState>()
                 .WithReadOnly(motionInfos)
                 .WithReadOnly(targetposs)
                 .WithReadOnly(poss)

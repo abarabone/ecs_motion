@@ -129,13 +129,13 @@ namespace Abarabone.Arms
                         //var (start, end) = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
                         var ptop = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
 
-                        instantiateBullet_(ref cmd, i, prefab, ptop.start, ptop.end);
+                        instantiateBullet_(ref cmd, i, prefab, slink.StateEntity, ptop.start, ptop.end);
 
 
 
                         if (!hit.isHit) return;
 
-                        hit.postMessageToHitTarget(sthit, parts);
+                        hit.PostStructureHitMessage(sthit, parts);
 
                     }
                 )
@@ -214,19 +214,26 @@ namespace Abarabone.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void instantiateBullet_
             (
-                ref EntityCommandBuffer.ParallelWriter cmd_, int i, Entity bulletPrefab,
+                ref EntityCommandBuffer.ParallelWriter cmd, int i, Entity bulletPrefab, Entity stateEntity,
                 float3 start, float3 end
             )
         {
-            var newBeamEntity = cmd_.Instantiate(i, bulletPrefab);
+            var newBeamEntity = cmd.Instantiate(i, bulletPrefab);
 
-            cmd_.SetComponent(i, newBeamEntity,
+            cmd.SetComponent(i, newBeamEntity,
                 new Particle.TranslationPtoPData
                 {
                     Start = start,
                     End = end,
                 }
             );
+            cmd.SetComponent(i, newBeamEntity,
+                new Bullet.LinkData
+                {
+                    StateEntity = stateEntity,
+                }
+            );
+
         }
     }
 

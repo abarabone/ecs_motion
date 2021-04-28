@@ -61,7 +61,7 @@ namespace Abarabone.Draw
 
             this.Entities
                 .WithBurst()
-                .WithAll<Structure.MainTag>()
+                .WithAll<StructureMain.MainTag>()
                 .WithReadOnly(linkedGroups)
                 //.WithReadOnly(excludes)
                 .WithReadOnly(parts)
@@ -69,7 +69,7 @@ namespace Abarabone.Draw
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in Structure.BinderLinkData binder,
+                        in StructureMain.BinderLinkData binder,
                         in DrawInstance.ModeLinkData model,
                         in DrawInstance.ModelLod2LinkData lod2
                     )

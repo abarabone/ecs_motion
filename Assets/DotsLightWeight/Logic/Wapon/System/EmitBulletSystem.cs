@@ -87,7 +87,8 @@ namespace Abarabone.Arms
                         ref FunctionUnit.EmittingStateData state,
                         ref FunctionUnit.TriggerData trigger,
                         in FunctionUnit.BulletEmittingData emitter,
-                        in FunctionUnit.MuzzleLinkData muzzle
+                        in FunctionUnit.StateLinkData slink,
+                        in FunctionUnit.MuzzleLinkData mlink
                     ) =>
                     {
                         if (!trigger.IsTriggered) return;
@@ -106,8 +107,8 @@ namespace Abarabone.Arms
                         var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(dt) & 0x_7fff_ffff);
 
                         var bulletData = bullets[emitter.BulletPrefab];
-                        var rot = rots[muzzle.EmitterEntity].Value;
-                        var pos = poss[muzzle.EmitterEntity].Value;
+                        var rot = rots[mlink.EmitterEntity].Value;
+                        var pos = poss[mlink.EmitterEntity].Value;
 
                         var bulletPos = calcBulletPosition_(rot, pos, in emitter, in bulletData);
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
@@ -128,7 +129,9 @@ namespace Abarabone.Arms
                                 var bulletDir = calcBulletDirection_(rot, ref rnd, emitter.AccuracyRad);
                                 var speed = bulletDir * bulletData.BulletSpeed;
 
-                                emit_(cmd, entityInQueryIndex, emitter.BulletPrefab, bulletPos, range, speed, acc);
+                                emit_(cmd, entityInQueryIndex,
+                                    emitter.BulletPrefab, slink.StateEntity,
+                                    bulletPos, range, speed, acc);
                             }
                         }
                         while (currentTime >= state.NextEmitableTime);
@@ -168,7 +171,8 @@ namespace Abarabone.Arms
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void emit_(
-            EntityCommandBuffer.ParallelWriter cmd, int entityInQueryIndex, Entity bulletPrefab,
+            EntityCommandBuffer.ParallelWriter cmd, int entityInQueryIndex,
+            Entity bulletPrefab, Entity stateEntity,
             float3 bulletPosition, float range, float3 speed, float3 acc)
         {
 
@@ -197,6 +201,12 @@ namespace Abarabone.Arms
                 new Bullet.DistanceData
                 {
                     RestRangeDistance = range,
+                }
+            );
+            cmd.SetComponent(entityInQueryIndex, newBullet,
+                new Bullet.LinkData
+                {
+                    StateEntity = stateEntity,
                 }
             );
 

@@ -23,7 +23,7 @@ namespace Abarabone.Structure
 
 
 
-    static public partial class Structure
+    static public partial class StructureMain
     {
 
         public struct MainTag : IComponentData

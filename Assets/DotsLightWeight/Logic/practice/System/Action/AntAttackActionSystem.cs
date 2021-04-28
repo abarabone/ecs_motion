@@ -64,10 +64,12 @@ namespace Abarabone.Character.Action
 
             //var triggers = this.GetComponentDataFromEntity<FunctionUnit.TriggerData>();
 
+            var currentTime = this.Time.ElapsedTime;
 
             this.Entities
                 .WithBurst()
                 .WithAll<AntTag>()
+                .WithNone<AntAction.DamageState>()
                 .WithReadOnly(motionInfos)
                 .WithReadOnly(targetposs)
                 .WithReadOnly(poss)
@@ -149,6 +151,7 @@ namespace Abarabone.Character.Action
                                     new FunctionUnitAiming.HighAngleShotData
                                     {
                                         TargetPostureEntity = sensorHolderLink.HolderEntity,
+                                        EndTime = (float)currentTime + (tr.ed - tr.st),
                                     }
                                 );
                             }
@@ -175,8 +178,6 @@ namespace Abarabone.Character.Action
                             if (normalPosision >= tr.ed)//0.3f)
                             {
                                 state.Phase++;
-
-                                cmd.RemoveComponent<FunctionUnitAiming.HighAngleShotData>(entityInQueryIndex, flinks[0].FunctionEntity);
                             }
                         }
 
@@ -204,7 +205,6 @@ namespace Abarabone.Character.Action
                                     }
                                 );
 
-                                cmd.RemoveComponent<FunctionUnitAiming.HighAngleShotData>(entityInQueryIndex, flinks[0].FunctionEntity);
                                 return;
                             }
 

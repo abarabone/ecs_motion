@@ -55,7 +55,7 @@ namespace Abarabone.Structure
             
             var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
-            var destructions = this.GetComponentDataFromEntity<Structure.PartDestructionData>();
+            var destructions = this.GetComponentDataFromEntity<StructureMain.PartDestructionData>();
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
@@ -79,7 +79,7 @@ namespace Abarabone.Structure
             public EntityCommandBuffer.ParallelWriter Cmd;
 
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Structure.PartDestructionData> Destructions;
+            public ComponentDataFromEntity<StructureMain.PartDestructionData> Destructions;
 
             [ReadOnly]
             public ComponentDataFromEntity<StructurePart.DebrisPrefabData> Prefabs;

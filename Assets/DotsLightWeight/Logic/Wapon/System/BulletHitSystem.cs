@@ -36,7 +36,8 @@ namespace Abarabone.Arms
     {
 
 
-        HitMessage<Abarabone.Structure.HitMessage>.Sender sender;
+        HitMessage<Structure.HitMessage>.Sender stSender;
+        HitMessage<Character.HitMessage>.Sender chSender;
 
         PhysicsHitDependency.Sender phydep;
 
@@ -45,7 +46,8 @@ namespace Abarabone.Arms
         {
             base.OnCreate();
 
-            this.sender = HitMessage<Abarabone.Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
+            this.stSender = HitMessage<Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
+            this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
         }
@@ -54,10 +56,12 @@ namespace Abarabone.Arms
         protected override void OnUpdate()
         {
             using var phyScope = this.phydep.WithDependencyScope();
-            using var hitScope = this.sender.WithDependencyScope();
+            using var sthitScope = this.stSender.WithDependencyScope();
+            using var chhitScope = this.chSender.WithDependencyScope();
 
 
-            var sthit = this.sender.AsParallelWriter();
+            var sthit = this.stSender.AsParallelWriter();
+            var chhit = this.chSender.AsParallelWriter();
             var cw = this.phydep.PhysicsWorld.CollisionWorld;
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
@@ -68,16 +72,20 @@ namespace Abarabone.Arms
 
             this.Entities
                 .WithBurst()
+                .WithReadOnly(hitTargets)
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
                 .WithNativeDisableParallelForRestriction(sthit)
                 .WithNativeDisableContainerSafetyRestriction(sthit)
+                .WithNativeDisableParallelForRestriction(chhit)
+                .WithNativeDisableContainerSafetyRestriction(chhit)
                 .ForEach(
                     (
                         Entity fireEntity,// int entityInQueryIndex,
                         in Particle.TranslationPtoPData ptop,
-                        in Bullet.SpecData bullet,
+                        //in Bullet.SpecData bullet,
+                        in Bullet.LinkData link,
                         //in Bullet.DistanceData dist
                         in Bullet.VelocityData v
                     ) =>
@@ -85,14 +93,22 @@ namespace Abarabone.Arms
                         //var hit = cw.BulletHitRay
                         //    (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
                         var hit = cw.BulletHitRay
-                            (bullet.StateEntity, ptop.Start, ptop.End, 1.0f, targets);
+                            (link.StateEntity, ptop.Start, ptop.End, 1.0f, targets);
 
                         if (!hit.isHit) return;
 
 
-                        //var ht = hitTargets[hit.]
+                        var ht = hitTargets[hit.hitEntity];
 
-                        hit.postMessageToHitTarget(sthit, parts);
+                        switch (ht.HitType)
+                        {
+                            case Hit.HitType.part:
+                                hit.PostStructureHitMessage(sthit, parts);
+                                break;
+                            case Hit.HitType.charactor:
+                                hit.PostCharacterHitMessage(chhit, 1.0f, v.Velocity.xyz);
+                                break;
+                        }
                     }
                 )
                 .ScheduleParallel();

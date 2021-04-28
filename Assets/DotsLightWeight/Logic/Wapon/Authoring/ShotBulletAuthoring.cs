@@ -52,8 +52,9 @@ namespace Abarabone.Arms.Authoring
 
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
                 var types = (this.GravityFactor != 0.0f || this.AimFactor != 0.0f || true)//
-                    ? new ComponentTypes
-                    (new ComponentType[] {
+                    ? new ComponentTypes(new ComponentType[]
+                    {
+                        typeof(Bullet.LinkData),
                         typeof(Bullet.SpecData),
                         typeof(Bullet.VelocityData),
                         typeof(Bullet.AccelerationData),
@@ -61,14 +62,15 @@ namespace Abarabone.Arms.Authoring
                         typeof(Bullet.LifeTimeData),
                         typeof(Particle.AdditionalData)
                     })
-                    : new ComponentTypes
-                    (
+                    : new ComponentTypes(new ComponentType[]
+                    {
+                        typeof(Bullet.LinkData),
                         typeof(Bullet.SpecData),
                         typeof(Bullet.VelocityData),
                         typeof(Bullet.DistanceData),
                         typeof(Bullet.LifeTimeData),
                         typeof(Particle.AdditionalData)
-                    );
+                    });
                 em.AddComponents(bulletEntity, types);
 
                 em.SetComponentData(bulletEntity,

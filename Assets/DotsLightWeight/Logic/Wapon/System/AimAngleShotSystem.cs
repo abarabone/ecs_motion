@@ -54,6 +54,10 @@ namespace Abarabone.Arms
 
         protected override void OnUpdate()
         {
+            using var cmdScope = this.cmddep.WithDependencyScope();
+
+
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
 
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
@@ -76,7 +80,7 @@ namespace Abarabone.Arms
                 .WithNativeDisableContainerSafetyRestriction(rots)
                 .ForEach(
                     (
-                        Entity fireEntity, int entityInQueryIndex,
+                        Entity entity, int entityInQueryIndex,
                         ref FunctionUnit.TriggerData trigger,
                         ref Rotation rot,
                         ref Translation pos,
@@ -94,6 +98,13 @@ namespace Abarabone.Arms
                         var targetpos = targetposs[data.TargetPostureEntity].Position + math.up() * 2.0f;
                         rot.Value = quaternion.LookRotationSafe(math.normalize(targetpos - ppos), Vector3.up);//prot;
                         pos.Value = ppos;
+
+
+                        if (currentTime > data.EndTime)
+                        {
+                            cmd.RemoveComponent<FunctionUnitAiming.HighAngleShotData>
+                                (entityInQueryIndex, entity);
+                        }
 
                     }
                 )

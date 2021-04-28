@@ -251,14 +251,14 @@ namespace Abarabone.Structure.Authoring
             (
                 new ComponentType[]
                 {
-                    typeof(Structure.MainTag),
+                    typeof(StructureMain.MainTag),
                     typeof(DrawInstance.MeshTag),
                     //typeof(NonUniformScale),//暫定
                     //typeof(ObjectMain.ObjectMainTag),
-                    typeof(Structure.BinderLinkData),//暫定
+                    typeof(StructureMain.BinderLinkData),//暫定
                     typeof(DrawInstance.ModeLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(Structure.PartDestructionData),
+                    typeof(StructureMain.PartDestructionData),
                 }
             );
             em.AddComponents(mainEntity, mainAddtypes);
@@ -270,7 +270,7 @@ namespace Abarabone.Structure.Authoring
             //    }
             //);
             em.SetComponentData(mainEntity,
-                new Structure.BinderLinkData
+                new StructureMain.BinderLinkData
                 {
                     BinderEntity = binderEntity,
                 }

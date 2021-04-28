@@ -61,8 +61,9 @@ namespace Abarabone.Character
             this.Dependency = new JobExecution
             {
                 Cmd = cmd,
-                Rotations = rots,
-                Positions = poss,
+                CurrentTime = (float)this.Time.ElapsedTime,
+                //Rotations = rots,
+                //Positions = poss,
             }
             .ScheduleParallelEach(this.Reciever, 32, this.Dependency);
         }
@@ -73,18 +74,24 @@ namespace Abarabone.Character
         {
 
             public EntityCommandBuffer.ParallelWriter Cmd;
+            public float CurrentTime;
 
-            [ReadOnly]
-            public ComponentDataFromEntity<Rotation> Rotations;
-            [ReadOnly]
-            public ComponentDataFromEntity<Translation> Positions;
+            //[ReadOnly]
+            //public ComponentDataFromEntity<Rotation> Rotations;
+            //[ReadOnly]
+            //public ComponentDataFromEntity<Translation> Positions;
 
 
             [BurstCompile]
             public void Execute(int index, Entity targetEntity, HitMessage hitMessage)
             {
 
-
+                this.Cmd.AddComponent(index, targetEntity,
+                    new AntAction.DamageState
+                    {
+                        EntTime = this.CurrentTime + 0.5f,
+                    }
+                );
 
             }
 
