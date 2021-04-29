@@ -7,16 +7,16 @@ using Unity.Physics;
 using Unity.Physics.Authoring;
 using Unity.Linq;
 
-namespace Abarabone.Character.Authoring
+namespace DotsLite.Character.Authoring
 {
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
-    using Abarabone.SystemGroup;
-    using Abarabone.Character;
-    using Abarabone.CharacterMotion;
-    using Abarabone.Targeting;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Common.Extension;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.SystemGroup;
+    using DotsLite.Character;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Targeting;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Common.Extension;
 
     /// <summary>
     /// メインエンティティに付けておく

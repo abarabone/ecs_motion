@@ -13,14 +13,14 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine.InputSystem;
 
-namespace Abarabone.Character
+namespace DotsLite.Character
 {
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
-    using Abarabone.SystemGroup;
-    using Abarabone.Character;
-    using Abarabone.CharacterMotion;
-    using Abarabone.Targeting;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.SystemGroup;
+    using DotsLite.Character;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Targeting;
 
 
     //[DisableAutoCreation]

@@ -9,9 +9,9 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
-    using Abarabone.Dependency;
+    using DotsLite.Dependency;
 
     /// <summary>
     /// TRSだが、現在はTRのみ対応

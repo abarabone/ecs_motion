@@ -18,23 +18,23 @@ using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.Arms
+namespace DotsLite.Arms
 {
 
-    using Abarabone.Model;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Arms;
-    using Abarabone.Character;
-    using Abarabone.Draw;
-    using Abarabone.Particle;
-    using Abarabone.CharacterMotion;
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
-    using Abarabone.Physics;
-    using Abarabone.SystemGroup;
-    using Abarabone.Structure;
-    using Abarabone.Dependency;
-    using Abarabone.Hit;
+    using DotsLite.Model;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Arms;
+    using DotsLite.Character;
+    using DotsLite.Draw;
+    using DotsLite.Particle;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.Physics;
+    using DotsLite.SystemGroup;
+    using DotsLite.Structure;
+    using DotsLite.Dependency;
+    using DotsLite.Hit;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;

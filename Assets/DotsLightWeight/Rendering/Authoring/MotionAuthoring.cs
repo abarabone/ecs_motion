@@ -7,9 +7,9 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-namespace Abarabone.CharacterMotion.Authoring
+namespace DotsLite.CharacterMotion.Authoring
 {
-    using Abarabone.Model.Authoring;
+    using DotsLite.Model.Authoring;
 
     /// <summary>
     /// Animator と同じオブジェクトに付ける。

@@ -6,10 +6,10 @@ using Unity.Linq;
 using System.Threading.Tasks;
 using System;
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
 
-	using Abarabone.Common.Extension;
+	using DotsLite.Common.Extension;
     
 
 	public static class MeshUtility

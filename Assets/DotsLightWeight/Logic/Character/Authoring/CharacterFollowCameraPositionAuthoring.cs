@@ -12,12 +12,12 @@ using Unity.Physics;
 using UnityEngine.InputSystem;
 using Unity.Physics.Systems;
 
-namespace Abarabone.Character
+namespace DotsLite.Character
 {
 
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
-    using Abarabone.SystemGroup;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.SystemGroup;
 
 
     [GenerateAuthoringComponent]

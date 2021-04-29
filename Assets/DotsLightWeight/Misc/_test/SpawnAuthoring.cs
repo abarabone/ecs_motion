@@ -7,12 +7,12 @@ using Unity.Jobs;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-using Abarabone.Model;
-using Abarabone.Model.Authoring;
+using DotsLite.Model;
+using DotsLite.Model.Authoring;
 //using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System;
-using Abarabone.Dependency;
+using DotsLite.Dependency;
 
 public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {

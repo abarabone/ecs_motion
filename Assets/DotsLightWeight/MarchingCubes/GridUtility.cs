@@ -11,7 +11,7 @@ using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
 using na = Unity.Burst.NoAliasAttribute;
 
-namespace Abarabone.MarchingCubes
+namespace DotsLite.MarchingCubes
 {
 
     //public unsafe interface ICubeInstanceWriter

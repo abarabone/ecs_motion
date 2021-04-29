@@ -7,7 +7,7 @@ using Unity.Entities.Conversion;
 using Unity.Entities.Hybrid;
 using System.Linq;
 
-namespace Abarabone.Draw.Authoring
+namespace DotsLite.Draw.Authoring
 {
 
     /// <summary>

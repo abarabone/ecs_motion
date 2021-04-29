@@ -11,16 +11,16 @@ using Unity.Transforms;
 using Unity.Physics;
 
 
-namespace Abarabone.Physics
+namespace DotsLite.Physics
 {
     
-    using Abarabone.SystemGroup;
-    using Abarabone.Utilities;
-    using Abarabone.Geometry;
-    using Abarabone.Character;
-    using Abarabone.CharacterMotion;//
-    using Abarabone.Model;
-    using Abarabone.Dependency;
+    using DotsLite.SystemGroup;
+    using DotsLite.Utilities;
+    using DotsLite.Geometry;
+    using DotsLite.Character;
+    using DotsLite.CharacterMotion;//
+    using DotsLite.Model;
+    using DotsLite.Dependency;
 
 
     //[DisableAutoCreation]

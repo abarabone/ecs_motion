@@ -14,7 +14,7 @@ using UnityEngine.XR;
 using Unity.Physics;
 using Unity.Physics.Systems;
 
-namespace Abarabone.Dependency
+namespace DotsLite.Dependency
 {
     public static partial class PhysicsHitDependency
     {

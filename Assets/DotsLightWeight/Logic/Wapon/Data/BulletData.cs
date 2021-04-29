@@ -13,10 +13,10 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-namespace Abarabone.Arms
+namespace DotsLite.Arms
 {
 
-    using Abarabone.Utilities;
+    using DotsLite.Utilities;
 
 
     static public partial class Bullet

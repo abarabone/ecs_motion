@@ -7,20 +7,20 @@ using Unity.Linq;
 using Unity.Entities;
 using System;
 
-namespace Abarabone.Structure.Authoring
+namespace DotsLite.Structure.Authoring
 {
 
-    using Abarabone.Model;
-    using Abarabone.Draw.Authoring;
-	using Abarabone.Common.Extension;
-    using Abarabone.Draw;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Character;//ObjectMain はここにある、名前変えるべきか？
-    using Abarabone.Structure;
+    using DotsLite.Model;
+    using DotsLite.Draw.Authoring;
+	using DotsLite.Common.Extension;
+    using DotsLite.Draw;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Character;//ObjectMain はここにある、名前変えるべきか？
+    using DotsLite.Structure;
     using Unity.Physics;
     using Unity.Transforms;
-    using Abarabone.Geometry;
-    using Abarabone.Utilities;
+    using DotsLite.Geometry;
+    using DotsLite.Utilities;
 
     using Material = UnityEngine.Material;
     using Unity.Physics.Authoring;

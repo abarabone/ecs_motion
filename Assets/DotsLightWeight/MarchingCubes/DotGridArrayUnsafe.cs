@@ -10,7 +10,7 @@ using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
 //using Unity.Collections.Experimental;
 
-namespace Abarabone.MarchingCubes
+namespace DotsLite.MarchingCubes
 {
 
     /// グリッド配列は本体へのポインタのみ持ち、all 0 / all 1 のグリッドはデフォルトとして使いまわされる。

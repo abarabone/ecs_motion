@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 
-namespace Abarabone.Dependency
+namespace DotsLite.Dependency
 {
     public static partial class CommandBufferDependency
     {

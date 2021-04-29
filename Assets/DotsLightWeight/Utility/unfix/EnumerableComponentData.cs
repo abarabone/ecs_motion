@@ -11,7 +11,7 @@ using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 
 
-namespace Abarabone.Misc
+namespace DotsLite.Misc
 {
 
     public struct EnumerableComponentData<T> : System.IDisposable

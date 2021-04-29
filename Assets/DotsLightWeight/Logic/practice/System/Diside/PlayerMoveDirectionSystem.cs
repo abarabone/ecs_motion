@@ -16,13 +16,13 @@ using UnityEngine.InputSystem;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-using Abarabone.Misc;
-using Abarabone.Utilities;
-using Abarabone.SystemGroup;
-using Abarabone.Character;
-using Abarabone.CharacterMotion;
+using DotsLite.Misc;
+using DotsLite.Utilities;
+using DotsLite.SystemGroup;
+using DotsLite.Character;
+using DotsLite.CharacterMotion;
 
-namespace Abarabone.Character
+namespace DotsLite.Character
 {
 
 

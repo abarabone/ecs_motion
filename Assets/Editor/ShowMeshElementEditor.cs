@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Abarabone.Structure.Authoring
+namespace DotsLite.Structure.Authoring
 {
     public class ShowMeshElementEditor : MonoBehaviour
     {

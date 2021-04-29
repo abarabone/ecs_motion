@@ -9,9 +9,9 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 
-using Abarabone.Misc;
+using DotsLite.Misc;
 
-namespace Abarabone.CharacterMotion
+namespace DotsLite.CharacterMotion
 {
     
 	public struct MotionBlobData

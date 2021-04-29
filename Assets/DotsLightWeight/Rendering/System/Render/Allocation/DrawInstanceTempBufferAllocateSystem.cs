@@ -3,9 +3,9 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
-    using Abarabone.Misc;
+    using DotsLite.Misc;
 
     /// <summary>
     /// ジョブで依存関係をスケジュールしてバッファを確保したいが、うまくいかない

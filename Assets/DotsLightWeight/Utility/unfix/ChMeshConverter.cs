@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-using Abarabone.Common.Extension;
-using Abarabone.CharacterMotion;
+using DotsLite.Common.Extension;
+using DotsLite.CharacterMotion;
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
     
 	static public class ChMeshConverter

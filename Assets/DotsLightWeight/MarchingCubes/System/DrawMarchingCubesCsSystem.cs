@@ -9,10 +9,10 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.MarchingCubes
+namespace DotsLite.MarchingCubes
 {
-    using Abarabone.Draw;
-    using Abarabone.Utilities;
+    using DotsLite.Draw;
+    using DotsLite.Utilities;
 
     //[DisableAutoCreation]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]

@@ -13,7 +13,7 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
 
 

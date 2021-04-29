@@ -13,10 +13,10 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-namespace Abarabone.Character
+namespace DotsLite.Character
 {
-    using Abarabone.Geometry;
-    using Abarabone.Utilities;
+    using DotsLite.Geometry;
+    using DotsLite.Utilities;
 
 
     static public partial class ActionState

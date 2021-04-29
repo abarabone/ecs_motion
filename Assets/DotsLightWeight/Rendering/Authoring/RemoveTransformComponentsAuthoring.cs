@@ -10,7 +10,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
     /// <summary>
     /// 

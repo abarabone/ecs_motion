@@ -1,7 +1,7 @@
-﻿using Abarabone.Misc;
+﻿using DotsLite.Misc;
 using Unity.Entities;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
 
     ////[UpdateBefore( typeof( DrawCullingSystem ) )]

@@ -10,12 +10,12 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Physics;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
-    using Abarabone.Model.Authoring;
-    using Abarabone.Targeting;
-    using Abarabone.Common.Extension;
-    using Abarabone.Hit;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Targeting;
+    using DotsLite.Common.Extension;
+    using DotsLite.Hit;
 
 
     /// <summary>

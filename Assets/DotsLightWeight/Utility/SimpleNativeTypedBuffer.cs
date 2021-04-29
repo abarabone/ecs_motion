@@ -15,11 +15,11 @@ using Unity.Burst;
 using System.Runtime.InteropServices;
 using System;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
 
-    using Abarabone.Geometry;
-    using Abarabone.Misc;
+    using DotsLite.Geometry;
+    using DotsLite.Misc;
 
 
     public unsafe struct SimpleNativeTypedBuffer<T, Tallocator> : IDisposable

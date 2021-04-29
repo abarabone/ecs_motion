@@ -7,7 +7,7 @@ using Unity.Entities.Conversion;
 using Unity.Entities.Hybrid;
 using System.Linq;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
 
     /// <summary>

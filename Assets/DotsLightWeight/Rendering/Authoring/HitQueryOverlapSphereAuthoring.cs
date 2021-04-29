@@ -10,11 +10,11 @@ using Unity.Physics;
 using Unity.Physics.Authoring;
 using Unity.Mathematics;
 
-namespace Abarabone.Physics.Authoring
+namespace DotsLite.Physics.Authoring
 {
-    using Abarabone.CharacterMotion;
-    using Abarabone.Character;
-    using Abarabone.Utilities;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Character;
+    using DotsLite.Utilities;
 
     public class HitQueryOverlapSphereAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {

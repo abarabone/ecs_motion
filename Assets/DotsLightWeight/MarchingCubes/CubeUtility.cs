@@ -11,7 +11,7 @@ using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.MarchingCubes
+namespace DotsLite.MarchingCubes
 {
     static public class CubeUtility
     {

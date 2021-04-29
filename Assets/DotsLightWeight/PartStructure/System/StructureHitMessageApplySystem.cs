@@ -9,9 +9,9 @@ using System;
 using Unity.Jobs.LowLevel.Unsafe;
 using System.Runtime.CompilerServices;
 
-namespace Abarabone.Structure
+namespace DotsLite.Structure
 {
-    using Abarabone.Dependency;
+    using DotsLite.Dependency;
 
     public struct HitMessage : IHitMessage
     {

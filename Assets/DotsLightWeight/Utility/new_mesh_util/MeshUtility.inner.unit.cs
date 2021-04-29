@@ -11,11 +11,11 @@ using Unity.Linq;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.Geometry.inner.unit
+namespace DotsLite.Geometry.inner.unit
 {
-    using Abarabone.Common.Extension;
-    using Abarabone.Utilities;
-    using Abarabone.Geometry.inner;
+    using DotsLite.Common.Extension;
+    using DotsLite.Utilities;
+    using DotsLite.Geometry.inner;
 
     public struct AdditionalParameters
     {

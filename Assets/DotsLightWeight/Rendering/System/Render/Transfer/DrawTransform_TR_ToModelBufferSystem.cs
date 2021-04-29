@@ -13,9 +13,9 @@ using Unity.Transforms;
 //using Abarabone.CharacterMotion;
 //using Abarabone.SystemGroup;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
-    using Abarabone.Dependency;
+    using DotsLite.Dependency;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]

@@ -1,6 +1,6 @@
 ﻿using Unity.Entities;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
     /// <summary>
     /// 

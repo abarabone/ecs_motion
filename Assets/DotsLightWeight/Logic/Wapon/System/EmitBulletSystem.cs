@@ -13,21 +13,21 @@ using Unity.Entities.UniversalDelegates;
 using UnityEngine.XR;
 using Unity.Physics.Systems;
 
-namespace Abarabone.Arms
+namespace DotsLite.Arms
 {
 
-    using Abarabone.Model;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Arms;
-    using Abarabone.Character;
-    using Abarabone.Particle;
-    using Abarabone.SystemGroup;
-    using Abarabone.Geometry;
+    using DotsLite.Model;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Arms;
+    using DotsLite.Character;
+    using DotsLite.Particle;
+    using DotsLite.SystemGroup;
+    using DotsLite.Geometry;
     using Unity.Physics;
-    using Abarabone.Structure;
+    using DotsLite.Structure;
     using UnityEngine.Rendering;
-    using Abarabone.Dependency;
-    using Abarabone.Utilities;
+    using DotsLite.Dependency;
+    using DotsLite.Utilities;
 
     using Random = Unity.Mathematics.Random;
     using System;

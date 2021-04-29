@@ -17,19 +17,19 @@ using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 using RaycastHit = Unity.Physics.RaycastHit;
 
-namespace Abarabone.Character
+namespace DotsLite.Character
 {
-    using Abarabone.Dependency;
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
-    using Abarabone.SystemGroup;
-    using Abarabone.Character;
-    using Abarabone.Geometry;
-    using Abarabone.Physics;
-    using Abarabone.Model;
+    using DotsLite.Dependency;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.SystemGroup;
+    using DotsLite.Character;
+    using DotsLite.Geometry;
+    using DotsLite.Physics;
+    using DotsLite.Model;
 
 
-    using Abarabone.CharacterMotion;
+    using DotsLite.CharacterMotion;
 
     /// <summary>
     /// 

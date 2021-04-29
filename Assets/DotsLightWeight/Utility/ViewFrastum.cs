@@ -9,7 +9,7 @@ using UnityEngine;
 using Unity.Transforms;
 using UnityEditor;
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
     using Plane = Unity.Physics.Plane;
 

@@ -10,16 +10,16 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 
-namespace Abarabone.CharacterMotion
+namespace DotsLite.CharacterMotion
 {
     
     
-    using Abarabone.SystemGroup;
-    using Abarabone.Utilities;
-    using Abarabone.Geometry;
-    using Abarabone.Character;
-    using Abarabone.Model;
-    using Abarabone.Draw;
+    using DotsLite.SystemGroup;
+    using DotsLite.Utilities;
+    using DotsLite.Geometry;
+    using DotsLite.Character;
+    using DotsLite.Model;
+    using DotsLite.Draw;
 
     [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ) )]

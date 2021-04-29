@@ -14,17 +14,17 @@ using UnityEngine.XR;
 using Unity.Physics;
 using Unity.Physics.Systems;
 
-namespace Abarabone.Arms
+namespace DotsLite.Arms
 {
 
-    using Abarabone.Model;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Arms;
-    using Abarabone.Character;
-    using Abarabone.Particle;
-    using Abarabone.SystemGroup;
-    using Abarabone.Geometry;
-    using Abarabone.Structure;
+    using DotsLite.Model;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Arms;
+    using DotsLite.Character;
+    using DotsLite.Particle;
+    using DotsLite.SystemGroup;
+    using DotsLite.Geometry;
+    using DotsLite.Structure;
 
     using Random = Unity.Mathematics.Random;
     using TMPro;

@@ -10,15 +10,15 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
-    using Abarabone.Draw;
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Geometry;
-    using Abarabone.Structure.Authoring;
-    using Abarabone.Utilities;
-    using Abarabone.Common.Extension;
-    using Abarabone.Misc;
+    using DotsLite.Draw;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Geometry;
+    using DotsLite.Structure.Authoring;
+    using DotsLite.Utilities;
+    using DotsLite.Common.Extension;
+    using DotsLite.Misc;
 
     [Serializable]
     public class MeshModel<TIdx, TVtx> : IMeshModel

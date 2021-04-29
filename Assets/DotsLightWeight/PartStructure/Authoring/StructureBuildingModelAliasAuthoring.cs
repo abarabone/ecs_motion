@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-namespace Abarabone.Structure.Authoring
+namespace DotsLite.Structure.Authoring
 {
     public class StructureBuildingModelAliasAuthoring : MonoBehaviour
     {

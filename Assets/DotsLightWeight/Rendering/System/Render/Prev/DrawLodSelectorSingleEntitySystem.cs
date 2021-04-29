@@ -9,15 +9,15 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
     
-    using Abarabone.Misc;
-    using Abarabone.SystemGroup;
-    using Abarabone.Geometry;
-    using Abarabone.Particle;
+    using DotsLite.Misc;
+    using DotsLite.SystemGroup;
+    using DotsLite.Geometry;
+    using DotsLite.Particle;
     using System.Runtime.CompilerServices;
-    using Abarabone.Utilities;
+    using DotsLite.Utilities;
 
     //[DisableAutoCreation]
     ////[UpdateBefore(typeof(DrawCullingSystem))]

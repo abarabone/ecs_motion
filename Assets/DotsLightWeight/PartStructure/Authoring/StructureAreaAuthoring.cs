@@ -11,19 +11,19 @@ using System.Threading.Tasks;
 using Unity.Linq;
 using UnityEditor;
 
-namespace Abarabone.Structure.Authoring
+namespace DotsLite.Structure.Authoring
 {
 
-    using Abarabone.Model;
-    using Abarabone.Draw;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Geometry;
+    using DotsLite.Model;
+    using DotsLite.Draw;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Geometry;
     using Unity.Physics.Authoring;
     using System.Runtime.InteropServices;
-    using Abarabone.Common.Extension;
-    using Abarabone.Utilities;
-    using Abarabone.Structure.Authoring;
+    using DotsLite.Common.Extension;
+    using DotsLite.Utilities;
+    using DotsLite.Structure.Authoring;
 
     public class StructureAreaAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs

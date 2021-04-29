@@ -7,12 +7,12 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
-    using Abarabone.Geometry;
-    using Abarabone.Utilities;
-    using Abarabone.Common.Extension;
-    using Abarabone.Draw.Authoring;
+    using DotsLite.Geometry;
+    using DotsLite.Utilities;
+    using DotsLite.Common.Extension;
+    using DotsLite.Draw.Authoring;
 
 
     /// <summary>

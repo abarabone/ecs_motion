@@ -10,16 +10,16 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace Abarabone.Structure.Authoring
+namespace DotsLite.Structure.Authoring
 {
-    using Abarabone.Model;
-    using Abarabone.Draw;
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Geometry;
-    using Abarabone.Utilities;
-    using Abarabone.Common.Extension;
-    using Abarabone.Misc;
-    using Abarabone.Model.Authoring;
+    using DotsLite.Model;
+    using DotsLite.Draw;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Geometry;
+    using DotsLite.Utilities;
+    using DotsLite.Common.Extension;
+    using DotsLite.Misc;
+    using DotsLite.Model.Authoring;
 
     [Serializable]
     public class StructureModel<TIdx, TVtx> : LodMeshModel<TIdx, TVtx>

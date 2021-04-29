@@ -10,10 +10,10 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
-    using Abarabone.CharacterMotion;
-    using Abarabone.SystemGroup;
+    using DotsLite.CharacterMotion;
+    using DotsLite.SystemGroup;
 
 
     //[UpdateAfter( typeof( DrawInstanceTempBufferAllocationSystem ) )]

@@ -6,14 +6,14 @@ using Unity.Collections;
 using Unity.Physics;
 using System;
 
-namespace Abarabone.Physics
+namespace DotsLite.Physics
 {
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;
     using RaycastHit = Unity.Physics.RaycastHit;
-    using Abarabone.Model;
-    using Abarabone.Hit;
+    using DotsLite.Model;
+    using DotsLite.Hit;
 
 
     public struct ClosestHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult

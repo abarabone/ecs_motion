@@ -12,20 +12,20 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine.XR;
 using Unity.Physics.Systems;
 
-namespace Abarabone.Arms
+namespace DotsLite.Arms
 {
-    using Abarabone.Dependency;
-    using Abarabone.Model;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Arms;
-    using Abarabone.Character;
-    using Abarabone.Particle;
-    using Abarabone.SystemGroup;
-    using Abarabone.Geometry;
+    using DotsLite.Dependency;
+    using DotsLite.Model;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Arms;
+    using DotsLite.Character;
+    using DotsLite.Particle;
+    using DotsLite.SystemGroup;
+    using DotsLite.Geometry;
     using Unity.Physics;
-    using Abarabone.Structure;
-    using Abarabone.Character.Action;
-    using Abarabone.Hit;
+    using DotsLite.Structure;
+    using DotsLite.Character.Action;
+    using DotsLite.Hit;
 
 
     //[DisableAutoCreation]

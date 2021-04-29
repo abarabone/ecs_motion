@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.Linq;
 using System.Linq;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
 
     public static class FindObjectExtension

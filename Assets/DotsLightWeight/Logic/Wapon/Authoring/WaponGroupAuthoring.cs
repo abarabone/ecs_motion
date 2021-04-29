@@ -10,15 +10,15 @@ using Unity.Transforms;
 using Unity.Mathematics;
     using Unity.Physics.Authoring;
 
-namespace Abarabone.Arms.Authoring
+namespace DotsLite.Arms.Authoring
 {
-    using Abarabone.Model.Authoring;
-    using Abarabone.Character;
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Common.Extension;
-    using Abarabone.Draw;
-    using Abarabone.CharacterMotion;
-    using Abarabone.Arms;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Character;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Common.Extension;
+    using DotsLite.Draw;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Arms;
 
     public class WaponGroupAuthoring : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
     {

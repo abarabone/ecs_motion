@@ -11,12 +11,12 @@ using Unity.Linq;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
-    using Abarabone.Common.Extension;
-    using Abarabone.Utilities;
-    using Abarabone.Geometry.inner;
-    using Abarabone.Geometry.inner.unit;
+    using DotsLite.Common.Extension;
+    using DotsLite.Utilities;
+    using DotsLite.Geometry.inner;
+    using DotsLite.Geometry.inner.unit;
 
     [StructLayout(LayoutKind.Sequential)]
     public struct PositionVertex : IVertexUnit<PositionVertex>, ISetBufferParams

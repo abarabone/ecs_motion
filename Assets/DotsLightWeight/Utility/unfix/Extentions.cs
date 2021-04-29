@@ -14,7 +14,7 @@ using Unity.Entities;
 using System.Runtime.CompilerServices;
 
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
 
 	static public class GeometryExtentions

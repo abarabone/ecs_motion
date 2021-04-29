@@ -14,16 +14,16 @@ using Unity.Physics.Systems;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-namespace Abarabone.Character.Action
+namespace DotsLite.Character.Action
 {
-    using Abarabone.Dependency;
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
-    using Abarabone.SystemGroup;
-    using Abarabone.Character;
-    using Abarabone.CharacterMotion;
-    using Abarabone.Targeting;
-    using Motion = Abarabone.CharacterMotion.Motion;
+    using DotsLite.Dependency;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.SystemGroup;
+    using DotsLite.Character;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Targeting;
+    using Motion = DotsLite.CharacterMotion.Motion;
 
 
     /// <summary>
@@ -102,7 +102,7 @@ namespace Abarabone.Character.Action
     }
 }
 
-namespace Abarabone.Character.Action
+namespace DotsLite.Character.Action
 {
     using Unity.Entities.CodeGeneratedJobForEach;
 

@@ -12,11 +12,11 @@ using Unity.Physics;
 using UnityEngine.InputSystem;
 using Unity.Physics.Systems;
 
-using Abarabone.Misc;
-using Abarabone.Utilities;
-using Abarabone.SystemGroup;
+using DotsLite.Misc;
+using DotsLite.Utilities;
+using DotsLite.SystemGroup;
 
-namespace Abarabone.Character
+namespace DotsLite.Character
 {
 
     //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]

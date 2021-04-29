@@ -9,7 +9,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
 
     public interface IMeshModel

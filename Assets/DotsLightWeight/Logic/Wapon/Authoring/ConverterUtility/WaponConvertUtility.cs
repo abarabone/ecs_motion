@@ -9,15 +9,15 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Arms.Authoring
+namespace DotsLite.Arms.Authoring
 {
-    using Abarabone.Character;
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Common.Extension;
-    using Abarabone.Draw;
-    using Abarabone.CharacterMotion;
-    using Abarabone.Arms;
-    using Abarabone.Particle;
+    using DotsLite.Character;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Common.Extension;
+    using DotsLite.Draw;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Arms;
+    using DotsLite.Particle;
     using Unity.Physics.Authoring;
 
 

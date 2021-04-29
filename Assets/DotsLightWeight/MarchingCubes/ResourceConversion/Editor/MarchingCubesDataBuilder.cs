@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
 
-namespace Abarabone.MarchingCubes
+namespace DotsLite.MarchingCubes
 {
     static public class MarchingCubesDataBuilder
     {

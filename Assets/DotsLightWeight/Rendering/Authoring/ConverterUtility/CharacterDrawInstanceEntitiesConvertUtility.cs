@@ -8,19 +8,19 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Draw.Authoring
+namespace DotsLite.Draw.Authoring
 {
     using CharacterMotion;
     using Draw;
     using Character;
-    using Abarabone.CharacterMotion.Authoring;
-    using Abarabone.Model.Authoring;
+    using DotsLite.CharacterMotion.Authoring;
+    using DotsLite.Model.Authoring;
 
-    using Abarabone.Common.Extension;
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
+    using DotsLite.Common.Extension;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
     using Unity.Linq;
-    using Abarabone.Model;
+    using DotsLite.Model;
 
     static public class CharacterDrawInstanceEntitiesConvertUtility
     {

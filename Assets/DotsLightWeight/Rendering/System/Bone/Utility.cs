@@ -10,17 +10,17 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using System.Runtime.CompilerServices;
 
-namespace Abarabone.Model
+namespace DotsLite.Model
 {
 
     
-    using Abarabone.SystemGroup;
-    using Abarabone.Utilities;
-    using Abarabone.Geometry;
-    using Abarabone.Character;
-    using Abarabone.Model;
-    using Abarabone.Draw;
-    using Abarabone.CharacterMotion;
+    using DotsLite.SystemGroup;
+    using DotsLite.Utilities;
+    using DotsLite.Geometry;
+    using DotsLite.Character;
+    using DotsLite.Model;
+    using DotsLite.Draw;
+    using DotsLite.CharacterMotion;
     using Unity.Physics;
 
     static public class BoneUtility

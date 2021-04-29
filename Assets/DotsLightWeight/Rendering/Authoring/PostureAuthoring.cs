@@ -9,14 +9,14 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Character;
-    using Abarabone.Common.Extension;
-    using Abarabone.CharacterMotion.Authoring;
-    using Abarabone.Geometry;
-    using Abarabone.Utilities;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Character;
+    using DotsLite.Common.Extension;
+    using DotsLite.CharacterMotion.Authoring;
+    using DotsLite.Geometry;
+    using DotsLite.Utilities;
 
 
     public class PostureAuthoring : MonoBehaviour, IConvertGameObjectToEntity

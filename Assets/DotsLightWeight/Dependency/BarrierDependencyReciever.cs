@@ -6,7 +6,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Collections;
 
-namespace Abarabone.Dependency
+namespace DotsLite.Dependency
 {
     public static partial class BarrierDependency
     {

@@ -7,11 +7,11 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 
-using Abarabone.SystemGroup;
+using DotsLite.SystemGroup;
 
-namespace Abarabone.CharacterMotion
+namespace DotsLite.CharacterMotion
 {
-    using Abarabone.Dependency;
+    using DotsLite.Dependency;
 
     //[UpdateBefore( typeof( MotionProgressSystem ) )]// MotionB
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ))]

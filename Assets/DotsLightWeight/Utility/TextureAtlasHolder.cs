@@ -4,9 +4,9 @@ using UnityEngine;
 using Unity.Entities;
 
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
-    using Abarabone.Common.Extension;
+    using DotsLite.Common.Extension;
 
     public class TextureAtlasDictionary : GameObjectConversionSystem
     {

@@ -9,13 +9,13 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
-    using Abarabone.Model;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Common.Extension;
-    using Abarabone.Utilities;
+    using DotsLite.Model;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Common.Extension;
+    using DotsLite.Utilities;
 
     public static class MeshModelUtility
     {

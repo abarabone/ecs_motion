@@ -16,15 +16,15 @@ using UnityEngine.InputSystem;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
-    using Abarabone.SystemGroup;
-    using Abarabone.Character;
-    using Abarabone.Structure;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.SystemGroup;
+    using DotsLite.Character;
+    using DotsLite.Structure;
     using System.Runtime.CompilerServices;
-    using Abarabone.Dependency;
+    using DotsLite.Dependency;
 
 
         /// <summary>

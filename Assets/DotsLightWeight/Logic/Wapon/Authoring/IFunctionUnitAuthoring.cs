@@ -2,7 +2,7 @@
 using Unity.Entities;
 using System.Collections.Generic;
 
-namespace Abarabone.Arms.Authoring
+namespace DotsLite.Arms.Authoring
 {
     public interface IFunctionUnitAuthoring
     { }

@@ -7,7 +7,7 @@ using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 
 // わかりにくい、統一感がない、そのせいか使いにくい
-namespace Abarabone.Misc
+namespace DotsLite.Misc
 {
 
 	/// <summary>

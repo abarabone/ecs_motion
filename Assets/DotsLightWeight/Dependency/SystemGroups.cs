@@ -15,10 +15,10 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics.Systems;
 
-using Abarabone.Geometry;
+using DotsLite.Geometry;
 using System.Runtime.InteropServices;
 
-namespace Abarabone.SystemGroup
+namespace DotsLite.SystemGroup
 {
 
     namespace Simulation

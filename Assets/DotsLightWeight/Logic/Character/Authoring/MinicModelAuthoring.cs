@@ -9,14 +9,14 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
-    using Abarabone.Character;
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Common.Extension;
-    using Abarabone.Draw;
-    using Abarabone.CharacterMotion;
-    using Abarabone.Arms;
+    using DotsLite.Character;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Common.Extension;
+    using DotsLite.Draw;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Arms;
 
     /// <summary>
     /// プライマリエンティティは LinkedEntityGroup のみとする。

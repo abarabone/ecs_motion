@@ -11,9 +11,9 @@ using Unity.Transforms;
 //using Unity.Rendering;
 using Unity.Properties;
 using Unity.Burst;
-using Abarabone.Geometry;
+using DotsLite.Geometry;
 
-namespace Abarabone.Hit
+namespace DotsLite.Hit
 {
 
     static public partial class Hit

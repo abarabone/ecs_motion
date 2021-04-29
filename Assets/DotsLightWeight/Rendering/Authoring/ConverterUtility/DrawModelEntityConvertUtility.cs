@@ -8,19 +8,19 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Draw.Authoring
+namespace DotsLite.Draw.Authoring
 {
-    using Abarabone.CharacterMotion;
-    using Abarabone.Draw;
-    using Abarabone.Character;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Draw;
+    using DotsLite.Character;
     
-    using Abarabone.Model.Authoring;
+    using DotsLite.Model.Authoring;
 
-    using Abarabone.Common.Extension;
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
-    using Abarabone.Geometry;
-    using Abarabone.Model;
+    using DotsLite.Common.Extension;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.Geometry;
+    using DotsLite.Model;
     using Unity.Physics;
 
     using Material = UnityEngine.Material;

@@ -10,10 +10,10 @@ using Unity.Mathematics;
 
 
 
-using Abarabone.CharacterMotion;
-using Abarabone.SystemGroup;
+using DotsLite.CharacterMotion;
+using DotsLite.SystemGroup;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
 
     /// <summary>

@@ -13,10 +13,10 @@ using Unity.Properties;
 using Unity.Burst;
 using System.Runtime.InteropServices;
 
-namespace Abarabone.CharacterMotion
+namespace DotsLite.CharacterMotion
 {
-    using Abarabone.Geometry;
-    using Abarabone.Utilities;
+    using DotsLite.Geometry;
+    using DotsLite.Utilities;
 
 
     static public partial class Stream

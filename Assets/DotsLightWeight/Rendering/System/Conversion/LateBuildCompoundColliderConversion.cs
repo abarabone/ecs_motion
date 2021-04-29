@@ -19,9 +19,9 @@ using Unity.Jobs.LowLevel.Unsafe;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
-    using Abarabone.Misc;
+    using DotsLite.Misc;
 
 
     /// <summary>

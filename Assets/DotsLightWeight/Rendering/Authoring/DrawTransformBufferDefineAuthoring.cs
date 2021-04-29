@@ -7,7 +7,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using System.Runtime.InteropServices;
 
-namespace Abarabone.Draw.Authoring
+namespace DotsLite.Draw.Authoring
 {
     public class DrawTransformBufferDefineAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {

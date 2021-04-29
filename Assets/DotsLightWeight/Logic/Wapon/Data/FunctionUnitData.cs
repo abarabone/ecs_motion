@@ -13,7 +13,7 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-namespace Abarabone.Arms
+namespace DotsLite.Arms
 {
     /// <summary>
     /// 兵士はユニットを武器にまとめて所持する。

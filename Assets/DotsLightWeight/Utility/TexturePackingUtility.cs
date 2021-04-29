@@ -4,11 +4,11 @@ using System;
 using UnityEngine;
 using System.Linq;
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
 
-	using Abarabone.Common.Extension;
-	using Abarabone.Utilities;
+	using DotsLite.Common.Extension;
+	using DotsLite.Utilities;
 
 	public class HashToRect
 	{

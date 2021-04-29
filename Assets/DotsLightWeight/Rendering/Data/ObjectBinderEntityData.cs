@@ -7,7 +7,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-namespace Abarabone.Model
+namespace DotsLite.Model
 {
 
 

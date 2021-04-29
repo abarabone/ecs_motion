@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Abarabone.Physics.Authoring;
+using DotsLite.Physics.Authoring;
 
-namespace Abarabone.Physics.Authoring
+namespace DotsLite.Physics.Authoring
 {
-    using Abarabone.Model.Authoring;
+    using DotsLite.Model.Authoring;
 
     [CustomEditor(typeof(HitQueryOverlapSphereAuthoring))]
     public class OverlapSphereHandle : Editor

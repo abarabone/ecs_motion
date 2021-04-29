@@ -5,11 +5,11 @@ using System.Linq;
 using Unity.Linq;
 using System.IO;
 
-using Abarabone.Utilities;
-using Abarabone.Common.Extension;
+using DotsLite.Utilities;
+using DotsLite.Common.Extension;
 
 
-namespace Abarabone.CharacterMotion
+namespace DotsLite.CharacterMotion
 {
 
 

@@ -7,19 +7,19 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 
-namespace Abarabone.CharacterMotion.Authoring
+namespace DotsLite.CharacterMotion.Authoring
 {
 
-    using Abarabone.Geometry;
-    using Abarabone.Utilities;
-    using Abarabone.Misc;
-    using Abarabone.CharacterMotion;
-    using Abarabone.Draw;
-    using Abarabone.Common.Extension;
-    using Abarabone.Character;
-    using Abarabone.Model;
+    using DotsLite.Geometry;
+    using DotsLite.Utilities;
+    using DotsLite.Misc;
+    using DotsLite.CharacterMotion;
+    using DotsLite.Draw;
+    using DotsLite.Common.Extension;
+    using DotsLite.Character;
+    using DotsLite.Model;
     using Unity.Linq;
-    using Abarabone.Model.Authoring;
+    using DotsLite.Model.Authoring;
 
     public enum EnMotionType
     {

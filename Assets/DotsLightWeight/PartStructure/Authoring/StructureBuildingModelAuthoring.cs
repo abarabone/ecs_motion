@@ -12,23 +12,23 @@ using Unity.Physics;
 using Unity.Linq;
 using Unity.Physics.Authoring;
 
-namespace Abarabone.Structure.Authoring
+namespace DotsLite.Structure.Authoring
 {
-    using Abarabone.Model;
-    using Abarabone.Draw;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Geometry;
-    using Abarabone.Structure.Authoring;
-    using Abarabone.Character;//ObjectMain はここにある、名前変えるべきか？
+    using DotsLite.Model;
+    using DotsLite.Draw;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Geometry;
+    using DotsLite.Structure.Authoring;
+    using DotsLite.Character;//ObjectMain はここにある、名前変えるべきか？
 
-    using Abarabone.Common.Extension;
-    using Abarabone.Structure;
+    using DotsLite.Common.Extension;
+    using DotsLite.Structure;
     using Unity.Entities.UniversalDelegates;
     using Unity.Properties;
     using System.CodeDom;
-    using Abarabone.Utilities;
-    using Abarabone.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.Misc;
 
 
 

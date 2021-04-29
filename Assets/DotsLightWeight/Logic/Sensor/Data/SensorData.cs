@@ -14,7 +14,7 @@ using Unity.Burst;
 using Unity.Physics;
 using Unity.Physics.Authoring;
 
-namespace Abarabone.Targeting
+namespace DotsLite.Targeting
 {
 
     // ƒƒCƒ“‚É’u‚­

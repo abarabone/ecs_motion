@@ -11,13 +11,13 @@ using Unity.Transforms;
 //using Unity.Rendering;
 using Unity.Properties;
 using Unity.Burst;
-using Abarabone.Geometry;
+using DotsLite.Geometry;
 using System.Runtime.InteropServices;
 using System;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
-    using Abarabone.Utilities;
+    using DotsLite.Utilities;
 
 
     public struct DrawInstanceEntity :

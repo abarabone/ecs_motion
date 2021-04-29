@@ -8,16 +8,16 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Model.Authoring
+namespace DotsLite.Model.Authoring
 {
     using CharacterMotion;
     using Draw;
     using Character;
     
 
-    using Abarabone.Common.Extension;
-    using Abarabone.Misc;
-    using Abarabone.Utilities;
+    using DotsLite.Common.Extension;
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
     using Unity.Physics;
     using Unity.Physics.Authoring;
 

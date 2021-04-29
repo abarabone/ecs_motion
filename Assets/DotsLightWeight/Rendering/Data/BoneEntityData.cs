@@ -14,7 +14,7 @@ using Unity.Transforms;
 using Unity.Properties;
 using Unity.Burst;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
 
 
@@ -47,7 +47,7 @@ namespace Abarabone.Draw
 }
 
 
-namespace Abarabone.Model
+namespace DotsLite.Model
 {
 
     public enum BoneType

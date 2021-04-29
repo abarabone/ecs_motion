@@ -9,9 +9,9 @@ using System.Runtime.CompilerServices;
 using Unity.Entities;
 using Unity.Collections;
 
-using Abarabone.Misc;
+using DotsLite.Misc;
 
-namespace Abarabone.Common.Extension
+namespace DotsLite.Common.Extension
 {
 
 

@@ -9,7 +9,7 @@ using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 using System;
 
-namespace Abarabone.MarchingCubes
+namespace DotsLite.MarchingCubes
 {
 
 

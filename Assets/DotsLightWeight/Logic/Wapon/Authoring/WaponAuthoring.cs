@@ -9,7 +9,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Arms.Authoring
+namespace DotsLite.Arms.Authoring
 {
     public partial class WaponAuthoring : MonoBehaviour, IWaponAuthoring, IConvertGameObjectToEntity
     {

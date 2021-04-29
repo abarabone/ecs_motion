@@ -11,12 +11,12 @@ using Unity.Linq;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.Geometry.inner
+namespace DotsLite.Geometry.inner
 {
-    using Abarabone.Common.Extension;
-    using Abarabone.Utilities;
-    using Abarabone.Geometry.inner.unit;
-    using Abarabone.Misc;
+    using DotsLite.Common.Extension;
+    using DotsLite.Utilities;
+    using DotsLite.Geometry.inner.unit;
+    using DotsLite.Misc;
 
 
     //static class MeshQyeryUtility

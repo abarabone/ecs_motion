@@ -15,9 +15,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System;
 
-namespace Abarabone.CharacterMotion
+namespace DotsLite.CharacterMotion
 {
-    using Abarabone.Geometry;
+    using DotsLite.Geometry;
 	
 
     static public partial class Motion

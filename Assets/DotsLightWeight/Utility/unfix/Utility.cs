@@ -8,10 +8,10 @@ using Unity.Linq;
 using Unity.Collections;
 using Unity.Mathematics;
 
-namespace Abarabone.Utilities
+namespace DotsLite.Utilities
 {
-    using Abarabone.Common.Extension;
-    using Abarabone.Geometry;
+    using DotsLite.Common.Extension;
+    using DotsLite.Geometry;
 
 
     static class DevUtil
@@ -218,7 +218,7 @@ namespace Abarabone.Utilities
 }
 
 
-namespace Abarabone.Utilities
+namespace DotsLite.Utilities
 {
     using Unity.Collections.LowLevel.Unsafe;
 

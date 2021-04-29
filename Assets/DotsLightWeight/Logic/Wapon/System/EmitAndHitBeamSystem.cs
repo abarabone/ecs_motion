@@ -14,20 +14,20 @@ using UnityEngine.XR;
 using Unity.Physics;
 using Unity.Physics.Systems;
 
-namespace Abarabone.Arms
+namespace DotsLite.Arms
 {
 
-    using Abarabone.Model;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Arms;
-    using Abarabone.Character;
-    using Abarabone.Particle;
-    using Abarabone.SystemGroup;
-    using Abarabone.Geometry;
-    using Abarabone.Structure;
-    using Abarabone.Dependency;
-    using Abarabone.Utilities;
-    using Abarabone.Hit;
+    using DotsLite.Model;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Arms;
+    using DotsLite.Character;
+    using DotsLite.Particle;
+    using DotsLite.SystemGroup;
+    using DotsLite.Geometry;
+    using DotsLite.Structure;
+    using DotsLite.Dependency;
+    using DotsLite.Utilities;
+    using DotsLite.Hit;
 
 
     //[DisableAutoCreation]
@@ -41,7 +41,7 @@ namespace Abarabone.Arms
 
         PhysicsHitDependency.Sender phydep;
 
-        HitMessage<Abarabone.Structure.HitMessage>.Sender sender;
+        HitMessage<DotsLite.Structure.HitMessage>.Sender sender;
 
         //BarrierDependency.Reciever bardep;
 
@@ -54,7 +54,7 @@ namespace Abarabone.Arms
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
 
-            this.sender = HitMessage<Abarabone.Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
+            this.sender = HitMessage<DotsLite.Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
 
             //this.bardep = BarrierDependency.Reciever.Create();
         }

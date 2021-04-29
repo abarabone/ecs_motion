@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.Linq;
-using Abarabone.Utilities;
-using Abarabone.Geometry;
-using Abarabone.Common.Extension;
+using DotsLite.Utilities;
+using DotsLite.Geometry;
+using DotsLite.Common.Extension;
 
 public class MeshTest : MonoBehaviour
 {

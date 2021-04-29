@@ -9,13 +9,13 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
     
-    using Abarabone.Misc;
-    using Abarabone.SystemGroup;
-    using Abarabone.Utilities;
-    using Abarabone.Dependency;
+    using DotsLite.Misc;
+    using DotsLite.SystemGroup;
+    using DotsLite.Utilities;
+    using DotsLite.Dependency;
 
     ////[DisableAutoCreation]
     //[UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]

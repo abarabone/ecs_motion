@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Unity.Linq;
 using UnityEditor;
 
-namespace Abarabone.Structure.Authoring
+namespace DotsLite.Structure.Authoring
 {
     public interface IStructureGroupAuthoring
     { 

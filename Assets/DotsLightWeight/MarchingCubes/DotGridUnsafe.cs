@@ -11,7 +11,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using System;
 
-namespace Abarabone.MarchingCubes
+namespace DotsLite.MarchingCubes
 {
 
     public enum GridFillMode

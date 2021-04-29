@@ -15,9 +15,9 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-using Abarabone.Utilities;
+using DotsLite.Utilities;
 
-namespace Abarabone.Character
+namespace DotsLite.Character
 {
 
 

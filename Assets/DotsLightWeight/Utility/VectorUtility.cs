@@ -8,7 +8,7 @@ using Unity.Linq;
 using Unity.Collections;
 using Unity.Mathematics;
 
-namespace Abarabone.Utilities
+namespace DotsLite.Utilities
 {
 
     /// <summary>

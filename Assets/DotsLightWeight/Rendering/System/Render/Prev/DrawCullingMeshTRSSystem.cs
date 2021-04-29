@@ -9,13 +9,13 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
     
-    using Abarabone.Misc;
-    using Abarabone.SystemGroup;
-    using Abarabone.Geometry;
-    using Abarabone.Particle;
+    using DotsLite.Misc;
+    using DotsLite.SystemGroup;
+    using DotsLite.Geometry;
+    using DotsLite.Particle;
     
 
     ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]

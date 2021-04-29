@@ -10,9 +10,9 @@ using Unity.Mathematics;
 
 
 
-using Abarabone.SystemGroup;
+using DotsLite.SystemGroup;
 
-namespace Abarabone.CharacterMotion
+namespace DotsLite.CharacterMotion
 {
     
     //[UpdateAfter(typeof(MotionProgressSystem))]//MotionB

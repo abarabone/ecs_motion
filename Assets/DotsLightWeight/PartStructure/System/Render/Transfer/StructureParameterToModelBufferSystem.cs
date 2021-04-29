@@ -10,15 +10,15 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 
-using Abarabone.CharacterMotion;
-using Abarabone.SystemGroup;
+using DotsLite.CharacterMotion;
+using DotsLite.SystemGroup;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
 
-    using Abarabone.Structure;
-    using Abarabone.Dependency;
+    using DotsLite.Structure;
+    using DotsLite.Dependency;
 
 
     //[DisableAutoCreation]

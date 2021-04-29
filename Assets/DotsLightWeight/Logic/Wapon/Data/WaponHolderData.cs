@@ -15,7 +15,7 @@ using Unity.Physics;
 using System;
 using System.Runtime.InteropServices;
 
-namespace Abarabone.Arms
+namespace DotsLite.Arms
 {
 
     static public partial class FunctionHolder

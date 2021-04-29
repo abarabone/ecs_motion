@@ -8,13 +8,13 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace Abarabone.Particle.Aurthoring
+namespace DotsLite.Particle.Aurthoring
 {
-    using Abarabone.Model;
-    using Abarabone.Draw;
-    using Abarabone.Model.Authoring;
-    using Abarabone.Draw.Authoring;
-    using Abarabone.Geometry;
+    using DotsLite.Model;
+    using DotsLite.Draw;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Geometry;
 
     /// <summary>
     /// 

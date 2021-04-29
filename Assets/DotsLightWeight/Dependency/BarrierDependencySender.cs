@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using System;
 
-namespace Abarabone.Dependency
+namespace DotsLite.Dependency
 {
     public static partial class BarrierDependency
     {

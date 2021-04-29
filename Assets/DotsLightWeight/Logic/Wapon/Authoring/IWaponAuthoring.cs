@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Abarabone.Arms.Authoring
+namespace DotsLite.Arms.Authoring
 {
     public interface IWaponAuthoring
     { }

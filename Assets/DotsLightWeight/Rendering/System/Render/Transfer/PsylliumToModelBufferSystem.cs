@@ -9,14 +9,14 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
-    using Abarabone.CharacterMotion;
-    using Abarabone.SystemGroup;
-    using Abarabone.Geometry;
-    using Abarabone.Character;
-    using Abarabone.Particle;
-    using Abarabone.Dependency;
+    using DotsLite.CharacterMotion;
+    using DotsLite.SystemGroup;
+    using DotsLite.Geometry;
+    using DotsLite.Character;
+    using DotsLite.Particle;
+    using DotsLite.Dependency;
 
 
     /// <summary>

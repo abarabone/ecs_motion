@@ -9,11 +9,11 @@ using Unity.Mathematics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-using Abarabone.SystemGroup;
+using DotsLite.SystemGroup;
 
-namespace Abarabone.CharacterMotion
+namespace DotsLite.CharacterMotion
 {
-    using Abarabone.Dependency;
+    using DotsLite.Dependency;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]

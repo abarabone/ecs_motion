@@ -13,7 +13,7 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
 
     static public partial class DrawInstance
@@ -24,12 +24,12 @@ namespace Abarabone.Draw
 
 }
 
-namespace Abarabone.Particle
+namespace DotsLite.Particle
 {
-    using Abarabone.Utilities;
-    using Abarabone.Draw;
-    using Abarabone.Character;
-    using Abarabone.CharacterMotion;
+    using DotsLite.Utilities;
+    using DotsLite.Draw;
+    using DotsLite.Character;
+    using DotsLite.CharacterMotion;
 
 
     public struct PsylliumEntity :

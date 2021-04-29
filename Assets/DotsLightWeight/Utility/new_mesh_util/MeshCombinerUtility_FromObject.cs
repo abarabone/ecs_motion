@@ -5,9 +5,9 @@ using System.Linq;
 using Unity.Linq;
 using System.Threading.Tasks;
 using System;
-using Abarabone.Common.Extension;
+using DotsLite.Common.Extension;
 
-namespace Abarabone.Geometry
+namespace DotsLite.Geometry
 {
 
 	/// <summary>

@@ -16,11 +16,11 @@ using UnityEngine.InputSystem;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-using Abarabone.Misc;
-using Abarabone.Utilities;
-using Abarabone.SystemGroup;
+using DotsLite.Misc;
+using DotsLite.Utilities;
+using DotsLite.SystemGroup;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
 
     //[DisableAutoCreation]

@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.Entities;
 
 
-namespace Abarabone.Common.Extension
+namespace DotsLite.Common.Extension
 {
 
     public class EntityDictionary : GameObjectConversionSystem

@@ -9,9 +9,9 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.MarchingCubes
+namespace DotsLite.MarchingCubes
 {
-    using Abarabone.Dependency;
+    using DotsLite.Dependency;
 
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class DotGridFillingSystem : DependencyAccessableSystemBase

@@ -8,11 +8,11 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 
-namespace Abarabone.Draw
+namespace DotsLite.Draw
 {
     
-    using Abarabone.CharacterMotion;
-    using Abarabone.SystemGroup;
+    using DotsLite.CharacterMotion;
+    using DotsLite.SystemGroup;
 
 
     ////[UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]

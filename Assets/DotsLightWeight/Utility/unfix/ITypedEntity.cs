@@ -11,7 +11,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using System.Runtime.CompilerServices;
 
-namespace Abarabone.Utilities
+namespace DotsLite.Utilities
 {
 
     public interface ITypedEntity<T>

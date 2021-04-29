@@ -3,7 +3,7 @@ using System;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Collections;
 
-namespace Abarabone.Misc
+namespace DotsLite.Misc
 {
 
 	/// <summary>

@@ -11,10 +11,10 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace Abarabone.MarchingCubes.Authoring
+namespace DotsLite.MarchingCubes.Authoring
 {
-    using Abarabone.Draw;
-    using Abarabone.Model;
+    using DotsLite.Draw;
+    using DotsLite.Model;
 
     public class MarchingCubesAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
