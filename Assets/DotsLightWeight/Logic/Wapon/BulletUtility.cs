@@ -34,7 +34,7 @@ namespace DotsLite.Arms
     using DotsLite.SystemGroup;
     using DotsLite.Structure;
     using DotsLite.Dependency;
-    using DotsLite.Hit;
+    using DotsLite.Collision;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;
@@ -80,6 +80,7 @@ namespace DotsLite.Arms
         public struct BulletHit
         {
             public bool isHit;
+            public Hit.HitType hitType;
             public float3 posision;
             public float3 normal;
             public Entity hitEntity;
@@ -129,12 +130,14 @@ namespace DotsLite.Arms
             return new BulletHit
             {
                 isHit = isHit,
+                hitType = collector.HitType,
                 posision = collector.ClosestHit.Position,
                 normal = collector.ClosestHit.SurfaceNormal,
                 hitEntity = collector.ClosestHit.Entity,
                 stateEntity = collector.TargetStateEntity,
             };
         }
+
 
 
         //static public void postMessageToHitTarget

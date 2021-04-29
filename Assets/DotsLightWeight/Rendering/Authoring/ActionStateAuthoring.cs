@@ -17,6 +17,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.CharacterMotion.Authoring;
     using DotsLite.Geometry;
     using DotsLite.Utilities;
+    using DotsLite.Collision;
 
 
     public class ActionStateAuthoring : MonoBehaviour, IConvertGameObjectToEntity
@@ -27,7 +28,6 @@ namespace DotsLite.Model.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-
             var top = this.GetComponentInChildren<ModelGroupAuthoring.ModelAuthoringBase>(); 
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             var state = this;//.GetComponentInChildren<ActionStateAuthoring>();
@@ -35,14 +35,8 @@ namespace DotsLite.Model.Authoring
 
             createStateEntity_(conversionSystem, top, posture, state, motion);
 
-            top.GetComponentsInChildren<Unity.Physics.Authoring.PhysicsBodyAuthoring>()
-                .Select(x => conversionSystem.GetPrimaryEntity(x))
-                .ForEach(x => dstManager.AddComponentData(x, new Hit.Hit.TargetData
-                    {
-                        HitType = Hit.Hit.HitType.charactor,
-                        StateEntity = conversionSystem.GetOrCreateEntity(state),
-                    })
-                );
+            var ent = conversionSystem.GetOrCreateEntity(state);
+            conversionSystem.AddHitTargetsAllRigidBody(top, ent, Hit.HitType.charactor);
 
             return;
 

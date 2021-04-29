@@ -25,7 +25,7 @@ namespace DotsLite.Arms
     using Unity.Physics;
     using DotsLite.Structure;
     using DotsLite.Character.Action;
-    using DotsLite.Hit;
+    using DotsLite.Collision;
 
 
     //[DisableAutoCreation]
@@ -66,13 +66,12 @@ namespace DotsLite.Arms
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
-            var hitTargets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
 
             var dt = this.Time.DeltaTime;
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(hitTargets)
+                .WithAll<Bullet.SpecData>()// ビームを除外するため
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
@@ -98,15 +97,15 @@ namespace DotsLite.Arms
                         if (!hit.isHit) return;
 
 
-                        var ht = hitTargets[hit.hitEntity];
-
-                        switch (ht.HitType)
+                        switch (hit.hitType)
                         {
                             case Hit.HitType.part:
                                 hit.PostStructureHitMessage(sthit, parts);
                                 break;
                             case Hit.HitType.charactor:
                                 hit.PostCharacterHitMessage(chhit, 1.0f, v.Velocity.xyz);
+                                break;
+                            default:
                                 break;
                         }
                     }

@@ -27,7 +27,7 @@ namespace DotsLite.Arms
     using DotsLite.Structure;
     using DotsLite.Dependency;
     using DotsLite.Utilities;
-    using DotsLite.Hit;
+    using DotsLite.Collision;
 
 
     //[DisableAutoCreation]
@@ -41,7 +41,9 @@ namespace DotsLite.Arms
 
         PhysicsHitDependency.Sender phydep;
 
-        HitMessage<DotsLite.Structure.HitMessage>.Sender sender;
+        HitMessage<Structure.HitMessage>.Sender stSender;
+        HitMessage<Character.HitMessage>.Sender chSender;
+
 
         //BarrierDependency.Reciever bardep;
 
@@ -54,7 +56,8 @@ namespace DotsLite.Arms
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
 
-            this.sender = HitMessage<DotsLite.Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
+            this.stSender = HitMessage<Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
+            this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
 
             //this.bardep = BarrierDependency.Reciever.Create();
         }
@@ -68,14 +71,16 @@ namespace DotsLite.Arms
 
         protected override void OnUpdate()
         {
-            using var phyScope = this.phydep.WithDependencyScope();
-            using var hitScope = this.sender.WithDependencyScope();
             using var cmdScope = this.cmddep.WithDependencyScope();
+            using var phyScope = this.phydep.WithDependencyScope();
+            using var sthitScope = this.stSender.WithDependencyScope();
+            using var chhitScope = this.chSender.WithDependencyScope();
 
 
             var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
             var cw = this.phydep.PhysicsWorld.CollisionWorld;
-            var sthit = this.sender.AsParallelWriter();
+            var sthit = this.stSender.AsParallelWriter();
+            var chhit = this.chSender.AsParallelWriter();
 
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
@@ -135,7 +140,17 @@ namespace DotsLite.Arms
 
                         if (!hit.isHit) return;
 
-                        hit.PostStructureHitMessage(sthit, parts);
+                        switch (hit.hitType)
+                        {
+                            case Hit.HitType.part:
+                                hit.PostStructureHitMessage(sthit, parts);
+                                break;
+                            case Hit.HitType.charactor:
+                                hit.PostCharacterHitMessage(chhit, 1.0f, 0.0f);
+                                break;
+                            default:
+                                break;
+                        }
 
                     }
                 )

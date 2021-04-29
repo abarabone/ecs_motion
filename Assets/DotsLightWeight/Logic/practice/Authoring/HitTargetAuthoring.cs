@@ -15,7 +15,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Model.Authoring;
     using DotsLite.Targeting;
     using DotsLite.Common.Extension;
-    using DotsLite.Hit;
+    using DotsLite.Collision;
 
 
     /// <summary>
@@ -39,7 +39,7 @@ namespace DotsLite.Model.Authoring
             var stateEntity = conversionSystem.GetOrCreateEntity(state);
             dstManager.AddComponentData(entity, new Hit.TargetData
             {
-                StateEntity = stateEntity,
+                MainEntity = stateEntity,
                 HitType = this.HitType,
             });
 

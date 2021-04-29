@@ -82,6 +82,8 @@ namespace DotsLite.Structure.Authoring
                     break;
             }
 
+            //conversionSystem.AddHitTargetsAllRigidBody(this, )
+
         }
 
 

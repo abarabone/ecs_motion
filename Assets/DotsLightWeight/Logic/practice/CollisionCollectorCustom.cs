@@ -13,7 +13,7 @@ namespace DotsLite.Physics
     using SphereCollider = Unity.Physics.SphereCollider;
     using RaycastHit = Unity.Physics.RaycastHit;
     using DotsLite.Model;
-    using DotsLite.Hit;
+    using DotsLite.Collision;
 
 
     public struct ClosestHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
@@ -21,6 +21,7 @@ namespace DotsLite.Physics
         public bool EarlyOutOnFirstHit => false;//{ get; private set; }
         public float MaxFraction { get; private set; }
         public int NumHits { get; private set; }
+        public Hit.HitType HitType { get; private set; }
         
         public Entity SelfStateEntity;
         public Entity TargetStateEntity;
@@ -33,21 +34,30 @@ namespace DotsLite.Physics
             ( float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets )
         {
             this.MaxFraction = maxFraction;
-            this.m_ClosestHit = default( T );
+            this.m_ClosestHit = default;
             this.SelfStateEntity = selfStateEntity;
             this.TargetStateEntity = Entity.Null;
             this.NumHits = 0;
             this.Targets = targets;
+            this.HitType = Hit.HitType.none;
         }
 
         public bool AddHit( T hit )
         {
-            var ent = this.Targets.HasComponent(hit.Entity)
-                ? this.Targets[hit.Entity].StateEntity
-                : hit.Entity;
-            if( ent == this.SelfStateEntity ) return false;
+            if (this.Targets.HasComponent(hit.Entity))
+            {
+                var t = this.Targets[hit.Entity];
+                if (t.MainEntity == this.SelfStateEntity) return false;
+                this.HitType = t.HitType;
+                this.TargetStateEntity = t.MainEntity;
+            }
+            else
+            {
+                if (hit.Entity == this.SelfStateEntity) return false;
+                this.HitType = Hit.HitType.none;
+                this.TargetStateEntity = hit.Entity;
+            }
 
-            this.TargetStateEntity = ent;
             //if( hit.Fraction >= m_ClosestHit.Fraction ) return false;
             this.MaxFraction = hit.Fraction;
             this.m_ClosestHit = hit;
@@ -64,6 +74,7 @@ namespace DotsLite.Physics
         public bool EarlyOutOnFirstHit => this.NumHits > 0;
         public float MaxFraction { get; }
         public int NumHits { get; private set; }
+        public Hit.HitType HitType { get; private set; }
 
         public Entity SelfStateEntity;
         public Entity TargetStateEntity;
@@ -77,16 +88,25 @@ namespace DotsLite.Physics
             this.TargetStateEntity = Entity.Null;
             this.NumHits = 0;
             this.Targets = targets;
+            this.HitType = Hit.HitType.none;
         }
 
         public bool AddHit( T hit )
         {
-            var ent = this.Targets.HasComponent(hit.Entity)
-                ? this.Targets[hit.Entity].StateEntity
-                : hit.Entity;
-            if (ent == this.SelfStateEntity) return false;
+            if (this.Targets.HasComponent(hit.Entity))
+            {
+                var t = this.Targets[hit.Entity];
+                if (t.MainEntity == this.SelfStateEntity) return false;
+                this.HitType = t.HitType;
+                this.TargetStateEntity = t.MainEntity;
+            }
+            else
+            {
+                if (hit.Entity == this.SelfStateEntity) return false;
+                this.HitType = Hit.HitType.none;
+                this.TargetStateEntity = hit.Entity;
+            }
 
-            this.TargetStateEntity = ent;
             this.NumHits = 1;
             return true;
         }

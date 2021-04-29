@@ -78,8 +78,8 @@ namespace DotsLite.Character.Action
                         Entity entity, int entityInQueryIndex,
                         ref AntAction.DamageState state,
                         in ActionState.MotionLinkDate mlink,
-                        in ActionState.PostureLinkData plink,
-                        in TargetSensorHolderLink.HolderLinkData holderLink
+                        in ActionState.PostureLinkData plink
+                        //in TargetSensorHolderLink.HolderLinkData holderLink
                     )
                 =>
                     {
@@ -122,7 +122,7 @@ namespace DotsLite.Character.Action
                             var motion = new MotionOperator
                                 (cmd, motionInfos, motionCursors, mlink.MotionEntity, entityInQueryIndex);
 
-                            motion.Start(Motion_ant.seaching, isLooping: true, delayTime: 0.1f, scale: 3.0f);
+                            motion.Start(Motion_ant.seaching, isLooping: true, delayTime: 0.1f, scale: 1.0f);
 
                             state.Phase++;
                         }

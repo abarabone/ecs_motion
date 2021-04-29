@@ -65,12 +65,12 @@ namespace DotsLite.Character
                 //Rotations = rots,
                 //Positions = poss,
             }
-            .ScheduleParallelEach(this.Reciever, 32, this.Dependency);
+            .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
         }
 
 
         [BurstCompile]
-        public struct JobExecution : HitMessage<HitMessage>.IApplyJobExecutionForEach
+        public struct JobExecution : HitMessage<HitMessage>.IApplyJobExecutionForKey
         {
 
             public EntityCommandBuffer.ParallelWriter Cmd;
@@ -83,37 +83,23 @@ namespace DotsLite.Character
 
 
             [BurstCompile]
-            public void Execute(int index, Entity targetEntity, HitMessage hitMessage)
+            public void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, HitMessage>.Enumerator msgs)
             {
+
 
                 this.Cmd.AddComponent(index, targetEntity,
                     new AntAction.DamageState
                     {
-                        EntTime = this.CurrentTime + 0.5f,
+                        EntTime = this.CurrentTime + 0.3f,
                     }
                 );
 
-            }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static void createDebris_
-                (
-                    EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity debrisPrefab_,
-                    Rotation rot_, Translation pos_
-                )
-            {
+                foreach (var msg in msgs)
+                {
 
-                var ent = cmd_.Instantiate(uniqueIndex_, debrisPrefab_);
-                cmd_.SetComponent(uniqueIndex_, ent, rot_);
-                cmd_.SetComponent(uniqueIndex_, ent, pos_);
+                }
 
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static void destroyPart_
-                (EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity part_)
-            {
-                cmd_.DestroyEntity(uniqueIndex_, part_);
             }
         }
     }

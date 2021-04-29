@@ -13,7 +13,7 @@ using Unity.Properties;
 using Unity.Burst;
 using DotsLite.Geometry;
 
-namespace DotsLite.Hit
+namespace DotsLite.Collision
 {
 
     static public partial class Hit
@@ -21,6 +21,7 @@ namespace DotsLite.Hit
 
         public enum HitType
         {
+            none,
             charactor,
             part,
 
@@ -30,7 +31,7 @@ namespace DotsLite.Hit
         // コリジョンを持つエンティティに付け、ヒット処理の適用対象に誘導する。
         public struct TargetData : IComponentData
         {
-            public Entity StateEntity;
+            public Entity MainEntity;
             public HitType HitType;
         }
 
