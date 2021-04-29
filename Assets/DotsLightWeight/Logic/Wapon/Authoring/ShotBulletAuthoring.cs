@@ -36,6 +36,8 @@ namespace DotsLite.Arms.Authoring
         public float GravityFactor;
         public float AimFactor;
 
+        public BulletType BulletType;
+
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -60,7 +62,8 @@ namespace DotsLite.Arms.Authoring
                         typeof(Bullet.AccelerationData),
                         typeof(Bullet.DistanceData),
                         typeof(Bullet.LifeTimeData),
-                        typeof(Particle.AdditionalData)
+                        typeof(Particle.AdditionalData),
+                        this.BulletType.ToComponentType()
                     })
                     : new ComponentTypes(new ComponentType[]
                     {
@@ -69,7 +72,8 @@ namespace DotsLite.Arms.Authoring
                         typeof(Bullet.VelocityData),
                         typeof(Bullet.DistanceData),
                         typeof(Bullet.LifeTimeData),
-                        typeof(Particle.AdditionalData)
+                        typeof(Particle.AdditionalData),
+                        this.BulletType.ToComponentType()
                     });
                 em.AddComponents(bulletEntity, types);
 

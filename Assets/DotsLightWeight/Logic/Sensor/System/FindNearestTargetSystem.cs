@@ -76,7 +76,7 @@ namespace DotsLite.Character
                     {
 
                         // 暫定：あとでグループ対応コレクターにすること
-                        var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(collision.Distance, collision.PostureEntity, targets);
+                        var collector = new ClosestTargetedHitExcludeSelfCollector<DistanceHit>(collision.Distance, collision.PostureEntity, targets);
 
 
                         var startpos = poss[collision.PostureEntity].Value;

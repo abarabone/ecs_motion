@@ -75,8 +75,10 @@ namespace DotsLite.Structure.Authoring
 
 
 
+            var posture = this.FindParent<StructureBuildingModelAuthoring>()
+                .GetComponentInChildren<PostureAuthoring>();
 
-            initPartData_(conversionSystem, this.gameObject, this.PartId);
+            initPartData_(conversionSystem, posture, this, this.PartId);
 
             //createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
             //createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
@@ -87,7 +89,7 @@ namespace DotsLite.Structure.Authoring
 
 
             static void initPartData_
-                (GameObjectConversionSystem gcs, GameObject part, int partId)
+                (GameObjectConversionSystem gcs, PostureAuthoring main, StructurePartAuthoring part, int partId)
             {
                 var em = gcs.DstEntityManager;
 
@@ -95,6 +97,7 @@ namespace DotsLite.Structure.Authoring
                 var addtypes = new ComponentTypes
                 (
                     typeof(StructurePart.PartData),
+                    typeof(Collision.Hit.TargetData),
                     typeof(Disabled)
                 );
                 em.AddComponents(ent, addtypes);
@@ -105,6 +108,13 @@ namespace DotsLite.Structure.Authoring
                     {
                         PartId = partId,
                         //Life = 
+                    }
+                );
+                em.SetComponentData(ent,
+                    new Collision.Hit.TargetData
+                    {
+                        MainEntity = gcs.GetPrimaryEntity(main),
+                        HitType = Collision.Hit.HitType.part,
                     }
                 );
             }

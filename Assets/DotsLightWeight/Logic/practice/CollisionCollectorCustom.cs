@@ -16,7 +16,7 @@ namespace DotsLite.Physics
     using DotsLite.Collision;
 
 
-    public struct ClosestHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
+    public struct ClosestTargetedHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
     {
         public bool EarlyOutOnFirstHit => false;//{ get; private set; }
         public float MaxFraction { get; private set; }
@@ -30,7 +30,7 @@ namespace DotsLite.Physics
         T m_ClosestHit;
         public T ClosestHit => m_ClosestHit;
 
-        public ClosestHitExcludeSelfCollector
+        public ClosestTargetedHitExcludeSelfCollector
             ( float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets )
         {
             this.MaxFraction = maxFraction;
@@ -69,7 +69,7 @@ namespace DotsLite.Physics
 
 
 
-    public struct AnyHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
+    public struct AnyTargetedHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
     {
         public bool EarlyOutOnFirstHit => this.NumHits > 0;
         public float MaxFraction { get; }
@@ -80,7 +80,7 @@ namespace DotsLite.Physics
         public Entity TargetStateEntity;
         ComponentDataFromEntity<Hit.TargetData> Targets;
 
-        public AnyHitExcludeSelfCollector
+        public AnyTargetedHitExcludeSelfCollector
             (float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets)
         {
             this.MaxFraction = maxFraction;
@@ -111,5 +111,34 @@ namespace DotsLite.Physics
             return true;
         }
     }
-    
+
+
+
+
+    public struct AnyHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
+    {
+        public bool EarlyOutOnFirstHit => this.NumHits > 0;
+        public float MaxFraction { get; }
+        public int NumHits { get; private set; }
+
+        public Entity SelfEntity;
+        public Entity OtherEntity;
+
+        public AnyHitExcludeSelfCollector(float maxFraction, Entity selfStateEntity)
+        {
+            this.MaxFraction = maxFraction;
+            this.SelfEntity = selfStateEntity;
+            this.OtherEntity = Entity.Null;
+            this.NumHits = 0;
+        }
+
+        public bool AddHit(T hit)
+        {
+            if (hit.Entity == this.SelfEntity) return false;
+            this.OtherEntity = hit.Entity;
+            this.NumHits = 1;
+            return true;
+        }
+    }
+
 }

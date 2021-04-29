@@ -16,6 +16,10 @@ using UnityEngine.Assertions;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 using RaycastHit = Unity.Physics.RaycastHit;
+using Unity.Physics.Authoring;
+
+using CatId = PhysicsCategoryNamesId;
+using CatFlag = PhysicsCategoryNamesFlag;
 
 namespace DotsLite.Character
 {
@@ -50,12 +54,10 @@ namespace DotsLite.Character
                 (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
 
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
-            var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
 
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(targets)
                 .WithReadOnly(cw)
                 .ForEach(
                     (
@@ -74,10 +76,10 @@ namespace DotsLite.Character
                             MaxDistance = sphere.Distance,
                             Filter = sphere.Filter,
                         };
-                        var collector = new AnyHitExcludeSelfCollector<DistanceHit>(sphere.Distance, entity, targets);
+                        var collector = new AnyHitExcludeSelfCollector<DistanceHit>(sphere.Distance, entity);
                         var isHit = cw.CalculateDistance(hitInput, ref collector);
 
-                        ground.IsGround = collector.NumHits > 0;
+                        ground.IsGround = isHit;//collector.NumHits > 0;
                     }
                 )
                 .ScheduleParallel();

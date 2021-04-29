@@ -82,7 +82,7 @@ namespace DotsLite.Character
                             MaxDistance = walling.HangerRange,//.CenterHeight,//.HangerRange,
                             Filter = walling.Filter,
                         };
-                        var collector = new ClosestHitExcludeSelfCollector<DistanceHit>(1.0f, entity, targets);
+                        var collector = new ClosestTargetedHitExcludeSelfCollector<DistanceHit>(1.0f, entity, targets);
                         var isHit = collisionWorld.CalculateDistance(hitInput, ref collector);
 
                         if (collector.NumHits <= 0) return;

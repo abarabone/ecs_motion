@@ -62,6 +62,8 @@ namespace DotsLite.Character.Action
             var rotations = this.GetComponentDataFromEntity<Rotation>();
 
             this.Entities
+                .WithBurst()
+                .WithNone<AntAction.DamageState>()
                 .WithReadOnly(motionInfos)
                 .WithReadOnly(groundResults)
                 .WithNativeDisableParallelForRestriction(motionCursors)

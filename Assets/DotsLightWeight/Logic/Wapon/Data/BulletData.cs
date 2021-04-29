@@ -77,6 +77,16 @@ namespace DotsLite.Arms
         // 残り時間は、できれば終了時刻に変更する
         // 残り距離は、時間に換算できないか検討する
 
+
+
+        public struct RayTag : IComponentData
+        { }
+
+        public struct SphereTag : IComponentData
+        { }
+
+        public struct BeamTag : IComponentData
+        { }
     }
 
 }

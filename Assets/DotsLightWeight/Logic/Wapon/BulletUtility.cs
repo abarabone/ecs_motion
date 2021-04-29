@@ -48,9 +48,28 @@ namespace DotsLite.Arms
 
 
 
+    public enum BulletType
+    {
+        None,
+        Bullet,
+        Sphere,
+        Explosion,
+        Beam,
+    }
+
 
     static public class Bulletss
     {
+
+        static public ComponentType ToComponentType(this BulletType type) =>
+            type switch
+            {
+                BulletType.Bullet => typeof(Bullet.RayTag),
+                BulletType.Sphere => typeof(Bullet.SphereTag),
+                BulletType.Beam => typeof(Bullet.BeamTag),
+                _ => default,
+            };
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void InstantiateBullet(
@@ -112,7 +131,7 @@ namespace DotsLite.Arms
             var filter = new CollisionFilter
             {
                 BelongsTo = CollisionFilter.Default.BelongsTo,
-                CollidesWith = CatFlag.datail | CatFlag.field,// | CatFlag.detenv,
+                CollidesWith = CatFlag.datail | CatFlag.field | CatFlag.detenv,
             };
 
             var hitInput = new RaycastInput
@@ -122,9 +141,39 @@ namespace DotsLite.Arms
                 Filter = filter,//CollisionFilter.Default,//
             };
 
-            var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(distance, selfStateEntity, links);
+            var collector = new ClosestTargetedHitExcludeSelfCollector<RaycastHit>(distance, selfStateEntity, links);
 
             var isHit = cw.CastRay(hitInput, ref collector);
+
+
+            return new BulletHit
+            {
+                isHit = isHit,
+                hitType = collector.HitType,
+                posision = collector.ClosestHit.Position,
+                normal = collector.ClosestHit.SurfaceNormal,
+                hitEntity = collector.ClosestHit.Entity,
+                stateEntity = collector.TargetStateEntity,
+            };
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public BulletHit BulletHitSphere(
+            ref this CollisionWorld cw,
+            Entity selfStateEntity, float3 pos, float radius,
+            ComponentDataFromEntity<Hit.TargetData> links)
+        {
+
+            var filter = new CollisionFilter
+            {
+                BelongsTo = CollisionFilter.Default.BelongsTo,
+                CollidesWith = CatFlag.datail | CatFlag.field | CatFlag.detenv,
+            };
+
+            var collector = new ClosestTargetedHitExcludeSelfCollector<DistanceHit>(radius, selfStateEntity, links);
+
+            var isHit = cw.OverlapSphereCustom(pos, radius, ref collector, filter);
 
 
             return new BulletHit

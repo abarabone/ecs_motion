@@ -250,7 +250,7 @@ namespace DotsLite.Character
         public static HitFlagAndResult raycast
             (ref this PhysicsWorld pw, RaycastInput hitInput, Entity self, ComponentDataFromEntity<Hit.TargetData> mainlist)
         {
-            var collector = new ClosestHitExcludeSelfCollector<RaycastHit>(maxFraction: 1.0f, self, mainlist);
+            var collector = new ClosestTargetedHitExcludeSelfCollector<RaycastHit>(maxFraction: 1.0f, self, mainlist);
 
             var isHit = pw.CastRay(hitInput, ref collector);
 

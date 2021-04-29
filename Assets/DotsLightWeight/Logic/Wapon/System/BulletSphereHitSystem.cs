@@ -32,37 +32,44 @@ namespace DotsLite.Arms
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
-    public class BulletHitSystem : DependencyAccessableSystemBase
+    public class BulletSphereHitSystem : DependencyAccessableSystemBase
     {
 
+        CommandBufferDependency.Sender cmddep;
+
+        PhysicsHitDependency.Sender phydep;
 
         HitMessage<Structure.HitMessage>.Sender stSender;
         HitMessage<Character.HitMessage>.Sender chSender;
 
-        PhysicsHitDependency.Sender phydep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.stSender = HitMessage<Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
-            this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
+
+            this.stSender = HitMessage<Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
+            this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
         }
 
 
         protected override void OnUpdate()
         {
+            using var cmdScope = this.cmddep.WithDependencyScope();
             using var phyScope = this.phydep.WithDependencyScope();
             using var sthitScope = this.stSender.WithDependencyScope();
             using var chhitScope = this.chSender.WithDependencyScope();
 
 
+            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cw = this.phydep.PhysicsWorld.CollisionWorld;
             var sthit = this.stSender.AsParallelWriter();
             var chhit = this.chSender.AsParallelWriter();
-            var cw = this.phydep.PhysicsWorld.CollisionWorld;
+
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
@@ -71,7 +78,7 @@ namespace DotsLite.Arms
 
             this.Entities
                 .WithBurst()
-                .WithAll<Bullet.SpecData>()// ビームを除外するため
+                .WithAll<Bullet.SphereTag>()
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
@@ -81,18 +88,18 @@ namespace DotsLite.Arms
                 .WithNativeDisableContainerSafetyRestriction(chhit)
                 .ForEach(
                     (
-                        Entity fireEntity,// int entityInQueryIndex,
+                        Entity entity, int entityInQueryIndex,
                         in Particle.TranslationPtoPData ptop,
+                        in Particle.AdditionalData additional,
                         //in Bullet.SpecData bullet,
                         in Bullet.LinkData link,
                         //in Bullet.DistanceData dist
                         in Bullet.VelocityData v
                     ) =>
                     {
-                        //var hit = cw.BulletHitRay
-                        //    (bullet.MainEntity, ptop.Start, ptop.End, dist.RestRangeDistance, mainLinks);
-                        var hit = cw.BulletHitRay
-                            (link.StateEntity, ptop.Start, ptop.End, 1.0f, targets);
+
+                        var hit = cw.BulletHitSphere
+                            (link.StateEntity, ptop.Start, additional.Size, targets);
 
                         if (!hit.isHit) return;
 
@@ -108,6 +115,8 @@ namespace DotsLite.Arms
                             default:
                                 break;
                         }
+
+                        cmd.DestroyEntity(entityInQueryIndex, entity);
                     }
                 )
                 .ScheduleParallel();
