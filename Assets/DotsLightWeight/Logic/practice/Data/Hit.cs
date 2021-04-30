@@ -64,6 +64,12 @@ namespace DotsLite.Character
             public float4 DamageForce;
         }
 
+        public struct DeadState : IComponentData
+        {
+            public int Phase;
+            public float RemoveTime;
+        }
+
     }
 
 }

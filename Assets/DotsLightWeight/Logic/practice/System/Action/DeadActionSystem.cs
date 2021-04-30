@@ -34,7 +34,7 @@ namespace DotsLite.Character.Action
     //[DisableAutoCreation]
     [UpdateAfter(typeof(AntMoveDirectionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class AntrDamageActionSystem : DependencyAccessableSystemBase
+    public class DeadActionSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;
@@ -67,19 +67,14 @@ namespace DotsLite.Character.Action
 
             this.Entities
                 .WithBurst()
-                //.WithAll<AntTag>()
                 .WithReadOnly(motionInfos)
-                //.WithReadOnly(targetposs)
-                //.WithReadOnly(poss)
-                //.WithReadOnly(mvspds)
                 .WithNativeDisableParallelForRestriction(motionCursors)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref CharacterAction.DamageState state,
+                        ref CharacterAction.DeadState state,
                         in ActionState.MotionLinkDate mlink,
                         in ActionState.PostureLinkData plink
-                        //in TargetSensorHolderLink.HolderLinkData holderLink
                     )
                 =>
                     {
@@ -97,32 +92,32 @@ namespace DotsLite.Character.Action
                         }
 
 
-                        if (currentTime <= state.EndTime) return;
+                        if (currentTime <= state.RemoveTime) return;
 
-                        cmd.RemoveComponent<CharacterAction.DamageState>(entityInQueryIndex, entity);
+                        cmd.DestroyEntity(entityInQueryIndex, entity);
 
                         return;
 
 
                         void initPhase_(
-                            ref CharacterAction.DamageState state,
+                            ref CharacterAction.DeadState state,
                             in ActionState.MotionLinkDate mlink,
                             in ActionState.PostureLinkData plink)
                         {
 
-                            cmd.AddComponent(entityInQueryIndex, plink.PostureEntity,
-                                new Move.EasingSpeedData
-                                {
-                                    Rate = 3.0f,
-                                    TargetSpeedPerSec = 0.0f,
-                                }
-                            );
+                            //cmd.AddComponent(entityInQueryIndex, plink.PostureEntity,
+                            //    new Move.EasingSpeedData
+                            //    {
+                            //        Rate = 3.0f,
+                            //        TargetSpeedPerSec = 0.0f,
+                            //    }
+                            //);
 
 
                             var motion = new MotionOperator
                                 (cmd, motionInfos, motionCursors, mlink.MotionEntity, entityInQueryIndex);
 
-                            motion.Start(Motion_ant.seaching, isLooping: true, delayTime: 0.1f, scale: 1.0f);
+                            motion.Start(Motion_ant.dead, isLooping: true, delayTime: 0.1f, scale: 0.2f);
 
                             state.Phase++;
                         }
@@ -130,7 +125,7 @@ namespace DotsLite.Character.Action
                     }
                 )
                 .ScheduleParallel();
-                
+
 
         }
 
