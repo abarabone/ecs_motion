@@ -35,7 +35,7 @@ namespace DotsLite.Dependency
 
             public struct DependencyScope : IDisposable
             {
-                public Sender parent;
+                public Sender parent { set; private get; }
 
                 public void Dispose()
                 {

@@ -33,7 +33,7 @@ namespace DotsLite.CharacterMotion
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var linkers = this.GetComponentDataFromEntity<Stream.RelationData>( isReadOnly: true );
             var shifters = this.GetComponentDataFromEntity<Stream.KeyShiftData>();
@@ -69,7 +69,7 @@ namespace DotsLite.CharacterMotion
                         makeEnableSection( entityInQueryIndex, linker.PositionStreamTop );
                         makeEnableSection( entityInQueryIndex, linker.RotationStreamTop );
 
-                        commands.RemoveComponent<Motion.InitializeData>( entityInQueryIndex, entity );
+                        cmd.RemoveComponent<Motion.InitializeData>( entityInQueryIndex, entity );
                     }
                 )
                 .ScheduleParallel();
@@ -105,7 +105,7 @@ namespace DotsLite.CharacterMotion
             {
                 for( var ent = entTop; ent != Entity.Null; ent = linkers[ ent ].NextStreamEntity )
                 {
-                    commands.RemoveComponent<Disabled>( index, ent );
+                    cmd.RemoveComponent<Disabled>( index, ent );
                 }
             }
         }

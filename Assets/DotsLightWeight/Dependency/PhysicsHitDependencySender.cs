@@ -34,7 +34,7 @@ namespace DotsLite.Dependency
                 };
 
 
-            public PhysicsWorld PhysicsWorld => this.buildPhysicsWorld.PhysicsWorld;
+            //public PhysicsWorld PhysicsWorld => this.buildPhysicsWorld.PhysicsWorld;
 
 
             public DisposableDependency WithDependencyScope()
@@ -47,7 +47,9 @@ namespace DotsLite.Dependency
 
             public struct DisposableDependency : IDisposable
             {
-                public Sender parent;
+                public Sender parent { set; private get; }
+
+                public PhysicsWorld PhysicsWorld => this.parent.buildPhysicsWorld.PhysicsWorld;
 
                 public void Dispose()
                 {

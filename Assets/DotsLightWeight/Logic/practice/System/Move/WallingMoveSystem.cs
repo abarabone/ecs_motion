@@ -73,8 +73,9 @@ namespace DotsLite.Character
             using var phyScope = this.phydep.WithDependencyScope();
 
 
+            var physicsWorld = phyScope.PhysicsWorld;//.CollisionWorld;
+
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
-            var physicsWorld = this.phydep.PhysicsWorld;//.CollisionWorld;
             var deltaTime = this.Time.DeltaTime;//UnityEngine.Time.fixedDeltaTime,
             var rdt = 1.0f / deltaTime;
 

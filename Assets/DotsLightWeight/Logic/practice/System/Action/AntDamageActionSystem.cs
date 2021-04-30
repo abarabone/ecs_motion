@@ -52,7 +52,7 @@ namespace DotsLite.Character.Action
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var motionInfos = this.GetComponentDataFromEntity<Motion.InfoData>(isReadOnly: true);
             var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>();
@@ -76,7 +76,7 @@ namespace DotsLite.Character.Action
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref AntAction.DamageState state,
+                        ref CharacterAction.DamageState state,
                         in ActionState.MotionLinkDate mlink,
                         in ActionState.PostureLinkData plink
                         //in TargetSensorHolderLink.HolderLinkData holderLink
@@ -97,15 +97,15 @@ namespace DotsLite.Character.Action
                         }
 
 
-                        if (currentTime <= state.EntTime) return;
+                        if (currentTime <= state.EndTime) return;
 
-                        cmd.RemoveComponent<AntAction.DamageState>(entityInQueryIndex, entity);
+                        cmd.RemoveComponent<CharacterAction.DamageState>(entityInQueryIndex, entity);
 
                         return;
 
 
                         void initPhase_(
-                            ref AntAction.DamageState state,
+                            ref CharacterAction.DamageState state,
                             in ActionState.MotionLinkDate mlink,
                             in ActionState.PostureLinkData plink)
                         {

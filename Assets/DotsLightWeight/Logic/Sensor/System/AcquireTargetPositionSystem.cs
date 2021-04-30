@@ -48,7 +48,7 @@ namespace DotsLite.Character
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             this.Entities

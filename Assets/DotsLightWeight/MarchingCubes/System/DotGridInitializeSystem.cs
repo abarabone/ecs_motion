@@ -33,7 +33,7 @@ namespace DotsLite.MarchingCubes
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var cmd = this.cmddep.CreateCommandBuffer();
+            var cmd = cmdScope.CommandBuffer;
 
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
             var defaults = globaldata.DefaultGrids;

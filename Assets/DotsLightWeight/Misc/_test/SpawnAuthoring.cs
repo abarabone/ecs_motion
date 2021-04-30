@@ -92,7 +92,7 @@ public class SpawnFreqencySystem : DependencyAccessableSystemBase
         using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-        var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+        var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
         this.Entities
             .WithBurst()
@@ -143,7 +143,7 @@ public class SpawnSystem : DependencyAccessableSystemBase
         using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-        var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+        var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
         this.Entities
             .WithBurst()
@@ -196,7 +196,7 @@ public class ObjectInitializeSystem : DependencyAccessableSystemBase
         using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-        var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+        var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
         this.Entities
             //.WithoutBurst()

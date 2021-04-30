@@ -27,8 +27,8 @@ namespace DotsLite.Dependency
 
 
 
-            public EntityCommandBuffer CreateCommandBuffer() =>
-                this.commandSystem.CreateCommandBuffer();
+            //public EntityCommandBuffer CreateCommandBuffer() =>
+            //    this.commandSystem.CreateCommandBuffer();
 
 
             public DisposableDependency WithDependencyScope()
@@ -39,7 +39,9 @@ namespace DotsLite.Dependency
 
             public struct DisposableDependency : IDisposable
             {
-                public Sender parent;
+                public Sender parent { set; private get; }
+
+                public EntityCommandBuffer CommandBuffer => this.parent.commandSystem.CreateCommandBuffer();
 
                 public void Dispose()
                 {

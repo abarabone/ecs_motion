@@ -55,7 +55,7 @@ namespace DotsLite.Character
 
 
             var dt = this.Time.DeltaTime;
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             this.Entities
                 .WithBurst()

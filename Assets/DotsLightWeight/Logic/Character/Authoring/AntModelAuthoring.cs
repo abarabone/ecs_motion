@@ -35,6 +35,9 @@ namespace DotsLite.Model.Authoring
         public float ed;
 
 
+        public float ArmorDurability;
+
+
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             base.Convert(entity, dstManager, conversionSystem);
@@ -145,21 +148,27 @@ namespace DotsLite.Model.Authoring
             {
                 var em = gcs.DstEntityManager;
 
-                var types = new ComponentTypes
-                (
+                var types = new ComponentTypes(new ComponentType[]
+                {
                     typeof(AntTag),
 
                     typeof(AntAction.WalkState),
                     typeof(AntAction.AttackTimeRange),
 
-                    typeof(Control.ActionData)
-                );
+                    typeof(Control.ActionData),
+
+                    typeof(Armor.SimpleDamageData)
+                });
                 var ent = gcs.GetOrCreateEntity(state, types);
 
                 em.SetComponentData(ent, new AntAction.AttackTimeRange
                 {
                     st = st,
                     ed = ed,
+                });
+                em.SetComponentData(ent, new Armor.SimpleDamageData
+                {
+                    Durability = this.ArmorDurability,
                 });
             }
 

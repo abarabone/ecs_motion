@@ -54,7 +54,7 @@ namespace DotsLite.Character
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             //inputDeps = new SwitchWallingAndFreeFallWithHitJob
             //{
@@ -84,10 +84,10 @@ namespace DotsLite.Character
                         {
                             if (wallHitResults[entity].IsHit)
                             {
-                                //commands.RemoveComponent<PhysicsVelocity>(entityInQueryIndex, entity);
+                                //cmd.RemoveComponent<PhysicsVelocity>(entityInQueryIndex, entity);
                                 cmd.RemoveComponent<WallHitResultData>(entityInQueryIndex, entity);
 
-                                //commands.AddComponent( jobIndex, entity, new WallHunggingData { } );
+                                //cmd.AddComponent( jobIndex, entity, new WallHunggingData { } );
                                 g = new PhysicsGravityFactor { Value = 0.0f };
                                 walling.State = WallHangingData.WallingState.none_rotating;
 
@@ -104,9 +104,9 @@ namespace DotsLite.Character
                         {
                             if (walling.State > WallHangingData.WallingState.front_45_rotating)
                             {
-                                //commands.RemoveComponent<WallHunggingData>( entityInQueryIndex, entity );
+                                //cmd.RemoveComponent<WallHunggingData>( entityInQueryIndex, entity );
 
-                                //commands.AddComponent( jobIndex, entity, new PhysicsVelocity { } );
+                                //cmd.AddComponent( jobIndex, entity, new PhysicsVelocity { } );
                                 cmd.AddComponent(entityInQueryIndex, entity, new WallHitResultData { });
                                 g = new PhysicsGravityFactor { Value = 1.0f };
 

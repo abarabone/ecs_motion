@@ -65,7 +65,7 @@
 //            //.Schedule( this, inputDeps );
 //            //this.ecb.AddJobHandleForProducer( inputDeps );
 
-//            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+//            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 //            var motionInfos = this.GetComponentDataFromEntity<Motion.InfoData>(isReadOnly: true);
 //            var groundResults = this.GetComponentDataFromEntity<GroundHitResultData>(isReadOnly: true);
 //            var rotations = this.GetComponentDataFromEntity<Rotation>();
@@ -95,7 +95,7 @@
 
 //                        if (acts.IsChangeMotion)
 //                        {
-//                            commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+//                            cmd.AddComponent(entityInQueryIndex, linker.MotionEntity,
 //                                new Motion.InitializeData
 //                                {
 //                                    MotionIndex = (motionInfo.MotionIndex + 1) % 10,
@@ -107,7 +107,7 @@
 //                        if (!groundResults[linker.PostureEntity].IsGround)
 //                        {
 //                            if (motionInfo.MotionIndex != Motion_riku.jump02)
-//                                commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+//                                cmd.AddComponent(entityInQueryIndex, linker.MotionEntity,
 //                                    new Motion.InitializeData
 //                                    {
 //                                        MotionIndex = Motion_riku.jump02,
@@ -122,7 +122,7 @@
 //                        {
 //                            if (motionInfo.MotionIndex != Motion_riku.walk_stance)
 //                            {
-//                                commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+//                                cmd.AddComponent(entityInQueryIndex, linker.MotionEntity,
 //                                    new Motion.InitializeData
 //                                    {
 //                                        MotionIndex = Motion_riku.walk_stance,
@@ -142,7 +142,7 @@
 //                        {
 //                            if (motionInfo.MotionIndex != Motion_riku.stand_stance)
 //                            {
-//                                commands.AddComponent(entityInQueryIndex, linker.MotionEntity,
+//                                cmd.AddComponent(entityInQueryIndex, linker.MotionEntity,
 //                                    new Motion.InitializeData
 //                                    {
 //                                        MotionIndex = Motion_riku.stand_stance,

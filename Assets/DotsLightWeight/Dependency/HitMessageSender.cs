@@ -36,8 +36,8 @@ namespace DotsLite.Dependency
                 };
 
 
-            public ParallelWriter AsParallelWriter() =>
-                this.recievableSystem.Reciever.Holder.AsParallelWriter();
+            //public ParallelWriter AsParallelWriter() =>
+            //    this.recievableSystem.Reciever.Holder.AsParallelWriter();
 
 
             public DisposableDependency WithDependencyScope() =>
@@ -46,7 +46,10 @@ namespace DotsLite.Dependency
 
             public struct DisposableDependency : IDisposable
             {
-                public Sender parent;
+                public Sender parent { set; private get; }
+
+                public ParallelWriter MessagerAsParallelWriter =>
+                    this.parent.recievableSystem.Reciever.Holder.AsParallelWriter();
 
                 public void Dispose()
                 {

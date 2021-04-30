@@ -12,6 +12,7 @@ using System.Runtime.CompilerServices;
 namespace DotsLite.Character
 {
     using DotsLite.Dependency;
+    using DotsLite.Utilities;
 
     public struct HitMessage : IHitMessage
     {
@@ -53,7 +54,7 @@ namespace DotsLite.Character
             using var cmdScope = this.cmddep.WithDependencyScope();
 
             
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
@@ -86,19 +87,24 @@ namespace DotsLite.Character
             public void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, HitMessage>.Enumerator msgs)
             {
 
-
-                this.Cmd.AddComponent(index, targetEntity,
-                    new AntAction.DamageState
-                    {
-                        EntTime = this.CurrentTime + 0.3f,
-                    }
-                );
-
+                var damage = 0.0f;
+                var force = float3.zero;
 
                 foreach (var msg in msgs)
                 {
-
+                    damage += msg.Damage;
+                    force += msg.Force;
                 }
+
+
+                this.Cmd.AddComponent(index, targetEntity,
+                    new CharacterAction.DamageState
+                    {
+                        EndTime = this.CurrentTime + 0.3f,
+                        Damage = damage,
+                        DamageForce = force.As_float4(),
+                    }
+                );
 
             }
         }

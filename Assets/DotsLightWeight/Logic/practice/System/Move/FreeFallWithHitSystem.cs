@@ -56,7 +56,7 @@ namespace DotsLite.Character
 
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
-            var collisionWorld = this.phydep.PhysicsWorld.CollisionWorld;
+            var collisionWorld = phyScope.PhysicsWorld.CollisionWorld;
 
             this.Entities
                 .WithBurst()

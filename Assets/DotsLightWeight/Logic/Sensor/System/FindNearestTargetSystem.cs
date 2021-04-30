@@ -54,8 +54,8 @@ namespace DotsLite.Character
             using var phyScope = this.phydep.WithDependencyScope();
 
 
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
-            var cw = this.phydep.PhysicsWorld.CollisionWorld;
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
+            var cw = phyScope.PhysicsWorld.CollisionWorld;
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);

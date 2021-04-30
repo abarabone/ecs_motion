@@ -53,7 +53,7 @@ namespace DotsLite.Structure
             using var cmdScope = this.cmddep.WithDependencyScope();
 
             
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var destructions = this.GetComponentDataFromEntity<StructureMain.PartDestructionData>();
             var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);

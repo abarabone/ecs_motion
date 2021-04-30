@@ -77,10 +77,10 @@ namespace DotsLite.Arms
             using var chhitScope = this.chSender.WithDependencyScope();
 
 
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
-            var cw = this.phydep.PhysicsWorld.CollisionWorld;
-            var sthit = this.stSender.AsParallelWriter();
-            var chhit = this.chSender.AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
+            var cw = phyScope.PhysicsWorld.CollisionWorld;
+            var sthit = sthitScope.MessagerAsParallelWriter;
+            var chhit = chhitScope.MessagerAsParallelWriter;
 
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);

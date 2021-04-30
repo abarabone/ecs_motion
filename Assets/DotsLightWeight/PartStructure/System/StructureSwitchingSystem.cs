@@ -51,7 +51,7 @@ namespace DotsLite.Draw
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             //var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);

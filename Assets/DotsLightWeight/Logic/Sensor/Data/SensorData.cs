@@ -37,17 +37,6 @@ namespace DotsLite.Targeting
 
 
 
-    // ダメージなど -----------------------------------------------------
-
-    public static class Life
-    {
-        public struct SimpleDamageData : IComponentData
-        {
-            public float Durability;
-        }
-    }
-
-
     // 移動先関連 -----------------------------------------------------------
 
 

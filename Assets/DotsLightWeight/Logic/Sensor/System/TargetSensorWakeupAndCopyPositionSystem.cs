@@ -51,7 +51,7 @@ namespace DotsLite.Character
             var sensorPoss = this.GetComponentDataFromEntity<TargetSensorResponse.PositionData>(isReadOnly: true);
             var disables = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var currentTime = this.Time.ElapsedTime;
 

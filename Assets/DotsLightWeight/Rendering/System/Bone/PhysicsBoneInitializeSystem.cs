@@ -46,7 +46,7 @@ namespace DotsLite.Physics
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var commands = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             var translations = this.GetComponentDataFromEntity<Translation>();// isReadOnly: true );
             var rotations = this.GetComponentDataFromEntity<Rotation>();// isReadOnly: true );
 
@@ -77,7 +77,7 @@ namespace DotsLite.Physics
                         translations[entity] = pos;//
                         rotations[entity] = rot;//
 
-                        commands.RemoveComponent<Bone.InitializeData>(entityInQueryIndex, entity);
+                        cmd.RemoveComponent<Bone.InitializeData>(entityInQueryIndex, entity);
                     }
                 )
                 .ScheduleParallel();

@@ -52,7 +52,7 @@ namespace DotsLite.Character.Action
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var motionInfos = this.GetComponentDataFromEntity<Motion.InfoData>(isReadOnly: true);
             var motionCursors = this.GetComponentDataFromEntity<Motion.CursorData>();
@@ -69,7 +69,7 @@ namespace DotsLite.Character.Action
             this.Entities
                 .WithBurst()
                 .WithAll<AntTag>()
-                .WithNone<AntAction.DamageState>()
+                .WithNone<CharacterAction.DamageState>()
                 .WithReadOnly(motionInfos)
                 .WithReadOnly(targetposs)
                 .WithReadOnly(poss)

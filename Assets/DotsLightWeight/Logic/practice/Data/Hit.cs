@@ -37,5 +37,33 @@ namespace DotsLite.Collision
 
 
     }
+}
+
+namespace DotsLite.Character
+{
+
+    static public partial class Armor
+    {
+
+
+        public struct SimpleDamageData : IComponentData
+        {
+            public float Durability;
+        }
+
+    }
+
+    static public partial class CharacterAction
+    {
+
+        public struct DamageState : IComponentData
+        {
+            public int Phase;
+            public float EndTime;
+            public float Damage;
+            public float4 DamageForce;
+        }
+
+    }
 
 }

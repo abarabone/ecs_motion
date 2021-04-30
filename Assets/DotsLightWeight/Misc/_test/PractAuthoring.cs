@@ -69,7 +69,7 @@ public class PracSpawnSystem : DependencyAccessableSystemBase
         using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-        var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+        var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
         this.Entities
             //.WithoutBurst()

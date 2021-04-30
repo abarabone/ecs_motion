@@ -53,7 +53,7 @@ namespace DotsLite.Draw
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var cmd = this.cmddep.CreateCommandBuffer().AsParallelWriter();
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var deltaTime = this.Time.DeltaTime;
 
