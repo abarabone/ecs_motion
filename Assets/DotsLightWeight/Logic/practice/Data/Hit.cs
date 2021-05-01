@@ -27,6 +27,20 @@ namespace DotsLite.Collision
 
         }
 
+        public enum Corps
+        {
+            human,
+            invader,
+            forener,
+            primer,
+            chronus,
+            core,
+            abyss,
+            predator,
+            messenger,
+
+        }
+
 
         // コリジョンを持つエンティティに付け、ヒット処理の適用対象に誘導する。
         public struct TargetData : IComponentData
@@ -35,6 +49,11 @@ namespace DotsLite.Collision
             public HitType HitType;
         }
 
+        public struct SensorTargetData : IComponentData
+        {
+            public Entity StateEntity;
+            public 
+        }
 
     }
 }

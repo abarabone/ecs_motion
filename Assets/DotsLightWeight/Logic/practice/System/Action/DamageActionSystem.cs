@@ -67,6 +67,7 @@ namespace DotsLite.Character.Action
 
             this.Entities
                 .WithBurst()
+                .WithNone<CharacterAction.DeadState>()
                 //.WithAll<AntTag>()
                 .WithReadOnly(motionInfos)
                 //.WithReadOnly(targetposs)
@@ -77,6 +78,7 @@ namespace DotsLite.Character.Action
                     (
                         Entity entity, int entityInQueryIndex,
                         ref CharacterAction.DamageState state,
+                        ref Armor.SimpleDamageData damage,
                         in ActionState.MotionLinkDate mlink,
                         in ActionState.PostureLinkData plink
                         //in TargetSensorHolderLink.HolderLinkData holderLink
@@ -86,7 +88,7 @@ namespace DotsLite.Character.Action
                         switch (state.Phase)
                         {
                             case 0:
-                                initPhase_(ref state, in mlink, in plink);
+                                initPhase_(ref damage, ref state, in mlink, in plink);
                                 break;
                             case 1:
                                 break;
@@ -105,6 +107,7 @@ namespace DotsLite.Character.Action
 
 
                         void initPhase_(
+                            ref Armor.SimpleDamageData damage,
                             ref CharacterAction.DamageState state,
                             in ActionState.MotionLinkDate mlink,
                             in ActionState.PostureLinkData plink)
@@ -123,6 +126,18 @@ namespace DotsLite.Character.Action
                                 (cmd, motionInfos, motionCursors, mlink.MotionEntity, entityInQueryIndex);
 
                             motion.Start(Motion_ant.seaching, isLooping: true, delayTime: 0.1f, scale: 1.0f);
+
+
+
+                            damage.Durability -= state.Damage;
+                            if (damage.Durability < 0.0f)
+                            {
+                                cmd.AddComponent(entityInQueryIndex, entity, new CharacterAction.DeadState
+                                {
+                                    RemoveTime = (float)currentTime + 5.0f,
+                                });
+                            }
+
 
                             state.Phase++;
                         }

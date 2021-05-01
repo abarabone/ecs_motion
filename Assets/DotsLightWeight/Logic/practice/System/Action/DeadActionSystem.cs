@@ -67,6 +67,8 @@ namespace DotsLite.Character.Action
 
             this.Entities
                 .WithBurst()
+                .WithAll<AntTag>()
+                .WithAll<CharacterAction.DamageState>()
                 .WithReadOnly(motionInfos)
                 .WithNativeDisableParallelForRestriction(motionCursors)
                 .ForEach(
@@ -74,7 +76,8 @@ namespace DotsLite.Character.Action
                         Entity entity, int entityInQueryIndex,
                         ref CharacterAction.DeadState state,
                         in ActionState.MotionLinkDate mlink,
-                        in ActionState.PostureLinkData plink
+                        in ActionState.PostureLinkData plink,
+                        in ActionState.BinderLinkData blink
                     )
                 =>
                     {
@@ -94,7 +97,7 @@ namespace DotsLite.Character.Action
 
                         if (currentTime <= state.RemoveTime) return;
 
-                        cmd.DestroyEntity(entityInQueryIndex, entity);
+                        cmd.DestroyEntity(entityInQueryIndex, blink.BinderEntity);
 
                         return;
 
@@ -112,6 +115,7 @@ namespace DotsLite.Character.Action
                             //        TargetSpeedPerSec = 0.0f,
                             //    }
                             //);
+                            cmd.RemoveComponent<GroundHitWallingData>(entityInQueryIndex, plink.PostureEntity);
 
 
                             var motion = new MotionOperator

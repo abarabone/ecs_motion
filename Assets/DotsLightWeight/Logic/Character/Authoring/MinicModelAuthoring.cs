@@ -25,6 +25,8 @@ namespace DotsLite.Model.Authoring
     public class MinicModelAuthoring : CharacterModelAuthoring, IConvertGameObjectToEntity
     {
 
+        public float ArmorDurability;
+
 
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -32,7 +34,7 @@ namespace DotsLite.Model.Authoring
 
 
             var state = this.GetComponentInChildren<ActionStateAuthoring>();
-            initState_(conversionSystem, state);
+            initState_(conversionSystem, state, this);
 
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             initPosture_(conversionSystem, posture, state);
@@ -68,7 +70,7 @@ namespace DotsLite.Model.Authoring
             }
 
             static void initState_
-                (GameObjectConversionSystem gcs, ActionStateAuthoring state)
+                (GameObjectConversionSystem gcs, ActionStateAuthoring state, MinicModelAuthoring minic)
             {
                 var em = gcs.DstEntityManager;
 
@@ -77,10 +79,16 @@ namespace DotsLite.Model.Authoring
                     typeof(PlayerTag),
 
                     typeof(MinicWalkActionState),
+                    typeof(Armor.SimpleDamageData),
 
                     typeof(Control.ActionData)
                 );
                 var ent = gcs.GetOrCreateEntity(state, types);
+
+                em.SetComponentData(ent, new Armor.SimpleDamageData
+                {
+                    Durability = minic.ArmorDurability,
+                });
             }
 
 
