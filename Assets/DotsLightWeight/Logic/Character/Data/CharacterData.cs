@@ -54,9 +54,9 @@ namespace DotsLite.Character
             public float vangle;
         }
 
-        public struct ActionLinkData : IComponentData
+        public struct StateLinkData : IComponentData
         {
-            public Entity ActionEntity;
+            public Entity StateEntity;
         }
     }
 

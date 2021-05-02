@@ -69,7 +69,8 @@ namespace DotsLite.Character
                         ref Translation pos,
                         ref Rotation rot,
                         ref PhysicsVelocity v,
-                        in GroundHitWallingData walling
+                        in GroundHitWallingData walling,
+                        in Control.StateLinkData slink
                     )
                 =>
                     {
@@ -82,11 +83,12 @@ namespace DotsLite.Character
                             MaxDistance = walling.HangerRange,//.CenterHeight,//.HangerRange,
                             Filter = walling.Filter,
                         };
-                        var collector = new ClosestTargetedHitExcludeSelfCollector<DistanceHit>(1.0f, entity, targets);
+                        //var collector = new ClosestTargetedHitExcludeSelfCollector<DistanceHit>(1.0f, entity, targets);
+                        var collector = new ClosestTargetedHitExcludeSelfCollector<DistanceHit>(walling.HangerRange, slink.StateEntity, targets);
                         var isHit = collisionWorld.CalculateDistance(hitInput, ref collector);
 
-                        if (collector.NumHits <= 0) return;
-                        //if (!isHit) return;
+                        //if (collector.NumHits <= 0) return;
+                        if (!isHit) return;
 
 
                         result.IsHit = true;

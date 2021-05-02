@@ -59,13 +59,13 @@ namespace DotsLite.Model.Authoring
 
                     typeof(Control.MoveData),
                     typeof(Control.WorkData),
-                    typeof(Control.ActionLinkData)
+                    typeof(Control.StateLinkData)
                 });
                 em.AddComponents(ent, types);
 
-                em.SetComponentData(ent, new Control.ActionLinkData
+                em.SetComponentData(ent, new Control.StateLinkData
                 {
-                    ActionEntity = gcs.GetOrCreateEntity(state),
+                    StateEntity = gcs.GetOrCreateEntity(state),
                 });
             }
 

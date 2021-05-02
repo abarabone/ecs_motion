@@ -142,10 +142,10 @@ namespace DotsLite.Arms
 
                         switch (hit.hitType)
                         {
-                            case Hit.HitType.part:
+                            case HitType.part:
                                 hit.PostStructureHitMessage(sthit, parts);
                                 break;
-                            case Hit.HitType.charactor:
+                            case HitType.charactor:
                                 hit.PostCharacterHitMessage(chhit, 1.0f, 0.0f);
                                 break;
                             default:

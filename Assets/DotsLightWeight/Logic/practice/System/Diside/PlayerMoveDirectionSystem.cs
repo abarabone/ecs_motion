@@ -172,14 +172,14 @@ namespace DotsLite.Character
                 .WithAll<PlayerTag>()
                 .WithNativeDisableParallelForRestriction(actions)
                 .ForEach(
-                    (ref Control.MoveData move, ref Control.WorkData work, in Control.ActionLinkData link) =>
+                    (ref Control.MoveData move, ref Control.WorkData work, in Control.StateLinkData link) =>
                     {
 
                         var c = this.playerControlFunction(ref work, dt);
 
                         move = c.move;
 
-                        actions[link.ActionEntity] = c.action;
+                        actions[link.StateEntity] = c.action;
 
                     }
                 )
