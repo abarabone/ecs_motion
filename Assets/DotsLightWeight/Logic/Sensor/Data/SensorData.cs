@@ -36,6 +36,29 @@ namespace DotsLite.Targeting
     }
 
 
+    // 受動側のコライダに置く -----------------------------------------------------------
+
+    public enum Corps
+    {
+        none = 0,
+        human = 1 << 0,
+        invader = 1 << 1,
+        forener = 1 << 2,
+        primer = 1 << 3,
+        chronus = 1 << 4,
+        core = 1 << 5,
+        abyss = 1 << 6,
+        triffids = 1 << 7,
+        predator = 1 << 8,
+        messenger = 1 << 9,
+    }
+
+    public struct TargetData : IComponentData
+    {
+        public Entity StateEntity;
+        public Corps Corps;
+    }
+
 
     // 移動先関連 -----------------------------------------------------------
 

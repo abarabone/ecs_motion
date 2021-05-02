@@ -114,7 +114,7 @@ namespace DotsLite.Structure.Authoring
                     new Collision.Hit.TargetData
                     {
                         MainEntity = gcs.GetPrimaryEntity(main),
-                        HitType = Collision.Hit.HitType.part,
+                        HitType = Collision.HitType.part,
                     }
                 );
             }

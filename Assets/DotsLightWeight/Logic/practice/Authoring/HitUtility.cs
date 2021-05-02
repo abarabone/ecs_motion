@@ -22,7 +22,7 @@ namespace DotsLite.Model.Authoring
     {
 
         public static void AddHitTargetsAllRigidBody(this GameObjectConversionSystem gcs,
-            ModelGroupAuthoring.ModelAuthoringBase top, Entity mainEntity, Hit.HitType type)
+            ModelGroupAuthoring.ModelAuthoringBase top, Entity mainEntity, HitType type)
         {
 
             top.GetComponentsInChildren<Unity.Physics.Authoring.PhysicsBodyAuthoring>()
@@ -31,8 +31,8 @@ namespace DotsLite.Model.Authoring
                 .ForEach(x => gcs.DstEntityManager.AddComponentData(x,
                     new Hit.TargetData
                     {
-                        HitType = type,
                         MainEntity = mainEntity,
+                        HitType = type,
                     })
                 );
 

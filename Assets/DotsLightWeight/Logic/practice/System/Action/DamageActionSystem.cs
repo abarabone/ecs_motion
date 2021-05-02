@@ -85,6 +85,9 @@ namespace DotsLite.Character.Action
                     )
                 =>
                     {
+                        //if (damage.Durability < 0.0f) return;
+
+
                         switch (state.Phase)
                         {
                             case 0:

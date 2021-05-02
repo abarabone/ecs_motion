@@ -34,6 +34,7 @@ namespace DotsLite.Model.Authoring
         public float st;
         public float ed;
 
+        public Corps Corps;
 
         public float ArmorDurability;
 
