@@ -26,14 +26,14 @@ namespace DotsLite.Targeting
         }
     }
 
-    // 所属グループ
-    public static partial class TargetGroup
-    {
-        public struct BelongToData : IComponentData
-        {
-            public int BelongTo;
-        }
-    }
+    //// 所属グループ
+    //public static partial class TargetGroup
+    //{
+    //    public struct BelongToData : IComponentData
+    //    {
+    //        public int BelongTo;
+    //    }
+    //}
 
 
     // 受動側のコライダに置く -----------------------------------------------------------
@@ -55,7 +55,6 @@ namespace DotsLite.Targeting
 
     public struct TargetData : IComponentData
     {
-        public Entity StateEntity;
         public Corps Corps;
     }
 

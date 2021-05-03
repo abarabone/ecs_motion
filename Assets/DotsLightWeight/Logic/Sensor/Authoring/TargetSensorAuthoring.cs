@@ -53,16 +53,22 @@ namespace DotsLite.Character.Authoring
 
 
             var holderEntity = createSensorHolder_(conversionSystem, holder);
+            
             var stateEntity = conversionSystem.GetOrCreateEntity(state);
-            dstManager.AddComponentData(stateEntity, new TargetSensorHolderLink.HolderLinkData
-            {
-                HolderEntity = holderEntity,
-            });
+            dstManager.AddComponentData(stateEntity,
+                new TargetSensorHolderLink.HolderLinkData
+                {
+                    HolderEntity = holderEntity,
+                }
+            );
+
             var postureEntity = conversionSystem.GetPrimaryEntity(posture);
-            dstManager.AddComponentData(postureEntity, new TargetSensorHolderLink.HolderLinkData
-            {
-                HolderEntity = holderEntity,
-            });
+            dstManager.AddComponentData(postureEntity,
+                new TargetSensorHolderLink.HolderLinkData
+                {
+                    HolderEntity = holderEntity,
+                }
+            );
 
             foreach (var src in this.Sensors)
             {

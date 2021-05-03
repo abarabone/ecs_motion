@@ -81,6 +81,8 @@ namespace DotsLite.Character.Action
                     )
                 =>
                     {
+                        var eqi = entityInQueryIndex;
+
                         switch (state.Phase)
                         {
                             case 0:
@@ -97,7 +99,7 @@ namespace DotsLite.Character.Action
 
                         if (currentTime <= state.RemoveTime) return;
 
-                        cmd.DestroyEntity(entityInQueryIndex, blink.BinderEntity);
+                        cmd.DestroyEntity(eqi, blink.BinderEntity);
 
                         return;
 
@@ -108,18 +110,18 @@ namespace DotsLite.Character.Action
                             in ActionState.PostureLinkData plink)
                         {
 
-                            //cmd.AddComponent(entityInQueryIndex, plink.PostureEntity,
+                            //cmd.AddComponent(eqi, plink.PostureEntity,
                             //    new Move.EasingSpeedData
                             //    {
                             //        Rate = 3.0f,
                             //        TargetSpeedPerSec = 0.0f,
                             //    }
                             //);
-                            cmd.RemoveComponent<GroundHitWallingData>(entityInQueryIndex, plink.PostureEntity);
+                            cmd.RemoveComponent<GroundHitWallingData>(eqi, plink.PostureEntity);
 
 
                             var motion = new MotionOperator
-                                (cmd, motionInfos, motionCursors, mlink.MotionEntity, entityInQueryIndex);
+                                (cmd, motionInfos, motionCursors, mlink.MotionEntity, eqi);
 
                             motion.Start(Motion_ant.dead, isLooping: true, delayTime: 0.1f, scale: 0.2f);
 
