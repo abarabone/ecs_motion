@@ -114,61 +114,61 @@ namespace DotsLite.Character
 
                         var n = collector.ClosestHit.SurfaceNormal;
                         var p = collector.ClosestHit.Position;
-                        //pos.Value = p;
+                        pos.Value = p;
 
-                        //var right = math.mul(rot.Value, new float3(1.0f, 0.0f, 0.0f));
-                        //var forward = math.cross(right, n);
-                        //var safe_forward = math.select(math.forward(rot.Value), forward, math.abs(math.dot(right, n)) > math.FLT_MIN_NORMAL);
-                        //rot.Value = quaternion.LookRotation(safe_forward, n);
+                        var right = math.mul(rot.Value, new float3(1.0f, 0.0f, 0.0f));
+                        var forward = math.cross(right, n);
+                        var safe_forward = math.select(math.forward(rot.Value), forward, math.abs(math.dot(right, n)) > math.FLT_MIN_NORMAL);
+                        rot.Value = quaternion.LookRotation(safe_forward, n);
 
-                        //v.Linear *= 0.3f;
-                        //v.Angular *= 0.3f;
+                        v.Linear *= 0.3f;
+                        v.Angular *= 0.3f;
 
-                        var par = caluclateWallPosture(pos.Value, p, n, up);
-                        v = setResultTo(par.pos, par.rot, mass, pos, rot, rdt);
-                        //var (newpos, newrot) = caluclateWallPosture(pos.Value, p, n, up);
-                        //v = setResultTo(newpos, newrot, mass, pos, rot, rdt);
+                        //var par = caluclateWallPosture(pos.Value, p, n, up);
+                        //v = setResultTo(par.pos, par.rot, mass, pos, rot, rdt);
+                        ////var (newpos, newrot) = caluclateWallPosture(pos.Value, p, n, up);
+                        ////v = setResultTo(newpos, newrot, mass, pos, rot, rdt);
                     }
                 )
                 .ScheduleParallel();
         }
 
 
-        // burst でタプルが使えるようになるまでの代用
-        public struct PosAndRot
-        {
-            public float3 pos;
-            public quaternion rot;
-        }
+        //// burst でタプルが使えるようになるまでの代用
+        //public struct PosAndRot
+        //{
+        //    public float3 pos;
+        //    public quaternion rot;
+        //}
 
-        [BurstCompile]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static (float3 newpos, quaternion newrot) caluclateWallPosture
-        public static PosAndRot caluclateWallPosture
-            (float3 o, float3 p, float3 n, float3 up)
-        {
-            var f = p - o;
-            var w = f - math.dot(f, n) * n;
+        //[BurstCompile]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        ////static (float3 newpos, quaternion newrot) caluclateWallPosture
+        //public static PosAndRot caluclateWallPosture
+        //    (float3 o, float3 p, float3 n, float3 up)
+        //{
+        //    var f = p - o;
+        //    var w = f - math.dot(f, n) * n;
 
-            var newpos = p + w;// + n * r;
+        //    var newpos = p + w;// + n * r;
 
-            var newfwd = math.normalizesafe(w, up);
-            var newrot = quaternion.LookRotationSafe(newfwd, n);
+        //    var newfwd = math.normalizesafe(w, up);
+        //    var newrot = quaternion.LookRotationSafe(newfwd, n);
 
-            //return (newpos, newrot);
-            return new PosAndRot { pos = newpos, rot = newrot };
-        }
+        //    //return (newpos, newrot);
+        //    return new PosAndRot { pos = newpos, rot = newrot };
+        //}
 
-        [BurstCompile]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static PhysicsVelocity setResultTo
-            (float3 newpos, quaternion newrot, PhysicsMass m, Translation pos, Rotation rot, float rdt)
-        {
+        //[BurstCompile]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static PhysicsVelocity setResultTo
+        //    (float3 newpos, quaternion newrot, PhysicsMass m, Translation pos, Rotation rot, float rdt)
+        //{
 
-            var rgtf = new RigidTransform(newrot, newpos);
+        //    var rgtf = new RigidTransform(newrot, newpos);
 
-            return PhysicsVelocity.CalculateVelocityToTarget(in m, in pos, in rot, in rgtf, rdt);
-        }
+        //    return PhysicsVelocity.CalculateVelocityToTarget(in m, in pos, in rot, in rgtf, rdt);
+        //}
 
 
     }
