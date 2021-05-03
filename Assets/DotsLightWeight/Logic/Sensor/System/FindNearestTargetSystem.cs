@@ -66,12 +66,10 @@ namespace DotsLite.Character
                 .WithReadOnly(targets)
                 .WithReadOnly(poss)
                 .WithReadOnly(cw)
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        ref TargetSensor.LinkTargetMainData target,
-                        in TargetSensor.CollisionData collision
-                    )
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    ref TargetSensor.LinkTargetMainData target,
+                    in TargetSensor.CollisionData collision)
                 =>
                     {
 
