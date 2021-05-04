@@ -26,9 +26,8 @@ namespace DotsLite.Character
     using DotsLite.SystemGroup;
     using DotsLite.Character;
     using DotsLite.Geometry;
-    using DotsLite.Physics;
-    using DotsLite.Model;
     using DotsLite.Collision;
+    using DotsLite.Model;
 
 
     static class FreeFallWithHitSystemBringYourOwnDelegate

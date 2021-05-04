@@ -28,10 +28,9 @@ namespace DotsLite.Character
     using DotsLite.Misc;
     using DotsLite.Utilities;
     using DotsLite.Character;
-    using DotsLite.Physics;
+    using DotsLite.Collision;
     using DotsLite.SystemGroup;
     using DotsLite.Model;
-    using DotsLite.Collision;
 
 
     //[DisableAutoCreation]

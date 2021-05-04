@@ -30,11 +30,10 @@ namespace DotsLite.Arms
     using DotsLite.CharacterMotion;
     using DotsLite.Misc;
     using DotsLite.Utilities;
-    using DotsLite.Physics;
+    using DotsLite.Collision;
     using DotsLite.SystemGroup;
     using DotsLite.Structure;
     using DotsLite.Dependency;
-    using DotsLite.Collision;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;

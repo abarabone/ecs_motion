@@ -6,64 +6,75 @@ using Unity.Collections;
 using Unity.Physics;
 using System;
 
-namespace DotsLite.Physics
+namespace DotsLite.Collision
 {
 
-    using Collider = Unity.Physics.Collider;
-    using SphereCollider = Unity.Physics.SphereCollider;
-    using RaycastHit = Unity.Physics.RaycastHit;
-    using DotsLite.Model;
-    using DotsLite.Collision;
+    using DotsLite.Character;
 
 
+    public static class CollectorExtension
+    {
+        public static ClosestCorpsExcludeSelfCollector<T> GetClosestCollector<T>(
+            this ComponentDataFromEntity<CorpsGroup.TargetData> corpss, float maxFraction, Targeting.Corps selfCorps)
+            where T : struct, IQueryResult
+        =>
+            new ClosestCorpsExcludeSelfCollector<T>(maxFraction, selfCorps, corpss);
 
 
-    public struct ClosestJoinedHitExcludeSelfCollector<T> : ICollector<T>
+        public static ClosestTargetedHitExcludeSelfCollector<T> GetClosestCollector<T>(
+            this ComponentDataFromEntity<Hit.TargetData> targets, float maxFraction, Entity selfStateEntity)
+            where T : struct, IQueryResult
+        =>
+            new ClosestTargetedHitExcludeSelfCollector<T>(maxFraction, selfStateEntity, targets);
+
+
+        public static AnyTargetedHitExcludeSelfCollector<T> GetAnyCollector<T>(
+            this ComponentDataFromEntity<Hit.TargetData> targets, float maxFraction, Entity selfStateEntity)
+            where T : struct, IQueryResult
+        =>
+            new AnyTargetedHitExcludeSelfCollector<T>(maxFraction, selfStateEntity, targets);
+    }
+
+
+    public struct ClosestCorpsExcludeSelfCollector<T> : ICollector<T>
         where T : struct, IQueryResult
     {
-        public bool EarlyOutOnFirstHit => false;//{ get; private set; }
+        public bool EarlyOutOnFirstHit => false;
         public float MaxFraction { get; private set; }
         public int NumHits { get; private set; }
 
         public Targeting.Corps TargetCorps { get; private set; }
-        public Entity TargetStateEntity { get; private set; }
+        public Targeting.Corps SelfCorps { get; private set; }
 
-        Targeting.Corps selfCorps;
-        Entity selfStateEntity;
-        ComponentDataFromEntity<Hit.TargetData> Targets;
+        public T ClosestHit { get; private set; }
 
-        T m_ClosestHit;
-        public T ClosestHit => m_ClosestHit;
+        ComponentDataFromEntity<CorpsGroup.TargetData> corpss;
 
-        public ClosestJoinedHitExcludeSelfCollector(
-            float maxFraction, Entity selfStateEntity, Targeting.Corps selfCorps,
-            ComponentDataFromEntity<Hit.TargetData> targets)
+
+        public ClosestCorpsExcludeSelfCollector(
+            float maxFraction, Targeting.Corps selfCorps, ComponentDataFromEntity<CorpsGroup.TargetData> corpss)
         {
             this.MaxFraction = maxFraction;
-            this.m_ClosestHit = default;
+            this.ClosestHit = default;
             this.NumHits = 0;
 
             this.TargetCorps = Targeting.Corps.none;
-            this.TargetStateEntity = Entity.Null;
 
-            this.selfCorps = selfCorps;
-            this.selfStateEntity = selfStateEntity;
-
-            this.Targets = targets;
+            this.SelfCorps = selfCorps;
+            this.corpss = corpss;
         }
 
         public bool AddHit(T hit)
         {
-            if (!this.Targets.HasComponent(hit.Entity)) return false;
+            if (!this.corpss.HasComponent(hit.Entity)) return false;
 
-            var t = this.Targets[hit.Entity];
-            if (t.MainEntity == this.selfStateEntity || t.Corps == this.selfCorps) return false;
+            var t = this.corpss[hit.Entity];
+            if (t.Corps == this.SelfCorps) return false;
 
             this.TargetCorps = t.Corps;
-            this.TargetStateEntity = t.MainEntity;
 
             this.MaxFraction = hit.Fraction;
-            this.m_ClosestHit = hit;
+            this.ClosestHit = hit;
             this.NumHits = 1;
             return true;
         }
@@ -76,7 +87,7 @@ namespace DotsLite.Physics
     {
         public bool EarlyOutOnFirstHit => false;//{ get; private set; }
         public float MaxFraction { get; private set; }
-        public int NumHits { get; private set; }\
+        public int NumHits { get; private set; }
 
         public HitType TargetHitType { get; private set; }
         public Entity TargetStateEntity { get; private set; }
@@ -85,14 +96,14 @@ namespace DotsLite.Physics
 
         ComponentDataFromEntity<Hit.TargetData> Targets;
         
-        T m_ClosestHit;
-        public T ClosestHit => m_ClosestHit;
+        public T ClosestHit { get; private set; }
+        //public T ClosestHit => m_ClosestHit;
 
         public ClosestTargetedHitExcludeSelfCollector
             ( float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets )
         {
             this.MaxFraction = maxFraction;
-            this.m_ClosestHit = default;
+            this.ClosestHit = default;
             this.NumHits = 0;
 
             this.TargetStateEntity = Entity.Null;
@@ -121,7 +132,7 @@ namespace DotsLite.Physics
 
             //if( hit.Fraction >= m_ClosestHit.Fraction ) return false;
             this.MaxFraction = hit.Fraction;
-            this.m_ClosestHit = hit;
+            this.ClosestHit = hit;
             this.NumHits = 1;
             return true;
         }
@@ -137,8 +148,8 @@ namespace DotsLite.Physics
         public int NumHits { get; private set; }
         public HitType HitType { get; private set; }
 
-        public Entity SelfStateEntity;
-        public Entity TargetStateEntity;
+        public Entity SelfStateEntity { get; private set; }
+        public Entity TargetStateEntity { get; private set; }
         ComponentDataFromEntity<Hit.TargetData> Targets;
 
         public AnyTargetedHitExcludeSelfCollector
@@ -182,8 +193,8 @@ namespace DotsLite.Physics
         public float MaxFraction { get; }
         public int NumHits { get; private set; }
 
-        public Entity SelfEntity;
-        public Entity OtherEntity;
+        public Entity SelfEntity { get; private set; }
+        public Entity OtherEntity { get; private set; }
 
         public AnyHitExcludeSelfCollector(float maxFraction, Entity selfStateEntity)
         {
@@ -196,6 +207,7 @@ namespace DotsLite.Physics
         public bool AddHit(T hit)
         {
             if (hit.Entity == this.SelfEntity) return false;
+
             this.OtherEntity = hit.Entity;
             this.NumHits = 1;
             return true;

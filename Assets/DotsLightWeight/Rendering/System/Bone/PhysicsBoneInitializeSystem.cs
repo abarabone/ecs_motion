@@ -11,7 +11,7 @@ using Unity.Transforms;
 using Unity.Physics;
 
 
-namespace DotsLite.Physics
+namespace DotsLite.Collision
 {
     
     using DotsLite.SystemGroup;

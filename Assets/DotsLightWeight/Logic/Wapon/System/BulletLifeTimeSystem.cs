@@ -28,7 +28,7 @@ namespace DotsLite.Arms
     using DotsLite.CharacterMotion;
     using DotsLite.Misc;
     using DotsLite.Utilities;
-    using DotsLite.Physics;
+    using DotsLite.Collision;
     using DotsLite.SystemGroup;
     using DotsLite.Dependency;
 

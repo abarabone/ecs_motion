@@ -109,6 +109,7 @@ namespace DotsLite.Targeting
         {
             public Entity PostureEntity;
             public float Distance;
+            public Corps Corps;
             public CollisionFilter Filter;
         }
     }
