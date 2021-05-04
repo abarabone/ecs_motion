@@ -48,7 +48,7 @@ namespace DotsLite.Model.Authoring
             initState_(conversionSystem, state);
 
             var posture = this.GetComponentInChildren<PostureAuthoring>();
-            initPosture_(conversionSystem, posture, state);
+            initPosture_(conversionSystem, posture, state, this.Corps);
 
             return;
 
@@ -93,7 +93,7 @@ namespace DotsLite.Model.Authoring
 
 
             void initPosture_
-                (GameObjectConversionSystem gcs, PostureAuthoring posture, ActionStateAuthoring state)
+                (GameObjectConversionSystem gcs, PostureAuthoring posture, ActionStateAuthoring state, Corps corps)
             {
                 var em = gcs.DstEntityManager;
 
@@ -114,7 +114,9 @@ namespace DotsLite.Model.Authoring
 
                     typeof(Control.MoveData),
                     typeof(Control.WorkData),
-                    typeof(Control.StateLinkData)
+                    typeof(Control.StateLinkData),
+
+                    typeof(CorpsGroup.TargetData)
                 });
                 em.AddComponents(ent, types);
 
@@ -141,6 +143,11 @@ namespace DotsLite.Model.Authoring
                 {
                     TargetSpeedPerSec = this.MoveSpeedPerSec,
                     Rate = 0.5f,
+                });
+
+                em.SetComponentData(ent, new CorpsGroup.TargetData
+                {
+                    Corps = corps,
                 });
             }
 
