@@ -22,7 +22,7 @@ namespace DotsLite.Model.Authoring
     {
 
         public static void AddHitTargetsAllRigidBody(this GameObjectConversionSystem gcs,
-            ModelGroupAuthoring.ModelAuthoringBase top, Entity mainEntity, HitType type)
+            ModelGroupAuthoring.ModelAuthoringBase top, Entity mainEntity, HitType type, Corps corps)
         {
 
             top.GetComponentsInChildren<Unity.Physics.Authoring.PhysicsBodyAuthoring>()
@@ -33,6 +33,7 @@ namespace DotsLite.Model.Authoring
                     {
                         MainEntity = mainEntity,
                         HitType = type,
+                        Corps = corps,
                     })
                 );
 

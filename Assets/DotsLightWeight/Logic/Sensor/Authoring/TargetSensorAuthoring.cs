@@ -42,6 +42,8 @@ namespace DotsLite.Character.Authoring
         [SerializeField]
         public Filter Collision;
 
+        public Corps TargetCorps;
+
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -72,7 +74,7 @@ namespace DotsLite.Character.Authoring
 
             foreach (var src in this.Sensors)
             {
-                var sent = createSensor_(conversionSystem, src, holder, posture);
+                var sent = createSensor_(conversionSystem, src, holder, posture, this.TargetCorps);
                 addToHolder_(conversionSystem, src, sent, holderEntity);
             }
 
@@ -126,7 +128,7 @@ namespace DotsLite.Character.Authoring
                 {
                     PostureEntity = gcs.GetPrimaryEntity(posture),
                     Distance = src.distance,
-                    Corps = corps,
+                    CorpsJoin = corps,
                     Filter = new CollisionFilter
                     {
                         BelongsTo = holder.Collision.BelongsTo.Value,

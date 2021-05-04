@@ -19,6 +19,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.CharacterMotion;
     using DotsLite.Arms;
     using DotsLite.Targeting;
+    using DotsLite.Collision;
 
     /// <summary>
     /// 
@@ -49,6 +50,10 @@ namespace DotsLite.Model.Authoring
 
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             initPosture_(conversionSystem, posture, state, this.Corps);
+
+
+            var ent = conversionSystem.GetOrCreateEntity(state);
+            conversionSystem.AddHitTargetsAllRigidBody(this, ent, HitType.charactor, this.Corps);
 
             return;
 

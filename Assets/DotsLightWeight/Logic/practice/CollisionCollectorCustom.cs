@@ -10,6 +10,7 @@ namespace DotsLite.Collision
 {
 
     using DotsLite.Character;
+    using DotsLite.Collision;
 
 
     public static class CollectorExtension
@@ -69,7 +70,7 @@ namespace DotsLite.Collision
             if (!this.corpss.HasComponent(hit.Entity)) return false;
 
             var t = this.corpss[hit.Entity];
-            if (t.Corps == this.SelfCorps) return false;
+            if ((t.Corps & this.SelfCorps) == 0) return false;
 
             this.TargetCorps = t.Corps;
 
@@ -91,6 +92,7 @@ namespace DotsLite.Collision
 
         public HitType TargetHitType { get; private set; }
         public Entity TargetStateEntity { get; private set; }
+        public CorpsGroup Corps { get; private set; }//
 
         Entity selfStateEntity;
 
@@ -110,6 +112,7 @@ namespace DotsLite.Collision
             this.TargetHitType = HitType.none;
 
             this.selfStateEntity = selfStateEntity;
+            this.Corps = 
             
             this.Targets = targets;
         }

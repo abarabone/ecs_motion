@@ -15,6 +15,7 @@ using DotsLite.Geometry;
 
 namespace DotsLite.Collision
 {
+    using Targeting;
 
     public enum HitType
     {
@@ -33,6 +34,7 @@ namespace DotsLite.Collision
         {
             public Entity MainEntity;
             public HitType HitType;
+            public Corps Corps;// Ç∆ÇËÇ†Ç¶Ç∏Ç±Ç±Ç…àÍèèÇ…
         }
 
     }

@@ -74,6 +74,8 @@ namespace DotsLite.Arms
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
+            //var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);//
+
             var dt = this.Time.DeltaTime;
 
             this.Entities
@@ -101,6 +103,8 @@ namespace DotsLite.Arms
                             (link.StateEntity, ptop.Start, ptop.End, 1.0f, targets);
 
                         if (!hit.isHit) return;
+
+                        //if (corpss[hit.)
 
 
                         switch (hit.hitType)
