@@ -30,11 +30,10 @@ namespace DotsLite.Arms
     using DotsLite.CharacterMotion;
     using DotsLite.Misc;
     using DotsLite.Utilities;
-    using DotsLite.Physics;
+    using DotsLite.Collision;
     using DotsLite.SystemGroup;
     using DotsLite.Structure;
     using DotsLite.Dependency;
-    using DotsLite.Collision;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;
@@ -112,11 +111,11 @@ namespace DotsLite.Arms
         static public BulletHit BulletHitRay(
             ref this CollisionWorld cw,
             Entity selfStateEntity, float3 start, DirectionAndLength dir,
-            ComponentDataFromEntity<Hit.TargetData> links)
+            ComponentDataFromEntity<Hit.TargetData> targets)
         {
             var end = start + dir.Direction * dir.Length;
 
-            return cw.BulletHitRay(selfStateEntity, start, end, dir.Length, links);
+            return cw.BulletHitRay(selfStateEntity, start, end, dir.Length, targets);
         }
 
 
@@ -125,7 +124,7 @@ namespace DotsLite.Arms
         static public BulletHit BulletHitRay(
             ref this CollisionWorld cw,
             Entity selfStateEntity, float3 start, float3 end, float distance,
-            ComponentDataFromEntity<Hit.TargetData> links)
+            ComponentDataFromEntity<Hit.TargetData> targets)
         {
 
             var filter = new CollisionFilter
@@ -141,7 +140,7 @@ namespace DotsLite.Arms
                 Filter = filter,//CollisionFilter.Default,//
             };
 
-            var collector = new ClosestTargetedHitExcludeSelfCollector<RaycastHit>(distance, selfStateEntity, links);
+            var collector = new ClosestTargetedHitExcludeSelfCollector<RaycastHit>(distance, selfStateEntity, targets);
 
             var isHit = cw.CastRay(hitInput, ref collector);
 

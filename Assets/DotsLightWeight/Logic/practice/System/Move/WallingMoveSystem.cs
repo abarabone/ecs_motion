@@ -26,10 +26,9 @@ namespace DotsLite.Character
     using DotsLite.SystemGroup;
     using DotsLite.Character;
     using DotsLite.Geometry;
-    using DotsLite.Physics;
+    using DotsLite.Collision;
     using DotsLite.CharacterMotion;
     using DotsLite.Model;
-    using DotsLite.Collision;
 
 
     static class BringYourOwnDelegate

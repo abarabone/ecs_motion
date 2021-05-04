@@ -18,6 +18,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.CharacterMotion;
     using DotsLite.Arms;
     using DotsLite.Targeting;
+    using DotsLite.Collision;
 
     /// <summary>
     /// プライマリエンティティは LinkedEntityGroup のみとする。
@@ -42,6 +43,10 @@ namespace DotsLite.Model.Authoring
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             initPosture_(conversionSystem, posture, state, this.Corps);
 
+
+            var ent = conversionSystem.GetOrCreateEntity(state);
+            conversionSystem.AddHitTargetsAllRigidBody(this, ent, HitType.charactor, this.Corps);
+
             return;
 
 
@@ -62,9 +67,9 @@ namespace DotsLite.Model.Authoring
 
                     typeof(Control.MoveData),
                     typeof(Control.WorkData),
-                    typeof(Control.StateLinkData),
+                    typeof(Control.StateLinkData)//,
 
-                    typeof(CorpsGroup.TargetData)
+                    //typeof(CorpsGroup.TargetData)
                 });
                 em.AddComponents(ent, types);
 
@@ -73,10 +78,10 @@ namespace DotsLite.Model.Authoring
                     StateEntity = gcs.GetOrCreateEntity(state),
                 });
 
-                em.SetComponentData(ent, new CorpsGroup.TargetData
-                {
-                    Corps = corps,
-                });
+                //em.SetComponentData(ent, new CorpsGroup.TargetData
+                //{
+                //    Corps = corps,
+                //});
             }
 
             static void initState_

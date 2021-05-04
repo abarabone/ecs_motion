@@ -108,8 +108,9 @@ namespace DotsLite.Targeting
         public struct CollisionData : IComponentData
         {
             public Entity PostureEntity;
-            public float Distance;
             public CollisionFilter Filter;
+            public float Distance;
+            public Corps CorpsJoin;
         }
     }
 

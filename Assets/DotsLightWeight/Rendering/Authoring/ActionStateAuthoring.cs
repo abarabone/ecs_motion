@@ -35,8 +35,8 @@ namespace DotsLite.Model.Authoring
 
             createStateEntity_(conversionSystem, top, posture, state, motion);
 
-            var ent = conversionSystem.GetOrCreateEntity(state);
-            conversionSystem.AddHitTargetsAllRigidBody(top, ent, HitType.charactor);
+            //var ent = conversionSystem.GetOrCreateEntity(state);
+            //conversionSystem.AddHitTargetsAllRigidBody(top, ent, HitType.charactor, this.Corps);
 
             return;
 

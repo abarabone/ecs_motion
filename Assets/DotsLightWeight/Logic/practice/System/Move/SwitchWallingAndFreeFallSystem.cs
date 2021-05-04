@@ -22,7 +22,7 @@ using DotsLite.Utilities;
 using DotsLite.SystemGroup;
 using DotsLite.Character;
 using DotsLite.Geometry;
-using DotsLite.Physics;
+using DotsLite.Collision;
 
 namespace DotsLite.Character
 {

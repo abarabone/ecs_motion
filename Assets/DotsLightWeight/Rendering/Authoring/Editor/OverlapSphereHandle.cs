@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using DotsLite.Physics.Authoring;
+using DotsLite.Collision.Authoring;
 
-namespace DotsLite.Physics.Authoring
+namespace DotsLite.Collision.Authoring
 {
     using DotsLite.Model.Authoring;
 

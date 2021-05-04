@@ -10,7 +10,7 @@ using Unity.Physics;
 using Unity.Physics.Authoring;
 using Unity.Mathematics;
 
-namespace DotsLite.Physics.Authoring
+namespace DotsLite.Collision.Authoring
 {
     using DotsLite.CharacterMotion;
     using DotsLite.Character;

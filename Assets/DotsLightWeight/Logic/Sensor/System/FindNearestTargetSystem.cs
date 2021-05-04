@@ -26,9 +26,8 @@ namespace DotsLite.Character
     using DotsLite.CharacterMotion;
     using DotsLite.Dependency;
     using DotsLite.Targeting;
-    using DotsLite.Physics;
-    using DotsLite.Model;
     using DotsLite.Collision;
+    using DotsLite.Model;
 
 
     //[DisableAutoCreation]
@@ -57,13 +56,13 @@ namespace DotsLite.Character
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             var cw = phyScope.PhysicsWorld.CollisionWorld;
 
-            var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
+            var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
                 .WithAll<TargetSensor.WakeupFindTag>()
-                .WithReadOnly(targets)
+                .WithReadOnly(corpss)
                 .WithReadOnly(poss)
                 .WithReadOnly(cw)
                 .ForEach((
@@ -73,8 +72,7 @@ namespace DotsLite.Character
                 =>
                     {
 
-                        // 暫定：あとでグループ対応コレクターにすること
-                        var collector = new ClosestTargetedHitExcludeSelfCollector<DistanceHit>(collision.Distance, collision.PostureEntity, targets);
+                        var collector = corpss.GetClosestCollector<DistanceHit>(collision.Distance, collision.CorpsJoin);
 
 
                         var startpos = poss[collision.PostureEntity].Value;

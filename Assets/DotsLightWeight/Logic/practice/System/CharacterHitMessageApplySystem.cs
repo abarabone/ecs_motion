@@ -20,6 +20,7 @@ namespace DotsLite.Character
         public float3 Normale;
         public float3 Force;
         public float Damage;
+        public Targeting.Corps TargetCorps;
     }
 
 
@@ -56,13 +57,15 @@ namespace DotsLite.Character
             
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
-            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
-            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            //var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            //var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            //var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);
 
             this.Dependency = new JobExecution
             {
                 Cmd = cmd,
                 CurrentTime = (float)this.Time.ElapsedTime,
+                //Corpss = corpss,
                 //Rotations = rots,
                 //Positions = poss,
             }
@@ -78,6 +81,9 @@ namespace DotsLite.Character
             public float CurrentTime;
 
             //[ReadOnly]
+            //public ComponentDataFromEntity<CorpsGroup.TargetData> Corpss;
+
+            //[ReadOnly]
             //public ComponentDataFromEntity<Rotation> Rotations;
             //[ReadOnly]
             //public ComponentDataFromEntity<Translation> Positions;
@@ -89,6 +95,9 @@ namespace DotsLite.Character
 
                 var damage = 0.0f;
                 var force = float3.zero;
+
+                //var corps = this.Corpss[targetEntity].Corps;
+
 
                 foreach (var msg in msgs)
                 {
