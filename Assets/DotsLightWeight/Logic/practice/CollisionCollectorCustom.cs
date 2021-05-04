@@ -76,7 +76,7 @@ namespace DotsLite.Physics
     {
         public bool EarlyOutOnFirstHit => false;//{ get; private set; }
         public float MaxFraction { get; private set; }
-        public int NumHits { get; private set; }
+        public int NumHits { get; private set; }\
 
         public HitType TargetHitType { get; private set; }
         public Entity TargetStateEntity { get; private set; }
