@@ -61,7 +61,20 @@ namespace DotsLite.Character.Action
             var moves = this.GetComponentDataFromEntity<Control.MoveData>(isReadOnly: true);
             var rotations = this.GetComponentDataFromEntity<Rotation>();
 
+
+            var post = cmdScope.CommandBuffer;
             this.Entities
+                .WithName("Reset")
+                .WithAll<MinicWalkActionState, CharacterAction.DamageState>()
+                .ForEach((Entity entity) =>
+                {
+                    post.RemoveComponent<MinicWalkActionState>(entity);
+                    post.AddComponent<MinicWalkActionState>(entity);
+                })
+                .Schedule();
+
+            this.Entities
+                .WithName("Action")
                 .WithBurst()
                 .WithNone<CharacterAction.DamageState>()
                 .WithReadOnly(motionInfos)

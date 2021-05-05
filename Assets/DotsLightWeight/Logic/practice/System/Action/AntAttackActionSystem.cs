@@ -66,7 +66,20 @@ namespace DotsLite.Character.Action
 
             var currentTime = this.Time.ElapsedTime;
 
+
+            var post = cmdScope.CommandBuffer;
             this.Entities
+                .WithName("Reset")
+                .WithAll<AntAction.AttackState, CharacterAction.DamageState>()
+                .ForEach((Entity entity) =>
+                {
+                    post.RemoveComponent<AntAction.AttackState>(entity);
+                    post.AddComponent<AntAction.WalkState>(entity);
+                })
+                .Schedule();
+
+            this.Entities
+                .WithName("Action")
                 .WithBurst()
                 .WithAll<AntTag>()
                 .WithNone<CharacterAction.DamageState>()

@@ -90,6 +90,7 @@ namespace DotsLite.Character
             this.Entities
                 .WithBurst()
                 .WithAll<WallingTag>()
+                .WithNone<CharacterAction.DeadState>()
                 .WithNone<WallHitResultData>()
                 .WithReadOnly(physicsWorld)
                 .WithReadOnly(targets)

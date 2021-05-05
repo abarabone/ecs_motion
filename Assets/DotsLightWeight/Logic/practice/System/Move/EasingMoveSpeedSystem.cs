@@ -78,10 +78,12 @@ namespace DotsLite.Character
                         var rate = ease.Rate;
 
                         var newspd = cur + (tar - cur) * rate * dt;
-                        speed.SpeedPerSec = math.clamp(newspd, 0.0f, max);
+                        var latest = math.clamp(newspd, 0.0f, max);
 
-                        var isFinished = math.abs(cur - tar) <= math.abs(max * 0.01f);
-                        if (isFinished)
+                        speed.SpeedPerSec = latest;
+
+                        var isAlmostSame = math.abs(latest - tar) <= math.abs(max * 0.01f);
+                        if (isAlmostSame)
                         {
                             speed.SpeedPerSec = ease.TargetSpeedPerSec;
 

@@ -61,7 +61,19 @@ namespace DotsLite.Character.Action
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
 
+            var post = cmdScope.CommandBuffer;
             this.Entities
+                .WithName("Reset")
+                .WithAll<AntAction.WalkState, CharacterAction.DamageState>()
+                .ForEach((Entity entity) =>
+                {
+                    post.RemoveComponent<AntAction.WalkState>(entity);
+                    post.AddComponent<AntAction.WalkState>(entity);
+                })
+                .Schedule();
+
+            this.Entities
+                .WithName("Action")
                 .WithBurst()
                 .WithAll<AntTag>()
                 .WithNone<CharacterAction.DamageState>()
