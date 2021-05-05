@@ -70,7 +70,8 @@ namespace DotsLite.Arms.Authoring
                     typeof(FunctionUnit.BulletEmittingData),
                     typeof(FunctionUnit.EmittingStateData),
                     typeof(FunctionUnit.TriggerData),
-                    typeof(FunctionUnit.ActivateData)
+                    typeof(FunctionUnit.ActivateData),
+                    typeof(Targeting.CorpsGroup.TargetWithArmsData)
                 });
                 em.AddComponents(ent, types);
 

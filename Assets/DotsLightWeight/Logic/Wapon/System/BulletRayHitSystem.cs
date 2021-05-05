@@ -26,6 +26,7 @@ namespace DotsLite.Arms
     using DotsLite.Structure;
     using DotsLite.Character.Action;
     using DotsLite.Collision;
+    using DotsLite.Targeting;
 
 
     //[DisableAutoCreation]
@@ -74,7 +75,7 @@ namespace DotsLite.Arms
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
-            //var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);//
+            var corpss = this.GetComponentDataFromEntity<CorpsGroup.Data>(isReadOnly: true);
 
             var dt = this.Time.DeltaTime;
 
@@ -83,7 +84,7 @@ namespace DotsLite.Arms
                 .WithAll<Bullet.RayTag>()
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
-                //.WithReadOnly(corpss)//
+                .WithReadOnly(corpss)
                 .WithReadOnly(cw)
                 .WithNativeDisableParallelForRestriction(sthit)
                 .WithNativeDisableContainerSafetyRestriction(sthit)
@@ -97,7 +98,7 @@ namespace DotsLite.Arms
                         in Bullet.LinkData link,
                         //in Bullet.DistanceData dist
                         in Bullet.VelocityData v,
-                        in Bullet.SpecData a
+                        in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
                         
@@ -106,19 +107,24 @@ namespace DotsLite.Arms
 
                         if (!hit.isHit) return;
 
-                        //var targetCorps = ;
-                        //var otherCorps = corpss[hit.stateEntity].Corps;
-                        //if ((targetCorps & selfCorps) != 
-
 
                         switch (hit.hitType)
                         {
                             case HitType.part:
+
                                 hit.PostStructureHitMessage(sthit, parts);
                                 break;
+
+
                             case HitType.charactor:
+
+                                var otherCorpts = corpss[hit.hitEntity];
+                                if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
+
                                 hit.PostCharacterHitMessage(chhit, 1.0f, v.Velocity.xyz);
                                 break;
+
+
                             default:
                                 break;
                         }

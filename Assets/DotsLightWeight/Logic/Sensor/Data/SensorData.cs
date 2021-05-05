@@ -35,7 +35,7 @@ namespace DotsLite.Targeting
 
     static public partial class CorpsGroup
     {
-        public struct TargetInBulletData : IComponentData
+        public struct TargetWithArmsData : IComponentData
         {
             public Corps TargetCorps;
         }

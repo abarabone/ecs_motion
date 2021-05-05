@@ -63,7 +63,8 @@ namespace DotsLite.Arms.Authoring
                     typeof(Bullet.SpecData), // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
                     typeof(FunctionUnit.TriggerData),
                     //typeof(FunctionUnit.OwnerLinkData),
-                    typeof(FunctionUnit.ActivateData)
+                    typeof(FunctionUnit.ActivateData),
+                    typeof(Targeting.CorpsGroup.TargetWithArmsData)
                 });
                 em.AddComponents(ent, types);
 

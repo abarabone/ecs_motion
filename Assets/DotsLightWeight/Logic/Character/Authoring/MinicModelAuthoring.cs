@@ -19,6 +19,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Arms;
     using DotsLite.Targeting;
     using DotsLite.Collision;
+    using DotsLite.Arms.Authoring;
 
     /// <summary>
     /// プライマリエンティティは LinkedEntityGroup のみとする。
@@ -29,7 +30,9 @@ namespace DotsLite.Model.Authoring
 
         public float ArmorDurability;
 
-        public Corps Corps;
+        public Corps CorpsBelongsTo;
+        public Corps CorpsTargets;
+
 
 
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -41,17 +44,21 @@ namespace DotsLite.Model.Authoring
             initState_(conversionSystem, state, this);
 
             var posture = this.GetComponentInChildren<PostureAuthoring>();
-            initPosture_(conversionSystem, posture, state, this.Corps);
+            initPosture_(conversionSystem, posture, state);//, this.CorpsBelongsTo);
 
 
             //var ent = conversionSystem.GetOrCreateEntity(state);
             //conversionSystem.AddHitTargetsAllRigidBody(this, ent, HitType.charactor, this.Corps);
 
+            var funits = this.GetComponentsInChildren<IFunctionUnitAuthoring>();
+            conversionSystem.AddTargetCorpsToFunctionUnit(funits, this.CorpsTargets);
+
+            conversionSystem.AddCorpsToAllRigidBody(this, this.CorpsBelongsTo);
             return;
 
 
             static void initPosture_
-                (GameObjectConversionSystem gcs, PostureAuthoring posture, ActionStateAuthoring state, Corps corps)
+                (GameObjectConversionSystem gcs, PostureAuthoring posture, ActionStateAuthoring state)//, Corps corps)
             {
                 var em = gcs.DstEntityManager;
 

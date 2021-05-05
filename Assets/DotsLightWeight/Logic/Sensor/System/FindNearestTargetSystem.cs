@@ -72,8 +72,7 @@ namespace DotsLite.Character
                 =>
                     {
 
-                        //var collector = corpss.GetClosestCollector<DistanceHit>(collision.Distance, collision.CorpsJoin);
-                        var collector = 
+                        var collector = corpss.GetClosestCollector<DistanceHit>(collision.Distance, collision.CorpsJoin);
 
 
                         var startpos = poss[collision.PostureEntity].Value;

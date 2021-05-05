@@ -28,6 +28,7 @@ namespace DotsLite.Arms
     using DotsLite.Dependency;
     using DotsLite.Utilities;
     using DotsLite.Collision;
+    using DotsLite.Targeting;
 
 
     //[DisableAutoCreation]
@@ -89,6 +90,8 @@ namespace DotsLite.Arms
 
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
+            var corpss = this.GetComponentDataFromEntity<CorpsGroup.Data>(isReadOnly: true);
+
 
             // カメラは暫定
             var tfcam = Camera.main.transform;
@@ -103,6 +106,7 @@ namespace DotsLite.Arms
                 .WithReadOnly(poss)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
+                .WithReadOnly(corpss)
                 //.WithReadOnly(cmd)
                 .WithNativeDisableParallelForRestriction(sthit)
                 .WithNativeDisableContainerSafetyRestriction(sthit)
@@ -113,7 +117,8 @@ namespace DotsLite.Arms
                         in FunctionUnit.BulletEmittingData emitter,
                         in FunctionUnit.MuzzleLinkData mlink,
                         in FunctionUnit.StateLinkData slink,
-                        in Bullet.SpecData bulletData
+                        in Bullet.SpecData bulletData,
+                        in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
                         if (!trigger.IsTriggered) return;
@@ -143,11 +148,20 @@ namespace DotsLite.Arms
                         switch (hit.hitType)
                         {
                             case HitType.part:
+
                                 hit.PostStructureHitMessage(sthit, parts);
                                 break;
+
+
                             case HitType.charactor:
+
+                                var otherCorpts = corpss[hit.hitEntity];
+                                if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
+
                                 hit.PostCharacterHitMessage(chhit, 1.0f, 0.0f);
                                 break;
+
+
                             default:
                                 break;
                         }

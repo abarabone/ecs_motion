@@ -28,6 +28,7 @@ namespace DotsLite.Arms
     using UnityEngine.Rendering;
     using DotsLite.Dependency;
     using DotsLite.Utilities;
+    using DotsLite.Targeting;
 
     using Random = Unity.Mathematics.Random;
     using System;
@@ -88,7 +89,8 @@ namespace DotsLite.Arms
                         ref FunctionUnit.TriggerData trigger,
                         in FunctionUnit.BulletEmittingData emitter,
                         in FunctionUnit.StateLinkData slink,
-                        in FunctionUnit.MuzzleLinkData mlink
+                        in FunctionUnit.MuzzleLinkData mlink,
+                        in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
                         if (!trigger.IsTriggered) return;
@@ -131,7 +133,7 @@ namespace DotsLite.Arms
 
                                 emit_(cmd, entityInQueryIndex,
                                     emitter.BulletPrefab, slink.StateEntity,
-                                    bulletPos, range, speed, acc);
+                                    bulletPos, range, speed, acc, corps.TargetCorps);
                             }
                         }
                         while (currentTime >= state.NextEmitableTime);
@@ -171,42 +173,48 @@ namespace DotsLite.Arms
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void emit_(
-            EntityCommandBuffer.ParallelWriter cmd, int entityInQueryIndex,
+            EntityCommandBuffer.ParallelWriter cmd, int eqi,
             Entity bulletPrefab, Entity stateEntity,
-            float3 bulletPosition, float range, float3 speed, float3 acc)
+            float3 bulletPosition, float range, float3 speed, float3 acc, Corps targetCorps)
         {
 
-            var newBullet = cmd.Instantiate(entityInQueryIndex, bulletPrefab);
+            var newBullet = cmd.Instantiate(eqi, bulletPrefab);
 
-            cmd.SetComponent(entityInQueryIndex, newBullet,
+            cmd.SetComponent(eqi, newBullet,
                 new Particle.TranslationPtoPData
                 {
                     Start = bulletPosition,
                     End = bulletPosition
                 }
             );
-            cmd.SetComponent(entityInQueryIndex, newBullet,
+            cmd.SetComponent(eqi, newBullet,
                 new Bullet.VelocityData
                 {
                     Velocity = speed.As_float4(),
                 }
             );
-            cmd.SetComponent(entityInQueryIndex, newBullet,
+            cmd.SetComponent(eqi, newBullet,
                 new Bullet.AccelerationData
                 {
                     Acceleration = acc.As_float4(),
                 }
             );
-            cmd.SetComponent(entityInQueryIndex, newBullet,
+            cmd.SetComponent(eqi, newBullet,
                 new Bullet.DistanceData
                 {
                     RestRangeDistance = range,
                 }
             );
-            cmd.SetComponent(entityInQueryIndex, newBullet,
+            cmd.SetComponent(eqi, newBullet,
                 new Bullet.LinkData
                 {
                     StateEntity = stateEntity,
+                }
+            );
+            cmd.SetComponent(eqi, newBullet,
+                new CorpsGroup.TargetWithArmsData
+                {
+                    TargetCorps = targetCorps,
                 }
             );
 

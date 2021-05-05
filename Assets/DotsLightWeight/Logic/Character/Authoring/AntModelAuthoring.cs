@@ -20,6 +20,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Arms;
     using DotsLite.Targeting;
     using DotsLite.Collision;
+    using DotsLite.Arms.Authoring;
 
     /// <summary>
     /// 
@@ -50,14 +51,16 @@ namespace DotsLite.Model.Authoring
             initState_(conversionSystem, state);
 
             var posture = this.GetComponentInChildren<PostureAuthoring>();
-            initPosture_(conversionSystem, posture, state, this.CorpsBelongsTo);
+            initPosture_(conversionSystem, posture, state);//, this.CorpsBelongsTo);
 
 
             //var ent = conversionSystem.GetOrCreateEntity(state);
             //conversionSystem.AddHitTargetsAllRigidBody(this, ent, HitType.charactor);
 
-            //var  funits = this.getco
+            var funits = this.GetComponentsInChildren<IFunctionUnitAuthoring>();
+            conversionSystem.AddTargetCorpsToFunctionUnit(funits, this.CorpsTargets);
 
+            conversionSystem.AddCorpsToAllRigidBody(this, this.CorpsBelongsTo);
             return;
 
 
@@ -101,7 +104,7 @@ namespace DotsLite.Model.Authoring
 
 
             void initPosture_
-                (GameObjectConversionSystem gcs, PostureAuthoring posture, ActionStateAuthoring state, Corps corps)
+                (GameObjectConversionSystem gcs, PostureAuthoring posture, ActionStateAuthoring state)//, Corps corps)
             {
                 var em = gcs.DstEntityManager;
 
@@ -122,9 +125,9 @@ namespace DotsLite.Model.Authoring
 
                     typeof(Control.MoveData),
                     typeof(Control.WorkData),
-                    typeof(Control.StateLinkData),
+                    typeof(Control.StateLinkData)
 
-                    typeof(CorpsGroup.Data)
+                    //typeof(CorpsGroup.Data)
                 });
                 em.AddComponents(ent, types);
 
@@ -153,10 +156,10 @@ namespace DotsLite.Model.Authoring
                     Rate = 0.5f,
                 });
 
-                em.SetComponentData(ent, new CorpsGroup.Data
-                {
-                    BelongTo = corps,
-                });
+                //em.SetComponentData(ent, new CorpsGroup.Data
+                //{
+                //    BelongTo = corps,
+                //});
             }
 
             void initState_
@@ -187,10 +190,6 @@ namespace DotsLite.Model.Authoring
                     Durability = this.ArmorDurability,
                 });
             }
-
-
-            //void addCorpsToFunctionUnit_
-            //    (GameObjectConversionSystem gcs, ActionStateAuthoring state)
 
         }
 

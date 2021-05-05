@@ -63,7 +63,8 @@ namespace DotsLite.Arms.Authoring
                         typeof(Bullet.DistanceData),
                         typeof(Bullet.LifeTimeData),
                         typeof(Particle.AdditionalData),
-                        this.BulletType.ToComponentType()
+                        this.BulletType.ToComponentType(),
+                        typeof(Targeting.CorpsGroup.TargetWithArmsData)
                     })
                     : new ComponentTypes(new ComponentType[]
                     {
@@ -73,7 +74,8 @@ namespace DotsLite.Arms.Authoring
                         typeof(Bullet.DistanceData),
                         typeof(Bullet.LifeTimeData),
                         typeof(Particle.AdditionalData),
-                        this.BulletType.ToComponentType()
+                        this.BulletType.ToComponentType(),
+                        typeof(Targeting.CorpsGroup.TargetWithArmsData)
                     });
                 em.AddComponents(bulletEntity, types);
 
