@@ -63,11 +63,12 @@ namespace DotsLite.Character
                     {
                         //ref var acts = ref handler.ControlAction;
 
-                        var vlinear = v.Linear.xz;
-                        var dir = moves.MoveDirection.xz;
+                        var vlinear = v.Linear;
+                        var dir = moves.MoveDirection;
+                        dir.y = 0.0f;
 
-                        var d = dir * (deltaTime * 300.0f);
-                        v.Linear += new float3(d - vlinear, 0.0f).xzy * 0.9f;
+                        var d = dir * (300.0f * deltaTime);
+                        v.Linear +=(d - vlinear) * 0.9f;
 
                         //var d = dir * (deltaTime * 300.0f);
                         //var l = math.length(vlinear + d);

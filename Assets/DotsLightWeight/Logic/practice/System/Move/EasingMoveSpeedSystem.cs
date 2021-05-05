@@ -66,13 +66,22 @@ namespace DotsLite.Character
                 =>
                     {
 
-                        var newspd = speed.SpeedPerSec +
-                            (ease.TargetSpeedPerSec - speed.SpeedPerSec) * ease.Rate * dt;
+                        //var newspd = speed.SpeedPerSec +
+                        //    (ease.TargetSpeedPerSec - speed.SpeedPerSec) * ease.Rate * dt;
 
-                        speed.SpeedPerSec = math.clamp(newspd, 0.0f, speed.SpeedPerSecMax);
+                        //speed.SpeedPerSec = math.clamp(newspd, 0.0f, speed.SpeedPerSecMax);
 
 
-                        if (math.abs(speed.SpeedPerSec - ease.TargetSpeedPerSec) <= math.abs(speed.SpeedPerSecMax * 0.01f))
+                        var cur = speed.SpeedPerSec;
+                        var tar = ease.TargetSpeedPerSec;
+                        var max = speed.SpeedPerSecMax;
+                        var rate = ease.Rate;
+
+                        var newspd = cur + (tar - cur) * rate * dt;
+                        speed.SpeedPerSec = math.clamp(newspd, 0.0f, max);
+
+                        var isFinished = math.abs(cur - tar) <= math.abs(max * 0.01f);
+                        if (isFinished)
                         {
                             speed.SpeedPerSec = ease.TargetSpeedPerSec;
 
