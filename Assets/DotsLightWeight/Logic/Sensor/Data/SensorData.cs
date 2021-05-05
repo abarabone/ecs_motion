@@ -53,6 +53,16 @@ namespace DotsLite.Targeting
         messenger = 1 << 9,
     }
 
+    static public partial class CorpsGroup
+    {
+        public struct TargetData : IComponentData
+        {
+            public Corps Corps;
+        }
+
+    }
+
+
 
     // ˆÚ“®æŠÖ˜A -----------------------------------------------------------
 

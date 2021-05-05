@@ -22,16 +22,6 @@ namespace DotsLite.Character
     using DotsLite.Targeting;
 
 
-    static public class CorpsGroup
-    {
-        public struct TargetData : IComponentData
-        {
-            public Corps Corps;
-        }
-
-    }
-
-
 
     static public partial class Control
     {

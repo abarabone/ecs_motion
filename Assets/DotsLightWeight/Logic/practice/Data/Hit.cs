@@ -34,7 +34,7 @@ namespace DotsLite.Collision
         {
             public Entity MainEntity;
             public HitType HitType;
-            public Corps Corps;// ‚Æ‚è‚ ‚¦‚¸‚±‚±‚Éˆê‚É
+            //public Corps Corps;// ‚Æ‚è‚ ‚¦‚¸‚±‚±‚Éˆê‚É
         }
 
     }
