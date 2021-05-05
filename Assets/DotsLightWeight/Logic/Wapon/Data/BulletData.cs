@@ -44,7 +44,8 @@ namespace DotsLite.Arms
             public Entity StateEntity;
         }
 
-        public struct SpecData : IComponentData
+        public struct 
+            SpecData : IComponentData
         {
             public float RangeDistanceFactor;
             public float BulletSpeed;

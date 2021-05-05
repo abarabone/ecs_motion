@@ -74,7 +74,7 @@ namespace DotsLite.Arms
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
-            //var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);//
+            var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);//
 
             var dt = this.Time.DeltaTime;
 
@@ -83,6 +83,7 @@ namespace DotsLite.Arms
                 .WithAll<Bullet.RayTag>()
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
+                .WithReadOnly(corpss)//
                 .WithReadOnly(cw)
                 .WithNativeDisableParallelForRestriction(sthit)
                 .WithNativeDisableContainerSafetyRestriction(sthit)
@@ -95,16 +96,19 @@ namespace DotsLite.Arms
                         //in Bullet.SpecData bullet,
                         in Bullet.LinkData link,
                         //in Bullet.DistanceData dist
-                        in Bullet.VelocityData v
+                        in Bullet.VelocityData v,
+                        in Bullet.SpecData a
                     ) =>
                     {
-
+                        
                         var hit = cw.BulletHitRay
                             (link.StateEntity, ptop.Start, ptop.End, 1.0f, targets);
 
                         if (!hit.isHit) return;
 
-                        //if (corpss[hit.)
+                        var targetCorps = ;
+                        var otherCorps = corpss[hit.stateEntity].Corps;
+                        if ((targetCorps & selfCorps) != 
 
 
                         switch (hit.hitType)

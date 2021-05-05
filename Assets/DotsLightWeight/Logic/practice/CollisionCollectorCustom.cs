@@ -92,14 +92,12 @@ namespace DotsLite.Collision
 
         public HitType TargetHitType { get; private set; }
         public Entity TargetStateEntity { get; private set; }
-        public CorpsGroup Corps { get; private set; }//
 
         Entity selfStateEntity;
 
         ComponentDataFromEntity<Hit.TargetData> Targets;
         
         public T ClosestHit { get; private set; }
-        //public T ClosestHit => m_ClosestHit;
 
         public ClosestTargetedHitExcludeSelfCollector
             ( float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets )
@@ -112,7 +110,6 @@ namespace DotsLite.Collision
             this.TargetHitType = HitType.none;
 
             this.selfStateEntity = selfStateEntity;
-            this.Corps = 
             
             this.Targets = targets;
         }
