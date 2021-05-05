@@ -148,11 +148,11 @@ namespace DotsLite.Arms
             return new BulletHit
             {
                 isHit = isHit,
-                hitType = collector.TargetHitType,
+                hitType = collector.OtherHitType,
                 posision = collector.ClosestHit.Position,
                 normal = collector.ClosestHit.SurfaceNormal,
                 hitEntity = collector.ClosestHit.Entity,
-                stateEntity = collector.TargetStateEntity,
+                stateEntity = collector.OtherStateEntity,
             };
         }
 
@@ -178,11 +178,11 @@ namespace DotsLite.Arms
             return new BulletHit
             {
                 isHit = isHit,
-                hitType = collector.TargetHitType,
+                hitType = collector.OtherHitType,
                 posision = collector.ClosestHit.Position,
                 normal = collector.ClosestHit.SurfaceNormal,
                 hitEntity = collector.ClosestHit.Entity,
-                stateEntity = collector.TargetStateEntity,
+                stateEntity = collector.OtherStateEntity,
             };
         }
 

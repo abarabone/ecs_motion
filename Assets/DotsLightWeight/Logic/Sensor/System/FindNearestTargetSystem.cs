@@ -56,7 +56,7 @@ namespace DotsLite.Character
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             var cw = phyScope.PhysicsWorld.CollisionWorld;
 
-            var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);
+            var corpss = this.GetComponentDataFromEntity<CorpsGroup.Data>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             this.Entities
@@ -72,7 +72,8 @@ namespace DotsLite.Character
                 =>
                     {
 
-                        var collector = corpss.GetClosestCollector<DistanceHit>(collision.Distance, collision.CorpsJoin);
+                        //var collector = corpss.GetClosestCollector<DistanceHit>(collision.Distance, collision.CorpsJoin);
+                        var collector = 
 
 
                         var startpos = poss[collision.PostureEntity].Value;

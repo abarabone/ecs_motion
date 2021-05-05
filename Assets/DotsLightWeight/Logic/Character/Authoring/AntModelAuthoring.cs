@@ -35,7 +35,8 @@ namespace DotsLite.Model.Authoring
         public float st;
         public float ed;
 
-        public Corps Corps;
+        public Corps CorpsBelongsTo;
+        public Corps CorpsTargets;
 
         public float ArmorDurability;
 
@@ -49,11 +50,13 @@ namespace DotsLite.Model.Authoring
             initState_(conversionSystem, state);
 
             var posture = this.GetComponentInChildren<PostureAuthoring>();
-            initPosture_(conversionSystem, posture, state, this.Corps);
+            initPosture_(conversionSystem, posture, state, this.CorpsBelongsTo);
 
 
-            var ent = conversionSystem.GetOrCreateEntity(state);
-            conversionSystem.AddHitTargetsAllRigidBody(this, ent, HitType.charactor, this.Corps);
+            //var ent = conversionSystem.GetOrCreateEntity(state);
+            //conversionSystem.AddHitTargetsAllRigidBody(this, ent, HitType.charactor);
+
+            //var  funits = this.getco
 
             return;
 
@@ -121,7 +124,7 @@ namespace DotsLite.Model.Authoring
                     typeof(Control.WorkData),
                     typeof(Control.StateLinkData),
 
-                    typeof(CorpsGroup.TargetData)
+                    typeof(CorpsGroup.Data)
                 });
                 em.AddComponents(ent, types);
 
@@ -150,9 +153,9 @@ namespace DotsLite.Model.Authoring
                     Rate = 0.5f,
                 });
 
-                em.SetComponentData(ent, new CorpsGroup.TargetData
+                em.SetComponentData(ent, new CorpsGroup.Data
                 {
-                    Corps = corps,
+                    BelongTo = corps,
                 });
             }
 
@@ -185,10 +188,9 @@ namespace DotsLite.Model.Authoring
                 });
             }
 
-            //void addCorpsCollider_(ActionStateAuthoring state, Corps corps)
-            //{
 
-            //}
+            //void addCorpsToFunctionUnit_
+            //    (GameObjectConversionSystem gcs, ActionStateAuthoring state)
 
         }
 

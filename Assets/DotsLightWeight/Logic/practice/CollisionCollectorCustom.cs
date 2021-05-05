@@ -11,15 +11,16 @@ namespace DotsLite.Collision
 
     using DotsLite.Character;
     using DotsLite.Collision;
+    using DotsLite.Targeting;
 
 
     public static class CollectorExtension
     {
         public static ClosestCorpsExcludeSelfCollector<T> GetClosestCollector<T>(
-            this ComponentDataFromEntity<CorpsGroup.TargetData> corpss, float maxFraction, Targeting.Corps selfCorps)
+            this ComponentDataFromEntity<CorpsGroup.Data> corpss, float maxFraction, Corps targetCorps)
             where T : struct, IQueryResult
         =>
-            new ClosestCorpsExcludeSelfCollector<T>(maxFraction, selfCorps, corpss);
+            new ClosestCorpsExcludeSelfCollector<T>(maxFraction, targetCorps, corpss);
 
 
         public static ClosestTargetedHitExcludeSelfCollector<T> GetClosestCollector<T>(
@@ -44,24 +45,24 @@ namespace DotsLite.Collision
         public float MaxFraction { get; private set; }
         public int NumHits { get; private set; }
 
-        public Targeting.Corps TargetCorps { get; private set; }
-        public Targeting.Corps SelfCorps { get; private set; }
+        public Corps OtherCorps { get; private set; }
+        public Corps TargetCorps { get; private set; }
 
         public T ClosestHit { get; private set; }
 
-        ComponentDataFromEntity<CorpsGroup.TargetData> corpss;
+        ComponentDataFromEntity<CorpsGroup.Data> corpss;
 
 
         public ClosestCorpsExcludeSelfCollector(
-            float maxFraction, Targeting.Corps selfCorps, ComponentDataFromEntity<CorpsGroup.TargetData> corpss)
+            float maxFraction, Corps targetCorps, ComponentDataFromEntity<CorpsGroup.Data> corpss)
         {
             this.MaxFraction = maxFraction;
             this.ClosestHit = default;
             this.NumHits = 0;
+            this.OtherCorps = Corps.none;
 
-            this.TargetCorps = Targeting.Corps.none;
+            this.TargetCorps = targetCorps;
 
-            this.SelfCorps = selfCorps;
             this.corpss = corpss;
         }
 
@@ -70,9 +71,9 @@ namespace DotsLite.Collision
             if (!this.corpss.HasComponent(hit.Entity)) return false;
 
             var t = this.corpss[hit.Entity];
-            if ((t.Corps & this.SelfCorps) == 0) return false;
+            if ((t.BelongTo & this.TargetCorps) == 0) return false;
 
-            this.TargetCorps = t.Corps;
+            this.OtherCorps = t.BelongTo;
 
             this.MaxFraction = hit.Fraction;
             this.ClosestHit = hit;
@@ -90,12 +91,12 @@ namespace DotsLite.Collision
         public float MaxFraction { get; private set; }
         public int NumHits { get; private set; }
 
-        public HitType TargetHitType { get; private set; }
-        public Entity TargetStateEntity { get; private set; }
+        public HitType OtherHitType { get; private set; }
+        public Entity OtherStateEntity { get; private set; }
 
         Entity selfStateEntity;
 
-        ComponentDataFromEntity<Hit.TargetData> Targets;
+        ComponentDataFromEntity<Hit.TargetData> targets;
         
         public T ClosestHit { get; private set; }
 
@@ -106,28 +107,28 @@ namespace DotsLite.Collision
             this.ClosestHit = default;
             this.NumHits = 0;
 
-            this.TargetStateEntity = Entity.Null;
-            this.TargetHitType = HitType.none;
+            this.OtherStateEntity = Entity.Null;
+            this.OtherHitType = HitType.none;
 
             this.selfStateEntity = selfStateEntity;
             
-            this.Targets = targets;
+            this.targets = targets;
         }
 
         public bool AddHit( T hit )
         {
-            if (this.Targets.HasComponent(hit.Entity))
+            if (this.targets.HasComponent(hit.Entity))
             {
-                var t = this.Targets[hit.Entity];
+                var t = this.targets[hit.Entity];
                 if (t.MainEntity == this.selfStateEntity) return false;
-                this.TargetHitType = t.HitType;
-                this.TargetStateEntity = t.MainEntity;
+                this.OtherHitType = t.HitType;
+                this.OtherStateEntity = t.MainEntity;
             }
             else
             {
                 if (hit.Entity == this.selfStateEntity) return false;
-                this.TargetHitType = HitType.none;
-                this.TargetStateEntity = hit.Entity;
+                this.OtherHitType = HitType.none;
+                this.OtherStateEntity = hit.Entity;
             }
 
             //if( hit.Fraction >= m_ClosestHit.Fraction ) return false;
@@ -146,37 +147,38 @@ namespace DotsLite.Collision
         public bool EarlyOutOnFirstHit => this.NumHits > 0;
         public float MaxFraction { get; }
         public int NumHits { get; private set; }
-        public HitType HitType { get; private set; }
+        public HitType OtherHitType { get; private set; }
 
         public Entity SelfStateEntity { get; private set; }
-        public Entity TargetStateEntity { get; private set; }
-        ComponentDataFromEntity<Hit.TargetData> Targets;
+        public Entity OtherStateEntity { get; private set; }
+        ComponentDataFromEntity<Hit.TargetData> targets;
 
         public AnyTargetedHitExcludeSelfCollector
             (float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets)
         {
             this.MaxFraction = maxFraction;
-            this.SelfStateEntity = selfStateEntity;
-            this.TargetStateEntity = Entity.Null;
             this.NumHits = 0;
-            this.Targets = targets;
-            this.HitType = HitType.none;
+            this.OtherHitType = HitType.none;
+            this.OtherStateEntity = Entity.Null;
+
+            this.SelfStateEntity = selfStateEntity;
+            this.targets = targets;
         }
 
         public bool AddHit( T hit )
         {
-            if (this.Targets.HasComponent(hit.Entity))
+            if (this.targets.HasComponent(hit.Entity))
             {
-                var t = this.Targets[hit.Entity];
+                var t = this.targets[hit.Entity];
                 if (t.MainEntity == this.SelfStateEntity) return false;
-                this.HitType = t.HitType;
-                this.TargetStateEntity = t.MainEntity;
+                this.OtherHitType = t.HitType;
+                this.OtherStateEntity = t.MainEntity;
             }
             else
             {
                 if (hit.Entity == this.SelfStateEntity) return false;
-                this.HitType = HitType.none;
-                this.TargetStateEntity = hit.Entity;
+                this.OtherHitType = HitType.none;
+                this.OtherStateEntity = hit.Entity;
             }
 
             this.NumHits = 1;

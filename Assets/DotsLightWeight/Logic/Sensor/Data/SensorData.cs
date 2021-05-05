@@ -17,27 +17,6 @@ using Unity.Physics.Authoring;
 namespace DotsLite.Targeting
 {
 
-    // メインに置く
-    public static partial class TargetSensorHolderLink
-    {
-        public struct HolderLinkData : IComponentData
-        {
-            public Entity HolderEntity;
-        }
-    }
-
-    //// 所属グループ
-    //public static partial class TargetGroup
-    //{
-    //    public struct BelongToData : IComponentData
-    //    {
-    //        public int BelongTo;
-    //    }
-    //}
-
-
-    // 受動側のコライダに置く -----------------------------------------------------------
-
     public enum Corps
     {
         none = 0,
@@ -53,14 +32,37 @@ namespace DotsLite.Targeting
         messenger = 1 << 9,
     }
 
+
     static public partial class CorpsGroup
     {
-        public struct TargetData : IComponentData
+        public struct TargetInBulletData : IComponentData
         {
-            public Corps Corps;
+            public Corps TargetCorps;
         }
 
     }
+
+
+
+    // メインに置く
+    public static partial class TargetSensorHolderLink
+    {
+        public struct HolderLinkData : IComponentData
+        {
+            public Entity HolderEntity;
+        }
+    }
+
+    // 所属グループ
+    static public partial class CorpsGroup
+    {
+        public struct Data : IComponentData
+        {
+            public Corps BelongTo;
+        }
+
+    }
+
 
 
 
