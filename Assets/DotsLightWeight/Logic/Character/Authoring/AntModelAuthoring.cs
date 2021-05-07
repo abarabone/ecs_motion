@@ -125,9 +125,10 @@ namespace DotsLite.Model.Authoring
 
                     typeof(Control.MoveData),
                     typeof(Control.WorkData),
-                    typeof(Control.StateLinkData)
+                    typeof(Control.StateLinkData),
 
-                    //typeof(CorpsGroup.Data)
+                    //typeof(CorpsGroup.Data),
+                    typeof(ColliderBank.DeadData)// ColliderSwitchingAuthoring にて付与する
                 });
                 em.AddComponents(ent, types);
 

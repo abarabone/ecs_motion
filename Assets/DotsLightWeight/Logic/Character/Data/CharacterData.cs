@@ -14,11 +14,11 @@ using Unity.Transforms;
 using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
-
-using DotsLite.Utilities;
+using Collider = Unity.Physics.Collider;
 
 namespace DotsLite.Character
 {
+    using DotsLite.Utilities;
     using DotsLite.Targeting;
 
 
@@ -165,7 +165,7 @@ namespace DotsLite.Character
 
     static public partial class Grouding
     {
-
+        // ↓すでに作成したコンポーネントデータをここに移動させたい
     }
 
     public struct GroundHitResultData : IComponentData
@@ -196,6 +196,14 @@ namespace DotsLite.Character
         public CollisionFilter Filter;
     }
 
+
+
+
+    static public partial class Walling
+    {
+        // ↓すでに作成したコンポーネントデータをここに移動させたい
+    }
+
     // 壁移動させたいメインエンティティに付けておく
     public struct WallingTag : IComponentData
     { }
@@ -219,5 +227,17 @@ namespace DotsLite.Character
     public struct HorizontalMovingTag : IComponentData
     { }
 
+
+
+
+    static public partial class ColliderBank
+    {
+
+        public unsafe struct DeadData : IComponentData
+        {
+            public BlobAssetReference<Collider> Collider;
+        }
+
+    }
 
 }

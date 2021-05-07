@@ -71,14 +71,12 @@ namespace DotsLite.Character.Action
                 .WithAll<CharacterAction.DamageState>()
                 .WithReadOnly(motionInfos)
                 .WithNativeDisableParallelForRestriction(motionCursors)
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        ref CharacterAction.DeadState state,
-                        in ActionState.MotionLinkDate mlink,
-                        in ActionState.PostureLinkData plink,
-                        in ActionState.BinderLinkData blink
-                    )
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    ref CharacterAction.DeadState state,
+                    in ActionState.MotionLinkDate mlink,
+                    in ActionState.PostureLinkData plink,
+                    in ActionState.BinderLinkData blink)
                 =>
                     {
                         var eqi = entityInQueryIndex;

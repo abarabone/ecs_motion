@@ -171,7 +171,7 @@ namespace DotsLite.Character
         }
     }
 
-    static class Walling
+    static partial class Walling
     {
         // burst でタプルが使えるようになるまでの代用
         public struct PosAndRot
