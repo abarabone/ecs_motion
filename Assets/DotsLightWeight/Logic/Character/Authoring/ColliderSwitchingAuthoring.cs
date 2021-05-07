@@ -25,6 +25,12 @@ namespace DotsLite.Character.Authoring
 
     using Collide = Unity.Physics.Collider;
 
+    public struct ColliderSwitchTargetData : IComponentData
+    {
+        public ColliderSwitchingAuthoring.Mode mode;
+        public Entity stateEntity;
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -36,11 +42,11 @@ namespace DotsLite.Character.Authoring
         public enum Mode
         {
             none,
-            deading
+            deading,
         }
 
 
-        public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             var em = dstManager;
             var gcs = conversionSystem;
@@ -53,22 +59,57 @@ namespace DotsLite.Character.Authoring
             var stateEntity = gcs.GetOrCreateEntity(state);
             var postureEntity = gcs.GetPrimaryEntity(posture);
 
-            //var collider = em.GetComponentData<PhysicsCollider>(entity);
-            var collider = 
 
-            switch (this.mode)
+            em.AddComponentData(entity, new ColliderSwitchTargetData
             {
-                case Mode.deading:
-
-                    em.AddComponentData(stateEntity, new ColliderBank.DeadData
-                    {
-                        Collider = collider.Value,
-                    });
-
-                    break;
-            }
+                mode = this.mode,
+                stateEntity = stateEntity,
+            });
 
             dstManager.DestroyEntity(entity);
         }
+    }
+
+
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    [UpdateBefore(typeof(NoNeedLinkedEntityGroupCleanUpSystem))]
+    public class MakeColliderBankSystem : GameObjectConversionSystem
+    {
+        protected override void OnUpdate()
+        {
+            var em = this.DstEntityManager;
+
+            var desc0 = new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    typeof(ColliderSwitchTargetData),
+                }
+            };
+            using var q = em.CreateEntityQuery(desc0);
+
+            using var ents = q.ToEntityArray(Allocator.Temp);
+            foreach (var ent in ents)
+            {
+                var cst = em.GetComponentData<ColliderSwitchTargetData>(ent);
+                var collider = em.GetComponentData<PhysicsCollider>(ent);
+
+                em.DestroyEntity(ent);
+
+                switch (cst.mode)
+                {
+                    case ColliderSwitchingAuthoring.Mode.deading:
+
+                        em.SetComponentData(cst.stateEntity, new ColliderBank.DeadData
+                        {
+                            Collider = collider.Value,
+                        });
+
+                        break;
+                }
+            }
+        }
+
     }
 }
