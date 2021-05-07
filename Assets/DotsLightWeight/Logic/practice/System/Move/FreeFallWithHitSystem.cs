@@ -78,6 +78,7 @@ namespace DotsLite.Character
 
             this.Entities
                 .WithBurst()
+                .WithAll<WallingTag>()
                 .WithReadOnly(targets)
                 .WithReadOnly(collisionWorld)
                 .ForEach(

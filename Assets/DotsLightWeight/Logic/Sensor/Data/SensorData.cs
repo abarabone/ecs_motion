@@ -13,10 +13,12 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 using Unity.Physics.Authoring;
+using System;
 
 namespace DotsLite.Targeting
 {
 
+    [Flags]
     public enum Corps
     {
         none = 0,

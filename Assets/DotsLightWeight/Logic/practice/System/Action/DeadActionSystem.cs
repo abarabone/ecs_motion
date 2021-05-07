@@ -76,7 +76,8 @@ namespace DotsLite.Character.Action
                     ref CharacterAction.DeadState state,
                     in ActionState.MotionLinkDate mlink,
                     in ActionState.PostureLinkData plink,
-                    in ActionState.BinderLinkData blink)
+                    in ActionState.BinderLinkData blink,
+                    in ColliderBank.DeadData cbank)
                 =>
                     {
                         var eqi = entityInQueryIndex;
@@ -84,7 +85,7 @@ namespace DotsLite.Character.Action
                         switch (state.Phase)
                         {
                             case 0:
-                                initPhase_(ref state, in mlink, in plink);
+                                initPhase_(ref state, in mlink, in plink, in cbank);
                                 break;
                             case 1:
                                 break;
@@ -105,23 +106,26 @@ namespace DotsLite.Character.Action
                         void initPhase_(
                             ref CharacterAction.DeadState state,
                             in ActionState.MotionLinkDate mlink,
-                            in ActionState.PostureLinkData plink)
+                            in ActionState.PostureLinkData plink,
+                            in ColliderBank.DeadData cbank)
                         {
-
-                            //cmd.AddComponent(eqi, plink.PostureEntity,
-                            //    new Move.EasingSpeedData
-                            //    {
-                            //        Rate = 3.0f,
-                            //        TargetSpeedPerSec = 0.0f,
-                            //    }
-                            //);
-                            cmd.RemoveComponent<GroundHitWallingData>(eqi, plink.PostureEntity);
 
 
                             var motion = new MotionOperator
                                 (cmd, motionInfos, motionCursors, mlink.MotionEntity, eqi);
 
                             motion.Start(Motion_ant.dead, isLooping: true, delayTime: 0.1f, scale: 0.2f);
+
+
+                            cmd.SetComponent(eqi, plink.PostureEntity, new PhysicsCollider
+                            {
+                                Value = cbank.Collider,
+                            });
+                            cmd.SetComponent(eqi, plink.PostureEntity, new PhysicsGravityFactor
+                            {
+                                Value = 1.0f,
+                            });
+                            cmd.RemoveComponent<WallingTag>(eqi, plink.PostureEntity);
 
                             state.Phase++;
                         }

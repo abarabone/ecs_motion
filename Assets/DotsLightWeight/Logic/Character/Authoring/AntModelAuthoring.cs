@@ -126,9 +126,6 @@ namespace DotsLite.Model.Authoring
                     typeof(Control.MoveData),
                     typeof(Control.WorkData),
                     typeof(Control.StateLinkData),
-
-                    //typeof(CorpsGroup.Data),
-                    typeof(ColliderBank.DeadData)// ColliderSwitchingAuthoring にて付与する
                 });
                 em.AddComponents(ent, types);
 
@@ -157,10 +154,6 @@ namespace DotsLite.Model.Authoring
                     Rate = 0.5f,
                 });
 
-                //em.SetComponentData(ent, new CorpsGroup.Data
-                //{
-                //    BelongTo = corps,
-                //});
             }
 
             void initState_
@@ -177,7 +170,9 @@ namespace DotsLite.Model.Authoring
 
                     typeof(Control.ActionData),
 
-                    typeof(Armor.SimpleDamageData)
+                    typeof(Armor.SimpleDamageData),
+
+                    typeof(ColliderBank.DeadData),// ColliderSwitchingAuthoring にて付与する
                 });
                 var ent = gcs.GetOrCreateEntity(state, types);
 
@@ -190,6 +185,11 @@ namespace DotsLite.Model.Authoring
                 {
                     Durability = this.ArmorDurability,
                 });
+
+                //em.SetComponentData(ent, new CorpsGroup.Data
+                //{
+                //    BelongTo = corps,
+                //});
             }
 
         }

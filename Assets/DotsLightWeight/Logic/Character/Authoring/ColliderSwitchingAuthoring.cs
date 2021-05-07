@@ -27,8 +27,8 @@ namespace DotsLite.Character.Authoring
 
     public struct ColliderSwitchTargetData : IComponentData
     {
-        public ColliderSwitchingAuthoring.Mode mode;
-        public Entity stateEntity;
+        public ColliderSwitchingAuthoring.Mode Mode;
+        public Entity Entity;
     }
 
     /// <summary>
@@ -62,11 +62,9 @@ namespace DotsLite.Character.Authoring
 
             em.AddComponentData(entity, new ColliderSwitchTargetData
             {
-                mode = this.mode,
-                stateEntity = stateEntity,
+                Mode = this.mode,
+                Entity = stateEntity,
             });
-
-            dstManager.DestroyEntity(entity);
         }
     }
 
@@ -97,11 +95,11 @@ namespace DotsLite.Character.Authoring
 
                 em.DestroyEntity(ent);
 
-                switch (cst.mode)
+                switch (cst.Mode)
                 {
                     case ColliderSwitchingAuthoring.Mode.deading:
 
-                        em.SetComponentData(cst.stateEntity, new ColliderBank.DeadData
+                        em.AddComponentData(cst.Entity, new ColliderBank.DeadData
                         {
                             Collider = collider.Value,
                         });
