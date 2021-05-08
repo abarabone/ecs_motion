@@ -20,7 +20,7 @@ namespace DotsLite.Draw
 
 
     /// <summary>
-    /// 物理をつけたパーティクル用　暫定でのこしてある
+    /// 物理をつけたパーティクル用　暫定でのこしてある　長さ固定なのでいまいち
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]

@@ -9,23 +9,24 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-
-using DotsLite.CharacterMotion;
-using DotsLite.SystemGroup;
-using Unity.Collections.LowLevel.Unsafe;
+using System;
 
 namespace DotsLite.Draw
 {
-
-    using DotsLite.Structure;
+    using DotsLite.CharacterMotion;
+    using DotsLite.SystemGroup;
+    using DotsLite.Geometry;
+    using DotsLite.Character;
+    using DotsLite.Particle;
     using DotsLite.Dependency;
 
 
-    //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
+    //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class ParticleUvAnimationParameterToModelBufferSystem : DependencyAccessableSystemBase
+    public class Particle1PointToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 
@@ -38,47 +39,45 @@ namespace DotsLite.Draw
             this.bardep = BarrierDependency.Sender.Create<DrawMeshCsSystem>(this);
         }
 
-
         protected unsafe override void OnUpdate()
         {
             using var barScope = bardep.WithDependencyScope();
 
 
+            //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
-            //var boneinfoOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneVectorSettingData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
-                //.WithAll<Structure.ShowNearTag>()
-                .WithReadOnly( offsetsOfDrawModel )
+                .WithReadOnly(offsetsOfDrawModel)
+                .WithAll<DrawInstance.ParticleTag>()
+                .WithNone<DrawInstance.MeshTag>()
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModeLinkData linker,
-                        in StructureMain.PartDestructionData destruction
-                    ) =>
+                        in Particle.AdditionalData additional,
+                        in Translation pos
+                    )
+                =>
                     {
                         if (target.DrawInstanceId == -1) return;
 
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
-                        //var boneInfo = boneinfoOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var pDstBase = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        var boneVectorLength = 2;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
-                        var i = target.DrawInstanceId * (boneVectorLength + offsetInfo.VectorOffsetPerInstance);
-                        var size = offsetInfo.VectorOffsetPerInstance * sizeof(float4);
-                        fixed (void* pSrc = destruction.Destructions)
-                        {
-                            UnsafeUtility.MemCpy(pDstBase + i, pSrc, size);
-                        }
+                        var lengthOfInstance = 1 + offsetInfo.VectorOffsetPerInstance;
+                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorOffsetPerInstance;
+
+                        var size = additional.Size;
+                        var color = math.asfloat(additional.Color.ToUint());
+
+                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        pModel[i] = new float4(pos.Value, size);
                     }
                 )
                 .ScheduleParallel();
         }
-
-
-
     }
 
 }
