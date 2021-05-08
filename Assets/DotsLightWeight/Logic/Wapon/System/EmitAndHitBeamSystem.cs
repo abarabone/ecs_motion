@@ -117,7 +117,7 @@ namespace DotsLite.Arms
                         in FunctionUnit.BulletEmittingData emitter,
                         in FunctionUnit.MuzzleLinkData mlink,
                         in FunctionUnit.StateLinkData slink,
-                        in Bullet.SpecData bulletData,
+                        in Bullet.MoveSpecData bulletData,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {

@@ -45,13 +45,25 @@ namespace DotsLite.Arms
             public Entity StateEntity;
         }
 
-        public struct 
-            SpecData : IComponentData
+        public struct MoveSpecData : IComponentData
         {
             public float RangeDistanceFactor;
             public float BulletSpeed;
             public float GravityFactor;
             public float AimFactor;
+        }
+        public struct PointDamageSpecData : IComponentData
+        {
+            public float Damage;
+        }
+        public struct SphereRangeDamageSpecData : IComponentData
+        {
+            public float Damage;
+            public float Range;
+        }
+        public struct SubEmitData : IComponentData
+        {
+            public Entity EmitionEntity;
         }
 
         public struct VelocityData : IComponentData

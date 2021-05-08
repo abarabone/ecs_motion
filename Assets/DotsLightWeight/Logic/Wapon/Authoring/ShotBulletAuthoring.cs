@@ -57,7 +57,7 @@ namespace DotsLite.Arms.Authoring
                     ? new ComponentTypes(new ComponentType[]
                     {
                         typeof(Bullet.LinkData),
-                        typeof(Bullet.SpecData),
+                        typeof(Bullet.MoveSpecData),
                         typeof(Bullet.VelocityData),
                         typeof(Bullet.AccelerationData),
                         typeof(Bullet.DistanceData),
@@ -69,7 +69,7 @@ namespace DotsLite.Arms.Authoring
                     : new ComponentTypes(new ComponentType[]
                     {
                         typeof(Bullet.LinkData),
-                        typeof(Bullet.SpecData),
+                        typeof(Bullet.MoveSpecData),
                         typeof(Bullet.VelocityData),
                         typeof(Bullet.DistanceData),
                         typeof(Bullet.LifeTimeData),
@@ -80,7 +80,7 @@ namespace DotsLite.Arms.Authoring
                 em.AddComponents(bulletEntity, types);
 
                 em.SetComponentData(bulletEntity,
-                    new Bullet.SpecData
+                    new Bullet.MoveSpecData
                     {
                         BulletSpeed = this.BulletSpeed,
                         RangeDistanceFactor = this.RangeDistance,

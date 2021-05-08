@@ -68,7 +68,7 @@ namespace DotsLite.Arms
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
-            var bullets = this.GetComponentDataFromEntity<Bullet.SpecData>(isReadOnly: true);
+            var bullets = this.GetComponentDataFromEntity<Bullet.MoveSpecData>(isReadOnly: true);
 
 
             var dt = this.Time.DeltaTime;
@@ -78,7 +78,7 @@ namespace DotsLite.Arms
 
             this.Entities
                 .WithBurst()
-                .WithNone<Bullet.SpecData>()
+                .WithNone<Bullet.MoveSpecData>()
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
                 .WithReadOnly(bullets)
@@ -161,7 +161,7 @@ namespace DotsLite.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float3 calcBulletPosition_(
             quaternion rot, float3 pos,
-            in FunctionUnit.BulletEmittingData emitter, in Bullet.SpecData bulletData)
+            in FunctionUnit.BulletEmittingData emitter, in Bullet.MoveSpecData bulletData)
         {
 
             var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);

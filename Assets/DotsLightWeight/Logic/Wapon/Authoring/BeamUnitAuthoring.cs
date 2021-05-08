@@ -60,7 +60,7 @@ namespace DotsLite.Arms.Authoring
                 {
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                     typeof(FunctionUnit.BulletEmittingData),
-                    typeof(Bullet.SpecData), // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
+                    typeof(Bullet.MoveSpecData), // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
                     typeof(FunctionUnit.TriggerData),
                     //typeof(FunctionUnit.OwnerLinkData),
                     typeof(FunctionUnit.ActivateData),
@@ -77,7 +77,7 @@ namespace DotsLite.Arms.Authoring
                     }
                 );
                 em.SetComponentData(ent,
-                    new Bullet.SpecData
+                    new Bullet.MoveSpecData
                     {
                         RangeDistanceFactor = beamBullet.RangeDistance,
                     }
