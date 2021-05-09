@@ -67,8 +67,10 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var lengthOfInstance = 2 + offsetInfo.VectorOffsetPerInstance;
-                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorOffsetPerInstance;
+                        const int vectorLength = 2;
+                        var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
+                        var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
+                        var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
 
                         var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());

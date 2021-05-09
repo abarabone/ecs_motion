@@ -25,8 +25,10 @@ namespace DotsLite.Character
 
 
     // ホルダーからセンサーを起動する
-    // センサーはインターバルごとに WakeupFindTag をつけて起動する
-    // 
+    // センサーはインターバルごとに WakeupFindTag をつけて索敵を起動する
+    // 索敵を１度実行したらすぐに WakeupFindTag を外し、キャプチャした相手をポーリングし続ける
+    // キャプチャは次のインターバル後の索敵まで続く
+    // 索敵に失敗したケースも、索敵の１ケースとして任意の位置をポーリングする←未実装
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]

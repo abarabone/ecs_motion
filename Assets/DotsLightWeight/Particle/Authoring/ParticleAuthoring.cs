@@ -17,7 +17,7 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Geometry;
 
     /// <summary>
-    /// 
+    /// 他メッシュとのアトラス対応は後回し
     /// </summary>
     public class ParticleAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
@@ -26,10 +26,9 @@ namespace DotsLite.Particle.Aurthoring
         public Shader DrawShader;
         public Color ParticleColor;
 
-        public float DefaultRadius;
+        public int Division;
 
-        //public bool IsHMesh;
-
+        //public bool IsRound;
 
 
         /// <summary>
@@ -72,9 +71,8 @@ namespace DotsLite.Particle.Aurthoring
                     typeof(DrawInstance.ModeLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(Particle.AdditionalData),
-                    typeof(Particle.TranslationPtoPData)
-                //typeof(Translation),
-                //typeof(Rotation)
+                    typeof(Particle.TranslationPtoPData),
+                    typeof(Translation)
                 );
                 em.SetArchetype(mainEntity, archetype);
 
