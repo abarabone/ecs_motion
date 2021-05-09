@@ -41,7 +41,7 @@ namespace DotsLite.Draw
                 .WithNone<Translation>()
                 .ForEach(
                         (
-                            ref DrawInstance.ModeLinkData modelLink,
+                            ref DrawInstance.ModelLinkData modelLink,
                             in DrawInstance.ModelLod2LinkData lodLink,
                             in DrawInstance.PostureLinkData posturelink
                         ) =>
@@ -61,7 +61,7 @@ namespace DotsLite.Draw
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .ForEach(
                         (
-                            ref DrawInstance.ModeLinkData modelLink,
+                            ref DrawInstance.ModelLinkData modelLink,
                             in DrawInstance.ModelLod2LinkData lodLink,
                             in Translation pos
                         ) =>
@@ -84,7 +84,7 @@ namespace DotsLite.Draw
         static Entity selectModel_
             (
                 float3 targetpos_, float3 campos_,
-                DrawInstance.ModelLod2LinkData lodLink_, DrawInstance.ModeLinkData modelLink_
+                DrawInstance.ModelLod2LinkData lodLink_, DrawInstance.ModelLinkData modelLink_
             )
         {
 

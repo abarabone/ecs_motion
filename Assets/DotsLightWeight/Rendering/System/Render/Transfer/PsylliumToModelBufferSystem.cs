@@ -56,7 +56,7 @@ namespace DotsLite.Draw
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,
-                        in DrawInstance.ModeLinkData linker,
+                        in DrawInstance.ModelLinkData linker,
                         in Particle.AdditionalData additional,
                         in Translation pos,
                         in Rotation rot

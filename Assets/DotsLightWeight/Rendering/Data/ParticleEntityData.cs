@@ -35,7 +35,7 @@ namespace DotsLite.Particle
     public struct PsylliumEntity :
         ITypedEntity<
             DrawInstance.ParticleTag,
-            DrawInstance.ModeLinkData,//DrawTransform.LinkData
+            DrawInstance.ModelLinkData,//DrawTransform.LinkData
             DrawInstance.TargetWorkData,
             Translation,
             Rotation

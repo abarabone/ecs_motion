@@ -50,12 +50,14 @@ namespace DotsLite.Draw
 namespace DotsLite.Model
 {
 
+    // ボーンのベクトル数も兼ねている
     public enum BoneType
     {
         T = 1,
         TR = 2,
         TRS = 3,
         Matrix4x3 = 3,
+        PtoP = 2,
     }
 
     static public partial class TransformOption

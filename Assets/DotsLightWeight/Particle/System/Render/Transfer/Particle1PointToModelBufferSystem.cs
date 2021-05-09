@@ -19,9 +19,10 @@ namespace DotsLite.Draw
     using DotsLite.Character;
     using DotsLite.Particle;
     using DotsLite.Dependency;
+    using DotsLite.Model;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
@@ -55,8 +56,10 @@ namespace DotsLite.Draw
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,
-                        in DrawInstance.ModeLinkData linker,
+                        in DrawInstance.ModelLinkData linker,
                         in Particle.AdditionalData additional,
+                        in BillBoad.UvCursor cursor,
+                        in BillBoad.UvParam uvinfo,
                         in Translation pos
                     )
                 =>
@@ -66,17 +69,19 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        const int vectorLength = 1;
+                        const int vectorLength = (int)BoneType.T;
                         var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
                         var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
                         var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
 
+                        var uv = cursor.CalcUv(uvinfo);
                         var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[i] = new float4(pos.Value, size);
+                        pModel[i + 0] = new float4(pos.Value, 1.0f);
+                        pModel[i + 1] = new float4(uv, size, color);//math.asfloat(new int4());
                     }
                 )
                 .ScheduleParallel();

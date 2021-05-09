@@ -19,6 +19,7 @@ namespace DotsLite.Draw
     using DotsLite.Character;
     using DotsLite.Particle;
     using DotsLite.Dependency;
+    using DotsLite.Model;
 
 
     //[DisableAutoCreation]
@@ -56,7 +57,7 @@ namespace DotsLite.Draw
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,
-                        in DrawInstance.ModeLinkData linker,
+                        in DrawInstance.ModelLinkData linker,
                         in Particle.AdditionalData additional,
                         in Particle.TranslationPtoPData pos
                     )
@@ -67,9 +68,10 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        const int vectorLength = 2;
+                        const int vectorLength = (int)BoneType.PtoP;
                         var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
                         var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
+
                         var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
 
                         var size = additional.Size;

@@ -68,7 +68,7 @@ namespace DotsLite.Particle.Aurthoring
                 var archetype = em.CreateArchetype(
                     typeof( ModelPrefabNoNeedLinkedEntityGroupTag ),
                     typeof( DrawInstance.ParticleTag ),
-                    typeof( DrawInstance.ModeLinkData ),
+                    typeof( DrawInstance.ModelLinkData ),
                     typeof( DrawInstance.TargetWorkData ),
                     typeof( Particle.AdditionalData ),
                     typeof( Particle.TranslationPtoPData )
@@ -79,7 +79,7 @@ namespace DotsLite.Particle.Aurthoring
 
 
                 em.SetComponentData( mainEntity,
-                    new DrawInstance.ModeLinkData
+                    new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
                         DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary( main ),

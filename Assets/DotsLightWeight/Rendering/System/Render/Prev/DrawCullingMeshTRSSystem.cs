@@ -59,7 +59,7 @@ namespace DotsLite.Draw
                 .ForEach(
                         (
                             ref DrawInstance.TargetWorkData target,
-                            in DrawInstance.ModeLinkData modellink,
+                            in DrawInstance.ModelLinkData modellink,
                             in Rotation rot,
                             in Translation pos
                         ) =>

@@ -22,7 +22,7 @@ namespace DotsLite.Draw
 
     public struct DrawInstanceEntity :
         ITypedEntity<
-            DrawInstance.ModeLinkData,
+            DrawInstance.ModelLinkData,
             DrawInstance.TargetWorkData
         >
     {
@@ -54,7 +54,7 @@ namespace DotsLite.Draw
         /// <summary>
         /// 描画モデルの種類情報
         /// </summary>
-        public struct ModeLinkData : IComponentData
+        public struct ModelLinkData : IComponentData
         {
             public Entity DrawModelEntityCurrent;
         }

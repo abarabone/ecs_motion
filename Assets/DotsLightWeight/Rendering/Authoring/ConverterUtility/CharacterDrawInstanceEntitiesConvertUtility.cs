@@ -84,7 +84,7 @@ namespace DotsLite.Draw.Authoring
                 em.CreateArchetype(
                     typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.BoneModelTag),
-                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.PostureLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.BoneLinkData),
@@ -96,7 +96,7 @@ namespace DotsLite.Draw.Authoring
                 em.CreateArchetype(
                     typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.BoneModelTag),
-                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.PostureLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.TransformOffsetData),
@@ -107,7 +107,7 @@ namespace DotsLite.Draw.Authoring
             void setDrawComponents_()
             {
                 em.SetComponentData(ent,
-                    new DrawInstance.ModeLinkData
+                    new DrawInstance.ModelLinkData
                     {
                         DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(top.gameObject),
                     }
@@ -181,7 +181,7 @@ namespace DotsLite.Draw.Authoring
             void setDrawComponet_
                 ( EntityManager em_, IEnumerable<Entity> boneEntities_, Entity drawInstanceEntity_ )
             {
-                var drawModelLinker = em_.GetComponentData<DrawInstance.ModeLinkData>( drawInstanceEntity_ );
+                var drawModelLinker = em_.GetComponentData<DrawInstance.ModelLinkData>( drawInstanceEntity_ );
 
                 em_.SetComponentData(
                     boneEntities_,

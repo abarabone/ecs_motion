@@ -53,7 +53,7 @@ namespace DotsLite.Draw
             //    .ScheduleParallel();
 
 
-            var models = this.GetComponentDataFromEntity<DrawInstance.ModeLinkData>(isReadOnly: true);
+            var models = this.GetComponentDataFromEntity<DrawInstance.ModelLinkData>(isReadOnly: true);
 
             this.Entities
             //var withLod = this.Entities

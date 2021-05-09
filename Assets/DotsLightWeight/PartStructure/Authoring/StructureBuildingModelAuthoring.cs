@@ -258,7 +258,7 @@ namespace DotsLite.Structure.Authoring
                     //typeof(NonUniformScale),//暫定
                     //typeof(ObjectMain.ObjectMainTag),
                     typeof(StructureMain.BinderLinkData),//暫定
-                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(StructureMain.PartDestructionData),
                 }
@@ -278,7 +278,7 @@ namespace DotsLite.Structure.Authoring
                 }
             );
             em.SetComponentData(mainEntity,
-                new DrawInstance.ModeLinkData
+                new DrawInstance.ModelLinkData
                 {
                     DrawModelEntityCurrent = Entity.Null,//gcs_.GetFromModelEntityDictionary(far_.objectTop),//(top_),
                 }

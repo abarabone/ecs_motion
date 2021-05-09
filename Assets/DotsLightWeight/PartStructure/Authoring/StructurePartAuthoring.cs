@@ -158,7 +158,7 @@ namespace DotsLite.Structure.Authoring
                 (
                     typeof(StructurePartDebris.Data),
                     typeof(DrawInstance.MeshTag),
-                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(PhysicsVelocity),//暫定
                     typeof(PhysicsGravityFactor),//暫定
@@ -186,7 +186,7 @@ namespace DotsLite.Structure.Authoring
                 //    }
                 //);
                 em_.SetComponentData(prefabEnt,
-                    new DrawInstance.ModeLinkData
+                    new DrawInstance.ModelLinkData
                     {
                         DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(master),
                     }

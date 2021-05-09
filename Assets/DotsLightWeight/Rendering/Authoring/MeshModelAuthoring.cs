@@ -71,7 +71,7 @@ namespace DotsLite.Model.Authoring
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                     typeof(BinderTrimBlankLinkedEntityGroupTag),
                     typeof(DrawInstance.MeshTag),
-                    typeof(DrawInstance.ModeLinkData),
+                    typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(Translation),
                     typeof(Rotation),
@@ -81,7 +81,7 @@ namespace DotsLite.Model.Authoring
 
 
                 em.SetComponentData(mainEntity,
-                    new DrawInstance.ModeLinkData
+                    new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
                         DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(main),//gcs.GetDrawModelEntity(main, lodOpts),

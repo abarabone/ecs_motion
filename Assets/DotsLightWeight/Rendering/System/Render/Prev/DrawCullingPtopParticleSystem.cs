@@ -58,7 +58,7 @@ namespace DotsLite.Draw
                 .ForEach(
                         (
                             ref DrawInstance.TargetWorkData target,
-                            in DrawInstance.ModeLinkData modellink,
+                            in DrawInstance.ModelLinkData modellink,
                             in Particle.TranslationPtoPData ptop,
                             in Particle.AdditionalData additional
                         ) =>

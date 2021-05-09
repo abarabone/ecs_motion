@@ -50,7 +50,7 @@ namespace DotsLite.Draw
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,
-                        in DrawInstance.ModeLinkData linker,
+                        in DrawInstance.ModelLinkData linker,
                         in Translation pos,
                         in Rotation rot//,
                         //in NonUniformScale scl

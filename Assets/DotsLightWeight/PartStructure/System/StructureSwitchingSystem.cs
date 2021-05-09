@@ -70,7 +70,7 @@ namespace DotsLite.Draw
                     (
                         Entity entity, int entityInQueryIndex,
                         in StructureMain.BinderLinkData binder,
-                        in DrawInstance.ModeLinkData model,
+                        in DrawInstance.ModelLinkData model,
                         in DrawInstance.ModelLod2LinkData lod2
                     )
                 =>
