@@ -208,7 +208,7 @@ namespace DotsLite.Arms
             cmd.SetComponent(eqi, newBullet,
                 new Bullet.LinkData
                 {
-                    StateEntity = stateEntity,
+                    OwnerStateEntity = stateEntity,
                 }
             );
             cmd.SetComponent(eqi, newBullet,

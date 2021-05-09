@@ -53,13 +53,13 @@ namespace DotsLite.Draw
             //    .ScheduleParallel();
 
 
-            var models = this.GetComponentDataFromEntity<DrawInstance.ModelLinkData>(isReadOnly: true);
+            var mlinks = this.GetComponentDataFromEntity<DrawInstance.ModelLinkData>(isReadOnly: true);
 
             this.Entities
             //var withLod = this.Entities
                 .WithBurst()
                 //.WithAll<DrawTransform.WithLodTag>()
-                .WithReadOnly(models)
+                .WithReadOnly(mlinks)
                 .WithReadOnly(targets)
                 .ForEach(
                     (
@@ -74,7 +74,7 @@ namespace DotsLite.Draw
                         boneIndexer.DrawInstanceId = drawTarget.DrawInstanceId;
 
 
-                        drawLinker.DrawModelEntityCurrent = models[drawLinker.DrawInstanceEntity].DrawModelEntityCurrent;
+                        drawLinker.DrawModelEntityCurrent = mlinks[drawLinker.DrawInstanceEntity].DrawModelEntityCurrent;
                     }
                     // ここでボーン書き込み位置を計算してしまうことも可能だが、そうすると DrawInstanceTempBufferAllocateSystem に依存する。
                     // ジョブの並列度が下がるので、ここでは最低限のことだけ行う。

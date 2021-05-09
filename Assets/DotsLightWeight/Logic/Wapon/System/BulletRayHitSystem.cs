@@ -103,7 +103,7 @@ namespace DotsLite.Arms
                     {
                         
                         var hit = cw.BulletHitRay
-                            (link.StateEntity, ptop.Start, ptop.End, 1.0f, targets);
+                            (link.OwnerStateEntity, ptop.Start, ptop.End, 1.0f, targets);
 
                         if (!hit.isHit) return;
 

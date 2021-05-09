@@ -259,7 +259,7 @@ namespace DotsLite.Arms
             cmd.SetComponent(i, newBeamEntity,
                 new Bullet.LinkData
                 {
-                    StateEntity = stateEntity,
+                    OwnerStateEntity = stateEntity,
                 }
             );
 

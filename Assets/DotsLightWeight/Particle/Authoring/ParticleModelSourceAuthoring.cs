@@ -19,8 +19,7 @@ namespace DotsLite.Particle.Aurthoring
     /// <summary>
     /// 他メッシュとのアトラス対応は後回し
     /// </summary>
-    public class ParticleAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+    public class ParticleModelSourceAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         public Shader DrawShader;

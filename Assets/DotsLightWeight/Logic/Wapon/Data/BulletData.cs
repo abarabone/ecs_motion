@@ -42,7 +42,7 @@ namespace DotsLite.Arms
 
         public struct LinkData : IComponentData
         {
-            public Entity StateEntity;
+            public Entity OwnerStateEntity;
         }
 
         public struct MoveSpecData : IComponentData
