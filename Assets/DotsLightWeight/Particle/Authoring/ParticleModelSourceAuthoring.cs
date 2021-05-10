@@ -45,8 +45,9 @@ namespace DotsLite.Particle.Aurthoring
 
                 const BoneType BoneType = BoneType.T;
                 const int boneLength = 1;
+                const int additional = 1;
 
-                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, BoneType, boneLength);
+                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, BoneType, boneLength, additional);
             }
         }
 

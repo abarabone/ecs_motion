@@ -20,6 +20,7 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.CharacterMotion;
     using DotsLite.Arms;
     using DotsLite.Model;
+    using DotsLite.Particle.Aurthoring;
 
     /// <summary>
     /// 
@@ -31,6 +32,7 @@ namespace DotsLite.Arms.Authoring
 
         //public IBulletAuthoring aaa;
         public ShotBulletAuthoring BulletPrefab;
+        public ParticleAuthoringBase MuzzleEffectPrefab;
 
         //public GameObject MuzzleObject;
         public float3 MuzzleLocalPosition;
@@ -43,7 +45,14 @@ namespace DotsLite.Arms.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            referencedPrefabs.Add(this.BulletPrefab.gameObject);
+            var bullet = this.BulletPrefab;
+            referencedPrefabs.Add(bullet.gameObject);
+
+            if (this.MuzzleEffectPrefab != null)
+            {
+                var effect = this.MuzzleEffectPrefab;// as MonoBehaviour;
+                referencedPrefabs.Add(effect.gameObject);
+            }
         }
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -54,14 +63,17 @@ namespace DotsLite.Arms.Authoring
             return;
 
 
-            void initEmitter_(GameObjectConversionSystem gcs_, Entity emitter_)
+            void initEmitter_(GameObjectConversionSystem gcs, Entity emitter)
             {
 
-                var em = gcs_.DstEntityManager;
+                var em = gcs.DstEntityManager;
 
-                var bulletPrefab = gcs_.GetPrimaryEntity(this.BulletPrefab.gameObject);
+                var bulletPrefab = gcs.GetPrimaryEntity(this.BulletPrefab);
+                var effectPrefab = this.MuzzleEffectPrefab != null
+                    ? gcs.GetPrimaryEntity(this.MuzzleEffectPrefab)
+                    : Entity.Null;
 
-                var ent = emitter_;
+                var ent = emitter;
 
 
                 var types = new ComponentTypes(new ComponentType[]
@@ -79,7 +91,7 @@ namespace DotsLite.Arms.Authoring
                     new FunctionUnit.BulletEmittingData
                     {
                         BulletPrefab = bulletPrefab,
-                        EffectPrefab = Entity.Null,// 
+                        EffectPrefab = effectPrefab,
                         MuzzlePositionLocal = this.MuzzleLocalPosition,
                         EmittingInterval = this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,

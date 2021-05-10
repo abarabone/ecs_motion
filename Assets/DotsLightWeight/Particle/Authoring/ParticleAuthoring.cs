@@ -16,14 +16,22 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
+    //public interface IParticle
+    //{ }
+    public abstract class ParticleAuthoringBase : ModelGroupAuthoring.ModelAuthoringBase
+    { }
+
+
     /// <summary>
     /// 他メッシュとのアトラス対応は後回し
     /// </summary>
-    public class ParticleAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class ParticleAuthoring :
+        ParticleAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+        //ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs,
+        //IParticle
     {
 
-        ParticleModelSourceAuthoring ModelSource;
+        public ParticleModelSourceAuthoring ModelSource;
 
         public Color ParticleColor;
         public float Radius;

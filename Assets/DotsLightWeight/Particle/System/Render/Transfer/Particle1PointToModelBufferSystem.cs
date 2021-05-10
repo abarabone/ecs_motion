@@ -81,7 +81,7 @@ namespace DotsLite.Draw
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
                         pModel[i + 0] = new float4(pos.Value, 1.0f);
-                        pModel[i + 1] = new float4(uv, size, color);//math.asfloat(new int4());
+                        pModel[i + 1] = new float4(uv, size, color);
                     }
                 )
                 .ScheduleParallel();

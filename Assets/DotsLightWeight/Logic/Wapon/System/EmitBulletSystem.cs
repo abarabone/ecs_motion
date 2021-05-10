@@ -93,12 +93,24 @@ namespace DotsLite.Arms
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
+                        var eqi = entityInQueryIndex;
+
                         if (!trigger.IsTriggered) return;
 
                         trigger.IsTriggered = false;// 一発ずつオフにする
 
 
                         if (currentTime < state.NextEmitableTime) return;
+
+                        if (emitter.EffectPrefab != Entity.Null)
+                        {
+                            var mzrot = rots[mlink.MuzzleEntity].Value;
+                            var mzpos = poss[mlink.MuzzleEntity].Value;
+                            var efpos = calcEffectPosition_(mzrot, mzpos, emitter);
+                            emitEffect_(cmd, eqi, emitter.EffectPrefab, efpos);
+                        }
+
+
 
                         // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射感覚になる
                         var elapsed = 0.0f;
@@ -112,7 +124,7 @@ namespace DotsLite.Arms
                         var rot = rots[mlink.EmitterEntity].Value;
                         var pos = poss[mlink.EmitterEntity].Value;
 
-                        var bulletPos = calcBulletPosition_(rot, pos, in emitter, in bulletData);
+                        var bulletPos = calcBulletPosition_(rot, pos, in emitter);
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
                         var g = new DirectionAndLength { Value = gravity.As_float4(bulletData.GravityFactor) };
@@ -143,6 +155,32 @@ namespace DotsLite.Arms
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static float3 calcEffectPosition_(
+            quaternion rot, float3 pos, in FunctionUnit.BulletEmittingData emitter)
+        {
+
+            var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
+
+            return muzpos;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void emitEffect_(
+            EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity effectPrefab,
+            float3 pos)
+        {
+            //if (effectPrefab == Entity.Null) return;
+
+            var ent = cmd.Instantiate(eqi, effectPrefab);
+            
+            cmd.SetComponent(eqi, effectPrefab, new Translation
+            {
+                Value = pos
+            });
+        }
+
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float3 calcBulletDirection_(
@@ -160,8 +198,7 @@ namespace DotsLite.Arms
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float3 calcBulletPosition_(
-            quaternion rot, float3 pos,
-            in FunctionUnit.BulletEmittingData emitter, in Bullet.MoveSpecData bulletData)
+            quaternion rot, float3 pos, in FunctionUnit.BulletEmittingData emitter)
         {
 
             var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
