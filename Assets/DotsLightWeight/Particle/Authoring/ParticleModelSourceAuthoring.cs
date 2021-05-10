@@ -23,22 +23,8 @@ namespace DotsLite.Particle.Aurthoring
     {
 
         public Shader DrawShader;
-        public Color ParticleColor;
+        public Texture2D Texture;
 
-        public uint2 Division;
-
-        //public bool UseRoundMesh;
-        //public bool UseCustomSize;
-
-        public uint IndexStart;
-        public length_define IndexLength;
-        public enum length_define
-        {
-            _1 = 1 - 1,
-            _2 = 2 - 1,
-            _4 = 4 - 1,
-            _8 = 8 - 1,
-        }
 
         /// <summary>
         /// 
@@ -46,146 +32,22 @@ namespace DotsLite.Particle.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            createModelEntity_(conversionSystem, this.gameObject, this.DrawShader, this.createMesh());
-
-            initParticleEntityComponents_(conversionSystem, this.gameObject);
-            //initParticleCustomEntityComponents_(conversionSystem, this.gameObject);
+            createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, this.createMesh(), this.Texture);
 
             return;
 
 
             static void createModelEntity_
-                (GameObjectConversionSystem gcs, GameObject main, Shader shader, Mesh mesh)
+                (GameObjectConversionSystem gcs, Entity entity, GameObject main, Shader shader, Mesh mesh, Texture tex)
             {
                 var mat = new Material(shader);
+                mat.mainTexture = tex;
 
                 const BoneType BoneType = BoneType.T;
                 const int boneLength = 1;
 
-                var modelEntity_ = gcs.CreateDrawModelEntityComponents(main, mesh, mat, BoneType, boneLength);
+                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, BoneType, boneLength);
             }
-
-
-            void initParticleEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
-            {
-                dstManager.SetName_(entity, $"{this.name}");
-
-                var em = gcs.DstEntityManager;
-
-
-                var mainEntity = gcs.GetPrimaryEntity(main);
-
-                var archetype = em.CreateArchetype(
-                    typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                    typeof(DrawInstance.ParticleTag),
-                    typeof(DrawInstance.ModelLinkData),
-                    typeof(DrawInstance.TargetWorkData),
-                    typeof(Particle.AdditionalData),
-                    typeof(BillBoad.UvCursor),
-                    typeof(BillBoad.UvCursorParam),
-                    typeof(BillBoad.UvParam),
-                    typeof(Translation)
-                );
-                em.SetArchetype(mainEntity, archetype);
-
-
-                em.SetComponentData(mainEntity,
-                    new DrawInstance.ModelLinkData
-                    //new DrawTransform.LinkData
-                    {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(main),
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new DrawInstance.TargetWorkData
-                    {
-                        DrawInstanceId = -1,
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new Particle.AdditionalData
-                    {
-                        Color = this.ParticleColor,
-                        Size = 1.0f,//this.DefaultRadius,
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new BillBoad.UvCursor
-                    {
-                        CurrentIndex = 0,
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new BillBoad.UvCursorParam
-                    {
-
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new BillBoad.UvParam
-                    {
-                        Span = BillBoad.CalcSpan(this.Division),
-                        //UMask =
-                    }
-                );
-            }
-
-            //    void initParticleCustomEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
-            //    {
-            //        dstManager.SetName_(entity, $"{this.name}");
-
-            //        var em = gcs.DstEntityManager;
-
-
-            //        var mainEntity = gcs.GetPrimaryEntity(main);
-
-            //        var archetype = em.CreateArchetype(
-            //            typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-            //            typeof(DrawInstance.ParticleTag),
-            //            typeof(DrawInstance.ModelLinkData),
-            //            typeof(DrawInstance.TargetWorkData),
-            //            typeof(Particle.AdditionalData),
-            //            typeof(BillBoadCustom.UvCursor),
-            //            typeof(BillBoadCustom.UvInfo),
-            //            typeof(Translation)
-            //        );
-            //        em.SetArchetype(mainEntity, archetype);
-
-
-            //        em.SetComponentData(mainEntity,
-            //            new DrawInstance.ModelLinkData
-            //            //new DrawTransform.LinkData
-            //            {
-            //                DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(main),
-            //            }
-            //        );
-            //        em.SetComponentData(mainEntity,
-            //            new DrawInstance.TargetWorkData
-            //            {
-            //                DrawInstanceId = -1,
-            //            }
-            //        );
-            //        em.SetComponentData(mainEntity,
-            //            new Particle.AdditionalData
-            //            {
-            //                Color = this.ParticleColor,
-            //                Size = 1.0f,//this.DefaultRadius,
-            //            }
-            //        );
-            //        em.SetComponentData(mainEntity,
-            //            new BillBoadCustom.UvCursor
-            //            {
-            //                CurrentId = 0,
-            //                Length = 1,
-            //            }
-            //        );
-            //        em.SetComponentData(mainEntity,
-            //            new BillBoadCustom.UvInfo
-            //            {
-            //                Span = BillBoad.CalcSpan(this.Division),
-            //            }
-            //        );
-            //    }
         }
 
         Mesh createMesh()

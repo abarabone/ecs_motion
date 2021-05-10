@@ -30,8 +30,8 @@ namespace DotsLite.Particle
         }
         public struct UvCursorParam : IComponentData
         {
-            public int IndexOffset;
-            public int IndexMask;
+            public int IndexPrevMask;
+            public int IndexAfterOffset;
         }
 
         public struct UvParam : IComponentData
@@ -60,12 +60,9 @@ namespace DotsLite.Particle
         public static float2 CalcSpan(uint2 division, float2 uvWidthHeight) =>
             uvWidthHeight / division;
 
-        public static (uint umask, int vshift) CalcUvParameter(uint2 division)
-        {
-            var umask = division.x - 1;
-            var vshift = math.countbits(umask);
-            return (umask, vshift);
-        }
+        public static uint CalcUMask(uint2 division) => division.x - 1;
+        public static int CalcVShift(uint2 division) => math.countbits(CalcUMask(division));
+        
 
         public static float2 CalcUv(int id, float2 span, uint umask, int vshift)
         {

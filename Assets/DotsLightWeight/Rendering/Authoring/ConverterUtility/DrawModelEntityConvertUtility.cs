@@ -29,21 +29,28 @@ namespace DotsLite.Draw.Authoring
     static public class DrawModelEntityConvertUtility
     {
 
+        static public Entity CreateDrawModelEntityComponents(
+            this GameObjectConversionSystem gcs, GameObject topGameObject,
+            Mesh mesh, Material mat,
+            BoneType BoneType, int boneLength, int instanceDataVectorLength = 0)
+        {
+            var em = gcs.DstEntityManager;
+            var ent = em.CreateEntity();
+            return InitDrawModelEntityComponents(gcs, topGameObject, ent, mesh, mat, BoneType, boneLength, instanceDataVectorLength);
+        }
 
 
-        static public Entity CreateDrawModelEntityComponents
-            (
-                this GameObjectConversionSystem gcs, GameObject topGameObject,
-                Mesh mesh, Material mat,
-                BoneType BoneType, int boneLength, int instanceDataVectorLength = 0
-            )
+        static public Entity InitDrawModelEntityComponents(
+            this GameObjectConversionSystem gcs, GameObject topGameObject, Entity drawModelEntity,
+            Mesh mesh, Material mat,
+            BoneType BoneType, int boneLength, int instanceDataVectorLength = 0)
         {
 
             var em = gcs.DstEntityManager;
 
             setShaderProps_( em, mat, mesh, boneLength );
 
-            var drawModelEntity = createDrawModelEntity_( gcs, topGameObject );
+            addComponents_( gcs, topGameObject, drawModelEntity);
             initInfomationData_( em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength );
             initResourceData_(em, drawModelEntity, mat, mesh);
 
@@ -51,7 +58,7 @@ namespace DotsLite.Draw.Authoring
 
 
 
-            void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int boneLength_ )
+            static void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int boneLength_ )
             {
                 var sys = em_.World.GetExistingSystem<DrawBufferManagementSystem>();
                 var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
@@ -63,36 +70,31 @@ namespace DotsLite.Draw.Authoring
             }
 
 
-            Entity createDrawModelEntity_
-                ( GameObjectConversionSystem gcs_, GameObject top_ )
+            static void addComponents_(GameObjectConversionSystem gcs, GameObject top, Entity drawModelEntity)
             {
-                var em_ = gcs_.DstEntityManager;
+                var em = gcs.DstEntityManager;
 
 
-                var drawModelArchetype = em_.CreateArchetype(
+                var types = new ComponentTypes(new ComponentType[] {
                     typeof( DrawModel.BoneVectorSettingData ),
                     typeof( DrawModel.InstanceCounterData ),
                     typeof( DrawModel.InstanceOffsetData ),
                     typeof( DrawModel.BoundingBoxData ),
                     typeof( DrawModel.GeometryData ),
                     typeof( DrawModel.ComputeArgumentsBufferData )
-                );
-                var ent = em_.CreateEntity( drawModelArchetype );
+                });
+                em.AddComponents(drawModelEntity, types);
 
-                gcs.AddToModelEntityDictionary(top_, ent);
+                gcs.AddToModelEntityDictionary(top, drawModelEntity);
 
 
-                em_.SetName_( ent, $"{top_.name} model" );
-
-                return ent;
+                em.SetName_(drawModelEntity, $"{top.name} model" );
             }
 
 
-            void initInfomationData_
-                (
-                    EntityManager em_, Entity ent_,
-                    Bounds bbox_, int boneLength_, BoneType BoneType_, int instanceDataVectorLength_
-                )
+            void initInfomationData_(
+                EntityManager em_, Entity ent_,
+                Bounds bbox_, int boneLength_, BoneType BoneType_, int instanceDataVectorLength_)
             {
 
                 em_.SetComponentData(ent_,

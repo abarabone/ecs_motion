@@ -87,6 +87,11 @@ namespace DotsLite.Particle
 
         static public uint ToUint(this Color32 c) => (uint)(c.r << 24 | c.g << 16 | c.b << 8 | c.a << 0);
 
+
+        public struct DurationData : IComponentData
+        {
+            public float DurationSec;
+        }
     }
 
 
