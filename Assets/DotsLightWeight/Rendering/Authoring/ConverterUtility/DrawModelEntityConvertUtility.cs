@@ -62,6 +62,7 @@ namespace DotsLite.Draw.Authoring
             {
                 var sys = em_.World.GetExistingSystem<DrawBufferManagementSystem>();
                 var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
+
                 mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer );
 
                 mat_.SetInt( "BoneLengthEveryInstance", boneLength_ );
