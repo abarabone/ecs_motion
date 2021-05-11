@@ -26,7 +26,7 @@ namespace DotsLite.Particle.Aurthoring
     /// 他メッシュとのアトラス対応は後回し
     /// </summary>
     public class ParticleAuthoring :
-        ParticleAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+        ParticleAuthoringBase, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
         //ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs,
         //IParticle
     {
@@ -54,10 +54,10 @@ namespace DotsLite.Particle.Aurthoring
         public float DurationTimeSec;// 0 以下なら消えない
 
 
-        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        {
-            referencedPrefabs.Add(this.ModelSource.gameObject);
-        }
+        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        //{
+        //    referencedPrefabs.Add(this.ModelSource.gameObject);
+        //}
 
 
         /// <summary>
@@ -66,10 +66,19 @@ namespace DotsLite.Particle.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var modelEntity = conversionSystem.GetFromModelEntityDictionary(this.ModelSource.gameObject);
+            //var modelEntity = conversionSystem.GetPrimaryEntity(this.ModelSource);
+            //dstManager.RemoveComponent<Prefab>(modelEntity);
+            //var isExists = conversionSystem.IsExistsInModelEntityDictionary(this.ModelSource.gameObject);
+            //if (!isExists)
+            //{
+            //    var ent = conversionSystem.GetPrimaryEntity(this.ModelSource);
+            //    this.ModelSource.Convert(ent, dstManager, conversionSystem);
+            //}
+            var modelEntity = conversionSystem.GetPrimaryEntity(this.ModelSource);
 
 
-            initParticleEntityComponents_(conversionSystem, this.gameObject);
+
+            initParticleEntityComponents_(conversionSystem, this.gameObject, modelEntity);
             //initParticleCustomEntityComponents_(conversionSystem, this.gameObject);
 
             addDurationTime_(conversionSystem, entity, this.DurationTimeSec);
@@ -77,9 +86,9 @@ namespace DotsLite.Particle.Aurthoring
             return;
 
 
-            void initParticleEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
+            void initParticleEntityComponents_(GameObjectConversionSystem gcs, GameObject main, Entity modelEntity)
             {
-                dstManager.SetName_(entity, $"{this.name}");
+                gcs.DstEntityManager.SetName_(entity, $"{main.name}");
 
                 var em = gcs.DstEntityManager;
 
@@ -104,7 +113,7 @@ namespace DotsLite.Particle.Aurthoring
                     new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(main),
+                        DrawModelEntityCurrent = modelEntity,
                     }
                 );
                 em.SetComponentData(mainEntity,

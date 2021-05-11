@@ -55,11 +55,13 @@ namespace DotsLite.Model.Authoring
 
         static public Entity GetFromModelEntityDictionary(this GameObjectConversionSystem gcs, GameObject topGameObject)
         {
-            gcs.GetSingleton<ModelEntityDictionary.Data>()
-                .ModelDictionary
-                .TryGetValue(topGameObject, out var entity);
+            return gcs.GetSingleton<ModelEntityDictionary.Data>()
+                .ModelDictionary[topGameObject];
+            //gcs.GetSingleton<ModelEntityDictionary.Data>()
+            //    .ModelDictionary
+            //    .TryGetValue(topGameObject, out var entity);
 
-            return entity;
+            //return entity;
         }
 
         static public bool IsExistsInModelEntityDictionary(this GameObjectConversionSystem gcs, GameObject topGameObject) =>
