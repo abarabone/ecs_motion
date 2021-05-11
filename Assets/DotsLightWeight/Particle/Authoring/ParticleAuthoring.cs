@@ -26,7 +26,7 @@ namespace DotsLite.Particle.Aurthoring
     /// 他メッシュとのアトラス対応は後回し
     /// </summary>
     public class ParticleAuthoring :
-        ParticleAuthoringBase, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
+        ParticleAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
         //ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs,
         //IParticle
     {
@@ -51,13 +51,13 @@ namespace DotsLite.Particle.Aurthoring
             length_8 = 8,
         }
 
-        public float DurationTimeSec;// 0 以下なら消えない
+        public float LifeTimeSec;// 0 以下なら消えない
 
 
-        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        //{
-        //    referencedPrefabs.Add(this.ModelSource.gameObject);
-        //}
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            referencedPrefabs.Add(this.ModelSource.gameObject);
+        }
 
 
         /// <summary>
@@ -81,7 +81,8 @@ namespace DotsLite.Particle.Aurthoring
             initParticleEntityComponents_(conversionSystem, this.gameObject, modelEntity);
             //initParticleCustomEntityComponents_(conversionSystem, this.gameObject);
 
-            addDurationTime_(conversionSystem, entity, this.DurationTimeSec);
+            addLifeTime_(conversionSystem, entity, this.LifeTimeSec);
+            //addDurationTime_(conversionSystem, entity, this.LifeTimeSec);
 
             return;
 
@@ -100,10 +101,10 @@ namespace DotsLite.Particle.Aurthoring
                     typeof(DrawInstance.ParticleTag),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(Particle.AdditionalData),
                     typeof(BillBoad.UvCursor),
                     typeof(BillBoad.UvCursorParam),
                     typeof(BillBoad.UvParam),
+                    typeof(Particle.AdditionalData),
                     typeof(Translation)
                 );
                 em.SetArchetype(mainEntity, archetype);
@@ -111,7 +112,6 @@ namespace DotsLite.Particle.Aurthoring
 
                 em.SetComponentData(mainEntity,
                     new DrawInstance.ModelLinkData
-                    //new DrawTransform.LinkData
                     {
                         DrawModelEntityCurrent = modelEntity,
                     }
@@ -122,13 +122,7 @@ namespace DotsLite.Particle.Aurthoring
                         DrawInstanceId = -1,
                     }
                 );
-                em.SetComponentData(mainEntity,
-                    new Particle.AdditionalData
-                    {
-                        Color = this.ParticleColor,
-                        Size = this.Radius,
-                    }
-                );
+
                 em.SetComponentData(mainEntity,
                     new BillBoad.UvCursor
                     {
@@ -148,6 +142,14 @@ namespace DotsLite.Particle.Aurthoring
                         Span = BillBoad.CalcSpan(this.Division),
                         UMask = BillBoad.CalcUMask(this.Division),
                         VShift = BillBoad.CalcVShift(this.Division),
+                    }
+                );
+
+                em.SetComponentData(mainEntity,
+                    new Particle.AdditionalData
+                    {
+                        Color = this.ParticleColor,
+                        Size = this.Radius,
                     }
                 );
             }
@@ -209,11 +211,27 @@ namespace DotsLite.Particle.Aurthoring
             //        );
             //    }
 
-            static void addDurationTime_(GameObjectConversionSystem gcs, Entity ent, float time)
-            {
-                if (time > 0.0f) return;
+            //static void addDurationTime_(GameObjectConversionSystem gcs, Entity ent, float time)
+            //{
+            //    if (time > 0.0f) return;
 
-                gcs.DstEntityManager.AddComponentData(ent, new Particle.DurationData
+            //    gcs.DstEntityManager.AddComponentData(ent, new Particle.DurationData
+            //    {
+            //        DurationSec = time,
+            //    });
+            //}
+
+            static void addLifeTime_(GameObjectConversionSystem gcs, Entity ent, float time)
+            {
+                if (time <= 0.0f) return;
+
+                var types = new ComponentTypes(
+                    typeof(Particle.LifeTimeSpecData),
+                    typeof(Particle.LifeTimeData)
+                );
+                gcs.DstEntityManager.AddComponents(ent, types);
+
+                gcs.DstEntityManager.AddComponentData(ent, new Particle.LifeTimeSpecData
                 {
                     DurationSec = time,
                 });
@@ -221,5 +239,7 @@ namespace DotsLite.Particle.Aurthoring
         }
 
     }
+
+
 
 }

@@ -1,4 +1,6 @@
-﻿Shader "Custom/Particle uv"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Custom/Particle uv"
 {
     Properties
     {
@@ -68,14 +70,16 @@
 
 				const float3 eye =  (wpos - _WorldSpaceCameraPos);
 				const float3 up = UNITY_MATRIX_IT_MV[1].xyz;
-				const float3 side = normalize(cross(up, eye));
+				const float3 side = -normalize(cross(up, eye));
 				//const float3 edgeface = normalize(eye);//cross(eye, side));
 
-				const float4 wvt = float4(wpos + (side * lvt.xxx + up * lvt.yyy) * size, 1);
+				//const float4 wvt = float4(wpos + (side * lvt.xxx + up * lvt.yyy) * size, 1);
+				const float4 wvt = float4(wpos * size, 1) + lvt;
 				//const float4x4 mt = float4x4(float4(side, 0), float4(up, 0), float4(edgeface, 0), wpos_current);
 				//const float4 wvt = mul(lvt, mt);
 
-                o.vertex = mul(UNITY_MATRIX_VP, wvt);
+                o.vertex = UnityObjectToClipPos(-lvt.xyz * 3, 1.0f));
+                //o.vertex = mul(UNITY_MATRIX_VP, wvt);
                 o.uv = v.uv;
                 o.color = color * 6;
                 UNITY_TRANSFER_FOG(o, o.vertex);

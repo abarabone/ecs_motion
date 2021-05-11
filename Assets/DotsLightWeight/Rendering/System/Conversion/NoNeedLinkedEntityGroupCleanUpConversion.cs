@@ -20,6 +20,8 @@ namespace DotsLite.Model.Authoring
     public class NoNeedLinkedEntityGroupCleanUpSystem : GameObjectConversionSystem
     {
         protected override void OnUpdate()
+        { }
+        protected override void OnDestroy()
         {
             var em = this.DstEntityManager;
 

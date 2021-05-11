@@ -34,6 +34,8 @@ namespace DotsLite.Model.Authoring
 
 
         protected override void OnUpdate()
+        { }
+        protected override void OnDestroy()
         {
             var em = this.DstEntityManager;
 

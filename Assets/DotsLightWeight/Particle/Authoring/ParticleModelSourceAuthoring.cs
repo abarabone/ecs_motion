@@ -62,9 +62,9 @@ namespace DotsLite.Particle.Aurthoring
 
             mesh.vertices = new Vector3[]
             {
-                new Vector3 (-width, -height, 0),     // 0
-                new Vector3 (-width, -height, 0),           // 1
-                new Vector3 (width , -height, 0),     // 2
+                new Vector3 (-width, height, 0),     // 0
+                new Vector3 (width, height, 0),           // 1
+                new Vector3 (-width , -height, 0),     // 2
                 new Vector3 (width , -height, 0),           // 3
             };
 
@@ -85,6 +85,44 @@ namespace DotsLite.Particle.Aurthoring
             return mesh;
         }
 
+    }
+
+
+    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    public class RemovePrefabComponentsConversion : GameObjectConversionSystem
+    {
+        protected override void OnUpdate()
+        { }
+        //{
+        //    var em = this.DstEntityManager;
+
+        //    this.Entities
+        //        .WithAll<DrawModel.GeometryData, Prefab>()
+        //        .ForEach(ent =>
+        //        {
+        //            em.RemoveComponent<Prefab>(ent);
+        //        });
+        //}
+        protected override void OnDestroy()
+        {
+            var em = this.DstEntityManager;
+
+            var desc0 = new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    typeof(DrawModel.GeometryData),
+                    typeof(Prefab)
+                }
+            };
+            using var q = em.CreateEntityQuery(desc0);
+
+            using var ents = q.ToEntityArray(Allocator.Temp);
+            foreach (var ent in ents)
+            {
+                em.RemoveComponent<Prefab>(ent);
+            }
+        }
     }
 
 }

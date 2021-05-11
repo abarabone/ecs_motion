@@ -20,8 +20,9 @@ namespace DotsLite.Model.Authoring
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     public class TrimBlankEntityFromLinkedEntityGroupConversion : GameObjectConversionSystem
     {
-        //protected override void OnDestroy()
         protected override void OnUpdate()
+        { }
+        protected override void OnDestroy()
         {
             var em = this.DstEntityManager;
             var needs = new NativeList<LinkedEntityGroup>( Allocator.Temp );

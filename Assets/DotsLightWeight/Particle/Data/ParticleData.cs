@@ -20,6 +20,26 @@ namespace DotsLite.Particle
     using DotsLite.CharacterMotion;
 
 
+    public static partial class Particle
+    {
+
+        // ”jŠüŽžŽw’è
+        public struct LifeTimeData : IComponentData
+        {
+            public float EndTime;
+        }
+        public struct LifeTimeSpecData : IComponentData
+        {
+            public float DurationSec;
+        }
+
+        //// Œ¸‚Á‚Ä‚­
+        //public struct DurationData : IComponentData
+        //{
+        //    public float DurationSec;
+        //}
+    }
+
 
     static public partial class BillBoad
     {
@@ -49,7 +69,28 @@ namespace DotsLite.Particle
         //    public Color Color;
         //}
 
+    }
 
+    public static partial class BillBoadCustom
+    {
+        public struct UvCursor : IComponentData
+        {
+            public int2 CurrentId;
+            public int2 Length;
+        }
+
+        public struct UvInfo : IComponentData
+        {
+            //public uint2 Division;
+            //public float2 UvWH;
+            //public float2 UvOffset;
+            public float2 Span;
+        }
+    }
+
+
+    static public partial class BillBoad
+    {
         public static float2 CalcUv(this UvCursor cursor, UvParam uvinfo) =>
             CalcUv(cursor.CurrentIndex, uvinfo.Span, uvinfo.UMask, uvinfo.VShift);
 
@@ -95,22 +136,5 @@ namespace DotsLite.Particle
         }
     }
 
-
-    public static partial class BillBoadCustom
-    {
-        public struct UvCursor : IComponentData
-        {
-            public int2 CurrentId;
-            public int2 Length;
-        }
-
-        public struct UvInfo : IComponentData
-        {
-            //public uint2 Division;
-            //public float2 UvWH;
-            //public float2 UvOffset;
-            public float2 Span;
-        }
-    }
 
 }
