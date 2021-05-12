@@ -43,11 +43,10 @@ namespace DotsLite.Particle.Aurthoring
                 var mat = new Material(shader);
                 mat.mainTexture = tex;
 
-                const BoneType BoneType = BoneType.T;
+                const BoneType BoneType = BoneType.P1p;
                 const int boneLength = 1;
-                const int additional = 1;
 
-                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, BoneType, boneLength, additional);
+                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, BoneType, boneLength);
             }
         }
 
@@ -71,9 +70,9 @@ namespace DotsLite.Particle.Aurthoring
             mesh.uv = new Vector2[]
             {
                 new Vector2 (0, 0),
-                new Vector2 (0, 0.5f),
                 new Vector2 (1, 0),
-                new Vector2 (1, 0.5f),
+                new Vector2 (0, 1),
+                new Vector2 (1, 1),
             };
 
             mesh.triangles = new int[]

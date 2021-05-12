@@ -69,11 +69,11 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        const int vectorLength = (int)BoneType.T;
-                        var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
+                        const int vectorLength = (int)BoneType.P1p;
+                        var lengthOfInstance = vectorLength;//offsetInfo.VectorOffsetPerInstance + vectorLength;
                         var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
-                        var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
+                        var i = instanceBufferOffset;// + offsetInfo.VectorOffsetPerInstance;
 
                         var uv = cursor.CalcUv(uvinfo);
                         var size = additional.Size;

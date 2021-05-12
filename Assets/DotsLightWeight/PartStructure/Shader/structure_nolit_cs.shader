@@ -114,9 +114,10 @@ Shader "Custom/structure_nolit_cs"
 				//const float4	wvt = mul(UNITY_MATRIX_VP, float4(tvt.xyz, 1.0f));
 				const float4	wvt = UnityObjectToClipPos(tvt.xyz);
 
-				const float alival = get_part_bit(i_vector_base, v.part_index.rg) == 0 ? 1 : 0;
+				//const float alive = get_part_bit(i_vector_base, v.part_index.rg) == 0 ? 1 : 0;
+				const float alive = 1 - any(get_part_bit(i_vector_base, v.part_index.rg));
 
-				o.vertex = wvt * alival;
+				o.vertex = wvt * alive;
 				o.uv = v.uv;
 				o.color = float4(1,1,1,1);
 

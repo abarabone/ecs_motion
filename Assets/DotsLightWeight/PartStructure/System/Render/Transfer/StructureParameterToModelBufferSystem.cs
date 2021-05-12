@@ -19,6 +19,7 @@ namespace DotsLite.Draw
 
     using DotsLite.Structure;
     using DotsLite.Dependency;
+    using DotsLite.Model;
 
 
     //[DisableAutoCreation]
@@ -65,8 +66,10 @@ namespace DotsLite.Draw
                         //var boneInfo = boneinfoOfDrawModel[linker.DrawModelEntityCurrent];
 
                         var pDstBase = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        var boneVectorLength = 2;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
-                        var i = target.DrawInstanceId * (boneVectorLength + offsetInfo.VectorOffsetPerInstance);
+                        var boneVectorLength = (int)BoneType.TR;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
+                        var instanceVectorLength = boneVectorLength + offsetInfo.VectorOffsetPerInstance;
+
+                        var i = target.DrawInstanceId * instanceVectorLength;
                         var size = offsetInfo.VectorOffsetPerInstance * sizeof(float4);
                         fixed (void* pSrc = destruction.Destructions)
                         {
