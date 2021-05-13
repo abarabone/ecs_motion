@@ -72,9 +72,13 @@ Shader "Custom/Particle uv"
 				const half4 lvt = half4(roted, 0, 0);
                 const half3 wpos = buf0.xyz;
 
-                const half4 w = mul(UNITY_MATRIX_V, half4(wpos, 1)) + lvt;
-                o.vertex = mul(UNITY_MATRIX_P, w);
+                //const half4 vpos = mul(UNITY_MATRIX_V, half4(wpos, 1));
+                //o.vertex = mul(UNITY_MATRIX_P, vpos + lvt);
                 
+                const half3x3 mv = half3x3(UNITY_MATRIX_V[0].xyz, UNITY_MATRIX_V[1].xyz, UNITY_MATRIX_V[2].xyz);
+                const half4 _vt = half4(mul(lvt.xyz, mv), 0);
+                o.vertex = mul(UNITY_MATRIX_VP, half4(wpos, 1) + _vt);
+
                 o.uv = v.uv;
                 o.color = color;// * 6;
                 UNITY_TRANSFER_FOG(o, o.vertex);
