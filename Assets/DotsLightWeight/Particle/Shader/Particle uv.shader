@@ -13,6 +13,8 @@ Shader "Custom/Particle uv"
 		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
 		Blend SrcAlpha One
+        //Blend SrcAlpha OneMinusSrcAlpha
+        //Blend One One
 		Lighting Off ZWrite Off Fog
 		{
 			Mode Off
@@ -61,25 +63,27 @@ Shader "Custom/Particle uv"
 				const float4 buf0 = BoneVectorBuffer[ivec + 0];
 				const float4 buf1 = BoneVectorBuffer[ivec + 1];
 
-                const fixed4 color = float4(asuint(buf1.w).xxxx >> uint4(24, 16, 8, 0) & 255) / 255.;
+                const fixed4 color = float4(asuint(buf1.w).xxxx >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
                 const float size = buf1.z;
                 const half2 uv = buf1.xy;
 
-				float4 lvt = v.vertex;
+				const float4 lvt = v.vertex;
                 const float3 wpos = buf0.xyz;
 
-				const float3 eye = (wpos - _WorldSpaceCameraPos);
-				const float3 up = UNITY_MATRIX_IT_MV[1].xyz;
-				const float3 side = normalize(cross(up, eye));
+				//const float3 eye = (wpos - _WorldSpaceCameraPos);
+				//const float3 up = UNITY_MATRIX_V[1].xyz;
+				//const float3 side = UNITY_MATRIX_V[0].xyz;//normalize(cross(up, eye));
 
-				const float4 wvt = float4(wpos + (side * lvt.xxx + up * lvt.yyy) * size, 1);
+				//const float4 wvt = float4(wpos + (side * lvt.xxx + up * lvt.yyy) * size, 1);
 				//const float3 wvt = wpos + (side * lvt.xxx + up * lvt.yyy) * size;
 
-
-                o.vertex = UnityObjectToClipPos(wvt);
-                //o.vertex = mul(UNITY_MATRIX_VP, wvt);
+                //const float4 w = mul(UNITY_MATRIX_V, float4(wpos, 0));
+                //const float4 wvt = transpose(UNITY_MATRIX_V)[3] + float4(lvt.x, lvt.y, 0, 0);
+                //const float4 wvt = float4(UNITY_MATRIX_V[0].w + lvt.x, UNITY_MATRIX_V[1].w + lvt.y, 0, 0);
+                //const float4 wvt = mul(UNITY_MATRIX_V, float4(lvt.x, lvt.y, 0, 1));
+                o.vertex = mul(UNITY_MATRIX_VP, wpos + lvt);
                 o.uv = v.uv;
-                //o.color = color * 6;
+                o.color = color;// * 6;
                 UNITY_TRANSFER_FOG(o, o.vertex);
 
                 return o;
