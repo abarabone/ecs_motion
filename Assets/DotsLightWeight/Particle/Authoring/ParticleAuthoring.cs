@@ -104,6 +104,7 @@ namespace DotsLite.Particle.Aurthoring
                     typeof(BillBoad.UvCursor),
                     typeof(BillBoad.UvCursorParam),
                     typeof(BillBoad.UvParam),
+                    typeof(BillBoad.RotationData),
                     typeof(Particle.AdditionalData),
                     typeof(Translation)
                 );
@@ -142,6 +143,12 @@ namespace DotsLite.Particle.Aurthoring
                         Span = BillBoad.CalcSpan(this.Division),
                         UMask = BillBoad.CalcUMask(this.Division),
                         VShift = BillBoad.CalcVShift(this.Division),
+                    }
+                );
+                em.SetComponentData(mainEntity,
+                    new BillBoad.RotationData
+                    {
+                        Direction = new float2(0, 1),
                     }
                 );
 

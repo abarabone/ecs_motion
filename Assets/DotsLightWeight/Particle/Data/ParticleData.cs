@@ -69,6 +69,14 @@ namespace DotsLite.Particle
         //    public Color Color;
         //}
 
+        // 二次元回転を、up の方向ベクトル x, y で表す
+        // 回転行列は下記（ x=cos, y=sin とみなせるため）
+        // | x, -y |
+        // | y,  x |
+        public struct RotationData : IComponentData
+        {
+            public float2 Direction;
+        }
     }
 
     public static partial class BillBoadCustom

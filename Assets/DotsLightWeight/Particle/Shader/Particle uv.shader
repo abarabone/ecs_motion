@@ -63,25 +63,18 @@ Shader "Custom/Particle uv"
 				const float4 buf0 = BoneVectorBuffer[ivec + 0];
 				const float4 buf1 = BoneVectorBuffer[ivec + 1];
 
-                const fixed4 color = float4(asuint(buf1.w).xxxx >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
-                const float size = buf1.z;
+                const fixed4 color = float4(asuint(buf0.w).xxxx >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
                 const half2 uv = buf1.xy;
+                const half2 dir = buf1.zw;
+                const half2x2 rot = half2x2(half2(dir.x, -dir.y), dir.yx);
+                
+                const half2 roted = mul(rot, v.vertex.xy);
+				const half4 lvt = half4(roted, 0, 0);
+                const half3 wpos = buf0.xyz;
 
-				const float4 lvt = v.vertex;
-                const float3 wpos = buf0.xyz;
-
-				//const float3 eye = (wpos - _WorldSpaceCameraPos);
-				//const float3 up = UNITY_MATRIX_V[1].xyz;
-				//const float3 side = UNITY_MATRIX_V[0].xyz;//normalize(cross(up, eye));
-
-				//const float4 wvt = float4(wpos + (side * lvt.xxx + up * lvt.yyy) * size, 1);
-				//const float3 wvt = wpos + (side * lvt.xxx + up * lvt.yyy) * size;
-
-                //const float4 w = mul(UNITY_MATRIX_V, float4(wpos, 0));
-                //const float4 wvt = transpose(UNITY_MATRIX_V)[3] + float4(lvt.x, lvt.y, 0, 0);
-                //const float4 wvt = float4(UNITY_MATRIX_V[0].w + lvt.x, UNITY_MATRIX_V[1].w + lvt.y, 0, 0);
-                //const float4 wvt = mul(UNITY_MATRIX_V, float4(lvt.x, lvt.y, 0, 1));
-                o.vertex = mul(UNITY_MATRIX_VP, wpos + lvt);
+                const half4 w = mul(UNITY_MATRIX_V, half4(wpos, 1)) + lvt;
+                o.vertex = mul(UNITY_MATRIX_P, w);
+                
                 o.uv = v.uv;
                 o.color = color;// * 6;
                 UNITY_TRANSFER_FOG(o, o.vertex);

@@ -60,6 +60,7 @@ namespace DotsLite.Draw
                         in Particle.AdditionalData additional,
                         in BillBoad.UvCursor cursor,
                         in BillBoad.UvParam uvinfo,
+                        in BillBoad.RotationData rotdir,
                         in Translation pos
                     )
                 =>
@@ -78,10 +79,11 @@ namespace DotsLite.Draw
                         var uv = cursor.CalcUv(uvinfo);
                         var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());
+                        var dir = rotdir.Direction;
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[i + 0] = new float4(pos.Value, 1.0f);
-                        pModel[i + 1] = new float4(uv, size, color);
+                        pModel[i + 0] = new float4(pos.Value, color);
+                        pModel[i + 1] = new float4(uv, dir * size);
                     }
                 )
                 .ScheduleParallel();

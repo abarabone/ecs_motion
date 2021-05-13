@@ -102,12 +102,14 @@ namespace DotsLite.Arms
 
                         if (currentTime < state.NextEmitableTime) return;
 
+                        var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(dt) & 0x_7fff_ffff);
+
                         if (emitter.EffectPrefab != Entity.Null)
                         {
                             var mzrot = rots[mlink.MuzzleEntity].Value;
                             var mzpos = poss[mlink.MuzzleEntity].Value;
                             var efpos = calcEffectPosition_(mzrot, mzpos, emitter);
-                            emitEffect_(cmd, eqi, emitter.EffectPrefab, efpos);
+                            emitEffect_(cmd, eqi, emitter.EffectPrefab, efpos, rnd);
                         }
 
 
@@ -117,8 +119,6 @@ namespace DotsLite.Arms
                         var frameBaseTime = currentTime - dt;
                         var isEmitPrevFrame = state.NextEmitableTime > frameBaseTime;
                         var baseTime = math.select(frameBaseTime, state.NextEmitableTime, isEmitPrevFrame);
-
-                        var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(dt) & 0x_7fff_ffff);
 
                         var bulletData = bullets[emitter.BulletPrefab];
                         var rot = rots[mlink.EmitterEntity].Value;
@@ -168,15 +168,19 @@ namespace DotsLite.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void emitEffect_(
             EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity effectPrefab,
-            float3 pos)
+            float3 pos, Random rnd)
         {
             //if (effectPrefab == Entity.Null) return;
 
             var ent = cmd.Instantiate(eqi, effectPrefab);
             
-            cmd.SetComponent(eqi, effectPrefab, new Translation
+            cmd.SetComponent(eqi, ent, new Translation
             {
-                Value = pos
+                Value = pos,
+            });
+            cmd.SetComponent(eqi, ent, new BillBoad.RotationData
+            {
+                Direction = rnd.NextFloat2Direction() * rnd.NextFloat(0.8f, 1.2f),
             });
         }
 
@@ -186,7 +190,7 @@ namespace DotsLite.Arms
         static float3 calcBulletDirection_(
             quaternion dirrot, ref Random rnd, float accuracyRad)
         {
-
+            
             var yrad = rnd.NextFloat(accuracyRad);
             var zrad = rnd.NextFloat(2.0f * math.PI);
             var bulletDir = math.mul(dirrot, math.forward(quaternion.EulerYZX(0.0f, yrad, zrad)));
