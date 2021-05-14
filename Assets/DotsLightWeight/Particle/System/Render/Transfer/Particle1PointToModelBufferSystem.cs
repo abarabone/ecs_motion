@@ -38,6 +38,10 @@ namespace DotsLite.Draw
             base.OnCreate();
 
             this.bardep = BarrierDependency.Sender.Create<DrawMeshCsSystem>(this);
+
+
+            //this.Entities
+            //    .ForEach((ref ))
         }
 
         protected unsafe override void OnUpdate()
@@ -80,6 +84,8 @@ namespace DotsLite.Draw
                         var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());
                         var dir = rotdir.Direction;
+
+                        var 
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
                         pModel[i + 0] = new float4(pos.Value, color);

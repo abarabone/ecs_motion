@@ -20,6 +20,23 @@ namespace DotsLite.Particle
     using DotsLite.CharacterMotion;
 
 
+
+    public static partial class ParticleModel
+    {
+        public struct UvParam : IComponentData
+        {
+            public uint2 Division;
+            public float2 UvOffset;
+        }
+
+        public struct UvCalcParam : IComponentData
+        {
+            public float2 UnitSpan;
+        }
+    }
+
+
+
     public static partial class Particle
     {
 
@@ -56,13 +73,10 @@ namespace DotsLite.Particle
 
         public struct UvParam : IComponentData
         {
-            //public uint2 Division;
-            //public float2 UvWH;
-            //public float2 UvOffset;
-            public float2 Span;
-
+            public uint OffsetIndex;
             public uint UMask;
             public int VShift;
+            //public int 
         }
         //public struct AdditionalData : IComponentData
         //{
@@ -87,13 +101,13 @@ namespace DotsLite.Particle
             public int2 Length;
         }
 
-        public struct UvInfo : IComponentData
-        {
-            //public uint2 Division;
-            //public float2 UvWH;
-            //public float2 UvOffset;
-            public float2 Span;
-        }
+        //public struct UvInfo : IComponentData
+        //{
+        //    //public uint2 Division;
+        //    //public float2 UvWH;
+        //    //public float2 UvOffset;
+        //    public float2 Span;
+        //}
     }
 
 
@@ -105,9 +119,6 @@ namespace DotsLite.Particle
 
         public static float2 CalcSpan(uint2 division) =>
             new float2(1.0f, 1.0f) / division;
-
-        public static float2 CalcSpan(uint2 division, float2 uvWidthHeight) =>
-            uvWidthHeight / division;
 
         public static uint CalcUMask(uint2 division) => division.x - 1;
         public static int CalcVShift(uint2 division) => math.countbits(CalcUMask(division));
@@ -129,9 +140,9 @@ namespace DotsLite.Particle
         }
 
         // 計算方法のリファレンスとして
-        public static float2 CalcUv(int id, uint2 division, float2 uvWidthHeight)
+        public static float2 CalcUv(int id, uint2 division)
         {
-            var span = uvWidthHeight / division;
+            var span = new float2(1,1) / division;
 
             var umask = division.x - 1;
             var vshift = math.countbits(umask);
