@@ -21,17 +21,16 @@ namespace DotsLite.Particle
 
 
 
-    public static partial class ParticleModel
+    public static partial class BillboadModel
     {
-        public struct UvParam : IComponentData
+        public struct UvInformationData : IComponentData
         {
             public uint2 Division;
-            public float2 UvOffset;
         }
 
-        public struct UvCalcParam : IComponentData
+        public struct IndexToUvData : IComponentData
         {
-            public float2 UnitSpan;
+            public float2 CellSpan;
         }
     }
 
@@ -65,23 +64,24 @@ namespace DotsLite.Particle
         {
             public int CurrentIndex;
         }
-        //public struct UvCursorParam : IComponentData
-        //{
-        //    public int IndexPrevMask;
-        //    public int IndexAfterOffset;
-        //}
-
-        public struct IndexToUvData : IComponentData
+        public struct UvAnimationWorkData : IComponentData
         {
-            public uint UMask;
-            public int VShift;
-            public uint Offset;
-            public int UnitUsage;
+            public float NextAnimationTime;
         }
-        //public struct AdditionalData : IComponentData
-        //{
-        //    public Color Color;
-        //}
+
+        public struct UvAnimationData : IComponentData
+        {
+            public float TimeSpan;
+            public int CursorAnimationMask;
+        }
+        public struct CursorToUvIndexData : IComponentData
+        {
+            public uint Offset;
+            public int UCellUsage;
+            public int VCellUsage;
+            public int UMask;
+            public int VShift;
+        }
 
         // 二次元回転を、up の方向ベクトル x, y で表す
         // 回転行列は下記（ x=cos, y=sin とみなせるため）
@@ -116,6 +116,20 @@ namespace DotsLite.Particle
         //public static float2 CalcUv(this UvCursor cursor, UvParam uvinfo) =>
         //    CalcUv(cursor.CurrentIndex, uvinfo.Span, uvinfo.UMask, uvinfo.VShift);
 
+        public static void ProgressCursorAnimation(
+            ref this UvCursorData cursor, UvAnimationWorkData awork, UvAnimationData anim, double currentTime)
+        {
+            if (currentTime < awork.NextAnimationTime) return;
+
+            cursor.CurrentIndex = ++cursor.CurrentIndex & anim.CursorAnimationMask;
+        }
+
+        public static int CalcUvIndex(this UvCursorData cursor, UvAnimationData anim, CursorToUvIndexData calc)
+        {
+            var u = cursor.CurrentIndex & calc.UMask;
+            var v = cursor.CurrentIndex >> calc.VShift;
+            return (u << 16) | v;
+        }
 
         public static float2 CalcSpan(uint2 division) =>
             new float2(1.0f, 1.0f) / division;

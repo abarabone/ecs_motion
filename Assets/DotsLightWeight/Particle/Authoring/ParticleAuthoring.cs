@@ -102,8 +102,9 @@ namespace DotsLite.Particle.Aurthoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(BillBoad.UvCursorData),
-                    typeof(BillBoad.UvCursorParam),
-                    typeof(BillBoad.IndexToUvData),
+                    typeof(BillBoad.CursorToUvIndexData),
+                    typeof(BillBoad.UvAnimationWorkData),
+                    typeof(BillBoad.UvAnimationData),
                     typeof(BillBoad.RotationData),
                     typeof(Particle.AdditionalData),
                     typeof(Translation)
@@ -130,21 +131,21 @@ namespace DotsLite.Particle.Aurthoring
                         CurrentIndex = 0,
                     }
                 );
-                em.SetComponentData(mainEntity,
-                    new BillBoad.UvCursorParam
-                    {
-                        IndexPrevMask = (int)(this.IndexLength - 1),
-                        IndexAfterOffset = (int)this.IndexStart,
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new BillBoad.IndexToUvData
-                    {
-                        Span = BillBoad.CalcSpan(this.Division),
-                        UMask = BillBoad.CalcUMask(this.Division),
-                        VShift = BillBoad.CalcVShift(this.Division),
-                    }
-                );
+                //em.SetComponentData(mainEntity,
+                //    new BillBoad.UvCursorParam
+                //    {
+                //        IndexPrevMask = (int)(this.IndexLength - 1),
+                //        IndexAfterOffset = (int)this.IndexStart,
+                //    }
+                //);
+                //em.SetComponentData(mainEntity,
+                //    new BillBoad.IndexToUvData
+                //    {
+                //        Span = BillBoad.CalcSpan(this.Division),
+                //        UMask = BillBoad.CalcUMask(this.Division),
+                //        VShift = BillBoad.CalcVShift(this.Division),
+                //    }
+                //);
                 em.SetComponentData(mainEntity,
                     new BillBoad.RotationData
                     {

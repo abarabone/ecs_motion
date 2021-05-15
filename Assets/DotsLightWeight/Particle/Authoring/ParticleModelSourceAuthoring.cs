@@ -26,13 +26,33 @@ namespace DotsLite.Particle.Aurthoring
         public Texture2D Texture;
 
 
+        public int2 TextureSize;
+        public int2 Division;
+        public TextureFormat TextureFormat;
+        public bool UseMipmap;
+        public bool UseLinear;
+
+        [SerializeField]
+        public SrcTexture[] SrcTexutres;
+        [Serializable]
+        public struct SrcTexture
+        {
+            public Texture2D texuture;
+            public int2 indexOfLeftTop;
+            public int2 cellUsage;
+        }
+
+
         /// <summary>
-        /// 
+        /// パーティクル共通で使用するモデルエンティティを作成する。
+        /// 最終的に prefab コンポーネントを削除する。（ unity の想定と違って歪みがありそう…）
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
             createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, this.createMesh(), this.Texture);
+
+            
 
             return;
 
@@ -47,6 +67,45 @@ namespace DotsLite.Particle.Aurthoring
                 const int boneLength = 1;
 
                 gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, BoneType, boneLength);
+            }
+
+            void addParamComponents_(GameObjectConversionSystem gcs, Entity ent)
+            {
+
+            }
+
+            void packTexture_()
+            {
+
+                var renderTexture = new RenderTexture(this.TextureSize.x, this.TextureSize.y, 32);
+
+
+                var q =
+                    from src in this.SrcTexutres
+                    let top = 
+                    let left =
+                    
+                Graphics.Blit(source, renderTexture);
+
+
+
+                RenderTexture.active = renderTexture;
+
+                // RenderTexture.activeの内容をtextureに書き込み
+                var texture = new Texture2D(this.TextureSize.x, this.TextureSize.y, this.TextureFormat, this.UseMipmap, this.UseLinear);
+                texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+                RenderTexture.active = null;
+
+                // 不要になったので削除
+                RenderTexture.DestroyImmediate(renderTexture);
+
+                // pngとして保存
+                System.IO.File.WriteAllBytes(savePath, texture.EncodeToPNG());
+
+                AssetDatabase.Refresh();
+
+                // 保存したものをロードしてから返す
+                return AssetDatabase.LoadAssetAtPath<Texture2D>(savePath);
             }
         }
 

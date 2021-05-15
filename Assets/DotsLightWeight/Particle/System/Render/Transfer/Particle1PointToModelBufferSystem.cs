@@ -40,17 +40,18 @@ namespace DotsLite.Draw
             this.bardep = BarrierDependency.Sender.Create<DrawMeshCsSystem>(this);
 
 
-            this.Entities
-                .ForEach((
-                    ref ParticleModel.UvCalcParam calc,
-                    in DrawModel.GeometryData geom,
-                    in ParticleModel.UvParam param) =>
-                {
-                    calc.UnitSpan = new float2(1,1) / param.Division;
+            //this.Entities
+            //    .ForEach((
+            //        in BillboadModel.IndexToUvData calc,
+            //        in DrawModel.GeometryData geom) =>
+            //    {
+            //        var uv = calc.CellSpan;
+            //        var 
+            //        var p = new float4();
 
-                    //geom.Material
-                })
-                .Run();
+            //        geom.Material.SetVector("UvParam", );
+            //    })
+            //    .Run();
         }
 
         protected unsafe override void OnUpdate()
@@ -72,7 +73,8 @@ namespace DotsLite.Draw
                         in DrawInstance.ModelLinkData linker,
                         in Particle.AdditionalData additional,
                         in BillBoad.UvCursorData cursor,
-                        in BillBoad.IndexToUvData uvinfo,
+                        in BillBoad.UvAnimationData anim,
+                        in BillBoad.CursorToUvIndexData uvinfo,
                         in BillBoad.RotationData rotdir,
                         in Translation pos
                     )
@@ -89,16 +91,16 @@ namespace DotsLite.Draw
 
                         var i = instanceBufferOffset;// + offsetInfo.VectorOffsetPerInstance;
 
-                        var uv = cursor.CalcUv(uvinfo);
+                        //var uv = cursor.CalcUv(uvinfo);
                         var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());
                         var dir = rotdir.Direction;
 
-                        var 
+                        //var uvindex = cursor.CalcUvIndex(anim, uvinfo);
 
-                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[i + 0] = new float4(pos.Value, color);
-                        pModel[i + 1] = new float4(uv, dir * size);
+                        //var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        //pModel[i + 0] = new float4(pos.Value, color);
+                        //pModel[i + 1] = new float4(uv, dir * size);
                     }
                 )
                 .ScheduleParallel();
