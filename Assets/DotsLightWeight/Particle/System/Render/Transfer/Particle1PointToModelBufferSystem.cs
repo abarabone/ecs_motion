@@ -40,8 +40,17 @@ namespace DotsLite.Draw
             this.bardep = BarrierDependency.Sender.Create<DrawMeshCsSystem>(this);
 
 
-            //this.Entities
-            //    .ForEach((ref ))
+            this.Entities
+                .ForEach((
+                    ref ParticleModel.UvCalcParam calc,
+                    in DrawModel.GeometryData geom,
+                    in ParticleModel.UvParam param) =>
+                {
+                    calc.UnitSpan = new float2(1,1) / param.Division;
+
+                    //geom.Material
+                })
+                .Run();
         }
 
         protected unsafe override void OnUpdate()
@@ -62,8 +71,8 @@ namespace DotsLite.Draw
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
                         in Particle.AdditionalData additional,
-                        in BillBoad.UvCursor cursor,
-                        in BillBoad.UvParam uvinfo,
+                        in BillBoad.UvCursorData cursor,
+                        in BillBoad.IndexToUvData uvinfo,
                         in BillBoad.RotationData rotdir,
                         in Translation pos
                     )

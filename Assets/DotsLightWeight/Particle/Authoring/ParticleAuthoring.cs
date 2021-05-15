@@ -101,9 +101,9 @@ namespace DotsLite.Particle.Aurthoring
                     typeof(DrawInstance.ParticleTag),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(BillBoad.UvCursor),
+                    typeof(BillBoad.UvCursorData),
                     typeof(BillBoad.UvCursorParam),
-                    typeof(BillBoad.UvParam),
+                    typeof(BillBoad.IndexToUvData),
                     typeof(BillBoad.RotationData),
                     typeof(Particle.AdditionalData),
                     typeof(Translation)
@@ -125,7 +125,7 @@ namespace DotsLite.Particle.Aurthoring
                 );
 
                 em.SetComponentData(mainEntity,
-                    new BillBoad.UvCursor
+                    new BillBoad.UvCursorData
                     {
                         CurrentIndex = 0,
                     }
@@ -138,7 +138,7 @@ namespace DotsLite.Particle.Aurthoring
                     }
                 );
                 em.SetComponentData(mainEntity,
-                    new BillBoad.UvParam
+                    new BillBoad.IndexToUvData
                     {
                         Span = BillBoad.CalcSpan(this.Division),
                         UMask = BillBoad.CalcUMask(this.Division),

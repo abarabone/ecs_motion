@@ -61,22 +61,22 @@ namespace DotsLite.Particle
     static public partial class BillBoad
     {
 
-        public struct UvCursor : IComponentData
+        public struct UvCursorData : IComponentData
         {
             public int CurrentIndex;
         }
-        public struct UvCursorParam : IComponentData
-        {
-            public int IndexPrevMask;
-            public int IndexAfterOffset;
-        }
+        //public struct UvCursorParam : IComponentData
+        //{
+        //    public int IndexPrevMask;
+        //    public int IndexAfterOffset;
+        //}
 
-        public struct UvParam : IComponentData
+        public struct IndexToUvData : IComponentData
         {
-            public uint OffsetIndex;
             public uint UMask;
             public int VShift;
-            //public int 
+            public uint Offset;
+            public int UnitUsage;
         }
         //public struct AdditionalData : IComponentData
         //{
@@ -93,28 +93,28 @@ namespace DotsLite.Particle
         }
     }
 
-    public static partial class BillBoadCustom
-    {
-        public struct UvCursor : IComponentData
-        {
-            public int2 CurrentId;
-            public int2 Length;
-        }
+    //public static partial class BillBoadCustom
+    //{
+    //    public struct UvCursor : IComponentData
+    //    {
+    //        public int2 CurrentId;
+    //        public int2 Length;
+    //    }
 
-        //public struct UvInfo : IComponentData
-        //{
-        //    //public uint2 Division;
-        //    //public float2 UvWH;
-        //    //public float2 UvOffset;
-        //    public float2 Span;
-        //}
-    }
+    //    //public struct UvInfo : IComponentData
+    //    //{
+    //    //    //public uint2 Division;
+    //    //    //public float2 UvWH;
+    //    //    //public float2 UvOffset;
+    //    //    public float2 Span;
+    //    //}
+    //}
 
 
     static public partial class BillBoad
     {
-        public static float2 CalcUv(this UvCursor cursor, UvParam uvinfo) =>
-            CalcUv(cursor.CurrentIndex, uvinfo.Span, uvinfo.UMask, uvinfo.VShift);
+        //public static float2 CalcUv(this UvCursor cursor, UvParam uvinfo) =>
+        //    CalcUv(cursor.CurrentIndex, uvinfo.Span, uvinfo.UMask, uvinfo.VShift);
 
 
         public static float2 CalcSpan(uint2 division) =>
@@ -124,20 +124,20 @@ namespace DotsLite.Particle
         public static int CalcVShift(uint2 division) => math.countbits(CalcUMask(division));
         
 
-        public static float2 CalcUv(int id, float2 span, uint umask, int vshift)
-        {
-            var iu = id & umask;
-            var iv = id >> vshift;
-            var uv = span * new float2(iu, iv);
-            return uv;
-        }
-        public static float2 CalcUv(int id, float2 span, uint umask, int vshift, float2 uvOffset)
-        {
-            var iu = id & umask;
-            var iv = id >> vshift;
-            var uv = span * new float2(iu, iv);
-            return uvOffset + uv;
-        }
+        //public static float2 CalcUv(int id, float2 span, uint umask, int vshift)
+        //{
+        //    var iu = id & umask;
+        //    var iv = id >> vshift;
+        //    var uv = span * new float2(iu, iv);
+        //    return uv;
+        //}
+        //public static float2 CalcUv(int id, float2 span, uint umask, int vshift, float2 uvOffset)
+        //{
+        //    var iu = id & umask;
+        //    var iv = id >> vshift;
+        //    var uv = span * new float2(iu, iv);
+        //    return uvOffset + uv;
+        //}
 
         // 計算方法のリファレンスとして
         public static float2 CalcUv(int id, uint2 division)

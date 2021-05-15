@@ -52,7 +52,7 @@ namespace DotsLite.Draw
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
-                .WithAll<BillBoad.UvCursor>()//
+                .WithAll<BillBoad.UvCursorData>()//
                 .WithNone<DrawInstance.BoneModelTag>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach((
