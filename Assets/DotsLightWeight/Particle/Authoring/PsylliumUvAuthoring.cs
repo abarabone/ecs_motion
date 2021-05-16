@@ -19,7 +19,7 @@ namespace DotsLite.Particle.Aurthoring
     /// <summary>
     /// 
     /// </summary>
-    public class PsylliumUvAuthoring
+    public class PsylliumAuthoring_
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 

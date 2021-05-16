@@ -79,8 +79,15 @@ namespace DotsLite.Particle.Aurthoring
             {
                 ParticleMeshType.billboad => this.createBillboadMesh(),
                 ParticleMeshType.psyllium => this.createPsylliumMesh(),
+                _ => default,
             };
-            createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex);
+            var bonetype = this.ParticleType switch
+            {
+                ParticleMeshType.billboad => BoneType.P1bb,
+                ParticleMeshType.psyllium => BoneType.PtoP,
+                _ => default,
+            };
+            createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, bonetype);
             
             addParamComponents_(conversionSystem, entity, this.DivisionU, this.DivisionV);
 
@@ -88,15 +95,14 @@ namespace DotsLite.Particle.Aurthoring
 
 
             static void createModelEntity_
-                (GameObjectConversionSystem gcs, Entity entity, GameObject main, Shader shader, Mesh mesh, Texture tex)
+                (GameObjectConversionSystem gcs, Entity entity, GameObject main, Shader shader, Mesh mesh, Texture tex, BoneType bonetype)
             {
                 var mat = new Material(shader);
                 mat.mainTexture = tex;
 
-                const BoneType BoneType = BoneType.P1bb;
                 const int boneLength = 1;
 
-                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, BoneType, boneLength);
+                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, bonetype, boneLength);
             }
 
             static void addParamComponents_(GameObjectConversionSystem gcs, Entity ent, length_define udiv, length_define vdiv)

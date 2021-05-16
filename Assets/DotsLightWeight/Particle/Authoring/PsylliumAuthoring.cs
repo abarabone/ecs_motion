@@ -23,40 +23,48 @@ namespace DotsLite.Particle.Aurthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public Material Material;
+        public ParticleModelSourceAuthoring ModelSource;
 
-        public float DefaultRadius;
+        public Color ParticleColor;
+        public float Radius;
 
-        //public bool IsHMesh;
+        public uint2 CellUsage;
 
+        public int AnimationBaseIndex;
+        public binary_length_define AnimationIndexLength;
+        public float AnimationTimeSpan;
+
+
+        public float LifeTimeSec;// 0 以下なら消えない
+
+
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            referencedPrefabs.Add(this.ModelSource.gameObject);
+        }
 
 
         /// <summary>
         /// 
         /// </summary>
-        public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            
-            createModelEntity_( conversionSystem, this.gameObject, this.Material );
-            
-            initParticleEntityComponents_( conversionSystem, this.gameObject );
-            
+
+            var modelEntity = conversionSystem.GetPrimaryEntity(this.ModelSource);
+
+
+
+            initParticleEntityComponents_(conversionSystem, this.gameObject, modelEntity, this);
+
+            conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationTimeSpan);
+
+            conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
+
             return;
 
 
-            void createModelEntity_
-                ( GameObjectConversionSystem gcs, GameObject main, Material srcMaterial )
-            {
-                var mat = new Material( srcMaterial );
-                var mesh = createMesh();
 
-                const BoneType BoneType = BoneType.TR;
-                const int boneLength = 1;
-
-                var modelEntity_ = gcs.CreateDrawModelEntityComponents( main, mesh, mat, BoneType, boneLength );
-            }
-
-            void initParticleEntityComponents_( GameObjectConversionSystem gcs, GameObject main )
+            void initParticleEntityComponents_( GameObjectConversionSystem gcs, Entity modelEntity, GameObject main )
             {
                 dstManager.SetName_( entity, $"{this.name}" );
 
@@ -71,18 +79,17 @@ namespace DotsLite.Particle.Aurthoring
                     typeof( DrawInstance.ModelLinkData ),
                     typeof( DrawInstance.TargetWorkData ),
                     typeof( Particle.AdditionalData ),
-                    typeof( Particle.TranslationPtoPData )
-                    //typeof(Translation),
-                    //typeof(Rotation)
+                    typeof( Particle.TranslationPtoPData ),
+                    typeof(Translation),
+                    typeof(Rotation)
                 );
                 em.SetArchetype( mainEntity, archetype );
 
 
                 em.SetComponentData( mainEntity,
                     new DrawInstance.ModelLinkData
-                    //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary( main ),
+                        DrawModelEntityCurrent = modelEntity,
                     }
                 );
                 em.SetComponentData( mainEntity,
@@ -99,103 +106,9 @@ namespace DotsLite.Particle.Aurthoring
                     }
                 );
 
-                //em.SetComponentData(mainEntity,
-                //    new Translation
-                //    {
-                //        Value = float3.zero,
-                //    }
-                //);
-                //em.SetComponentData(mainEntity,
-                //    new Rotation
-                //    {
-                //        Value = quaternion.identity,
-                //    }
-                //);
             }
 
         }
-
-        Mesh createMesh()
-        {
-
-            float height = 0.5f;// 1.0f;
-            float width = 0.5f;// 1.0f;
-            float radius = width;
-
-            Mesh mesh = new Mesh();
-            mesh.name = "psyllium";
-
-            mesh.vertices = new Vector3[]
-            {
-            new Vector3 (-width, -height, -radius),     // 0
-            new Vector3 (-width, -height, 0),           // 1
-            new Vector3 (width , -height, -radius),     // 2
-            new Vector3 (width , -height, 0),           // 3
-
-            new Vector3 (-width,  height, 0),           // 4
-            new Vector3 ( width,  height, 0),           // 5
-
-            new Vector3 (-width,  height, radius),      // 6 
-            new Vector3 (width ,  height, radius),      // 7
-
-                //new Vector3 (-width,  height, -radius),     // 8
-                //new Vector3 (width ,  height, -radius),     // 9
-                //new Vector3 (-width, -height, radius),      // 10
-                //new Vector3 (width , -height, radius),      // 11
-            };
-
-            mesh.uv = new Vector2[]
-            {
-            new Vector2 (0, 0),
-            new Vector2 (0, 0.5f),
-            new Vector2 (1, 0),
-            new Vector2 (1, 0.5f),
-            new Vector2 (0, 0.5f),
-            new Vector2 (1, 0.5f),
-            new Vector2 (0, 1),
-            new Vector2 (1, 1),
-
-                //new Vector2 (0, 0),
-                //new Vector2 (1, 0),
-                //new Vector2 (0, 1),
-                //new Vector2 (1, 1),
-            };
-
-            //mesh.colors = new Color[]
-            //{
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //    new Color (0, 0, 0, 0),
-            //};
-
-            mesh.triangles = new int[]
-            {
-            0, 1, 2,
-            1, 3, 2,
-            1, 4, 3,
-            4, 5, 3,
-            4, 6, 5,
-            6, 7, 5,
-
-                // 8, 4, 9,
-                // 4, 5, 9,
-                // 1,10, 3,
-                //10,11, 3
-            };
-
-            return mesh;
-        }
-
     }
     
 }

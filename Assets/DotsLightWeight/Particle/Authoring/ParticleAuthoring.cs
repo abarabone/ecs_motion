@@ -38,15 +38,8 @@ namespace DotsLite.Particle.Aurthoring
 
         public uint2 CellUsage;
 
-        public int AnimationIndexStart;
-        public length_define AnimationIndexLength;
-        public enum length_define
-        {
-            length_1 = 1,
-            length_2 = 2,
-            length_4 = 4,
-            length_8 = 8,
-        }
+        public int AnimationBaseIndex;
+        public binary_length_define AnimationIndexLength;
         public float AnimationTimeSpan;
 
 
@@ -69,11 +62,13 @@ namespace DotsLite.Particle.Aurthoring
 
 
 
-            initParticleEntityComponents_(conversionSystem, this.gameObject, modelEntity, this);
+            //initParticleEntityComponents_(conversionSystem, this.gameObject, modelEntity, this);
+            var div = (this.ModelSource.DivisionU, this.ModelSource.DivisionV).as;
+            conversionSystem.InitParticleEntityComponents(this.gameObject, modelEntity, div, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.Radius);
 
-            addAnimation_(conversionSystem, this.gameObject, this);
+            conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationTimeSpan);
 
-            addLifeTime_(conversionSystem, entity, this.LifeTimeSec);
+            conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
 
             return;
 
@@ -125,7 +120,7 @@ namespace DotsLite.Particle.Aurthoring
                 em.SetComponentData(mainEntity,
                     new BillBoad.CursorToUvIndexData
                     {
-                        IndexOffset = param.AnimationIndexStart,
+                        IndexOffset = param.AnimationBaseIndex,
                         UCellUsage = (byte)param.CellUsage.x,
                         VCellUsage = (byte)param.CellUsage.y,
                         UMask = (byte)(param.ModelSource.DivisionU - 1),
@@ -148,47 +143,6 @@ namespace DotsLite.Particle.Aurthoring
                 );
             }
 
-            static void addAnimation_(GameObjectConversionSystem gcs, GameObject main, ParticleAuthoring param)
-            {
-                if (param.AnimationIndexLength <= length_define.length_1) return;
-
-                var em = gcs.DstEntityManager;
-
-                var mainEntity = gcs.GetPrimaryEntity(main);
-
-                var types = new ComponentTypes(new ComponentType[]
-                {
-                    typeof(BillBoad.UvAnimationInitializeTag),
-                    typeof(BillBoad.UvAnimationWorkData),
-                    typeof(BillBoad.UvAnimationData),
-                });
-                em.AddComponents(mainEntity, types);
-
-                em.SetComponentData(mainEntity,
-                    new BillBoad.UvAnimationData
-                    {
-                        TimeSpan = param.AnimationTimeSpan,
-                        TimeSpanR = 1.0f / param.AnimationTimeSpan,
-                        CursorAnimationMask = (byte)(param.AnimationIndexLength - 1),
-                    }
-                );
-            }
-
-            static void addLifeTime_(GameObjectConversionSystem gcs, Entity ent, float time)
-            {
-                if (time <= 0.0f) return;
-
-                var types = new ComponentTypes(
-                    typeof(Particle.LifeTimeSpecData),
-                    typeof(Particle.LifeTimeData)
-                );
-                gcs.DstEntityManager.AddComponents(ent, types);
-
-                gcs.DstEntityManager.AddComponentData(ent, new Particle.LifeTimeSpecData
-                {
-                    DurationSec = time,
-                });
-            }
         }
 
     }
