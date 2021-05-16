@@ -27,10 +27,10 @@ namespace DotsLite.Arms.Authoring
     {
 
         public float RangeDistance;// 瞬時に着弾するので、射出時に決定する。そのため、弾丸には不要。
-        public float LifeTime;
+        //public float LifeTime;
 
-        public Color32 BulletColor;
-        public float BulletSize;
+        //public Color32 BulletColor;
+        //public float BulletSize;
 
 
 
@@ -58,20 +58,20 @@ namespace DotsLite.Arms.Authoring
                 );
                 em.AddComponents(bulletEntity, types);
 
-                em.SetComponentData(bulletEntity,
-                    new Bullet.LifeTimeData
-                    {
-                        LifeTime = this.LifeTime,
-                        InvTotalTime = 1.0f / this.LifeTime,
-                    }
-                );
-                em.SetComponentData(bulletEntity,
-                    new Particle.AdditionalData
-                    {
-                        Color = this.BulletColor,
-                        Size = this.BulletSize,
-                    }
-                );
+                //em.SetComponentData(bulletEntity,
+                //    new Bullet.LifeTimeData
+                //    {
+                //        LifeTime = this.LifeTime,
+                //        InvTotalTime = 1.0f / this.LifeTime,
+                //    }
+                //);
+                //em.SetComponentData(bulletEntity,
+                //    new Particle.AdditionalData
+                //    {
+                //        Color = this.BulletColor,
+                //        Size = this.BulletSize,
+                //    }
+                //);
                 em.SetComponentData(bulletEntity,
                     new Bullet.DistanceData
                     {

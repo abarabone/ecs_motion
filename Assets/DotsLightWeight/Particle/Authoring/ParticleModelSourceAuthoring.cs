@@ -29,26 +29,8 @@ namespace DotsLite.Particle.Aurthoring
         //public bool UseRoundMesh;
 
         public ParticleMeshType ParticleType;
-        public enum ParticleMeshType
-        {
-            billboad,
-            psyllium
-        }
 
-        public length_define DivisionU;
-        public length_define DivisionV;
-        public enum length_define
-        {
-            length_1 = 1,
-            length_2 = 2,
-            length_4 = 4,
-            length_8 = 8,
-            length_16 = 16,
-            //length_32 = 32,
-            //length_64 = 64,
-            //length_128 = 128,
-            //length_256 = 256,
-        }
+        public BinaryLength2 Division;
 
         [SerializeField]
         public SrcTexture[] SrcTexutres;
@@ -57,7 +39,7 @@ namespace DotsLite.Particle.Aurthoring
         {
             public Texture2D texuture;
             public int2 indexOfLeftTop;
-            public int2 cellUsage;
+            public BinaryLength2 cellUsage;
         }
 
         public int2 TextureSize;
@@ -88,14 +70,15 @@ namespace DotsLite.Particle.Aurthoring
                 _ => default,
             };
             createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, bonetype);
-            
-            addParamComponents_(conversionSystem, entity, this.DivisionU, this.DivisionV);
+
+            addParamComponents_(conversionSystem, entity, this.Division);
 
             return;
 
 
-            static void createModelEntity_
-                (GameObjectConversionSystem gcs, Entity entity, GameObject main, Shader shader, Mesh mesh, Texture tex, BoneType bonetype)
+            static void createModelEntity_(
+                GameObjectConversionSystem gcs, Entity entity, GameObject main,
+                Shader shader, Mesh mesh, Texture tex, BoneType bonetype)
             {
                 var mat = new Material(shader);
                 mat.mainTexture = tex;
@@ -105,19 +88,25 @@ namespace DotsLite.Particle.Aurthoring
                 gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, bonetype, boneLength);
             }
 
-            static void addParamComponents_(GameObjectConversionSystem gcs, Entity ent, length_define udiv, length_define vdiv)
+            static void addParamComponents_(
+                GameObjectConversionSystem gcs, Entity ent, BinaryLength2 div)
             {
                 var em = gcs.DstEntityManager;
 
-                var div = new uint2((uint)udiv, (uint)vdiv);
-
-                em.AddComponentData(ent, new BillboadModel.UvInformationData
+                var types = new ComponentTypes(new ComponentType[]
                 {
-                    Division = div,
+                    typeof(BillboadModel.UvInformationData),
+                    typeof(BillboadModel.IndexToUvData),
                 });
-                em.AddComponentData(ent, new BillboadModel.IndexToUvData
+                em.AddComponents(ent, types);
+                
+                em.SetComponentData(ent, new BillboadModel.UvInformationData
                 {
-                    CellSpan = new float2(1.0f) / div,
+                    Division = (uint2)(int2)div,
+                });
+                em.SetComponentData(ent, new BillboadModel.IndexToUvData
+                {
+                    CellSpan = new float2(1.0f) / (int2)div,
                 });
             }
 
@@ -245,7 +234,7 @@ namespace DotsLite.Particle.Aurthoring
         public Texture2D PackTexture()
         {
             var size = this.TextureSize;
-            var div = new int2((int)this.DivisionU, (int)this.DivisionV);
+            var div = (int2)this.Division;
             var span = size / div;
 
             var fmt = this.TextureFormat;

@@ -16,25 +16,42 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
-    public enum binary_length_define
+    [Serializable]
+    public struct BinaryLength2
+    {
+        public binary_length u;
+        public binary_length v;
+        public static implicit operator int2(BinaryLength2 src) => new int2((int)src.u, (int)src.v);
+    }
+    public enum binary_length
     {
         length_1 = 1,
         length_2 = 2,
         length_4 = 4,
         length_8 = 8,
+        length_16 = 16,
+        //length_32 = 32,
+        //length_64 = 64,
+        //length_128 = 128,
+        //length_256 = 256,
     }
 
+    public enum ParticleMeshType
+    {
+        billboad,
+        psyllium
+    }
 
     public static class ParticleAuthoringUtility
     {
 
-        public static int2 AsUint2(this (binary_length_define x, binary_length_define y) x) =>
-            new int2((int)x.x, (int)x.y);
+        //public static int2 AsUint2(this (binary_length x, binary_length y) x) =>
+        //    new int2((int)x.x, (int)x.y);
 
 
         public static void InitParticleEntityComponents(
             this GameObjectConversionSystem gcs, GameObject main, Entity modelEntity,
-            int2 division, int2 cellUsage, int animationBaseIndex, Color32 color, float radius)
+            BinaryLength2 division, BinaryLength2 cellUsage, int animationBaseIndex, Color32 color, float radius)
         {
             var em = gcs.DstEntityManager;
 
@@ -44,16 +61,17 @@ namespace DotsLite.Particle.Aurthoring
             gcs.DstEntityManager.SetName_(mainEntity, $"{main.name}");
 
 
-            var archetype = em.CreateArchetype(
+            var types = new ComponentTypes(new ComponentType[]
+            {
                 typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                 typeof(DrawInstance.ParticleTag),
                 typeof(DrawInstance.ModelLinkData),
                 typeof(DrawInstance.TargetWorkData),
                 typeof(BillBoad.UvCursorData),
                 typeof(BillBoad.CursorToUvIndexData),
-                typeof(Particle.AdditionalData)
-            );
-            em.SetArchetype(mainEntity, archetype);
+                typeof(Particle.AdditionalData),
+            });
+            em.AddComponents(mainEntity, types);
 
 
             em.SetComponentData(mainEntity,
@@ -79,16 +97,10 @@ namespace DotsLite.Particle.Aurthoring
                 new BillBoad.CursorToUvIndexData
                 {
                     IndexOffset = animationBaseIndex,
-                    UCellUsage = (byte)cellUsage.x,
-                    VCellUsage = (byte)cellUsage.y,
-                    UMask = (byte)(division.x - 1),
-                    VShift = (byte)math.countbits((int)division.x - 1),
-                }
-            );
-            em.SetComponentData(mainEntity,
-                new BillBoad.RotationData
-                {
-                    Direction = new float2(0, 1),
+                    UCellUsage = (byte)cellUsage.u,
+                    VCellUsage = (byte)cellUsage.v,
+                    UMask = (byte)(division.u - 1),
+                    VShift = (byte)math.countbits((int)division.u - 1),
                 }
             );
 
@@ -102,14 +114,11 @@ namespace DotsLite.Particle.Aurthoring
         }
 
 
-
-
-
         public static void AddAnimationComponents(
             this GameObjectConversionSystem gcs, GameObject main,
-            binary_length_define animationIndexLength, float animationTimeSpan)
+            binary_length animationIndexLength, float animationTimeSpan)
         {
-            if (animationIndexLength <= binary_length_define.length_1) return;
+            if (animationIndexLength <= binary_length.length_1) return;
 
             var em = gcs.DstEntityManager;
 
@@ -133,7 +142,8 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
-        public static void AddLifeTimeComponents(this GameObjectConversionSystem gcs, GameObject main, float time)
+        public static void AddLifeTimeComponents(
+            this GameObjectConversionSystem gcs, GameObject main, float time)
         {
             if (time <= 0.0f) return;
 

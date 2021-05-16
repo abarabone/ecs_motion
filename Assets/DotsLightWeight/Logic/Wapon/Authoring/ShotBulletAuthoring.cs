@@ -27,10 +27,10 @@ namespace DotsLite.Arms.Authoring
     {
 
         public float RangeDistance;
-        public float LifeTime;
+        //public float LifeTime;
 
-        public Color32 BulletColor;
-        public float BulletSize;
+        //public Color32 BulletColor;
+        //public float BulletSize;
         public float BulletSpeed;
 
         public float GravityFactor;
@@ -62,7 +62,7 @@ namespace DotsLite.Arms.Authoring
                         typeof(Bullet.AccelerationData),
                         typeof(Bullet.DistanceData),
                         typeof(Bullet.LifeTimeData),
-                        typeof(Particle.AdditionalData),
+                        //typeof(Particle.AdditionalData),
                         this.BulletType.ToComponentType(),
                         typeof(Targeting.CorpsGroup.TargetWithArmsData)
                     })
@@ -73,7 +73,7 @@ namespace DotsLite.Arms.Authoring
                         typeof(Bullet.VelocityData),
                         typeof(Bullet.DistanceData),
                         typeof(Bullet.LifeTimeData),
-                        typeof(Particle.AdditionalData),
+                        //typeof(Particle.AdditionalData),
                         this.BulletType.ToComponentType(),
                         typeof(Targeting.CorpsGroup.TargetWithArmsData)
                     });
@@ -94,22 +94,22 @@ namespace DotsLite.Arms.Authoring
                         RestRangeDistance = this.RangeDistance,
                     }
                 );
-                em.SetComponentData(bulletEntity,
-                    new Bullet.LifeTimeData
-                    {
-                        LifeTime = this.LifeTime,
-                        InvTotalTime = 1.0f / this.LifeTime,
-                    }
-                );
+                //em.SetComponentData(bulletEntity,
+                //    new Bullet.LifeTimeData
+                //    {
+                //        LifeTime = this.LifeTime,
+                //        InvTotalTime = 1.0f / this.LifeTime,
+                //    }
+                //);
 
-                // phyllium authoring で
-                em.SetComponentData(bulletEntity,
-                    new Particle.AdditionalData
-                    {
-                        Color = this.BulletColor,
-                        Size = this.BulletSize,
-                    }
-                );
+                //// phyllium authoring で
+                //em.SetComponentData(bulletEntity,
+                //    new Particle.AdditionalData
+                //    {
+                //        Color = this.BulletColor,
+                //        Size = this.BulletSize,
+                //    }
+                //);
             }
         }
 

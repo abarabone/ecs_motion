@@ -37,7 +37,7 @@ namespace DotsLite.Arms
     using RaycastHit = Unity.Physics.RaycastHit;
     using Unity.Physics.Authoring;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(ObjectInitializeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
