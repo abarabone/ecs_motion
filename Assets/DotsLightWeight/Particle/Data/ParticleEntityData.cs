@@ -32,35 +32,35 @@ namespace DotsLite.Particle
     using DotsLite.CharacterMotion;
 
 
-    public struct PsylliumEntity :
-        ITypedEntity<
-            DrawInstance.ParticleTag,
-            DrawInstance.ModelLinkData,//DrawTransform.LinkData
-            DrawInstance.TargetWorkData,
-            Translation,
-            Rotation
-        >
-    {
-        public Entity Entity { get; set; }
+    //public struct PsylliumEntity :
+    //    ITypedEntity<
+    //        DrawInstance.ParticleTag,
+    //        DrawInstance.ModelLinkData,//DrawTransform.LinkData
+    //        DrawInstance.TargetWorkData,
+    //        Translation,
+    //        Rotation
+    //    >
+    //{
+    //    public Entity Entity { get; set; }
 
-        static public implicit operator PsylliumEntity( Entity ent )
-            => new PsylliumEntity { Entity = ent };
-    }
+    //    static public implicit operator PsylliumEntity( Entity ent )
+    //        => new PsylliumEntity { Entity = ent };
+    //}
 
-    public struct LineParticleNodeEntity :
-        ITypedEntity<
-            Particle.LineParticlePointNodeLinkData,
-            BoneDraw.LinkData,
-            BoneDraw.IndexData,
-            BoneDraw.TargetWorkData,
-            Translation
-        >
-    {
-        public Entity Entity { get; set; }
+    //public struct LineParticleNodeEntity :
+    //    ITypedEntity<
+    //        Particle.LineParticlePointNodeLinkData,
+    //        BoneDraw.LinkData,
+    //        BoneDraw.IndexData,
+    //        BoneDraw.TargetWorkData,
+    //        Translation
+    //    >
+    //{
+    //    public Entity Entity { get; set; }
 
-        static public implicit operator LineParticleNodeEntity ( Entity ent )
-            => new LineParticleNodeEntity { Entity = ent };
-    }
+    //    static public implicit operator LineParticleNodeEntity ( Entity ent )
+    //        => new LineParticleNodeEntity { Entity = ent };
+    //}
 
 
 
@@ -69,7 +69,8 @@ namespace DotsLite.Particle
 
         public struct LineParticlePointNodeLinkData : IComponentData
         {
-            public LineParticleNodeEntity NextNodeEntity;
+            //public LineParticleNodeEntity NextNodeEntity;
+            public Entity NextNodeEntity;
         }
 
 

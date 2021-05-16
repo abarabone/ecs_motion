@@ -26,6 +26,15 @@ namespace DotsLite.Particle.Aurthoring
         public Shader DrawShader;
         public Texture2D Texture;
 
+        //public bool UseRoundMesh;
+
+        public ParticleMeshType ParticleType;
+        public enum ParticleMeshType
+        {
+            billboad,
+            psyllium
+        }
+
         public length_define DivisionU;
         public length_define DivisionV;
         public enum length_define
@@ -66,7 +75,11 @@ namespace DotsLite.Particle.Aurthoring
         {
 
             var tex = this.Texture.As() ?? this.PackTexture();
-            var mesh = this.createMesh();
+            var mesh = this.ParticleType switch
+            {
+                ParticleMeshType.billboad => this.createBillboadMesh(),
+                ParticleMeshType.psyllium => this.createPsylliumMesh(),
+            };
             createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex);
             
             addParamComponents_(conversionSystem, entity, this.DivisionU, this.DivisionV);
@@ -104,7 +117,7 @@ namespace DotsLite.Particle.Aurthoring
 
         }
 
-        Mesh createMesh()
+        Mesh createBillboadMesh()
         {
 
             float height = 0.5f;// 1.0f;
@@ -137,6 +150,91 @@ namespace DotsLite.Particle.Aurthoring
 
             return mesh;
         }
+
+
+        Mesh createPsylliumMesh()
+        {
+
+            float height = 0.5f;// 1.0f;
+            float width = 0.5f;// 1.0f;
+            float radius = width;
+
+            Mesh mesh = new Mesh();
+            mesh.name = "psyllium";
+
+            mesh.vertices = new Vector3[]
+            {
+            new Vector3 (-width, -height, -radius),     // 0
+            new Vector3 (-width, -height, 0),           // 1
+            new Vector3 (width , -height, -radius),     // 2
+            new Vector3 (width , -height, 0),           // 3
+
+            new Vector3 (-width,  height, 0),           // 4
+            new Vector3 ( width,  height, 0),           // 5
+
+            new Vector3 (-width,  height, radius),      // 6 
+            new Vector3 (width ,  height, radius),      // 7
+
+                //new Vector3 (-width,  height, -radius),     // 8
+                //new Vector3 (width ,  height, -radius),     // 9
+                //new Vector3 (-width, -height, radius),      // 10
+                //new Vector3 (width , -height, radius),      // 11
+            };
+
+            mesh.uv = new Vector2[]
+            {
+            new Vector2 (0, 0),
+            new Vector2 (0, 0.5f),
+            new Vector2 (1, 0),
+            new Vector2 (1, 0.5f),
+            new Vector2 (0, 0.5f),
+            new Vector2 (1, 0.5f),
+            new Vector2 (0, 1),
+            new Vector2 (1, 1),
+
+                //new Vector2 (0, 0),
+                //new Vector2 (1, 0),
+                //new Vector2 (0, 1),
+                //new Vector2 (1, 1),
+            };
+
+            //mesh.colors = new Color[]
+            //{
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //    new Color (0, 0, 0, 0),
+            //};
+
+            mesh.triangles = new int[]
+            {
+            0, 1, 2,
+            1, 3, 2,
+            1, 4, 3,
+            4, 5, 3,
+            4, 6, 5,
+            6, 7, 5,
+
+                // 8, 4, 9,
+                // 4, 5, 9,
+                // 1,10, 3,
+                //10,11, 3
+            };
+
+            return mesh;
+        }
+
+
+
 
         public Texture2D PackTexture()
         {

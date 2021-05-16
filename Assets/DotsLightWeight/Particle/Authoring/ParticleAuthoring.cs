@@ -36,11 +36,7 @@ namespace DotsLite.Particle.Aurthoring
         public Color ParticleColor;
         public float Radius;
 
-        //public uint2 Division;
         public uint2 CellUsage;
-
-        //public bool UseRoundMesh;
-        //public bool UseCustomSize;
 
         public int AnimationIndexStart;
         public length_define AnimationIndexLength;
