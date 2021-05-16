@@ -5,12 +5,10 @@ using System.Linq;
 using Unity.Linq;
 using System.IO;
 
-using DotsLite.Utilities;
-using DotsLite.Common.Extension;
-
-
 namespace DotsLite.CharacterMotion
 {
+    using DotsLite.Utilities;
+    using DotsLite.Common.Extension;
 
 
     // アニメーションクリップからモーションクリップへのコンバート -----------------------------
@@ -181,7 +179,7 @@ namespace DotsLite.CharacterMotion
 
             var fileName = Path.GetFileNameWithoutExtension( srcFilePath );
 
-            var dstFilePath = folderPath + $"/Motion {fileName}.asset";
+            var dstFilePath = $"{folderPath}/Motion {fileName}.asset";
 
 
             // アセットとして MotionClip を生成

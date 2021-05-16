@@ -76,15 +76,15 @@ namespace DotsLite.Particle
         }
         public struct CursorToUvIndexData : IComponentData
         {
-            public uint Offset;
-            public int UCellUsage;
-            public int VCellUsage;
-            public int UMask;
-            public int VShift;
+            public int IndexOffset;
+            public byte UCellUsage;
+            public byte VCellUsage;
+            public byte UMask;
+            public byte VShift;
         }
 
         // 二次元回転を、up の方向ベクトル x, y で表す
-        // 回転行列は下記（ x=cos, y=sin とみなせるため）
+        // 回転行列は下記（ x=cosΘ, y=sinΘ とみなせるため）
         // | x, -y |
         // | y,  x |
         public struct RotationData : IComponentData
@@ -124,18 +124,23 @@ namespace DotsLite.Particle
             cursor.CurrentIndex = ++cursor.CurrentIndex & anim.CursorAnimationMask;
         }
 
-        public static int CalcUvIndex(this UvCursorData cursor, UvAnimationData anim, CursorToUvIndexData calc)
+        public static int CalcUvIndex(this UvCursorData cursor, CursorToUvIndexData touv)
         {
-            var u = cursor.CurrentIndex & calc.UMask;
-            var v = cursor.CurrentIndex >> calc.VShift;
-            return (u << 16) | v;
+            var i = cursor.CurrentIndex + touv.IndexOffset;
+            var u = i & touv.UMask;
+            var v = i >> touv.VShift;
+
+            return wrap_((byte)u, (byte)v, touv.UCellUsage, touv.VCellUsage);
+
+            int wrap_(byte iu, byte iv, byte usageu, byte usagev) =>
+                (iu) | (iv << 8) | (usageu << 16) | (usagev << 24);
         }
 
-        public static float2 CalcSpan(uint2 division) =>
-            new float2(1.0f, 1.0f) / division;
+        //public static float2 CalcSpan(uint2 division) =>
+        //    new float2(1.0f, 1.0f) / division;
 
-        public static uint CalcUMask(uint2 division) => division.x - 1;
-        public static int CalcVShift(uint2 division) => math.countbits(CalcUMask(division));
+        //public static uint CalcUMask(uint2 division) => division.x - 1;
+        //public static int CalcVShift(uint2 division) => math.countbits(CalcUMask(division));
         
 
         //public static float2 CalcUv(int id, float2 span, uint umask, int vshift)

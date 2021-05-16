@@ -49,6 +49,7 @@ Shader "Custom/Particle uv"
 			StructuredBuffer<float4> BoneVectorBuffer;
 			//int	BoneLengthEveryInstance;
 			int BoneVectorOffset;
+            float4 UvParam;
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
@@ -59,18 +60,19 @@ Shader "Custom/Particle uv"
             {
                 v2f o;
 
+                const uvspan = UvParam.xy;
+
 				const int ivec = BoneVectorOffset + i * 2;
 				const float4 buf0 = BoneVectorBuffer[ivec + 0];
 				const float4 buf1 = BoneVectorBuffer[ivec + 1];
 
-                const fixed4 color = float4(asuint(buf0.w).xxxx >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
-                const half2 uv = buf1.xy;
-                const half2 dir = buf1.zw;
+                const half2 dir = buf1.xy;
                 const half2x2 rot = half2x2(half2(dir.x, -dir.y), dir.yx);
                 
                 const half2 roted = mul(rot, v.vertex.xy);
 				const half4 lvt = half4(roted, 0, 0);
-                const half3 wpos = buf0.xyz;
+                //const half3 wpos = buf0.xyz;
+                const half4 wpos = buf0;
 
                 //const half4 vpos = mul(UNITY_MATRIX_V, half4(wpos, 1));
                 //o.vertex = mul(UNITY_MATRIX_P, vpos + lvt);
@@ -79,8 +81,12 @@ Shader "Custom/Particle uv"
                 const half4 _vt = half4(mul(lvt.xyz, mv), 0);
                 o.vertex = mul(UNITY_MATRIX_VP, half4(wpos, 1) + _vt);
 
+                const uv = uint4(buf1.z);
                 o.uv = v.uv;
+
+                const fixed4 color = float4(asuint(buf1.w).xxxx >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
                 o.color = color;// * 6;
+                
                 UNITY_TRANSFER_FOG(o, o.vertex);
 
                 return o;
