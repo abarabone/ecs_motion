@@ -60,7 +60,8 @@ Shader "Custom/Particle uv"
             {
                 v2f o;
 
-                const uvspan = UvParam.xy;
+                const half2 uvspan = UvParam.xy;
+                const half2 uvtick = uvspan / 100;
 
 				const int ivec = BoneVectorOffset + i * 2;
 				const float4 buf0 = BoneVectorBuffer[ivec + 0];
@@ -79,12 +80,15 @@ Shader "Custom/Particle uv"
                 
                 const half3x3 mv = half3x3(UNITY_MATRIX_V[0].xyz, UNITY_MATRIX_V[1].xyz, UNITY_MATRIX_V[2].xyz);
                 const half4 _vt = half4(mul(lvt.xyz, mv), 0);
-                o.vertex = mul(UNITY_MATRIX_VP, half4(wpos, 1) + _vt);
+                //o.vertex = mul(UNITY_MATRIX_VP, half4(wpos, 1) + _vt);
+                o.vertex = mul(UNITY_MATRIX_VP, wpos + _vt);
 
-                const uv = uint4(buf1.z);
-                o.uv = v.uv;
+                const uint4 uvp = asuint(buf1.zzzz) >> uint4(0, 8, 16, 24) & 255;
+                const half2 uvofs = uvp.xy * uvspan + uvtick;
+                const half2 uvsize = uvp.zw * uvspan - uvtick - uvtick;
+                o.uv = uvofs + v.uv * uvsize;
 
-                const fixed4 color = float4(asuint(buf1.w).xxxx >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
+                const fixed4 color = float4(asuint(buf1.wwww) >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
                 o.color = color;// * 6;
                 
                 UNITY_TRANSFER_FOG(o, o.vertex);

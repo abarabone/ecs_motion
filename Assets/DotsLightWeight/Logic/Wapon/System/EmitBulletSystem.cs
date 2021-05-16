@@ -72,7 +72,7 @@ namespace DotsLite.Arms
 
 
             var dt = this.Time.DeltaTime;
-            var currentTime = this.Time.ElapsedTime;
+            var currentTime = (float)this.Time.ElapsedTime;
             var gravity = UnityEngine.Physics.gravity.As_float3();// とりあえず
 
 

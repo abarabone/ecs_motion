@@ -15,6 +15,7 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Model.Authoring;
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
+    using DotsLite.Common.Extension;
 
     /// <summary>
     /// 他メッシュとのアトラス対応は後回し
@@ -64,9 +65,11 @@ namespace DotsLite.Particle.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            var tex = this.Texture ?? this.PackTexture();
+            var tex = this.Texture.As() ?? this.PackTexture();
             var mesh = this.createMesh();
             createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex);
+            
+            addParamComponents_(conversionSystem, entity, this.DivisionU, this.DivisionV);
 
             return;
 
@@ -83,11 +86,11 @@ namespace DotsLite.Particle.Aurthoring
                 gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, BoneType, boneLength);
             }
 
-            void addParamComponents_(GameObjectConversionSystem gcs, Entity ent)
+            static void addParamComponents_(GameObjectConversionSystem gcs, Entity ent, length_define udiv, length_define vdiv)
             {
                 var em = gcs.DstEntityManager;
 
-                var div = new uint2((uint)this.DivisionU, (uint)this.DivisionV);
+                var div = new uint2((uint)udiv, (uint)vdiv);
 
                 em.AddComponentData(ent, new BillboadModel.UvInformationData
                 {
@@ -157,7 +160,7 @@ namespace DotsLite.Particle.Aurthoring
 
                 var std = src.indexOfLeftTop;
                 var rev = div - src.cellUsage - src.indexOfLeftTop;
-                var idx = new int2(std.x, rev.y);
+                var idx = new int2(std.x, std.y);// rev.y);
                 var dstoffset = idx * span;
                 texture.ReadPixels(new Rect(0, 0, rdt.width, rdt.height), dstoffset.x, dstoffset.y);
 

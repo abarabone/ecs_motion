@@ -68,10 +68,13 @@ namespace DotsLite.Particle
         {
             public float NextAnimationTime;
         }
+        public struct UvAnimationInitializeTag : IComponentData
+        { }
 
         public struct UvAnimationData : IComponentData
         {
             public float TimeSpan;
+            public float TimeSpanR;
             public int CursorAnimationMask;
         }
         public struct CursorToUvIndexData : IComponentData

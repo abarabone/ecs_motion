@@ -73,21 +73,25 @@ namespace DotsLite.Particle.Aurthoring
 
 
 
-            initParticleEntityComponents_(conversionSystem, this.gameObject, modelEntity);
+            initParticleEntityComponents_(conversionSystem, this.gameObject, modelEntity, this);
+
+            addAnimation_(conversionSystem, this.gameObject, this);
 
             addLifeTime_(conversionSystem, entity, this.LifeTimeSec);
 
             return;
 
 
-            void initParticleEntityComponents_(GameObjectConversionSystem gcs, GameObject main, Entity modelEntity)
+            static void initParticleEntityComponents_(
+                GameObjectConversionSystem gcs, GameObject main, Entity modelEntity, ParticleAuthoring param)
             {
-                gcs.DstEntityManager.SetName_(entity, $"{main.name}");
-
                 var em = gcs.DstEntityManager;
 
 
                 var mainEntity = gcs.GetPrimaryEntity(main);
+
+                gcs.DstEntityManager.SetName_(mainEntity, $"{main.name}");
+
 
                 var archetype = em.CreateArchetype(
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
@@ -96,8 +100,6 @@ namespace DotsLite.Particle.Aurthoring
                     typeof(DrawInstance.TargetWorkData),
                     typeof(BillBoad.UvCursorData),
                     typeof(BillBoad.CursorToUvIndexData),
-                    typeof(BillBoad.UvAnimationWorkData),
-                    typeof(BillBoad.UvAnimationData),
                     typeof(BillBoad.RotationData),
                     typeof(Particle.AdditionalData),
                     typeof(Translation)
@@ -127,18 +129,11 @@ namespace DotsLite.Particle.Aurthoring
                 em.SetComponentData(mainEntity,
                     new BillBoad.CursorToUvIndexData
                     {
-                        IndexOffset = this.AnimationIndexStart,
-                        UCellUsage = (byte)this.CellUsage.x,
-                        VCellUsage = (byte)this.CellUsage.y,
-                        UMask = (byte)(this.ModelSource.DivisionU - 1),
-                        VShift = (byte)math.countbits((int)this.ModelSource.DivisionU - 1),
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new BillBoad.UvAnimationData
-                    {
-                        TimeSpan = this.AnimationTimeSpan,
-                        CursorAnimationMask = (byte)(this.AnimationIndexLength - 1),
+                        IndexOffset = param.AnimationIndexStart,
+                        UCellUsage = (byte)param.CellUsage.x,
+                        VCellUsage = (byte)param.CellUsage.y,
+                        UMask = (byte)(param.ModelSource.DivisionU - 1),
+                        VShift = (byte)math.countbits((int)param.ModelSource.DivisionU - 1),
                     }
                 );
                 em.SetComponentData(mainEntity,
@@ -151,8 +146,34 @@ namespace DotsLite.Particle.Aurthoring
                 em.SetComponentData(mainEntity,
                     new Particle.AdditionalData
                     {
-                        Color = this.ParticleColor,
-                        Size = this.Radius,
+                        Color = param.ParticleColor,
+                        Size = param.Radius,
+                    }
+                );
+            }
+
+            static void addAnimation_(GameObjectConversionSystem gcs, GameObject main, ParticleAuthoring param)
+            {
+                if (param.AnimationIndexLength <= length_define.length_1) return;
+
+                var em = gcs.DstEntityManager;
+
+                var mainEntity = gcs.GetPrimaryEntity(main);
+
+                var types = new ComponentTypes(new ComponentType[]
+                {
+                    typeof(BillBoad.UvAnimationInitializeTag),
+                    typeof(BillBoad.UvAnimationWorkData),
+                    typeof(BillBoad.UvAnimationData),
+                });
+                em.AddComponents(mainEntity, types);
+
+                em.SetComponentData(mainEntity,
+                    new BillBoad.UvAnimationData
+                    {
+                        TimeSpan = param.AnimationTimeSpan,
+                        TimeSpanR = 1.0f / param.AnimationTimeSpan,
+                        CursorAnimationMask = (byte)(param.AnimationIndexLength - 1),
                     }
                 );
             }
