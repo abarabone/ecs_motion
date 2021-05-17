@@ -52,7 +52,7 @@ namespace DotsLite.Draw
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.ParticleTag>()
-                .WithNone<DrawInstance.MeshTag>()
+                .WithNone<DrawInstance.MeshTag, BillBoad.UvCursorData, BillBoad.CursorToUvIndexData>()
                 .WithNone<Translation, Rotation>()// 物理パーティクルは除外
                 .ForEach(
                     (

@@ -1,6 +1,4 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "Custom/Particle uv"
+Shader "Custom/Psyllium ptop uv"
 {
     Properties
     {
@@ -13,8 +11,6 @@ Shader "Custom/Particle uv"
 		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
 		Blend SrcAlpha One
-        //Blend SrcAlpha OneMinusSrcAlpha
-        //Blend One One
 		Lighting Off ZWrite Off Fog
 		{
 			Mode Off
@@ -59,38 +55,41 @@ Shader "Custom/Particle uv"
             v2f vert (appdata v, uint i : SV_InstanceID)
             {
                 v2f o;
-
+                
                 const half2 uvspan = UvParam.xy;
                 const half2 uvtick = uvspan * 0.01f;// / 100;
 
-				const int ivec = BoneVectorOffset + i * 2;
+				const int ivec = BoneVectorOffset + i * 3;
 				const float4 buf0 = BoneVectorBuffer[ivec + 0];
 				const float4 buf1 = BoneVectorBuffer[ivec + 1];
+				const float4 buf2 = BoneVectorBuffer[ivec + 2];
 
-                const half2 dir = buf1.xy;
-                const half2x2 rot = half2x2(half2(dir.x, -dir.y), dir.yx);
+				const float4 lvt = v.vertex;
+                const float4 wpos0 = buf0;
+                const float4 wpos1 = buf1;
+
+                const int iofs = lvt.y + 0.5f;
+				const float3 wpos_current = BoneVectorBuffer[ivec + (0+iofs)].xyz;
+
+				const float3 eye =  (wpos_current - _WorldSpaceCameraPos);
+				const float3 up =  (wpos1.xyz - wpos0.xyz);
+				const float3 side = normalize(cross(up, eye));
+				const float3 edgeface = normalize(cross(eye, side));
+
+                const float size = buf2.x;
+
+				const float4 wvt = float4(wpos_current + (side * lvt.xxx + edgeface * lvt.zzz) * size, 1);
+				//const float4x4 mt = float4x4(float4(side, 0), float4(up, 0), float4(edgeface, 0), wpos_current);
+				//const float4 wvt = mul(lvt, mt);
+                o.vertex = mul(UNITY_MATRIX_VP, wvt);
                 
-                const half2 roted = mul(rot, v.vertex.xy);
-				const half4 lvt = half4(roted, 0, 0);
-                //const half3 wpos = buf0.xyz;
-                const half4 wpos = buf0;
-
-                //const half4 vpos = mul(UNITY_MATRIX_V, half4(wpos, 1));
-                //o.vertex = mul(UNITY_MATRIX_P, vpos + lvt);
-                
-                const half3x3 mv = half3x3(UNITY_MATRIX_V[0].xyz, UNITY_MATRIX_V[1].xyz, UNITY_MATRIX_V[2].xyz);
-                const half4 _vt = half4(mul(lvt.xyz, mv), 0);
-                //o.vertex = mul(UNITY_MATRIX_VP, half4(wpos, 1) + _vt);
-                o.vertex = mul(UNITY_MATRIX_VP, wpos + _vt);
-
-                const uint4 uvp = asuint(buf1.zzzz) >> uint4(0, 8, 16, 24) & 255;
+                const uint4 uvp = asuint(buf2.zzzz) >> uint4(0, 8, 16, 24) & 255;
                 const half2 uvofs = uvp.xy * uvspan + uvtick;
                 const half2 uvsize = uvp.zw * uvspan - uvtick - uvtick;
                 o.uv = uvofs + v.uv * uvsize;
-
-                const fixed4 color = float4(asuint(buf1.wwww) >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
-                o.color = color;// * 6;
                 
+                const fixed4 color = float4(asuint(buf2.yyyy) >> uint4(24, 16, 8, 0) & 255) / 255.;
+                o.color = color * 6;
                 UNITY_TRANSFER_FOG(o, o.vertex);
 
                 return o;

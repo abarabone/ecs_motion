@@ -57,21 +57,32 @@ namespace DotsLite.Particle.Aurthoring
         {
 
             var tex = this.Texture.As() ?? this.PackTexture();
-            var mesh = this.ParticleType switch
-            {
-                ParticleMeshType.billboad => this.createBillboadMesh(),
-                ParticleMeshType.psyllium => this.createPsylliumMesh(),
-                _ => default,
-            };
-            var bonetype = this.ParticleType switch
-            {
-                ParticleMeshType.billboad => BoneType.P1bb,
-                ParticleMeshType.psyllium => BoneType.PtoP,
-                _ => default,
-            };
-            createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, bonetype);
 
-            addParamComponents_(conversionSystem, entity, this.Division);
+            switch (this.ParticleType)
+            {
+                case ParticleMeshType.billboadUv:
+                    {
+                        var mesh = this.createBillboadMesh();
+                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.P1uv);
+                        addParamComponents_(conversionSystem, entity, this.Division);
+                    }
+                    break;
+                case ParticleMeshType.psyllium:
+                    {
+                        var mesh = this.createPsylliumMesh();
+                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.PtoP);
+                    }
+                    break;
+                case ParticleMeshType.psylliumUv:
+                    {
+                        var mesh = this.createPsylliumMesh();
+                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.PtoPuv);
+                        addParamComponents_(conversionSystem, entity, this.Division);
+                    }
+                    break;
+                default:
+                    break;
+            }
 
             return;
 

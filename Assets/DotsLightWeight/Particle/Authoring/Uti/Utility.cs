@@ -38,8 +38,9 @@ namespace DotsLite.Particle.Aurthoring
 
     public enum ParticleMeshType
     {
-        billboad,
-        psyllium
+        billboadUv,
+        psyllium,
+        psylliumUv,
     }
 
     public static class ParticleAuthoringUtility
@@ -49,7 +50,7 @@ namespace DotsLite.Particle.Aurthoring
         //    new int2((int)x.x, (int)x.y);
 
 
-        public static void InitParticleEntityComponents(
+        public static void InitParticleUvEntityComponents(
             this GameObjectConversionSystem gcs, GameObject main, Entity modelEntity,
             BinaryLength2 division, BinaryLength2 cellUsage, int animationBaseIndex, Color32 color, float radius)
         {
@@ -101,6 +102,51 @@ namespace DotsLite.Particle.Aurthoring
                     VCellUsage = (byte)cellUsage.v,
                     UMask = (byte)(division.u - 1),
                     VShift = (byte)math.countbits((int)division.u - 1),
+                }
+            );
+
+            em.SetComponentData(mainEntity,
+                new Particle.AdditionalData
+                {
+                    Color = color,
+                    Size = radius,
+                }
+            );
+        }
+
+
+        public static void InitParticleEntityComponents(
+            this GameObjectConversionSystem gcs, GameObject main, Entity modelEntity, Color32 color, float radius)
+        {
+            var em = gcs.DstEntityManager;
+
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            gcs.DstEntityManager.SetName_(mainEntity, $"{main.name}");
+
+
+            var types = new ComponentTypes(new ComponentType[]
+            {
+                typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
+                typeof(DrawInstance.ParticleTag),
+                typeof(DrawInstance.ModelLinkData),
+                typeof(DrawInstance.TargetWorkData),
+                typeof(Particle.AdditionalData),
+            });
+            em.AddComponents(mainEntity, types);
+
+
+            em.SetComponentData(mainEntity,
+                new DrawInstance.ModelLinkData
+                {
+                    DrawModelEntityCurrent = modelEntity,
+                }
+            );
+            em.SetComponentData(mainEntity,
+                new DrawInstance.TargetWorkData
+                {
+                    DrawInstanceId = -1,
                 }
             );
 

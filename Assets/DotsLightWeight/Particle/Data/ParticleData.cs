@@ -136,7 +136,7 @@ namespace DotsLite.Particle
             return wrap_((byte)u, (byte)v, touv.UCellUsage, touv.VCellUsage);
 
             int wrap_(byte iu, byte iv, byte usageu, byte usagev) =>
-                (iu) | (iv << 8) | (usageu << 16) | (usagev << 24);
+                (iu << 0) | (iv << 8) | (usageu << 16) | (usagev << 24);
         }
 
         //public static float2 CalcSpan(uint2 division) =>

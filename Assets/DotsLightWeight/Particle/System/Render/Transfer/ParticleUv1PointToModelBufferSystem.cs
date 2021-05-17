@@ -27,7 +27,7 @@ namespace DotsLite.Draw
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class Particle1PointToModelBufferSystem : DependencyAccessableSystemBase
+    public class ParticleUv1PointToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 
@@ -83,7 +83,7 @@ namespace DotsLite.Draw
 
                     var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                    const int vectorLength = (int)BoneType.P1bb;
+                    const int vectorLength = (int)BoneType.P1uv;
                     var lengthOfInstance = vectorLength;//offsetInfo.VectorOffsetPerInstance + vectorLength;
                     var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 

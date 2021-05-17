@@ -62,21 +62,26 @@ namespace DotsLite.Particle.Aurthoring
             var modelEntity = conversionSystem.GetPrimaryEntity(this.ModelSource);
 
 
-            conversionSystem.InitParticleEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.Radius);
-            
             switch (this.ModelSource.ParticleType)
             {
-                case ParticleMeshType.billboad:
+                case ParticleMeshType.billboadUv:
+                    conversionSystem.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.Radius);
                     addParticleEntityComponents_(conversionSystem, this.gameObject);
+                    conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationTimeSpan);
+                    conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
                     break;
                 case ParticleMeshType.psyllium:
+                    conversionSystem.InitParticleEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.Radius);
                     addPsylliumComponents_(conversionSystem, this.gameObject);
+                    conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
+                    break;
+                case ParticleMeshType.psylliumUv:
+                    conversionSystem.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.Radius);
+                    addPsylliumComponents_(conversionSystem, this.gameObject);
+                    conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationTimeSpan);
+                    conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
                     break;
             }
-
-            conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationTimeSpan);
-
-            conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
 
             return;
 

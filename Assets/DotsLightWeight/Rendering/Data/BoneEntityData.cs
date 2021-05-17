@@ -58,7 +58,8 @@ namespace DotsLite.Model
         TRS = 3,
         Matrix4x3 = 3,
         PtoP = 2,
-        P1bb = 2,
+        P1uv = 2,
+        PtoPuv = 3,
     }
 
     static public partial class TransformOption
