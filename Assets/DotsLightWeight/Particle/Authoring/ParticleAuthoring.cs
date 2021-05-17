@@ -35,14 +35,15 @@ namespace DotsLite.Particle.Aurthoring
         //public ParticleMeshType ParticleType;
 
         public Color ParticleColor;
-        public float Radius;
+        public float StartRadius;
+        public float EndRadius;
 
         public BinaryLength2 CellUsage;
 
         public int AnimationBaseIndex;
+        public int AnimationIndexMax;
         public binary_length AnimationIndexLength;
         public float AnimationTimeSpan;
-
 
         public float LifeTimeSec;// 0 à»â∫Ç»ÇÁè¡Ç¶Ç»Ç¢
 
@@ -65,20 +66,20 @@ namespace DotsLite.Particle.Aurthoring
             switch (this.ModelSource.ParticleType)
             {
                 case ParticleMeshType.billboadUv:
-                    conversionSystem.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.Radius);
+                    conversionSystem.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
                     addParticleEntityComponents_(conversionSystem, this.gameObject);
-                    conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationTimeSpan);
+                    conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpan);
                     conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
                     break;
                 case ParticleMeshType.psyllium:
-                    conversionSystem.InitParticleEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.Radius);
+                    conversionSystem.InitParticleEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.StartRadius);
                     addPsylliumComponents_(conversionSystem, this.gameObject);
                     conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
                     break;
                 case ParticleMeshType.psylliumUv:
-                    conversionSystem.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.Radius);
+                    conversionSystem.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
                     addPsylliumComponents_(conversionSystem, this.gameObject);
-                    conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationTimeSpan);
+                    conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpan);
                     conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
                     break;
             }

@@ -162,7 +162,7 @@ namespace DotsLite.Particle.Aurthoring
 
         public static void AddAnimationComponents(
             this GameObjectConversionSystem gcs, GameObject main,
-            binary_length animationIndexLength, float animationTimeSpan)
+            binary_length animationIndexLength, int animationBaseIndex, int animationIndexMax, float animationTimeSpan)
         {
             if (animationIndexLength <= binary_length.length_1) return;
 
@@ -183,7 +183,8 @@ namespace DotsLite.Particle.Aurthoring
                 {
                     TimeSpan = animationTimeSpan,
                     TimeSpanR = 1.0f / animationTimeSpan,
-                    CursorAnimationMask = (byte)(animationIndexLength - 1),
+                    CursorAnimationMask = (int)animationIndexLength - 1,
+                    AnimationIndexMax = animationIndexMax - animationBaseIndex,
                 }
             );
         }

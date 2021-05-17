@@ -100,8 +100,10 @@ namespace DotsLite.Particle
 
                         var freq = (int)(overtime * data.TimeSpanR) + 1;
 
-                        cursor.CurrentIndex = (cursor.CurrentIndex + freq) & data.CursorAnimationMask;
-
+                        var newindex = math.min(cursor.CurrentIndex + freq, data.AnimationIndexMax);
+                        cursor.CurrentIndex = newindex & data.CursorAnimationMask;
+                        //var newindex = (cursor.CurrentIndex + freq) & data.CursorAnimationMask;
+                        //cursor.CurrentIndex = math.min(newindex, data.AnimationIndexMax);
 
                         work.NextAnimationTime = currentTime + data.TimeSpan * freq;
                     }
