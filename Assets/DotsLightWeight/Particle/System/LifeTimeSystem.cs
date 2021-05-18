@@ -65,25 +65,7 @@ namespace DotsLite.Particle
 
             this.Entities
                 .WithName("Initialize")
-                .WithBurst()
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        ref Particle.LifeTimeData timer,
-                        in Particle.LifeTimeSpecData spec
-                    ) =>
-                    {
-                        var eqi = entityInQueryIndex;
-
-                        timer.EndTime = currentTime + spec.DurationSec;
-
-                        cmd.RemoveComponent<Particle.LifeTimeSpecData>(eqi, entity);
-                    }
-                )
-                .ScheduleParallel();
-
-            this.Entities
-                .WithName("LifeTime")
+                .WithAll<Particle.LifeTimeInitializeTag>()
                 .WithBurst()
                 .ForEach(
                     (
@@ -94,12 +76,32 @@ namespace DotsLite.Particle
                     {
                         var eqi = entityInQueryIndex;
 
+                        //timer.EndTime = currentTime + spec.DurationSec;
+                        timer.StartTime = currentTime;
+
+                        cmd.RemoveComponent<Particle.LifeTimeInitializeTag>(eqi, entity);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithName("TerminateCheck")
+                .WithBurst()
+                .ForEach(
+                    (
+                        Entity entity, int entityInQueryIndex,
+                        ref Particle.LifeTimeData timer,
+                        in Particle.LifeTimeSpecData spec
+                    ) =>
+                    {
+                        var eqi = entityInQueryIndex;
+
                         //if (timer.EndTime == 0)
                         //{
                         //    timer.EndTime = currentTime + spec.DurationSec;
                         //}
 
-                        if (timer.EndTime > currentTime) return;
+                        if (timer.StartTime + spec.DurationSec > currentTime) return;
 
                         cmd.DestroyEntity(eqi, entity);
                     }

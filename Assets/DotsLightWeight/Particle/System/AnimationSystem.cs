@@ -39,26 +39,26 @@ namespace DotsLite.Particle
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class ParticleAnimationSystem : DependencyAccessableSystemBase
+    public class ParticleAnimationSystem : SystemBase//DependencyAccessableSystemBase
     {
 
 
-        CommandBufferDependency.Sender cmddep;
+        //CommandBufferDependency.Sender cmddep;
 
 
-        protected override void OnCreate()
-        {
-            base.OnCreate();
+        //protected override void OnCreate()
+        //{
+        //    base.OnCreate();
 
-            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-        }
+        //    this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        //}
 
         protected override void OnUpdate()
         {
-            using var cmdScope = this.cmddep.WithDependencyScope();
+            //    using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
+            //    var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var currentTime = (float)this.Time.ElapsedTime;
 
@@ -66,19 +66,20 @@ namespace DotsLite.Particle
             this.Entities
                 .WithName("Initialize")
                 .WithBurst()
-                .WithAll<BillBoad.UvAnimationInitializeTag>()
+                .WithAll<Particle.LifeTimeInitializeTag>()
+                //.WithAll<BillBoad.UvAnimationInitializeTag>()
                 .ForEach(
                     (
-                        Entity entity, int entityInQueryIndex,
+                        //Entity entity, int entityInQueryIndex,
                         ref BillBoad.UvAnimationWorkData work,
                         in BillBoad.UvAnimationData data
                     ) =>
                     {
-                        var eqi = entityInQueryIndex;
+                        //var eqi = entityInQueryIndex;
 
                         work.NextAnimationTime = currentTime + data.TimeSpan;
 
-                        cmd.RemoveComponent<BillBoad.UvAnimationInitializeTag>(eqi, entity);
+                        //cmd.RemoveComponent<BillBoad.UvAnimationInitializeTag>(eqi, entity);
                     }
                 )
                 .ScheduleParallel();

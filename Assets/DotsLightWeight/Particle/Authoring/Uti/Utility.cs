@@ -172,9 +172,11 @@ namespace DotsLite.Particle.Aurthoring
 
             var types = new ComponentTypes(new ComponentType[]
             {
-                    typeof(BillBoad.UvAnimationInitializeTag),
-                    typeof(BillBoad.UvAnimationWorkData),
-                    typeof(BillBoad.UvAnimationData),
+                typeof(Particle.LifeTimeInitializeTag),
+                typeof(Particle.LifeTimeData),
+                //typeof(BillBoad.UvAnimationInitializeTag),
+                typeof(BillBoad.UvAnimationWorkData),
+                typeof(BillBoad.UvAnimationData),
             });
             em.AddComponents(mainEntity, types);
 
@@ -194,18 +196,50 @@ namespace DotsLite.Particle.Aurthoring
         {
             if (time <= 0.0f) return;
 
+            var em = gcs.DstEntityManager;
+
             var mainEntity = gcs.GetPrimaryEntity(main);
 
             var types = new ComponentTypes(
+                typeof(Particle.LifeTimeInitializeTag),
                 typeof(Particle.LifeTimeSpecData),
                 typeof(Particle.LifeTimeData)
             );
-            gcs.DstEntityManager.AddComponents(mainEntity, types);
+            em.AddComponents(mainEntity, types);
 
-            gcs.DstEntityManager.AddComponentData(mainEntity, new Particle.LifeTimeSpecData
-            {
-                DurationSec = time,
-            });
+            em.AddComponentData(mainEntity,
+                new Particle.LifeTimeSpecData
+                {
+                    DurationSec = time,
+                }
+            );
+        }
+
+        public static void AddSizingComponents(
+            this GameObjectConversionSystem gcs, GameObject main,
+            float startRadius, float endRadius, float endtime)
+        {
+            if (endtime <= 0.0f) return;
+
+            var em = gcs.DstEntityManager;
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(
+                typeof(Particle.LifeTimeInitializeTag),
+                typeof(Particle.LifeTimeData),
+                typeof(BillBoad.SizeAnimationData)
+            );
+            em.AddComponents(mainEntity, types);
+
+            em.AddComponentData(mainEntity,
+                new BillBoad.SizeAnimationData
+                {
+                    StartSize = startRadius,
+                    EndSize = endRadius,
+                    MaxTimeSpanR = 1.0f / endtime,
+                }
+            );
         }
 
     }

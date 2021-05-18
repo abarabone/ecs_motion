@@ -43,7 +43,7 @@ namespace DotsLite.Particle
         public struct LifeTimeData : IComponentData
         {
             public float StartTime;
-            public float EndTime;
+            //public float EndTime;
         }
         public struct LifeTimeSpecData : IComponentData
         {
@@ -71,13 +71,14 @@ namespace DotsLite.Particle
         {
             public float NextAnimationTime;
         }
-        public struct UvAnimationInitializeTag : IComponentData
-        { }
+        //public struct UvAnimationInitializeTag : IComponentData
+        //{ }
 
         public struct SizeAnimationData : IComponentData
         {
             public float StartSize;
             public float EndSize;
+            public float MaxTimeSpanR;
         }
 
         public struct UvAnimationData : IComponentData

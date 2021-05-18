@@ -57,7 +57,7 @@ namespace DotsLite.Arms
                 .WithNone<Bullet.AccelerationData>()
                 .ForEach(
                     (
-                        Entity entity, int entityInQueryIndex,
+                        //Entity entity, int entityInQueryIndex,
                         ref Particle.TranslationPtoPData ptop,
                         ref Bullet.DistanceData dist,
                         in Bullet.VelocityData v

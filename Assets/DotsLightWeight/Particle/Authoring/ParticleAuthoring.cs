@@ -37,6 +37,7 @@ namespace DotsLite.Particle.Aurthoring
         public Color ParticleColor;
         public float StartRadius;
         public float EndRadius;
+        public float EndTimeForRadius;
 
         public BinaryLength2 CellUsage;
 
@@ -70,17 +71,22 @@ namespace DotsLite.Particle.Aurthoring
                     addParticleEntityComponents_(conversionSystem, this.gameObject);
                     conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpan);
                     conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
+                    conversionSystem.AddSizingComponents(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
                     break;
+
                 case ParticleMeshType.psyllium:
                     conversionSystem.InitParticleEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.StartRadius);
                     addPsylliumComponents_(conversionSystem, this.gameObject);
                     conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
+                    conversionSystem.AddSizingComponents(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
                     break;
+
                 case ParticleMeshType.psylliumUv:
                     conversionSystem.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
                     addPsylliumComponents_(conversionSystem, this.gameObject);
                     conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpan);
                     conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
+                    conversionSystem.AddSizingComponents(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
                     break;
             }
 

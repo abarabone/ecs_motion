@@ -53,7 +53,6 @@ namespace DotsLite.Draw
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.ParticleTag>()
                 .WithNone<DrawInstance.MeshTag, BillBoad.UvCursorData, BillBoad.CursorToUvIndexData>()
-                .WithNone<Translation, Rotation>()// 物理パーティクルは除外
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,

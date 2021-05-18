@@ -38,27 +38,13 @@ namespace DotsLite.Particle
     using Unity.Physics.Authoring;
 
     //[DisableAutoCreation]
+    [UpdateAfter(typeof(ParticleLifeTimeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class SizingSystem : DependencyAccessableSystemBase
+    public class SizingSystem : SystemBase
     {
-
-
-        CommandBufferDependency.Sender cmddep;
-
-
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-
-            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-        }
 
         protected override void OnUpdate()
         {
-            using var cmdScope = this.cmddep.WithDependencyScope();
-
-
-            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var currentTime = (float)this.Time.ElapsedTime;
 
@@ -67,13 +53,16 @@ namespace DotsLite.Particle
                 .WithBurst()
                 .ForEach(
                     (
-                        Entity entity, int entityInQueryIndex,
                         ref Particle.AdditionalData data,
-                        in BillBoad.SizeAnimationData anim
+                        in BillBoad.SizeAnimationData anim,
+                        in Particle.LifeTimeData timer
                     ) =>
                     {
-                        var eqi = entityInQueryIndex;
 
+                        var elapsed = currentTime - timer.StartTime;
+                        var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
+
+                        data.Size = math.lerp(anim.StartSize, anim.EndSize, normalizeTime);
 
                     }
                 )
