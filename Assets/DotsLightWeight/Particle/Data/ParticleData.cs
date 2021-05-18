@@ -42,12 +42,15 @@ namespace DotsLite.Particle
         // ”jŠüw’è
         public struct LifeTimeData : IComponentData
         {
+            public float StartTime;
             public float EndTime;
         }
         public struct LifeTimeSpecData : IComponentData
         {
             public float DurationSec;
         }
+        public struct LifeTimeInitializeTag : IComponentData
+        { }
 
         //// Œ¸‚Á‚Ä‚­
         //public struct DurationData : IComponentData

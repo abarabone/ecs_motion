@@ -39,7 +39,7 @@ namespace DotsLite.Particle
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class ParticleAnimationSystem : DependencyAccessableSystemBase
+    public class SizingSystem : DependencyAccessableSystemBase
     {
 
 
@@ -64,48 +64,17 @@ namespace DotsLite.Particle
 
 
             this.Entities
-                .WithName("Initialize")
                 .WithBurst()
-                .WithAll<BillBoad.UvAnimationInitializeTag>()
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref BillBoad.UvAnimationWorkData work,
-                        in BillBoad.UvAnimationData data
+                        ref Particle.AdditionalData data,
+                        in BillBoad.SizeAnimationData anim
                     ) =>
                     {
                         var eqi = entityInQueryIndex;
 
-                        work.NextAnimationTime = currentTime + data.TimeSpan;
 
-                        cmd.RemoveComponent<BillBoad.UvAnimationInitializeTag>(eqi, entity);
-                    }
-                )
-                .ScheduleParallel();
-
-            this.Entities
-                .WithName("Progress")
-                .WithBurst()
-                .ForEach(
-                    (
-                        ref BillBoad.UvCursorData cursor,
-                        ref BillBoad.UvAnimationWorkData work,
-                        in BillBoad.UvAnimationData data
-                    ) =>
-                    {
-                        if (work.NextAnimationTime > currentTime) return;
-
-                        var overtime = currentTime - work.NextAnimationTime;
-
-
-                        var freq = (int)(overtime * data.TimeSpanR) + 1;
-
-                        var newindex = math.min(cursor.CurrentIndex + freq , data.AnimationIndexMax);
-                        cursor.CurrentIndex = newindex & data.CursorAnimationMask;
-                        //var newindex = (cursor.CurrentIndex + freq) & data.CursorAnimationMask;
-                        //cursor.CurrentIndex = math.min(newindex, data.AnimationIndexMax);
-
-                        work.NextAnimationTime = currentTime + data.TimeSpan * freq;
                     }
                 )
                 .ScheduleParallel();

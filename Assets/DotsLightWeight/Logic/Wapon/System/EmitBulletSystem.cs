@@ -173,7 +173,7 @@ namespace DotsLite.Arms
             //if (effectPrefab == Entity.Null) return;
 
             var ent = cmd.Instantiate(eqi, effectPrefab);
-            
+
             cmd.SetComponent(eqi, ent, new Translation
             {
                 Value = pos,

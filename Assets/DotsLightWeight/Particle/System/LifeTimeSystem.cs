@@ -88,10 +88,16 @@ namespace DotsLite.Particle
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in Particle.LifeTimeData timer
+                        ref Particle.LifeTimeData timer
+                        //in Particle.LifeTimeSpecData spec
                     ) =>
                     {
                         var eqi = entityInQueryIndex;
+
+                        //if (timer.EndTime == 0)
+                        //{
+                        //    timer.EndTime = currentTime + spec.DurationSec;
+                        //}
 
                         if (timer.EndTime > currentTime) return;
 
