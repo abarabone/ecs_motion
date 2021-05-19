@@ -103,7 +103,8 @@ namespace DotsLite.Draw
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
                 .WithReadOnly(bboxes)
                 //.WithNone<NonUniformScale>()
-                .WithNone<Particle.TranslationPtoPData>()
+                //.WithNone<Particle.TranslationPtoPData>()
+                .WithNone<Particle.TranslationTailData>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach(
                         (
@@ -140,54 +141,54 @@ namespace DotsLite.Draw
                 .ScheduleParallel(this.Dependency );
 
 
-            var dependsParticle = this.Entities
-            //this.Entities
-                .WithName("PtopParticle")
-                .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
-                .WithNativeDisableParallelForRestriction(drawModels)
-                .WithNativeDisableContainerSafetyRestriction(drawModels)
-                //.WithNone<Rotation, Translation, NonUniformScale>()
-                .WithNone<DrawInstance.PostureLinkData>()
-                .ForEach(
-                        (
-                            ref DrawInstance.TargetWorkData target,
-                            in DrawInstance.ModelLinkData modellink,
-                            in Particle.TranslationPtoPData ptop,
-                            in Particle.AdditionalData additional
-                        ) =>
-                        {
-                            if (modellink.DrawModelEntityCurrent == Entity.Null)
-                            {
-                                target.DrawInstanceId = -1;
-                                return;
-                            }
+            //var dependsParticle = this.Entities
+            ////this.Entities
+            //    .WithName("PtopParticle")
+            //    .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
+            //    .WithNativeDisableParallelForRestriction(drawModels)
+            //    .WithNativeDisableContainerSafetyRestriction(drawModels)
+            //    //.WithNone<Rotation, Translation, NonUniformScale>()
+            //    .WithNone<DrawInstance.PostureLinkData>()
+            //    .ForEach(
+            //            (
+            //                ref DrawInstance.TargetWorkData target,
+            //                in DrawInstance.ModelLinkData modellink,
+            //                in Particle.TranslationPtoPData ptop,
+            //                in Particle.AdditionalData additional
+            //            ) =>
+            //            {
+            //                if (modellink.DrawModelEntityCurrent == Entity.Null)
+            //                {
+            //                    target.DrawInstanceId = -1;
+            //                    return;
+            //                }
 
 
-                            var bbox = new AABB
-                            {
-                                Center = (ptop.Start + ptop.End) * 0.5f,
-                                Extents = math.abs(ptop.End - ptop.Start) * 0.5f + additional.Size,
-                            };
+            //                var bbox = new AABB
+            //                {
+            //                    Center = (ptop.Start + ptop.End) * 0.5f,
+            //                    Extents = math.abs(ptop.End - ptop.Start) * 0.5f + additional.Size,
+            //                };
 
-                            var isHit = viewFrustum.IsInside(bbox);
+            //                var isHit = viewFrustum.IsInside(bbox);
 
-                            if (!isHit)
-                            {
-                                target.DrawInstanceId = -1;
-                                return;
-                            }
-
-
-                            var drawModelData = drawModels[modellink.DrawModelEntityCurrent];
-
-                            target.DrawInstanceId = drawModelData.InstanceCounter.GetSerial();
-
-                        }
-                )
-                .ScheduleParallel(this.Dependency);
+            //                if (!isHit)
+            //                {
+            //                    target.DrawInstanceId = -1;
+            //                    return;
+            //                }
 
 
-            this.Dependency = JobHandle.CombineDependencies(dependsTRbone, dependsTR, dependsParticle);
+            //                var drawModelData = drawModels[modellink.DrawModelEntityCurrent];
+
+            //                target.DrawInstanceId = drawModelData.InstanceCounter.GetSerial();
+
+            //            }
+            //    )
+            //    .ScheduleParallel(this.Dependency);
+
+
+            this.Dependency = JobHandle.CombineDependencies(dependsTRbone, dependsTR);//, dependsParticle);
 
             //this.presentationBarier.AddJobHandleForProducer( this.Dependency );
         }

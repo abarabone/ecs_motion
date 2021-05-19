@@ -31,6 +31,7 @@ namespace DotsLite.Arms
     using DotsLite.Utilities;
     using DotsLite.Collision;
     using DotsLite.SystemGroup;
+    using DotsLite.Common.Extension;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;
@@ -57,7 +58,9 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref Particle.TranslationPtoPData ptop,
+                        //ref Particle.TranslationPtoPData ptop,
+                        ref Translation pos,
+                        ref Particle.TranslationTailData tail,
                         ref Bullet.DistanceData dist,
                         ref Bullet.VelocityData v,
                         in Bullet.AccelerationData acc
@@ -65,9 +68,13 @@ namespace DotsLite.Arms
                     {
                         var d = v.Velocity.xyz * dt;
 
-                        ptop.Start = ptop.End;
+                        //ptop.Start = ptop.End;
 
-                        ptop.End += d;
+                        //ptop.End += d;
+
+                        tail.PositionAndSize = pos.Value.As_float4(tail.Size);
+
+                        pos.Value += d;
 
                         dist.RestRangeDistance -= math.length(d);
 

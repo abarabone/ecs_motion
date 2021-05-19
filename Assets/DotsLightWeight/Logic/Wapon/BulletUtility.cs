@@ -77,16 +77,29 @@ namespace DotsLite.Arms
         {
             var newBeamEntity = cmd.Instantiate(uniqueIndex, bulletPrefab);
 
+            //cmd.SetComponent(uniqueIndex, newBeamEntity,
+            //    new Particle.TranslationPtoPData
+            //    {
+            //        Start = start,
+            //        End = end,
+            //    }
+            //);
             cmd.SetComponent(uniqueIndex, newBeamEntity,
-                new Particle.TranslationPtoPData
+                new Particle.TranslationTailData
                 {
-                    Start = start,
-                    End = end,
+                    PositionAndSize = end.As_float4(),
+                }
+            );
+            cmd.SetComponent(uniqueIndex, newBeamEntity,
+                new Translation
+                {
+                    Value = start,
                 }
             );
         }
-
     }
+
+
 
 
 

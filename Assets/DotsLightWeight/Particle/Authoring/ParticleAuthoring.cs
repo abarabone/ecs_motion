@@ -135,8 +135,9 @@ namespace DotsLite.Particle.Aurthoring
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
-                    typeof( Particle.TranslationPtoPData ),
-                    //typeof(Translation),
+                    //typeof( Particle.TranslationPtoPData ),
+                    typeof(Particle.TranslationTailData),
+                    typeof(Translation),
                     //typeof(Rotation)
                 });
                 em.AddComponents(mainEntity, types);
@@ -149,7 +150,7 @@ namespace DotsLite.Particle.Aurthoring
                 //{
                 //    Value = quaternion.identity,
                 //});
-                em.RemoveComponent<Translation>(mainEntity);//
+                //em.RemoveComponent<Translation>(mainEntity);//
                 em.RemoveComponent<Rotation>(mainEntity);//
             }
         }

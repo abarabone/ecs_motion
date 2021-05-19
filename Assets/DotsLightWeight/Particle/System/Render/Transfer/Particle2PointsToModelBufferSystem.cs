@@ -55,10 +55,12 @@ namespace DotsLite.Draw
                 .WithNone<DrawInstance.MeshTag, BillBoad.UvCursorData, BillBoad.CursorToUvIndexData>()
                 .ForEach(
                     (
+                        ref Particle.TranslationTailData tail,
+                        in Translation pos,
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
-                        in Particle.AdditionalData additional,
-                        in Particle.TranslationPtoPData pos
+                        in Particle.AdditionalData additional
+                        //in Particle.TranslationPtoPData pos
                     )
                 =>
                     {
@@ -76,9 +78,11 @@ namespace DotsLite.Draw
                         var size = additional.Size;
                         var color = math.asfloat(additional.Color.ToUint());
 
+                        tail.Size = size;
+
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[i + 0] = new float4(pos.Start, size);
-                        pModel[i + 1] = new float4(pos.End, color);
+                        pModel[i + 0] = tail.PositionAndSize;
+                        pModel[i + 1] = new float4(pos.Value, color);
                     }
                 )
                 .ScheduleParallel();

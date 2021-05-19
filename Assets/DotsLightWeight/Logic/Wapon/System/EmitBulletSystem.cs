@@ -221,11 +221,23 @@ namespace DotsLite.Arms
 
             var newBullet = cmd.Instantiate(eqi, bulletPrefab);
 
-            cmd.SetComponent(eqi, newBullet,
-                new Particle.TranslationPtoPData
+            //cmd.SetComponent(eqi, newBullet,
+            //    new Particle.TranslationPtoPData
+            //    {
+            //        Start = bulletPosition,
+            //        End = bulletPosition
+            //    }
+            //);
+            cmd.SetComponent(eqi, bulletPrefab,
+                new Particle.TranslationTailData
                 {
-                    Start = bulletPosition,
-                    End = bulletPosition
+                    PositionAndSize = bulletPosition.As_float4(),
+                }
+            );
+            cmd.SetComponent(eqi, bulletPrefab,
+                new Translation
+                {
+                    Value = bulletPosition,
                 }
             );
             cmd.SetComponent(eqi, newBullet,

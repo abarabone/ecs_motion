@@ -71,8 +71,9 @@ namespace DotsLite.Particle.Aurthoring
                     typeof( DrawInstance.ModelLinkData ),
                     typeof( DrawInstance.TargetWorkData ),
                     typeof( Particle.AdditionalData ),
-                    typeof( Particle.TranslationPtoPData )
-                    //typeof(Translation),
+                    //typeof( Particle.TranslationPtoPData )
+                    typeof(Translation),
+                    typeof(Particle.TranslationTailData)
                     //typeof(Rotation)
                 );
                 em.SetArchetype( mainEntity, archetype );

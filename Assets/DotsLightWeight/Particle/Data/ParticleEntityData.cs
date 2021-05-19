@@ -74,10 +74,27 @@ namespace DotsLite.Particle
         }
 
 
-        public struct TranslationPtoPData : IComponentData
+        //public struct TranslationPtoPData : IComponentData
+        //{
+        //    public float3 Start;
+        //    public float3 End;
+        //}
+        public struct TranslationTailData : IComponentData
         {
-            public float3 Start;
-            public float3 End;
+            public float4 PositionAndSize;
+
+            public float3 Position
+            {
+                get => this.PositionAndSize.xyz;
+                //set => this.PositionAndSize.xyz = value;
+                set => this.PositionAndSize = new float4(value, this.Size);
+            }
+            public float Size
+            {
+                get => this.PositionAndSize.w;
+                //set => this.PositionAndSize.w = value;
+                set => this.PositionAndSize = new float4(this.Position, value);
+            }
         }
 
         public struct AdditionalData : IComponentData

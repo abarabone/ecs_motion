@@ -65,18 +65,18 @@ Shader "Custom/Psyllium ptop uv"
 				const float4 buf2 = BoneVectorBuffer[ivec + 2];
 
 				const float4 lvt = v.vertex;
-                const float4 wpos0 = buf0;
-                const float4 wpos1 = buf1;
+                const float3 wpos0 = buf0.xyz;
+                const float3 wpos1 = buf1.xyz;
 
                 const int iofs = lvt.y + 0.5f;
-				const float3 wpos_current = BoneVectorBuffer[ivec + (0+iofs)].xyz;
+				const float4 currentbuf = BoneVectorBuffer[ivec + (0+iofs)];
+				const float3 wpos_current = currentbuf.xyz;
+                const float size = currentbuf.w;
 
 				const float3 eye =  (wpos_current - _WorldSpaceCameraPos);
-				const float3 up =  (wpos1.xyz - wpos0.xyz);
+				const float3 up =  (wpos1 - wpos0);
 				const float3 side = normalize(cross(up, eye));
 				const float3 edgeface = normalize(cross(eye, side));
-
-                const float size = buf2.x;
 
 				const float4 wvt = float4(wpos_current + (side * lvt.xxx + edgeface * lvt.zzz) * size, 1);
 				//const float4x4 mt = float4x4(float4(side, 0), float4(up, 0), float4(edgeface, 0), wpos_current);

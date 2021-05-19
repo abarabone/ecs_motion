@@ -93,7 +93,8 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in Particle.TranslationPtoPData ptop,
+                        //in Particle.TranslationPtoPData ptop,
+                        in Translation pos,
                         in Particle.AdditionalData additional,
                         //in Bullet.SpecData bullet,
                         in Bullet.LinkData link,
@@ -104,7 +105,7 @@ namespace DotsLite.Arms
                     {
 
                         var hit = cw.BulletHitSphere
-                            (link.OwnerStateEntity, ptop.End, additional.Size, targets);
+                            (link.OwnerStateEntity, pos.Value, additional.Size, targets);
 
                         if (!hit.isHit) return;
 

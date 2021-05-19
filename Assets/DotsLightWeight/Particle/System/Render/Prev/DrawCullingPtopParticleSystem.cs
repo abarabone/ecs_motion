@@ -59,7 +59,9 @@ namespace DotsLite.Draw
                         (
                             ref DrawInstance.TargetWorkData target,
                             in DrawInstance.ModelLinkData modellink,
-                            in Particle.TranslationPtoPData ptop,
+                            //in Particle.TranslationPtoPData ptop,
+                            in Translation pos,
+                            in Particle.TranslationTailData tail,
                             in Particle.AdditionalData additional
                         ) =>
                         {
@@ -72,8 +74,8 @@ namespace DotsLite.Draw
 
                             var bbox = new AABB
                             {
-                                Center = (ptop.Start + ptop.End) * 0.5f,
-                                Extents = math.abs(ptop.End - ptop.Start) * 0.5f + additional.Size,
+                                Center = (pos.Value + tail.Position) * 0.5f,
+                                Extents = math.abs(pos.Value - tail.Position) * 0.5f + additional.Size,
                             };
 
                             var isHit = viewFrustum.IsInside(bbox);

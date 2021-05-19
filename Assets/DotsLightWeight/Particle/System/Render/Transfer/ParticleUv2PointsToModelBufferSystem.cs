@@ -54,12 +54,14 @@ namespace DotsLite.Draw
                 .WithAll<DrawInstance.ParticleTag>()
                 .WithNone<DrawInstance.MeshTag>()
                 .ForEach((
+                    ref Particle.TranslationTailData tail,
+                    in Translation pos,
                     in DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData linker,
                     in Particle.AdditionalData additional,
                     in BillBoad.UvCursorData cursor,
-                    in BillBoad.CursorToUvIndexData touv,
-                    in Particle.TranslationPtoPData pos) =>
+                    in BillBoad.CursorToUvIndexData touv) =>
+                    //in Particle.TranslationPtoPData pos) =>
                 {
                     if (target.DrawInstanceId == -1) return;
 
@@ -75,14 +77,22 @@ namespace DotsLite.Draw
                     //var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
                     var i = instanceBufferOffset;// + offsetInfo.VectorOffsetPerInstance;
 
+                    ////const int vectorLength = (int)BoneType.PtoPuv;
+                    ////var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
+                    ////var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
+
+                    ////var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
+
                     var size = additional.Size;
                     var color = math.asfloat(additional.Color.ToUint());
                     var uvindex = math.asfloat(cursor.CalcUvIndex(touv));
 
                     var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                    pModel[i + 0] = new float4(pos.Start, 1.0f);
-                    pModel[i + 1] = new float4(pos.End, 1.0f);
-                    pModel[i + 2] = new float4(size, color, uvindex, 0.0f);
+                    pModel[i + 0] = new float4(tail.Position, 1);// tail.PositionAndSize;
+                    pModel[i + 1] = new float4(pos.Value, 1);// size);
+                    pModel[i + 2] = new float4(0, color, uvindex, 0);
+
+                    tail.Size = size;
                 })
                 .ScheduleParallel();
         }
