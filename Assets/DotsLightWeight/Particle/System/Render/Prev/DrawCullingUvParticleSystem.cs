@@ -53,8 +53,8 @@ namespace DotsLite.Draw
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
                 .WithAll<BillBoad.UvCursorData>()//
-                .WithNone<DrawInstance.BoneModelTag>()
-                .WithNone<DrawInstance.PostureLinkData>()
+                .WithNone<DrawInstance.BoneModelTag, DrawInstance.PostureLinkData>()
+                .WithNone<Particle.TranslationTailData>()
                 .ForEach((
                     ref DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData modellink,

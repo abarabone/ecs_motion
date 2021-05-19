@@ -88,8 +88,8 @@ namespace DotsLite.Draw
                     var uvindex = math.asfloat(cursor.CalcUvIndex(touv));
 
                     var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                    pModel[i + 0] = new float4(tail.Position, 1);// tail.PositionAndSize;
-                    pModel[i + 1] = new float4(pos.Value, 1);// size);
+                    pModel[i + 0] = tail.PositionAndSize;
+                    pModel[i + 1] = new float4(pos.Value, size);
                     pModel[i + 2] = new float4(0, color, uvindex, 0);
 
                     tail.Size = size;

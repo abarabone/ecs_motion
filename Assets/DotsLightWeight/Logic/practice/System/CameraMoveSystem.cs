@@ -37,8 +37,11 @@ namespace DotsLite.Character
             this.RequireSingletonForUpdate<CharacterFollowCameraPositionData>();
 
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            if (Gamepad.current == null)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
 
             //this.eq = this.Entities
             //    .WithAllReadOnly<Translation, Rotation, PlayerTag, MoveHandlingData>()
