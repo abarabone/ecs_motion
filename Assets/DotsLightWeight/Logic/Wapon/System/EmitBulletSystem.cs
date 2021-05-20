@@ -102,7 +102,7 @@ namespace DotsLite.Arms
 
                         if (currentTime < state.NextEmitableTime) return;
 
-                        var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + (uint)math.asuint(dt) & 0x_7fff_ffff);
+                        var rnd = Random.CreateFromIndex((uint)eqi + (uint)math.asuint(dt) & 0x_7fff_ffff);
 
                         if (emitter.EffectPrefab != Entity.Null)
                         {
@@ -143,7 +143,7 @@ namespace DotsLite.Arms
                                 var bulletDir = calcBulletDirection_(rot, ref rnd, emitter.AccuracyRad);
                                 var speed = bulletDir * bulletData.BulletSpeed;
 
-                                emit_(cmd, entityInQueryIndex,
+                                emit_(cmd, eqi,
                                     emitter.BulletPrefab, slink.StateEntity,
                                     bulletPos, range, speed, acc, corps.TargetCorps);
                             }
@@ -205,7 +205,7 @@ namespace DotsLite.Arms
             quaternion rot, float3 pos, in FunctionUnit.BulletEmittingData emitter)
         {
 
-            var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
+            var muzpos = pos;// + math.mul(rot, emitter.MuzzlePositionLocal);
 
             return muzpos;
         }
