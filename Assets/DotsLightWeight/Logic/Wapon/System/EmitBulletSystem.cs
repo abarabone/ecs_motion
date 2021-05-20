@@ -205,7 +205,7 @@ namespace DotsLite.Arms
             quaternion rot, float3 pos, in FunctionUnit.BulletEmittingData emitter)
         {
 
-            var muzpos = pos;// + math.mul(rot, emitter.MuzzlePositionLocal);
+            var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
 
             return muzpos;
         }
@@ -228,13 +228,13 @@ namespace DotsLite.Arms
             //        End = bulletPosition
             //    }
             //);
-            cmd.SetComponent(eqi, bulletPrefab,
+            cmd.SetComponent(eqi, newBullet,
                 new Particle.TranslationTailData
                 {
                     PositionAndSize = bulletPosition.As_float4(),
                 }
             );
-            cmd.SetComponent(eqi, bulletPrefab,
+            cmd.SetComponent(eqi, newBullet,
                 new Translation
                 {
                     Value = bulletPosition,

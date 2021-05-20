@@ -75,7 +75,7 @@ Shader "Custom/Psyllium ptop uv"
 
 				const float3 eye =  (wpos_current - _WorldSpaceCameraPos);
 				const float3 up_ =  (wpos1 - wpos0);
-                const float3 up = any(up_) ? up_ : float3(0,1,0);
+                const float3 up = up_;//any(up_) ? up_ : float3(0,1,0);
 				const float3 side = normalize(cross(up, eye));
 				const float3 edgeface = normalize(cross(eye, side));
 

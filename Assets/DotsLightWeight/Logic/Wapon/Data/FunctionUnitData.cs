@@ -110,4 +110,56 @@ namespace DotsLite.Arms
         }
     }
 
+
+
+
+
+
+
+    static public partial class Effector
+    {
+
+        public struct StateLinkData : IComponentData
+        {
+            public Entity StateEntity;
+        }
+
+    }
+    static public partial class Emitter
+    {
+
+
+        //public struct MuzzleLinkData : IComponentData
+        //{
+        //    public Entity MuzzleEntity;
+        //}
+
+
+        public struct EffectEmittingData : IComponentData
+        {
+            public Entity BulletPrefab;
+
+            public float3 MuzzlePositionLocal;
+            public Entity MuzzleEntity;
+        }
+
+        public struct BulletEmittingData : IComponentData
+        {
+            public Entity EffectorPrefab;
+
+            public float3 MuzzlePositionLocal;
+            public Entity MuzzleEntity;
+
+            public float EmittingInterval;
+            public float AccuracyRad;
+            public int NumEmitMultiple;
+            public float RangeDistanceFactor;// 切り替え時に弾丸のと計算確定しようかと思ったが、わかりにくいのでやめた
+        }
+
+        public struct TriggerData : IComponentData
+        {
+            public bool IsTriggered;
+        }
+    }
+
 }
