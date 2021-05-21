@@ -69,10 +69,10 @@ namespace DotsLite.Arms
             public double NextEmitableTime;
         }
 
-        public struct ActivateData : IComponentData
-        {
-            public bool IsActive;   
-        }
+        //public struct ActivateData : IComponentData
+        //{
+        //    public bool IsActive;   
+        //}
 
         public struct RealoadingStateData : IComponentData
         {
