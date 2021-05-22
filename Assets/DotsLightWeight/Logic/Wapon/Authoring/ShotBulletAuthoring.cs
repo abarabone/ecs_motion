@@ -111,54 +111,6 @@ namespace DotsLite.Arms.Authoring
                 //    }
                 //);
             }
-            void initBullet2_(GameObjectConversionSystem gcs_, GameObject bullet_)
-            {
-                var em = gcs_.DstEntityManager;
-
-
-                var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
-                var types = (this.GravityFactor != 0.0f || this.AimFactor != 0.0f || true)//
-                    ? new ComponentTypes(new ComponentType[]
-                    {
-                        typeof(Bullet.LinkData),
-                        typeof(Bullet.MoveSpecData),
-                        typeof(Bullet.VelocityData),
-                        typeof(Bullet.AccelerationData),
-                        typeof(Bullet.DistanceData),
-                        typeof(Bullet.LifeTimeData),
-                        //typeof(Particle.AdditionalData),
-                        this.BulletType.ToComponentType(),
-                        typeof(Targeting.CorpsGroup.TargetWithArmsData)
-                    })
-                    : new ComponentTypes(new ComponentType[]
-                    {
-                        typeof(Bullet.LinkData),
-                        typeof(Bullet.MoveSpecData),
-                        typeof(Bullet.VelocityData),
-                        typeof(Bullet.DistanceData),
-                        typeof(Bullet.LifeTimeData),
-                        //typeof(Particle.AdditionalData),
-                        this.BulletType.ToComponentType(),
-                        typeof(Targeting.CorpsGroup.TargetWithArmsData)
-                    });
-                em.AddComponents(bulletEntity, types);
-
-                em.SetComponentData(bulletEntity,
-                    new Bullet.MoveSpecData
-                    {
-                        BulletSpeed = this.BulletSpeed,
-                        RangeDistanceFactor = this.RangeDistance,
-                        GravityFactor = this.GravityFactor,
-                        AimFactor = this.AimFactor,
-                    }
-                );
-                em.SetComponentData(bulletEntity,
-                    new Bullet.DistanceData
-                    {
-                        RestRangeDistance = this.RangeDistance,
-                    }
-                );
-            }
         }
 
     }

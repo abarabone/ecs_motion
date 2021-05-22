@@ -144,20 +144,14 @@ namespace DotsLite.Arms.Authoring
                 em.SetComponentData(ent,
                     new Emitter.EffectEmittingData
                     {
-                        BulletPrefab = bulletPrefab,
-                        EffectPrefab = effectPrefab,
+                        Prefab = bulletPrefab,
                         MuzzlePositionLocal = this.MuzzleLocalPosition,
-                        EmittingInterval = this.EmittingInterval,
-                        NumEmitMultiple = this.NumEmitMultiple,
-                        AccuracyRad = math.radians(this.DirectionAccuracyDegree),
-                        RangeDistanceFactor = this.RangeDistanceFactor,
                     }
                 );
                 em.SetComponentData(ent,
                     new Emitter.BulletEmittingData
                     {
-                        BulletPrefab = bulletPrefab,
-                        EffectPrefab = effectPrefab,
+                        Prefab = bulletPrefab,
                         MuzzlePositionLocal = this.MuzzleLocalPosition,
                         EmittingInterval = this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,
@@ -166,7 +160,7 @@ namespace DotsLite.Arms.Authoring
                     }
                 );
                 em.SetComponentData(ent,
-                    new FunctionUnit.EmittingStateData
+                    new Emitter.StateData
                     {
                         NextEmitableTime = this.EmittingInterval,
                     }
