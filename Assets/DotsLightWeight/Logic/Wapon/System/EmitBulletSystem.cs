@@ -86,7 +86,7 @@ namespace DotsLite.Arms
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         ref FunctionUnit.EmittingStateData state,
-                        ref FunctionUnit.TriggerData trigger,
+                        in FunctionUnit.TriggerData trigger,
                         in FunctionUnit.BulletEmittingData emitter,
                         in FunctionUnit.StateLinkData slink,
                         in FunctionUnit.MuzzleLinkData mlink,
@@ -97,7 +97,6 @@ namespace DotsLite.Arms
 
                         if (!trigger.IsTriggered) return;
 
-                        trigger.IsTriggered = false;// 一発ずつオフにする
 
 
                         if (currentTime < state.NextEmitableTime) return;

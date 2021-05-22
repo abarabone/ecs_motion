@@ -38,7 +38,7 @@ namespace DotsLite.Arms
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(CameraMoveSystem))]
-    public class EmitBulletSystem : DependencyAccessableSystemBase
+    public class EmitBulletSystem2 : DependencyAccessableSystemBase
     {
 
 
@@ -85,11 +85,15 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref FunctionUnit.EmittingStateData state,
-                        ref FunctionUnit.TriggerData trigger,
-                        in FunctionUnit.BulletEmittingData emitter,
-                        in FunctionUnit.StateLinkData slink,
-                        in FunctionUnit.MuzzleLinkData mlink,
+                        ref Emitter.StateData state,
+                        in Emitter.TriggerData trigger,
+                        in Emitter.BulletEmittingData emitter,
+                        in Emitter.OwnerLinkData slink,
+                        //ref FunctionUnit.EmittingStateData state,
+                        //ref FunctionUnit.TriggerData trigger,
+                        //in FunctionUnit.BulletEmittingData emitter,
+                        //in FunctionUnit.StateLinkData slink,
+                        //in FunctionUnit.MuzzleLinkData mlink,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
@@ -97,21 +101,9 @@ namespace DotsLite.Arms
 
                         if (!trigger.IsTriggered) return;
 
-                        trigger.IsTriggered = false;// 一発ずつオフにする
 
-
-                        if (currentTime < state.NextEmitableTime) return;
 
                         var rnd = Random.CreateFromIndex((uint)eqi + (uint)math.asuint(dt) & 0x_7fff_ffff);
-
-                        if (emitter.EffectPrefab != Entity.Null)
-                        {
-                            var mzrot = rots[mlink.MuzzleEntity].Value;
-                            var mzpos = poss[mlink.MuzzleEntity].Value;
-                            var efpos = calcEffectPosition_(mzrot, mzpos, emitter);
-                            emitEffect_(cmd, eqi, emitter.EffectPrefab, efpos, rnd);
-                        }
-
 
 
                         // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射感覚になる
@@ -120,11 +112,11 @@ namespace DotsLite.Arms
                         var isEmitPrevFrame = state.NextEmitableTime > frameBaseTime;
                         var baseTime = math.select(frameBaseTime, state.NextEmitableTime, isEmitPrevFrame);
 
-                        var bulletData = bullets[emitter.BulletPrefab];
-                        var rot = rots[mlink.EmitterEntity].Value;
-                        var pos = poss[mlink.EmitterEntity].Value;
+                        var bulletData = bullets[emitter.Prefab];
+                        var rot = rots[emitter.MuzzleEntity].Value;
+                        var pos = poss[emitter.MuzzleEntity].Value;
 
-                        var bulletPos = calcBulletPosition_(rot, pos, in emitter);
+                        var bulletPos = calcPosition_(rot, pos, in emitter);
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
                         var g = new DirectionAndLength { Value = gravity.As_float4(bulletData.GravityFactor) };
@@ -140,11 +132,11 @@ namespace DotsLite.Arms
                             // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
                             for (var i = 0; i < emitter.NumEmitMultiple; i++)
                             {
-                                var bulletDir = calcBulletDirection_(rot, ref rnd, emitter.AccuracyRad);
+                                var bulletDir = calcDirection_(rot, ref rnd, emitter.AccuracyRad);
                                 var speed = bulletDir * bulletData.BulletSpeed;
 
                                 emit_(cmd, eqi,
-                                    emitter.BulletPrefab, slink.StateEntity,
+                                    emitter.Prefab, slink.StateEntity,
                                     bulletPos, range, speed, acc, corps.TargetCorps);
                             }
                         }
@@ -155,39 +147,10 @@ namespace DotsLite.Arms
         }
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static float3 calcEffectPosition_(
-            quaternion rot, float3 pos, in FunctionUnit.BulletEmittingData emitter)
-        {
-
-            var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
-
-            return muzpos;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void emitEffect_(
-            EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity effectPrefab,
-            float3 pos, Random rnd)
-        {
-            //if (effectPrefab == Entity.Null) return;
-
-            var ent = cmd.Instantiate(eqi, effectPrefab);
-
-            cmd.SetComponent(eqi, ent, new Translation
-            {
-                Value = pos,
-            });
-            cmd.SetComponent(eqi, ent, new BillBoad.RotationData
-            {
-                Direction = rnd.NextFloat2Direction() * rnd.NextFloat(0.8f, 1.2f),
-            });
-        }
-
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static float3 calcBulletDirection_(
+        static float3 calcDirection_(
             quaternion dirrot, ref Random rnd, float accuracyRad)
         {
             
@@ -201,8 +164,8 @@ namespace DotsLite.Arms
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static float3 calcBulletPosition_(
-            quaternion rot, float3 pos, in FunctionUnit.BulletEmittingData emitter)
+        static float3 calcPosition_(
+            quaternion rot, float3 pos, in Emitter.BulletEmittingData emitter)
         {
 
             var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);

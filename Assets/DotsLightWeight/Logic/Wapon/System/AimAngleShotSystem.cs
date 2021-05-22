@@ -89,8 +89,11 @@ namespace DotsLite.Arms
                         in FunctionUnitAiming.HighAngleShotData data
                     ) =>
                     {
+                        var eqi = entityInQueryIndex;
 
-                        trigger.IsTriggered = true;
+
+                        if (!trigger.IsTriggered) trigger.IsTriggered = true;
+                        //trigger.IsTriggered = true;
 
                         var prot = rots[plink.ParentEntity].Value;
                         var ppos = poss[plink.ParentEntity].Value;
@@ -102,8 +105,9 @@ namespace DotsLite.Arms
 
                         if (currentTime > data.EndTime)
                         {
-                            cmd.RemoveComponent<FunctionUnitAiming.HighAngleShotData>
-                                (entityInQueryIndex, entity);
+                            trigger.IsTriggered = false;
+
+                            cmd.RemoveComponent<FunctionUnitAiming.HighAngleShotData>(eqi, entity);
                         }
 
                     }
