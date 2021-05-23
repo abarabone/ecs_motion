@@ -183,22 +183,28 @@ namespace DotsLite.Arms.Authoring
                     (Entity muzzle, Entity unit, int waponId, int unitId)
                 {
                     var types = new ComponentTypes(
-                        typeof(FunctionUnit.MuzzleLinkData),
-                        typeof(FunctionUnit.StateLinkData),
+                        typeof(Emitter.BulletMuzzleLinkData),
+                        typeof(Emitter.EffectMuzzleLinkData),
+                        typeof(Emitter.OwnerLinkData),
                         typeof(FunctionUnit.holderLinkData),
                         typeof(FunctionUnitInWapon.TriggerSpecificData)
                     );
                     em.AddComponents(unit, types);
 
                     em.SetComponentData(unit,
-                        new FunctionUnit.MuzzleLinkData
+                        new Emitter.BulletMuzzleLinkData
                         {
-                            EmitterEntity = emitter,
                             MuzzleEntity = muzzle,
                         }
                     );
                     em.SetComponentData(unit,
-                        new FunctionUnit.StateLinkData
+                        new Emitter.EffectMuzzleLinkData
+                        {
+                            MuzzleEntity = muzzle,
+                        }
+                    );
+                    em.SetComponentData(unit,
+                        new Emitter.OwnerLinkData
                         {
                             StateEntity = state,
                         }

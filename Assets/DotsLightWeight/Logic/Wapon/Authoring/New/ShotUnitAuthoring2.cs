@@ -127,7 +127,7 @@ namespace DotsLite.Arms.Authoring
                     new Emitter.BulletEmittingData
                     {
                         Prefab = bulletPrefab,
-                        MuzzlePositionLocal = this.MuzzleLocalPosition,
+                        //MuzzlePositionLocal = this.MuzzleLocalPosition,
 
                         EmittingInterval = this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,
@@ -161,7 +161,7 @@ namespace DotsLite.Arms.Authoring
                     new Emitter.EffectEmittingData
                     {
                         Prefab = effectPrefab,
-                        MuzzlePositionLocal = this.MuzzleLocalPosition,
+                        //MuzzlePositionLocal = this.MuzzleLocalPosition,
                     }
                 );
             }

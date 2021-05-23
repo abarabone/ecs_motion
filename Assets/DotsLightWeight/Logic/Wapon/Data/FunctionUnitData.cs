@@ -135,20 +135,24 @@ namespace DotsLite.Arms
         //}
 
 
+        public struct EffectMuzzleLinkData : IComponentData
+        {
+            public Entity MuzzleEntity;
+            public float3 MuzzlePositionLocal;
+        }
         public struct EffectEmittingData : IComponentData
         {
             public Entity Prefab;
-
-            public float3 MuzzlePositionLocal;
-            public Entity MuzzleEntity;
         }
 
+        public struct BulletMuzzleLinkData : IComponentData
+        {
+            public Entity MuzzleEntity;
+            public float3 MuzzlePositionLocal;
+        }
         public struct BulletEmittingData : IComponentData
         {
             public Entity Prefab;
-
-            public float3 MuzzlePositionLocal;
-            public Entity MuzzleEntity;
 
             public float EmittingInterval;
             public float AccuracyRad;
