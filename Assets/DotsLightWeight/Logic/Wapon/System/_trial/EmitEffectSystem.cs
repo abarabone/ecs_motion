@@ -34,10 +34,17 @@ namespace DotsLite.Arms
     using System;
 
 
+    /// <summary>
+    /// １つだけ放出する。
+    /// trigger.IsTriggered が真のとき、放出される。
+    /// 現状は、bullet の state.NextEmitableTime 更新に依存する。
+    /// </summary>
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(CameraMoveSystem))]
+    [UpdateAfter(typeof(WaponTriggerSystem2))]
+    [UpdateBefore(typeof(EmitBulletSystem2))]
     public class EmitEffectSystem2 : DependencyAccessableSystemBase
     {
 
@@ -85,9 +92,10 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Emitter.StateData state,
+                        ref Emitter.EffectStateData state,
                         in Emitter.TriggerData trigger,
                         in Emitter.EffectEmittingData emitter,
+                        in Emitter.EffectMuzzleLinkData muzzle,
                         in Emitter.OwnerLinkData slink,
                         //ref FunctionUnit.EmittingStateData state,
                         //ref FunctionUnit.TriggerData trigger,
@@ -100,15 +108,16 @@ namespace DotsLite.Arms
                         var eqi = entityInQueryIndex;
 
                         if (!trigger.IsTriggered) return;
-
-
                         if (currentTime < state.NextEmitableTime) return;
+                        
+
+                        //state.NextEmitableTime = 
 
                         var rnd = Random.CreateFromIndex((uint)eqi + (uint)math.asuint(dt) & 0x_7fff_ffff);
 
-                        var mzrot = rots[emitter.MuzzleEntity].Value;
-                        var mzpos = poss[emitter.MuzzleEntity].Value;
-                        var efpos = calcPosition_(mzrot, mzpos, emitter);
+                        var mzrot = rots[muzzle.MuzzleEntity].Value;
+                        var mzpos = poss[muzzle.MuzzleEntity].Value;
+                        var efpos = calcPosition_(mzrot, mzpos, muzzle.MuzzlePositionLocal);
 
                         emit_(cmd, eqi, emitter.Prefab, efpos, rnd);
                     }
@@ -119,10 +128,10 @@ namespace DotsLite.Arms
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float3 calcPosition_(
-            quaternion rot, float3 pos, in Emitter.EffectEmittingData emitter)
+            quaternion rot, float3 pos, float3 localPostion)
         {
 
-            var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
+            var muzpos = pos + math.mul(rot, localPostion);
 
             return muzpos;
         }

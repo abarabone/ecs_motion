@@ -38,6 +38,7 @@ namespace DotsLite.Arms
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(CameraMoveSystem))]
+    [UpdateAfter(typeof(WaponTriggerSystem2))]
     public class EmitBulletSystem2 : DependencyAccessableSystemBase
     {
 
@@ -85,9 +86,10 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Emitter.StateData state,
+                        ref Emitter.BulletStateData state,
                         in Emitter.TriggerData trigger,
                         in Emitter.BulletEmittingData emitter,
+                        in Emitter.BulletMuzzleLinkData muzzle,
                         in Emitter.OwnerLinkData slink,
                         //ref FunctionUnit.EmittingStateData state,
                         //ref FunctionUnit.TriggerData trigger,
@@ -106,17 +108,17 @@ namespace DotsLite.Arms
                         var rnd = Random.CreateFromIndex((uint)eqi + (uint)math.asuint(dt) & 0x_7fff_ffff);
 
 
-                        // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射感覚になる
+                        // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射間隔になる
                         var elapsed = 0.0f;
                         var frameBaseTime = currentTime - dt;
                         var isEmitPrevFrame = state.NextEmitableTime > frameBaseTime;
                         var baseTime = math.select(frameBaseTime, state.NextEmitableTime, isEmitPrevFrame);
 
                         var bulletData = bullets[emitter.Prefab];
-                        var rot = rots[emitter.MuzzleEntity].Value;
-                        var pos = poss[emitter.MuzzleEntity].Value;
+                        var rot = rots[muzzle.MuzzleEntity].Value;
+                        var pos = poss[muzzle.MuzzleEntity].Value;
 
-                        var bulletPos = calcPosition_(rot, pos, in emitter);
+                        var bulletPos = calcPosition_(rot, pos, muzzle.MuzzlePositionLocal);
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
                         var g = new DirectionAndLength { Value = gravity.As_float4(bulletData.GravityFactor) };
@@ -165,10 +167,10 @@ namespace DotsLite.Arms
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float3 calcPosition_(
-            quaternion rot, float3 pos, in Emitter.BulletEmittingData emitter)
+            quaternion rot, float3 pos, float3 localPosition)
         {
 
-            var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
+            var muzpos = pos + math.mul(rot, localPosition);
 
             return muzpos;
         }

@@ -115,7 +115,7 @@ namespace DotsLite.Arms
 
 
 
-
+    // trial
     static public partial class Emitter
     {
 
@@ -124,16 +124,16 @@ namespace DotsLite.Arms
             public Entity StateEntity;
         }
 
-        public struct StateData : IComponentData
-        {
-            public double NextEmitableTime;
-        }
-
         //public struct MuzzleLinkData : IComponentData
         //{
         //    public Entity MuzzleEntity;
         //}
 
+
+        public struct EffectStateData : IComponentData
+        {
+            public double NextEmitableTime;
+        }
 
         public struct EffectMuzzleLinkData : IComponentData
         {
@@ -143,6 +143,11 @@ namespace DotsLite.Arms
         public struct EffectEmittingData : IComponentData
         {
             public Entity Prefab;
+        }
+
+        public struct BulletStateData : IComponentData
+        {
+            public double NextEmitableTime;
         }
 
         public struct BulletMuzzleLinkData : IComponentData
