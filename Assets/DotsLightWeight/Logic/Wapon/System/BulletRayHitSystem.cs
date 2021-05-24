@@ -100,6 +100,7 @@ namespace DotsLite.Arms
                         in Bullet.LinkData link,
                         //in Bullet.DistanceData dist
                         in Bullet.VelocityData v,
+                        in Bullet.PointDamageSpecData damage,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
@@ -123,7 +124,7 @@ namespace DotsLite.Arms
                                 var otherCorpts = corpss[hit.hitEntity];
                                 if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
 
-                                hit.PostCharacterHitMessage(chhit, 1.0f, v.Velocity.xyz);
+                                hit.PostCharacterHitMessage(chhit, damage.Damage, v.Velocity.xyz);
                                 break;
 
 

@@ -93,6 +93,13 @@ namespace DotsLite.Arms
 
 
 
+        // function unit の emitting と同じ仕組みにできないかな…
+        public struct EmitData : IComponentData
+        {
+            public Entity EmittingPrefab;
+        }
+
+
         public struct RayTag : IComponentData
         { }
 

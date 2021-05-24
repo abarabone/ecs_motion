@@ -9,6 +9,7 @@ using Unity.Mathematics;
 ////using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.CompilerServices;
 using UnityEngine.XR;
 using Unity.Physics.Systems;
 
@@ -82,14 +83,12 @@ namespace DotsLite.Arms
                         //in Particle.TranslationPtoPData ptop,
                         in Translation pos,
                         in Particle.TranslationTailData tail,
-                        //in Bullet.SpecData bullet,
                         in Bullet.LinkData link,
-                        //in Bullet.DistanceData dist
-                        in Bullet.VelocityData v,
-                        in Bullet.
+                        in Bullet.EmitData emit,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
+                        var eqi = entityInQueryIndex;
                         
                         var hit = cw.BulletHitRay
                             (link.OwnerStateEntity, pos.Value, tail.Position, 1.0f, targets);
@@ -97,26 +96,12 @@ namespace DotsLite.Arms
                         if (!hit.isHit) return;
 
 
-                        switch (hit.hitType)
-                        {
-                            case HitType.part:
+                        var prefab = emit.EmittingPrefab;
+                        var state = link.OwnerStateEntity;
+                        var hpos = hit.posision;
+                        var cps = corps.TargetCorps;
+                        emit_(cmd, eqi, prefab, state, hpos, cps);
 
-                                hit.PostStructureHitMessage(sthit, parts);
-                                break;
-
-
-                            case HitType.charactor:
-
-                                var otherCorpts = corpss[hit.hitEntity];
-                                if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
-
-                                hit.PostCharacterHitMessage(chhit, 1.0f, v.Velocity.xyz);
-                                break;
-
-
-                            default:
-                                break;
-                        }
 
                         cmd.DestroyEntity(entityInQueryIndex, entity);
                     }
@@ -124,6 +109,34 @@ namespace DotsLite.Arms
                 .ScheduleParallel();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void emit_(
+            EntityCommandBuffer.ParallelWriter cmd, int eqi,
+            Entity prefab, Entity stateEntity, float3 position, Corps targetCorps)
+        {
+
+            var instance = cmd.Instantiate(eqi, prefab);
+
+            cmd.SetComponent(eqi, instance,
+                new Translation
+                {
+                    Value = position,
+                }
+            );
+            cmd.SetComponent(eqi, instance,
+                new Bullet.LinkData
+                {
+                    OwnerStateEntity = stateEntity,
+                }
+            );
+            cmd.SetComponent(eqi, instance,
+                new CorpsGroup.TargetWithArmsData
+                {
+                    TargetCorps = targetCorps,
+                }
+            );
+
+        }
     }
 
 }
