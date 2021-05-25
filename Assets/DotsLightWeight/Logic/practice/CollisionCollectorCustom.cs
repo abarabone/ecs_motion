@@ -38,6 +38,10 @@ namespace DotsLite.Collision
     }
 
 
+    /// <summary>
+    /// 軍指定、自己除外、再近傍
+    /// CorpsGroup.Data を持つ Entity は、必ず state entity
+    /// </summary>
     public struct ClosestCorpsExcludeSelfCollector<T> : ICollector<T>
         where T : struct, IQueryResult
     {
@@ -84,7 +88,11 @@ namespace DotsLite.Collision
 
 
 
-    public struct ClosestTargetedHitExcludeSelfCollector<T> : ICollector<T>
+    /// <summary>
+    /// type 取得、state entity 取得、自己除外、再近傍
+    /// </summary>
+    public struct ClosestTargetedHitExcludeSe
+        lfCollector<T> : ICollector<T>
         where T : struct, IQueryResult
     {
         public bool EarlyOutOnFirstHit => false;//{ get; private set; }
@@ -138,10 +146,13 @@ namespace DotsLite.Collision
             return true;
         }
     }
-    
 
 
 
+
+    /// <summary>
+    /// 種類取得、state entity 取得、自己除外、１つでも
+    /// </summary>
     public struct AnyTargetedHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
     {
         public bool EarlyOutOnFirstHit => this.NumHits > 0;
@@ -189,6 +200,9 @@ namespace DotsLite.Collision
 
 
 
+    /// <summary>
+    /// 自己除外、１つでも
+    /// </summary>
     public struct AnyHitExcludeSelfCollector<T> : ICollector<T> where T : struct, IQueryResult
     {
         public bool EarlyOutOnFirstHit => this.NumHits > 0;
