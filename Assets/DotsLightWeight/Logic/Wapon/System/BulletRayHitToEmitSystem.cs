@@ -64,9 +64,9 @@ namespace DotsLite.Arms
 
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
-            var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+            //var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
-            var corpss = this.GetComponentDataFromEntity<CorpsGroup.Data>(isReadOnly: true);
+            //var corpss = this.GetComponentDataFromEntity<CorpsGroup.Data>(isReadOnly: true);
 
             var dt = this.Time.DeltaTime;
 
@@ -74,8 +74,8 @@ namespace DotsLite.Arms
                 .WithBurst()
                 .WithAll<Bullet.RayTag>()
                 .WithReadOnly(targets)
-                .WithReadOnly(parts)
-                .WithReadOnly(corpss)
+                //.WithReadOnly(parts)
+                //.WithReadOnly(corpss)
                 .WithReadOnly(cw)
                 .ForEach(
                     (

@@ -110,4 +110,13 @@ namespace DotsLite.Arms
         { }
     }
 
+
+    public static class Explosion
+    {
+        public struct SpecData : IComponentData
+        {
+            public float Radius;
+        }
+    }
+
 }

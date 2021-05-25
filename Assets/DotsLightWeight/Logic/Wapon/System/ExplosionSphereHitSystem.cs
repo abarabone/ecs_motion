@@ -28,6 +28,9 @@ namespace DotsLite.Arms
     using DotsLite.Collision;
     using DotsLite.Targeting;
 
+    using CatId = PhysicsCategoryNamesId;
+    using CatFlag = PhysicsCategoryNamesFlag;
+
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
@@ -93,21 +96,24 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        //in Particle.TranslationPtoPData ptop,
                         in Translation pos,
                         in Particle.AdditionalData additional,
-                        //in Bullet.SpecData bullet,
-                        in Bullet.LinkData link,
-                        //in Bullet.DistanceData dist
-                        in Bullet.VelocityData v,
+                        in Explosion.SpecData spec,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
 
-                        var hit = cw.BulletHitSphere
-                            (link.OwnerStateEntity, pos.Value, additional.Size, targets);
 
-                        if (!hit.isHit) return;
+                        var filter = new CollisionFilter
+                        {
+                            BelongsTo = CollisionFilter.Default.BelongsTo,
+                            CollidesWith = CatFlag.datail | CatFlag.field | CatFlag.detenv,
+                        };
+
+                        var results = new NativeList<DistanceHit>(30, Allocator.Temp);
+                        var isHit = cw.OverlapSphere(pos.Value, spec.Radius, ref results, filter);
+
+                        if (!isHit) return;
 
 
                         switch (hit.hitType)
