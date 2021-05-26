@@ -111,7 +111,7 @@ namespace DotsLite.Arms
                         };
 
                         var results = new NativeList<DistanceHit>(30, Allocator.Temp);
-                        var isHit = cw.OverlapSphere(pos.Value, spec.Radius, ref results, filter);
+                        var isHit = cw.OverlapSphereCustom((pos.Value, spec.Radius, ref results, filter);
 
                         if (!isHit) return;
 

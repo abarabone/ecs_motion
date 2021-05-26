@@ -37,6 +37,74 @@ namespace DotsLite.Collision
             new AnyTargetedHitExcludeSelfCollector<T>(maxFraction, selfStateEntity, targets);
     }
 
+    
+    /// <summary>
+    /// type 取得、state entity 取得、自己除外、すべて
+    /// </summary>
+    public struct AllTargetedHitExcludeSelfCollector<T> : ICollector<T>, IDisposable
+        where T : struct, IQueryResult
+    {
+        public bool EarlyOutOnFirstHit => false;//{ get; private set; }
+        public float MaxFraction { get; private set; }
+        public int NumHits { get; private set; }
+
+        public HitType OtherHitType { get; private set; }
+        public Entity OtherStateEntity { get; private set; }
+
+        Entity selfStateEntity;
+
+        ComponentDataFromEntity<Hit.TargetData> targets;
+        
+
+        public NativeList<T> HitResults { get; private set; }
+
+        public void Dispose() => this.HitResults.Dispose();
+
+
+        public AllTargetedHitExcludeSelfCollector
+            (float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets, int capacity = 512)
+        {
+            this.HitResults = new NativeList<T>(capacity, Allocator.Temp);
+
+            this.MaxFraction = maxFraction;
+            this.NumHits = 0;
+
+            //this.OtherStateEntity = Entity.Null;
+            //this.OtherHitType = HitType.none;
+
+            this.selfStateEntity = selfStateEntity;
+            
+            this.targets = targets;
+        }
+
+        public bool AddHit( T hit )
+        {
+            if (this.targets.HasComponent(hit.Entity))
+            {
+                var t = this.targets[hit.Entity];
+                if (t.MainEntity == this.selfStateEntity) return false;
+
+                //this.OtherHitType = t.HitType;
+                //this.OtherStateEntity = t.MainEntity;
+                this.HitResults.Add(hit);//
+            }
+            else
+            {
+                if (hit.Entity == this.selfStateEntity) return false;
+
+                //this.OtherHitType = HitType.none;
+                //this.OtherStateEntity = hit.Entity;
+                this.HitResults.Add(hit);//
+            }
+
+            //this.MaxFraction = hit.Fraction;
+            this.NumHits = this.HitResults.Length;
+            return true;
+        }
+    }
+
+
+
 
     /// <summary>
     /// 軍指定、自己除外、再近傍
@@ -91,8 +159,7 @@ namespace DotsLite.Collision
     /// <summary>
     /// type 取得、state entity 取得、自己除外、再近傍
     /// </summary>
-    public struct ClosestTargetedHitExcludeSe
-        lfCollector<T> : ICollector<T>
+    public struct ClosestTargetedHitExcludeSelfCollector<T> : ICollector<T>
         where T : struct, IQueryResult
     {
         public bool EarlyOutOnFirstHit => false;//{ get; private set; }
