@@ -110,7 +110,7 @@ namespace DotsLite.Arms
 
         public struct BulletHit
         {
-            public bool isHit;
+            //public bool isHit;
             public HitType hitType;
             public float3 posision;
             public float3 normal;
@@ -160,7 +160,7 @@ namespace DotsLite.Arms
 
             return new BulletHit
             {
-                isHit = isHit,
+                //isHit = isHit,
                 hitType = collector.OtherHitType,
                 posision = collector.ClosestHit.Position,
                 normal = collector.ClosestHit.SurfaceNormal,
@@ -190,7 +190,7 @@ namespace DotsLite.Arms
 
             return new BulletHit
             {
-                isHit = isHit,
+                //isHit = isHit,
                 hitType = collector.OtherHitType,
                 posision = collector.ClosestHit.Position,
                 normal = collector.ClosestHit.SurfaceNormal,
