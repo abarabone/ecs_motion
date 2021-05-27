@@ -36,9 +36,19 @@ namespace DotsLite.Collision
             where T : struct, IQueryResult
         =>
             new AnyTargetedHitExcludeSelfCollector<T>(maxFraction, selfStateEntity, targets);
+
+
+
+        public static AllTargetedDistanceHitCollector GetAllDistanceCollector(
+            this ComponentDataFromEntity<Hit.TargetData> targets,
+            float maxFraction, NativeList<DistanceHitResult> outputs)
+        =>
+            new AllTargetedDistanceHitCollector(maxFraction, targets, outputs);
     }
 
-    public struct HitResult
+
+
+    public struct HitResultCore
     {
         public HitType hitType;
         public float3 posision;
@@ -47,57 +57,61 @@ namespace DotsLite.Collision
         public Entity stateEntity;
     }
 
+    public struct DistanceHitResult
+    {
+        public HitResultCore core;
+        public float distance;
+    }
+
     /// <summary>
-    /// type 取得、state entity 取得、自己除外、すべて
+    /// type 取得、state entity 取得、すべて
     /// </summary>
-    public struct AllTargetedHitExcludeSelfCollector<> : ICollector<T>//, IDisposable
-        where T : struct, IQueryResult
+    public struct AllTargetedDistanceHitCollector : ICollector<DistanceHit>
     {
         public bool EarlyOutOnFirstHit => false;
         public float MaxFraction { get; private set; }
         public int NumHits { get; private set; }
 
 
-        Entity selfStateEntity;
-
         ComponentDataFromEntity<Hit.TargetData> targets;
 
-        NativeList<HitResult> hitResults;
+        NativeList<DistanceHitResult> hitResults;
 
 
-        public AllTargetedHitExcludeSelfCollector
-            (float maxFraction, Entity selfStateEntity, ComponentDataFromEntity<Hit.TargetData> targets, NativeList<HitResult> outputs)
+        public AllTargetedDistanceHitCollector
+            (float maxFraction, ComponentDataFromEntity<Hit.TargetData> targets, NativeList<DistanceHitResult> outputs)
         {
             this.hitResults = outputs;
 
             this.MaxFraction = maxFraction;
             this.NumHits = 0;
 
-            this.selfStateEntity = selfStateEntity;
             this.targets = targets;
         }
 
-        public bool AddHit(T hit)
+        public bool AddHit(DistanceHit hit)
         {
-            var res = new HitResult
+            var res = new DistanceHitResult
             {
-                hitEntity = hit.Entity,
+                core = new HitResultCore
+                {
+                    hitEntity = hit.Entity,
+                    posision = hit.Position,
+                    normal = hit.SurfaceNormal,
+                },
+                distance = hit.Distance,
             };
 
             if (this.targets.HasComponent(hit.Entity))
             {
                 var t = this.targets[hit.Entity];
-                if (t.MainEntity == this.selfStateEntity) return false;
-
-                res.hitType = t.HitType;
-                res.stateEntity = t.MainEntity;
+                res.core.hitType = t.HitType;
+                res.core.stateEntity = t.MainEntity;
             }
             else
             {
-                if (hit.Entity == this.selfStateEntity) return false;
-
-                res.hitType = HitType.none;
-                res.stateEntity = hit.Entity;
+                res.core.hitType = HitType.none;
+                res.core.stateEntity = hit.Entity;
             }
 
             this.hitResults.Add(res);

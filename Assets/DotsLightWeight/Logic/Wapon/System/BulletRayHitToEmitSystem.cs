@@ -98,7 +98,7 @@ namespace DotsLite.Arms
 
                         var prefab = emit.EmittingPrefab;
                         var state = link.OwnerStateEntity;
-                        var hpos = hit.posision;
+                        var hpos = hit.core.posision;
                         var cps = corps.TargetCorps;
                         emit_(cmd, eqi, prefab, state, hpos, cps);
 

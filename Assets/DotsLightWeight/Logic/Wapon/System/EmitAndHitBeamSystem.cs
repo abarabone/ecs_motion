@@ -132,18 +132,20 @@ namespace DotsLite.Arms
                         var pos = poss[mlink.MuzzleEntity];
                         var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
 
-                        var hit = hitTest_(slink.StateEntity, camrot, campos, range, ref cw, targets);
+                        var hit_ = hitTest_(slink.StateEntity, camrot, campos, range, ref cw, targets);
 
 
 
                         //var (start, end) = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
-                        var ptop = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit, camrot, campos);
+                        var ptop = calcBeamPosision_(emitter.MuzzlePositionLocal, range, rot, pos, hit_, camrot, campos);
 
                         instantiateBullet_(ref cmd, i, prefab, slink.StateEntity, ptop.start, ptop.end);
 
 
 
-                        if (!hit.isHit) return;
+                        if (!hit_.isHit) return;
+
+                        var hit = hit_.core;
 
                         switch (hit.hitType)
                         {
@@ -229,7 +231,7 @@ namespace DotsLite.Arms
             var beamStart = math.mul(mainrot.Value, muzzlePositionLocal) + mainpos.Value;
 
             //if (hit.isHit) return (beamStart, hit.posision);
-            if (hit.isHit) return new PtoPUnit { start = beamStart, end = hit.posision };
+            if (hit.isHit) return new PtoPUnit { start = beamStart, end = hit.core.posision };
 
 
             var beamEnd = sightPos + math.forward(sightRot) * range;

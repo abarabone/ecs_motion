@@ -104,11 +104,13 @@ namespace DotsLite.Arms
                     ) =>
                     {
 
-                        var hit = cw.BulletHitSphere
+                        var hit_ = cw.BulletHitSphere
                             (link.OwnerStateEntity, pos.Value, additional.Size, targets);
 
-                        if (!hit.isHit) return;
+                        if (!hit_.isHit) return;
 
+
+                        var hit = hit_.core;
 
                         switch (hit.hitType)
                         {

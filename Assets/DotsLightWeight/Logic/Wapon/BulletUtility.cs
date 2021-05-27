@@ -101,21 +101,13 @@ namespace DotsLite.Arms
 
 
 
-
-
-
-
     static public class BulletHitUtility
     {
 
         public struct BulletHit
         {
-            //public bool isHit;
-            public HitType hitType;
-            public float3 posision;
-            public float3 normal;
-            public Entity hitEntity;
-            public Entity stateEntity;
+            public bool isHit;
+            public HitResultCore core;
         }
 
 
@@ -160,12 +152,15 @@ namespace DotsLite.Arms
 
             return new BulletHit
             {
-                //isHit = isHit,
-                hitType = collector.OtherHitType,
-                posision = collector.ClosestHit.Position,
-                normal = collector.ClosestHit.SurfaceNormal,
-                hitEntity = collector.ClosestHit.Entity,
-                stateEntity = collector.OtherStateEntity,
+                isHit = isHit,
+                core = new HitResultCore
+                {
+                    hitType = collector.OtherHitType,
+                    posision = collector.ClosestHit.Position,
+                    normal = collector.ClosestHit.SurfaceNormal,
+                    hitEntity = collector.ClosestHit.Entity,
+                    stateEntity = collector.OtherStateEntity,
+                }
             };
         }
 
@@ -190,12 +185,15 @@ namespace DotsLite.Arms
 
             return new BulletHit
             {
-                //isHit = isHit,
-                hitType = collector.OtherHitType,
-                posision = collector.ClosestHit.Position,
-                normal = collector.ClosestHit.SurfaceNormal,
-                hitEntity = collector.ClosestHit.Entity,
-                stateEntity = collector.OtherStateEntity,
+                isHit = isHit,
+                core = new HitResultCore
+                {
+                    hitType = collector.OtherHitType,
+                    posision = collector.ClosestHit.Position,
+                    normal = collector.ClosestHit.SurfaceNormal,
+                    hitEntity = collector.ClosestHit.Entity,
+                    stateEntity = collector.OtherStateEntity,
+                }
             };
         }
 
@@ -227,7 +225,7 @@ namespace DotsLite.Arms
         //}
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void PostStructureHitMessage(
-            this BulletHit hit,
+            this HitResultCore hit,
             HitMessage<Structure.HitMessage>.ParallelWriter hitHolder,
             ComponentDataFromEntity<StructurePart.PartData> parts)
         {
@@ -240,12 +238,13 @@ namespace DotsLite.Arms
                     Normale = hit.normal,
                     PartEntity = hit.hitEntity,
                     PartId = parts[hit.hitEntity].PartId,
+                    //Force = ,
                 }
             );
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void PostCharacterHitMessage(
-            this BulletHit hit,
+            this HitResultCore hit,
             HitMessage<Character.HitMessage>.ParallelWriter hitHolder,
             float damage, float3 force)
         {
