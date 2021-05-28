@@ -108,6 +108,9 @@ namespace DotsLite.Arms
 
         public struct BeamTag : IComponentData
         { }
+
+        public struct EmitterTag : IComponentData
+        { }
     }
 
 

@@ -72,7 +72,7 @@ namespace DotsLite.Arms
 
             this.Entities
                 .WithBurst()
-                .WithAll<Bullet.RayTag>()
+                .WithAll<Bullet.EmitterTag>()
                 .WithReadOnly(targets)
                 //.WithReadOnly(parts)
                 //.WithReadOnly(corpss)
@@ -123,12 +123,12 @@ namespace DotsLite.Arms
                     Value = position,
                 }
             );
-            cmd.SetComponent(eqi, instance,
-                new Bullet.LinkData
-                {
-                    OwnerStateEntity = stateEntity,
-                }
-            );
+            //cmd.SetComponent(eqi, instance,
+            //    new Bullet.LinkData
+            //    {
+            //        OwnerStateEntity = stateEntity,
+            //    }
+            //);
             cmd.SetComponent(eqi, instance,
                 new CorpsGroup.TargetWithArmsData
                 {

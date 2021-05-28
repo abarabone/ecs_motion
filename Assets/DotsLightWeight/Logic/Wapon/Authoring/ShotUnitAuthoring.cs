@@ -30,8 +30,7 @@ namespace DotsLite.Arms.Authoring
 
         public int Id;
 
-        //public IBulletAuthoring aaa;
-        public ShotBulletAuthoring BulletPrefab;
+        public BulletAuthoringBase BulletPrefab;
         public ParticleAuthoringBase MuzzleEffectPrefab;
 
         //public GameObject MuzzleObject;

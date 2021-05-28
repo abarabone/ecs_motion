@@ -23,7 +23,7 @@ namespace DotsLite.Arms.Authoring
     /// <summary>
     /// 
     /// </summary>
-    public class ShotBulletAuthoring : MonoBehaviour, IBulletAuthoring, IConvertGameObjectToEntity
+    public class ShotBulletAuthoring : BulletAuthoringBase, IConvertGameObjectToEntity
     {
 
         public float RangeDistance;
@@ -53,31 +53,25 @@ namespace DotsLite.Arms.Authoring
 
 
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
-                var types = (this.GravityFactor != 0.0f || this.AimFactor != 0.0f || true)//
-                    ? new ComponentTypes(new ComponentType[]
-                    {
-                        typeof(Bullet.LinkData),
-                        typeof(Bullet.MoveSpecData),
-                        typeof(Bullet.VelocityData),
-                        typeof(Bullet.AccelerationData),
-                        typeof(Bullet.DistanceData),
-                        typeof(Bullet.LifeTimeData),
-                        //typeof(Particle.AdditionalData),
-                        this.BulletType.ToComponentType(),
-                        typeof(Targeting.CorpsGroup.TargetWithArmsData)
-                    })
-                    : new ComponentTypes(new ComponentType[]
-                    {
-                        typeof(Bullet.LinkData),
-                        typeof(Bullet.MoveSpecData),
-                        typeof(Bullet.VelocityData),
-                        typeof(Bullet.DistanceData),
-                        typeof(Bullet.LifeTimeData),
-                        //typeof(Particle.AdditionalData),
-                        this.BulletType.ToComponentType(),
-                        typeof(Targeting.CorpsGroup.TargetWithArmsData)
-                    });
+
+                var _types = new List<ComponentType>
+                {
+                    typeof(Bullet.LinkData),
+                    typeof(Bullet.MoveSpecData),
+                    typeof(Bullet.VelocityData),
+                    typeof(Bullet.DistanceData),
+                    typeof(Bullet.LifeTimeData),
+                    this.BulletType.ToComponentType(),
+                    typeof(Targeting.CorpsGroup.TargetWithArmsData)
+                };
+                if (this.GravityFactor != 0.0f || this.AimFactor != 0.0f || true)
+                {
+                    _types.Add(typeof(Bullet.AccelerationData));
+                }
+
+                var types = new ComponentTypes(_types.ToArray());
                 em.AddComponents(bulletEntity, types);
+
 
                 em.SetComponentData(bulletEntity,
                     new Bullet.MoveSpecData

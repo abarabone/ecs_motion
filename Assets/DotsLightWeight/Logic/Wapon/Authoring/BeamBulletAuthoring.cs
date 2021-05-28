@@ -23,7 +23,7 @@ namespace DotsLite.Arms.Authoring
     /// <summary>
     /// 
     /// </summary>
-    public class BeamBulletAuthoring : MonoBehaviour, IBulletAuthoring, IConvertGameObjectToEntity
+    public class BeamBulletAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         public float RangeDistance;// 瞬時に着弾するので、射出時に決定する。そのため、弾丸には不要。
