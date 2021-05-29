@@ -35,6 +35,7 @@ namespace DotsLite.Arms.Authoring
 
         public float GravityFactor;
         public float AimFactor;
+        public float DamagePoint;
 
         public BulletType BulletType;
 
@@ -61,6 +62,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(Bullet.VelocityData),
                     typeof(Bullet.DistanceData),
                     typeof(Bullet.LifeTimeData),
+                    typeof(Bullet.PointDamageSpecData),
                     this.BulletType.ToComponentType(),
                     typeof(Targeting.CorpsGroup.TargetWithArmsData)
                 };
@@ -86,6 +88,12 @@ namespace DotsLite.Arms.Authoring
                     new Bullet.DistanceData
                     {
                         RestRangeDistance = this.RangeDistance,
+                    }
+                );
+                em.SetComponentData(bulletEntity,
+                    new Bullet.PointDamageSpecData
+                    {
+                        Damage = this.DamagePoint,
                     }
                 );
                 //em.SetComponentData(bulletEntity,

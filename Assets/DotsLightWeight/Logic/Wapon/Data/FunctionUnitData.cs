@@ -66,7 +66,7 @@ namespace DotsLite.Arms
         //}
         public struct EmittingStateData : IComponentData
         {
-            public double NextEmitableTime;
+            public float NextEmitableTime;
         }
 
         //public struct ActivateData : IComponentData
@@ -147,7 +147,7 @@ namespace DotsLite.Arms
 
         public struct BulletStateData : IComponentData
         {
-            public double NextEmitableTime;
+            public float NextEmitableTime;
         }
 
         public struct BulletMuzzleLinkData : IComponentData
