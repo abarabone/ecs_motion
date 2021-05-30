@@ -15,7 +15,7 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
-
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsLite.Arms
 {
@@ -33,10 +33,7 @@ namespace DotsLite.Arms
     using DotsLite.SystemGroup;
     using DotsLite.Common.Extension;
 
-    using Collider = Unity.Physics.Collider;
-    using SphereCollider = Unity.Physics.SphereCollider;
-    using RaycastHit = Unity.Physics.RaycastHit;
-    using Unity.Physics.Authoring;
+    using Random = Unity.Mathematics.Random;
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
@@ -51,9 +48,11 @@ namespace DotsLite.Arms
         {
 
             var dt = this.Time.DeltaTime;
+            var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// とりあえず
 
 
             this.Entities
+                .WithName("Move")
                 .WithBurst()
                 .ForEach(
                     (
@@ -61,7 +60,7 @@ namespace DotsLite.Arms
                         //ref Particle.TranslationPtoPData ptop,
                         ref Translation pos,
                         ref Particle.TranslationTailData tail,
-                        ref Bullet.DistanceData dist,
+                        //ref Bullet.DistanceData dist,
                         ref Bullet.VelocityData v,
                         in Bullet.AccelerationData acc
                     ) =>
@@ -76,7 +75,7 @@ namespace DotsLite.Arms
 
                         pos.Value += d;
 
-                        dist.RestRangeDistance -= math.length(d);
+                        //dist.RestRangeDistance -= math.length(d);
 
 
                         var a = acc.Acceleration.xyz * dt;

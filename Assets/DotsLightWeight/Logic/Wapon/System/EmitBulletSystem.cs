@@ -115,11 +115,11 @@ namespace DotsLite.Arms
                             var rot = rots[mlink.EmitterEntity].Value;
                             var pos = poss[mlink.EmitterEntity].Value;
 
-                            var bulletPos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, emitter.MuzzlePositionLocal);
-                            var acc = BulletEmittingUtility.CalcAcc(gravity, bulletData.GravityFactor);
-                            var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
-                            //var spd = BulletEmittingUtility.CalcAimSpeed(, bulletData.AimFactor);
-
+                            //var bulletPos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, emitter.MuzzlePositionLocal);
+                            //var acc = BulletEmittingUtility.CalcAcc(gravity, bulletData.GravityFactor);
+                            //var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
+                            ////var spd = BulletEmittingUtility.CalcAimSpeed(, bulletData.AimFactor);
+                            var init = emitter.CalcEmittingParams(pos, rot, emitter.MuzzlePositionLocal);
 
                             // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射間隔になる
                             var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
@@ -135,12 +135,9 @@ namespace DotsLite.Arms
                             // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
                             for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
                             {
-                                var bulletDir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, emitter.AccuracyRad);
-                                var speed = bulletDir * bulletData.BulletSpeed;
-
                                 BulletEmittingUtility.EmitBullet(cmd, eqi,
                                     emitter.BulletPrefab, slink.StateEntity,
-                                    bulletPos, range, speed, acc, corps.TargetCorps);
+                                    init, corps.TargetCorps);
                             }
                             //}
 

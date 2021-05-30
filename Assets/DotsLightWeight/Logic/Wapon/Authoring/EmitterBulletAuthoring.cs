@@ -67,6 +67,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(Bullet.LifeTimeData),
                     typeof(Bullet.EmitterTag),
                     typeof(Bullet.EmitData),
+                    typeof(Bullet.InitializeFromEmitterData),
                     typeof(Targeting.CorpsGroup.TargetWithArmsData)
                 };
                 if (this.GravityFactor != 0.0f || this.AimFactor != 0.0f || true)

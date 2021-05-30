@@ -100,6 +100,15 @@ namespace DotsLite.Arms
         }
 
 
+        public struct InitializeFromEmitterData : IComponentData
+        {
+            public quaternion EmitterRotation;
+            public float4 AimSpeed;
+            public float EmitterAccuracyRad;
+            public float EmitterRangeDistanceFactor;
+        }
+
+
         public struct RayTag : IComponentData
         { }
 

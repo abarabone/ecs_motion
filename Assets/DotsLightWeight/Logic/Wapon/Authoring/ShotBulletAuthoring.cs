@@ -63,6 +63,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(Bullet.DistanceData),
                     typeof(Bullet.LifeTimeData),
                     typeof(Bullet.PointDamageSpecData),
+                    typeof(Bullet.InitializeFromEmitterData),
                     this.BulletType.ToComponentType(),
                     typeof(Targeting.CorpsGroup.TargetWithArmsData)
                 };

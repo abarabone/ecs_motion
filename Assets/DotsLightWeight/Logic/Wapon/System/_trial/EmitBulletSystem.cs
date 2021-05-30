@@ -116,21 +116,22 @@ namespace DotsLite.Arms
                         var rot = rots[muzzle.MuzzleEntity].Value;
                         var pos = poss[muzzle.MuzzleEntity].Value;
 
-                        var bulletPos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, muzzle.MuzzlePositionLocal);
-                        var acc = BulletEmittingUtility.CalcAcc(gravity, bulletData.GravityFactor, bulletData.AimFactor);
-                        var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
+                        //var bulletPos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, muzzle.MuzzlePositionLocal);
+                        //var acc = BulletEmittingUtility.CalcAcc(gravity, bulletData.GravityFactor, bulletData.AimFactor);
+                        //var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
+                        var init = emitter.CalcEmittingParams(pos, rot, muzzle.MuzzlePositionLocal);
 
                         //for (var ifreq = 0; ifreq < freq; ifreq++)
                         //{
-                            // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
-                            for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
+                        // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
+                        for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
                             {
-                                var bulletDir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, emitter.AccuracyRad);
-                                var speed = bulletDir * bulletData.BulletSpeed;
+                                //var bulletDir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, emitter.AccuracyRad);
+                                //var speed = bulletDir * bulletData.BulletSpeed;
 
                                 BulletEmittingUtility.EmitBullet(cmd, eqi,
                                     emitter.Prefab, slink.StateEntity,
-                                    bulletPos, range, speed, acc, corps.TargetCorps);
+                                    init, corps.TargetCorps);
                             }
                         //}
                     }

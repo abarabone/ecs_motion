@@ -84,21 +84,66 @@ namespace DotsLite.Arms
 
 
 
-
         public struct BulletEmittingParams
         {
-            float4 position;
-            float4 acceleration;
-            float4 speed;
-            float lifetime;
+            public float4 Position;
+            public Bullet.InitializeFromEmitterData Initialize;
         }
 
-
         public static BulletEmittingParams CalcEmittingParams(
-            FunctionUnit.BulletEmittingData data,
-            Translation pos, Rotation rot,
-            float3 gravity, float gravityFactor)
+            this FunctionUnit.BulletEmittingData data,
+            float3 pos, quaternion rot, float3 muzzlePositionLocal)
         {
+
+            return new BulletEmittingParams
+            {
+                Position = calcMuzzlePosition_().As_float4(),
+                Initialize = new Bullet.InitializeFromEmitterData
+                {
+                    EmitterRotation = rot,
+                    EmitterAccuracyRad = data.AccuracyRad,
+                    EmitterRangeDistanceFactor = data.RangeDistanceFactor,
+                    AimSpeed = 0,
+                },
+            };
+
+
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            float3 calcMuzzlePosition_()
+            {
+
+                var muzpos = pos + math.mul(rot, muzzlePositionLocal);
+
+                return muzpos;
+            }
+
+        }
+        public static BulletEmittingParams CalcEmittingParams(
+            this Emitter.BulletEmittingData data,
+            float3 pos, quaternion rot, float3 muzzlePositionLocal)
+        {
+
+            return new BulletEmittingParams
+            {
+                Position = calcMuzzlePosition_().As_float4(),
+                Initialize = new Bullet.InitializeFromEmitterData
+                {
+                    EmitterRotation = rot,
+                    EmitterAccuracyRad = data.AccuracyRad,
+                    EmitterRangeDistanceFactor = data.RangeDistanceFactor,
+                    AimSpeed = 0,
+                },
+            };
+
+
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            float3 calcMuzzlePosition_()
+            {
+
+                var muzpos = pos + math.mul(rot, muzzlePositionLocal);
+
+                return muzpos;
+            }
 
         }
 
@@ -128,20 +173,6 @@ namespace DotsLite.Arms
 
             return muzpos;
         }
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static float3 calcBulletPosition_(
-        //    quaternion rot, float3 pos, in FunctionUnit.BulletEmittingData emitter)
-        //{
-
-        //    var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
-
-        //    return muzpos;
-        //}
-
 
 
         /// <summary>
@@ -182,6 +213,40 @@ namespace DotsLite.Arms
             });
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void EmitBullet(
+            EntityCommandBuffer.ParallelWriter cmd, int eqi,
+            Entity bulletPrefab, Entity stateEntity,
+            BulletEmittingParams emitting, Corps targetCorps)
+        {
+
+            var newBullet = cmd.Instantiate(eqi, bulletPrefab);
+
+            cmd.SetComponent(eqi, newBullet, emitting.Initialize);
+            cmd.SetComponent(eqi, newBullet,
+                new Translation
+                {
+                    Value = emitting.Position.xyz,
+                }
+            );
+            cmd.SetComponent(eqi, newBullet,
+                new Bullet.LinkData
+                {
+                    OwnerStateEntity = stateEntity,
+                }
+            );
+            cmd.SetComponent(eqi, newBullet,
+                new CorpsGroup.TargetWithArmsData
+                {
+                    TargetCorps = targetCorps,
+                }
+            );
+
+        }
 
         /// <summary>
         /// 
