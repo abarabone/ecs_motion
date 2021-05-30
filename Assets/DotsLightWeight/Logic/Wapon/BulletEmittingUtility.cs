@@ -95,7 +95,7 @@ namespace DotsLite.Arms
 
 
         public static BulletEmittingParams CalcEmittingParams(
-            FunctionUnit.BulletEmittingData
+            FunctionUnit.BulletEmittingData data,
             Translation pos, Rotation rot,
             float3 gravity, float gravityFactor)
         {
