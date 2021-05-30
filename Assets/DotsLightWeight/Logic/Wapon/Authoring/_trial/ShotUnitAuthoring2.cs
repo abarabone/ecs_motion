@@ -84,7 +84,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                     typeof(Emitter.BulletEmittingData),
                     typeof(Emitter.TriggerData),
-                    typeof(Emitter.BulletStateData),
+                    typeof(Emitter.StateData),
                     //typeof(FunctionUnit.BulletEmittingData),
                     //typeof(FunctionUnit.EmittingStateData),
                     //typeof(FunctionUnit.TriggerData),
@@ -104,8 +104,8 @@ namespace DotsLite.Arms.Authoring
                     typeof(Emitter.EffectEmittingData),
                     typeof(Emitter.BulletEmittingData),
                     typeof(Emitter.TriggerData),
-                    typeof(Emitter.BulletStateData),
-                    typeof(Emitter.EffectStateData),
+                    typeof(Emitter.StateData),
+                    //typeof(Emitter.EffectStateData),
                     //typeof(FunctionUnit.BulletEmittingData),
                     //typeof(FunctionUnit.EmittingStateData),
                     //typeof(FunctionUnit.TriggerData),
@@ -137,7 +137,7 @@ namespace DotsLite.Arms.Authoring
                     }
                 );
                 em.SetComponentData(ent,
-                    new Emitter.BulletStateData
+                    new Emitter.StateData
                     {
                         NextEmitableTime = this.EmittingInterval,
                     }

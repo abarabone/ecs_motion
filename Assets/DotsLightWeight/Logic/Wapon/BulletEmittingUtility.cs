@@ -55,6 +55,7 @@ namespace DotsLite.Arms
         /// <summary>
         /// 種類列挙型からコンポーネントの型を取得する
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ComponentType ToComponentType(this BulletType type) =>
             type switch
             {
@@ -72,6 +73,7 @@ namespace DotsLite.Arms
         /// <summary>
         /// 
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float CalcBaseTime(float currentTime, float nextEmitableTime, float dt)
         {
             var frameBaseTime = currentTime - dt;
@@ -82,14 +84,33 @@ namespace DotsLite.Arms
 
 
 
+
+        public struct BulletEmittingParams
+        {
+            float4 position;
+            float4 acceleration;
+            float4 speed;
+            float lifetime;
+        }
+
+
+        public static BulletEmittingParams CalcEmittingParams(
+            FunctionUnit.BulletEmittingData
+            Translation pos, Rotation rot,
+            float3 gravity, float gravityFactor)
+        {
+
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
-        public static float3 CalcAcc(float3 gravity, float gravityFactor, float aimFactor)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float3 CalcAcc(float3 gravity, float gravityFactor)
         {
             var g = new DirectionAndLength { Value = gravity.As_float4(gravityFactor) };
-            var aim = new DirectionAndLength { Value = float3.zero.As_float4(aimFactor) };
-            var acc = g.Ray + aim.Ray;
+            var acc = g.Ray;
             return acc;
         }
 
@@ -127,8 +148,7 @@ namespace DotsLite.Arms
         /// 
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 CalcBulletDirection(
-            quaternion dirrot, ref Random rnd, float accuracyRad)
+        public static float3 CalcBulletDirection(quaternion dirrot, ref Random rnd, float accuracyRad)
         {
 
             var yrad = rnd.NextFloat(accuracyRad);
@@ -146,7 +166,7 @@ namespace DotsLite.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void EmitEffect(
             EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity effectPrefab,
-            float3 pos, Random rnd)
+            float3 pos, ref Random rnd)
         {
             //if (effectPrefab == Entity.Null) return;
 
@@ -175,12 +195,12 @@ namespace DotsLite.Arms
 
             var newBullet = cmd.Instantiate(eqi, bulletPrefab);
 
-            cmd.SetComponent(eqi, newBullet,
-                new Particle.TranslationTailData
-                {
-                    PositionAndSize = bulletPosition.As_float4(),
-                }
-            );
+            //cmd.SetComponent(eqi, newBullet,
+            //    new Particle.TranslationTailData
+            //    {
+            //        PositionAndSize = bulletPosition.As_float4(),
+            //    }
+            //);
             cmd.SetComponent(eqi, newBullet,
                 new Translation
                 {

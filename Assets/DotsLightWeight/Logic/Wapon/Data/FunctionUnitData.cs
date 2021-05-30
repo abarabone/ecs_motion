@@ -130,10 +130,10 @@ namespace DotsLite.Arms
         //}
 
 
-        public struct EffectStateData : IComponentData
-        {
-            public double NextEmitableTime;
-        }
+        //public struct EffectStateData : IComponentData
+        //{
+        //    public double NextEmitableTime;
+        //}
 
         public struct EffectMuzzleLinkData : IComponentData
         {
@@ -145,9 +145,10 @@ namespace DotsLite.Arms
             public Entity Prefab;
         }
 
-        public struct BulletStateData : IComponentData
+        public struct StateData : IComponentData
         {
             public float NextEmitableTime;
+            public int EmitFrequencyInCurrentFrame;
         }
 
         public struct BulletMuzzleLinkData : IComponentData
@@ -165,10 +166,17 @@ namespace DotsLite.Arms
             public float RangeDistanceFactor;// 切り替え時に弾丸のと計算確定しようかと思ったが、わかりにくいのでやめた
         }
 
+        public struct BulletEmittingWorkData : IComponentData
+        {
+            public float BulletLifeTime;    // 距離とスピードから算出した時間
+            public float BulletRadius;      // bullet からの写し
+        }
+
         public struct TriggerData : IComponentData
         {
             public bool IsTriggered;
         }
+
     }
 
 }

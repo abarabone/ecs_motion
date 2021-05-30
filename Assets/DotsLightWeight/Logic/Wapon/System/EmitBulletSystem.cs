@@ -78,7 +78,7 @@ namespace DotsLite.Arms
 
             this.Entities
                 .WithBurst()
-                .WithNone<Bullet.MoveSpecData>()
+                //.WithNone<Bullet.MoveSpecData>()
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
                 .WithReadOnly(bullets)
@@ -96,65 +96,44 @@ namespace DotsLite.Arms
                         var eqi = entityInQueryIndex;
 
                         if (!trigger.IsTriggered) return;
-
-
-
                         if (currentTime < state.NextEmitableTime) return;
 
                         var rnd = Random.CreateFromIndex((uint)eqi + (uint)math.asuint(dt) & 0x_7fff_ffff);
 
-                        //if (emitter.EffectPrefab != Entity.Null)
-                        //{
-                        //    var mzrot = rots[mlink.MuzzleEntity].Value;
-                        //    var mzpos = poss[mlink.MuzzleEntity].Value;
-                        //    var efpos = calcEffectPosition_(mzrot, mzpos, emitter);
-                        //    emitEffect_(cmd, eqi, emitter.EffectPrefab, efpos, rnd);
-                        //}
 
-
-
-                        // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射間隔になる
-                        //var elapsed = 0.0f;
-                        //var frameBaseTime = currentTime - dt;
-                        //var isEmitPrevFrame = state.NextEmitableTime > frameBaseTime;
-                        //var baseTime = math.select(frameBaseTime, state.NextEmitableTime, isEmitPrevFrame);
-
-                        var bulletData = bullets[emitter.BulletPrefab];
-                        var rot = rots[mlink.EmitterEntity].Value;
-                        var pos = poss[mlink.EmitterEntity].Value;
-
-                        //var bulletPos = calcBulletPosition_(rot, pos, in emitter);
-                        //var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
-
-                        //var g = new DirectionAndLength { Value = gravity.As_float4(bulletData.GravityFactor) };
-                        //var aim = new DirectionAndLength { Value = float3.zero.As_float4(bulletData.AimFactor) };
-                        //var acc = g.Ray + aim.Ray;
-
-                        var bulletPos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, emitter.MuzzlePositionLocal);
-                        var acc = BulletEmittingUtility.CalcAcc(gravity, bulletData.GravityFactor, bulletData.AimFactor);
-                        var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
-
-
-                        // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射間隔になる
-                        var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
-
-                        var nextTime = frameBaseTime;
-                        do
+                        if (emitter.EffectPrefab != Entity.Null)
                         {
-                            //state.NextEmitableTime = currentTime + emitter.EmittingInterval;
-                            nextTime += emitter.EmittingInterval;
-                            //state.NextEmitableTime = baseTime + elapsed;
+                            var mzrot = rots[mlink.MuzzleEntity].Value;
+                            var mzpos = poss[mlink.MuzzleEntity].Value;
+                            var efpos = BulletEmittingUtility.CalcMuzzlePosition(mzrot, mzpos, emitter.MuzzlePositionLocal);
+                            BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.EffectPrefab, efpos, ref rnd);
+                        }
 
+                        {
+                            var bulletData = bullets[emitter.BulletPrefab];
+                            var rot = rots[mlink.EmitterEntity].Value;
+                            var pos = poss[mlink.EmitterEntity].Value;
+
+                            var bulletPos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, emitter.MuzzlePositionLocal);
+                            var acc = BulletEmittingUtility.CalcAcc(gravity, bulletData.GravityFactor);
+                            var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
+                            //var spd = BulletEmittingUtility.CalcAimSpeed(, bulletData.AimFactor);
+
+
+                            // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射間隔になる
+                            var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
+
+                            var d = currentTime - frameBaseTime;
+                            var freq = (int)(d * math.rcp(emitter.EmittingInterval)) + 1;
+                            //Debug.Log(freq);
+
+                            state.NextEmitableTime = frameBaseTime + emitter.EmittingInterval * freq;
+
+                            //for (var ifreq = 0; ifreq < freq; ifreq++)
+                            //{
                             // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
-                            for (var i = 0; i < emitter.NumEmitMultiple; i++)
+                            for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
                             {
-                                //var bulletDir = calcBulletDirection_(rot, ref rnd, emitter.AccuracyRad);
-                                //var speed = bulletDir * bulletData.BulletSpeed;
-
-                                //emit_(cmd, eqi,
-                                //    emitter.BulletPrefab, slink.StateEntity,
-                                //    bulletPos, range, speed, acc, corps.TargetCorps);
-
                                 var bulletDir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, emitter.AccuracyRad);
                                 var speed = bulletDir * bulletData.BulletSpeed;
 
@@ -162,134 +141,36 @@ namespace DotsLite.Arms
                                     emitter.BulletPrefab, slink.StateEntity,
                                     bulletPos, range, speed, acc, corps.TargetCorps);
                             }
+                            //}
+
+                            ////// 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射間隔になる
+                            ////var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
+
+                            ////var nextTime = frameBaseTime;
+                            ////do
+                            ////{
+                            ////    nextTime += emitter.EmittingInterval;
+
+                            ////    // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
+                            ////    for (var i = 0; i < emitter.NumEmitMultiple; i++)
+                            ////    {
+                            ////        var bulletDir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, emitter.AccuracyRad);
+                            ////        var speed = bulletDir * bulletData.BulletSpeed;
+
+                            ////        BulletEmittingUtility.EmitBullet(cmd, eqi,
+                            ////            emitter.BulletPrefab, slink.StateEntity,
+                            ////            bulletPos, range, speed, acc, corps.TargetCorps);
+                            ////    }
+                            ////}
+                            ////while (currentTime >= nextTime);
+
+
+                            ////state.NextEmitableTime = nextTime;
                         }
-                        while (currentTime >= nextTime);
-
-
-                        state.NextEmitableTime = nextTime;
                     }
                 )
                 .ScheduleParallel();
         }
-
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static float3 calcEffectPosition_(
-        //    quaternion rot, float3 pos, in FunctionUnit.BulletEmittingData emitter)
-        //{
-
-        //    var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
-
-        //    return muzpos;
-        //}
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static void emitEffect_(
-        //    EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity effectPrefab,
-        //    float3 pos, Random rnd)
-        //{
-        //    //if (effectPrefab == Entity.Null) return;
-
-        //    var ent = cmd.Instantiate(eqi, effectPrefab);
-
-        //    cmd.SetComponent(eqi, ent, new Translation
-        //    {
-        //        Value = pos,
-        //    });
-        //    cmd.SetComponent(eqi, ent, new BillBoad.RotationData
-        //    {
-        //        Direction = rnd.NextFloat2Direction() * rnd.NextFloat(0.8f, 1.2f),
-        //    });
-        //}
-
-
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static float3 calcBulletDirection_(
-        //    quaternion dirrot, ref Random rnd, float accuracyRad)
-        //{
-            
-        //    var yrad = rnd.NextFloat(accuracyRad);
-        //    var zrad = rnd.NextFloat(2.0f * math.PI);
-        //    var bulletDir = math.mul(dirrot, math.forward(quaternion.EulerYZX(0.0f, yrad, zrad)));
-
-        //    return bulletDir;
-        //}
-
-
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static float3 calcBulletPosition_(
-        //    quaternion rot, float3 pos, in FunctionUnit.BulletEmittingData emitter)
-        //{
-
-        //    var muzpos = pos + math.mul(rot, emitter.MuzzlePositionLocal);
-
-        //    return muzpos;
-        //}
-
-
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static void emit_(
-        //    EntityCommandBuffer.ParallelWriter cmd, int eqi,
-        //    Entity bulletPrefab, Entity stateEntity,
-        //    float3 bulletPosition, float range, float3 speed, float3 acc, Corps targetCorps)
-        //{
-
-        //    var newBullet = cmd.Instantiate(eqi, bulletPrefab);
-
-        //    //cmd.SetComponent(eqi, newBullet,
-        //    //    new Particle.TranslationPtoPData
-        //    //    {
-        //    //        Start = bulletPosition,
-        //    //        End = bulletPosition
-        //    //    }
-        //    //);
-        //    cmd.SetComponent(eqi, newBullet,
-        //        new Particle.TranslationTailData
-        //        {
-        //            PositionAndSize = bulletPosition.As_float4(),
-        //        }
-        //    );
-        //    cmd.SetComponent(eqi, newBullet,
-        //        new Translation
-        //        {
-        //            Value = bulletPosition,
-        //        }
-        //    );
-        //    cmd.SetComponent(eqi, newBullet,
-        //        new Bullet.VelocityData
-        //        {
-        //            Velocity = speed.As_float4(),
-        //        }
-        //    );
-        //    cmd.SetComponent(eqi, newBullet,
-        //        new Bullet.AccelerationData
-        //        {
-        //            Acceleration = acc.As_float4(),
-        //        }
-        //    );
-        //    cmd.SetComponent(eqi, newBullet,
-        //        new Bullet.DistanceData
-        //        {
-        //            RestRangeDistance = range,
-        //        }
-        //    );
-        //    cmd.SetComponent(eqi, newBullet,
-        //        new Bullet.LinkData
-        //        {
-        //            OwnerStateEntity = stateEntity,
-        //        }
-        //    );
-        //    cmd.SetComponent(eqi, newBullet,
-        //        new CorpsGroup.TargetWithArmsData
-        //        {
-        //            TargetCorps = targetCorps,
-        //        }
-        //    );
-
-        //}
 
     }
 

@@ -44,8 +44,8 @@ namespace DotsLite.Arms
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(CameraMoveSystem))]
     [UpdateAfter(typeof(WaponTriggerSystem2))]
-    [UpdateBefore(typeof(EmitBulletSystem2))]
-    public class EmitEffectSystem2 : DependencyAccessableSystemBase
+    [UpdateAfter(typeof(EmitTimeProgressSystem))]
+    public class EmitEffectSystem : DependencyAccessableSystemBase
     {
 
 
@@ -57,12 +57,6 @@ namespace DotsLite.Arms
             base.OnCreate();
 
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-        }
-
-        struct PtoPUnit
-        {
-            public float3 start;
-            public float3 end;
         }
 
         protected override void OnUpdate()
@@ -85,14 +79,14 @@ namespace DotsLite.Arms
 
             this.Entities
                 .WithBurst()
-                .WithNone<Bullet.MoveSpecData>()
+                //.WithNone<Bullet.MoveSpecData>()
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
                 //.WithReadOnly(bullets)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
-                        ref Emitter.EffectStateData state,
+                        in Emitter.StateData state,
                         in Emitter.TriggerData trigger,
                         in Emitter.EffectEmittingData emitter,
                         in Emitter.EffectMuzzleLinkData muzzle,
@@ -106,53 +100,23 @@ namespace DotsLite.Arms
                     ) =>
                     {
                         var eqi = entityInQueryIndex;
+                        var freq = state.EmitFrequencyInCurrentFrame;
 
                         if (!trigger.IsTriggered) return;
-                        if (currentTime < state.NextEmitableTime) return;
+                        //if (currentTime < state.NextEmitableTime) return;
+                        if (freq <= 0) return;
                         
-
-                        //state.NextEmitableTime = 
 
                         var rnd = Random.CreateFromIndex((uint)eqi + (uint)math.asuint(dt) & 0x_7fff_ffff);
 
                         var mzrot = rots[muzzle.MuzzleEntity].Value;
                         var mzpos = poss[muzzle.MuzzleEntity].Value;
-                        var efpos = calcPosition_(mzrot, mzpos, muzzle.MuzzlePositionLocal);
+                        var efpos = BulletEmittingUtility.CalcMuzzlePosition(mzrot, mzpos, muzzle.MuzzlePositionLocal);
 
-                        emit_(cmd, eqi, emitter.Prefab, efpos, rnd);
+                        BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, efpos, ref rnd);
                     }
                 )
                 .ScheduleParallel();
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static float3 calcPosition_(
-            quaternion rot, float3 pos, float3 localPostion)
-        {
-
-            var muzpos = pos + math.mul(rot, localPostion);
-
-            return muzpos;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void emit_(
-            EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity effectPrefab,
-            float3 pos, Random rnd)
-        {
-            //if (effectPrefab == Entity.Null) return;
-
-            var ent = cmd.Instantiate(eqi, effectPrefab);
-
-            cmd.SetComponent(eqi, ent, new Translation
-            {
-                Value = pos,
-            });
-            cmd.SetComponent(eqi, ent, new BillBoad.RotationData
-            {
-                Direction = rnd.NextFloat2Direction() * rnd.NextFloat(0.8f, 1.2f),
-            });
         }
 
 
