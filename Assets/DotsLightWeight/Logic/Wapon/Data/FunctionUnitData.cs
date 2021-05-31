@@ -69,6 +69,11 @@ namespace DotsLite.Arms
             public float NextEmitableTime;
         }
 
+        public struct PrevFrameMuzzlePosition : IComponentData
+        {
+            public float4 PrevPosition;
+        }
+
         //public struct ActivateData : IComponentData
         //{
         //    public bool IsActive;   
@@ -138,7 +143,10 @@ namespace DotsLite.Arms
         public struct EffectMuzzleLinkData : IComponentData
         {
             public Entity MuzzleEntity;
-            public float3 MuzzlePositionLocal;
+        }
+        public struct EffectMuzzlePositionData : IComponentData
+        {
+            public float4 MuzzlePositionLocal;
         }
         public struct EffectEmittingData : IComponentData
         {
@@ -154,7 +162,10 @@ namespace DotsLite.Arms
         public struct BulletMuzzleLinkData : IComponentData
         {
             public Entity MuzzleEntity;
-            public float3 MuzzlePositionLocal;
+        }
+        public struct BulletMuzzlePositionData : IComponentData
+        {
+            public float4 MuzzlePositionLocal;
         }
         public struct BulletEmittingData : IComponentData
         {
@@ -170,6 +181,11 @@ namespace DotsLite.Arms
         {
             public float BulletLifeTime;    // 距離とスピードから算出した時間
             public float BulletRadius;      // bullet からの写し
+        }
+
+        public struct PrevFrameMuzzlePosition : IComponentData
+        {
+            public float4 PrevPosition;
         }
 
         public struct TriggerData : IComponentData

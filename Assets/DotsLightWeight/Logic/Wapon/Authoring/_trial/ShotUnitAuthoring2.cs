@@ -21,11 +21,13 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Arms;
     using DotsLite.Model;
     using DotsLite.Particle.Aurthoring;
+    using DotsLite.Utilities;
 
     /// <summary>
     /// 
     /// </summary>
-    public class ShotUnitAuthoring2 : MonoBehaviour, IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class ShotUnitAuthoring2 : MonoBehaviour,
+        IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs, IMuzzleLocalPostion
     {
 
         public int Id;
@@ -36,6 +38,7 @@ namespace DotsLite.Arms.Authoring
 
         //public GameObject MuzzleObject;
         public float3 MuzzleLocalPosition;
+        public float3 Local => this.MuzzleLocalPosition;
 
         public int NumEmitMultiple;
         public float EmittingInterval;
@@ -85,10 +88,6 @@ namespace DotsLite.Arms.Authoring
                     typeof(Emitter.BulletEmittingData),
                     typeof(Emitter.TriggerData),
                     typeof(Emitter.StateData),
-                    //typeof(FunctionUnit.BulletEmittingData),
-                    //typeof(FunctionUnit.EmittingStateData),
-                    //typeof(FunctionUnit.TriggerData),
-                    //typeof(FunctionUnit.ActivateData),
                     typeof(Targeting.CorpsGroup.TargetWithArmsData)
                 });
                 em.AddComponents(emitter, types);
@@ -105,11 +104,6 @@ namespace DotsLite.Arms.Authoring
                     typeof(Emitter.BulletEmittingData),
                     typeof(Emitter.TriggerData),
                     typeof(Emitter.StateData),
-                    //typeof(Emitter.EffectStateData),
-                    //typeof(FunctionUnit.BulletEmittingData),
-                    //typeof(FunctionUnit.EmittingStateData),
-                    //typeof(FunctionUnit.TriggerData),
-                    //typeof(FunctionUnit.ActivateData),
                     typeof(Targeting.CorpsGroup.TargetWithArmsData)
                 });
                 em.AddComponents(emitter, types);
@@ -128,7 +122,6 @@ namespace DotsLite.Arms.Authoring
                     new Emitter.BulletEmittingData
                     {
                         Prefab = bulletPrefab,
-                        //MuzzlePositionLocal = this.MuzzleLocalPosition,
 
                         EmittingInterval = this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,
@@ -162,7 +155,6 @@ namespace DotsLite.Arms.Authoring
                     new Emitter.EffectEmittingData
                     {
                         Prefab = effectPrefab,
-                        //MuzzlePositionLocal = this.MuzzleLocalPosition,
                     }
                 );
             }

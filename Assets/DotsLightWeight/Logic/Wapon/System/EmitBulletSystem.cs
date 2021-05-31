@@ -132,7 +132,8 @@ namespace DotsLite.Arms
                             var rot = rots[mlink.EmitterEntity].Value;
                             var pos = poss[mlink.EmitterEntity].Value;
 
-                            var init = emitter.CalcEmittingParams(pos, rot, emitter.MuzzlePositionLocal);
+                            var mzpos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, emitter.MuzzlePositionLocal);
+                            var init = emitter.CreateInitData(pos, rot);
                             var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
                             var freq = BulletEmittingUtility.CalcFreq(currentTime, frameBaseTime, emitter.EmittingInterval);
 
@@ -143,8 +144,7 @@ namespace DotsLite.Arms
                             for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
                             {
                                 BulletEmittingUtility.EmitBullet(cmd, eqi,
-                                    emitter.BulletPrefab, slink.StateEntity,
-                                    init, corps.TargetCorps);
+                                    emitter.BulletPrefab, slink.StateEntity, mzpos, init, corps.TargetCorps);
                             }
                             //}
 

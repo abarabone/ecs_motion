@@ -84,68 +84,28 @@ namespace DotsLite.Arms
 
 
 
-        public struct BulletEmittingParams
-        {
-            public float4 Position;
-            public Bullet.InitializeFromEmitterData Initialize;
-        }
-
-        public static BulletEmittingParams CalcEmittingParams(
-            this FunctionUnit.BulletEmittingData data,
-            float3 pos, quaternion rot, float3 muzzlePositionLocal)
-        {
-
-            return new BulletEmittingParams
+        public static Bullet.InitializeFromEmitterData CreateInitData(
+            this FunctionUnit.BulletEmittingData data, float3 pos, quaternion rot)
+        =>
+            new Bullet.InitializeFromEmitterData
             {
-                Position = calcMuzzlePosition_().As_float4(),
-                Initialize = new Bullet.InitializeFromEmitterData
-                {
-                    EmitterRotation = rot,
-                    EmitterAccuracyRad = data.AccuracyRad,
-                    EmitterRangeDistanceFactor = data.RangeDistanceFactor,
-                    AimSpeed = 0,
-                },
+                EmitterRotation = rot,
+                EmitterAccuracyRad = data.AccuracyRad,
+                EmitterRangeDistanceFactor = data.RangeDistanceFactor,
+                AimSpeed = 0,
+            };
+        
+        public static Bullet.InitializeFromEmitterData CreateInitData(
+            this Emitter.BulletEmittingData data, float3 pos, quaternion rot)
+        =>
+            new Bullet.InitializeFromEmitterData
+            {
+                EmitterRotation = rot,
+                EmitterAccuracyRad = data.AccuracyRad,
+                EmitterRangeDistanceFactor = data.RangeDistanceFactor,
+                AimSpeed = 0,
             };
 
-
-            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-            float3 calcMuzzlePosition_()
-            {
-
-                var muzpos = pos + math.mul(rot, muzzlePositionLocal);
-
-                return muzpos;
-            }
-
-        }
-        public static BulletEmittingParams CalcEmittingParams(
-            this Emitter.BulletEmittingData data,
-            float3 pos, quaternion rot, float3 muzzlePositionLocal)
-        {
-
-            return new BulletEmittingParams
-            {
-                Position = calcMuzzlePosition_().As_float4(),
-                Initialize = new Bullet.InitializeFromEmitterData
-                {
-                    EmitterRotation = rot,
-                    EmitterAccuracyRad = data.AccuracyRad,
-                    EmitterRangeDistanceFactor = data.RangeDistanceFactor,
-                    AimSpeed = 0,
-                },
-            };
-
-
-            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-            float3 calcMuzzlePosition_()
-            {
-
-                var muzpos = pos + math.mul(rot, muzzlePositionLocal);
-
-                return muzpos;
-            }
-
-        }
 
 
         /// <summary>
@@ -221,10 +181,7 @@ namespace DotsLite.Arms
         {
             var ent = cmd.Instantiate(eqi, effectPrefab);
 
-            cmd.SetComponent(eqi, ent, new Translation
-            {
-                Value = pos,
-            });
+            cmd.SetComponent(eqi, ent, new Translation { Value = pos });
         }
 
 
@@ -234,19 +191,14 @@ namespace DotsLite.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void EmitBullet(
             EntityCommandBuffer.ParallelWriter cmd, int eqi,
-            Entity bulletPrefab, Entity stateEntity,
-            BulletEmittingParams emitting, Corps targetCorps)
+            Entity bulletPrefab, Entity stateEntity, float3 pos,
+            Bullet.InitializeFromEmitterData init, Corps targetCorps)
         {
 
             var newBullet = cmd.Instantiate(eqi, bulletPrefab);
 
-            cmd.SetComponent(eqi, newBullet, emitting.Initialize);
-            cmd.SetComponent(eqi, newBullet,
-                new Translation
-                {
-                    Value = emitting.Position.xyz,
-                }
-            );
+            cmd.SetComponent(eqi, newBullet, init);
+            cmd.SetComponent(eqi, newBullet, new Translation { Value = pos });
             cmd.SetComponent(eqi, newBullet,
                 new Bullet.LinkData
                 {

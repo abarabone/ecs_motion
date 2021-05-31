@@ -69,8 +69,6 @@ namespace DotsLite.Arms
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
-            //var bullets = this.GetComponentDataFromEntity<Bullet.MoveSpecData>(isReadOnly: true);
-
 
             var dt = this.Time.DeltaTime;
             var currentTime = (float)this.Time.ElapsedTime;
@@ -82,20 +80,15 @@ namespace DotsLite.Arms
                 //.WithNone<Bullet.MoveSpecData>()
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
-                //.WithReadOnly(bullets)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
                         in Emitter.StateData state,
                         in Emitter.TriggerData trigger,
                         in Emitter.EffectEmittingData emitter,
-                        in Emitter.EffectMuzzleLinkData muzzle,
+                        in Emitter.EffectMuzzleLinkData mzlink,
+                        in Emitter.EffectMuzzlePositionData mzpos,
                         in Emitter.OwnerLinkData slink,
-                        //ref FunctionUnit.EmittingStateData state,
-                        //ref FunctionUnit.TriggerData trigger,
-                        //in FunctionUnit.BulletEmittingData emitter,
-                        //in FunctionUnit.StateLinkData slink,
-                        //in FunctionUnit.MuzzleLinkData mlink,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
@@ -103,15 +96,40 @@ namespace DotsLite.Arms
                         var freq = state.EmitFrequencyInCurrentFrame;
 
                         if (!trigger.IsTriggered) return;
-                        //if (currentTime < state.NextEmitableTime) return;
                         if (freq <= 0) return;
                         
 
-                        var mzrot = rots[muzzle.MuzzleEntity].Value;
-                        var mzpos = poss[muzzle.MuzzleEntity].Value;
-                        var efpos = BulletEmittingUtility.CalcMuzzlePosition(mzrot, mzpos, muzzle.MuzzlePositionLocal);
+                        var rot = rots[mzlink.MuzzleEntity].Value;
+                        var pos = poss[mzlink.MuzzleEntity].Value;
+                        var efpos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, mzpos.MuzzlePositionLocal.xyz);
 
                         BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, efpos);
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithNone<Emitter.EffectMuzzleLinkData>()
+                //.WithNone<Bullet.MoveSpecData>()
+                .ForEach(
+                    (
+                        Entity fireEntity, int entityInQueryIndex,
+                        in Emitter.StateData state,
+                        in Emitter.TriggerData trigger,
+                        in Emitter.EffectEmittingData emitter,
+                        in Emitter.OwnerLinkData slink,
+                        in Translation pos,
+                        in CorpsGroup.TargetWithArmsData corps
+                    ) =>
+                    {
+                        var eqi = entityInQueryIndex;
+                        var freq = state.EmitFrequencyInCurrentFrame;
+
+                        if (!trigger.IsTriggered) return;
+                        if (freq <= 0) return;
+
+                        BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, pos.Value);
                     }
                 )
                 .ScheduleParallel();

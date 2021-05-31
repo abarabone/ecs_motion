@@ -18,6 +18,12 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Draw;
     using DotsLite.CharacterMotion;
     using DotsLite.Arms;
+    using DotsLite.Utilities;
+
+    public interface IMuzzleLocalPostion
+    {
+        float3 Local { get; }
+    }
 
     //[UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     public class WaponHolderAuthoring2 : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
@@ -43,20 +49,26 @@ namespace DotsLite.Arms.Authoring
             var stateEntity = conversionSystem.GetOrCreateEntity(state);
 
             var holderEntity = entity;
-            var muzzleEntity = conversionSystem.GetPrimaryEntity(this.Muzzle);
-            var emitterEntity = this.UseCameraSite ? conversionSystem.GetPrimaryEntity(Camera.main) : muzzleEntity;
+            var muzzle = this.Muzzle.gameObject;
+            var emitter = this.UseCameraSite ? Camera.main.gameObject : muzzle;
+            var muzzleEntity = conversionSystem.GetPrimaryEntity(muzzle);
+            var emitterEntity = conversionSystem.GetPrimaryEntity(emitter);
 
-            var unitsEntities = listupMuzzleAndUnitsEntities_(conversionSystem, wapons);
-            initHolder_(conversionSystem, holderEntity, postureEntity, muzzleEntity, stateEntity, wapons.Length, startSelectedId: 0);
-            initAllWapons_(conversionSystem, holderEntity, unitsEntities);
-            initAllUnits_(conversionSystem, holderEntity, postureEntity, stateEntity, muzzleEntity, emitterEntity, unitsEntities);
-            //createInitUnit2Entities_(conversionSystem, holderEntity, this.Wapons);
+            var units = listupMuzzleAndUnitsEntities_(conversionSystem, wapons);
+            initHolder_(conversionSystem,
+                holderEntity, postureEntity,
+                muzzleEntity, stateEntity, wapons.Length, startSelectedId: 0);
+            initAllWapons_(conversionSystem,
+                holderEntity, units);
+            initAllUnits_(conversionSystem,
+                holderEntity, postureEntity, stateEntity,
+                muzzleEntity, emitterEntity, units, this.UseCameraSite ? Camera.main : null);
 
             return;
 
 
             /// 
-            static Entity[][] listupMuzzleAndUnitsEntities_
+            static IFunctionUnitAuthoring[][] listupMuzzleAndUnitsEntities_
                 (GameObjectConversionSystem gcs, IEnumerable<WaponAuthoring> wapons)
             {
 
@@ -67,7 +79,7 @@ namespace DotsLite.Arms.Authoring
                         from u in w.GetComponentsInChildren<IFunctionUnitAuthoring>()
                         let ubehviour = u as MonoBehaviour//)?.gameObject
                         where ubehviour != null
-                        select gcs.GetPrimaryEntity(ubehviour)
+                        select u//gcs.GetPrimaryEntity(ubehviour)
 
                     select qUnitEntity.ToArray()
                     ;
@@ -117,15 +129,15 @@ namespace DotsLite.Arms.Authoring
 
 
             static void initAllWapons_
-                (GameObjectConversionSystem gcs, Entity holder, IEnumerable<IEnumerable<Entity>> unitss)
+                (GameObjectConversionSystem gcs, Entity holder, IEnumerable<IEnumerable<IFunctionUnitAuthoring>> unitss)
             {
                 var em = gcs.DstEntityManager;
                 var holderBuf = em.GetBuffer<WaponHolder.UnitLinkData>(holder);
 
                 foreach (var w in unitss)
                 {
-                    var unit0 = w.ElementAtOrDefault(0);
-                    var unit1 = w.ElementAtOrDefault(1);
+                    var unit0 = gcs.GetPrimaryEntity(w.ElementAtOrDefault(0) as MonoBehaviour);
+                    var unit1 = gcs.GetPrimaryEntity(w.ElementAtOrDefault(1) as MonoBehaviour);
                     add2UnitsToHolder_(unit0, unit1);
                 }
 
@@ -140,31 +152,10 @@ namespace DotsLite.Arms.Authoring
             }
 
 
-            //static void createInitUnit2Entities_
-            //    (GameObjectConversionSystem gcs, Entity holder, IEnumerable<WaponAuthoring> wapons)
-            //{
-            //    var em = gcs.DstEntityManager;
-
-            //    var wents = wapons
-            //        .Select(x => gcs.GetPrimaryEntity(x))
-            //        .ToArray();
-
-            //    var initent = em.CreateEntity(new ComponentType(typeof(WaponTemplate.AddWaponData)));
-            //    em.AddComponentData(initent, new WaponTemplate.AddWaponData
-            //    {
-            //        HolderEntity = holder,
-            //        TemplateWaponEntity0 = wents.ElementAtOrDefault(0),
-            //        TemplateWaponEntity1 = wents.ElementAtOrDefault(1),
-            //        TemplateWaponEntity2 = wents.ElementAtOrDefault(2),
-            //        TemplateWaponEntity3 = wents.ElementAtOrDefault(3),
-            //    });
-            //}
-
-
             static void initAllUnits_(
                 GameObjectConversionSystem gcs,
                 Entity holder, Entity main, Entity state, Entity muzzle, Entity emitter,
-                IEnumerable<IEnumerable<Entity>> unitss)
+                IEnumerable<IEnumerable<IFunctionUnitAuthoring>> unitss, Camera cam)
             {
                 var em = gcs.DstEntityManager;
 
@@ -180,27 +171,45 @@ namespace DotsLite.Arms.Authoring
                 }
 
                 void addFunctionUnitComponents_
-                    (Entity muzzle, Entity unit, int waponId, int unitId)
+                    (Entity muzzle, IFunctionUnitAuthoring unit_, int waponId, int unitId)
                 {
-                    var types = new ComponentTypes(
+                    var unit = gcs.GetPrimaryEntity(unit_ as MonoBehaviour);
+
+                    var types = new ComponentTypes(new ComponentType[] {
                         typeof(Emitter.BulletMuzzleLinkData),
+                        typeof(Emitter.BulletMuzzlePositionData),
                         typeof(Emitter.EffectMuzzleLinkData),
+                        typeof(Emitter.EffectMuzzlePositionData),
                         typeof(Emitter.OwnerLinkData),
                         typeof(FunctionUnit.holderLinkData),
-                        typeof(FunctionUnitInWapon.TriggerSpecificData)
-                    );
+                        typeof(FunctionUnitInWapon.TriggerSpecificData),
+                    });
                     em.AddComponents(unit, types);
 
                     em.SetComponentData(unit,
                         new Emitter.BulletMuzzleLinkData
                         {
-                            MuzzleEntity = muzzle,
+                            MuzzleEntity = emitter,
+                        }
+                    );
+                    em.SetComponentData(unit,
+                        new Emitter.BulletMuzzlePositionData
+                        {
+                            MuzzlePositionLocal = cam != null
+                                ? cam.GetComponent<IMuzzleLocalPostion>().Local.As_float4()
+                                : (unit_ as IMuzzleLocalPostion).Local.As_float4(),
                         }
                     );
                     em.SetComponentData(unit,
                         new Emitter.EffectMuzzleLinkData
                         {
                             MuzzleEntity = muzzle,
+                        }
+                    );
+                    em.SetComponentData(unit,
+                        new Emitter.EffectMuzzlePositionData
+                        {
+                            MuzzlePositionLocal = (unit_ as IMuzzleLocalPostion).Local.As_float4(),
                         }
                     );
                     em.SetComponentData(unit,
