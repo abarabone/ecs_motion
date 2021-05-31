@@ -152,6 +152,18 @@ namespace DotsLite.Arms
         /// 
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CalcFreq(float currentTime, float frameBaseTime, float interval)
+        {
+            var d = currentTime - frameBaseTime;
+            var freq = (int)(d * math.rcp(interval)) + 1;
+            return freq;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float3 CalcAcc(float3 gravity, float gravityFactor)
         {
             var g = new DirectionAndLength { Value = gravity.As_float4(gravityFactor) };
@@ -191,25 +203,27 @@ namespace DotsLite.Arms
 
 
 
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static float2 Calc2dRot(ref Random rnd) => rnd.NextFloat2Direction();// * rnd.NextFloat(0.8f, 1.2f);
+
+
+
         /// <summary>
         /// 
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void EmitEffect(
             EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity effectPrefab,
-            float3 pos, ref Random rnd)
+            float3 pos)//, ref Random rnd)
         {
-            //if (effectPrefab == Entity.Null) return;
-
             var ent = cmd.Instantiate(eqi, effectPrefab);
 
             cmd.SetComponent(eqi, ent, new Translation
             {
                 Value = pos,
-            });
-            cmd.SetComponent(eqi, ent, new BillBoad.RotationData
-            {
-                Direction = rnd.NextFloat2Direction() * rnd.NextFloat(0.8f, 1.2f),
             });
         }
 
@@ -248,62 +262,62 @@ namespace DotsLite.Arms
 
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void EmitBullet(
-            EntityCommandBuffer.ParallelWriter cmd, int eqi,
-            Entity bulletPrefab, Entity stateEntity,
-            float3 bulletPosition, float range, float3 speed, float3 acc, Corps targetCorps)
-        {
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static void EmitBullet(
+        //    EntityCommandBuffer.ParallelWriter cmd, int eqi,
+        //    Entity bulletPrefab, Entity stateEntity,
+        //    float3 bulletPosition, float range, float3 speed, float3 acc, Corps targetCorps)
+        //{
 
-            var newBullet = cmd.Instantiate(eqi, bulletPrefab);
+        //    var newBullet = cmd.Instantiate(eqi, bulletPrefab);
 
-            //cmd.SetComponent(eqi, newBullet,
-            //    new Particle.TranslationTailData
-            //    {
-            //        PositionAndSize = bulletPosition.As_float4(),
-            //    }
-            //);
-            cmd.SetComponent(eqi, newBullet,
-                new Translation
-                {
-                    Value = bulletPosition,
-                }
-            );
-            cmd.SetComponent(eqi, newBullet,
-                new Bullet.VelocityData
-                {
-                    Velocity = speed.As_float4(),
-                }
-            );
-            cmd.SetComponent(eqi, newBullet,
-                new Bullet.AccelerationData
-                {
-                    Acceleration = acc.As_float4(),
-                }
-            );
-            cmd.SetComponent(eqi, newBullet,
-                new Bullet.DistanceData
-                {
-                    RestRangeDistance = range,
-                }
-            );
-            cmd.SetComponent(eqi, newBullet,
-                new Bullet.LinkData
-                {
-                    OwnerStateEntity = stateEntity,
-                }
-            );
-            cmd.SetComponent(eqi, newBullet,
-                new CorpsGroup.TargetWithArmsData
-                {
-                    TargetCorps = targetCorps,
-                }
-            );
+        //    //cmd.SetComponent(eqi, newBullet,
+        //    //    new Particle.TranslationTailData
+        //    //    {
+        //    //        PositionAndSize = bulletPosition.As_float4(),
+        //    //    }
+        //    //);
+        //    cmd.SetComponent(eqi, newBullet,
+        //        new Translation
+        //        {
+        //            Value = bulletPosition,
+        //        }
+        //    );
+        //    cmd.SetComponent(eqi, newBullet,
+        //        new Bullet.VelocityData
+        //        {
+        //            Velocity = speed.As_float4(),
+        //        }
+        //    );
+        //    cmd.SetComponent(eqi, newBullet,
+        //        new Bullet.AccelerationData
+        //        {
+        //            Acceleration = acc.As_float4(),
+        //        }
+        //    );
+        //    cmd.SetComponent(eqi, newBullet,
+        //        new Bullet.DistanceData
+        //        {
+        //            RestRangeDistance = range,
+        //        }
+        //    );
+        //    cmd.SetComponent(eqi, newBullet,
+        //        new Bullet.LinkData
+        //        {
+        //            OwnerStateEntity = stateEntity,
+        //        }
+        //    );
+        //    cmd.SetComponent(eqi, newBullet,
+        //        new CorpsGroup.TargetWithArmsData
+        //        {
+        //            TargetCorps = targetCorps,
+        //        }
+        //    );
 
-        }
+        //}
 
 
     }

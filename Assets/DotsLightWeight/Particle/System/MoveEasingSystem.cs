@@ -15,6 +15,7 @@ using Unity.Physics;
 using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
 
+using Random = Unity.Mathematics.Random;
 
 namespace DotsLite.Particle
 {
@@ -40,7 +41,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateAfter(typeof(ParticleLifeTimeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class SizingSystem : SystemBase
+    public class MoveEasingSystem : SystemBase
     {
 
         protected override void OnUpdate()
@@ -70,25 +71,25 @@ namespace DotsLite.Particle
             //    )
             //    .ScheduleParallel();
 
-            this.Entities
-                .WithName("Sizing")
-                .WithBurst()
-                .ForEach(
-                    (
-                        ref Particle.AdditionalData data,
-                        in BillBoad.SizeAnimationData anim,
-                        in Particle.LifeTimeData timer
-                    ) =>
-                    {
+            //this.Entities
+            //    .WithName("Rotate")
+            //    .WithBurst()
+            //    .ForEach(
+            //        (
+            //            ref BillBoad.RotationData rot,
+            //            in BillBoad.SizeAnimationData anim,
+            //            in BillBoad.RotationSpeedData rotspd,
+            //            in Particle.LifeTimeData timer
+            //        ) =>
+            //        {
 
-                        var elapsed = currentTime - timer.StartTime;
-                        var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
+            //            var elapsed = currentTime - timer.StartTime;
+            //            var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
 
-                        data.Size = math.lerp(anim.StartSize, anim.EndSize, normalizeTime);
 
-                    }
-                )
-                .ScheduleParallel();
+            //        }
+            //    )
+            //    .ScheduleParallel();
         }
 
     }

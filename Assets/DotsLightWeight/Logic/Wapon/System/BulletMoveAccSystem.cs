@@ -48,7 +48,8 @@ namespace DotsLite.Arms
         {
 
             var dt = this.Time.DeltaTime;
-            var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// とりあえず
+            var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// とりあえずエンジン側のを
+            // 重力が変化する可能性を考えて、毎フレーム取得する
 
 
             this.Entities
@@ -62,25 +63,21 @@ namespace DotsLite.Arms
                         ref Particle.TranslationTailData tail,
                         //ref Bullet.DistanceData dist,
                         ref Bullet.VelocityData v,
-                        in Bullet.AccelerationData acc
+                        in Bullet.AccelerationData acc,
+                        in Bullet.MoveSpecData spec
                     ) =>
                     {
+                        var g = gravity * spec.GravityFactor;
+                        var a = acc.Acceleration + g;
+
+                        v.Velocity += a * dt;
+
+
                         var d = v.Velocity.xyz * dt;
-
-                        //ptop.Start = ptop.End;
-
-                        //ptop.End += d;
 
                         tail.PositionAndSize = pos.Value.As_float4(tail.Size);
 
                         pos.Value += d;
-
-                        //dist.RestRangeDistance -= math.length(d);
-
-
-                        var a = acc.Acceleration.xyz * dt;
-
-                        v.Velocity += a.As_float4();
                     }
                 )
                 .ScheduleParallel();

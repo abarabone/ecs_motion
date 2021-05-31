@@ -15,6 +15,7 @@ using Unity.Physics;
 using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
 
+using Random = Unity.Mathematics.Random;
 
 namespace DotsLite.Particle
 {
@@ -40,7 +41,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateAfter(typeof(ParticleLifeTimeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class SizingSystem : SystemBase
+    public class RotateSystem : SystemBase
     {
 
         protected override void OnUpdate()
@@ -50,45 +51,45 @@ namespace DotsLite.Particle
             var currentTime = (float)this.Time.ElapsedTime;
 
 
-            //this.Entities
-            //    .WithName("Initialize")
-            //    .WithAll<Particle.LifeTimeInitializeTag>()
-            //    .WithBurst()
-            //    .ForEach(
-            //        (
-            //            int nativeThreadIndex, int entityInQueryIndex,
-            //            ref BillBoad.RotationData rot
-            //        ) =>
-            //        {
-            //            var tid = nativeThreadIndex;
-            //            var eqi = entityInQueryIndex;
-            //            var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
-
-            //            rot.Direction = rnd.NextFloat2Direction();
-
-            //        }
-            //    )
-            //    .ScheduleParallel();
-
             this.Entities
-                .WithName("Sizing")
+                .WithName("Initialize")
+                .WithAll<Particle.LifeTimeInitializeTag>()
                 .WithBurst()
                 .ForEach(
                     (
-                        ref Particle.AdditionalData data,
-                        in BillBoad.SizeAnimationData anim,
-                        in Particle.LifeTimeData timer
+                        int nativeThreadIndex, int entityInQueryIndex,
+                        ref BillBoad.RotationData rot
                     ) =>
                     {
+                        var tid = nativeThreadIndex;
+                        var eqi = entityInQueryIndex;
+                        var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
 
-                        var elapsed = currentTime - timer.StartTime;
-                        var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
-
-                        data.Size = math.lerp(anim.StartSize, anim.EndSize, normalizeTime);
+                        rot.Direction = rnd.NextFloat2Direction();
 
                     }
                 )
                 .ScheduleParallel();
+
+            //this.Entities
+            //    .WithName("Rotate")
+            //    .WithBurst()
+            //    .ForEach(
+            //        (
+            //            ref BillBoad.RotationData rot,
+            //            in BillBoad.SizeAnimationData anim,
+            //            in BillBoad.RotationSpeedData rotspd,
+            //            in Particle.LifeTimeData timer
+            //        ) =>
+            //        {
+
+            //            var elapsed = currentTime - timer.StartTime;
+            //            var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
+
+
+            //        }
+            //    )
+            //    .ScheduleParallel();
         }
 
     }

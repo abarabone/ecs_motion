@@ -39,16 +39,16 @@ namespace DotsLite.Arms
     {
         // Declare the delegate that takes 12 parameters. T0 is used for the Entity argument
         [Unity.Entities.CodeGeneratedJobForEach.EntitiesForEachCompatible]
-        public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>
+        public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8>
             (
                 T0 t0, T1 t1,
-                ref T2 t2, ref T3 t3, ref T4 t4, ref T5 t5,
-                in T6 t6, in T7 t7, in T8 t8, in T9 t9
+                ref T2 t2, ref T3 t3, ref T4 t4,
+                in T5 t5, in T6 t6, in T7 t7, in T8 t8
             );
 
         // Declare the function overload
-        public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>
-            (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> codeToRun)
+        public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8>
+            (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8> codeToRun)
             where TDescription : struct, Unity.Entities.CodeGeneratedJobForEach.ISupportForEachWithUniversalDelegate
         =>
             LambdaForEachDescriptionConstructionMethods.ThrowCodeGenException<TDescription>();
@@ -79,7 +79,6 @@ namespace DotsLite.Arms
                     int nativeThreadIndex, int entityInQueryIndex,
                     ref Particle.TranslationTailData tail,
                     ref Bullet.VelocityData v,
-                    ref Bullet.AccelerationData acc,
                     ref Particle.LifeTimeSpecData t,
                     in Translation pos,
                     in Bullet.MoveSpecData spec,
@@ -93,12 +92,12 @@ namespace DotsLite.Arms
 
                     tail.PositionAndSize = pos.Value.As_float4(data.Size);
 
+
                     var rot = init.EmitterRotation;
                     var rad = init.EmitterAccuracyRad;
                     var dir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, rad);
                     v.Velocity = init.AimSpeed * spec.AimFactor + (dir * spec.BulletSpeed).As_float4();
 
-                    acc.Acceleration = gravity * spec.GravityFactor;
 
                     var d = spec.RangeDistanceFactor * init.EmitterRangeDistanceFactor;
                     var rspd = math.rcp(spec.BulletSpeed);

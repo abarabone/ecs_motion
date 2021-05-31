@@ -109,16 +109,11 @@ namespace DotsLite.Arms
                         //Debug.Log(freq);
 
 
-                        var rnd = Random.CreateFromIndex((uint)eqi + (uint)math.asuint(dt) & 0x_7fff_ffff);
-
-
                         var bulletData = bullets[emitter.Prefab];
                         var rot = rots[muzzle.MuzzleEntity].Value;
                         var pos = poss[muzzle.MuzzleEntity].Value;
 
-                        //var bulletPos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, muzzle.MuzzlePositionLocal);
-                        //var acc = BulletEmittingUtility.CalcAcc(gravity, bulletData.GravityFactor, bulletData.AimFactor);
-                        //var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
+
                         var init = emitter.CalcEmittingParams(pos, rot, muzzle.MuzzlePositionLocal);
 
                         //for (var ifreq = 0; ifreq < freq; ifreq++)
@@ -126,9 +121,6 @@ namespace DotsLite.Arms
                         // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
                         for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
                             {
-                                //var bulletDir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, emitter.AccuracyRad);
-                                //var speed = bulletDir * bulletData.BulletSpeed;
-
                                 BulletEmittingUtility.EmitBullet(cmd, eqi,
                                     emitter.Prefab, slink.StateEntity,
                                     init, corps.TargetCorps);

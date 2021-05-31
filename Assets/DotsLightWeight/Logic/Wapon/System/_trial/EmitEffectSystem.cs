@@ -107,13 +107,11 @@ namespace DotsLite.Arms
                         if (freq <= 0) return;
                         
 
-                        var rnd = Random.CreateFromIndex((uint)eqi + (uint)math.asuint(dt) & 0x_7fff_ffff);
-
                         var mzrot = rots[muzzle.MuzzleEntity].Value;
                         var mzpos = poss[muzzle.MuzzleEntity].Value;
                         var efpos = BulletEmittingUtility.CalcMuzzlePosition(mzrot, mzpos, muzzle.MuzzlePositionLocal);
 
-                        BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, efpos, ref rnd);
+                        BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, efpos);
                     }
                 )
                 .ScheduleParallel();

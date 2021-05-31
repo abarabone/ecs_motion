@@ -105,6 +105,10 @@ namespace DotsLite.Particle
         {
             public float2 Direction;
         }
+        public struct RotationSpeedData : IComponentData
+        {
+            public float RadSpeedPerSec;
+        }
     }
 
     //public static partial class BillBoadCustom

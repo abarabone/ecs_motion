@@ -33,6 +33,25 @@ namespace DotsLite.Arms
     using Random = Unity.Mathematics.Random;
     using System;
 
+    //static class BringYourOwnDelegate2
+    //{
+    //    // Declare the delegate that takes 12 parameters. T0 is used for the Entity argument
+    //    [Unity.Entities.CodeGeneratedJobForEach.EntitiesForEachCompatible]
+    //    public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8>
+    //        (
+    //            T0 t0, T1 t1, T2 t2,
+    //            ref T3 t3,
+    //            in T4 t4, in T5 t5, in T6 t6, in T7 t7, in T8 t8
+    //        );
+
+    //    // Declare the function overload
+    //    public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8>
+    //        (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8> codeToRun)
+    //        where TDescription : struct, Unity.Entities.CodeGeneratedJobForEach.ISupportForEachWithUniversalDelegate
+    //    =>
+    //        LambdaForEachDescriptionConstructionMethods.ThrowCodeGenException<TDescription>();
+    //}
+
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
@@ -99,15 +118,13 @@ namespace DotsLite.Arms
                         if (!trigger.IsTriggered) return;
                         if (currentTime < state.NextEmitableTime) return;
 
-                        var rnd = Random.CreateFromIndex((uint)eqi + (uint)math.asuint(dt) & 0x_7fff_ffff);
-
 
                         if (emitter.EffectPrefab != Entity.Null)
                         {
                             var mzrot = rots[mlink.MuzzleEntity].Value;
                             var mzpos = poss[mlink.MuzzleEntity].Value;
                             var efpos = BulletEmittingUtility.CalcMuzzlePosition(mzrot, mzpos, emitter.MuzzlePositionLocal);
-                            BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.EffectPrefab, efpos, ref rnd);
+                            BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.EffectPrefab, efpos);
                         }
 
                         {
@@ -115,21 +132,11 @@ namespace DotsLite.Arms
                             var rot = rots[mlink.EmitterEntity].Value;
                             var pos = poss[mlink.EmitterEntity].Value;
 
-                            //var bulletPos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, emitter.MuzzlePositionLocal);
-                            //var acc = BulletEmittingUtility.CalcAcc(gravity, bulletData.GravityFactor);
-                            //var range = emitter.RangeDistanceFactor * bulletData.RangeDistanceFactor;
-                            ////var spd = BulletEmittingUtility.CalcAimSpeed(, bulletData.AimFactor);
                             var init = emitter.CalcEmittingParams(pos, rot, emitter.MuzzlePositionLocal);
-
-                            // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射間隔になる
                             var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
+                            var freq = BulletEmittingUtility.CalcFreq(currentTime, frameBaseTime, emitter.EmittingInterval);
 
-                            var d = currentTime - frameBaseTime;
-                            var freq = (int)(d * math.rcp(emitter.EmittingInterval)) + 1;
                             //Debug.Log(freq);
-
-                            state.NextEmitableTime = frameBaseTime + emitter.EmittingInterval * freq;
-
                             //for (var ifreq = 0; ifreq < freq; ifreq++)
                             //{
                             // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
@@ -141,29 +148,7 @@ namespace DotsLite.Arms
                             }
                             //}
 
-                            ////// 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射間隔になる
-                            ////var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
-
-                            ////var nextTime = frameBaseTime;
-                            ////do
-                            ////{
-                            ////    nextTime += emitter.EmittingInterval;
-
-                            ////    // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
-                            ////    for (var i = 0; i < emitter.NumEmitMultiple; i++)
-                            ////    {
-                            ////        var bulletDir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, emitter.AccuracyRad);
-                            ////        var speed = bulletDir * bulletData.BulletSpeed;
-
-                            ////        BulletEmittingUtility.EmitBullet(cmd, eqi,
-                            ////            emitter.BulletPrefab, slink.StateEntity,
-                            ////            bulletPos, range, speed, acc, corps.TargetCorps);
-                            ////    }
-                            ////}
-                            ////while (currentTime >= nextTime);
-
-
-                            ////state.NextEmitableTime = nextTime;
+                            state.NextEmitableTime = frameBaseTime + emitter.EmittingInterval * freq;
                         }
                     }
                 )

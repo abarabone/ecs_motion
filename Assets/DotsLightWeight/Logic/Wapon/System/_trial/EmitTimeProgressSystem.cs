@@ -60,11 +60,8 @@ namespace DotsLite.Arms
                         if (!trigger.IsTriggered) return;
 
 
-                        // 前回の発射が直前のフレームなら連続した発射間隔、はなれたフレームなら今フレームをベースにした発射間隔になる
                         var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
-
-                        var d = currentTime - frameBaseTime;
-                        var freq = (int)(d * math.rcp(emitter.EmittingInterval)) + 1;
+                        var freq = BulletEmittingUtility.CalcFreq(currentTime, frameBaseTime, emitter.EmittingInterval);
 
                         state.NextEmitableTime = frameBaseTime + emitter.EmittingInterval * freq;
                         state.EmitFrequencyInCurrentFrame = freq;
