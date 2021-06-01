@@ -47,7 +47,10 @@ namespace DotsLite.Particle.Aurthoring
         public float AnimationTimeSpan;
 
         public float LifeTimeSec;// 0 à»â∫Ç»ÇÁè¡Ç¶Ç»Ç¢
-
+        
+        public float AlphaMin;
+        public float AlphaMax;
+        
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {

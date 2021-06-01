@@ -110,16 +110,12 @@ namespace DotsLite.Particle
             public float RadSpeedPerSec;
         }
 
-        public struct ColorFadeData : IComponentData
+        public struct AlphaFadeData : IComponentData
         {
-            public float4 Current;
-            public float4 SpeedPerSec;
-        }
-        public struct ColorFadeData : IComponentData
-        {
-            public Color32 Min;
-            public Color32 Max;
-
+            public float Current;
+            public float SpeedPerSec;
+            public float Min;
+            public float Max;
         }
     }
 

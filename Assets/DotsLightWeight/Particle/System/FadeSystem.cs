@@ -76,24 +76,15 @@ namespace DotsLite.Particle
                 .ForEach(
                     (
                         ref Particle.AdditionalData data,
-                        in BillBoad.SizeAnimationData anim,
-                        in Particle.LifeTimeData timer
+                        ref BillBoad.AlphaFadeData fade
                     ) =>
                     {
 
-                        var elapsed = currentTime - timer.StartTime;
-                        var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
+                        var next = fade.Current + fade.SpeedPerSec * dt;
 
-                        data.Size = math.lerp(anim.StartSize, anim.EndSize, normalizeTime);
+                        fade.Current = math.clamp(next, fade.Min, fade.Max);
 
-
-                        var c = new Color32();
-
-                        var ci = c.to_int4();
-                        var spd = c.to_int4();
-
-                        ci += spd * dt;
-
+                        data.Color.a = (byte)(fade.Current * 255);
                     }
                 )
                 .ScheduleParallel();

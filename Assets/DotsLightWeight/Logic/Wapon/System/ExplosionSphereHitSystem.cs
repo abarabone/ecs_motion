@@ -143,7 +143,7 @@ namespace DotsLite.Arms
                             }
                         }
 
-                        cmd.DestroyEntity(entityInQueryIndex, entity);
+                        //cmd.DestroyEntity(entityInQueryIndex, entity);
                     }
                 )
                 .ScheduleParallel();
