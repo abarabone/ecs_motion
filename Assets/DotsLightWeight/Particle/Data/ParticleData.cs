@@ -109,6 +109,18 @@ namespace DotsLite.Particle
         {
             public float RadSpeedPerSec;
         }
+
+        public struct ColorFadeData : IComponentData
+        {
+            public float4 Current;
+            public float4 SpeedPerSec;
+        }
+        public struct ColorFadeData : IComponentData
+        {
+            public Color32 Min;
+            public Color32 Max;
+
+        }
     }
 
     //public static partial class BillBoadCustom

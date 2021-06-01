@@ -21,7 +21,8 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Arms;
     using DotsLite.Model;
 
-    public class BeamUnitAuthoring : MonoBehaviour, IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class BeamUnitAuthoring : MonoBehaviour,
+        IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs, IMuzzleLocalPostion
     {
 
         public int Id;
@@ -30,6 +31,7 @@ namespace DotsLite.Arms.Authoring
 
         public GameObject MuzzleObject;
         public float3 MuzzleLocalPosition;
+        public float3 Local => this.MuzzleLocalPosition;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)

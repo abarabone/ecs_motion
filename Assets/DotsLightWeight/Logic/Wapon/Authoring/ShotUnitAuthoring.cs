@@ -21,20 +21,24 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Arms;
     using DotsLite.Model;
     using DotsLite.Particle.Aurthoring;
+    using DotsLite.Utilities;
 
     /// <summary>
     /// 
     /// </summary>
-    public class ShotUnitAuthoring : MonoBehaviour, IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class ShotUnitAuthoring : MonoBehaviour,
+        IFunctionUnitAuthoring, IConvertGameObjectToEntity, IDeclareReferencedPrefabs, IMuzzleLocalPostion
     {
 
         public int Id;
 
+        //public IBulletAuthoring aaa;
         public BulletAuthoringBase BulletPrefab;
         public ParticleAuthoringBase MuzzleEffectPrefab;
 
         //public GameObject MuzzleObject;
         public float3 MuzzleLocalPosition;
+        public float3 Local => this.MuzzleLocalPosition;
 
         public int NumEmitMultiple;
         public float EmittingInterval;
@@ -57,41 +61,68 @@ namespace DotsLite.Arms.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            initEmitter_(conversionSystem, entity);
+            switch (this.MuzzleEffectPrefab == null)
+            {
+                case true:
+                    addComponents_(conversionSystem, entity);
+                    setComponents_(conversionSystem, entity);
+                    break;
+
+                case false:
+                    addComponentsWithEffect_(conversionSystem, entity);
+                    setComponents_(conversionSystem, entity);
+                    setEffectComponent_(conversionSystem, entity);
+                    break;
+            }
 
             return;
 
 
-            void initEmitter_(GameObjectConversionSystem gcs, Entity emitter)
+            void addComponents_(GameObjectConversionSystem gcs, Entity emitter)
             {
-
                 var em = gcs.DstEntityManager;
-
-                var bulletPrefab = gcs.GetPrimaryEntity(this.BulletPrefab);
-                var effectPrefab = this.MuzzleEffectPrefab != null
-                    ? gcs.GetPrimaryEntity(this.MuzzleEffectPrefab)
-                    : Entity.Null;
-
-                var ent = emitter;
-
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                    typeof(FunctionUnit.BulletEmittingData),
-                    typeof(FunctionUnit.EmittingStateData),
-                    typeof(FunctionUnit.TriggerData),
-                    //typeof(FunctionUnit.ActivateData),
+                    typeof(Emitter.BulletEmittingData),
+                    typeof(Emitter.TriggerData),
+                    typeof(Emitter.StateData),
                     typeof(Targeting.CorpsGroup.TargetWithArmsData)
                 });
-                em.AddComponents(ent, types);
+                em.AddComponents(emitter, types);
+            }
+
+            void addComponentsWithEffect_(GameObjectConversionSystem gcs, Entity emitter)
+            {
+                var em = gcs.DstEntityManager;
+
+                var types = new ComponentTypes(new ComponentType[]
+                {
+                    typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
+                    typeof(Emitter.EffectEmittingData),
+                    typeof(Emitter.BulletEmittingData),
+                    typeof(Emitter.TriggerData),
+                    typeof(Emitter.StateData),
+                    typeof(Targeting.CorpsGroup.TargetWithArmsData)
+                });
+                em.AddComponents(emitter, types);
+            }
+
+
+            void setComponents_(GameObjectConversionSystem gcs, Entity emitter)
+            {
+                var em = gcs.DstEntityManager;
+
+                var bulletPrefab = gcs.GetPrimaryEntity(this.BulletPrefab);
+
+                var ent = emitter;
 
                 em.SetComponentData(ent,
-                    new FunctionUnit.BulletEmittingData
+                    new Emitter.BulletEmittingData
                     {
-                        BulletPrefab = bulletPrefab,
-                        EffectPrefab = effectPrefab,
-                        MuzzlePositionLocal = this.MuzzleLocalPosition,
+                        Prefab = bulletPrefab,
+
                         EmittingInterval = this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,
                         AccuracyRad = math.radians(this.DirectionAccuracyDegree),
@@ -99,20 +130,34 @@ namespace DotsLite.Arms.Authoring
                     }
                 );
                 em.SetComponentData(ent,
-                    new FunctionUnit.EmittingStateData
+                    new Emitter.StateData
                     {
                         NextEmitableTime = this.EmittingInterval,
                     }
                 );
-                //em.SetComponentData(ent,
-                //    new FunctionUnit.TriggerData
-                //    {
-                //        IsTriggered = true,
-                //    }
-                //);
+                em.SetComponentData(ent,
+                    new Emitter.TriggerData
+                    {
+                        IsTriggered = true,
+                    }
+                );
             }
 
+            void setEffectComponent_(GameObjectConversionSystem gcs, Entity emitter)
+            {
+                var em = gcs.DstEntityManager;
 
+                var effectPrefab = gcs.GetPrimaryEntity(this.MuzzleEffectPrefab);
+
+                var ent = emitter;
+
+                em.SetComponentData(ent,
+                    new Emitter.EffectEmittingData
+                    {
+                        Prefab = effectPrefab,
+                    }
+                );
+            }
         }
 
     }
