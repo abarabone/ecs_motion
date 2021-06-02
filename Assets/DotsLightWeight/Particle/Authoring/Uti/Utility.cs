@@ -160,7 +160,7 @@ namespace DotsLite.Particle.Aurthoring
         }
 
 
-        public static void AddAnimationComponents(
+        public static void AddAnimationComponentsOrNot(
             this GameObjectConversionSystem gcs, GameObject main,
             binary_length animationIndexLength, int animationBaseIndex, int animationIndexMax, float animationTimeSpan)
         {
@@ -191,7 +191,7 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
-        public static void AddLifeTimeComponents(
+        public static void AddLifeTimeComponentsOrNot(
             this GameObjectConversionSystem gcs, GameObject main, float time)
         {
             if (time <= 0.0f) return;
@@ -215,7 +215,54 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
-        public static void AddSizingComponents(
+        public static void AddRotationComponentsOrNot(
+            this GameObjectConversionSystem gcs, GameObject main, float rotSpeed)
+        {
+            if (rotSpeed <= 0.0f) return;
+
+            var em = gcs.DstEntityManager;
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(
+                typeof(BillBoad.RotationSpeedData)
+            );
+            em.AddComponents(mainEntity, types);
+
+            em.AddComponentData(mainEntity,
+                new BillBoad.RotationSpeedData
+                {
+                    RadSpeedPerSec = math.radians(rotSpeed),
+                }
+            );
+        }
+
+        public static void AddAlphaFadeComponentsOrNot(
+            this GameObjectConversionSystem gcs, GameObject main, float firstValue, float lastValue, float timeSpan)
+        {
+            if (timeSpan <= 0.0f) return;
+
+            var em = gcs.DstEntityManager;
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(
+                typeof(BillBoad.AlphaFadeData)
+            );
+            em.AddComponents(mainEntity, types);
+
+            em.AddComponentData(mainEntity,
+                new BillBoad.AlphaFadeData
+                {
+                    Current = firstValue,
+                    Min = math.min(firstValue, lastValue),
+                    Max = math.max(firstValue, lastValue),
+                    SpeedPerSec = (lastValue - firstValue) / timeSpan,
+                }
+            );
+        }
+
+        public static void AddSizingComponentsOrNot(
             this GameObjectConversionSystem gcs, GameObject main,
             float startRadius, float endRadius, float endtime)
         {

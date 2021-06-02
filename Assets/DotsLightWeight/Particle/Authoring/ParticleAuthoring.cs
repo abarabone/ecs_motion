@@ -44,12 +44,14 @@ namespace DotsLite.Particle.Aurthoring
         public int AnimationBaseIndex;
         public int AnimationIndexMax;
         public binary_length AnimationIndexLength;
-        public float AnimationTimeSpan;
+        public float AnimationTimeSpanSec;
 
         public float LifeTimeSec;// 0 à»â∫Ç»ÇÁè¡Ç¶Ç»Ç¢
-        
-        public float AlphaMin;
-        public float AlphaMax;
+
+        public float AlphaTimeSpanSec;
+        public float AlphaLast;
+
+        public float RotationDegreesPerSec;
         
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -63,35 +65,35 @@ namespace DotsLite.Particle.Aurthoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            var gcs = conversionSystem;
 
-            var modelEntity = conversionSystem.GetPrimaryEntity(this.ModelSource);
+            var modelEntity = gcs.GetPrimaryEntity(this.ModelSource);
 
 
             switch (this.ModelSource.ParticleType)
             {
                 case ParticleMeshType.billboadUv:
-                    conversionSystem.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
-                    addParticleEntityComponents_(conversionSystem, this.gameObject);
-                    conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpan);
-                    conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
-                    conversionSystem.AddSizingComponents(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
+                    gcs.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
+                    addParticleEntityComponents_(gcs, this.gameObject);
+                    gcs.AddAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec);
                     break;
 
                 case ParticleMeshType.psyllium:
-                    conversionSystem.InitParticleEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.StartRadius);
-                    addPsylliumComponents_(conversionSystem, this.gameObject);
-                    conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
-                    conversionSystem.AddSizingComponents(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
+                    gcs.InitParticleEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.StartRadius);
+                    addPsylliumComponents_(gcs, this.gameObject);
                     break;
 
                 case ParticleMeshType.psylliumUv:
-                    conversionSystem.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
-                    addPsylliumComponents_(conversionSystem, this.gameObject);
-                    conversionSystem.AddAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpan);
-                    conversionSystem.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
-                    conversionSystem.AddSizingComponents(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
+                    gcs.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
+                    addPsylliumComponents_(gcs, this.gameObject);
+                    gcs.AddAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec);
                     break;
             }
+
+            gcs.AddLifeTimeComponentsOrNot(this.gameObject, this.LifeTimeSec);
+            gcs.AddSizingComponentsOrNot(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
+            gcs.AddAlphaFadeComponentsOrNot(this.gameObject, this.ParticleColor.a, this.AlphaLast, this.AlphaTimeSpanSec);
+            gcs.AddRotationComponentsOrNot(this.gameObject, this.RotationDegreesPerSec);
 
             return;
 
