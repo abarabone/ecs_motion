@@ -17,6 +17,7 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Draw;
     using DotsLite.CharacterMotion;
     using DotsLite.Arms;
+    using DotsLite.Utilities;
 
     public class FunctionHolderAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -64,14 +65,14 @@ namespace DotsLite.Arms.Authoring
             {
                 var em = gcs.DstEntityManager;
 
-                foreach (var unit in units)
+                foreach (var unit in units.Cast<IMuzzleLocalPostion>())
                 {
                     var src = unit as MonoBehaviour;
 
                     var unitEntity = gcs.GetPrimaryEntity(src);
                     var parentEntity = gcs.GetPrimaryEntity(src.transform.parent);
 
-                    initUnit_(gcs, unitEntity, stateEntity, stateEntity, parentEntity);
+                    initUnit_(gcs, unit, unitEntity, stateEntity, stateEntity, parentEntity);
 
                     var holderBuf = em.GetBuffer<FunctionHolder.LinkData>(holderEntity);
                     holderBuf.Add(new FunctionHolder.LinkData
@@ -81,32 +82,69 @@ namespace DotsLite.Arms.Authoring
                 }
             }
 
-            static void initUnit_(GameObjectConversionSystem gcs, Entity unit, Entity state, Entity holder, Entity parent)
+            static void initUnit_(
+                GameObjectConversionSystem gcs, IMuzzleLocalPostion unitObject,
+                Entity unit, Entity state, Entity holder, Entity parent)
             {
                 var em = gcs.DstEntityManager;
 
-                var types = new ComponentTypes(
-                    typeof(FunctionUnit.StateLinkData),
-                    typeof(FunctionUnit.MuzzleLinkData),
+                var _types = new List<ComponentType>
+                {
+                    typeof(Emitter.OwnerLinkData),
+                    typeof(Emitter.BulletMuzzleLinkData),
+                    typeof(Emitter.BulletMuzzlePositionData),
                     typeof(FunctionUnitAiming.ParentBoneLinkData),
                     typeof(Rotation),
-                    typeof(Translation)
-                );
+                    typeof(Translation),
+                };
+                if (unitObject.UseEffect)
+                {
+                    _types.Add(typeof(Emitter.EffectMuzzleLinkData));
+                    _types.Add(typeof(Emitter.EffectMuzzlePositionData));
+                }
+                var types = new ComponentTypes(_types.ToArray());
                 em.AddComponents(unit, types);
 
                 em.SetComponentData(unit,
-                    new FunctionUnit.StateLinkData
+                    new Emitter.OwnerLinkData
                     {
                         StateEntity = state,
                     }
                 );
                 em.SetComponentData(unit,
-                    new FunctionUnit.MuzzleLinkData
+                    new Emitter.BulletMuzzleLinkData
                     {
-                        EmitterEntity = unit,
                         MuzzleEntity = unit,
                     }
                 );
+                em.SetComponentData(unit,
+                    new Emitter.BulletMuzzlePositionData
+                    {
+                        MuzzlePositionLocal = unitObject.Local.As_float4(),
+                    }
+                );
+                if (unitObject.UseEffect)
+                {
+                    em.SetComponentData(unit,
+                        new Emitter.EffectMuzzleLinkData
+                        {
+                            MuzzleEntity = unit,
+                        }
+                    );
+                    em.SetComponentData(unit,
+                        new Emitter.EffectMuzzlePositionData
+                        {
+                            MuzzlePositionLocal = unitObject.Local.As_float4(),
+                        }
+                    );
+                }
+                //em.SetComponentData(unit,
+                //    new FunctionUnit.MuzzleLinkData
+                //    {
+                //        EmitterEntity = unit,
+                //        MuzzleEntity = unit,
+                //    }
+                //);
                 em.SetComponentData(unit,
                     new FunctionUnitAiming.ParentBoneLinkData
                     {

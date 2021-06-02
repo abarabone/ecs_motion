@@ -81,10 +81,10 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref FunctionUnit.TriggerData trigger,
+                        ref Emitter.TriggerData trigger,
                         ref Rotation rot,
                         ref Translation pos,
-                        in FunctionUnit.StateLinkData slink,
+                        in Emitter.OwnerLinkData slink,
                         in FunctionUnitAiming.ParentBoneLinkData plink,
                         in FunctionUnitAiming.HighAngleShotData data
                     ) =>

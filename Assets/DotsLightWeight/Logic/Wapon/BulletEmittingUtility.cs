@@ -84,16 +84,16 @@ namespace DotsLite.Arms
 
 
 
-        public static Bullet.InitializeFromEmitterData CreateInitData(
-            this FunctionUnit.BulletEmittingData data, float3 pos, quaternion rot)
-        =>
-            new Bullet.InitializeFromEmitterData
-            {
-                EmitterRotation = rot,
-                EmitterAccuracyRad = data.AccuracyRad,
-                EmitterRangeDistanceFactor = data.RangeDistanceFactor,
-                AimSpeed = 0,
-            };
+        //public static Bullet.InitializeFromEmitterData CreateInitData(
+        //    this FunctionUnit.BulletEmittingData data, float3 pos, quaternion rot)
+        //=>
+        //    new Bullet.InitializeFromEmitterData
+        //    {
+        //        EmitterRotation = rot,
+        //        EmitterAccuracyRad = data.AccuracyRad,
+        //        EmitterRangeDistanceFactor = data.RangeDistanceFactor,
+        //        AimSpeed = 0,
+        //    };
         
         public static Bullet.InitializeFromEmitterData CreateInitData(
             this Emitter.BulletEmittingData data, float3 pos, quaternion rot)

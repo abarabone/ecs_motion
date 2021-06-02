@@ -28,6 +28,7 @@ namespace DotsLite.Arms.Authoring
         public int Id;
 
         public BeamBulletAuthoring BeamPrefab;
+        public bool UseEffect => false;
 
         public GameObject MuzzleObject;
         public float3 MuzzleLocalPosition;
@@ -61,9 +62,9 @@ namespace DotsLite.Arms.Authoring
                 var types = new ComponentTypes(new ComponentType[]
                 {
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                    typeof(FunctionUnit.BulletEmittingData),
+                    typeof(Emitter.BulletEmittingData),
                     typeof(Bullet.MoveSpecData), // 通常なら弾丸に持たせるところ、瞬時に着弾するため unit に持たせる。
-                    typeof(FunctionUnit.TriggerData),
+                    typeof(Emitter.TriggerData),
                     //typeof(FunctionUnit.OwnerLinkData),
                     ////typeof(FunctionUnit.ActivateData),
                     typeof(Targeting.CorpsGroup.TargetWithArmsData)
@@ -71,10 +72,10 @@ namespace DotsLite.Arms.Authoring
                 em.AddComponents(ent, types);
 
                 em.SetComponentData(ent,
-                    new FunctionUnit.BulletEmittingData
+                    new Emitter.BulletEmittingData
                     {
-                        BulletPrefab = beamPrefab,
-                        MuzzlePositionLocal = this.MuzzleLocalPosition,
+                        //BulletPrefab = beamPrefab,
+                        //MuzzlePositionLocal = this.MuzzleLocalPosition,
                         RangeDistanceFactor = 1.0f,
                     }
                 );

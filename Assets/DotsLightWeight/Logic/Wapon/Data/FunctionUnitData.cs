@@ -24,50 +24,50 @@ namespace DotsLite.Arms
     static public partial class FunctionUnit
     {
 
-        //public struct OwnerLinkData : IComponentData
+        ////public struct OwnerLinkData : IComponentData
+        ////{
+        ////    //public Entity OwnerMainEntity;  // 当たり判定で自身を除外するなど
+        ////    public Entity MuzzleEntity;     // 射出の向きやエフェクトの位置のため
+        ////}
+        //public struct StateLinkData : IComponentData
         //{
-        //    //public Entity OwnerMainEntity;  // 当たり判定で自身を除外するなど
-        //    public Entity MuzzleEntity;     // 射出の向きやエフェクトの位置のため
+        //    public Entity StateEntity;
         //}
-        public struct StateLinkData : IComponentData
-        {
-            public Entity StateEntity;
-        }
-        public struct MuzzleLinkData : IComponentData
-        {
-            public Entity EmitterEntity;    // 射出の向き
-            public Entity MuzzleEntity;     // エフェクトの位置
-        }
+        //public struct MuzzleLinkData : IComponentData
+        //{
+        //    public Entity EmitterEntity;    // 射出の向き
+        //    public Entity MuzzleEntity;     // エフェクトの位置
+        //}
         public struct holderLinkData : IComponentData
         {
             public Entity WaponHolderEntity;
         }
-        public struct BulletEmittingData : IComponentData
-        {
-            public Entity BulletPrefab;
-            public Entity EffectPrefab;
-
-            public float3 MuzzlePositionLocal;
-
-            public float EmittingInterval;
-            public float AccuracyRad;
-            public int NumEmitMultiple;
-            public float RangeDistanceFactor;// 切り替え時に弾丸のと計算確定しようかと思ったが、わかりにくいのでやめた
-        }
-
-        public struct TriggerData : IComponentData
-        {
-            public bool IsTriggered;
-        }
-
-        //public struct SightModeData : IComponentData
+        //public struct BulletEmittingData : IComponentData
         //{
-        //    public bool IsCameraSight;
+        //    public Entity BulletPrefab;
+        //    public Entity EffectPrefab;
+
+        //    public float3 MuzzlePositionLocal;
+
+        //    public float EmittingInterval;
+        //    public float AccuracyRad;
+        //    public int NumEmitMultiple;
+        //    public float RangeDistanceFactor;// 切り替え時に弾丸のと計算確定しようかと思ったが、わかりにくいのでやめた
         //}
-        public struct EmittingStateData : IComponentData
-        {
-            public float NextEmitableTime;
-        }
+
+        //public struct TriggerData : IComponentData
+        //{
+        //    public bool IsTriggered;
+        //}
+
+        ////public struct SightModeData : IComponentData
+        ////{
+        ////    public bool IsCameraSight;
+        ////}
+        //public struct EmittingStateData : IComponentData
+        //{
+        //    public float NextEmitableTime;
+        //}
 
         public struct PrevFrameMuzzlePosition : IComponentData
         {
@@ -140,6 +140,12 @@ namespace DotsLite.Arms
         //    public double NextEmitableTime;
         //}
 
+        public struct StateData : IComponentData
+        {
+            public float NextEmitableTime;
+            public int EmitFrequencyInCurrentFrame;
+        }
+
         public struct EffectMuzzleLinkData : IComponentData
         {
             public Entity MuzzleEntity;
@@ -151,12 +157,6 @@ namespace DotsLite.Arms
         public struct EffectEmittingData : IComponentData
         {
             public Entity Prefab;
-        }
-
-        public struct StateData : IComponentData
-        {
-            public float NextEmitableTime;
-            public int EmitFrequencyInCurrentFrame;
         }
 
         public struct BulletMuzzleLinkData : IComponentData

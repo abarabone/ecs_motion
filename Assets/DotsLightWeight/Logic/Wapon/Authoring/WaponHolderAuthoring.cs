@@ -23,6 +23,7 @@ namespace DotsLite.Arms.Authoring
     public interface IMuzzleLocalPostion
     {
         float3 Local { get; }
+        bool UseEffect { get; }
     }
 
     //[UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
@@ -158,6 +159,7 @@ namespace DotsLite.Arms.Authoring
                 IEnumerable<IEnumerable<IFunctionUnitAuthoring>> unitss, Camera cam)
             {
                 var em = gcs.DstEntityManager;
+                var camObject = cam?.GetComponent<IMuzzleLocalPostion>();
 
                 var qUnit =
                     from w in unitss.WithIndex()
@@ -167,23 +169,29 @@ namespace DotsLite.Arms.Authoring
                     ;
                 foreach (var (unit, wid, uid) in qUnit)
                 {
-                    addFunctionUnitComponents_(muzzle, unit, wid, uid);
+                    addFunctionUnitComponents_(muzzle, unit as IMuzzleLocalPostion, wid, uid);
                 }
 
                 void addFunctionUnitComponents_
-                    (Entity muzzle, IFunctionUnitAuthoring unit_, int waponId, int unitId)
+                    (Entity muzzle, IMuzzleLocalPostion unitObject, int waponId, int unitId)
                 {
-                    var unit = gcs.GetPrimaryEntity(unit_ as MonoBehaviour);
+                    var unit = gcs.GetPrimaryEntity(unitObject as MonoBehaviour);
 
-                    var types = new ComponentTypes(new ComponentType[] {
+                    var _types = new List<ComponentType>
+                    {
                         typeof(Emitter.BulletMuzzleLinkData),
                         typeof(Emitter.BulletMuzzlePositionData),
-                        typeof(Emitter.EffectMuzzleLinkData),
-                        typeof(Emitter.EffectMuzzlePositionData),
                         typeof(Emitter.OwnerLinkData),
                         typeof(FunctionUnit.holderLinkData),
                         typeof(FunctionUnitInWapon.TriggerSpecificData),
-                    });
+                    };
+                    if (unitObject.UseEffect)
+                    {
+                        _types.Add(typeof(Emitter.EffectMuzzleLinkData));
+                        _types.Add(typeof(Emitter.EffectMuzzlePositionData));
+                    }
+                    var types = new ComponentTypes(_types.ToArray());
+
                     em.AddComponents(unit, types);
 
                     em.SetComponentData(unit,
@@ -195,23 +203,26 @@ namespace DotsLite.Arms.Authoring
                     em.SetComponentData(unit,
                         new Emitter.BulletMuzzlePositionData
                         {
-                            MuzzlePositionLocal = cam != null
-                                ? cam.GetComponent<IMuzzleLocalPostion>().Local.As_float4()
-                                : (unit_ as IMuzzleLocalPostion).Local.As_float4(),
+                            MuzzlePositionLocal = (camObject ?? unitObject).Local.As_float4(),
                         }
                     );
-                    em.SetComponentData(unit,
-                        new Emitter.EffectMuzzleLinkData
-                        {
-                            MuzzleEntity = muzzle,
-                        }
-                    );
-                    em.SetComponentData(unit,
-                        new Emitter.EffectMuzzlePositionData
-                        {
-                            MuzzlePositionLocal = (unit_ as IMuzzleLocalPostion).Local.As_float4(),
-                        }
-                    );
+
+                    if (unitObject.UseEffect)
+                    {
+                        em.SetComponentData(unit,
+                            new Emitter.EffectMuzzleLinkData
+                            {
+                                MuzzleEntity = muzzle,
+                            }
+                        );
+                        em.SetComponentData(unit,
+                            new Emitter.EffectMuzzlePositionData
+                            {
+                                MuzzlePositionLocal = unitObject.Local.As_float4(),
+                            }
+                        );
+                    }
+
                     em.SetComponentData(unit,
                         new Emitter.OwnerLinkData
                         {

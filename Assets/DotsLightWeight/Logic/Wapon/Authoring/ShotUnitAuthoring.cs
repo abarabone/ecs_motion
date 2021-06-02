@@ -35,6 +35,7 @@ namespace DotsLite.Arms.Authoring
         //public IBulletAuthoring aaa;
         public BulletAuthoringBase BulletPrefab;
         public ParticleAuthoringBase MuzzleEffectPrefab;
+        public bool UseEffect => this.MuzzleEffectPrefab != null;
 
         //public GameObject MuzzleObject;
         public float3 MuzzleLocalPosition;

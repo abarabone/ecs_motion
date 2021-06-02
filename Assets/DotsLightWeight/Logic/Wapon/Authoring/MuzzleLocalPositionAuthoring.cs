@@ -9,5 +9,6 @@ namespace DotsLite.Arms.Authoring
     {
         public float3 MuzzleLocalPosition;
         public float3 Local => this.MuzzleLocalPosition;
+        public bool UseEffect => false;
     }
 }

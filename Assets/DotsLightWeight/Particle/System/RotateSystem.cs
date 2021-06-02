@@ -71,25 +71,28 @@ namespace DotsLite.Particle
                 )
                 .ScheduleParallel();
 
-            //this.Entities
-            //    .WithName("Rotate")
-            //    .WithBurst()
-            //    .ForEach(
-            //        (
-            //            ref BillBoad.RotationData rot,
-            //            in BillBoad.SizeAnimationData anim,
-            //            in BillBoad.RotationSpeedData rotspd,
-            //            in Particle.LifeTimeData timer
-            //        ) =>
-            //        {
+            this.Entities
+                .WithName("Rotate")
+                .WithBurst()
+                .ForEach((
+                    ref BillBoad.RotationData rot,
+                    in BillBoad.RotationSpeedData rotspd)
+                =>
+                    {
 
-            //            var elapsed = currentTime - timer.StartTime;
-            //            var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
+                        var drad = rotspd.RadSpeedPerSec * dt;
 
+                        // | x, -y |
+                        // | y,  x |
+                        var c0 = new float2(math.cos(drad), math.sin(drad));
+                        var c1 = new float2(-c0.y, c0.x);
+                        var mt = new float2x2(c0, c1);
 
-            //        }
-            //    )
-            //    .ScheduleParallel();
+                        rot.Direction = math.mul(rot.Direction, mt);
+
+                    }
+                )
+                .ScheduleParallel();
         }
 
     }
