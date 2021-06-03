@@ -136,12 +136,12 @@ namespace DotsLite.Arms.Authoring
                         NextEmitableTime = this.EmittingInterval,
                     }
                 );
-                em.SetComponentData(ent,
-                    new Emitter.TriggerData
-                    {
-                        IsTriggered = true,
-                    }
-                );
+                //em.SetComponentData(ent,
+                //    new Emitter.TriggerData
+                //    {
+                //        IsTriggered = true,
+                //    }
+                //);
             }
 
             void setEffectComponent_(GameObjectConversionSystem gcs, Entity emitter)

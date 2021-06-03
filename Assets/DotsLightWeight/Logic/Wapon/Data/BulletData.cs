@@ -127,7 +127,7 @@ namespace DotsLite.Arms
     {
         public struct SpecData : IComponentData
         {
-            public float Radius;
+            public float HitRadius;
         }
     }
 

@@ -57,6 +57,20 @@ namespace DotsLite.Particle
         //{
         //    public float DurationSec;
         //}
+
+        public struct EasingData : IComponentData
+        {
+            public float4 MoveSpeedAndEasingRate;
+
+            public float3 MoveSpeed => this.MoveSpeedAndEasingRate.xyz;
+            public float EasingRate { set => this.MoveSpeedAndEasingRate.w = value; }
+            public void Apply()
+            {
+                this.MoveSpeedAndEasingRate.xyz *= this.MoveSpeedAndEasingRate.w;
+
+
+            }
+        }
     }
 
 

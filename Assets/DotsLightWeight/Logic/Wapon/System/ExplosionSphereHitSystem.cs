@@ -110,8 +110,8 @@ namespace DotsLite.Arms
                         };
 
                         using var results = new NativeList<DistanceHitResult>(512, Allocator.Temp);
-                        var collector = targets.GetAllDistanceCollector(spec.Radius, results);
-                        var isHit = cw.OverlapSphereCustom(pos.Value, spec.Radius, ref collector, filter);
+                        var collector = targets.GetAllDistanceCollector(spec.HitRadius, results);
+                        var isHit = cw.OverlapSphereCustom(pos.Value, spec.HitRadius, ref collector, filter);
 
                         if (!isHit) return;
 
@@ -133,7 +133,7 @@ namespace DotsLite.Arms
                                     var otherCorpts = corpss[hit.hitEntity];
                                     if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
 
-                                    var pow = spec.Radius * math.rcp(hit_.distance) * (hit.posision - pos.Value);
+                                    var pow = spec.HitRadius * math.rcp(hit_.distance) * (hit.posision - pos.Value);
                                     hit.PostCharacterHitMessage(chhit, 1.0f, pow);
                                     break;
 

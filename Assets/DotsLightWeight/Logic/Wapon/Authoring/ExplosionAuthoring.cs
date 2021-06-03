@@ -59,7 +59,7 @@ namespace DotsLite.Arms.Authoring
                 em.SetComponentData(bulletEntity,
                     new Explosion.SpecData
                     {
-                        Radius = this.Radius,
+                        HitRadius = this.Radius,
                     }
                 );
             }

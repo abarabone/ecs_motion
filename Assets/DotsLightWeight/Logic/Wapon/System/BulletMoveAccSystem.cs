@@ -53,33 +53,38 @@ namespace DotsLite.Arms
 
 
             this.Entities
+                .WithName("TailCopy")
+                .WithBurst()
+                .ForEach((
+                    ref Particle.TranslationTailData tail,
+                    in Translation pos) =>
+                {
+                    tail.PositionAndSize = pos.Value.As_float4(tail.Size);
+                })
+                .ScheduleParallel();
+
+            this.Entities
                 .WithName("Move")
                 .WithBurst()
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        //ref Particle.TranslationPtoPData ptop,
-                        ref Translation pos,
-                        ref Particle.TranslationTailData tail,
-                        //ref Bullet.DistanceData dist,
-                        ref Bullet.VelocityData v,
-                        in Bullet.AccelerationData acc,
-                        in Bullet.MoveSpecData spec
-                    ) =>
-                    {
-                        var g = gravity * spec.GravityFactor;
-                        var a = acc.Acceleration + g;
+                .ForEach((
+                    ref Translation pos,
+                    //ref Particle.TranslationTailData tail,
+                    ref Bullet.VelocityData v,
+                    in Bullet.AccelerationData acc,
+                    in Bullet.MoveSpecData spec) =>
+                {
+                    var g = gravity * spec.GravityFactor;
+                    var a = acc.Acceleration + g;
 
-                        v.Velocity += a * dt;
+                    v.Velocity += a * dt;
 
 
-                        var d = v.Velocity.xyz * dt;
+                    var d = v.Velocity.xyz * dt;
 
-                        tail.PositionAndSize = pos.Value.As_float4(tail.Size);
+                    //tail.PositionAndSize = pos.Value.As_float4(tail.Size);
 
-                        pos.Value += d;
-                    }
-                )
+                    pos.Value += d;
+                })
                 .ScheduleParallel();
 
         }

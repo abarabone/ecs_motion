@@ -93,13 +93,10 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        //in Particle.TranslationPtoPData ptop,
-                        in Translation pos,
                         in Particle.AdditionalData additional,
-                        //in Bullet.SpecData bullet,
                         in Bullet.LinkData link,
-                        //in Bullet.DistanceData dist
                         in Bullet.VelocityData v,
+                        in Translation pos,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
