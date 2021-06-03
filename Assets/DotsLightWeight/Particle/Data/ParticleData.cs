@@ -67,8 +67,6 @@ namespace DotsLite.Particle
             public void Apply()
             {
                 this.MoveSpeedAndEasingRate.xyz *= this.MoveSpeedAndEasingRate.w;
-
-
             }
         }
     }

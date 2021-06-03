@@ -35,24 +35,36 @@ namespace DotsLite.Particle.Aurthoring
         //public ParticleMeshType ParticleType;
 
         public Color ParticleColor;
+        public bool UseAnimationAlpha;
+        [HideBy("UseAnimationAlpha")] public float AlphaTimeSpanSec;
+        [HideBy("UseAnimationAlpha")] public float AlphaLast;
+
         public float StartRadius;
+        public bool UseAnimationRadius;
         public float EndRadius;
         public float EndTimeForRadius;
 
         public BinaryLength2 CellUsage;
 
         public int AnimationBaseIndex;
+        public bool UseAnimationUv;
         public int AnimationIndexMax;
         public binary_length AnimationIndexLength;
         public float AnimationTimeSpanSec;
 
+        public bool UseLifeTime;
         public float LifeTimeSec;// 0 à»â∫Ç»ÇÁè¡Ç¶Ç»Ç¢
 
-        public float AlphaTimeSpanSec;
-        public float AlphaLast;
-
+        public bool UseAnimationRotation;
         public float RotationDegreesPerSec;
-        
+
+        public bool UseMoveEasing;
+        public float EasingRatePerSec;
+        public bool UseRandomDirection;
+        public bool UseMinMax;
+        public float3 MinEasingSpeed;
+        public float3 MaxEasingSpeed;
+
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
