@@ -162,9 +162,10 @@ namespace DotsLite.Particle.Aurthoring
 
         public static void AddAnimationComponentsOrNot(
             this GameObjectConversionSystem gcs, GameObject main,
-            binary_length animationIndexLength, int animationBaseIndex, int animationIndexMax, float animationTimeSpan)
+            binary_length animationIndexLength, int animationBaseIndex, int animationIndexMax, float animationTimeSpan,
+            bool isEnable)
         {
-            if (animationIndexLength <= binary_length.length_1) return;
+            if (!isEnable) return;
 
             var em = gcs.DstEntityManager;
 
@@ -192,9 +193,10 @@ namespace DotsLite.Particle.Aurthoring
         }
 
         public static void AddLifeTimeComponentsOrNot(
-            this GameObjectConversionSystem gcs, GameObject main, float time)
+            this GameObjectConversionSystem gcs, GameObject main, float time,
+            bool isEnable)
         {
-            if (time <= 0.0f) return;
+            if (!isEnable) return;
 
             var em = gcs.DstEntityManager;
 
@@ -216,9 +218,10 @@ namespace DotsLite.Particle.Aurthoring
         }
 
         public static void AddRotationComponentsOrNot(
-            this GameObjectConversionSystem gcs, GameObject main, float rotSpeed)
+            this GameObjectConversionSystem gcs, GameObject main, float rotSpeed,
+            bool isEnable)
         {
-            if (rotSpeed <= 0.0f) return;
+            if (!isEnable) return;
 
             var em = gcs.DstEntityManager;
 
@@ -238,9 +241,10 @@ namespace DotsLite.Particle.Aurthoring
         }
 
         public static void AddAlphaFadeComponentsOrNot(
-            this GameObjectConversionSystem gcs, GameObject main, float firstValue, float lastValue, float timeSpan)
+            this GameObjectConversionSystem gcs, GameObject main, float firstValue, float lastValue, float timeSpan,
+            bool isEnable)
         {
-            if (timeSpan <= 0.0f) return;
+            if (!isEnable) return;
 
             var em = gcs.DstEntityManager;
 
@@ -264,9 +268,10 @@ namespace DotsLite.Particle.Aurthoring
 
         public static void AddSizingComponentsOrNot(
             this GameObjectConversionSystem gcs, GameObject main,
-            float startRadius, float endRadius, float endtime)
+            float startRadius, float endRadius, float endtime,
+            bool isEnable)
         {
-            if (endtime <= 0.0f) return;
+            if (!isEnable) return;
 
             var em = gcs.DstEntityManager;
 

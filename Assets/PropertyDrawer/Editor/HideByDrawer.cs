@@ -1,44 +1,49 @@
-//using UnityEngine;
-//using UnityEditor;
-//using UnityEngine.UIElements;
-//using UnityEditor.UIElements;
+using UnityEngine;
+using UnityEditor;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 //[CustomPropertyDrawer(typeof(HideByAttribute))]
-//public class HideByDrawer : PropertyDrawer
-//{
-//    //public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-//    //{
-//    //    var attr = (HideByAttribute)this.attribute;
+public class HideByDrawer : PropertyDrawer
+{
+    //public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    //{
+    //    var attr = (HideByAttribute)this.attribute;
 
-//    //    EditorGUILayout.PropertyField(property, label);
-//    //}
-//    public override VisualElement CreatePropertyGUI(SerializedProperty property)
-//    {
-//        EditorGUI.BeginChangeCheck();
+    //    EditorGUILayout.PropertyField(property, label);
+    //}
+    //public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    //{
+    //    EditorGUI.BeginChangeCheck();
 
-//        var attr = (HideByAttribute)this.attribute;
-//        var isUse = property.serializedObject.FindProperty(attr.fieldname)?.boolValue;
-//        Debug.LogError(isUse);
+    //    _target.EnableShadow = EditorGUILayout.ToggleLeft("EnableShadow", _target.EnableShadow);
+    //    if (_target.EnableShadow)
+    //    {
+    //        PropertyDrawerUtility.DrawDefaultGUI(position, property, label);
+    //    }
 
-//        if (EditorGUI.EndChangeCheck())
-//        {
-//            EditorUtility.SetDirty(property.serializedObject);
-//        }
+    //    // GUIÇÃçXêVÇ™Ç†Ç¡ÇΩÇÁé¿çs
+    //    if (EditorGUI.EndChangeCheck())
+    //    {
+    //        EditorUtility.SetDirty(_target);
+    //    }
+    //}
 
-//        var container = new VisualElement();
-//        if (isUse.GetValueOrDefault())
-//        {
-//            return null;
-//            //var propfield = new PropertyField(property.Copy())
-//            //{
-//            //    name = "PropertyField:" + property.propertyPath,
-//            //};
-//            //if (property.propertyPath == "m_Script")
-//            //{
-//            //    propfield.SetEnabled(false);
-//            //}
-//            //container.Add(propfield);
-//        }
-//        return container;
-//    }
-//}
+    //public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    //{
+    //    return PropertyDrawerUtility.GetDefaultPropertyHeight(property, label);
+    //}
+    //public override VisualElement CreatePropertyGUI(SerializedProperty property)
+    //{
+    //    //EditorGUI.BeginChangeCheck();
+
+    //    var attr = (HideByAttribute)this.attribute;
+    //    var isUse = property.serializedObject.FindProperty(attr.fieldname)?.boolValue;
+    //    Debug.Log(isUse);
+
+    //    var container = new VisualElement();
+    //    var propfield = new PropertyField(property);
+    //    container.Add(propfield);
+    //    return container;
+    //}
+}
