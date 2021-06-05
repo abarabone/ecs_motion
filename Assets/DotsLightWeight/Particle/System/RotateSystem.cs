@@ -52,7 +52,7 @@ namespace DotsLite.Particle
 
 
             this.Entities
-                .WithName("Initialize")
+                .WithName("InitializeFirstAngle")
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .WithBurst()
                 .ForEach(
@@ -66,6 +66,27 @@ namespace DotsLite.Particle
                         var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
 
                         rot.Direction = rnd.NextFloat2Direction();
+
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
+                .WithName("InitializeSetting")
+                .WithAll<Particle.LifeTimeInitializeTag>()
+                .WithBurst()
+                .ForEach(
+                    (
+                        int nativeThreadIndex, int entityInQueryIndex,
+                        ref BillBoad.RotationSpeedData speed,
+                        in BillBoad.RotationRandomSettingData data
+                    ) =>
+                    {
+                        var tid = nativeThreadIndex;
+                        var eqi = entityInQueryIndex;
+                        var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
+
+                        speed.RadSpeedPerSec = rnd.NextFloat(data.MinSpeed, data.MaxSpeed);
 
                     }
                 )

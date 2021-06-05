@@ -67,17 +67,19 @@ namespace DotsLite.Particle.Aurthoring
         [Space(4)]
         [Header("Rotation")]
         public bool UseAnimationRotation;
-        [VisBy("UseAnimationRotation")] public float RotationDegreesPerSec;
+        [VisBy("UseAnimationRotation")] public float MinRotationDegreesPerSec;
+        [VisBy("UseAnimationRotation")] public float MaxRotationDegreesPerSec;
+        //public bool UseRandomRotation;
 
         [Space(4)]
         [Header("Move")]
         public bool UseMoveEasing;
         [VisBy("UseMoveEasing")] public float EasingRatePerSec;
-        public bool UseEasingMinMax;
-        [VisBy("UseEasingMinMax")] public float MinEasingSpeed;
-        [VisBy("UseEasingMinMax")] public float MaxEasingSpeed;
-        public bool UseDirectionSetting;
-        [VisBy("UseDirectionSetting")] public float3 Direction;
+        public bool UseDirectionNormal;
+        [VisBy("UseDirectionOffset")] public float3 DirectionOffset;
+        public float MinDistanceOffset;
+        public float MaxDistanceOffset;
+        //public bool UseRandomMove;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -119,7 +121,8 @@ namespace DotsLite.Particle.Aurthoring
             gcs.AddLifeTimeComponentsOrNot(this.gameObject, this.LifeTimeSec, this.UseLifeTime);
             gcs.AddSizingComponentsOrNot(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius, this.UseAnimationRadius);
             gcs.AddAlphaFadeComponentsOrNot(this.gameObject, this.ParticleColor.a, this.AlphaLast, this.AlphaTimeSpanSec, this.UseAnimationAlpha);
-            gcs.AddRotationComponentsOrNot(this.gameObject, this.RotationDegreesPerSec, this.UseAnimationRotation);
+            gcs.AddRotationComponentsOrNot(this.gameObject, this.MinRotationDegreesPerSec, this.MaxDistanceOffset, this.UseAnimationRotation);
+            gcs.AddEasingComponentsOrNot(this.gameObject, this.EasingRatePerSec, this.MinDistanceOffset, this.MaxDistanceOffset, this.UseDirectionNormal, this.DirectionOffset, this.UseMoveEasing);
 
             return;
 

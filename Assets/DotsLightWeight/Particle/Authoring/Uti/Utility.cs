@@ -217,7 +217,7 @@ namespace DotsLite.Particle.Aurthoring
         }
 
         public static void AddRotationComponentsOrNot(
-            this GameObjectConversionSystem gcs, GameObject main, float rotSpeed,
+            this GameObjectConversionSystem gcs, GameObject main, float rotSpeedMin, float rotSpeedMax,
             bool isEnable)
         {
             if (!isEnable) return;
@@ -226,18 +226,34 @@ namespace DotsLite.Particle.Aurthoring
 
             var mainEntity = gcs.GetPrimaryEntity(main);
 
-            var types = new ComponentTypes(
+            var _types = new List<ComponentType>
+            {
                 typeof(Particle.LifeTimeInitializeTag),
-                typeof(BillBoad.RotationSpeedData)
-            );
+                typeof(BillBoad.RotationSpeedData),
+            };
+            if (rotSpeedMin != rotSpeedMax)
+            {
+                _types.Add(typeof(BillBoad.RotationRandomSettingData));
+            }
+            var types = new ComponentTypes(_types.ToArray());
             em.AddComponents(mainEntity, types);
 
             em.AddComponentData(mainEntity,
                 new BillBoad.RotationSpeedData
                 {
-                    RadSpeedPerSec = math.radians(rotSpeed),
+                    RadSpeedPerSec = math.radians(rotSpeedMin),
                 }
             );
+            if (rotSpeedMin != rotSpeedMax)
+            {
+                em.AddComponentData(mainEntity,
+                    new BillBoad.RotationRandomSettingData
+                    {
+                        MinSpeed = rotSpeedMin,
+                        MaxSpeed = rotSpeedMax,
+                    }
+                );
+            }
         }
 
         public static void AddAlphaFadeComponentsOrNot(
@@ -296,8 +312,7 @@ namespace DotsLite.Particle.Aurthoring
 
         public static void AddEasingComponentsOrNot(
             this GameObjectConversionSystem gcs, GameObject main,
-            float  rate,
-            bool useEasingMinMax, float minSpeed, float maxSpeed,
+            float rate, float distOffsetMin, float distOffsetMax,
             bool useDirectionSetting, float3 dir,
             bool isEnable)
         {
@@ -307,6 +322,7 @@ namespace DotsLite.Particle.Aurthoring
 
             var mainEntity = gcs.GetPrimaryEntity(main);
 
+
             var _types = new List<ComponentType>
             {
                 typeof(Particle.LifeTimeInitializeTag),
@@ -314,15 +330,24 @@ namespace DotsLite.Particle.Aurthoring
             };
             if (!useDirectionSetting)
             {
-                _types.Add(typeof(Particle.RandomDirectionTag));
+                _types.Add(typeof(Particle.EasingSetting));
             }
             var types = new ComponentTypes(_types.ToArray());
             em.AddComponents(mainEntity, types);
 
+
             em.AddComponentData(mainEntity,
                 new Particle.EasingData
                 {
-
+                    LastPosition = useDirectionSetting ? dir : 0,
+                    Rate = rate,
+                }
+            );
+            em.AddComponentData(mainEntity,
+                new Particle.EasingSetting
+                {
+                    LastDistanceMin = distOffsetMin,
+                    LastDistanceMax = distOffsetMax,
                 }
             );
         }

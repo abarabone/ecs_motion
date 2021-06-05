@@ -52,43 +52,54 @@ namespace DotsLite.Particle
 
 
             this.Entities
-                .WithName("Initialize")
+                .WithName("InitializeWithSetting")
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .WithBurst()
-                .ForEach(
-                    (
-                        int nativeThreadIndex, int entityInQueryIndex,
-                        ref BillBoad.RotationData rot
-                    ) =>
-                    {
-                        var tid = nativeThreadIndex;
-                        var eqi = entityInQueryIndex;
-                        var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
+                .ForEach((
+                    int nativeThreadIndex, int entityInQueryIndex,
+                    ref Particle.EasingData data,
+                    in Particle.EasingSetting setting,
+                    in Translation pos) =>
+                {
+                    var tid = nativeThreadIndex;
+                    var eqi = entityInQueryIndex;
+                    var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
 
-                        rot.Direction = rnd.NextFloat2Direction();
+                    var last = rnd.NextFloat(setting.LastDistanceMin, setting.LastDistanceMax);
+                    var endpos = pos.Value + rnd.NextFloat3Direction() * last;
 
-                    }
-                )
+                    data.Set(endpos, data.Rate);
+                })
                 .ScheduleParallel();
 
             this.Entities
-                .WithName("Rotate")
+                .WithName("Initialize")
+                .WithAll<Particle.LifeTimeInitializeTag>()
+                .WithNone<Particle.EasingSetting>()
                 .WithBurst()
-                .ForEach(
-                    (
-                        ref BillBoad.RotationData rot,
-                        in BillBoad.SizeAnimationData anim,
-                        in BillBoad.RotationSpeedData rotspd,
-                        in Particle.LifeTimeData timer
-                    ) =>
-                    {
+                .ForEach((
+                    ref Particle.EasingData data,
+                    in Translation pos) =>
+                {
+                    var endpos = pos.Value + data.LastPosition;
 
-                        var elapsed = currentTime - timer.StartTime;
-                        var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
+                    data.Set(endpos, data.Rate);
+                })
+                .ScheduleParallel();
 
+            this.Entities
+                .WithName("Move")
+                .WithBurst()
+                .ForEach((
+                    ref Translation pos,
+                    in Particle.EasingData data) =>
+                {
 
-                    }
-                )
+                    var newpos = (data.LastPosition - pos.Value) * data.Rate * dt;
+
+                    pos.Value += newpos;
+
+                })
                 .ScheduleParallel();
         }
 

@@ -8,6 +8,14 @@ public class VisByDrawer : PropertyDrawer
 {
     //public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     //{
+    //    EditorGUI.PropertyField(position, property, label, true);
+    //}
+    //public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    //{
+    //    return base.GetPropertyHeight(property, label);
+    //}
+    //public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    //{
     //    var attr = (HideByAttribute)this.attribute;
 
     //    EditorGUILayout.PropertyField(property, label);

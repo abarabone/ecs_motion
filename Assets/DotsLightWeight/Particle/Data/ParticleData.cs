@@ -54,20 +54,27 @@ namespace DotsLite.Particle
         }
 
 
-        public struct EasingInitializeData : IComponentData
+        public struct EasingSetting : IComponentData
         {
-            public float 
+            public float LastDistanceMin;
+            public float LastDistanceMax;
+            //public float Rate;
         }
         public struct EasingData : IComponentData
         {
-            public float4 VelocityAndRate;
+            public float4 LastPositionAndRate;
 
-            public float3 Velocity => this.VelocityAndRate.xyz;
-            public float Rate { set => this.VelocityAndRate.w = value; }
-            public void Update()
+            public float3 LastPosition
             {
-                this.VelocityAndRate.xyz *= this.VelocityAndRate.w;
+                set => this.LastPositionAndRate.xyz = value;
+                get => this.LastPositionAndRate.xyz;
             }
+            public float Rate
+            {
+                set => this.LastPositionAndRate.w = value;
+                get => this.LastPositionAndRate.w;
+            }
+            public void Set(float3 pos, float rate) => this.LastPositionAndRate = pos.As_float4(rate);
         }
     }
 
@@ -120,6 +127,11 @@ namespace DotsLite.Particle
         public struct RotationSpeedData : IComponentData
         {
             public float RadSpeedPerSec;
+        }
+        public struct RotationRandomSettingData : IComponentData
+        {
+            public float MinSpeed;
+            public float MaxSpeed;
         }
 
         public struct AlphaFadeData : IComponentData
