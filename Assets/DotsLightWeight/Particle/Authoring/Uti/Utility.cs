@@ -175,7 +175,6 @@ namespace DotsLite.Particle.Aurthoring
             {
                 typeof(Particle.LifeTimeInitializeTag),
                 typeof(Particle.LifeTimeData),
-                //typeof(BillBoad.UvAnimationInitializeTag),
                 typeof(BillBoad.UvAnimationWorkData),
                 typeof(BillBoad.UvAnimationData),
             });
@@ -228,6 +227,7 @@ namespace DotsLite.Particle.Aurthoring
             var mainEntity = gcs.GetPrimaryEntity(main);
 
             var types = new ComponentTypes(
+                typeof(Particle.LifeTimeInitializeTag),
                 typeof(BillBoad.RotationSpeedData)
             );
             em.AddComponents(mainEntity, types);
@@ -294,5 +294,37 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
+        public static void AddEasingComponentsOrNot(
+            this GameObjectConversionSystem gcs, GameObject main,
+            float  rate,
+            bool useEasingMinMax, float minSpeed, float maxSpeed,
+            bool useDirectionSetting, float3 dir,
+            bool isEnable)
+        {
+            if (!isEnable) return;
+
+            var em = gcs.DstEntityManager;
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var _types = new List<ComponentType>
+            {
+                typeof(Particle.LifeTimeInitializeTag),
+                typeof(Particle.EasingData)
+            };
+            if (!useDirectionSetting)
+            {
+                _types.Add(typeof(Particle.RandomDirectionTag));
+            }
+            var types = new ComponentTypes(_types.ToArray());
+            em.AddComponents(mainEntity, types);
+
+            em.AddComponentData(mainEntity,
+                new Particle.EasingData
+                {
+
+                }
+            );
+        }
     }
 }

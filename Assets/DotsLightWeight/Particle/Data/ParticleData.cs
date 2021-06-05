@@ -39,6 +39,9 @@ namespace DotsLite.Particle
     public static partial class Particle
     {
 
+        public struct LifeTimeInitializeTag : IComponentData
+        { }
+
         // ”jŠüŽžŽw’è
         public struct LifeTimeData : IComponentData
         {
@@ -49,24 +52,21 @@ namespace DotsLite.Particle
         {
             public float DurationSec;
         }
-        public struct LifeTimeInitializeTag : IComponentData
-        { }
 
-        //// Œ¸‚Á‚Ä‚­
-        //public struct DurationData : IComponentData
-        //{
-        //    public float DurationSec;
-        //}
 
+        public struct EasingInitializeData : IComponentData
+        {
+            public float 
+        }
         public struct EasingData : IComponentData
         {
-            public float4 MoveSpeedAndEasingRate;
+            public float4 VelocityAndRate;
 
-            public float3 MoveSpeed => this.MoveSpeedAndEasingRate.xyz;
-            public float EasingRate { set => this.MoveSpeedAndEasingRate.w = value; }
-            public void Apply()
+            public float3 Velocity => this.VelocityAndRate.xyz;
+            public float Rate { set => this.VelocityAndRate.w = value; }
+            public void Update()
             {
-                this.MoveSpeedAndEasingRate.xyz *= this.MoveSpeedAndEasingRate.w;
+                this.VelocityAndRate.xyz *= this.VelocityAndRate.w;
             }
         }
     }

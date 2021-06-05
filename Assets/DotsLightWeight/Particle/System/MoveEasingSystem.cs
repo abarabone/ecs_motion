@@ -51,45 +51,45 @@ namespace DotsLite.Particle
             var currentTime = (float)this.Time.ElapsedTime;
 
 
-            //this.Entities
-            //    .WithName("Initialize")
-            //    .WithAll<Particle.LifeTimeInitializeTag>()
-            //    .WithBurst()
-            //    .ForEach(
-            //        (
-            //            int nativeThreadIndex, int entityInQueryIndex,
-            //            ref BillBoad.RotationData rot
-            //        ) =>
-            //        {
-            //            var tid = nativeThreadIndex;
-            //            var eqi = entityInQueryIndex;
-            //            var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
+            this.Entities
+                .WithName("Initialize")
+                .WithAll<Particle.LifeTimeInitializeTag>()
+                .WithBurst()
+                .ForEach(
+                    (
+                        int nativeThreadIndex, int entityInQueryIndex,
+                        ref BillBoad.RotationData rot
+                    ) =>
+                    {
+                        var tid = nativeThreadIndex;
+                        var eqi = entityInQueryIndex;
+                        var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
 
-            //            rot.Direction = rnd.NextFloat2Direction();
+                        rot.Direction = rnd.NextFloat2Direction();
 
-            //        }
-            //    )
-            //    .ScheduleParallel();
+                    }
+                )
+                .ScheduleParallel();
 
-            //this.Entities
-            //    .WithName("Rotate")
-            //    .WithBurst()
-            //    .ForEach(
-            //        (
-            //            ref BillBoad.RotationData rot,
-            //            in BillBoad.SizeAnimationData anim,
-            //            in BillBoad.RotationSpeedData rotspd,
-            //            in Particle.LifeTimeData timer
-            //        ) =>
-            //        {
+            this.Entities
+                .WithName("Rotate")
+                .WithBurst()
+                .ForEach(
+                    (
+                        ref BillBoad.RotationData rot,
+                        in BillBoad.SizeAnimationData anim,
+                        in BillBoad.RotationSpeedData rotspd,
+                        in Particle.LifeTimeData timer
+                    ) =>
+                    {
 
-            //            var elapsed = currentTime - timer.StartTime;
-            //            var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
+                        var elapsed = currentTime - timer.StartTime;
+                        var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
 
 
-            //        }
-            //    )
-            //    .ScheduleParallel();
+                    }
+                )
+                .ScheduleParallel();
         }
 
     }

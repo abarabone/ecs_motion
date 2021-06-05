@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HideByAttribute : PropertyAttribute
+public class VisByAttribute : PropertyAttribute
 {
     public string fieldname;
 
-    public HideByAttribute(string fieldname)
+    public VisByAttribute(string fieldname)
     {
         this.fieldname = fieldname;
     }

@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
 //[CustomPropertyDrawer(typeof(HideByAttribute))]
-public class HideByDrawer : PropertyDrawer
+public class VisByDrawer : PropertyDrawer
 {
     //public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     //{

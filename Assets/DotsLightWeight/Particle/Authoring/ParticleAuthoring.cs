@@ -34,36 +34,50 @@ namespace DotsLite.Particle.Aurthoring
         public ParticleModelSourceAuthoring ModelSource;
         //public ParticleMeshType ParticleType;
 
+        [Header("Color")]
         public Color ParticleColor;
         public bool UseAnimationAlpha;
-        [HideBy("UseAnimationAlpha")] public float AlphaTimeSpanSec;
-        [HideBy("UseAnimationAlpha")] public float AlphaLast;
+        [VisBy("UseAnimationAlpha")] public float AlphaTimeSpanSec;
+        [VisBy("UseAnimationAlpha")] public float AlphaLast;
 
+        [Space(4)]
+        [Header("Size")]
         public float StartRadius;
         public bool UseAnimationRadius;
-        public float EndRadius;
-        public float EndTimeForRadius;
+        [VisBy("UseAnimationRadius")] public float EndRadius;
+        [VisBy("UseAnimationRadius")] public float EndTimeForRadius;
 
+        [Space(4)]
+        [Header("Cell")]
         public BinaryLength2 CellUsage;
 
+        [Space(4)]
+        [Header("UvIndex")]
         public int AnimationBaseIndex;
         public bool UseAnimationUv;
-        public int AnimationIndexMax;
-        public binary_length AnimationIndexLength;
-        public float AnimationTimeSpanSec;
+        [VisBy("UseAnimationUv")] public int AnimationIndexMax;
+        [VisBy("UseAnimationUv")] public binary_length AnimationIndexLength;
+        [VisBy("UseAnimationUv")] public float AnimationTimeSpanSec;
 
+        [Space(4)]
+        [Header("LifeTime")]
         public bool UseLifeTime;
-        public float LifeTimeSec;
+        [VisBy("UseLifeTime")] public float LifeTimeSec;
 
+        [Space(4)]
+        [Header("Rotation")]
         public bool UseAnimationRotation;
-        public float RotationDegreesPerSec;
+        [VisBy("UseAnimationRotation")] public float RotationDegreesPerSec;
 
+        [Space(4)]
+        [Header("Move")]
         public bool UseMoveEasing;
-        public float EasingRatePerSec;
-        public bool UseRandomDirection;
+        [VisBy("UseMoveEasing")] public float EasingRatePerSec;
         public bool UseEasingMinMax;
-        public float3 MinEasingSpeed;
-        public float3 MaxEasingSpeed;
+        [VisBy("UseEasingMinMax")] public float MinEasingSpeed;
+        [VisBy("UseEasingMinMax")] public float MaxEasingSpeed;
+        public bool UseDirectionSetting;
+        [VisBy("UseDirectionSetting")] public float3 Direction;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
