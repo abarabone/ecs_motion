@@ -114,8 +114,8 @@ namespace DotsLite.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CalcFreq(float currentTime, float frameBaseTime, float intervalRcp)
         {
-            var d = currentTime - frameBaseTime + 1;
-            var freq = (int)(d * intervalRcp);
+            var d = currentTime - frameBaseTime;
+            var freq = (int)(d * intervalRcp + 1);
             return freq;
         }
 

@@ -50,72 +50,7 @@ namespace DotsLite.Particle.Aurthoring
         //    new int2((int)x.x, (int)x.y);
 
 
-        public static void InitBillBoadUvEntityComponents(
-            this GameObjectConversionSystem gcs, GameObject main, Entity modelEntity,
-            BinaryLength2 division, BinaryLength2 cellUsage, int animationBaseIndex, Color32 color, float radius)
-        {
-            var em = gcs.DstEntityManager;
-
-
-            var mainEntity = gcs.GetPrimaryEntity(main);
-
-            gcs.DstEntityManager.SetName_(mainEntity, $"{main.name}");
-
-
-            var types = new ComponentTypes(new ComponentType[]
-            {
-                typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                typeof(DrawInstance.BillBoadTag),
-                typeof(DrawInstance.ModelLinkData),
-                typeof(DrawInstance.TargetWorkData),
-                typeof(BillBoad.UvCursorData),
-                typeof(BillBoad.CursorToUvIndexData),
-                typeof(Particle.AdditionalData),
-            });
-            em.AddComponents(mainEntity, types);
-
-
-            em.SetComponentData(mainEntity,
-                new DrawInstance.ModelLinkData
-                {
-                    DrawModelEntityCurrent = modelEntity,
-                }
-            );
-            em.SetComponentData(mainEntity,
-                new DrawInstance.TargetWorkData
-                {
-                    DrawInstanceId = -1,
-                }
-            );
-
-            em.SetComponentData(mainEntity,
-                new BillBoad.UvCursorData
-                {
-                    CurrentIndex = 0,
-                }
-            );
-            em.SetComponentData(mainEntity,
-                new BillBoad.CursorToUvIndexData
-                {
-                    IndexOffset = animationBaseIndex,
-                    UCellUsage = (byte)cellUsage.u,
-                    VCellUsage = (byte)cellUsage.v,
-                    UMask = (byte)(division.u - 1),
-                    VShift = (byte)math.countbits((int)division.u - 1),
-                }
-            );
-
-            em.SetComponentData(mainEntity,
-                new Particle.AdditionalData
-                {
-                    Color = color,
-                    Size = radius,
-                }
-            );
-        }
-
-
-        public static void InitBillBoadEntityComponents(
+        public static void AddParticleEntityComponents(
             this GameObjectConversionSystem gcs, GameObject main, Entity modelEntity, Color32 color, float radius)
         {
             var em = gcs.DstEntityManager;
@@ -129,7 +64,6 @@ namespace DotsLite.Particle.Aurthoring
             var types = new ComponentTypes(new ComponentType[]
             {
                 typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                typeof(DrawInstance.BillBoadTag),
                 typeof(DrawInstance.ModelLinkData),
                 typeof(DrawInstance.TargetWorkData),
                 typeof(Particle.AdditionalData),
@@ -159,8 +93,92 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
+        public static void AddBillBoadComponents(
+            this GameObjectConversionSystem gcs, GameObject main)
+        {
+            var em = gcs.DstEntityManager;
 
-        public static void AddAnimationComponentsOrNot(
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+
+            var types = new ComponentTypes(new ComponentType[]
+            {
+                    typeof(DrawInstance.BillBoadTag),
+                    typeof(BillBoad.RotationData),
+                    typeof(Translation)
+            });
+            em.AddComponents(mainEntity, types);
+
+            em.SetComponentData(mainEntity,
+                new BillBoad.RotationData
+                {
+                    Direction = new float2(0, 1),
+                }
+            );
+
+            em.SetComponentData(mainEntity, new Translation
+            {
+                Value = float3.zero,
+            });
+
+            em.RemoveComponent<Rotation>(mainEntity);//
+        }
+
+        public static void AddPsylliumComponents(
+            this GameObjectConversionSystem gcs, GameObject main)
+        {
+            var em = gcs.DstEntityManager;
+
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(
+                typeof(DrawInstance.PsylliumTag),
+                typeof(Translation),
+                typeof(Particle.TranslationTailData)
+            );
+            em.AddComponents(mainEntity, types);
+
+            em.RemoveComponent<Rotation>(mainEntity);//
+        }
+
+        public static void AddUvIndexComponents(
+            this GameObjectConversionSystem gcs, GameObject main,
+            BinaryLength2 division, BinaryLength2 cellUsage, int uvIndex)
+        {
+            var em = gcs.DstEntityManager;
+
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(new ComponentType[]
+            {
+                typeof(BillBoad.UvCursorData),
+                typeof(BillBoad.CursorToUvIndexData),
+            });
+            em.AddComponents(mainEntity, types);
+
+
+            em.SetComponentData(mainEntity,
+                new BillBoad.UvCursorData
+                {
+                    CurrentIndex = 0,
+                }
+            );
+            em.SetComponentData(mainEntity,
+                new BillBoad.CursorToUvIndexData
+                {
+                    IndexOffset = uvIndex,
+                    UCellUsage = (byte)cellUsage.u,
+                    VCellUsage = (byte)cellUsage.v,
+                    UMask = (byte)(division.u - 1),
+                    VShift = (byte)math.countbits((int)division.u - 1),
+                }
+            );
+        }
+
+        public static void AddUvAnimationComponentsOrNot(
             this GameObjectConversionSystem gcs, GameObject main,
             binary_length animationIndexLength, int animationBaseIndex, int animationIndexMax, float animationTimeSpan,
             bool isEnable)
@@ -321,7 +339,7 @@ namespace DotsLite.Particle.Aurthoring
             var em = gcs.DstEntityManager;
 
             var mainEntity = gcs.GetPrimaryEntity(main);
-
+            
 
             var _types = new List<ComponentType>
             {

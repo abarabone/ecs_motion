@@ -98,23 +98,24 @@ namespace DotsLite.Particle.Aurthoring
             var modelEntity = gcs.GetPrimaryEntity(this.ModelSource);
 
 
+            gcs.AddParticleEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.StartRadius);
+
             switch (this.ModelSource.ParticleType)
             {
                 case ParticleMeshType.billboadUv:
-                    gcs.InitBillBoadUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
-                    addParticleEntityComponents_(gcs, this.gameObject);
-                    gcs.AddAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec, this.UseAnimationUv);
+                    gcs.AddBillBoadComponents(this.gameObject);
+                    gcs.AddUvIndexComponents(this.gameObject, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex);
+                    gcs.AddUvAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec, this.UseAnimationUv);
                     break;
 
                 case ParticleMeshType.psyllium:
-                    gcs.InitBillBoadEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.StartRadius);
-                    addPsylliumComponents_(gcs, this.gameObject);
+                    gcs.AddPsylliumComponents(this.gameObject);
                     break;
 
                 case ParticleMeshType.psylliumUv:
-                    gcs.InitBillBoadUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
-                    addPsylliumComponents_(gcs, this.gameObject);
-                    gcs.AddAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec, this.UseAnimationUv);
+                    gcs.AddPsylliumComponents(this.gameObject);
+                    gcs.AddUvIndexComponents(this.gameObject, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex);
+                    gcs.AddUvAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec, this.UseAnimationUv);
                     break;
             }
 
@@ -126,67 +127,6 @@ namespace DotsLite.Particle.Aurthoring
 
             return;
 
-
-            static void addParticleEntityComponents_(
-                GameObjectConversionSystem gcs, GameObject main)
-            {
-                var em = gcs.DstEntityManager;
-
-
-                var mainEntity = gcs.GetPrimaryEntity(main);
-
-
-                var types = new ComponentTypes(new ComponentType[]
-                {
-                    typeof(BillBoad.RotationData),
-                    typeof(Translation)
-                });
-                em.AddComponents(mainEntity, types);
-
-                em.SetComponentData(mainEntity,
-                    new BillBoad.RotationData
-                    {
-                        Direction = new float2(0, 1),
-                    }
-                );
-
-                em.SetComponentData(mainEntity, new Translation
-                {
-                    Value = float3.zero,
-                });
-
-                em.RemoveComponent<Rotation>(mainEntity);//
-            }
-
-            void addPsylliumComponents_(GameObjectConversionSystem gcs, GameObject main)
-            {
-                dstManager.SetName_(entity, $"{this.name}");
-
-                var em = gcs.DstEntityManager;
-
-
-                var mainEntity = gcs.GetPrimaryEntity(main);
-
-                var types = new ComponentTypes(new ComponentType[]
-                {
-                    //typeof( Particle.TranslationPtoPData ),
-                    typeof(Particle.TranslationTailData),
-                    typeof(Translation),
-                    //typeof(Rotation)
-                });
-                em.AddComponents(mainEntity, types);
-
-                //em.SetComponentData(mainEntity, new Translation
-                //{
-                //    Value = float3.zero,
-                //});
-                //em.SetComponentData(mainEntity, new Rotation
-                //{
-                //    Value = quaternion.identity,
-                //});
-                //em.RemoveComponent<Translation>(mainEntity);//
-                em.RemoveComponent<Rotation>(mainEntity);//
-            }
         }
 
     }
