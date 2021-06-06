@@ -126,6 +126,7 @@ namespace DotsLite.Arms.Authoring
                         Prefab = bulletPrefab,
 
                         EmittingInterval = this.EmittingInterval,
+                        EmittingIntervalRcp = 1.0f / this.EmittingInterval,
                         NumEmitMultiple = this.NumEmitMultiple,
                         AccuracyRad = math.radians(this.DirectionAccuracyDegree),
                         RangeDistanceFactor = this.RangeDistanceFactor,

@@ -39,31 +39,30 @@ namespace DotsLite.Arms
     using DotsLite.Targeting;
 
 
-    public enum BulletType
+    public enum BulletHitType
     {
         None,
-        Bullet,
+        Ray,
         Sphere,
-        Explosion,
-        Beam,
+        EmitAndHitRay,
     }
 
 
     static public class BulletEmittingUtility
     {
 
-        /// <summary>
-        /// 種類列挙型からコンポーネントの型を取得する
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ComponentType ToComponentType(this BulletType type) =>
-            type switch
-            {
-                BulletType.Bullet => typeof(Bullet.RayTag),
-                BulletType.Sphere => typeof(Bullet.SphereTag),
-                BulletType.Beam => typeof(Bullet.BeamTag),
-                _ => default,
-            };
+        ///// <summary>
+        ///// 種類列挙型からコンポーネントの型を取得する
+        ///// </summary>
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static ComponentType ToComponentType(this BulletHitType type) =>
+        //    type switch
+        //    {
+        //        BulletHitType.Ray => typeof(Bullet.RayTag),
+        //        BulletHitType.Sphere => typeof(Bullet.SphereTag),
+        //        BulletHitType.EmitAndHitRay => typeof(Bullet.BeamTag),
+        //        _ => default,
+        //    };
 
 
 
@@ -113,10 +112,10 @@ namespace DotsLite.Arms
         /// 
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int CalcFreq(float currentTime, float frameBaseTime, float interval)
+        public static int CalcFreq(float currentTime, float frameBaseTime, float intervalRcp)
         {
-            var d = currentTime - frameBaseTime;
-            var freq = (int)(d * math.rcp(interval)) + 1;
+            var d = currentTime - frameBaseTime + 1;
+            var freq = (int)(d * intervalRcp);
             return freq;
         }
 

@@ -80,7 +80,6 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        //in Particle.TranslationPtoPData ptop,
                         in Translation pos,
                         in Particle.TranslationTailData tail,
                         in Bullet.LinkData link,
@@ -100,7 +99,10 @@ namespace DotsLite.Arms
                         var state = link.OwnerStateEntity;
                         var hpos = hit.core.posision;
                         var cps = corps.TargetCorps;
-                        emit_(cmd, eqi, prefab, state, hpos, cps);
+                        for (var i = 0; i < emit.numEmitting; i++)
+                        {
+                            emit_(cmd, eqi, prefab, state, hpos, cps);
+                        }
 
 
                         cmd.DestroyEntity(eqi, entity);

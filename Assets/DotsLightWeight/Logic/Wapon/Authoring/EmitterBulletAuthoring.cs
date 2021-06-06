@@ -36,6 +36,7 @@ namespace DotsLite.Arms.Authoring
         public float AimFactor;
 
         public ParticleAuthoringBase EmittingPrefab;
+        public int NumEmitting;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -99,6 +100,7 @@ namespace DotsLite.Arms.Authoring
                     new Bullet.EmitData
                     {
                         EmittingPrefab = gcs_.GetPrimaryEntity(this.EmittingPrefab),
+                        numEmitting = this.NumEmitting,
                     }
                 );
                 //em.SetComponentData(bulletEntity,

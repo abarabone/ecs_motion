@@ -50,11 +50,11 @@ namespace DotsLite.Arms.Authoring
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
                 var types = new ComponentTypes
                 (
+                    typeof(Bullet.BeamTag),
                     typeof(Bullet.LifeTimeData),
                     typeof(Bullet.DistanceData),
                     typeof(Bullet.VelocityData),
-                    typeof(Bullet.LinkData),
-                    BulletType.Beam.ToComponentType()
+                    typeof(Bullet.LinkData)
                 );
                 em.AddComponents(bulletEntity, types);
 

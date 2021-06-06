@@ -61,9 +61,9 @@ namespace DotsLite.Arms
 
 
                         var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
-                        var freq = BulletEmittingUtility.CalcFreq(currentTime, frameBaseTime, emitter.EmittingInterval);
+                        var freq = BulletEmittingUtility.CalcFreq(currentTime, frameBaseTime, emitter.EmittingIntervalRcp);
 
-                        Debug.Log(freq);
+                        //Debug.Log($"current:{currentTime:0.00} freq:{freq} base:{frameBaseTime:0.00} next:{state.NextEmitableTime:0.00} dt:{dt:0.00}");
                         state.EmitFrequencyInCurrentFrame = freq;
                         state.NextEmitableTime = frameBaseTime + emitter.EmittingInterval * freq;
                     }

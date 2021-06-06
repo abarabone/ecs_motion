@@ -97,6 +97,7 @@ namespace DotsLite.Arms
         public struct EmitData : IComponentData
         {
             public Entity EmittingPrefab;
+            public int numEmitting;
         }
 
 

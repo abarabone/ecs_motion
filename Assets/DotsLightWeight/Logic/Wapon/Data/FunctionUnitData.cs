@@ -172,6 +172,7 @@ namespace DotsLite.Arms
             public Entity Prefab;
 
             public float EmittingInterval;
+            public float EmittingIntervalRcp;
             public float AccuracyRad;
             public int NumEmitMultiple;
             public float RangeDistanceFactor;// 切り替え時に弾丸のと計算確定しようかと思ったが、わかりにくいのでやめた

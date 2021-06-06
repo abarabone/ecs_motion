@@ -48,7 +48,7 @@ namespace DotsLite.Particle.Aurthoring
         [VisBy("UseAnimationRadius")] public float EndTimeForRadius;
 
         [Space(4)]
-        [Header("Cell")]
+        [Header("Cell")]//[Compact]
         public BinaryLength2 CellUsage;
 
         [Space(4)]
