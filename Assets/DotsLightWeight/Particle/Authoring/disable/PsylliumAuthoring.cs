@@ -39,7 +39,7 @@ namespace DotsLite.Particle.Aurthoring
             
             createModelEntity_( conversionSystem, this.gameObject, this.Material );
             
-            initParticleEntityComponents_( conversionSystem, this.gameObject );
+            initPsylliumEntityComponents_( conversionSystem, this.gameObject );
             
             return;
 
@@ -56,7 +56,7 @@ namespace DotsLite.Particle.Aurthoring
                 var modelEntity_ = gcs.CreateDrawModelEntityComponents( main, mesh, mat, BoneType, boneLength );
             }
 
-            void initParticleEntityComponents_( GameObjectConversionSystem gcs, GameObject main )
+            void initPsylliumEntityComponents_( GameObjectConversionSystem gcs, GameObject main )
             {
                 dstManager.SetName_( entity, $"{this.name}" );
 
@@ -66,15 +66,13 @@ namespace DotsLite.Particle.Aurthoring
                 var mainEntity = gcs.GetPrimaryEntity( main );
 
                 var archetype = em.CreateArchetype(
-                    typeof( ModelPrefabNoNeedLinkedEntityGroupTag ),
-                    typeof( DrawInstance.ParticleTag ),
-                    typeof( DrawInstance.ModelLinkData ),
-                    typeof( DrawInstance.TargetWorkData ),
-                    typeof( Particle.AdditionalData ),
-                    //typeof( Particle.TranslationPtoPData )
+                    typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
+                    typeof(DrawInstance.PsylliumTag),
+                    typeof(DrawInstance.ModelLinkData),
+                    typeof(DrawInstance.TargetWorkData),
+                    typeof(Particle.AdditionalData),
                     typeof(Translation),
                     typeof(Particle.TranslationTailData)
-                    //typeof(Rotation)
                 );
                 em.SetArchetype( mainEntity, archetype );
 

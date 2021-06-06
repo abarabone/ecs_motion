@@ -54,12 +54,12 @@ namespace DotsLite.Arms.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            initBullet_(conversionSystem, this.gameObject);
+            addBulletComponents_(conversionSystem, this.gameObject);
 
             return;
 
 
-            void initBullet_( GameObjectConversionSystem gcs_, GameObject bullet_ )
+            void addBulletComponents_( GameObjectConversionSystem gcs_, GameObject bullet_ )
             {
                 var em = gcs_.DstEntityManager;
 

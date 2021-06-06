@@ -101,18 +101,18 @@ namespace DotsLite.Particle.Aurthoring
             switch (this.ModelSource.ParticleType)
             {
                 case ParticleMeshType.billboadUv:
-                    gcs.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
+                    gcs.InitBillBoadUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
                     addParticleEntityComponents_(gcs, this.gameObject);
                     gcs.AddAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec, this.UseAnimationUv);
                     break;
 
                 case ParticleMeshType.psyllium:
-                    gcs.InitParticleEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.StartRadius);
+                    gcs.InitBillBoadEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.StartRadius);
                     addPsylliumComponents_(gcs, this.gameObject);
                     break;
 
                 case ParticleMeshType.psylliumUv:
-                    gcs.InitParticleUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
+                    gcs.InitBillBoadUvEntityComponents(this.gameObject, modelEntity, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex, this.ParticleColor, this.StartRadius);
                     addPsylliumComponents_(gcs, this.gameObject);
                     gcs.AddAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec, this.UseAnimationUv);
                     break;

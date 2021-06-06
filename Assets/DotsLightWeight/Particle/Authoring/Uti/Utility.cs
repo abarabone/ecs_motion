@@ -50,7 +50,7 @@ namespace DotsLite.Particle.Aurthoring
         //    new int2((int)x.x, (int)x.y);
 
 
-        public static void InitParticleUvEntityComponents(
+        public static void InitBillBoadUvEntityComponents(
             this GameObjectConversionSystem gcs, GameObject main, Entity modelEntity,
             BinaryLength2 division, BinaryLength2 cellUsage, int animationBaseIndex, Color32 color, float radius)
         {
@@ -65,7 +65,7 @@ namespace DotsLite.Particle.Aurthoring
             var types = new ComponentTypes(new ComponentType[]
             {
                 typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                typeof(DrawInstance.ParticleTag),
+                typeof(DrawInstance.BillBoadTag),
                 typeof(DrawInstance.ModelLinkData),
                 typeof(DrawInstance.TargetWorkData),
                 typeof(BillBoad.UvCursorData),
@@ -115,7 +115,7 @@ namespace DotsLite.Particle.Aurthoring
         }
 
 
-        public static void InitParticleEntityComponents(
+        public static void InitBillBoadEntityComponents(
             this GameObjectConversionSystem gcs, GameObject main, Entity modelEntity, Color32 color, float radius)
         {
             var em = gcs.DstEntityManager;
@@ -129,7 +129,7 @@ namespace DotsLite.Particle.Aurthoring
             var types = new ComponentTypes(new ComponentType[]
             {
                 typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                typeof(DrawInstance.ParticleTag),
+                typeof(DrawInstance.BillBoadTag),
                 typeof(DrawInstance.ModelLinkData),
                 typeof(DrawInstance.TargetWorkData),
                 typeof(Particle.AdditionalData),

@@ -18,7 +18,10 @@ namespace DotsLite.Draw
 
     static public partial class DrawInstance
     {
-        public struct ParticleTag : IComponentData
+        public struct BillBoadTag : IComponentData
+        { }
+
+        public struct PsylliumTag : IComponentData
         { }
     }
 

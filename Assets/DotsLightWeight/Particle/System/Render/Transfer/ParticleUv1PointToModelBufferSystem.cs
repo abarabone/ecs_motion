@@ -67,7 +67,7 @@ namespace DotsLite.Draw
             this.Entities
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
-                .WithAll<DrawInstance.ParticleTag>()
+                .WithAll<DrawInstance.BillBoadTag>()
                 .WithNone<DrawInstance.MeshTag>()
                 .ForEach((
                     in DrawInstance.TargetWorkData target,

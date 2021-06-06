@@ -51,7 +51,7 @@ namespace DotsLite.Draw
             this.Entities
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
-                .WithAll<DrawInstance.ParticleTag>()
+                .WithAll<DrawInstance.PsylliumTag>()
                 .WithNone<DrawInstance.MeshTag>()
                 .ForEach((
                     ref Particle.TranslationTailData tail,

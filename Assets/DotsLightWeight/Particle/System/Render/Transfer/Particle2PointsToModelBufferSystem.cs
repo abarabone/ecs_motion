@@ -51,8 +51,9 @@ namespace DotsLite.Draw
             this.Entities
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
-                .WithAll<DrawInstance.ParticleTag>()
-                .WithNone<DrawInstance.MeshTag, BillBoad.UvCursorData, BillBoad.CursorToUvIndexData>()
+                .WithAll<DrawInstance.PsylliumTag>()
+                .WithNone<DrawInstance.MeshTag>()
+                .WithNone<BillBoad.UvCursorData, BillBoad.CursorToUvIndexData>()
                 .ForEach(
                     (
                         ref Particle.TranslationTailData tail,
