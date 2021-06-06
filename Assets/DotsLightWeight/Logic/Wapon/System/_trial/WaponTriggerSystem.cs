@@ -36,7 +36,7 @@ namespace DotsLite.Arms
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(WaponSelectorSystem))]
     //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]//
-    public class WaponTriggerSystem2 : SystemBase
+    public class WaponTriggerSystem : SystemBase
     {
 
         protected override void OnUpdate()

@@ -8,6 +8,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
+    using Unity.Physics.Authoring;
 
 namespace DotsLite.Arms.Authoring
 {
@@ -18,7 +19,7 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.CharacterMotion;
     using DotsLite.Arms;
     using DotsLite.Particle;
-    using Unity.Physics.Authoring;
+    using DotsLite.Targeting;
     using DotsLite.Particle.Aurthoring;
 
     /// <summary>
@@ -50,7 +51,7 @@ namespace DotsLite.Arms.Authoring
                 {
                     typeof(Bullet.PointDamageSpecData),
                     typeof(Explosion.SpecData),
-                    typeof(Targeting.CorpsGroup.TargetWithArmsData),
+                    typeof(CorpsGroup.TargetWithArmsData),
                     typeof(Translation)
                 });
                 em.AddComponents(bulletEntity, types);

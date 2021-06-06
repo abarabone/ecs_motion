@@ -74,11 +74,12 @@ namespace DotsLite.Arms
         /// 
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float CalcBaseTime(float currentTime, float nextEmitableTime, float dt)
+        public static float 
+            CalcBaseTime(float currentTime, float nextEmitableTime, float dt)
         {
             var frameBaseTime = currentTime - dt;
-            var isEmitPrevFrame = nextEmitableTime > frameBaseTime;
-            var baseTime = math.select(frameBaseTime, nextEmitableTime, isEmitPrevFrame);
+            var isEmitInPrevFrame = nextEmitableTime > frameBaseTime;
+            var baseTime = math.select(frameBaseTime, nextEmitableTime, isEmitInPrevFrame);
             return baseTime;
         }
 
@@ -95,7 +96,7 @@ namespace DotsLite.Arms
         //        AimSpeed = 0,
         //    };
         
-        public static Bullet.InitializeFromEmitterData CreateInitData(
+        public static Bullet.InitializeFromEmitterData CreateBulletInitData(
             this Emitter.BulletEmittingData data, float3 pos, quaternion rot)
         =>
             new Bullet.InitializeFromEmitterData

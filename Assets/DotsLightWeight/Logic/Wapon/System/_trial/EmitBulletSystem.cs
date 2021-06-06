@@ -56,9 +56,9 @@ namespace DotsLite.Arms
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(CameraMoveSystem))]
-    [UpdateAfter(typeof(WaponTriggerSystem2))]
+    [UpdateAfter(typeof(WaponTriggerSystem))]
     [UpdateAfter(typeof(EmitTimeProgressSystem))]
-    public class EmitBulletSystem2 : DependencyAccessableSystemBase
+    public class EmitBulletSystem : DependencyAccessableSystemBase
     {
 
 
@@ -95,6 +95,7 @@ namespace DotsLite.Arms
 
 
             this.Entities
+                .WithName("WithMuzzle")
                 .WithBurst()
                 //.WithNone<Bullet.MoveSpecData>()
                 .WithReadOnly(rots)
@@ -124,7 +125,7 @@ namespace DotsLite.Arms
 
 
                         var wpos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, mzpos.MuzzlePositionLocal.xyz);
-                        var init = emitter.CreateInitData(pos, rot);
+                        var init = emitter.CreateBulletInitData(pos, rot);
 
                         //for (var ifreq = 0; ifreq < freq; ifreq++)
                         //{
@@ -140,6 +141,7 @@ namespace DotsLite.Arms
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("WithoutMuzzle")
                 .WithBurst()
                 .WithNone<Emitter.BulletMuzzleLinkData>()
                 //.WithNone<Bullet.MoveSpecData>()
@@ -163,7 +165,7 @@ namespace DotsLite.Arms
                         //Debug.Log(freq);
 
 
-                        var init = emitter.CreateInitData(pos.Value, rot.Value);
+                        var init = emitter.CreateBulletInitData(pos.Value, rot.Value);
 
                         //for (var ifreq = 0; ifreq < freq; ifreq++)
                         //{

@@ -37,7 +37,7 @@ namespace DotsLite.Arms
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    [UpdateAfter(typeof(WaponTriggerSystem2))]
+    [UpdateAfter(typeof(WaponTriggerSystem))]
     public class EmitTimeProgressSystem : SystemBase
     {
 
@@ -63,9 +63,9 @@ namespace DotsLite.Arms
                         var frameBaseTime = BulletEmittingUtility.CalcBaseTime(currentTime, state.NextEmitableTime, dt);
                         var freq = BulletEmittingUtility.CalcFreq(currentTime, frameBaseTime, emitter.EmittingInterval);
 
-                        state.NextEmitableTime = frameBaseTime + emitter.EmittingInterval * freq;
+                        Debug.Log(freq);
                         state.EmitFrequencyInCurrentFrame = freq;
-
+                        state.NextEmitableTime = frameBaseTime + emitter.EmittingInterval * freq;
                     }
                 )
                 .ScheduleParallel();

@@ -103,7 +103,7 @@ namespace DotsLite.Arms
                         emit_(cmd, eqi, prefab, state, hpos, cps);
 
 
-                        cmd.DestroyEntity(entityInQueryIndex, entity);
+                        cmd.DestroyEntity(eqi, entity);
                     }
                 )
                 .ScheduleParallel();

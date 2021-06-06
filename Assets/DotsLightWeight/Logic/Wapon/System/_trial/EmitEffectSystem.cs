@@ -43,7 +43,7 @@ namespace DotsLite.Arms
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(CameraMoveSystem))]
-    [UpdateAfter(typeof(WaponTriggerSystem2))]
+    [UpdateAfter(typeof(WaponTriggerSystem))]
     [UpdateAfter(typeof(EmitTimeProgressSystem))]
     public class EmitEffectSystem : DependencyAccessableSystemBase
     {

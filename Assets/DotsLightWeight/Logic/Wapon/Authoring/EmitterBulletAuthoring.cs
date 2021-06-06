@@ -20,6 +20,7 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Particle;
     using Unity.Physics.Authoring;
     using DotsLite.Particle.Aurthoring;
+    using DotsLite.Targeting;
 
     /// <summary>
     /// 
@@ -68,7 +69,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(Bullet.EmitterTag),
                     typeof(Bullet.EmitData),
                     typeof(Bullet.InitializeFromEmitterData),
-                    typeof(Targeting.CorpsGroup.TargetWithArmsData)
+                    typeof(CorpsGroup.TargetWithArmsData)
                 };
                 if (this.GravityFactor != 0.0f || this.AimFactor != 0.0f || true)
                 {

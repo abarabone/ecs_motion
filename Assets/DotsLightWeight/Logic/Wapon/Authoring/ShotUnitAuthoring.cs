@@ -22,6 +22,7 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Model;
     using DotsLite.Particle.Aurthoring;
     using DotsLite.Utilities;
+    using DotsLite.Targeting;
 
     /// <summary>
     /// 
@@ -89,7 +90,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(Emitter.BulletEmittingData),
                     typeof(Emitter.TriggerData),
                     typeof(Emitter.StateData),
-                    typeof(Targeting.CorpsGroup.TargetWithArmsData)
+                    typeof(CorpsGroup.TargetWithArmsData)
                 });
                 em.AddComponents(emitter, types);
             }
@@ -105,7 +106,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(Emitter.BulletEmittingData),
                     typeof(Emitter.TriggerData),
                     typeof(Emitter.StateData),
-                    typeof(Targeting.CorpsGroup.TargetWithArmsData)
+                    typeof(CorpsGroup.TargetWithArmsData)
                 });
                 em.AddComponents(emitter, types);
             }
