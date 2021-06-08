@@ -12,6 +12,7 @@ using Unity.Transforms;
 using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
+using System.Runtime.InteropServices;
 
 namespace DotsLite.Draw
 {
@@ -100,16 +101,41 @@ namespace DotsLite.Particle
             }
         }
 
+        [InternalBufferCapacity(8)]
+        public struct TranslationTailsData : IBufferElementData
+        {
+            public float4 PositionAndColor;
+
+            public float3 Position
+            {
+                get => this.PositionAndColor.xyz;
+                //set => this.PositionAndColor.xyz = value;
+                set => this.PositionAndColor = new float4(value, math.asfloat(this.Color.ToUint()));
+            }
+            public Color32 Color
+            {
+                get => math.asuint(this.PositionAndColor.w).ToColor32();
+                //set => this.PositionAndColor.w = value;
+                set => this.PositionAndColor = new float4(this.Position, math.asfloat(value.ToUint()));
+            }
+        }
+
         public struct AdditionalData : IComponentData
         {
             public Color32 Color;
             public float Size;
         }
 
-        static public uint ToUint(this Color32 c) => (uint)(c.r << 24 | c.g << 16 | c.b << 8 | c.a << 0);
+        static public unsafe uint ToUint(this Color32 c) => new Color32Convertor { Color = c }.Uint;// (uint)(c.r << 24 | c.g << 16 | c.b << 8 | c.a << 0);
 
+        static public Color32 ToColor32(this uint u) => new Color32Convertor { Uint = u }.Color;
 
-
+        [StructLayout(LayoutKind.Explicit)]
+        public struct Color32Convertor
+        {
+            [FieldOffset(0)] public Color32 Color;
+            [FieldOffset(0)] public uint Uint;
+        }
     }
 
 

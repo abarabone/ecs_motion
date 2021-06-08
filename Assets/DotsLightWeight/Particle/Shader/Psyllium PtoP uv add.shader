@@ -89,7 +89,7 @@ Shader "Custom/Psyllium ptop uv add"
                 const half2 uvsize = uvp.zw * uvspan - uvtick - uvtick;
                 o.uv = uvofs + v.uv * uvsize;
                 
-                const fixed4 color = float4(asuint(buf2.yyyy) >> uint4(24, 16, 8, 0) & 255) / 255.;
+                const fixed4 color = float4(asuint(buf2.yyyy) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
                 o.color = color * 6;
                 UNITY_TRANSFER_FOG(o, o.vertex);
 

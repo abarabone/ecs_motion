@@ -59,7 +59,7 @@ Shader "Custom/Psyllium ptop add"
 				const float4 buf0 = BoneVectorBuffer[ivec + 0];
 				const float4 buf1 = BoneVectorBuffer[ivec + 1];
 
-                const fixed4 color = float4(asuint(buf1.w).xxxx >> uint4(24, 16, 8, 0) & 255) / 255.;
+                const fixed4 color = float4(asuint(buf1.w).xxxx >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
                 const float size = buf0.w;
 
 				const float4 lvt = v.vertex;
