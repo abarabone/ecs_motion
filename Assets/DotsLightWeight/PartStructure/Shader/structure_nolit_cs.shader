@@ -63,7 +63,7 @@ Shader "Custom/structure_nolit_cs"
 
 
 			StructuredBuffer<float4> BoneVectorBuffer;
-			int	BoneLengthEveryInstance;
+			//int	VectorLengthPerInstance;
 			int BoneVectorOffset;
 
 			fixed4		_Color;

@@ -49,8 +49,24 @@ namespace DotsLite.Arms
 
             var dt = this.Time.DeltaTime;
             var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// とりあえずエンジン側のを
-            // 重力が変化する可能性を考えて、毎フレーム取得する
+                                                                              // 重力が変化する可能性を考えて、毎フレーム取得する
 
+
+            this.Entities
+                .WithName("TailLineCopy")
+                .WithBurst()
+                .ForEach((
+                    ref DynamicBuffer<Particle.TranslationTailLineData> tails,
+                    in Particle.TranslationTailData tail) =>
+                {
+                    for (var i = tails.Length; i-- > 1;)
+                    {
+                        tails.ElementAt(i).Position = tails[i - 1].Position;
+                    }
+
+                    tails.ElementAt(0).Position = tail.Position;
+                })
+                .ScheduleParallel();
 
             this.Entities
                 .WithName("TailCopy")
@@ -64,27 +80,10 @@ namespace DotsLite.Arms
                 .ScheduleParallel();
 
             this.Entities
-                .WithName("TailsCopy")
-                .WithBurst()
-                .ForEach((
-                    ref DynamicBuffer<Particle.TranslationTailsData> tails,
-                    in Translation pos) =>
-                {
-                    for (var i = tails.Length; i-->1; )
-                    {
-                        tails.ElementAt(i).Position = tails[i - 1].Position;
-                    }
-
-                    tails.ElementAt(0).Position = pos.Value;
-                })
-                .ScheduleParallel();
-
-            this.Entities
                 .WithName("Move")
                 .WithBurst()
                 .ForEach((
                     ref Translation pos,
-                    //ref Particle.TranslationTailData tail,
                     ref Bullet.VelocityData v,
                     in Bullet.AccelerationData acc,
                     in Bullet.MoveSpecData spec) =>
@@ -96,8 +95,6 @@ namespace DotsLite.Arms
 
 
                     var d = v.Velocity.xyz * dt;
-
-                    //tail.PositionAndSize = pos.Value.As_float4(tail.Size);
 
                     pos.Value += d;
                 })

@@ -20,6 +20,7 @@ namespace DotsLite.Draw
     using DotsLite.Particle;
     using DotsLite.Dependency;
     using DotsLite.Model;
+    using DotsLite.Utilities;
 
 
     //[DisableAutoCreation]
@@ -51,13 +52,14 @@ namespace DotsLite.Draw
             this.Entities
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
-                .WithAll<DrawInstance.PsylliumTag>()
+                .WithAll<DrawInstance.LineParticleTag>()
                 .WithNone<DrawInstance.MeshTag>()
                 .WithNone<BillBoad.UvCursorData, BillBoad.CursorToUvIndexData>()
                 .ForEach(
                     (
                         in Translation pos,
-                        in DynamicBuffer<Particle.TranslationTailsData> tails,
+                        in Particle.TranslationTailData tail,
+                        in DynamicBuffer<Particle.TranslationTailLineData> tails,
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
                         in Particle.AdditionalData additional
@@ -69,23 +71,25 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        const int vectorLength = (int)BoneType.PtoP;
+                        var vectorLength = 1 + 1 + tails.Length;
                         var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
                         var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
                         var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
 
-                        var size = additional.Size;
+                        var size = additional.Radius;
                         var color = math.asfloat(additional.Color.ToUint());
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[i++] = new float4(size);
                         pModel[i++] = new float4(pos.Value, color);
+                        pModel[i++] = new float4(tail.Position, color);
 
                         for (var j = 0; j < tails.Length; j++)
                         {
                             pModel[i + j] = tails[j].PositionAndColor;
                         }
+
+                        pModel[i + tails.Length] = new float4(size);
                     }
                 )
                 .ScheduleParallel();

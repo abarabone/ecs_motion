@@ -63,7 +63,7 @@ Shader "Custom/monomesh_nolit_cs"
 
 
 			StructuredBuffer<float4> BoneVectorBuffer;
-			int	BoneLengthEveryInstance;
+			int	VectorLengthPerInstance;
 			int BoneVectorOffset;
 
 			fixed4		_Color;
@@ -84,7 +84,7 @@ Shader "Custom/monomesh_nolit_cs"
 				v2f o;
 				
 				//const int vector_offset_per_instance = 4;
-				const int i_vector_base = BoneVectorOffset + i * BoneLengthEveryInstance;// +vector_offset_per_instance);
+				const int i_vector_base = BoneVectorOffset + i * VectorLengthPerInstance;// +vector_offset_per_instance);
 				const int ivec = i_vector_base;// +vector_offset_per_instance;
 
 				const float4 wpos = BoneVectorBuffer[ivec + 0];

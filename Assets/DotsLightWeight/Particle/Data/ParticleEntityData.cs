@@ -24,6 +24,9 @@ namespace DotsLite.Draw
 
         public struct PsylliumTag : IComponentData
         { }
+
+        public struct LineParticleTag : IComponentData
+        { }
     }
 
 }
@@ -102,7 +105,7 @@ namespace DotsLite.Particle
         }
 
         [InternalBufferCapacity(8)]
-        public struct TranslationTailsData : IBufferElementData
+        public struct TranslationTailLineData : IBufferElementData
         {
             public float4 PositionAndColor;
 
@@ -123,7 +126,7 @@ namespace DotsLite.Particle
         public struct AdditionalData : IComponentData
         {
             public Color32 Color;
-            public float Size;
+            public float Radius;
         }
 
         static public unsafe uint ToUint(this Color32 c) => new Color32Convertor { Color = c }.Uint;// (uint)(c.r << 24 | c.g << 16 | c.b << 8 | c.a << 0);

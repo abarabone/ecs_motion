@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
+using System.Runtime.CompilerServices;
 
 namespace DotsLite.Draw
 {
@@ -16,11 +17,12 @@ namespace DotsLite.Draw
     using DotsLite.SystemGroup;
     using DotsLite.Geometry;
     using DotsLite.Particle;
+    using DotsLite.Utilities;
     
 
     ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Culling))]
-    public class DrawCullingPtopParticleSystem : SystemBase
+    public class DrawCullingLineParticleSystem : SystemBase
     {
 
         //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -53,7 +55,7 @@ namespace DotsLite.Draw
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
                 //.WithNone<Rotation, Translation, NonUniformScale>()
-                .WithAll<DrawInstance.PsylliumTag, DrawInstance.BillBoadTag>()
+                .WithAll<DrawInstance.LineParticleTag>()
                 .WithNone<DrawInstance.BoneModelTag>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach(
@@ -61,7 +63,7 @@ namespace DotsLite.Draw
                             ref DrawInstance.TargetWorkData target,
                             in DrawInstance.ModelLinkData modellink,
                             //in Particle.TranslationPtoPData ptop,
-                            in Particle.TranslationTailData tail,
+                            in DynamicBuffer<Particle.TranslationTailLineData> tails,
                             in Translation pos,
                             in Particle.AdditionalData additional
                         ) =>
@@ -72,11 +74,13 @@ namespace DotsLite.Draw
                                 return;
                             }
 
-
+                            var minmax = calcMinMax(pos, tails);
+                            var min = minmax.min;
+                            var max = minmax.max;
                             var bbox = new AABB
                             {
-                                Center = (pos.Value + tail.Position) * 0.5f,
-                                Extents = math.abs(pos.Value - tail.Position) * 0.5f + additional.Radius,
+                                Center = (min + max).xyz * 0.5f,
+                                Extents = math.abs(max - min).xyz * 0.5f + additional.Radius,
                             };
 
                             var isHit = viewFrustum.IsInside(bbox);
@@ -98,6 +102,30 @@ namespace DotsLite.Draw
 
 
             //this.presentationBarier.AddJobHandleForProducer( this.Dependency );
+        }
+
+        struct minmax
+        {
+            public float4 min;
+            public float4 max;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static minmax calcMinMax(Translation pos, DynamicBuffer<Particle.TranslationTailLineData> tails)
+        {
+            var min = pos.Value;
+            var max = pos.Value;
+
+            foreach (var tail in tails)
+            {
+                min = math.min(min, tail.Position);
+                max = math.max(max, tail.Position);
+            }
+
+            return new minmax
+            {
+                min = min.As_float4(),
+                max = max.As_float4(),
+            };
         }
 
     }

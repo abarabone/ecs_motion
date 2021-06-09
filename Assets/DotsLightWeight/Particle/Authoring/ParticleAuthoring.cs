@@ -89,10 +89,8 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
-            var modelEntity = gcs.GetPrimaryEntity(this.ModelSource);
 
-
-            gcs.AddParticleEntityComponents(this.gameObject, modelEntity, this.ParticleColor, this.StartRadius);
+            gcs.AddParticleComponents(this.gameObject, this.ModelSource, this.ParticleColor, this.StartRadius);
 
             switch (this.ModelSource.ParticleType)
             {
@@ -110,6 +108,17 @@ namespace DotsLite.Particle.Aurthoring
                     gcs.AddPsylliumComponents(this.gameObject);
                     gcs.AddUvIndexComponents(this.gameObject, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex);
                     gcs.AddUvAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec, this.UseAnimationUv);
+                    break;
+
+                case ParticleMeshType.LinePsyllium:
+                    gcs.AddLineParticleComponents(this.gameObject, this.ModelSource.LineParticleSegments);
+                    break;
+
+                case ParticleMeshType.LineBillboad:
+
+                    break;
+
+                default:
                     break;
             }
 

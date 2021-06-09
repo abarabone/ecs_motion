@@ -35,24 +35,24 @@ namespace DotsLite.Arms
 
     using Random = Unity.Mathematics.Random;
 
-    static class BringYourOwnDelegate
-    {
-        // Declare the delegate that takes 12 parameters. T0 is used for the Entity argument
-        [Unity.Entities.CodeGeneratedJobForEach.EntitiesForEachCompatible]
-        public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8>
-            (
-                T0 t0, T1 t1,
-                ref T2 t2, ref T3 t3, ref T4 t4,
-                in T5 t5, in T6 t6, in T7 t7, in T8 t8
-            );
+    //static class BringYourOwnDelegate
+    //{
+    //    // Declare the delegate that takes 12 parameters. T0 is used for the Entity argument
+    //    [Unity.Entities.CodeGeneratedJobForEach.EntitiesForEachCompatible]
+    //    public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8>
+    //        (
+    //            T0 t0, T1 t1,
+    //            ref T2 t2, ref T3 t3, ref T4 t4,
+    //            in T5 t5, in T6 t6, in T7 t7, in T8 t8
+    //        );
 
-        // Declare the function overload
-        public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8>
-            (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8> codeToRun)
-            where TDescription : struct, Unity.Entities.CodeGeneratedJobForEach.ISupportForEachWithUniversalDelegate
-        =>
-            LambdaForEachDescriptionConstructionMethods.ThrowCodeGenException<TDescription>();
-    }
+    //    // Declare the function overload
+    //    public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8>
+    //        (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8> codeToRun)
+    //        where TDescription : struct, Unity.Entities.CodeGeneratedJobForEach.ISupportForEachWithUniversalDelegate
+    //    =>
+    //        LambdaForEachDescriptionConstructionMethods.ThrowCodeGenException<TDescription>();
+    //}
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
@@ -72,15 +72,13 @@ namespace DotsLite.Arms
 
 
             this.Entities
-                .WithName("Initialize")
+                .WithName("Misc")
                 .WithBurst()
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .ForEach((
                     int nativeThreadIndex, int entityInQueryIndex,
-                    ref Particle.TranslationTailData tail,
                     ref Bullet.VelocityData v,
                     ref Particle.LifeTimeSpecData t,
-                    in Translation pos,
                     in Bullet.MoveSpecData spec,
                     in Particle.AdditionalData data,
                     in Bullet.InitializeFromEmitterData init) =>
@@ -88,9 +86,6 @@ namespace DotsLite.Arms
                     var tid = nativeThreadIndex;
                     var eqi = entityInQueryIndex;
                     var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
-
-
-                    tail.PositionAndSize = pos.Value.As_float4(data.Size);
 
 
                     var rot = init.EmitterRotation;
@@ -102,6 +97,36 @@ namespace DotsLite.Arms
                     var d = spec.RangeDistanceFactor * init.EmitterRangeDistanceFactor;
                     var rspd = math.rcp(spec.BulletSpeed);
                     t.DurationSec = math.min(t.DurationSec, d * rspd);
+                })
+                .ScheduleParallel();
+
+            this.Entities
+                .WithName("Tail")
+                .WithBurst()
+                .WithAll<Particle.LifeTimeInitializeTag>()
+                .ForEach((
+                    ref Particle.TranslationTailData tail,
+                    in Translation pos,
+                    in Particle.AdditionalData data) =>
+                {
+                    tail.PositionAndSize = pos.Value.As_float4(data.Radius);
+                })
+                .ScheduleParallel();
+
+            this.Entities
+                .WithName("TailLine")
+                .WithBurst()
+                .WithAll<Particle.LifeTimeInitializeTag>()
+                .ForEach((
+                    ref DynamicBuffer<Particle.TranslationTailLineData> tails,
+                    in Translation pos) =>
+                {
+                    for (var i = 0; i < tails.Length; i++)
+                    {
+                        var tail = tails[i];
+                        tail.Position = pos.Value;
+                        tails[i] = tail;
+                    }
                 })
                 .ScheduleParallel();
 

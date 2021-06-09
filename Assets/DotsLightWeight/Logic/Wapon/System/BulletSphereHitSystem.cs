@@ -102,7 +102,7 @@ namespace DotsLite.Arms
                     {
 
                         var hit_ = cw.BulletHitSphere
-                            (link.OwnerStateEntity, pos.Value, additional.Size, targets);
+                            (link.OwnerStateEntity, pos.Value, additional.Radius, targets);
 
                         if (!hit_.isHit) return;
 

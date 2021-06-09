@@ -48,7 +48,7 @@ namespace DotsLite.Draw.Authoring
 
             var em = gcs.DstEntityManager;
 
-            setShaderProps_( em, mat, mesh, boneLength );
+            setShaderProps_( em, mat, mesh, boneLength * (int)BoneType + instanceDataVectorLength );
 
             addComponents_( gcs, topGameObject, drawModelEntity);
             initInfomationData_( em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength );
@@ -58,14 +58,14 @@ namespace DotsLite.Draw.Authoring
 
 
 
-            static void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int boneLength_ )
+            static void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int vectorLengthPerInstance )
             {
                 var sys = em_.World.GetExistingSystem<DrawBufferManagementSystem>();
                 var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
 
                 mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer );
 
-                mat_.SetInt( "BoneLengthEveryInstance", boneLength_ );
+                mat_.SetInt("VectorLengthPerInstance", vectorLengthPerInstance);
 
                 //mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要なので、ここではやらない
             }

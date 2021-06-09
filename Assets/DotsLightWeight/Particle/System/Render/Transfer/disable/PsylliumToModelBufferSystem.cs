@@ -67,7 +67,7 @@ namespace DotsLite.Draw
 
                         var i = target.DrawInstanceId * 2;
 
-                        var size = additional.Size;
+                        var size = additional.Radius;
                         var color = math.asfloat(additional.Color.ToUint());
 
                         var pInstance = offsetsOfDrawModel[ linker.DrawModelEntityCurrent ].pVectorOffsetPerModelInBuffer;

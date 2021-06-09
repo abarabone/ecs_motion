@@ -73,7 +73,7 @@ Shader "Custom/SkinnedMesh_1bone_nolit_cs"
 			//};
 
 			StructuredBuffer<float4> BoneVectorBuffer;
-			int	BoneLengthEveryInstance;
+			int	VectorLengthPerInstance;
 			int BoneVectorOffset;
 
 			fixed4		_Color;
@@ -101,7 +101,7 @@ Shader "Custom/SkinnedMesh_1bone_nolit_cs"
 				//UNITY_SETUP_INSTANCE_ID(v);
 
 				//int i = getInstanceId;
-				int vector_base = BoneVectorOffset + i * BoneLengthEveryInstance * 2;
+				int vector_base = BoneVectorOffset + i * VectorLengthPerInstance;
 				int ivec =  + vector_base + v.boneIndex.x * 2;
 
 				float4 wpos = BoneVectorBuffer[ivec + 0];

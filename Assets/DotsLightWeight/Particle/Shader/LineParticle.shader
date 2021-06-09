@@ -63,7 +63,7 @@
 				};
 
 				StructuredBuffer<float4> BoneVectorBuffer;
-				int	BoneLengthEveryInstance;
+				int	VectorLengthPerInstance;
 				int BoneVectorOffset;
 
 				sampler2D _MainTex;
@@ -79,7 +79,7 @@
 				{
 					v2f o;
 
-					int offset = BoneVectorOffset + i * BoneLengthEveryInstance;
+					int offset = BoneVectorOffset + i * VectorLengthPerInstance;
 					int3 ivec = offset.xxx + v.index.xyz;
 
 					float3 wpos = BoneVectorBuffer[ivec.x].xyz;

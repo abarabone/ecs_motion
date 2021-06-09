@@ -89,7 +89,7 @@ namespace DotsLite.Draw
 
                     var i = instanceBufferOffset;// + offsetInfo.VectorOffsetPerInstance;
 
-                    var size = additional.Size;
+                    var size = additional.Radius;
                     var color = math.asfloat(additional.Color.ToUint());
                     var dir = rotdir.Direction;
                     var uvindex = math.asfloat(cursor.CalcUvIndex(touv));

@@ -84,7 +84,7 @@ namespace DotsLite.Particle
                         var elapsed = currentTime - timer.StartTime;
                         var normalizeTime = math.saturate(elapsed * anim.MaxTimeSpanR);
 
-                        data.Size = math.lerp(anim.StartSize, anim.EndSize, normalizeTime);
+                        data.Radius = math.lerp(anim.StartSize, anim.EndSize, normalizeTime);
 
                     }
                 )

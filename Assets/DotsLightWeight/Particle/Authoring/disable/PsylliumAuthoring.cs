@@ -94,7 +94,7 @@ namespace DotsLite.Particle.Aurthoring
                     new Particle.AdditionalData
                     {
                         Color = this.Material.color,
-                        Size = this.DefaultRadius,
+                        Radius = this.DefaultRadius,
                     }
                 );
 

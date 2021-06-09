@@ -20,7 +20,7 @@ namespace DotsLite.Draw
 
     ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Culling))]
-    public class DrawCullingUvParticleSystem : SystemBase
+    public class DrawCullingBillBoadSystem : SystemBase
     {
 
         //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証
@@ -52,8 +52,9 @@ namespace DotsLite.Draw
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
-                .WithAll<BillBoad.UvCursorData>()//
-                .WithNone<DrawInstance.BoneModelTag, DrawInstance.PostureLinkData>()
+                .WithAll<DrawInstance.BillBoadTag>()
+                .WithNone<DrawInstance.BoneModelTag>()
+                .WithNone<DrawInstance.PostureLinkData>()
                 .WithNone<Particle.TranslationTailData>()
                 .ForEach((
                     ref DrawInstance.TargetWorkData target,
@@ -71,7 +72,7 @@ namespace DotsLite.Draw
                     var bbox = new AABB
                     {
                         Center = pos.Value,
-                        Extents = additional.Size,
+                        Extents = additional.Radius,
                     };
 
                     var isHit = viewFrustum.IsInside(bbox);

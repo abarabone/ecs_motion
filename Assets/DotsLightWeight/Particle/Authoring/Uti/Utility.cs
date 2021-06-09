@@ -52,8 +52,8 @@ namespace DotsLite.Particle.Aurthoring
         //    new int2((int)x.x, (int)x.y);
 
 
-        public static void AddParticleEntityComponents(
-            this GameObjectConversionSystem gcs, GameObject main, Entity modelEntity, Color32 color, float radius)
+        public static void AddParticleComponents(
+            this GameObjectConversionSystem gcs, GameObject main, ParticleModelSourceAuthoring modelSource, Color32 color, float radius)
         {
             var em = gcs.DstEntityManager;
 
@@ -76,7 +76,7 @@ namespace DotsLite.Particle.Aurthoring
             em.SetComponentData(mainEntity,
                 new DrawInstance.ModelLinkData
                 {
-                    DrawModelEntityCurrent = modelEntity,
+                    DrawModelEntityCurrent = gcs.GetPrimaryEntity(modelSource),
                 }
             );
             em.SetComponentData(mainEntity,
@@ -90,7 +90,7 @@ namespace DotsLite.Particle.Aurthoring
                 new Particle.AdditionalData
                 {
                     Color = color,
-                    Size = radius,
+                    Radius = radius,
                 }
             );
         }
@@ -141,6 +141,28 @@ namespace DotsLite.Particle.Aurthoring
                 typeof(Particle.TranslationTailData)
             );
             em.AddComponents(mainEntity, types);
+
+            em.RemoveComponent<Rotation>(mainEntity);//
+        }
+
+        public static void AddLineParticleComponents(
+            this GameObjectConversionSystem gcs, GameObject main, int segments)
+        {
+            var em = gcs.DstEntityManager;
+
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(
+                typeof(DrawInstance.LineParticleTag),
+                typeof(Translation),
+                typeof(Particle.TranslationTailData),
+                typeof(Particle.TranslationTailLineData)
+            );
+            em.AddComponents(mainEntity, types);
+
+            var buffer = em.AddBuffer<Particle.TranslationTailLineData>(mainEntity);
+            buffer.Length = segments + 1 - 2;
 
             em.RemoveComponent<Rotation>(mainEntity);//
         }
