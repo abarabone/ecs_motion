@@ -64,6 +64,22 @@ namespace DotsLite.Arms
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("TailsCopy")
+                .WithBurst()
+                .ForEach((
+                    ref DynamicBuffer<Particle.TranslationTailsData> tails,
+                    in Translation pos) =>
+                {
+                    for (var i = tails.Length; i-->1; )
+                    {
+                        tails.ElementAt(i).Position = tails[i - 1].Position;
+                    }
+
+                    tails.ElementAt(0).Position = pos.Value;
+                })
+                .ScheduleParallel();
+
+            this.Entities
                 .WithName("Move")
                 .WithBurst()
                 .ForEach((

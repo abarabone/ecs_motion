@@ -41,6 +41,8 @@ namespace DotsLite.Particle.Aurthoring
         billboadUv,
         psyllium,
         psylliumUv,
+        LinePsyllium,
+        LineBillboad,
     }
 
     public static class ParticleAuthoringUtility

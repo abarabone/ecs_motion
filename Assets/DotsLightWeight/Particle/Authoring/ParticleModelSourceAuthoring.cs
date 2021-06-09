@@ -31,6 +31,7 @@ namespace DotsLite.Particle.Aurthoring
         public ParticleMeshType ParticleType;
 
         public BinaryLength2 Division;
+        public int LineParticleSegments;
 
         [SerializeField]
         public SrcTexture[] SrcTexutres;
@@ -78,6 +79,18 @@ namespace DotsLite.Particle.Aurthoring
                         var mesh = this.createPsylliumMesh();
                         createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.PtoPuv);
                         addParamComponents_(conversionSystem, entity, this.Division);
+                    }
+                    break;
+                case ParticleMeshType.LinePsyllium:
+                    {
+                        var mesh = this.createLineParticleMesh_(this.LineParticleSegments, isPsylliumEdge: true);
+                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, (BoneType)this.LineParticleSegments);
+                    }
+                    break;
+                case ParticleMeshType.LineBillboad:
+                    {
+                        var mesh = this.createLineParticleMesh_(this.LineParticleSegments, isPsylliumEdge: false);
+                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, (BoneType)this.LineParticleSegments);
                     }
                     break;
                 default:
@@ -237,6 +250,147 @@ namespace DotsLite.Particle.Aurthoring
             };
 
             return mesh;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isPsylliumEdge">ê^Ç»ÇÁÇyå^ÅAãUÇ»ÇÁÉGå^ÇÃÉÅÉbÉVÉÖÇê∂ê¨Ç∑ÇÈÅB</param>
+        Mesh createLineParticleMesh_(int pointNodeLength, bool isPsylliumEdge)
+        {
+
+            const float h = 0.5f;
+            const float w = 0.5f;
+            const float d = 0.5f;
+
+            Mesh mesh = new Mesh();
+
+            mesh.vertices = queryVtx().SelectMany().ToArray();
+            mesh.uv = queryUv().SelectMany().ToArray();
+            mesh.colors = queryPointNodeIndex().SelectMany().ToArray();
+            mesh.triangles = queryTriangleIndex().SelectMany().ToArray();
+
+            return mesh;
+
+
+
+            IEnumerable<Vector3[]> queryVtx()
+            {
+                var startEdgeVtxs = new[] { new Vector3(-w, 0f, -d), new Vector3(+w, 0f, -d) };
+                var nodeVtxs = new[] { new Vector3(-w, 0f, 0f), new Vector3(+w, 0f, 0f) };
+                var endEdgeVtxs = new[] { new Vector3(-w, 0f, +d), new Vector3(+w, 0f, +d) };
+
+                var qVtx = Enumerable
+                    .Repeat(nodeVtxs, pointNodeLength)
+                    .Prepend(startEdgeVtxs)
+                    .Append(endEdgeVtxs)
+                    ;
+
+                if (isPsylliumEdge)
+                {
+                    return qVtx;
+                }
+                else
+                {
+                    return qVtx
+                        .Prepend(endEdgeVtxs)
+                        .Append(startEdgeVtxs)
+                        //.Select( (x,i) => new[] { x.First() + Vector3.up*i, x.Last() + Vector3.up*i } )
+                        ;
+                }
+            }
+
+            IEnumerable<Vector2[]> queryUv()
+            {
+                var startEdgeUvs = new[] { new Vector2(0.0f, 0.0f), new Vector2(1.0f, 0.0f) };
+                var nodeUvs = new[] { new Vector2(0.0f, 0.5f), new Vector2(1.0f, 0.5f) };
+                var endEdgeUvs = new[] { new Vector2(0.0f, 1.0f), new Vector2(1.0f, 1.0f) };
+
+                var qUv = Enumerable
+                    .Repeat(nodeUvs, pointNodeLength)
+                    .Prepend(startEdgeUvs)
+                    .Append(endEdgeUvs)
+                    ;
+
+                if (isPsylliumEdge)
+                {
+                    return qUv;
+                }
+                else
+                {
+                    return qUv
+                        .Prepend(endEdgeUvs)
+                        .Append(startEdgeUvs)
+                        ;
+                }
+            }
+
+            IEnumerable<Color[]> queryPointNodeIndex()
+            {
+                var lastNode = pointNodeLength - 1;
+                var qNodeIdxSingle = Enumerable.Range(1, pointNodeLength - 2)
+                    .Select(i => new Color(i, i, i - 1, 0))
+                    .Prepend(new Color(0, 0, 0, 0))
+                    .Prepend(new Color(0, 0, 0, 0))
+                    .Append(new Color(lastNode, lastNode - 1, lastNode - 1, 0))
+                    .Append(new Color(lastNode, lastNode - 1, lastNode - 1, 0))
+                    ;
+
+                if (isPsylliumEdge)
+                {
+                    return (qNodeIdxSingle, qNodeIdxSingle).Zip((l, r) => new[] { l, r });
+                }
+                else
+                {
+                    var q = qNodeIdxSingle
+                        .Prepend(new Color(0, 0, 0, 0))
+                        .Append(new Color(lastNode, lastNode - 1, lastNode - 1, 0))
+                        ;
+                    return (q, q).Zip((l, r) => new[] { l, r });
+                }
+            }
+
+            IEnumerable<IEnumerable<int>> queryTriangleIndex()
+            {
+                var planeTris = new[]
+                {
+                    0, 2, 1,
+                    2, 3, 1,
+                };
+
+                var qTri = Enumerable
+                    .Repeat(planeTris, 2 + pointNodeLength - 1)
+                    ;
+
+                if (isPsylliumEdge)
+                {
+                    return qTri
+                        .Select((tri, i) => tri.Select(x => x + i * 2))
+                        ;
+                }
+                else
+                {
+                    // Ç±Ç±ÇÕÇæÇ¢Ç‘ìÔâÇ…Ç»Ç¡ÇƒÇµÇ‹Ç¡ÇΩÅc
+                    var firstPlaneTris = new[]
+                    {
+                        4, 0, 5,
+                        0, 1, 5,
+                    };
+                    var lastPlaneTris = new[]
+                    {
+                        2, -2, 3,
+                        -2, -1, 3,
+                    };
+                    return qTri
+                        .Prepend(firstPlaneTris)
+                        .Append(lastPlaneTris)
+                        .Select((tri, i) => tri.Select(x => x + i * 2))
+                        ;
+                    ;
+                }
+            }
+
         }
 
 

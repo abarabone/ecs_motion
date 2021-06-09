@@ -16,12 +16,6 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
-    //public interface IParticle
-    //{ }
-    public abstract class ParticleAuthoringBase : ModelGroupAuthoring.ModelAuthoringBase
-    { }
-
-
     /// <summary>
     /// 他メッシュとのアトラス対応は後回し
     /// </summary>
