@@ -61,7 +61,6 @@ namespace DotsLite.Draw
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
                         in Particle.AdditionalData additional
-                        //in Particle.TranslationPtoPData pos
                     )
                 =>
                     {

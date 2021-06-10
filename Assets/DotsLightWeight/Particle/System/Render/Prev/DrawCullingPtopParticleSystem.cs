@@ -53,14 +53,13 @@ namespace DotsLite.Draw
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
                 //.WithNone<Rotation, Translation, NonUniformScale>()
-                .WithAll<DrawInstance.PsylliumTag, DrawInstance.BillBoadTag>()
+                .WithAll<DrawInstance.PsylliumTag>()
                 .WithNone<DrawInstance.BoneModelTag>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach(
                         (
                             ref DrawInstance.TargetWorkData target,
                             in DrawInstance.ModelLinkData modellink,
-                            //in Particle.TranslationPtoPData ptop,
                             in Particle.TranslationTailData tail,
                             in Translation pos,
                             in Particle.AdditionalData additional
