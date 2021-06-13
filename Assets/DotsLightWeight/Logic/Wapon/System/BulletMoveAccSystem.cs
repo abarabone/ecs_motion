@@ -55,9 +55,10 @@ namespace DotsLite.Arms
             this.Entities
                 .WithName("TailLineCopy")
                 .WithBurst()
+                .WithAll<Psyllium.MoveTailTag>()
                 .ForEach((
-                    ref DynamicBuffer<Particle.TranslationTailLineData> tails,
-                    in Particle.TranslationTailData tail) =>
+                    ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
+                    in Psyllium.TranslationTailData tail) =>
                 {
                     for (var i = tails.Length; i-- > 1;)
                     {
@@ -71,8 +72,9 @@ namespace DotsLite.Arms
             this.Entities
                 .WithName("TailCopy")
                 .WithBurst()
+                .WithAll<Psyllium.MoveTailTag>()
                 .ForEach((
-                    ref Particle.TranslationTailData tail,
+                    ref Psyllium.TranslationTailData tail,
                     in Translation pos) =>
                 {
                     tail.PositionAndSize = pos.Value.As_float4(tail.Size);

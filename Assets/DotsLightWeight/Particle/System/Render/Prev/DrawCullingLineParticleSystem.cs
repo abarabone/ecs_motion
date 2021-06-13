@@ -62,8 +62,7 @@ namespace DotsLite.Draw
                         (
                             ref DrawInstance.TargetWorkData target,
                             in DrawInstance.ModelLinkData modellink,
-                            //in Particle.TranslationPtoPData ptop,
-                            in DynamicBuffer<Particle.TranslationTailLineData> tails,
+                            in DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                             in Translation pos,
                             in Particle.AdditionalData additional
                         ) =>
@@ -110,7 +109,7 @@ namespace DotsLite.Draw
             public float4 max;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static minmax calcMinMax(Translation pos, DynamicBuffer<Particle.TranslationTailLineData> tails)
+        static minmax calcMinMax(Translation pos, DynamicBuffer<LineParticle.TranslationTailLineData> tails)
         {
             var min = pos.Value;
             var max = pos.Value;

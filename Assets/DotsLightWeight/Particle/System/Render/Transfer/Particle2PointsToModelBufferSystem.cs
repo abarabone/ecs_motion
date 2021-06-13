@@ -56,7 +56,7 @@ namespace DotsLite.Draw
                 .WithNone<BillBoad.UvCursorData, BillBoad.CursorToUvIndexData>()
                 .ForEach(
                     (
-                        ref Particle.TranslationTailData tail,
+                        ref Psyllium.TranslationTailData tail,
                         in Translation pos,
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,

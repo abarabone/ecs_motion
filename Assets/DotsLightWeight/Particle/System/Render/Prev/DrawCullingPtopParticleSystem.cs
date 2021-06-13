@@ -60,7 +60,7 @@ namespace DotsLite.Draw
                         (
                             ref DrawInstance.TargetWorkData target,
                             in DrawInstance.ModelLinkData modellink,
-                            in Particle.TranslationTailData tail,
+                            in Psyllium.TranslationTailData tail,
                             in Translation pos,
                             in Particle.AdditionalData additional
                         ) =>

@@ -54,7 +54,7 @@ namespace DotsLite.Draw
                 .WithAll<DrawInstance.PsylliumTag>()
                 .WithNone<DrawInstance.MeshTag>()
                 .ForEach((
-                    ref Particle.TranslationTailData tail,
+                    ref Psyllium.TranslationTailData tail,
                     in Translation pos,
                     in DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData linker,

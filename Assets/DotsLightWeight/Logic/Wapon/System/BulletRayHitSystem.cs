@@ -94,7 +94,7 @@ namespace DotsLite.Arms
                     (
                         Entity entity, int entityInQueryIndex,
                         in Translation pos,
-                        in Particle.TranslationTailData tail,
+                        in Psyllium.TranslationTailData tail,
                         in Bullet.LinkData link,
                         in Bullet.VelocityData v,
                         in Bullet.PointDamageSpecData damage,

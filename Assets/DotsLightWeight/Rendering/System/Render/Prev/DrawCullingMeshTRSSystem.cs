@@ -55,7 +55,7 @@ namespace DotsLite.Draw
                 .WithReadOnly(bboxes)
                 //.WithNone<NonUniformScale>()
                 //.WithNone<Particle.TranslationPtoPData>()
-                .WithNone<Particle.TranslationTailData>()
+                .WithNone<Psyllium.TranslationTailData>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach(
                         (

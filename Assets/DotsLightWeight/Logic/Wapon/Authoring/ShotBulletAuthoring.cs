@@ -68,6 +68,7 @@ namespace DotsLite.Arms.Authoring
 
                 var _types = new List<ComponentType>
                 {
+                    typeof(Psyllium.MoveTailTag),
                     typeof(Bullet.LinkData),
                     typeof(Bullet.MoveSpecData),
                     typeof(Bullet.VelocityData),
@@ -83,7 +84,7 @@ namespace DotsLite.Arms.Authoring
                 if (this.HitType == BulletHitType.Ray)
                 {
                     _types.Add(typeof(Bullet.RayTag));
-                    _types.Add(typeof(Particle.TranslationTailData));
+                    _types.Add(typeof(Psyllium.TranslationTailData));
                 }
                 if (this.HitType == BulletHitType.Sphere)
                 {

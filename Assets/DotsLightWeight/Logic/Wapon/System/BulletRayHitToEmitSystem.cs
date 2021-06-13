@@ -81,7 +81,7 @@ namespace DotsLite.Arms
                     (
                         Entity entity, int entityInQueryIndex,
                         in Translation pos,
-                        in Particle.TranslationTailData tail,
+                        in Psyllium.TranslationTailData tail,
                         in Bullet.LinkData link,
                         in Bullet.EmitData emit,
                         in CorpsGroup.TargetWithArmsData corps

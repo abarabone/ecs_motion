@@ -278,7 +278,7 @@
 //            //    }
 //            //);
 //            cmd.SetComponent(i, newBeamEntity,
-//                new Particle.TranslationTailData
+//                new Psyllium.TranslationTailData
 //                {
 //                    PositionAndSize = end.As_float4(),
 //                }

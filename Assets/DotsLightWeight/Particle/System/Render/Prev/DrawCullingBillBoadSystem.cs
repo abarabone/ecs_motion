@@ -55,7 +55,7 @@ namespace DotsLite.Draw
                 .WithAll<DrawInstance.BillBoadTag>()
                 .WithNone<DrawInstance.BoneModelTag>()
                 .WithNone<DrawInstance.PostureLinkData>()
-                .WithNone<Particle.TranslationTailData>()
+                .WithNone<Psyllium.TranslationTailData>()
                 .ForEach((
                     ref DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData modellink,

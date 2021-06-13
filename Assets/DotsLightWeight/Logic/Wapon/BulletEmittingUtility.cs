@@ -227,7 +227,7 @@ namespace DotsLite.Arms
         //    var newBullet = cmd.Instantiate(eqi, bulletPrefab);
 
         //    //cmd.SetComponent(eqi, newBullet,
-        //    //    new Particle.TranslationTailData
+        //    //    new Psyllium.TranslationTailData
         //    //    {
         //    //        PositionAndSize = bulletPosition.As_float4(),
         //    //    }

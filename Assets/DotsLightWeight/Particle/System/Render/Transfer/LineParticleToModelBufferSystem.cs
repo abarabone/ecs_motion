@@ -58,8 +58,8 @@ namespace DotsLite.Draw
                 .ForEach(
                     (
                         in Translation pos,
-                        in Particle.TranslationTailData tail,
-                        in DynamicBuffer<Particle.TranslationTailLineData> tails,
+                        in Psyllium.TranslationTailData tail,
+                        in DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
                         in Particle.AdditionalData additional

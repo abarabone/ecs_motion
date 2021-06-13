@@ -60,7 +60,7 @@
 //                        //Entity entity, int entityInQueryIndex,
 //                        //ref Particle.TranslationPtoPData ptop,
 //                        ref Translation pos,
-//                        ref Particle.TranslationTailData tail,
+//                        ref Psyllium.TranslationTailData tail,
 //                        ref Bullet.DistanceData dist,
 //                        in Bullet.VelocityData v
 //                    ) =>

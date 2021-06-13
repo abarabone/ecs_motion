@@ -72,7 +72,7 @@ namespace DotsLite.Particle.Aurthoring
                     typeof(DrawInstance.TargetWorkData),
                     typeof(Particle.AdditionalData),
                     typeof(Translation),
-                    typeof(Particle.TranslationTailData)
+                    typeof(Psyllium.TranslationTailData)
                 );
                 em.SetArchetype( mainEntity, archetype );
 

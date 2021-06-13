@@ -105,7 +105,7 @@ namespace DotsLite.Arms
                 .WithBurst()
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .ForEach((
-                    ref Particle.TranslationTailData tail,
+                    ref Psyllium.TranslationTailData tail,
                     in Translation pos,
                     in Particle.AdditionalData data) =>
                 {
@@ -118,7 +118,7 @@ namespace DotsLite.Arms
                 .WithBurst()
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .ForEach((
-                    ref DynamicBuffer<Particle.TranslationTailLineData> tails,
+                    ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     in Translation pos) =>
                 {
                     for (var i = 0; i < tails.Length; i++)

@@ -138,7 +138,7 @@ namespace DotsLite.Particle.Aurthoring
             var types = new ComponentTypes(
                 typeof(DrawInstance.PsylliumTag),
                 typeof(Translation),
-                typeof(Particle.TranslationTailData)
+                typeof(Psyllium.TranslationTailData)
             );
             em.AddComponents(mainEntity, types);
 
@@ -156,12 +156,12 @@ namespace DotsLite.Particle.Aurthoring
             var types = new ComponentTypes(
                 typeof(DrawInstance.LineParticleTag),
                 typeof(Translation),
-                typeof(Particle.TranslationTailData),
-                typeof(Particle.TranslationTailLineData)
+                typeof(Psyllium.TranslationTailData),
+                typeof(LineParticle.TranslationTailLineData)
             );
             em.AddComponents(mainEntity, types);
 
-            var buffer = em.AddBuffer<Particle.TranslationTailLineData>(mainEntity);
+            var buffer = em.AddBuffer<LineParticle.TranslationTailLineData>(mainEntity);
             buffer.Length = segments + 1 - 2;
 
             em.RemoveComponent<Rotation>(mainEntity);//
