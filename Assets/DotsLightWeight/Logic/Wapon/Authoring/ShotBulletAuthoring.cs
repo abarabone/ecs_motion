@@ -68,7 +68,6 @@ namespace DotsLite.Arms.Authoring
 
                 var _types = new List<ComponentType>
                 {
-                    typeof(Psyllium.MoveTailTag),
                     typeof(Bullet.LinkData),
                     typeof(Bullet.MoveSpecData),
                     typeof(Bullet.VelocityData),

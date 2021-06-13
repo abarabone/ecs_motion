@@ -136,6 +136,8 @@ namespace DotsLite.Particle.Aurthoring
             if (this.UseAnimationRotation) gcs.AddRotationComponents(this.gameObject, this.MinRotationDegreesPerSec, this.MaxDistanceOffset);
             if (this.UseMoveEasing) gcs.AddEasingComponents(this.gameObject, this.EasingRatePerSec, this.MinDistanceOffset, this.MaxDistanceOffset, this.UseDirectionNormal, this.DirectionOffset);
 
+            if (!this.UseSpring) gcs.AddMoveTagComponents(this.gameObject);
+
             return;
 
         }

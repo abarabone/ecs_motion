@@ -168,6 +168,22 @@ namespace DotsLite.Particle.Aurthoring
         }
 
 
+        public static void AddMoveTagComponents(
+            this GameObjectConversionSystem gcs, GameObject main)
+        {
+            var em = gcs.DstEntityManager;
+
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(
+                typeof(Psyllium.MoveTailTag)
+            );
+            em.AddComponents(mainEntity, types);
+        }
+
+
+
         public static void AddUvIndexComponents(
             this GameObjectConversionSystem gcs, GameObject main,
             BinaryLength2 division, BinaryLength2 cellUsage, int uvIndex)
