@@ -51,7 +51,7 @@ namespace DotsLite.Particle
         }
 
         [InternalBufferCapacity(8)]
-        public struct StateData : IComponentData
+        public struct StateData : IBufferElementData
         {
             public float4 PrePosition;
         }

@@ -75,6 +75,13 @@ namespace DotsLite.Particle.Aurthoring
         public float MaxDistanceOffset;
         //public bool UseRandomMove;
 
+        [Space(4)]
+        [Header("Spring")]
+        public bool UseSpring;
+        [VisBy("UseSpring")] public float Spring;
+        [VisBy("UseSpring")] public float Dumper;
+        [VisBy("UseSpring")] public float RestDistance;
+
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
@@ -97,7 +104,7 @@ namespace DotsLite.Particle.Aurthoring
                 case ParticleMeshType.billboadUv:
                     gcs.AddBillBoadComponents(this.gameObject);
                     gcs.AddUvIndexComponents(this.gameObject, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex);
-                    gcs.AddUvAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec, this.UseAnimationUv);
+                    if (this.UseAnimationUv) gcs.AddUvAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec);
                     break;
 
                 case ParticleMeshType.psyllium:
@@ -107,11 +114,12 @@ namespace DotsLite.Particle.Aurthoring
                 case ParticleMeshType.psylliumUv:
                     gcs.AddPsylliumComponents(this.gameObject);
                     gcs.AddUvIndexComponents(this.gameObject, this.ModelSource.Division, this.CellUsage, this.AnimationBaseIndex);
-                    gcs.AddUvAnimationComponentsOrNot(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec, this.UseAnimationUv);
+                    if (this.UseAnimationUv) gcs.AddUvAnimationComponents(this.gameObject, this.AnimationIndexLength, this.AnimationBaseIndex, this.AnimationIndexMax, this.AnimationTimeSpanSec);
                     break;
 
                 case ParticleMeshType.LinePsyllium:
                     gcs.AddLineParticleComponents(this.gameObject, this.ModelSource.LineParticleSegments);
+                    if (this.UseSpring) gcs.AddSpringComponents(this.gameObject, this.Spring, this.Dumper, this.RestDistance, this.ModelSource.LineParticleSegments);
                     break;
 
                 case ParticleMeshType.LineBillboad:
@@ -122,11 +130,11 @@ namespace DotsLite.Particle.Aurthoring
                     break;
             }
 
-            gcs.AddLifeTimeComponentsOrNot(this.gameObject, this.LifeTimeSec, this.UseLifeTime);
-            gcs.AddSizingComponentsOrNot(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius, this.UseAnimationRadius);
-            gcs.AddAlphaFadeComponentsOrNot(this.gameObject, this.ParticleColor.a, this.AlphaLast, this.AlphaTimeSpanSec, this.UseAnimationAlpha);
-            gcs.AddRotationComponentsOrNot(this.gameObject, this.MinRotationDegreesPerSec, this.MaxDistanceOffset, this.UseAnimationRotation);
-            gcs.AddEasingComponentsOrNot(this.gameObject, this.EasingRatePerSec, this.MinDistanceOffset, this.MaxDistanceOffset, this.UseDirectionNormal, this.DirectionOffset, this.UseMoveEasing);
+            if (this.UseLifeTime) gcs.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
+            if (this.UseAnimationRadius) gcs.AddSizingComponents(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
+            if (this.UseAnimationAlpha) gcs.AddAlphaFadeComponents(this.gameObject, this.ParticleColor.a, this.AlphaLast, this.AlphaTimeSpanSec);
+            if (this.UseAnimationRotation) gcs.AddRotationComponents(this.gameObject, this.MinRotationDegreesPerSec, this.MaxDistanceOffset);
+            if (this.UseMoveEasing) gcs.AddEasingComponents(this.gameObject, this.EasingRatePerSec, this.MinDistanceOffset, this.MaxDistanceOffset, this.UseDirectionNormal, this.DirectionOffset);
 
             return;
 

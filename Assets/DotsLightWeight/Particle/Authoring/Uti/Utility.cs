@@ -167,6 +167,7 @@ namespace DotsLite.Particle.Aurthoring
             em.RemoveComponent<Rotation>(mainEntity);//
         }
 
+
         public static void AddUvIndexComponents(
             this GameObjectConversionSystem gcs, GameObject main,
             BinaryLength2 division, BinaryLength2 cellUsage, int uvIndex)
@@ -202,13 +203,10 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
-        public static void AddUvAnimationComponentsOrNot(
+        public static void AddUvAnimationComponents(
             this GameObjectConversionSystem gcs, GameObject main,
-            binary_length animationIndexLength, int animationBaseIndex, int animationIndexMax, float animationTimeSpan,
-            bool isEnable)
+            binary_length animationIndexLength, int animationBaseIndex, int animationIndexMax, float animationTimeSpan)
         {
-            if (!isEnable) return;
-
             var em = gcs.DstEntityManager;
 
             var mainEntity = gcs.GetPrimaryEntity(main);
@@ -233,12 +231,9 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
-        public static void AddLifeTimeComponentsOrNot(
-            this GameObjectConversionSystem gcs, GameObject main, float time,
-            bool isEnable)
+        public static void AddLifeTimeComponents(
+            this GameObjectConversionSystem gcs, GameObject main, float time)
         {
-            if (!isEnable) return;
-
             var em = gcs.DstEntityManager;
 
             var mainEntity = gcs.GetPrimaryEntity(main);
@@ -258,11 +253,10 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
-        public static void AddRotationComponentsOrNot(
-            this GameObjectConversionSystem gcs, GameObject main, float rotSpeedMin, float rotSpeedMax,
-            bool isEnable)
+
+        public static void AddRotationComponents(
+            this GameObjectConversionSystem gcs, GameObject main, float rotSpeedMin, float rotSpeedMax)
         {
-            if (!isEnable) return;
 
             var em = gcs.DstEntityManager;
 
@@ -298,12 +292,10 @@ namespace DotsLite.Particle.Aurthoring
             }
         }
 
-        public static void AddAlphaFadeComponentsOrNot(
-            this GameObjectConversionSystem gcs, GameObject main, float firstValue, float lastValue, float timeSpan,
-            bool isEnable)
-        {
-            if (!isEnable) return;
 
+        public static void AddAlphaFadeComponents(
+            this GameObjectConversionSystem gcs, GameObject main, float firstValue, float lastValue, float timeSpan)
+        {
             var em = gcs.DstEntityManager;
 
             var mainEntity = gcs.GetPrimaryEntity(main);
@@ -324,13 +316,11 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
-        public static void AddSizingComponentsOrNot(
-            this GameObjectConversionSystem gcs, GameObject main,
-            float startRadius, float endRadius, float endtime,
-            bool isEnable)
-        {
-            if (!isEnable) return;
 
+        public static void AddSizingComponents(
+            this GameObjectConversionSystem gcs, GameObject main,
+            float startRadius, float endRadius, float endtime)
+        {
             var em = gcs.DstEntityManager;
 
             var mainEntity = gcs.GetPrimaryEntity(main);
@@ -352,13 +342,12 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
-        public static void AddEasingComponentsOrNot(
+
+        public static void AddEasingComponents(
             this GameObjectConversionSystem gcs, GameObject main,
             float rate, float distOffsetMin, float distOffsetMax,
-            bool useDirectionSetting, float3 dir,
-            bool isEnable)
+            bool useDirectionSetting, float3 dir)
         {
-            if (!isEnable) return;
 
             var em = gcs.DstEntityManager;
 
@@ -393,5 +382,34 @@ namespace DotsLite.Particle.Aurthoring
                 }
             );
         }
+
+
+        public static void AddSpringComponents(
+            this GameObjectConversionSystem gcs, GameObject main,
+            float spring, float dumper, float rest, int segments)
+        {
+            var em = gcs.DstEntityManager;
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(
+                typeof(Spring.SpecData),
+                typeof(Spring.StateData)
+            );
+            em.AddComponents(mainEntity, types);
+
+            em.AddComponentData(mainEntity,
+                new Spring.SpecData
+                {
+                    Spring = spring,
+                    Dumper = dumper,
+                    Rest = rest,
+                }
+            );
+
+            var buffer = em.AddBuffer<Spring.StateData>(mainEntity);
+            buffer.Length = segments + 1;
+        }
+
     }
 }
