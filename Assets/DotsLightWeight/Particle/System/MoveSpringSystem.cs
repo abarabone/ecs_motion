@@ -57,126 +57,163 @@ namespace DotsLite.Arms
                 .WithBurst()
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .ForEach((
-                    ref DynamicBuffer<Spring.StateData> state,
+                    ref DynamicBuffer<Spring.StateData> states,
                     in Translation pos,
                     in Psyllium.TranslationTailData tail,
-                    in DynamicBuffer<LineParticle.TranslationTailLineData> line) =>
+                    in DynamicBuffer<LineParticle.TranslationTailLineData> tails) =>
                     {
 
-                        state[0] = new Spring.StateData
+                        states[0] = new Spring.StateData
                         {
                             PrePosition = pos.Value.As_float4(),
                         };
-                        state[1] = new Spring.StateData
+                        states[1] = new Spring.StateData
                         {
                             PrePosition = tail.PositionAndSize,
                         };
-                        for (var i = 0; i < line.Length; i++)
+                        for (var i = 0; i < tails.Length; i++)
                         {
-                            state[2 + i] = new Spring.StateData
+                            states[2 + i] = new Spring.StateData
                             {
-                                PrePosition = line[i].PositionAndColor
+                                PrePosition = tails[i].PositionAndColor
                             };
                         }
                     })
                 .ScheduleParallel();
 
-            //this.Entities
-            //    .WithBurst()
-            //    .ForEach((
-            //        ref Translation pos,
-            //        ref Psyllium.TranslationTailData tail,
-            //        ref DynamicBuffer<LineParticle.TranslationTailLineData> line,
-            //        ref DynamicBuffer<Spring.StateData> state,
-            //        in Spring.SpecData spec,
-            //        in Bullet.MoveSpecData movespec) =>
-            //    {
-            //        var g = gravity * movespec.GravityFactor;
+            this.Entities
+                .WithBurst()
+                .ForEach((
+                    ref Translation pos,
+                    ref Psyllium.TranslationTailData tail,
+                    ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
+                    ref DynamicBuffer<Spring.StateData> states,
+                    in Spring.SpecData spec,
+                    in Bullet.MoveSpecData movespec) =>
+                {
+                    var g = gravity * movespec.GravityFactor;
 
 
-            //        var p0 = pos.Value;
-            //        var p1 = tail.Position;
-            //        var vt0 = SpringUtility.calc_vt(p0, state[0].PrePosition.xyz);
-            //        var vt1 = SpringUtility.calc_vt(p1, state[1].PrePosition.xyz);
-            //        var ftt_0 = float3.zero;
-            //        var ftt01 = spec.calc_ftt(p0, p1, vt0, vt1, dt);
+                    float3 currpos, nextpos;
+                    float3 currvt, nextvt;
+                    float3 fttup, fttdown;
+                    float3 newpos;
 
-            //        var nextpos = p0 + vt0 + ftt_0 + ftt01;
-            //        var prepos = p0;
+                    newpos = calcNewPositionFirst_(pos.Value, states[0].PrePosition.xyz, tail.Position, states[1].PrePosition.xyz, spec);
+                    pos.Value = newpos;
+                    states.shiftPrePosition(0, currpos);
 
-            //        pos.Value = nextpos;
-            //        state[0] = new Spring.StateData { PrePosition = prepos.As_float4() };
+                    newpos = calcNewPosition_(tails[0].Position, states[2].PrePosition.xyz, spec);
+                    tail.Position = newpos;
+                    states.shiftPrePosition(1, currpos);
+
+                    for (var i = 0; i < tails.Length - 1; i++)
+                    {
+                        newpos = calcNewPosition_(tails[1 + i].Position, states[3 + i].PrePosition.xyz, spec);
+                        tails.setResultPosition(i, newpos);
+                        states.shiftPrePosition(2 + i, currpos);
+                    }
+
+                    newpos = calcNewPositionLast_();
+                    tails.setResultPosition(tails.Length - 1, newpos);
+                    states.shiftPrePosition(states.Length - 1, currpos);
+
+                    return;
 
 
-            //        p0 = p1;
-            //        p1 = line[0].Position;
-            //        vt0 = vt1;
-            //        vt1 = SpringUtility.calc_vt(p1, state[0 + 2].PrePosition.xyz);
-            //        ftt_0 = ftt01;
-            //        ftt01 = spec.calc_ftt(p0, p1, vt0, vt1, dt);
+                    float3 calcNewPositionFirst_(
+                        float3 _currNowPos, float3 _currPrePos, float3 _nextNowPos, float3 _nextPrePos, Spring.SpecData spec)
+                    {
+                        currpos = _currNowPos;
+                        currvt = calc_vt(_currNowPos, _currPrePos);
 
-            //        nextpos = p0 + vt0 + ftt_0 + ftt01;
-            //        prepos = p0;
+                        nextpos = _nextNowPos;
+                        nextvt = calc_vt(_nextNowPos, _nextPrePos);
 
-            //        tail.Position = nextpos;
-            //        state[1] = new Spring.StateData { PrePosition = prepos.As_float4() };
+                        fttdown = calc_ftt(currpos, nextpos, currvt, nextvt, spec, dt);
 
+                        //return currpos + currvt - fttdown;
+                        return currpos - fttdown;
+                    }
 
-            //        for (var i = 1; i < line.Length; i++)
-            //        {
-            //            p0 = p1;
-            //            p1 = line[i].Position;
-            //            vt0 = vt1;
-            //            vt1 = SpringUtility.calc_vt(p1, state[i + 2].PrePosition.xyz);
-            //            ftt_0 = ftt01;
-            //            ftt01 = spec.calc_ftt(p0, p1, vt0, vt1, dt);
+                    float3 calcNewPosition_(float3 _nextNowPos, float3 _nextPrePos, Spring.SpecData spec)
+                    {
+                        currpos = nextpos;
+                        currvt = nextvt;
 
-            //            nextpos = p0 + vt0 + ftt_0 + ftt01;
-            //            prepos = p0;
+                        nextpos = _nextNowPos;
+                        nextvt = calc_vt(_nextNowPos, _nextPrePos);
 
-            //            var res = line[i - 1];
-            //            res.Position = nextpos;
-            //            line[i - 1] = res;
-            //            state[1] = new Spring.StateData
-            //            {
-            //                PrePosition = prepos.As_float4()
-            //            };
-            //        }
-            //    })
-            //    .ScheduleParallel();
+                        fttup = fttdown;
+                        fttdown = calc_ftt(currpos, nextpos, currvt, nextvt, spec, dt);
+
+                        return currpos + currvt + fttup - fttdown;
+                    }
+
+                    float3 calcNewPositionLast_()
+                    {
+                        currpos = nextpos;
+                        currvt = nextvt;
+
+                        fttup = fttdown;
+
+                        return currpos + currvt + fttup;
+                    }
+                })
+                .ScheduleParallel();
 
         }
 
-    }
-
-    static class SpringUtility
-    {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 calc_vt(float3 curpos, float3 prepos) => curpos - prepos;
-        
+        static float3 calc_vt(float3 curpos, float3 prepos) => curpos - prepos;
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 calc_ftt(this Spring.SpecData spec,
+        static float3 calc_ftt(
             float3 p0, float3 p1, float3 vt0, float3 vt1,
-            float dt)
+            Spring.SpecData spec, float dt)
         {
             var line = p0 - p1;
 
             var len = math.length(line);
+            if (len == 0.0f) return float3.zero;
+            if (math.isinf(len)) return float3.zero;
+            if (math.isnan(len)) return float3.zero;
             var lenrcp = math.rcp(len);
-            if (math.isinf(lenrcp)) return float3.zero;
             //lenrcp = math.select(0.0f, lenrcp, math.isnan(lenrcp));
             var dir = line * lenrcp;
 
             var f0 = (len - spec.Rest) * spec.Spring;// êLÇ—Ç…íÔçRÇµÅAèkÇ‡Ç§Ç∆Ç∑ÇÈóÕÇ™ÉvÉâÉX
             var ft0 = dir * f0 * dt;
 
-            var ft1 = spec.Dumper * (vt1 - vt0);
+            var ft1 = 0;// spec.Dumper * (vt1 - vt0);
 
             return (ft0 - ft1) * dt;
         }
+    }
 
+    static class SpringUtility
+    {
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void setResultPosition(
+            ref this DynamicBuffer<LineParticle.TranslationTailLineData> tails, int i, float3 newpos)
+        {
+            var tail = tails[i];
+            tail.Position = newpos;
+            tails[i] = tail;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void shiftPrePosition(
+            ref this DynamicBuffer<Spring.StateData> preposs, int i, float3 newpos)
+        {
+            preposs[i] = new Spring.StateData
+            {
+                PrePosition = newpos.As_float4(),
+            };
+        }
     }
 }
 

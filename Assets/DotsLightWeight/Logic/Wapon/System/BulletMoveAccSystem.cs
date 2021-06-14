@@ -48,9 +48,10 @@ namespace DotsLite.Arms
         {
 
             var dt = this.Time.DeltaTime;
+            var sqdt = dt * dt;
             var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// とりあえずエンジン側のを
                                                                               // 重力が変化する可能性を考えて、毎フレーム取得する
-
+            
 
             this.Entities
                 .WithName("TailLineCopy")
@@ -93,7 +94,7 @@ namespace DotsLite.Arms
                     var g = gravity * spec.GravityFactor;
                     var a = acc.Acceleration + g;
 
-                    v.Velocity += a * dt;
+                    v.Velocity += a * dt - sqdt;// dt^2 を引くとなんか誤差がなくなる
 
 
                     var d = v.Velocity.xyz * dt;
