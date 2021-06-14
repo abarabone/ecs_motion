@@ -94,10 +94,10 @@ namespace DotsLite.Arms
                     var g = gravity * spec.GravityFactor;
                     var a = acc.Acceleration + g;
 
-                    v.Velocity += a * dt - sqdt;// dt^2 を引くとなんか誤差がなくなる
+                    v.Velocity += a * dt;
 
 
-                    var d = v.Velocity.xyz * dt;
+                    var d = v.Velocity.xyz * dt - sqdt;// dt^2 を引くとなんか誤差がなくなるぽい
 
                     pos.Value += d;
                 })
