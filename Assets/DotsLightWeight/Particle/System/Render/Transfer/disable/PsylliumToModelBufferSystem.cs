@@ -9,7 +9,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace DotsLite.Draw
+namespace DotsLite.Draw.disable
 {
     using DotsLite.CharacterMotion;
     using DotsLite.SystemGroup;

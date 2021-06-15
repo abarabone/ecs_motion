@@ -18,7 +18,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.Arms
+namespace DotsLite.Particle
 {
 
     using DotsLite.Model;

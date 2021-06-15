@@ -19,7 +19,7 @@ namespace DotsLite.Particle
     {
 
 
-        [InternalBufferCapacity(6)]
+        [InternalBufferCapacity(8)]
         public struct TranslationTailLineData : IBufferElementData
         {
             public float4 PositionAndColor;

@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace DotsLite.Particle.Aurthoring
+namespace DotsLite.Particle.Aurthoring.disable
 {
     using DotsLite.Model;
     using DotsLite.Draw;
