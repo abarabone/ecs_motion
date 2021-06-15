@@ -99,37 +99,6 @@ namespace DotsLite.Arms
                     t.DurationSec = math.min(t.DurationSec, d * rspd);
                 })
                 .ScheduleParallel();
-
-            this.Entities
-                .WithName("Tail")
-                .WithBurst()
-                .WithAll<Particle.LifeTimeInitializeTag>()
-                .ForEach((
-                    ref Psyllium.TranslationTailData tail,
-                    in Translation pos,
-                    in Particle.AdditionalData data) =>
-                {
-                    tail.PositionAndSize = pos.Value.As_float4(data.Radius);
-                })
-                .ScheduleParallel();
-
-            this.Entities
-                .WithName("TailLine")
-                .WithBurst()
-                .WithAll<Particle.LifeTimeInitializeTag>()
-                .ForEach((
-                    ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
-                    in Translation pos) =>
-                {
-                    for (var i = 0; i < tails.Length; i++)
-                    {
-                        var tail = tails[i];
-                        tail.Position = pos.Value;
-                        tails[i] = tail;
-                    }
-                })
-                .ScheduleParallel();
-
         }
 
     }

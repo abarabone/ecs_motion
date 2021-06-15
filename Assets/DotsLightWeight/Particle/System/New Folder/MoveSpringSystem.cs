@@ -54,18 +54,9 @@ namespace DotsLite.Particle
                     in Psyllium.TranslationTailData tail,
                     in DynamicBuffer<LineParticle.TranslationTailLineData> tails) =>
                     {
-
-                        states[0] = new Spring.StateData
-                        {
-                            PrePosition = pos.Value.As_float4(),
-                        };
-                        states[1] = new Spring.StateData
-                        {
-                            PrePosition = tail.PositionAndSize,
-                        };
                         for (var i = 0; i < tails.Length; i++)
                         {
-                            states[2 + i] = new Spring.StateData
+                            states[i] = new Spring.StateData
                             {
                                 PrePosition = tails[i].PositionAndColor
                             };
@@ -95,10 +86,9 @@ namespace DotsLite.Particle
                 .WithBurst()
                 .WithNone<Particle.LifeTimeInitializeTag>()
                 .ForEach((
-                    ref Translation pos,
-                    ref Psyllium.TranslationTailData tail,
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     ref DynamicBuffer<Spring.StateData> states,
+                    ref Psyllium.TranslationTailData tail,
                     in Spring.SpecData spec,
                     in Bullet.MoveSpecData movespec) =>
                 {
@@ -109,26 +99,27 @@ namespace DotsLite.Particle
                     float3 currvt, nextvt;
                     float3 fttup, fttdown;
                     float3 newpos;
-                    var gtt = g_ * 0.0f;//movespec.GravityFactor;
+                    //var gtt = g_ * 0.0f;//movespec.GravityFactor;
 
-                    newpos = calcNewPositionFirst_(pos.Value, states[0].PrePosition.xyz, tail.Position, states[1].PrePosition.xyz, spec);
-                    pos.Value = newpos;
+                    newpos = calcNewPositionFirst_(
+                        tails[0].Position, states[0].PrePosition.xyz,
+                        tails[1].Position, states[1].PrePosition.xyz, spec);
+                    tails.setResultPosition(0, newpos);
                     states.shiftPrePosition(0, currpos);
 
-                    newpos = calcNewPosition_(tails[0].Position, states[2].PrePosition.xyz, spec);
-                    tail.Position = newpos + gtt;
-                    states.shiftPrePosition(1, currpos);
-
-                    for (var i = 0; i < tails.Length - 1; i++)
+                    for (var i = 1; i < tails.Length - 1; i++)
                     {
-                        newpos = calcNewPosition_(tails[1 + i].Position, states[3 + i].PrePosition.xyz, spec);
-                        tails.setResultPosition(i, newpos + gtt);
-                        states.shiftPrePosition(2 + i, currpos);
+                        newpos = calcNewPosition_(tails[i+1].Position, states[i+1].PrePosition.xyz, spec);
+                        tails.setResultPosition(i, newpos);// + gtt);
+                        states.shiftPrePosition(i, currpos);
                     }
 
                     newpos = calcNewPositionLast_();
-                    tails.setResultPosition(tails.Length - 1, newpos + gtt);
+                    tails.setResultPosition(tails.Length - 1, newpos);// + gtt);
                     states.shiftPrePosition(states.Length - 1, currpos);
+
+
+                    tail.Position = tails[1].Position;// 添え字を可変にするかも
 
                     return;
 
@@ -145,8 +136,7 @@ namespace DotsLite.Particle
 
                         fttdown = calc_ftt(currpos, nextpos, currvt, nextvt, spec, dt);
 
-                        //return currpos + currvt - fttdown;
-                        return currpos - fttdown;// 先頭は速度ベースで処理される
+                        return currpos + currvt - fttdown;
                     }
 
                     //[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -118,7 +118,7 @@ namespace DotsLite.Particle.Aurthoring
                     break;
 
                 case ParticleMeshType.LinePsyllium:
-                    gcs.AddLineParticleComponents(this.gameObject, this.ModelSource.LineParticleSegments);
+                    gcs.AddLineParticleComponents(this.gameObject, this.ModelSource.LineParticleSegments, this.UseSpring);
                     if (this.UseSpring) gcs.AddSpringComponents(this.gameObject, this.Spring, this.Dumper, this.RestDistance, this.ModelSource.LineParticleSegments);
                     break;
 

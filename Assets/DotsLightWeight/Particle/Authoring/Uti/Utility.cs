@@ -146,7 +146,7 @@ namespace DotsLite.Particle.Aurthoring
         }
 
         public static void AddLineParticleComponents(
-            this GameObjectConversionSystem gcs, GameObject main, int segments)
+            this GameObjectConversionSystem gcs, GameObject main, int segments, bool isSpring)
         {
             var em = gcs.DstEntityManager;
 
@@ -162,10 +162,33 @@ namespace DotsLite.Particle.Aurthoring
             em.AddComponents(mainEntity, types);
 
             var buffer = em.AddBuffer<LineParticle.TranslationTailLineData>(mainEntity);
-            buffer.Length = segments + 1 - 2;
+            buffer.Length = isSpring ? segments + 1 : segments + 1 - 2;
 
             em.RemoveComponent<Rotation>(mainEntity);//
         }
+
+        //public static void AddSpringLineParticleComponents(
+        //    this GameObjectConversionSystem gcs, GameObject main, int segments)
+        //{
+        //    var em = gcs.DstEntityManager;
+
+
+        //    var mainEntity = gcs.GetPrimaryEntity(main);
+
+        //    var types = new ComponentTypes(
+        //        typeof(DrawInstance.LineParticleTag),
+        //        typeof(Translation),
+        //        typeof(Psyllium.TranslationTailData),
+        //        typeof(LineParticle.TranslationTailLineData)
+        //    );
+        //    em.AddComponents(mainEntity, types);
+
+        //    var buffer = em.AddBuffer<LineParticle.TranslationTailLineData>(mainEntity);
+        //    buffer.Length = segments + 1;
+
+        //    em.RemoveComponent<Rotation>(mainEntity);//
+        //}
+
 
 
         public static void AddMoveTagComponents(

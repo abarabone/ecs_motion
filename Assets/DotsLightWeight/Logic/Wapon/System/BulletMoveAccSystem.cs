@@ -97,7 +97,7 @@ namespace DotsLite.Arms
                     v.Velocity += a * dt;
 
 
-                    var d = v.Velocity.xyz * dt - sqdt;// dt^2 を引くとなんか誤差がなくなるぽい
+                    var d = v.Velocity.xyz * dt;
 
                     pos.Value += d;
                 })
