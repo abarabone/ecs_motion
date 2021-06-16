@@ -17,7 +17,7 @@
 //using UnityEngine.Assertions;
 
 
-//namespace DotsLite.Arms
+//namespace DotsLite.Arms.disable
 //{
 
 //    using DotsLite.Model;
@@ -37,7 +37,7 @@
 //    using RaycastHit = Unity.Physics.RaycastHit;
 //    using Unity.Physics.Authoring;
 
-//    //[DisableAutoCreation]
+//    [DisableAutoCreation]
 //    //[UpdateInGroup(typeof(InitializationSystemGroup))]
 //    //[UpdateAfter(typeof(ObjectInitializeSystem))]
 //    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]

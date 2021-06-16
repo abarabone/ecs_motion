@@ -58,6 +58,7 @@ namespace DotsLite.Arms
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(ObjectInitializeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateAfter(typeof(DotsLite.Particle.InitializeSystem))]
     public class BulletInitializeSystem : SystemBase
     {
 
@@ -77,7 +78,9 @@ namespace DotsLite.Arms
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .ForEach((
                     int nativeThreadIndex, int entityInQueryIndex,
-                    ref Bullet.VelocityData v,
+                    ref Translation pos,
+                    //ref Bullet.VelocityData v,
+                    ref Particle.VelocityFactorData vfact,
                     ref Particle.LifeTimeSpecData t,
                     in Bullet.MoveSpecData spec,
                     in Particle.AdditionalData data,
@@ -86,12 +89,17 @@ namespace DotsLite.Arms
                     var tid = nativeThreadIndex;
                     var eqi = entityInQueryIndex;
                     var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
+                    var prepos = pos.Value;
 
 
                     var rot = init.EmitterRotation;
                     var rad = init.EmitterAccuracyRad;
                     var dir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, rad);
-                    v.Velocity = init.AimSpeed * spec.AimFactor + (dir * spec.BulletSpeed).As_float4();
+                    var v = init.AimSpeed.xyz * spec.AimFactor + dir * spec.BulletSpeed;
+                    pos.Value += v * dt;
+
+
+                    vfact.PrePosition = prepos.As_float4();
 
 
                     var d = spec.RangeDistanceFactor * init.EmitterRangeDistanceFactor;

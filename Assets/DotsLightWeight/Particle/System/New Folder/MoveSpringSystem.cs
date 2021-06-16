@@ -91,6 +91,7 @@ namespace DotsLite.Particle
         {
 
             var dt = this.Time.DeltaTime;
+            var dtrate = dt * TimeEx.PrevDeltaTimeRcp;
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
             var gravity = UnityEngine.Physics.gravity.As_float3();// ‚Æ‚è‚ ‚¦‚¸ƒGƒ“ƒWƒ“‘¤‚Ì‚ð
@@ -105,10 +106,10 @@ namespace DotsLite.Particle
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     ref DynamicBuffer<Spring.StatesData> states,
                     ref Psyllium.TranslationTailData tail,
-                    in Spring.SpecData spec,
-                    in Bullet.MoveSpecData movespec) =>
+                    in Spring.SpecData spec) =>
+                    //in Bullet.MoveSpecData movespec) =>
                 {
-                    var g = gravity * movespec.GravityFactor;
+                    //var g = gravity * movespec.GravityFactor;
 
 
                     float3 currpos, nextpos;

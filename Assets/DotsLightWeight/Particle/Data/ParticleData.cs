@@ -54,6 +54,27 @@ namespace DotsLite.Particle
             public float Radius;
         }
 
+
+        public struct VelocityFactorData : IComponentData
+        {
+            public float4 PrePosition;
+        }
+        public struct VelocitySpecData : IComponentData
+        {
+            public float4 AccelerationAndGravityFactor;
+            public float3 Acceleration
+            {
+                get => this.AccelerationAndGravityFactor.xyz;
+                set => this.AccelerationAndGravityFactor = value.As_float4(this.GravityFactor);
+            }
+            public float GravityFactor
+            {
+                get => this.AccelerationAndGravityFactor.w;
+                set => this.AccelerationAndGravityFactor.w = value;
+            }
+        }
+
+
         public struct LifeTimeInitializeTag : IComponentData
         { }
 
@@ -81,7 +102,7 @@ namespace DotsLite.Particle
 
             public float3 LastPosition
             {
-                set => this.LastPositionAndRate.xyz = value;
+                set => this.LastPositionAndRate = value.As_float4(this.Rate);
                 get => this.LastPositionAndRate.xyz;
             }
             public float Rate

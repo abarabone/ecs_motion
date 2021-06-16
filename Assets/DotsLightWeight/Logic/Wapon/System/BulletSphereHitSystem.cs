@@ -27,7 +27,7 @@ namespace DotsLite.Arms
     using DotsLite.Character.Action;
     using DotsLite.Collision;
     using DotsLite.Targeting;
-
+    using DotsLite.Misc;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
@@ -42,7 +42,6 @@ namespace DotsLite.Arms
 
         HitMessage<Structure.HitMessage>.Sender stSender;
         HitMessage<Character.HitMessage>.Sender chSender;
-
 
 
         protected override void OnCreate()
@@ -78,6 +77,7 @@ namespace DotsLite.Arms
             var corpss = this.GetComponentDataFromEntity<CorpsGroup.Data>(isReadOnly: true);
 
             var dt = this.Time.DeltaTime;
+            var predtrcp = dt * TimeEx.PrevDeltaTimeRcp;
 
             this.Entities
                 .WithBurst()
@@ -95,7 +95,8 @@ namespace DotsLite.Arms
                         Entity entity, int entityInQueryIndex,
                         in Particle.AdditionalData additional,
                         in Bullet.LinkData link,
-                        in Bullet.VelocityData v,
+                        //in Bullet.VelocityData v,
+                        in Particle.VelocityFactorData vfact,
                         in Translation pos,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
@@ -107,6 +108,7 @@ namespace DotsLite.Arms
                         if (!hit_.isHit) return;
 
 
+                        var v = (pos.Value - vfact.PrePosition.xyz) * predtrcp;
                         var hit = hit_.core;
 
                         switch (hit.hitType)
@@ -122,7 +124,7 @@ namespace DotsLite.Arms
                                 var otherCorpts = corpss[hit.hitEntity];
                                 if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
 
-                                hit.PostCharacterHitMessage(chhit, 1.0f, v.Velocity.xyz);
+                                hit.PostCharacterHitMessage(chhit, 1.0f, v);
                                 break;
 
 

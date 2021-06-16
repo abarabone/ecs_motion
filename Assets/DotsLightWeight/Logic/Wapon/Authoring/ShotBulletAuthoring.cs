@@ -70,15 +70,16 @@ namespace DotsLite.Arms.Authoring
                 {
                     typeof(Bullet.LinkData),
                     typeof(Bullet.MoveSpecData),
-                    typeof(Bullet.VelocityData),
+                    //typeof(Bullet.VelocityData),
+                    typeof(Particle.VelocityFactorData),
                     typeof(Bullet.DistanceData),
                     typeof(Bullet.LifeTimeData),
                     typeof(Bullet.InitializeFromEmitterData),
                     typeof(CorpsGroup.TargetWithArmsData)
                 };
-                if (this.GravityFactor != 0.0f || this.AimFactor != 0.0f || true)
+                if (true || this.GravityFactor != 0.0f || this.AimFactor != 0.0f)
                 {
-                    _types.Add(typeof(Bullet.AccelerationData));
+                    _types.Add(typeof(Particle.VelocitySpecData));
                 }
                 if (this.HitType == BulletHitType.Ray)
                 {
@@ -108,8 +109,15 @@ namespace DotsLite.Arms.Authoring
                     {
                         BulletSpeed = this.BulletSpeed,
                         RangeDistanceFactor = this.RangeDistance,
-                        GravityFactor = this.GravityFactor,
+                        //GravityFactor = this.GravityFactor,
                         AimFactor = this.AimFactor,
+                    }
+                );
+                em.SetComponentData(bulletEntity,
+                    new Particle.VelocitySpecData
+                    {
+                        Acceleration = 0.0f,
+                        GravityFactor = this.GravityFactor,
                     }
                 );
                 em.SetComponentData(bulletEntity,

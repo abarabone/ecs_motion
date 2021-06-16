@@ -17,7 +17,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.Arms
+namespace DotsLite.Particle
 {
 
     using DotsLite.Model;
@@ -36,27 +36,20 @@ namespace DotsLite.Arms
     using Random = Unity.Mathematics.Random;
 
     //[DisableAutoCreation]
-    //[UpdateInGroup(typeof(InitializationSystemGroup))]
-    //[UpdateAfter(typeof(ObjectInitializeSystem))]
+    [UpdateBefore(typeof(DotsLite.Particle.MoveAccSystem))]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
-    //[UpdateAfter(typeof())]
-    public class BulletMoveAccSystem : SystemBase
+    public class MoveTailSystem : SystemBase
     {
 
 
         protected override void OnUpdate()
         {
 
-            var dt = this.Time.DeltaTime;
-            var sqdt = dt * dt;
-            var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// とりあえずエンジン側のを
-                                                                              // 重力が変化する可能性を考えて、毎フレーム取得する
-            
-
             this.Entities
                 .WithName("TailLineCopy")
                 .WithBurst()
                 .WithAll<Psyllium.MoveTailTag>()
+                .WithNone<Particle.LifeTimeInitializeTag>()
                 .ForEach((
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     in Psyllium.TranslationTailData tail) =>
@@ -74,32 +67,12 @@ namespace DotsLite.Arms
                 .WithName("TailCopy")
                 .WithBurst()
                 .WithAll<Psyllium.MoveTailTag>()
+                .WithNone<Particle.LifeTimeInitializeTag>()
                 .ForEach((
                     ref Psyllium.TranslationTailData tail,
                     in Translation pos) =>
                 {
                     tail.PositionAndSize = pos.Value.As_float4(tail.Size);
-                })
-                .ScheduleParallel();
-
-            this.Entities
-                .WithName("Move")
-                .WithBurst()
-                .ForEach((
-                    ref Translation pos,
-                    ref Bullet.VelocityData v,
-                    in Bullet.AccelerationData acc,
-                    in Bullet.MoveSpecData spec) =>
-                {
-                    var g = gravity * spec.GravityFactor;
-                    var a = acc.Acceleration + g;
-
-                    v.Velocity += a * dt;
-
-
-                    var d = v.Velocity.xyz * dt;
-
-                    pos.Value += d;
                 })
                 .ScheduleParallel();
 

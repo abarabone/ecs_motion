@@ -49,7 +49,7 @@ namespace DotsLite.Arms
         {
             public float RangeDistanceFactor;
             public float BulletSpeed;
-            public float GravityFactor;
+            //public float GravityFactor;
             public float AimFactor;
         }
         public struct PointDamageSpecData : IComponentData
@@ -66,17 +66,17 @@ namespace DotsLite.Arms
             public Entity EmitionEntity;
         }
 
-        public struct VelocityData : IComponentData
-        {
-            //public float3 Direction;
-            //public DirectionAndLength DirAndLen;
-            public float4 Velocity;
-        }
-        public struct AccelerationData : IComponentData
-        {
-            //public DirectionAndLength DirAndLen;
-            public float4 Acceleration;
-        }
+        //public struct VelocityData : IComponentData
+        //{
+        //    //public float3 Direction;
+        //    //public DirectionAndLength DirAndLen;
+        //    public float4 Velocity;
+        //}
+        //public struct AccelerationData : IComponentData
+        //{
+        //    //public DirectionAndLength DirAndLen;
+        //    public float4 Acceleration;
+        //}
 
         public struct DistanceData : IComponentData
         {

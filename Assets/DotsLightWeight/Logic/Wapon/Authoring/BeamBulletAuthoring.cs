@@ -53,7 +53,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(Bullet.BeamTag),
                     typeof(Bullet.LifeTimeData),
                     typeof(Bullet.DistanceData),
-                    typeof(Bullet.VelocityData),
+                    //typeof(Bullet.VelocityData),
                     typeof(Bullet.LinkData)
                 );
                 em.AddComponents(bulletEntity, types);

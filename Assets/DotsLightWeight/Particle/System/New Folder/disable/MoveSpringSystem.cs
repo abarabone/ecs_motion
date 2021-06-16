@@ -100,10 +100,10 @@ namespace DotsLite.Particle.disable
                     ref Psyllium.TranslationTailData tail,
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     ref DynamicBuffer<Spring.StatesData> states,
-                    in Spring.SpecData spec,
-                    in Bullet.MoveSpecData movespec) =>
+                    in Spring.SpecData spec) =>
+                    //in Bullet.MoveSpecData movespec) =>
                 {
-                    var g = gravity * movespec.GravityFactor;
+                    //var g = gravity * movespec.GravityFactor;
 
 
                     float3 currpos, nextpos;
