@@ -433,11 +433,12 @@ namespace DotsLite.Particle.Aurthoring
 
             var types = new ComponentTypes(
                 typeof(Spring.SpecData),
-                typeof(Spring.StateData)
+                typeof(Spring.StatesData),
+                typeof(Spring.StickySelfFirstTag)
             );
             em.AddComponents(mainEntity, types);
 
-            em.AddComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new Spring.SpecData
                 {
                     Spring = spring,
@@ -446,7 +447,7 @@ namespace DotsLite.Particle.Aurthoring
                 }
             );
 
-            var buffer = em.AddBuffer<Spring.StateData>(mainEntity);
+            var buffer = em.AddBuffer<Spring.StatesData>(mainEntity);
             buffer.Length = segments + 1;
         }
 

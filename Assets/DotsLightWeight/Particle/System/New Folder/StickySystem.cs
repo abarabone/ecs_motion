@@ -37,6 +37,7 @@ namespace DotsLite.Particle
     using Random = Unity.Mathematics.Random;
 
     //[DisableAutoCreation]
+    [UpdateBefore(typeof(MoveSpringSystem))]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     public class StickySystem : SystemBase
     {
@@ -45,26 +46,52 @@ namespace DotsLite.Particle
         protected override void OnUpdate()
         {
 
-            var dt = this.Time.DeltaTime;
-            var sqdt = dt * dt;
-            var harfsqdt = 0.5f * sqdt;
-            var gravity = UnityEngine.Physics.gravity.As_float3();// とりあえずエンジン側のを              
-            // 重力が変化する可能性を考えて、毎フレーム取得する
+            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
 
-            var g_ = gravity * harfsqdt;
 
             this.Entities
+                .WithName("copy_self")
                 .WithBurst()
-                .WithNone<Particle.LifeTimeInitializeTag>()
+                .WithAll<Spring.StickySelfFirstTag>()
                 .ForEach((
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
-                    ref DynamicBuffer<Spring.StateData> states,
-                    ref Psyllium.TranslationTailData tail,
-                    in Spring.SpecData spec,
-                    in Bullet.MoveSpecData movespec) =>
+                    in Translation pos) =>
                 {
 
+                    tails.ElementAt(0).Position = pos.Value;
 
+                })
+                .ScheduleParallel();
+
+            this.Entities
+                .WithName("copy_first_T")
+                .WithBurst()
+                .WithReadOnly(poss)
+                .ForEach((
+                    ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
+                    in Spring.StickyTEntityFirstData stick) =>
+                {
+
+                    var pos = poss[stick.Target].Value;
+
+                    tails.ElementAt(0).Position = pos;
+
+                })
+                .ScheduleParallel();
+
+            this.Entities
+                .WithName("copy_last_T")
+                .WithBurst()
+                .WithReadOnly(poss)
+                .ForEach((
+                    ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
+                    in Spring.StickyTEntityLastData stick) =>
+                {
+
+                    var pos = poss[stick.Target].Value;
+
+                    tails.ElementAt(tails.Length - 1).Position = pos;
 
                 })
                 .ScheduleParallel();

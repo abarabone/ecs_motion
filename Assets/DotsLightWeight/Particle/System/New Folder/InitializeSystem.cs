@@ -69,9 +69,7 @@ namespace DotsLite.Particle
                 {
                     for (var i = 0; i < tails.Length; i++)
                     {
-                        var tail = tails[i];
-                        tail.Position = pos.Value;
-                        tails[i] = tail;
+                        var tail = tails.ElementAt(i).Position = pos.Value;
                     }
                 })
                 .ScheduleParallel();

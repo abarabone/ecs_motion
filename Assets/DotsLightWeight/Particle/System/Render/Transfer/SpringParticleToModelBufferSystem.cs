@@ -28,7 +28,7 @@ namespace DotsLite.Draw
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class LineParticleToModelBufferSystem : DependencyAccessableSystemBase
+    public class SpringParticleToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 
@@ -53,13 +53,11 @@ namespace DotsLite.Draw
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.LineParticleTag>()
+                .WithAll<Spring.StatesData>()//
                 .WithNone<DrawInstance.MeshTag>()
-                .WithNone<Spring.StatesData>()//
                 .WithNone<BillBoad.UvCursorData, BillBoad.CursorToUvIndexData>()
                 .ForEach(
                     (
-                        in Translation pos,
-                        in Psyllium.TranslationTailData tail,
                         in DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
@@ -72,7 +70,7 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var vectorLength = 2 + tails.Length + 1;
+                        var vectorLength = tails.Length + 1;
                         var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
                         var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
@@ -82,9 +80,6 @@ namespace DotsLite.Draw
                         var color = math.asfloat(additional.Color.ToUint());
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        pModel[i++] = new float4(pos.Value, color);
-                        pModel[i++] = new float4(tail.Position, color);
-
                         for (var j = 0; j < tails.Length; j++)
                         {
                             pModel[i + j] = tails[j].PositionAndColor;

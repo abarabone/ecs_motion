@@ -82,6 +82,7 @@ namespace DotsLite.Arms
             this.Entities
                 .WithBurst()
                 .WithAll<Bullet.RayTag>()
+                .WithNone<Bullet.EmitterTag>()// 
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(corpss)

@@ -51,11 +51,58 @@ namespace DotsLite.Particle
         }
 
         [InternalBufferCapacity(8)]
-        public struct StateData : IBufferElementData
+        public struct StatesData : IBufferElementData
         {
             public float4 PrePosition;
         }
 
+
+        public struct StickyTREntityData : IComponentData
+        {
+            public Entity Target;
+            public float4 LocalPosition;
+        }
+        public struct StickyTEntityData : IComponentData
+        {
+            public Entity Target;
+        }
+        public struct StickyPointData : IComponentData
+        {
+            public float4 Position;
+        }
+
+
+        public struct StickySelfFirstTag : IComponentData
+        { }
+
+        public struct StickyTREntityFirstData : IComponentData
+        {
+            public Entity Target;
+            public float4 LocalPosition;
+        }
+        public struct StickyTREntityLastData : IComponentData
+        {
+            public Entity Target;
+            public float4 LocalPosition;
+        }
+
+        public struct StickyTEntityFirstData : IComponentData
+        {
+            public Entity Target;
+        }
+        public struct StickyTEntityLastData : IComponentData
+        {
+            public Entity Target;
+        }
+
+        public struct StickyPointFirstData : IComponentData
+        {
+            public float4 Position;
+        }
+        public struct StickyPointLastData : IComponentData
+        {
+            public float4 Position;
+        }
     }
 }
 

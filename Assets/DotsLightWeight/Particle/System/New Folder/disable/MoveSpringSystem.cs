@@ -50,23 +50,23 @@ namespace DotsLite.Particle.disable
                 .WithBurst()
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .ForEach((
-                    ref DynamicBuffer<Spring.StateData> states,
+                    ref DynamicBuffer<Spring.StatesData> states,
                     in Translation pos,
                     in Psyllium.TranslationTailData tail,
                     in DynamicBuffer<LineParticle.TranslationTailLineData> tails) =>
                     {
 
-                        states[0] = new Spring.StateData
+                        states[0] = new Spring.StatesData
                         {
                             PrePosition = pos.Value.As_float4(),
                         };
-                        states[1] = new Spring.StateData
+                        states[1] = new Spring.StatesData
                         {
                             PrePosition = tail.PositionAndSize,
                         };
                         for (var i = 0; i < tails.Length; i++)
                         {
-                            states[2 + i] = new Spring.StateData
+                            states[2 + i] = new Spring.StatesData
                             {
                                 PrePosition = tails[i].PositionAndColor
                             };
@@ -99,7 +99,7 @@ namespace DotsLite.Particle.disable
                     ref Translation pos,
                     ref Psyllium.TranslationTailData tail,
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
-                    ref DynamicBuffer<Spring.StateData> states,
+                    ref DynamicBuffer<Spring.StatesData> states,
                     in Spring.SpecData spec,
                     in Bullet.MoveSpecData movespec) =>
                 {
@@ -220,9 +220,9 @@ namespace DotsLite.Particle.disable
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void shiftPrePosition(
-            ref this DynamicBuffer<Spring.StateData> preposs, int i, float3 newpos)
+            ref this DynamicBuffer<Spring.StatesData> preposs, int i, float3 newpos)
         {
-            preposs[i] = new Spring.StateData
+            preposs[i] = new Spring.StatesData
             {
                 PrePosition = newpos.As_float4(),
             };

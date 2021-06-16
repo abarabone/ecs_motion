@@ -48,20 +48,35 @@ namespace DotsLite.Particle
             this.Entities
                 .WithBurst()
                 .WithAll<Particle.LifeTimeInitializeTag>()
+                .WithAll<Spring.StatesData>()//
                 .ForEach((
-                    ref DynamicBuffer<Spring.StateData> states,
+                    ref DynamicBuffer<Spring.StatesData> states,
+                    ref Psyllium.TranslationTailData tail,
                     in Translation pos,
-                    in Psyllium.TranslationTailData tail,
                     in DynamicBuffer<LineParticle.TranslationTailLineData> tails) =>
                     {
+                        tail.Position = pos.Value;
+
                         for (var i = 0; i < tails.Length; i++)
                         {
-                            states[i] = new Spring.StateData
+                            states[i] = new Spring.StatesData
                             {
                                 PrePosition = tails[i].PositionAndColor
                             };
                         }
                     })
+                .ScheduleParallel();
+
+            this.Entities
+                .WithName("TailCopy")
+                .WithAll<Spring.StatesData>()//
+                .WithBurst()
+                .ForEach((
+                    ref Psyllium.TranslationTailData tail,
+                    in DynamicBuffer < LineParticle.TranslationTailLineData > tails) =>
+                {
+                    tail.Position = tails[1].Position;
+                })
                 .ScheduleParallel();
         }
     }
@@ -85,9 +100,10 @@ namespace DotsLite.Particle
             this.Entities
                 .WithBurst()
                 .WithNone<Particle.LifeTimeInitializeTag>()
+                .WithAll<Spring.StatesData>()//
                 .ForEach((
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
-                    ref DynamicBuffer<Spring.StateData> states,
+                    ref DynamicBuffer<Spring.StatesData> states,
                     ref Psyllium.TranslationTailData tail,
                     in Spring.SpecData spec,
                     in Bullet.MoveSpecData movespec) =>
@@ -101,22 +117,22 @@ namespace DotsLite.Particle
                     float3 newpos;
                     //var gtt = g_ * 0.0f;//movespec.GravityFactor;
 
-                    newpos = calcNewPositionFirst_(
+                    newpos = calcNewPositionFirst_(spec,
                         tails[0].Position, states[0].PrePosition.xyz,
-                        tails[1].Position, states[1].PrePosition.xyz, spec);
-                    tails.setResultPosition(0, newpos);
-                    states.shiftPrePosition(0, currpos);
+                        tails[1].Position, states[1].PrePosition.xyz);
+                    tails.ElementAt(0).Position = newpos;// + gtt);
+                    states.ElementAt(0).PrePosition = currpos.As_float4();
 
                     for (var i = 1; i < tails.Length - 1; i++)
                     {
-                        newpos = calcNewPosition_(tails[i+1].Position, states[i+1].PrePosition.xyz, spec);
-                        tails.setResultPosition(i, newpos);// + gtt);
-                        states.shiftPrePosition(i, currpos);
+                        newpos = calcNewPosition_(spec, tails[i+1].Position, states[i+1].PrePosition.xyz);
+                        tails.ElementAt(i).Position = newpos;// + gtt);
+                        states.ElementAt(i).PrePosition = currpos.As_float4();
                     }
 
                     newpos = calcNewPositionLast_();
-                    tails.setResultPosition(tails.Length - 1, newpos);// + gtt);
-                    states.shiftPrePosition(states.Length - 1, currpos);
+                    tails.ElementAt(tails.Length - 1).Position = newpos;// + gtt);
+                    states.ElementAt(states.Length - 1).PrePosition = currpos.As_float4();
 
 
                     tail.Position = tails[1].Position;// “Y‚¦Žš‚ð‰Â•Ï‚É‚·‚é‚©‚à
@@ -125,8 +141,8 @@ namespace DotsLite.Particle
 
 
                     //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-                    float3 calcNewPositionFirst_(
-                        float3 _currNowPos, float3 _currPrePos, float3 _nextNowPos, float3 _nextPrePos, Spring.SpecData spec)
+                    float3 calcNewPositionFirst_(Spring.SpecData spec,
+                        float3 _currNowPos, float3 _currPrePos, float3 _nextNowPos, float3 _nextPrePos)
                     {
                         currpos = _currNowPos;
                         currvt = calc_vt(_currNowPos, _currPrePos);
@@ -140,7 +156,7 @@ namespace DotsLite.Particle
                     }
 
                     //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-                    float3 calcNewPosition_(float3 _nextNowPos, float3 _nextPrePos, Spring.SpecData spec)
+                    float3 calcNewPosition_(Spring.SpecData spec, float3 _nextNowPos, float3 _nextPrePos)
                     {
                         currpos = nextpos;
                         currvt = nextvt;
@@ -198,24 +214,24 @@ namespace DotsLite.Particle
     static class SpringUtility
     {
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void setResultPosition(
-            ref this DynamicBuffer<LineParticle.TranslationTailLineData> tails, int i, float3 newpos)
-        {
-            var tail = tails[i];
-            tail.Position = newpos;
-            tails[i] = tail;
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static void setResultPosition(
+        //    ref this DynamicBuffer<LineParticle.TranslationTailLineData> tails, int i, float3 newpos)
+        //{
+        //    var tail = tails[i];
+        //    tail.Position = newpos;
+        //    tails[i] = tail;
+        //}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void shiftPrePosition(
-            ref this DynamicBuffer<Spring.StateData> preposs, int i, float3 newpos)
-        {
-            preposs[i] = new Spring.StateData
-            {
-                PrePosition = newpos.As_float4(),
-            };
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static void shiftPrePosition(
+        //    ref this DynamicBuffer<Spring.StateData> preposs, int i, float3 newpos)
+        //{
+        //    preposs[i] = new Spring.StateData
+        //    {
+        //        PrePosition = newpos.As_float4(),
+        //    };
+        //}
     }
 }
 
