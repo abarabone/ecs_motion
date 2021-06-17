@@ -16,10 +16,10 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
+    [RequireComponent(typeof(ParticleAuthoring2))]
     public class AlphaAnimationComponent :
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
-        public ParticleModelSourceAuthoring ModelSource;
 
         public float AlphaTimeSpanSec;
         public float AlphaLast;
