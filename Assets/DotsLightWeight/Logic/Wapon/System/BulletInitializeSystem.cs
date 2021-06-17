@@ -96,10 +96,11 @@ namespace DotsLite.Arms
                     var rad = init.EmitterAccuracyRad;
                     var dir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, rad);
                     var v = init.AimSpeed.xyz * spec.AimFactor + dir * spec.BulletSpeed;
-                    pos.Value += v * dt;
+                    //pos.Value += v * dt;
 
 
-                    vfact.PrePosition = prepos.As_float4();
+                    vfact.PrePosition = (prepos - v * dt).As_float4();
+                    // pos に足すと進んでしまうので、前フレームから引く
 
 
                     var d = spec.RangeDistanceFactor * init.EmitterRangeDistanceFactor;
