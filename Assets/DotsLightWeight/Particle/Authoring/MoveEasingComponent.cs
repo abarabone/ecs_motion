@@ -16,13 +16,17 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
-    [RequireComponent(typeof(ParticleAuthoring2))]
+    [RequireComponent(typeof(ParticleAuthoring))]
     public class MoveEasingComponent :
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
 
         public float EasingRatePerSec;
-        
+
+        public float MinDistanceOffset;
+        public float MaxDistanceOffset;
+
+        //public float3 MoveDirectionRad;
 
 
         /// <summary>
@@ -32,6 +36,10 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
+            var useDirectionNormal = false;
+
+            gcs.AddEasingComponents(this.gameObject,
+                this.EasingRatePerSec, this.MinDistanceOffset, this.MaxDistanceOffset, useDirectionNormal, float3.zero);// this.MoveDirection);
         }
     }
 }

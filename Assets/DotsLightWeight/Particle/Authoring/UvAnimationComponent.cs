@@ -16,12 +16,12 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
-    [RequireComponent(typeof(ParticleAuthoring2))]
+    [RequireComponent(typeof(ParticleAuthoring))]
     public class UvAnimationComponent :
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public int CellIndexMax;
+        public int CellIndexLast;
         public binary_length CellIndexLength;
         public float AnimationTimeSpanSec;
 
@@ -32,9 +32,9 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
-            var baseindex = this.GetComponent<ParticleAuthoring2>().CellIndex;
+            var baseindex = this.GetComponent<ParticleAuthoring>().CellIndex;
             gcs.AddUvAnimationComponents(this.gameObject,
-                this.CellIndexLength, baseindex, this.CellIndexMax, this.AnimationTimeSpanSec);
+                this.CellIndexLength, baseindex, this.CellIndexLast, this.AnimationTimeSpanSec);
         }
     }
 }

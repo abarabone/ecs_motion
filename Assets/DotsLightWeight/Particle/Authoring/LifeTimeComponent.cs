@@ -16,7 +16,7 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
-    [RequireComponent(typeof(ParticleAuthoring2))]
+    [RequireComponent(typeof(ParticleAuthoring))]
     public class LifeTimeComponent :
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
@@ -31,6 +31,7 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
+            gcs.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
         }
     }
 }

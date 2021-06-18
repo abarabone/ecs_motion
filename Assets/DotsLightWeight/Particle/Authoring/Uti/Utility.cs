@@ -284,7 +284,7 @@ namespace DotsLite.Particle.Aurthoring
             );
             em.AddComponents(mainEntity, types);
 
-            em.AddComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new Particle.LifeTimeSpecData
                 {
                     DurationSec = time,
@@ -313,7 +313,7 @@ namespace DotsLite.Particle.Aurthoring
             var types = new ComponentTypes(_types.ToArray());
             em.AddComponents(mainEntity, types);
 
-            em.AddComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new BillBoad.RotationSpeedData
                 {
                     RadSpeedPerSec = math.radians(rotSpeedMin),
@@ -321,7 +321,7 @@ namespace DotsLite.Particle.Aurthoring
             );
             if (rotSpeedMin != rotSpeedMax)
             {
-                em.AddComponentData(mainEntity,
+                em.SetComponentData(mainEntity,
                     new BillBoad.RotationRandomSettingData
                     {
                         MinSpeed = rotSpeedMin,
@@ -344,7 +344,7 @@ namespace DotsLite.Particle.Aurthoring
             );
             em.AddComponents(mainEntity, types);
 
-            em.AddComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new BillBoad.AlphaFadeData
                 {
                     Current = firstValue,
@@ -371,7 +371,7 @@ namespace DotsLite.Particle.Aurthoring
             );
             em.AddComponents(mainEntity, types);
 
-            em.AddComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new BillBoad.SizeAnimationData
                 {
                     StartSize = startRadius,
@@ -406,14 +406,14 @@ namespace DotsLite.Particle.Aurthoring
             em.AddComponents(mainEntity, types);
 
 
-            em.AddComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new Particle.EasingData
                 {
                     LastPosition = useDirectionSetting ? dir : 0,
                     Rate = rate,
                 }
             );
-            em.AddComponentData(mainEntity,
+            em.SetComponentData(mainEntity,
                 new Particle.EasingSetting
                 {
                     LastDistanceMin = distOffsetMin,

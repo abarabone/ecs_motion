@@ -133,7 +133,7 @@ namespace DotsLite.Particle.Aurthoring.disable
             if (this.UseLifeTime) gcs.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
             if (this.UseAnimationRadius) gcs.AddSizingComponents(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
             if (this.UseAnimationAlpha) gcs.AddAlphaFadeComponents(this.gameObject, this.ParticleColor.a, this.AlphaLast, this.AlphaTimeSpanSec);
-            if (this.UseAnimationRotation) gcs.AddRotationComponents(this.gameObject, this.MinRotationDegreesPerSec, this.MaxDistanceOffset);
+            if (this.UseAnimationRotation) gcs.AddRotationComponents(this.gameObject, this.MinRotationDegreesPerSec, this.MaxRotationDegreesPerSec);
             if (this.UseMoveEasing) gcs.AddEasingComponents(this.gameObject, this.EasingRatePerSec, this.MinDistanceOffset, this.MaxDistanceOffset, this.UseDirectionNormal, this.DirectionOffset);
 
             if (!this.UseSpring) gcs.AddMoveTagComponents(this.gameObject);

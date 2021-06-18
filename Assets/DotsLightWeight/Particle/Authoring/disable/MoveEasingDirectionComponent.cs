@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace DotsLite.Particle.Aurthoring
+namespace DotsLite.Particle.Aurthoring.disable
 {
     using DotsLite.Model;
     using DotsLite.Draw;
@@ -16,7 +16,7 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
-    [RequireComponent(typeof(ParticleAuthoring2))]
+    [RequireComponent(typeof(Aurthoring.ParticleAuthoring))]
     public class MoveEasingDirectionComponent :
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {

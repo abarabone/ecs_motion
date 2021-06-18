@@ -16,7 +16,7 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
-    [RequireComponent(typeof(ParticleAuthoring2))]
+    [RequireComponent(typeof(ParticleAuthoring))]
     public class AlphaAnimationComponent :
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
@@ -31,6 +31,8 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
+            var alphaFirst = this.GetComponent<ParticleAuthoring>().ParticleColor.a;
+            gcs.AddAlphaFadeComponents(this.gameObject, alphaFirst, this.AlphaLast, this.AlphaTimeSpanSec);
         }
     }
 }

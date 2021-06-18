@@ -16,7 +16,7 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
 
-    [RequireComponent(typeof(ParticleAuthoring2))]
+    [RequireComponent(typeof(ParticleAuthoring))]
     public class SpringComponent :
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
@@ -34,6 +34,8 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
+            var segmentLength = this.GetComponent<ParticleAuthoring>().ModelSource.LineParticleSegments;
+            gcs.AddSpringComponents(this.gameObject, this.Spring, this.Dumper, this.RestDistance, segmentLength);
         }
     }
 }
