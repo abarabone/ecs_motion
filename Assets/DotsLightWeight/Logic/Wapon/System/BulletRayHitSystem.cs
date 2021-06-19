@@ -71,6 +71,9 @@ namespace DotsLite.Arms
             var chhit =chhitScope.MessagerAsParallelWriter;
 
 
+            var damages = this.GetComponentDataFromEntity<Bullet.PointDamageSpecData>(isReadOnly: true);
+            var emits = this.GetComponentDataFromEntity<Bullet.EmitData>(isReadOnly: true);
+
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
@@ -82,7 +85,9 @@ namespace DotsLite.Arms
             this.Entities
                 .WithBurst()
                 .WithAll<Bullet.RayTag>()
-                .WithNone<Bullet.EmitterTag>()// 
+                //.WithNone<Bullet.EmitterTag>()// 
+                .WithReadOnly(damages)
+                .WithReadOnly(emits)
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(corpss)
@@ -96,13 +101,12 @@ namespace DotsLite.Arms
                         Entity entity, int entityInQueryIndex,
                         in Translation pos,
                         in Psyllium.TranslationTailData tail,
-                        in Bullet.LinkData link,
-                        //in Bullet.VelocityData v,
                         in Particle.VelocityFactorData vfact,
-                        in Bullet.PointDamageSpecData damage,
+                        in Bullet.LinkData link,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
+                        var eqi = entityInQueryIndex;
                         
                         var hit_ = cw.BulletHitRay
                             (link.OwnerStateEntity, pos.Value, tail.Position, 1.0f, targets);
@@ -113,26 +117,39 @@ namespace DotsLite.Arms
                         var v = (pos.Value - vfact.PrePosition.xyz) * predtrcp;
                         var hit = hit_.core;
 
-                        switch (hit.hitType)
+                        if (damages.HasComponent(entity))
                         {
-                            case HitType.part:
-
-                                hit.PostStructureHitMessage(sthit, parts);
-                                break;
-
-
-                            case HitType.charactor:
-
-                                var otherCorpts = corpss[hit.hitEntity];
-                                if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
-
-                                hit.PostCharacterHitMessage(chhit, damage.Damage, v);
-                                break;
-
-
-                            default:
-                                break;
+                            var damage = damages[entity].Damage;
+                            hit.Hit(chhit, sthit, parts, corpss, v, damage, corps);
                         }
+
+                        if (emits.HasComponent(entity))
+                        {
+                            var emit = emits[entity];
+                            hit.Emit(cmd, eqi, emit, link, corps);
+                        }
+
+
+                        //switch (hit.hitType)
+                        //{
+                        //    case HitType.part:
+
+                        //        hit.PostStructureHitMessage(sthit, parts);
+                        //        break;
+
+
+                        //    case HitType.charactor:
+
+                        //        var otherCorpts = corpss[hit.hitEntity];
+                        //        if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
+
+                        //        hit.PostCharacterHitMessage(chhit, damage.Damage, v);
+                        //        break;
+
+
+                        //    default:
+                        //        break;
+                        //}
 
                         cmd.DestroyEntity(entityInQueryIndex, entity);
                     }

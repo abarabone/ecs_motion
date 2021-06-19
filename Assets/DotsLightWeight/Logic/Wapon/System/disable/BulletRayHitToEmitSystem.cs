@@ -30,7 +30,7 @@ namespace DotsLite.Arms
     using DotsLite.Targeting;
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]

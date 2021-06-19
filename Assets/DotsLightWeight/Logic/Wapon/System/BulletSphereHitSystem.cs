@@ -93,11 +93,11 @@ namespace DotsLite.Arms
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in Particle.AdditionalData additional,
-                        in Bullet.LinkData link,
-                        //in Bullet.VelocityData v,
-                        in Particle.VelocityFactorData vfact,
                         in Translation pos,
+                        in Particle.VelocityFactorData vfact,
+                        in Bullet.LinkData link,
+                        in Particle.AdditionalData additional,
+                        in Bullet.PointDamageSpecData damage,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
@@ -121,10 +121,7 @@ namespace DotsLite.Arms
 
                             case HitType.charactor:
 
-                                var otherCorpts = corpss[hit.hitEntity];
-                                if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
-
-                                hit.PostCharacterHitMessage(chhit, 1.0f, v);
+                                hit.PostCharacterHitMessage(chhit, damage.Damage, v, corps, corpss[hit.hitEntity]);
                                 break;
 
 

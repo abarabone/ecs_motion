@@ -34,6 +34,7 @@ namespace DotsLite.Arms
     using DotsLite.SystemGroup;
     using DotsLite.Structure;
     using DotsLite.Dependency;
+    using DotsLite.Targeting;
 
     using Collider = Unity.Physics.Collider;
     using SphereCollider = Unity.Physics.SphereCollider;
@@ -153,30 +154,6 @@ namespace DotsLite.Arms
 
 
 
-        //static public void postMessageToHitTarget
-        //    (
-        //        this BulletHitUtility.BulletHit hit,
-        //        StructureHitHolder.ParallelWriter structureHitHolder,
-        //        ComponentDataFromEntity<StructurePart.PartData> parts
-        //    )
-        //{
-
-        //    if (!hit.isHit) return;
-
-
-        //    if (parts.HasComponent(hit.hitEntity))
-        //    {
-        //        structureHitHolder.Add(hit.mainEntity,
-        //            new StructureHitMessage
-        //            {
-        //                Position = hit.posision,
-        //                Normale = hit.normal,
-        //                PartEntity = hit.hitEntity,
-        //                PartId = parts[hit.hitEntity].PartId,
-        //            }
-        //        );
-        //    }
-        //}
         /// <summary>
         /// 
         /// </summary>
@@ -199,6 +176,8 @@ namespace DotsLite.Arms
                 }
             );
         }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -219,6 +198,102 @@ namespace DotsLite.Arms
             );
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public void PostCharacterHitMessage(
+            this HitResultCore hit,
+            HitMessage<Character.HitMessage>.ParallelWriter hitHolder,
+            float damage, float3 force,
+            CorpsGroup.TargetWithArmsData selfcorps, CorpsGroup.Data othercorps)
+        {
+            if ((othercorps.BelongTo & selfcorps.TargetCorps) == 0) return;
+
+            hit.PostCharacterHitMessage(hitHolder, damage, force);
+        }
+
+
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static public void DispatchHitMessage()
+        //{
+
+
+        //}
+
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public void Hit(this HitResultCore hit,
+            HitMessage<Character.HitMessage>.ParallelWriter chhit,
+            HitMessage<Structure.HitMessage>.ParallelWriter sthit,
+            ComponentDataFromEntity<StructurePart.PartData> parts,
+            ComponentDataFromEntity<CorpsGroup.Data> corpss,
+            float3 v, float damage,
+            CorpsGroup.TargetWithArmsData corps)
+        {
+
+            switch (hit.hitType)
+            {
+                case HitType.part:
+
+                    hit.PostStructureHitMessage(sthit, parts);
+                    break;
+
+
+                case HitType.charactor:
+
+                    var otherCorpts = corpss[hit.hitEntity];
+                    if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
+
+                    hit.PostCharacterHitMessage(chhit, damage, v);
+                    break;
+
+
+                default:
+                    break;
+            }
+
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public void Emit(this HitResultCore hit, 
+            EntityCommandBuffer.ParallelWriter cmd, int eqi,
+            Bullet.EmitData emit, Bullet.LinkData link, CorpsGroup.TargetWithArmsData corps)
+        {
+            var prefab = emit.EmittingPrefab;
+            var state = link.OwnerStateEntity;
+            var hpos = hit.posision;
+            var cps = corps.TargetCorps;
+            for (var i = 0; i < emit.numEmitting; i++)
+            {
+                emit_(cmd, eqi, prefab, state, hpos, cps);
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void emit_(
+            EntityCommandBuffer.ParallelWriter cmd, int eqi,
+            Entity prefab, Entity stateEntity, float3 position, Corps targetCorps)
+        {
+            var instance = cmd.Instantiate(eqi, prefab);
+
+            cmd.SetComponent(eqi, instance,
+                new Translation
+                {
+                    Value = position,
+                }
+            );
+            //cmd.SetComponent(eqi, instance,
+            //    new Bullet.LinkData
+            //    {
+            //        OwnerStateEntity = stateEntity,
+            //    }
+            //);
+            cmd.SetComponent(eqi, instance,
+                new CorpsGroup.TargetWithArmsData
+                {
+                    TargetCorps = targetCorps,
+                }
+            );
+        }
     }
 
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
 using Unity.Entities;
+using Unity.Physics.Systems;
 
 namespace DotsLite.Misc
 {
@@ -19,7 +20,8 @@ namespace DotsLite.Misc
     //}
 
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-    [UpdateAfter(typeof(EndFixedStepSimulationEntityCommandBufferSystem))]
+    //[UpdateAfter(typeof(EndFixedStepSimulationEntityCommandBufferSystem))]
+    [UpdateAfter(typeof(EndFramePhysicsSystem))]
     public class TimeEx : SystemBase
     {
         public static float PrevDeltaTime = 1.0f / 60.0f;

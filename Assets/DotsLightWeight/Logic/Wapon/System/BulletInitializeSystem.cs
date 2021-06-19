@@ -99,7 +99,7 @@ namespace DotsLite.Arms
                     //pos.Value += v * dt;
 
 
-                    vfact.PrePosition = (prepos - v * dt).As_float4();
+                    vfact.PrePosition = (prepos - v * TimeEx.PrevDeltaTime).As_float4();
                     // pos に足すと進んでしまうので、前フレームから引く
 
 
