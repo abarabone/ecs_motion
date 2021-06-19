@@ -71,6 +71,9 @@ namespace DotsLite.Arms
             var chhit = chhitScope.MessagerAsParallelWriter;
 
 
+            var damages = this.GetComponentDataFromEntity<Bullet.PointDamageSpecData>(isReadOnly: true);
+            var emits = this.GetComponentDataFromEntity<Bullet.EmitData>(isReadOnly: true);
+
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
 
@@ -82,6 +85,8 @@ namespace DotsLite.Arms
             this.Entities
                 .WithBurst()
                 .WithAll<Bullet.SphereTag>()
+                .WithReadOnly(damages)
+                .WithReadOnly(emits)
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
@@ -97,10 +102,11 @@ namespace DotsLite.Arms
                         in Particle.VelocityFactorData vfact,
                         in Bullet.LinkData link,
                         in Particle.AdditionalData additional,
-                        in Bullet.PointDamageSpecData damage,
+                        //in Bullet.PointDamageSpecData damage,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
+                        var eqi = entityInQueryIndex;
 
                         var hit_ = cw.BulletHitSphere
                             (link.OwnerStateEntity, pos.Value, additional.Radius, targets);
@@ -111,23 +117,18 @@ namespace DotsLite.Arms
                         var v = (pos.Value - vfact.PrePosition.xyz) * predtrcp;
                         var hit = hit_.core;
 
-                        switch (hit.hitType)
+                        if (damages.HasComponent(entity))
                         {
-                            case HitType.part:
-
-                                hit.PostStructureHitMessage(sthit, parts);
-                                break;
-
-
-                            case HitType.charactor:
-
-                                hit.PostCharacterHitMessage(chhit, damage.Damage, v, corps, corpss[hit.hitEntity]);
-                                break;
-
-
-                            default:
-                                break;
+                            var damage = damages[entity].Damage;
+                            hit.Hit(chhit, sthit, parts, corpss, v, damage, corps);
                         }
+
+                        if (emits.HasComponent(entity))
+                        {
+                            var emit = emits[entity];
+                            hit.Emit(cmd, eqi, emit, link, corps);
+                        }
+
 
                         cmd.DestroyEntity(entityInQueryIndex, entity);
                     }

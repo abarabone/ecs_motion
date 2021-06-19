@@ -19,9 +19,9 @@ namespace DotsLite.Collision
 
     public enum HitType
     {
-        none,
-        charactor,
-        part,
+        none = 0,
+        charactor = 1,
+        part = 2,
 
     }
 

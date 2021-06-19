@@ -73,6 +73,7 @@ namespace DotsLite.Arms
 
             var damages = this.GetComponentDataFromEntity<Bullet.PointDamageSpecData>(isReadOnly: true);
             var emits = this.GetComponentDataFromEntity<Bullet.EmitData>(isReadOnly: true);
+            var springs = this.GetComponentDataFromEntity<Spring.StickyStateData>(isReadOnly: true);
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
@@ -88,6 +89,7 @@ namespace DotsLite.Arms
                 //.WithNone<Bullet.EmitterTag>()// 
                 .WithReadOnly(damages)
                 .WithReadOnly(emits)
+                .WithReadOnly(springs)
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(corpss)
@@ -129,27 +131,11 @@ namespace DotsLite.Arms
                             hit.Emit(cmd, eqi, emit, link, corps);
                         }
 
-
-                        //switch (hit.hitType)
-                        //{
-                        //    case HitType.part:
-
-                        //        hit.PostStructureHitMessage(sthit, parts);
-                        //        break;
-
-
-                        //    case HitType.charactor:
-
-                        //        var otherCorpts = corpss[hit.hitEntity];
-                        //        if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
-
-                        //        hit.PostCharacterHitMessage(chhit, damage.Damage, v);
-                        //        break;
-
-
-                        //    default:
-                        //        break;
-                        //}
+                        if (springs.HasComponent(entity))
+                        {
+                            var state = springs[entity];
+                            hit.Sticky(cmd, eqi, entity, state);
+                        }
 
                         cmd.DestroyEntity(entityInQueryIndex, entity);
                     }

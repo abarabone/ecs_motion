@@ -57,6 +57,17 @@ namespace DotsLite.Particle
         }
 
 
+        public struct StickyStateData : IComponentData
+        {
+            public StickyState State;
+        }
+        public enum StickyState
+        {
+            none = 0,
+            head = 1,
+            tail = 2,
+        }
+
         public struct StickyTREntityData : IComponentData
         {
             public Entity Target;

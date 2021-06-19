@@ -434,7 +434,8 @@ namespace DotsLite.Particle.Aurthoring
             var types = new ComponentTypes(
                 typeof(Spring.SpecData),
                 typeof(Spring.StatesData),
-                typeof(Spring.StickySelfFirstTag)
+                typeof(Spring.StickySelfFirstTag),
+                typeof(Spring.StickyStateData)
             );
             em.AddComponents(mainEntity, types);
 
@@ -444,6 +445,12 @@ namespace DotsLite.Particle.Aurthoring
                     Spring = spring,
                     Dumper = dumper,
                     Rest = rest,
+                }
+            );
+            em.SetComponentData(mainEntity,
+                new Spring.StickyStateData
+                {
+                    State = Spring.StickyState.head,
                 }
             );
 

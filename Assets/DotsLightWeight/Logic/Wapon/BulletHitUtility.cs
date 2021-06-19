@@ -294,6 +294,58 @@ namespace DotsLite.Arms
                 }
             );
         }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Sticky(this HitResultCore hit,
+            EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity self,
+            Spring.StickyStateData state)
+        {
+            switch (f(state.State, hit.hitType))
+            {
+                case (int)Spring.StickyState.head << 3 | (int)HitType.part:
+                            cmd.RemoveComponent<Spring.StickySelfFirstTag>(eqi, self);
+                    //cmd.AddComponent(eqi, self, new Spring.StickyTEntityFirstData
+                    //{
+                    //    Target = hit.hitEntity,
+                    //});
+                    cmd.AddComponent(eqi, self, new Spring.StickyPointData
+                    {
+                        Position = hit.posision.As_float4(),
+                    });
+                    cmd.SetComponent(eqi, self, new Spring.StickyStateData
+                    {
+                        State = Spring.StickyState.tail,
+                    });
+                    break;
+
+                case (int)Spring.StickyState.head << 3 | (int)HitType.charactor:
+                    cmd.RemoveComponent<Spring.StickySelfFirstTag>(eqi, self);
+                    //cmd.AddComponent(eqi, self, new Spring.StickyTREntityFirstData
+                    //{
+                    //    Target = hit.hitEntity,
+                    //    LocalPosition = ,
+                    //});
+                    cmd.AddComponent(eqi, self, new Spring.StickyPointData
+                    {
+                        Position = hit.posision.As_float4(),
+                    });
+                    cmd.SetComponent(eqi, self, new Spring.StickyStateData
+                    {
+                        State = Spring.StickyState.tail,
+                    });
+                    break;
+
+                case (int)Spring.StickyState.tail << 3 | (int)HitType.part:
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static int f(Spring.StickyState state, HitType hittype) => (int)state << 3 | (int)hittype;
     }
 
 
