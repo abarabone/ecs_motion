@@ -32,12 +32,14 @@ namespace DotsLite.Particle
     using DotsLite.Collision;
     using DotsLite.SystemGroup;
     using DotsLite.Common.Extension;
+    using DotsLite.Particle.Aurthoring;
 
     using Random = Unity.Mathematics.Random;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
-    public class MoveAccSystem : SystemBase
+    [UpdateAfter(typeof(MoveSpringSystem))]
+    public class SpringHitSegmentCopySystem : SystemBase
     {
 
 
@@ -53,26 +55,16 @@ namespace DotsLite.Particle
             var gtt = gravity * hftt;
 
             this.Entities
-                .WithName("Move")
                 .WithBurst()
                 .WithNone<Particle.LifeTimeInitializeTag>()
                 .ForEach((
                     ref Translation pos,
-                    ref Particle.VelocityFactorData vfact,
-                    in Particle.VelocitySpecData spec) =>
-                    //ref Bullet.VelocityData v,
-                    //in Bullet.AccelerationData acc,
-                    //in Bullet.MoveSpecData spec) =>
+                    ref Psyllium.TranslationTailData tail,
+                    in Spring.HittableSegmentData hittable,
+                    in DynamicBuffer<LineParticle.TranslationTailLineData> tails) =>
                 {
-                    var prepos = pos.Value;
-                    var g = gtt * spec.GravityFactor;
-                    var a = spec.Acceleration * hftt;
-
-                    var vt = pos.Value - vfact.PrePosition.xyz;
-                    var d = vt * dtrate + g + a;
-
-                    pos.Value += d;
-                    vfact.PrePosition = prepos.As_float4();
+                    pos.Value = tails[hittable.Index.x].Position;
+                    tail.Position = tails[hittable.Index.y].Position;
                 })
                 .ScheduleParallel();
 

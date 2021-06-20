@@ -435,7 +435,8 @@ namespace DotsLite.Particle.Aurthoring
                 typeof(Spring.SpecData),
                 typeof(Spring.StatesData),
                 typeof(Spring.StickySelfFirstTag),
-                typeof(Spring.StickyStateData)
+                typeof(Spring.StickyStateData),
+                typeof(Spring.StickyApplyData)
             );
             em.AddComponents(mainEntity, types);
 
@@ -445,12 +446,21 @@ namespace DotsLite.Particle.Aurthoring
                     Spring = spring,
                     Dumper = dumper,
                     Rest = rest,
+                    GravityFactor = 0.3f,
                 }
             );
             em.SetComponentData(mainEntity,
                 new Spring.StickyStateData
                 {
-                    State = Spring.StickyState.head,
+                    NextSticky = Spring.NextStickyMode.first,
+                    PointLength = segments + 1,
+                }
+            );
+            em.SetComponentData(mainEntity,
+                new Spring.StickyApplyData
+                {
+                    FirstFactor = 0.0f,
+                    LastFactor = 1.0f,
                 }
             );
 

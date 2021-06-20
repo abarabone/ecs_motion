@@ -95,6 +95,7 @@ namespace DotsLite.Particle
             var dtrate = dt * TimeEx.PrevDeltaTimeRcp;
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
+
             var gravity = UnityEngine.Physics.gravity.As_float3();// とりあえずエンジン側のを
                                                       // 重力が変化する可能性を考えて、毎フレーム取得する
             var g = gravity * harfsqdt;
@@ -107,7 +108,7 @@ namespace DotsLite.Particle
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     ref DynamicBuffer<Spring.StatesData> states,
                     ref Psyllium.TranslationTailData tail,
-                    in Spring.StickyStateData sticky,
+                    in Spring.StickyApplyData sticky,
                     in Spring.SpecData spec) =>
                 {
 
@@ -117,13 +118,10 @@ namespace DotsLite.Particle
                     float3 d;
                     var gtt = g * spec.GravityFactor;
 
-                    var headfactor = math.select(1.0f, 0.0f, sticky.State >= Spring.StickyState.head);
-                    var tailfactor = math.select(1.0f, 1.0f, sticky.State >= Spring.StickyState.tail);
-
                     d = calcNewPositionFirst_(spec,
                         tails[0].Position, states[0].PrePosition.xyz,
                         tails[1].Position, states[1].PrePosition.xyz);
-                    tails.ElementAt(0).Position = currpos + (d + gtt) * headfactor;
+                    tails.ElementAt(0).Position = currpos + (d + gtt) * sticky.FirstFactor;
                     states.ElementAt(0).PrePosition = currpos.As_float4();
 
                     for (var i = 1; i < tails.Length - 1; i++)
@@ -134,11 +132,8 @@ namespace DotsLite.Particle
                     }
 
                     d = calcNewPositionLast_();
-                    tails.ElementAt(tails.Length - 1).Position = currpos + (d + gtt) * tailfactor;
+                    tails.ElementAt(tails.Length - 1).Position = currpos + (d + gtt) * sticky.LastFactor;
                     states.ElementAt(states.Length - 1).PrePosition = currpos.As_float4();
-
-
-                    tail.Position = tails[1].Position;// 添え字を可変にするかも
 
                     return;
 
@@ -148,10 +143,10 @@ namespace DotsLite.Particle
                         float3 _currNowPos, float3 _currPrePos, float3 _nextNowPos, float3 _nextPrePos)
                     {
                         currpos = _currNowPos;
-                        currvt = calc_vt(_currNowPos, _currPrePos);
+                        currvt = calc_vt(_currNowPos, _currPrePos) * dtrate;
 
                         nextpos = _nextNowPos;
-                        nextvt = calc_vt(_nextNowPos, _nextPrePos);
+                        nextvt = calc_vt(_nextNowPos, _nextPrePos) * dtrate;
 
                         fttdown = calc_ftt(currpos, nextpos, currvt, nextvt, spec, dt);
 
@@ -165,7 +160,7 @@ namespace DotsLite.Particle
                         currvt = nextvt;
 
                         nextpos = _nextNowPos;
-                        nextvt = calc_vt(_nextNowPos, _nextPrePos);
+                        nextvt = calc_vt(_nextNowPos, _nextPrePos) * dtrate;
 
                         fttup = fttdown;
                         fttdown = calc_ftt(currpos, nextpos, currvt, nextvt, spec, dt);

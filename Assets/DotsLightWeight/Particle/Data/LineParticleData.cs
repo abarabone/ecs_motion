@@ -57,31 +57,44 @@ namespace DotsLite.Particle
             public float4 PrePosition;
         }
 
+        public struct StickyApplyData : IComponentData
+        {
+            public float FirstFactor;
+            public float LastFactor;
+        }
+
+        public struct HittableSegmentData : IComponentData
+        {
+            public int2 Index;
+        }
 
         public struct StickyStateData : IComponentData
         {
-            public StickyState State;
+            public NextStickyMode NextSticky;
+            public int PointLength;
         }
-        public enum StickyState
+        public enum NextStickyMode
         {
             none = 0,
-            head = 1,
-            tail = 2,
+            first = 1,
+            last = 2,
+            completed = 3,
         }
 
-        public struct StickyTREntityData : IComponentData
-        {
-            public Entity Target;
-            public float4 LocalPosition;
-        }
-        public struct StickyTEntityData : IComponentData
-        {
-            public Entity Target;
-        }
-        public struct StickyPointData : IComponentData
-        {
-            public float4 Position;
-        }
+        // ボーンエンティティで実装する場合
+        //public struct StickyTREntityData : IComponentData
+        //{
+        //    public Entity Target;
+        //    public float4 LocalPosition;
+        //}
+        //public struct StickyTEntityData : IComponentData
+        //{
+        //    public Entity Target;
+        //}
+        //public struct StickyPointData : IComponentData
+        //{
+        //    public float4 Position;
+        //}
 
 
         public struct StickySelfFirstTag : IComponentData

@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using System.Runtime.CompilerServices;
 
-namespace DotsLite.Draw
+namespace DotsLite.Draw.disable
 {
     
     using DotsLite.Misc;
@@ -20,6 +20,7 @@ namespace DotsLite.Draw
     using DotsLite.Utilities;
     
 
+    [DisableAutoCreation]
     ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Culling))]
     public class DrawCullingLineParticleSystem : SystemBase
@@ -63,7 +64,7 @@ namespace DotsLite.Draw
                             ref DrawInstance.TargetWorkData target,
                             in DrawInstance.ModelLinkData modellink,
                             in DynamicBuffer<LineParticle.TranslationTailLineData> tails,
-                            //in Translation pos,
+                            in Translation pos,
                             in Particle.AdditionalData additional
                         ) =>
                         {
@@ -73,7 +74,7 @@ namespace DotsLite.Draw
                                 return;
                             }
 
-                            var minmax = calcMinMax(tails);
+                            var minmax = calcMinMax(pos, tails);
                             var min = minmax.min;
                             var max = minmax.max;
                             var bbox = new AABB
@@ -109,10 +110,10 @@ namespace DotsLite.Draw
             public float4 max;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static minmax calcMinMax(DynamicBuffer<LineParticle.TranslationTailLineData> tails)
+        static minmax calcMinMax(Translation pos, DynamicBuffer<LineParticle.TranslationTailLineData> tails)
         {
-            var min = new float3(float.MaxValue, float.MaxValue, float.MaxValue);
-            var max = new float3(float.MinValue, float.MinValue, float.MinValue);
+            var min = pos.Value;
+            var max = pos.Value;
 
             foreach (var tail in tails)
             {
