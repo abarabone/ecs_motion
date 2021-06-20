@@ -48,6 +48,7 @@ namespace DotsLite.Particle
             public float Spring;
             public float Dumper;
             public float Rest;
+            public float GravityFactor;
         }
 
         [InternalBufferCapacity(8)]

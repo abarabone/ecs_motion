@@ -362,6 +362,7 @@ namespace DotsLite.Arms
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int f(Spring.StickyState state, HitType hittype) => (int)state << 3 | (int)hittype;
+        // これリテラルに使う方法ないのか？
     }
 
 

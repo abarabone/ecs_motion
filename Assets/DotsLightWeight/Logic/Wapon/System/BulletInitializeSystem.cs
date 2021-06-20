@@ -66,10 +66,9 @@ namespace DotsLite.Arms
         protected override void OnUpdate()
         {
 
+            var pdt = TimeEx.PrevDeltaTime;
             var dt = this.Time.DeltaTime;
             var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// とりあえず
-
-            //var rnds = this.World.GetExistingSystem<RandomSystem>().RandomArray;
 
 
             this.Entities
@@ -99,7 +98,7 @@ namespace DotsLite.Arms
                     //pos.Value += v * dt;
 
 
-                    vfact.PrePosition = (prepos - v * TimeEx.PrevDeltaTime).As_float4();
+                    vfact.PrePosition = (prepos - v * pdt).As_float4();
                     // pos に足すと進んでしまうので、前フレームから引く
 
 

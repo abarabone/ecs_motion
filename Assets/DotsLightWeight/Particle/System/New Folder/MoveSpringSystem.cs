@@ -97,7 +97,7 @@ namespace DotsLite.Particle
             var harfsqdt = 0.5f * sqdt;
             var gravity = UnityEngine.Physics.gravity.As_float3();// とりあえずエンジン側のを
                                                       // 重力が変化する可能性を考えて、毎フレーム取得する
-            var g_ = gravity * harfsqdt;
+            var g = gravity * harfsqdt;
 
             this.Entities
                 .WithBurst()
@@ -107,33 +107,34 @@ namespace DotsLite.Particle
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     ref DynamicBuffer<Spring.StatesData> states,
                     ref Psyllium.TranslationTailData tail,
+                    in Spring.StickyStateData sticky,
                     in Spring.SpecData spec) =>
-                    //in Bullet.MoveSpecData movespec) =>
                 {
-                    //var g = gravity * movespec.GravityFactor;
-
 
                     float3 currpos, nextpos;
                     float3 currvt, nextvt;
                     float3 fttup, fttdown;
-                    float3 newpos;
-                    //var gtt = g_ * 0.0f;//movespec.GravityFactor;
+                    float3 d;
+                    var gtt = g * spec.GravityFactor;
 
-                    newpos = calcNewPositionFirst_(spec,
+                    var headfactor = math.select(1.0f, 0.0f, sticky.State >= Spring.StickyState.head);
+                    var tailfactor = math.select(1.0f, 1.0f, sticky.State >= Spring.StickyState.tail);
+
+                    d = calcNewPositionFirst_(spec,
                         tails[0].Position, states[0].PrePosition.xyz,
                         tails[1].Position, states[1].PrePosition.xyz);
-                    tails.ElementAt(0).Position = newpos;// + gtt);
+                    tails.ElementAt(0).Position = currpos + (d + gtt) * headfactor;
                     states.ElementAt(0).PrePosition = currpos.As_float4();
 
                     for (var i = 1; i < tails.Length - 1; i++)
                     {
-                        newpos = calcNewPosition_(spec, tails[i+1].Position, states[i+1].PrePosition.xyz);
-                        tails.ElementAt(i).Position = newpos;// + gtt);
+                        d = calcNewPosition_(spec, tails[i+1].Position, states[i+1].PrePosition.xyz);
+                        tails.ElementAt(i).Position = currpos + (d + gtt);
                         states.ElementAt(i).PrePosition = currpos.As_float4();
                     }
 
-                    newpos = calcNewPositionLast_();
-                    tails.ElementAt(tails.Length - 1).Position = newpos;// + gtt);
+                    d = calcNewPositionLast_();
+                    tails.ElementAt(tails.Length - 1).Position = currpos + (d + gtt) * tailfactor;
                     states.ElementAt(states.Length - 1).PrePosition = currpos.As_float4();
 
 
@@ -154,7 +155,7 @@ namespace DotsLite.Particle
 
                         fttdown = calc_ftt(currpos, nextpos, currvt, nextvt, spec, dt);
 
-                        return currpos + currvt - fttdown;
+                        return currvt - fttdown;
                     }
 
                     //[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -169,7 +170,7 @@ namespace DotsLite.Particle
                         fttup = fttdown;
                         fttdown = calc_ftt(currpos, nextpos, currvt, nextvt, spec, dt);
 
-                        return currpos + currvt + fttup - fttdown;
+                        return currvt + fttup - fttdown;
                     }
 
                     //[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -180,7 +181,7 @@ namespace DotsLite.Particle
 
                         fttup = fttdown;
 
-                        return currpos + currvt + fttup;
+                        return currvt + fttup;
                     }
                 })
                 .ScheduleParallel();
@@ -200,9 +201,8 @@ namespace DotsLite.Particle
             var line = p0 - p1;
 
             var len = math.length(line);
-            var lenrcp_ = math.rcp(len);
-            var lenrcp = math.select(0.0f, lenrcp_, math.isnan(lenrcp_));
-            var dir = line * lenrcp;
+            var lenrcp = math.select(math.rcp(len), 0.0f, len == 0.0f);
+            var dir = line * lenrcp;//Debug.Log(lenrcp);
 
             var f0 = (len - spec.Rest) * spec.Spring;// 伸びに抵抗し、縮もうとする力がプラス
             var ft0 = dir * f0 * dt;
