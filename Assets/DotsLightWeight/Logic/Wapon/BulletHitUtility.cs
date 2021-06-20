@@ -304,12 +304,12 @@ namespace DotsLite.Arms
             switch (f(state.State, hit.hitType))
             {
                 case (int)Spring.StickyState.head << 3 | (int)HitType.part:
-                            cmd.RemoveComponent<Spring.StickySelfFirstTag>(eqi, self);
+                    cmd.RemoveComponent<Spring.StickySelfFirstTag>(eqi, self);
                     //cmd.AddComponent(eqi, self, new Spring.StickyTEntityFirstData
                     //{
                     //    Target = hit.hitEntity,
                     //});
-                    cmd.AddComponent(eqi, self, new Spring.StickyPointData
+                    cmd.AddComponent(eqi, self, new Spring.StickyPointFirstData
                     {
                         Position = hit.posision.As_float4(),
                     });
@@ -326,7 +326,23 @@ namespace DotsLite.Arms
                     //    Target = hit.hitEntity,
                     //    LocalPosition = ,
                     //});
-                    cmd.AddComponent(eqi, self, new Spring.StickyPointData
+                    cmd.AddComponent(eqi, self, new Spring.StickyPointFirstData
+                    {
+                        Position = hit.posision.As_float4(),
+                    });
+                    cmd.SetComponent(eqi, self, new Spring.StickyStateData
+                    {
+                        State = Spring.StickyState.tail,
+                    });
+                    break;
+
+                case (int)Spring.StickyState.head << 3 | (int)HitType.none:
+                    cmd.RemoveComponent<Spring.StickySelfFirstTag>(eqi, self);
+                    //cmd.AddComponent(eqi, self, new Spring.StickyTEntityFirstData
+                    //{
+                    //    Target = hit.hitEntity,
+                    //});
+                    cmd.AddComponent(eqi, self, new Spring.StickyPointFirstData
                     {
                         Position = hit.posision.As_float4(),
                     });

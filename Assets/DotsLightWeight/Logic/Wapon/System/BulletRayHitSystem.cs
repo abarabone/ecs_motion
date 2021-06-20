@@ -105,6 +105,7 @@ namespace DotsLite.Arms
                         in Psyllium.TranslationTailData tail,
                         in Particle.VelocityFactorData vfact,
                         in Bullet.LinkData link,
+                        in Bullet.HitResponceTypesData hres,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
@@ -119,25 +120,32 @@ namespace DotsLite.Arms
                         var v = (pos.Value - vfact.PrePosition.xyz) * predtrcp;
                         var hit = hit_.core;
 
-                        if (damages.HasComponent(entity))
+                        //if (damages.HasComponent(entity))
+                        if ((hres.Types & Bullet.HitResponseTypes.damage) != 0)
                         {
                             var damage = damages[entity].Damage;
                             hit.Hit(chhit, sthit, parts, corpss, v, damage, corps);
                         }
 
-                        if (emits.HasComponent(entity))
+                        //if (emits.HasComponent(entity))
+                        if ((hres.Types & Bullet.HitResponseTypes.emit) != 0)
                         {
                             var emit = emits[entity];
                             hit.Emit(cmd, eqi, emit, link, corps);
                         }
 
-                        if (springs.HasComponent(entity))
+                        //if (springs.HasComponent(entity))
+                        if ((hres.Types & Bullet.HitResponseTypes.sticky) != 0)
                         {
                             var state = springs[entity];
                             hit.Sticky(cmd, eqi, entity, state);
                         }
 
-                        cmd.DestroyEntity(entityInQueryIndex, entity);
+
+                        if ((hres.Types & Bullet.HitResponseTypes.no_destroy) == 0)
+                        {
+                            cmd.DestroyEntity(entityInQueryIndex, entity);
+                        }
                     }
                 )
                 .ScheduleParallel();

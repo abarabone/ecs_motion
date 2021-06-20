@@ -41,6 +41,8 @@ namespace DotsLite.Arms.Authoring
         public ParticleAuthoringBase EmittingPrefab;
         public int NumEmitting;
 
+        public bool isNotDestroyOnHit;
+
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
@@ -75,6 +77,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(Bullet.DistanceData),
                     typeof(Bullet.LifeTimeData),
                     typeof(Bullet.InitializeFromEmitterData),
+                    typeof(Bullet.HitResponceTypesData),
                     typeof(CorpsGroup.TargetWithArmsData)
                 };
                 if (true || this.GravityFactor != 0.0f || this.AimFactor != 0.0f)
@@ -147,6 +150,17 @@ namespace DotsLite.Arms.Authoring
                         }
                     );
                 }
+
+                em.SetComponentData(bulletEntity,
+                    new Bullet.HitResponceTypesData
+                    {
+                        Types =
+                            (this.DamagePoint != 0.0f ? Bullet.HitResponseTypes.damage: 0) |
+                            (this.EmittingPrefab != null ? Bullet.HitResponseTypes.emit : 0) |
+                            (this.GetComponent<SpringComponent>() != null ? Bullet.HitResponseTypes.sticky : 0) |
+                            (this.isNotDestroyOnHit ? Bullet.HitResponseTypes.no_destroy : 0),
+                    }
+                );
             }
         }
 

@@ -66,6 +66,20 @@ namespace DotsLite.Arms
             public Entity EmitionEntity;
         }
 
+
+        public struct HitResponceTypesData : IComponentData
+        {
+            public HitResponseTypes Types;
+        }
+        public enum HitResponseTypes
+        {
+            damage = 1 << 0,
+            emit = 1 << 1,
+            sticky = 1 << 2,
+
+            no_destroy = 1 << 8,
+        }
+
         //public struct VelocityData : IComponentData
         //{
         //    //public float3 Direction;

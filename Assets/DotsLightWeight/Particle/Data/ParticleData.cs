@@ -54,19 +54,6 @@ namespace DotsLite.Particle
             public float Radius;
         }
 
-        public struct HitResponceTypeData : IComponentData
-        {
-            public HitResponseType Type;
-        }
-        public enum HitResponseType
-        {
-            damage = 1 << 0,
-            emit = 1 << 1,
-            sticky = 1 << 2,
-
-            no_destroy = 1 << 8,
-        }
-
         public struct VelocityFactorData : IComponentData
         {
             public float4 PrePosition;

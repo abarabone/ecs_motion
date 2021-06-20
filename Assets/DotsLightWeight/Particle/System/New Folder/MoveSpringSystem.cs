@@ -83,6 +83,7 @@ namespace DotsLite.Particle
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    [UpdateAfter(typeof(MoveAccSystem))]
     public class MoveSpringSystem : SystemBase
     {
 
@@ -208,7 +209,7 @@ namespace DotsLite.Particle
 
             var ft1 = spec.Dumper * (vt1 - vt0);
 
-            return (ft0 - ft1) * dt;
+            return (ft0 - ft1) * dt * 0.5f;
         }
     }
 

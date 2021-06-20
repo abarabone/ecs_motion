@@ -65,6 +65,21 @@ namespace DotsLite.Particle
                 .ScheduleParallel();
 
             this.Entities
+                .WithName("copy_first_point")
+                .WithBurst()
+                .ForEach((
+                    ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
+                    //ref Translation pos,
+                    in Spring.StickyPointFirstData stick) =>
+                {
+
+                    tails.ElementAt(0).Position = stick.Position.xyz;
+                    //pos.Value = stick.Position.xyz;
+
+                })
+                .ScheduleParallel();
+
+            this.Entities
                 .WithName("copy_first_T")
                 .WithBurst()
                 .WithReadOnly(poss)
