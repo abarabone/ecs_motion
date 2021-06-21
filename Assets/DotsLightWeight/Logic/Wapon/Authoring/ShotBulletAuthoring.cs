@@ -41,8 +41,8 @@ namespace DotsLite.Arms.Authoring
         public ParticleAuthoringBase EmittingPrefab;
         public int NumEmitting;
 
-        public bool isNotDestroyOnHit;
-
+        public bool IsNotDestroyOnHit;
+        public bool LinkMuzzle;
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
@@ -102,6 +102,11 @@ namespace DotsLite.Arms.Authoring
                     _types.Add(typeof(Bullet.EmitterTag));
                     _types.Add(typeof(Bullet.EmitData));
                 }
+                if (this.LinkMuzzle)
+                {
+                    _types.Add(typeof(Emitter.EffectMuzzleLinkData));
+                    _types.Add(typeof(Emitter.EffectMuzzlePositionData));
+                }
 
                 var types = new ComponentTypes(_types.ToArray());
                 em.AddComponents(bulletEntity, types);
@@ -158,9 +163,10 @@ namespace DotsLite.Arms.Authoring
                             (this.DamagePoint != 0.0f ? Bullet.HitResponseTypes.damage: 0) |
                             (this.EmittingPrefab != null ? Bullet.HitResponseTypes.emit : 0) |
                             (this.GetComponent<SpringComponent>() != null ? Bullet.HitResponseTypes.sticky : 0) |
-                            (this.isNotDestroyOnHit ? Bullet.HitResponseTypes.no_destroy : 0),
+                            (this.IsNotDestroyOnHit ? Bullet.HitResponseTypes.no_destroy : 0),
                     }
                 );
+
             }
         }
 

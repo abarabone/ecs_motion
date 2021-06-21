@@ -47,6 +47,7 @@ namespace DotsLite.Particle
         {
             this.Entities
                 .WithBurst()
+                .WithName("CopyPrePositions")
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .WithAll<Spring.StatesData>()//
                 .ForEach((
@@ -67,17 +68,17 @@ namespace DotsLite.Particle
                     })
                 .ScheduleParallel();
 
-            this.Entities
-                .WithName("TailCopy")
-                .WithAll<Spring.StatesData>()//
-                .WithBurst()
-                .ForEach((
-                    ref Psyllium.TranslationTailData tail,
-                    in DynamicBuffer < LineParticle.TranslationTailLineData > tails) =>
-                {
-                    tail.Position = tails[1].Position;
-                })
-                .ScheduleParallel();
+            //this.Entities
+            //    .WithName("TailCopy")
+            //    .WithAll<Spring.StatesData>()//
+            //    .WithBurst()
+            //    .ForEach((
+            //        ref Psyllium.TranslationTailData tail,
+            //        in DynamicBuffer<LineParticle.TranslationTailLineData> tails) =>
+            //    {
+            //        tail.Position = tails[1].Position;
+            //    })
+            //    .ScheduleParallel();
         }
     }
 

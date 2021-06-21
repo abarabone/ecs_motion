@@ -304,66 +304,66 @@ namespace DotsLite.Arms
             switch (f(state.NextSticky, hit.hitType))
             {
                 case (int)Spring.NextStickyMode.first << 3 | (int)HitType.part:
-                    cmd.RemoveComponent<Spring.StickySelfFirstTag>(eqi, self);
-                    cmd.RemoveComponent<Particle.VelocitySpecData>(eqi, self);
-                    //cmd.AddComponent(eqi, self, new Spring.StickyTEntityFirstData
+                    //cmd.RemoveComponent<Spring.StickySelfFirstTag>(eqi, self);
+                    //cmd.RemoveComponent<Particle.VelocitySpecData>(eqi, self);
+                    ////cmd.AddComponent(eqi, self, new Spring.StickyTEntityFirstData
+                    ////{
+                    ////    Target = hit.hitEntity,
+                    ////});
+                    //cmd.AddComponent(eqi, self, new Spring.StickyPointFirstData
                     //{
-                    //    Target = hit.hitEntity,
+                    //    Position = hit.posision.As_float4(),
                     //});
-                    cmd.AddComponent(eqi, self, new Spring.StickyPointFirstData
-                    {
-                        Position = hit.posision.As_float4(),
-                    });
-                    cmd.SetComponent(eqi, self, new Spring.StickyStateData
-                    {
-                        NextSticky = Spring.NextStickyMode.last,
-                        PointLength = state.PointLength,
-                    });
-                    cmd.SetComponent(eqi, self, new Spring.StickyApplyData
-                    {
-                        FirstFactor = 0.0f,
-                        LastFactor = 1.0f,
-                    });
-                    cmd.AddComponent(eqi, self, new Spring.HittableSegmentData
-                    {
-                        Index = new int2(state.PointLength-2, state.PointLength-1),
-                    });
-                    //cmd.SetComponent(eqi, self, new Particle.VelocityFactorData
+                    //cmd.SetComponent(eqi, self, new Spring.StickyStateData
                     //{
-                    //    PrePosition = 
+                    //    NextSticky = Spring.NextStickyMode.last,
+                    //    PointLength = state.PointLength,
                     //});
+                    //cmd.SetComponent(eqi, self, new Spring.StickyApplyData
+                    //{
+                    //    FirstFactor = 0.0f,
+                    //    LastFactor = 1.0f,
+                    //});
+                    //cmd.AddComponent(eqi, self, new Spring.HittableSegmentData
+                    //{
+                    //    Index = new int2(state.PointLength-2, state.PointLength-1),
+                    //});
+                    ////cmd.SetComponent(eqi, self, new Particle.VelocityFactorData
+                    ////{
+                    ////    PrePosition = 
+                    ////});
                     break;
 
                 case (int)Spring.NextStickyMode.first << 3 | (int)HitType.charactor:
-                    cmd.RemoveComponent<Spring.StickySelfFirstTag>(eqi, self);
-                    cmd.RemoveComponent<Particle.VelocitySpecData>(eqi, self);
-                    //cmd.AddComponent(eqi, self, new Spring.StickyTREntityFirstData
+                    //cmd.RemoveComponent<Spring.StickySelfFirstTag>(eqi, self);
+                    //cmd.RemoveComponent<Particle.VelocitySpecData>(eqi, self);
+                    ////cmd.AddComponent(eqi, self, new Spring.StickyTREntityFirstData
+                    ////{
+                    ////    Target = hit.hitEntity,
+                    ////    LocalPosition = ,
+                    ////});
+                    //cmd.AddComponent(eqi, self, new Spring.StickyPointFirstData
                     //{
-                    //    Target = hit.hitEntity,
-                    //    LocalPosition = ,
+                    //    Position = hit.posision.As_float4(),
                     //});
-                    cmd.AddComponent(eqi, self, new Spring.StickyPointFirstData
-                    {
-                        Position = hit.posision.As_float4(),
-                    });
-                    cmd.SetComponent(eqi, self, new Spring.StickyStateData
-                    {
-                        NextSticky = Spring.NextStickyMode.last,
-                        PointLength = state.PointLength,
-                    });
-                    cmd.SetComponent(eqi, self, new Spring.StickyApplyData
-                    {
-                        FirstFactor = 0.0f,
-                        LastFactor = 1.0f,
-                    });
-                    cmd.AddComponent(eqi, self, new Spring.HittableSegmentData
-                    {
-                        Index = new int2(state.PointLength - 2, state.PointLength - 1),
-                    });
-                    //cmd.SetComponent(eqi, self, new Particle.VelocityFactorData
+                    //cmd.SetComponent(eqi, self, new Spring.StickyStateData
                     //{
-                    //    PrePosition = 
+                    //    NextSticky = Spring.NextStickyMode.last,
+                    //    PointLength = state.PointLength,
                     //});
+                    //cmd.SetComponent(eqi, self, new Spring.StickyApplyData
+                    //{
+                    //    FirstFactor = 0.0f,
+                    //    LastFactor = 1.0f,
+                    //});
+                    //cmd.AddComponent(eqi, self, new Spring.HittableSegmentData
+                    //{
+                    //    Index = new int2(state.PointLength - 2, state.PointLength - 1),
+                    //});
+                    ////cmd.SetComponent(eqi, self, new Particle.VelocityFactorData
+                    ////{
+                    ////    PrePosition = 
+                    ////});
                     break;
 
                 case (int)Spring.NextStickyMode.first << 3 | (int)HitType.none:
@@ -399,26 +399,26 @@ namespace DotsLite.Arms
 
 
                 case (int)Spring.NextStickyMode.last << 3 | (int)HitType.part:
-                    cmd.AddComponent(eqi, self, new Spring.StickyPointLastData
-                    {
-                        Position = hit.posision.As_float4(),
-                    });
-                    cmd.SetComponent(eqi, self, new Spring.StickyStateData
-                    {
-                        NextSticky = Spring.NextStickyMode.completed,
-                        PointLength = state.PointLength,
-                    });
-                    cmd.SetComponent(eqi, self, new Spring.StickyApplyData
-                    {
-                        FirstFactor = 0.0f,
-                        LastFactor = 0.0f,
-                    });
-                    cmd.SetComponent(eqi, self, new Spring.HittableSegmentData
-                    {
-                        Index = new int2(0, 1),
-                    });
-                    cmd.RemoveComponent<Translation>(eqi, self);
-                    cmd.RemoveComponent<Psyllium.TranslationTailData>(eqi, self);
+                    //cmd.AddComponent(eqi, self, new Spring.StickyPointLastData
+                    //{
+                    //    Position = hit.posision.As_float4(),
+                    //});
+                    //cmd.SetComponent(eqi, self, new Spring.StickyStateData
+                    //{
+                    //    NextSticky = Spring.NextStickyMode.completed,
+                    //    PointLength = state.PointLength,
+                    //});
+                    //cmd.SetComponent(eqi, self, new Spring.StickyApplyData
+                    //{
+                    //    FirstFactor = 0.0f,
+                    //    LastFactor = 0.0f,
+                    //});
+                    //cmd.SetComponent(eqi, self, new Spring.HittableSegmentData
+                    //{
+                    //    Index = new int2(0, 1),
+                    //});
+                    //cmd.RemoveComponent<Translation>(eqi, self);
+                    //cmd.RemoveComponent<Psyllium.TranslationTailData>(eqi, self);
                     break;
 
                 case (int)Spring.NextStickyMode.last << 3 | (int)HitType.charactor:

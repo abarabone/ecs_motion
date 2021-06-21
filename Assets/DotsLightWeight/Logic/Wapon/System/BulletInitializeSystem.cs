@@ -78,7 +78,6 @@ namespace DotsLite.Arms
                 .ForEach((
                     int nativeThreadIndex, int entityInQueryIndex,
                     ref Translation pos,
-                    //ref Bullet.VelocityData v,
                     ref Particle.VelocityFactorData vfact,
                     ref Particle.LifeTimeSpecData t,
                     in Bullet.MoveSpecData spec,

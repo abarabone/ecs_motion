@@ -122,6 +122,7 @@ namespace DotsLite.Arms
             public float EmitterAccuracyRad;
             public float EmitterRangeDistanceFactor;
         }
+        //public struct Ini
 
 
         public struct RayTag : IComponentData
