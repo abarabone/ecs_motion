@@ -102,11 +102,11 @@ namespace DotsLite.Arms.Authoring
                     _types.Add(typeof(Bullet.EmitterTag));
                     _types.Add(typeof(Bullet.EmitData));
                 }
-                if (this.LinkMuzzle)
-                {
-                    _types.Add(typeof(Emitter.EffectMuzzleLinkData));
-                    _types.Add(typeof(Emitter.EffectMuzzlePositionData));
-                }
+                //if (this.LinkMuzzle)
+                //{
+                //    _types.Add(typeof(Emitter.EffectMuzzleLinkData));
+                //    _types.Add(typeof(Emitter.EffectMuzzlePositionData));
+                //}
 
                 var types = new ComponentTypes(_types.ToArray());
                 em.AddComponents(bulletEntity, types);
