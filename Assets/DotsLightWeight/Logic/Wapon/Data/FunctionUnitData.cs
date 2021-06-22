@@ -69,10 +69,10 @@ namespace DotsLite.Arms
         //    public float NextEmitableTime;
         //}
 
-        public struct PrevFrameMuzzlePosition : IComponentData
-        {
-            public float4 PrevPosition;
-        }
+        //public struct PrevFrameMuzzlePosition : IComponentData
+        //{
+        //    public float4 PrevPosition;
+        //}
 
         //public struct ActivateData : IComponentData
         //{
@@ -129,11 +129,6 @@ namespace DotsLite.Arms
             public Entity StateEntity;
         }
 
-        //public struct MuzzleLinkData : IComponentData
-        //{
-        //    public Entity MuzzleEntity;
-        //}
-
 
         //public struct EffectStateData : IComponentData
         //{
@@ -146,14 +141,26 @@ namespace DotsLite.Arms
             public int EmitFrequencyInCurrentFrame;
         }
 
+
+        public struct MuzzleTransformData : IComponentData
+        {
+            public Entity ParentEntity;
+            public float4 MuzzlePositionLocal;
+        }
+
+        //public struct MuzzlePositionData : IComponentData
+        //{
+        //    public float4 MuzzlePositionLocal;
+        //}
+
         public struct EffectMuzzleLinkData : IComponentData
         {
             public Entity MuzzleEntity;
         }
-        public struct EffectMuzzlePositionData : IComponentData
-        {
-            public float4 MuzzlePositionLocal;
-        }
+        //public struct EffectMuzzlePositionData : IComponentData
+        //{
+        //    public float4 MuzzlePositionLocal;
+        //}
         public struct EffectEmittingData : IComponentData
         {
             public Entity Prefab;
@@ -163,10 +170,10 @@ namespace DotsLite.Arms
         {
             public Entity MuzzleEntity;
         }
-        public struct BulletMuzzlePositionData : IComponentData
-        {
-            public float4 MuzzlePositionLocal;
-        }
+        //public struct BulletMuzzlePositionData : IComponentData
+        //{
+        //    public float4 MuzzlePositionLocal;
+        //}
         public struct BulletEmittingData : IComponentData
         {
             public Entity Prefab;

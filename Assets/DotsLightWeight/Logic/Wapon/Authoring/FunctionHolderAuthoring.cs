@@ -91,17 +91,17 @@ namespace DotsLite.Arms.Authoring
                 var _types = new List<ComponentType>
                 {
                     typeof(Emitter.OwnerLinkData),
-                    typeof(Emitter.BulletMuzzleLinkData),
-                    typeof(Emitter.BulletMuzzlePositionData),
+                    //typeof(Emitter.BulletMuzzleLinkData),
+                    typeof(Emitter.MuzzleTransformData),
                     typeof(FunctionUnitAiming.ParentBoneLinkData),
                     typeof(Rotation),
                     typeof(Translation),
                 };
-                if (unitObject.UseEffect)
-                {
-                    _types.Add(typeof(Emitter.EffectMuzzleLinkData));
-                    _types.Add(typeof(Emitter.EffectMuzzlePositionData));
-                }
+                //if (unitObject.UseEffect)
+                //{
+                //    _types.Add(typeof(Emitter.EffectMuzzleLinkData));
+                //    _types.Add(typeof(Emitter.EffectMuzzlePositionData));
+                //}
                 var types = new ComponentTypes(_types.ToArray());
                 em.AddComponents(unit, types);
 
@@ -118,26 +118,27 @@ namespace DotsLite.Arms.Authoring
                     }
                 );
                 em.SetComponentData(unit,
-                    new Emitter.BulletMuzzlePositionData
+                    new Emitter.MuzzleTransformData
                     {
                         MuzzlePositionLocal = unitObject.Local.As_float4(),
+                        ParentEntity = parent,
                     }
                 );
-                if (unitObject.UseEffect)
-                {
-                    em.SetComponentData(unit,
-                        new Emitter.EffectMuzzleLinkData
-                        {
-                            MuzzleEntity = unit,
-                        }
-                    );
-                    em.SetComponentData(unit,
-                        new Emitter.EffectMuzzlePositionData
-                        {
-                            MuzzlePositionLocal = unitObject.Local.As_float4(),
-                        }
-                    );
-                }
+                //if (unitObject.UseEffect)
+                //{
+                //    em.SetComponentData(unit,
+                //        new Emitter.EffectMuzzleLinkData
+                //        {
+                //            MuzzleEntity = unit,
+                //        }
+                //    );
+                //    em.SetComponentData(unit,
+                //        new Emitter.EffectMuzzlePositionData
+                //        {
+                //            MuzzlePositionLocal = unitObject.Local.As_float4(),
+                //        }
+                //    );
+                //}
                 //em.SetComponentData(unit,
                 //    new FunctionUnit.MuzzleLinkData
                 //    {

@@ -17,7 +17,7 @@ namespace DotsLite.Arms
 {
 
     using DotsLite.Utilities;
-    
+    using DotsLite.Targeting;
 
 
     static public partial class Bullet
@@ -117,12 +117,13 @@ namespace DotsLite.Arms
 
         public struct InitializeFromEmitterData : IComponentData
         {
-            public quaternion EmitterRotation;
             public float4 AimSpeed;
             public float EmitterAccuracyRad;
             public float EmitterRangeDistanceFactor;
+            public Entity OwnerStateEntity;
+            public Entity MuzzleEntity;
+            public Corps TargetCorps;
         }
-        //public struct Ini
 
 
         public struct RayTag : IComponentData

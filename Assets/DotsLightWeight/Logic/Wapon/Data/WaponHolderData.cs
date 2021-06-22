@@ -41,7 +41,7 @@ namespace DotsLite.Arms
         public struct OwnerLinkData : IComponentData
         {
             //public Entity OwnerEntity;
-            public Entity MuzzleEntity;
+            public Entity MuzzleParentEntity;
         }
         public struct StateLinkData : IComponentData
         {

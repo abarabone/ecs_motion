@@ -28,9 +28,9 @@ namespace DotsLite.Model
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void BoneTransform
-            (
+            (in this Bone.LocalValueData local, 
                 in Translation parentpos, in Rotation parentrot,
-                in Bone.LocalValueData local, ref Translation pos, ref Rotation rot
+                ref Translation pos, ref Rotation rot
             )
         {
             transform_(in parentpos, in parentrot, in local, out var newpos, out var newrot);
@@ -41,9 +41,9 @@ namespace DotsLite.Model
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public PhysicsVelocity BoneTransform
-            (
+            (in this Bone.LocalValueData local, 
                 in Translation parentpos, in Rotation parentrot,
-                in Bone.LocalValueData local, in Translation pos, in Rotation rot,
+                in Translation pos, in Rotation rot,
                 in PhysicsMass mass,
                 float deltaTime
             )

@@ -66,12 +66,12 @@ namespace DotsLite.Model
                         if (im != 0.0f && velocities.HasComponent(entity))
                         {
                             var mass = masses[entity];
-                            velocities[entity] = BoneUtility.BoneTransform
-                                (in parentpos, in parentrot, in local, in pos, in rot, in mass, deltaTime);
+                            velocities[entity] = local.BoneTransform
+                                (in parentpos, in parentrot, in pos, in rot, in mass, deltaTime);
                         }
                         else
                         {
-                            BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
+                            local.BoneTransform(in parentpos, in parentrot, ref pos, ref rot);
                         }
 
                         //BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);

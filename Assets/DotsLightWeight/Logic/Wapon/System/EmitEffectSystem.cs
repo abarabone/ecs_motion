@@ -66,7 +66,7 @@ namespace DotsLite.Arms
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
-            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            //var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
 
@@ -78,7 +78,7 @@ namespace DotsLite.Arms
             this.Entities
                 .WithBurst()
                 //.WithNone<Bullet.MoveSpecData>()
-                .WithReadOnly(rots)
+                //.WithReadOnly(rots)
                 .WithReadOnly(poss)
                 .ForEach(
                     (
@@ -87,7 +87,6 @@ namespace DotsLite.Arms
                         in Emitter.TriggerData trigger,
                         in Emitter.EffectEmittingData emitter,
                         in Emitter.EffectMuzzleLinkData mzlink,
-                        in Emitter.EffectMuzzlePositionData mzpos,
                         in Emitter.OwnerLinkData slink,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
@@ -98,12 +97,14 @@ namespace DotsLite.Arms
                         if (!trigger.IsTriggered) return;
                         if (freq <= 0) return;
                         
+                        //var rot = rots[mzlink.MuzzleEntity].Value;
+                        var pos = poss[mzlink.MuzzleEntity];
+                        //var efpos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, mzlink.MuzzlePositionLocal.xyz);
 
-                        var rot = rots[mzlink.MuzzleEntity].Value;
-                        var pos = poss[mzlink.MuzzleEntity].Value;
-                        var efpos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, mzpos.MuzzlePositionLocal.xyz);
 
-                        BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, efpos);
+                        var ent = cmd.Instantiate(eqi, emitter.Prefab);
+                        cmd.SetComponent(eqi, ent, pos);
+                        //BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, efpos);
                     }
                 )
                 .ScheduleParallel();
@@ -129,7 +130,9 @@ namespace DotsLite.Arms
                         if (!trigger.IsTriggered) return;
                         if (freq <= 0) return;
 
-                        BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, pos.Value);
+                        var ent = cmd.Instantiate(eqi, emitter.Prefab);
+                        cmd.SetComponent(eqi, ent, pos);
+                        //BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, pos.Value);
                     }
                 )
                 .ScheduleParallel();

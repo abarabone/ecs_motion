@@ -33,23 +33,23 @@ namespace DotsLite.Arms
     using Random = Unity.Mathematics.Random;
     using System;
 
-    static class BringYourOwnDelegate2
-    {
-        // Declare the delegate that takes 12 parameters. T0 is used for the Entity argument
-        [Unity.Entities.CodeGeneratedJobForEach.EntitiesForEachCompatible]
-        public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8>
-            (
-                T0 t0, T1 t1,
-                in T2 t2, in T3 t3, in T4 t4, in T5 t5, in T6 t6, in T7 t7, in T8 t8
-            );
+    //static class BringYourOwnDelegate2
+    //{
+    //    // Declare the delegate that takes 12 parameters. T0 is used for the Entity argument
+    //    [Unity.Entities.CodeGeneratedJobForEach.EntitiesForEachCompatible]
+    //    public delegate void CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8>
+    //        (
+    //            T0 t0, T1 t1,
+    //            in T2 t2, in T3 t3, in T4 t4, in T5 t5, in T6 t6, in T7 t7, in T8 t8
+    //        );
 
-        // Declare the function overload
-        public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8>
-            (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8> codeToRun)
-            where TDescription : struct, Unity.Entities.CodeGeneratedJobForEach.ISupportForEachWithUniversalDelegate
-        =>
-            LambdaForEachDescriptionConstructionMethods.ThrowCodeGenException<TDescription>();
-    }
+    //    // Declare the function overload
+    //    public static TDescription ForEach<TDescription, T0, T1, T2, T3, T4, T5, T6, T7, T8>
+    //        (this TDescription description, CustomForEachDelegate<T0, T1, T2, T3, T4, T5, T6, T7, T8> codeToRun)
+    //        where TDescription : struct, Unity.Entities.CodeGeneratedJobForEach.ISupportForEachWithUniversalDelegate
+    //    =>
+    //        LambdaForEachDescriptionConstructionMethods.ThrowCodeGenException<TDescription>();
+    //}
 
 
     //[DisableAutoCreation]
@@ -86,7 +86,7 @@ namespace DotsLite.Arms
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
-            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            //var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
 
             var dt = this.Time.DeltaTime;
@@ -98,8 +98,8 @@ namespace DotsLite.Arms
                 .WithName("WithMuzzle")
                 .WithBurst()
                 //.WithNone<Bullet.MoveSpecData>()
-                .WithReadOnly(rots)
-                .WithReadOnly(poss)
+                //.WithReadOnly(rots)
+                //.WithReadOnly(poss)
                 .ForEach(
                     (
                         Entity fireEntity, int entityInQueryIndex,
@@ -107,7 +107,6 @@ namespace DotsLite.Arms
                         in Emitter.TriggerData trigger,
                         in Emitter.BulletEmittingData emitter,
                         in Emitter.BulletMuzzleLinkData mzlink,
-                        in Emitter.BulletMuzzlePositionData mzpos,
                         in Emitter.OwnerLinkData slink,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
@@ -120,20 +119,31 @@ namespace DotsLite.Arms
                         //Debug.Log(freq);
 
 
-                        var rot = rots[mzlink.MuzzleEntity].Value;
-                        var pos = poss[mzlink.MuzzleEntity].Value;
+                        //var rot = rots[mzlink.MuzzleEntity].Value;
+                        //var pos = poss[mzlink.MuzzleEntity].Value;
 
 
-                        var wpos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, mzpos.MuzzlePositionLocal.xyz);
-                        var init = emitter.CreateBulletInitData(pos, rot);
+                        //var wpos = poss[mzlink.MuzzleEntity].Value;
+                        var init = new Bullet.InitializeFromEmitterData
+                        {
+                            EmitterAccuracyRad = emitter.AccuracyRad,
+                            EmitterRangeDistanceFactor = emitter.RangeDistanceFactor,
+                            AimSpeed = 0,
+                            MuzzleEntity = mzlink.MuzzleEntity,
+                            OwnerStateEntity = slink.StateEntity,
+                            TargetCorps = corps.TargetCorps,
+                        };
 
                         //for (var ifreq = 0; ifreq < freq; ifreq++)
                         //{
                         // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
                         for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
                             {
-                                BulletEmittingUtility.EmitBullet(cmd, eqi,
-                                    emitter.Prefab, slink.StateEntity, wpos, init, corps.TargetCorps);
+                                //BulletEmittingUtility.EmitBullet(cmd, eqi,
+                                //    emitter.Prefab, slink.StateEntity, wpos, init, corps.TargetCorps);
+
+                                var newBullet = cmd.Instantiate(eqi, emitter.Prefab);
+                                cmd.SetComponent(eqi, newBullet, init);
                             }
                         //}
                     }
@@ -147,13 +157,13 @@ namespace DotsLite.Arms
                 //.WithNone<Bullet.MoveSpecData>()
                 .ForEach(
                     (
-                        Entity fireEntity, int entityInQueryIndex,
+                        Entity entity, int entityInQueryIndex,
                         in Emitter.StateData state,
                         in Emitter.TriggerData trigger,
                         in Emitter.BulletEmittingData emitter,
                         in Emitter.OwnerLinkData slink,
-                        in Rotation rot,
-                        in Translation pos,
+                        //in Rotation rot,
+                        //in Translation pos,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
@@ -165,15 +175,27 @@ namespace DotsLite.Arms
                         //Debug.Log(freq);
 
 
-                        var init = emitter.CreateBulletInitData(pos.Value, rot.Value);
+                        ////var init = emitter.CreateBulletInitData(pos.Value, rot.Value);
+                        var init = new Bullet.InitializeFromEmitterData
+                        {
+                            EmitterAccuracyRad = emitter.AccuracyRad,
+                            EmitterRangeDistanceFactor = emitter.RangeDistanceFactor,
+                            AimSpeed = 0,
+                            MuzzleEntity = entity,
+                            OwnerStateEntity = slink.StateEntity,
+                            TargetCorps = corps.TargetCorps,
+                        };
+
 
                         //for (var ifreq = 0; ifreq < freq; ifreq++)
                         //{
                         // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
                         for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
                         {
-                            BulletEmittingUtility.EmitBullet(cmd, eqi,
-                                emitter.Prefab, slink.StateEntity, pos.Value, init, corps.TargetCorps);
+                            //BulletEmittingUtility.EmitBullet(cmd, eqi,
+                            //    emitter.Prefab, slink.StateEntity, pos.Value, init, corps.TargetCorps);
+                            var newBullet = cmd.Instantiate(eqi, emitter.Prefab);
+                            cmd.SetComponent(eqi, newBullet, init);
                         }
                         //}
                     }

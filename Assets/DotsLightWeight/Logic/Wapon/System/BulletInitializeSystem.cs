@@ -70,11 +70,15 @@ namespace DotsLite.Arms
             var dt = this.Time.DeltaTime;
             var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// とりあえず
 
+            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
             this.Entities
                 .WithName("Misc")
                 .WithBurst()
                 .WithAll<Particle.LifeTimeInitializeTag>()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
                 .ForEach((
                     int nativeThreadIndex, int entityInQueryIndex,
                     ref Translation pos,
@@ -87,17 +91,16 @@ namespace DotsLite.Arms
                     var tid = nativeThreadIndex;
                     var eqi = entityInQueryIndex;
                     var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
-                    var prepos = pos.Value;
+
+                    var mpos = poss[init.MuzzleEntity].Value;
+                    var mrot = rots[init.MuzzleEntity].Value;
 
 
-                    var rot = init.EmitterRotation;
                     var rad = init.EmitterAccuracyRad;
-                    var dir = BulletEmittingUtility.CalcBulletDirection(rot, ref rnd, rad);
+                    var dir = BulletEmittingUtility.CalcBulletDirection(mrot, ref rnd, rad);
                     var v = init.AimSpeed.xyz * spec.AimFactor + dir * spec.BulletSpeed;
-                    //pos.Value += v * dt;
-
-
-                    vfact.PrePosition = (prepos - v * pdt).As_float4();
+                    pos.Value = mpos;
+                    vfact.PrePosition = (mpos - v * pdt).As_float4();
                     // pos に足すと進んでしまうので、前フレームから引く
 
 

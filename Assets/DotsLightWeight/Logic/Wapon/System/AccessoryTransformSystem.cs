@@ -37,6 +37,9 @@ namespace DotsLite.Arms
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     [UpdateBefore(typeof(MoveSpringSystem))]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    //[UpdateBefore(typeof(EmitBulletSystem))]
+    //[UpdateBefore(typeof(EmitEffectSystem))]
     public class AccessoryTransformSystem : SystemBase
     {
 
@@ -44,19 +47,29 @@ namespace DotsLite.Arms
         protected override void OnUpdate()
         {
 
+            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
+
 
             this.Entities
                 .WithBurst()
                 .WithNone<Particle.LifeTimeInitializeTag>()
+                .WithReadOnly(poss)
+                .WithReadOnly(rots)
+                .WithNativeDisableContainerSafetyRestriction(poss)
+                .WithNativeDisableContainerSafetyRestriction(rots)
                 .ForEach((
-                    ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
-                    ref DynamicBuffer<Spring.StatesData> states,
-                    ref Psyllium.TranslationTailData tail,
-                    in Spring.StickyApplyData sticky,
-                    in Spring.SpecData spec) =>
+                    ref Translation pos,
+                    ref Rotation rot,
+                    in Emitter.MuzzleTransformData muzzle) =>
                 {
 
+                    var parent = muzzle.ParentEntity;
+                    var ppos = poss[parent].Value;
+                    var prot = rots[parent].Value;
 
+                    pos.Value = ppos + math.mul(prot, muzzle.MuzzlePositionLocal.xyz);
+                    rot.Value = prot;
 
                 })
                 .ScheduleParallel();

@@ -95,16 +95,16 @@ namespace DotsLite.Arms
         //        AimSpeed = 0,
         //    };
         
-        public static Bullet.InitializeFromEmitterData CreateBulletInitData(
-            this Emitter.BulletEmittingData data, float3 pos, quaternion rot)
-        =>
-            new Bullet.InitializeFromEmitterData
-            {
-                EmitterRotation = rot,
-                EmitterAccuracyRad = data.AccuracyRad,
-                EmitterRangeDistanceFactor = data.RangeDistanceFactor,
-                AimSpeed = 0,
-            };
+        //public static Bullet.InitializeFromEmitterData CreateBulletInitData(
+        //    this Emitter.BulletEmittingData data, float3 pos, quaternion rot)
+        //=>
+        //    new Bullet.InitializeFromEmitterData
+        //    {
+        //        EmitterRotation = rot,
+        //        EmitterAccuracyRad = data.AccuracyRad,
+        //        EmitterRangeDistanceFactor = data.RangeDistanceFactor,
+        //        AimSpeed = 0,
+        //    };
 
 
 
@@ -171,48 +171,48 @@ namespace DotsLite.Arms
 
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void EmitEffect(
-            EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity effectPrefab,
-            float3 pos)//, ref Random rnd)
-        {
-            var ent = cmd.Instantiate(eqi, effectPrefab);
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static void EmitEffect(
+        //    EntityCommandBuffer.ParallelWriter cmd, int eqi, Entity effectPrefab,
+        //    float3 pos)//, ref Random rnd)
+        //{
+        //    var ent = cmd.Instantiate(eqi, effectPrefab);
 
-            cmd.SetComponent(eqi, ent, new Translation { Value = pos });
-        }
+        //    cmd.SetComponent(eqi, ent, new Translation { Value = pos });
+        //}
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void EmitBullet(
-            EntityCommandBuffer.ParallelWriter cmd, int eqi,
-            Entity bulletPrefab, Entity stateEntity, float3 pos,
-            Bullet.InitializeFromEmitterData init, Corps targetCorps)
-        {
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static void EmitBullet(
+        //    EntityCommandBuffer.ParallelWriter cmd, int eqi,
+        //    Entity bulletPrefab, Entity stateEntity, float3 pos,
+        //    Bullet.InitializeFromEmitterData init, Corps targetCorps)
+        //{
 
-            var newBullet = cmd.Instantiate(eqi, bulletPrefab);
+        //    var newBullet = cmd.Instantiate(eqi, bulletPrefab);
 
-            cmd.SetComponent(eqi, newBullet, init);
-            cmd.SetComponent(eqi, newBullet, new Translation { Value = pos });
-            cmd.SetComponent(eqi, newBullet,
-                new Bullet.LinkData
-                {
-                    OwnerStateEntity = stateEntity,
-                }
-            );
-            cmd.SetComponent(eqi, newBullet,
-                new CorpsGroup.TargetWithArmsData
-                {
-                    TargetCorps = targetCorps,
-                }
-            );
+        //    cmd.SetComponent(eqi, newBullet, init);
+        //    //cmd.SetComponent(eqi, newBullet, new Translation { Value = pos });
+        //    cmd.SetComponent(eqi, newBullet,
+        //        new Bullet.LinkData
+        //        {
+        //            OwnerStateEntity = stateEntity,
+        //        }
+        //    );
+        //    cmd.SetComponent(eqi, newBullet,
+        //        new CorpsGroup.TargetWithArmsData
+        //        {
+        //            TargetCorps = targetCorps,
+        //        }
+        //    );
 
-        }
+        //}
 
         ///// <summary>
         ///// 
