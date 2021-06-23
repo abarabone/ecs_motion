@@ -37,6 +37,31 @@ namespace DotsLite.Particle
     using Random = Unity.Mathematics.Random;
 
     //[DisableAutoCreation]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateAfter(typeof(BulletInitializeSystem))]
+    public class StickyInitializeSystem : SystemBase
+    {
+
+
+        protected override void OnUpdate()
+        {
+            this.Entities
+                .WithBurst()
+                .WithAll<Particle.LifeTimeInitializeTag>()
+                .ForEach((
+                    ref Spring.StickyTEntityLastData stickylast,
+                    in Bullet.InitializeFromEmitterData init) =>
+                {
+
+                    stickylast.Target = init.EffectMuzzleEntity;
+
+                })
+                .ScheduleParallel();
+
+        }
+    }
+
+    //[DisableAutoCreation]
     [UpdateBefore(typeof(MoveSpringSystem))]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     public class StickySystem : SystemBase

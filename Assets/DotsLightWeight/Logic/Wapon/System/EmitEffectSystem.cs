@@ -67,7 +67,7 @@ namespace DotsLite.Arms
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             //var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
-            var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
+            //var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
 
             var dt = this.Time.DeltaTime;
@@ -75,43 +75,43 @@ namespace DotsLite.Arms
             var gravity = UnityEngine.Physics.gravity.As_float3();// とりあえず
 
 
+            //this.Entities
+            //    .WithBurst()
+            //    //.WithNone<Bullet.MoveSpecData>()
+            //    //.WithReadOnly(rots)
+            //    .WithReadOnly(poss)
+            //    .ForEach(
+            //        (
+            //            Entity entity, int entityInQueryIndex,
+            //            in Emitter.StateData state,
+            //            in Emitter.TriggerData trigger,
+            //            in Emitter.EffectEmittingData emitter,
+            //            //in Emitter.EffectMuzzleLinkData mzlink,
+            //            in Emitter.OwnerLinkData slink,
+            //            in CorpsGroup.TargetWithArmsData corps
+            //        ) =>
+            //        {
+            //            var eqi = entityInQueryIndex;
+            //            var freq = state.EmitFrequencyInCurrentFrame;
+
+            //            if (!trigger.IsTriggered) return;
+            //            if (freq <= 0) return;
+
+            //            //var rot = rots[mzlink.MuzzleEntity].Value;
+            //            var pos = poss[entity];// mzlink.MuzzleEntity];
+            //            //var efpos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, mzlink.MuzzlePositionLocal.xyz);
+
+
+            //            var ent = cmd.Instantiate(eqi, emitter.Prefab);
+            //            cmd.SetComponent(eqi, ent, pos);
+            //            //BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, efpos);
+            //        }
+            //    )
+            //    .ScheduleParallel();
+
             this.Entities
                 .WithBurst()
-                //.WithNone<Bullet.MoveSpecData>()
-                //.WithReadOnly(rots)
-                .WithReadOnly(poss)
-                .ForEach(
-                    (
-                        Entity fireEntity, int entityInQueryIndex,
-                        in Emitter.StateData state,
-                        in Emitter.TriggerData trigger,
-                        in Emitter.EffectEmittingData emitter,
-                        in Emitter.EffectMuzzleLinkData mzlink,
-                        in Emitter.OwnerLinkData slink,
-                        in CorpsGroup.TargetWithArmsData corps
-                    ) =>
-                    {
-                        var eqi = entityInQueryIndex;
-                        var freq = state.EmitFrequencyInCurrentFrame;
-
-                        if (!trigger.IsTriggered) return;
-                        if (freq <= 0) return;
-                        
-                        //var rot = rots[mzlink.MuzzleEntity].Value;
-                        var pos = poss[mzlink.MuzzleEntity];
-                        //var efpos = BulletEmittingUtility.CalcMuzzlePosition(rot, pos, mzlink.MuzzlePositionLocal.xyz);
-
-
-                        var ent = cmd.Instantiate(eqi, emitter.Prefab);
-                        cmd.SetComponent(eqi, ent, pos);
-                        //BulletEmittingUtility.EmitEffect(cmd, eqi, emitter.Prefab, efpos);
-                    }
-                )
-                .ScheduleParallel();
-
-            this.Entities
-                .WithBurst()
-                .WithNone<Emitter.EffectMuzzleLinkData>()
+                //.WithNone<Emitter.EffectMuzzleLinkData>()
                 //.WithNone<Bullet.MoveSpecData>()
                 .ForEach(
                     (

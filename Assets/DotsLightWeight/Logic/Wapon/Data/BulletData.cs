@@ -121,7 +121,8 @@ namespace DotsLite.Arms
             public float EmitterAccuracyRad;
             public float EmitterRangeDistanceFactor;
             public Entity OwnerStateEntity;
-            public Entity MuzzleEntity;
+            public Entity BulletMuzzleEntity;
+            public Entity EffectMuzzleEntity;
             public Corps TargetCorps;
         }
 

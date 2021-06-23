@@ -63,6 +63,7 @@ namespace DotsLite.Particle
             public float LastFactor;
         }
 
+        // どのセグメントがヒットレイとして機能するのか、２つのポイントのインデックスで示す
         public struct HittableSegmentData : IComponentData
         {
             public int2 Index;

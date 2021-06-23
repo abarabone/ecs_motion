@@ -95,18 +95,19 @@ namespace DotsLite.Arms
 
 
             this.Entities
-                .WithName("WithMuzzle")
+                .WithName("WithCameraMuzzle")
                 .WithBurst()
                 //.WithNone<Bullet.MoveSpecData>()
                 //.WithReadOnly(rots)
                 //.WithReadOnly(poss)
                 .ForEach(
                     (
-                        Entity fireEntity, int entityInQueryIndex,
+                        Entity entity, int entityInQueryIndex,
                         in Emitter.StateData state,
                         in Emitter.TriggerData trigger,
                         in Emitter.BulletEmittingData emitter,
                         in Emitter.BulletMuzzleLinkData mzlink,
+                        //in Emitter.EffectMuzzleLinkData eflink,
                         in Emitter.OwnerLinkData slink,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
@@ -119,17 +120,13 @@ namespace DotsLite.Arms
                         //Debug.Log(freq);
 
 
-                        //var rot = rots[mzlink.MuzzleEntity].Value;
-                        //var pos = poss[mzlink.MuzzleEntity].Value;
-
-
-                        //var wpos = poss[mzlink.MuzzleEntity].Value;
                         var init = new Bullet.InitializeFromEmitterData
                         {
                             EmitterAccuracyRad = emitter.AccuracyRad,
                             EmitterRangeDistanceFactor = emitter.RangeDistanceFactor,
                             AimSpeed = 0,
-                            MuzzleEntity = mzlink.MuzzleEntity,
+                            BulletMuzzleEntity = mzlink.MuzzleEntity,
+                            EffectMuzzleEntity = entity,//eflink.MuzzleEntity,
                             OwnerStateEntity = slink.StateEntity,
                             TargetCorps = corps.TargetCorps,
                         };
@@ -139,9 +136,6 @@ namespace DotsLite.Arms
                         // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
                         for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
                             {
-                                //BulletEmittingUtility.EmitBullet(cmd, eqi,
-                                //    emitter.Prefab, slink.StateEntity, wpos, init, corps.TargetCorps);
-
                                 var newBullet = cmd.Instantiate(eqi, emitter.Prefab);
                                 cmd.SetComponent(eqi, newBullet, init);
                             }
@@ -151,7 +145,7 @@ namespace DotsLite.Arms
                 .ScheduleParallel();
 
             this.Entities
-                .WithName("WithoutMuzzle")
+                .WithName("WithoutCameraMuzzle")
                 .WithBurst()
                 .WithNone<Emitter.BulletMuzzleLinkData>()
                 //.WithNone<Bullet.MoveSpecData>()
@@ -162,8 +156,6 @@ namespace DotsLite.Arms
                         in Emitter.TriggerData trigger,
                         in Emitter.BulletEmittingData emitter,
                         in Emitter.OwnerLinkData slink,
-                        //in Rotation rot,
-                        //in Translation pos,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
@@ -175,13 +167,13 @@ namespace DotsLite.Arms
                         //Debug.Log(freq);
 
 
-                        ////var init = emitter.CreateBulletInitData(pos.Value, rot.Value);
                         var init = new Bullet.InitializeFromEmitterData
                         {
                             EmitterAccuracyRad = emitter.AccuracyRad,
                             EmitterRangeDistanceFactor = emitter.RangeDistanceFactor,
                             AimSpeed = 0,
-                            MuzzleEntity = entity,
+                            BulletMuzzleEntity = entity,
+                            EffectMuzzleEntity = entity,
                             OwnerStateEntity = slink.StateEntity,
                             TargetCorps = corps.TargetCorps,
                         };
@@ -192,8 +184,6 @@ namespace DotsLite.Arms
                         // それぞれ別のエンティティに振り分けたほうが、ジョブの粒度が平均化に近づくかも…
                         for (var i = 0; i < emitter.NumEmitMultiple * freq; i++)
                         {
-                            //BulletEmittingUtility.EmitBullet(cmd, eqi,
-                            //    emitter.Prefab, slink.StateEntity, pos.Value, init, corps.TargetCorps);
                             var newBullet = cmd.Instantiate(eqi, emitter.Prefab);
                             cmd.SetComponent(eqi, newBullet, init);
                         }

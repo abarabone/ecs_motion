@@ -153,10 +153,10 @@ namespace DotsLite.Arms
         //    public float4 MuzzlePositionLocal;
         //}
 
-        public struct EffectMuzzleLinkData : IComponentData
-        {
-            public Entity MuzzleEntity;
-        }
+        //public struct EffectMuzzleLinkData : IComponentData
+        //{
+        //    public Entity MuzzleEntity;
+        //}
         //public struct EffectMuzzlePositionData : IComponentData
         //{
         //    public float4 MuzzlePositionLocal;

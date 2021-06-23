@@ -95,8 +95,8 @@ namespace DotsLite.Arms
                     var eqi = entityInQueryIndex;
                     var rnd = Random.CreateFromIndex((uint)(eqi * tid + math.asuint(dt)));
 
-                    var mpos = poss[init.MuzzleEntity].Value;
-                    var mrot = rots[init.MuzzleEntity].Value;
+                    var mpos = poss[init.BulletMuzzleEntity].Value;
+                    var mrot = rots[init.BulletMuzzleEntity].Value;
 
 
                     var rad = init.EmitterAccuracyRad;

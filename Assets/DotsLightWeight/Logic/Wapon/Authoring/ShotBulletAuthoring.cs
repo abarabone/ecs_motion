@@ -41,8 +41,8 @@ namespace DotsLite.Arms.Authoring
         public ParticleAuthoringBase EmittingPrefab;
         public int NumEmitting;
 
-        public bool IsNotDestroyOnHit;
-        public bool LinkMuzzle;
+        public bool willNotDestroyOnHit;
+        public bool willStickToMuzzle;
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
@@ -64,6 +64,8 @@ namespace DotsLite.Arms.Authoring
             void addBulletComponents_( GameObjectConversionSystem gcs_, GameObject bullet_ )
             {
                 var em = gcs_.DstEntityManager;
+
+                var useSpring = this.GetComponent<SpringComponent>() != null;
 
 
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
@@ -102,11 +104,16 @@ namespace DotsLite.Arms.Authoring
                     _types.Add(typeof(Bullet.EmitterTag));
                     _types.Add(typeof(Bullet.EmitData));
                 }
-                //if (this.LinkMuzzle)
-                //{
-                //    _types.Add(typeof(Emitter.EffectMuzzleLinkData));
-                //    _types.Add(typeof(Emitter.EffectMuzzlePositionData));
-                //}
+                if (useSpring)
+                {
+                    _types.Add(typeof(Spring.StickySelfFirstTag));
+                    _types.Add(typeof(Spring.StickyApplyData));
+
+                    if (this.willStickToMuzzle)
+                    {
+                        _types.Add(typeof(Spring.StickyTEntityLastData));
+                    }
+                }
 
                 var types = new ComponentTypes(_types.ToArray());
                 em.AddComponents(bulletEntity, types);
@@ -163,10 +170,19 @@ namespace DotsLite.Arms.Authoring
                             (this.DamagePoint != 0.0f ? Bullet.HitResponseTypes.damage: 0) |
                             (this.EmittingPrefab != null ? Bullet.HitResponseTypes.emit : 0) |
                             (this.GetComponent<SpringComponent>() != null ? Bullet.HitResponseTypes.sticky : 0) |
-                            (this.IsNotDestroyOnHit ? Bullet.HitResponseTypes.no_destroy : 0),
+                            (this.willNotDestroyOnHit ? Bullet.HitResponseTypes.no_destroy : 0),
                     }
                 );
 
+
+                if (useSpring)
+                {
+                    em.SetComponentData(bulletEntity, new Spring.StickyApplyData
+                    {
+                        FirstFactor = 0.0f,
+                        LastFactor = this.willStickToMuzzle ? 0.0f : 1.0f,
+                    });
+                }
             }
         }
 

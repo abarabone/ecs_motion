@@ -186,10 +186,10 @@ namespace DotsLite.Arms.Authoring
                         typeof(Translation),
                         typeof(Rotation)
                     };
-                    if (unitObject.UseEffect)
-                    {
-                        _types.Add(typeof(Emitter.EffectMuzzleLinkData));
-                    }
+                    //if (unitObject.UseEffect)
+                    //{
+                    //    _types.Add(typeof(Emitter.EffectMuzzleLinkData));
+                    //}
                     var types = new ComponentTypes(_types.ToArray());
 
                     em.AddComponents(unit, types);
@@ -208,15 +208,15 @@ namespace DotsLite.Arms.Authoring
                             MuzzleEntity = useCameraSite ? cammzl : unit,
                         }
                     );
-                    if (unitObject.UseEffect)
-                    {
-                        em.SetComponentData(unit,
-                            new Emitter.EffectMuzzleLinkData
-                            {
-                                MuzzleEntity = unit,
-                            }
-                        );
-                    }
+                    //if (unitObject.UseEffect)
+                    //{
+                    //    em.SetComponentData(unit,
+                    //        new Emitter.EffectMuzzleLinkData
+                    //        {
+                    //            MuzzleEntity = unit,
+                    //        }
+                    //    );
+                    //}
 
                     em.SetComponentData(unit,
                         new Emitter.OwnerLinkData

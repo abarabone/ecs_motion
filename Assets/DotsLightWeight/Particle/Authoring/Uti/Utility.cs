@@ -434,9 +434,9 @@ namespace DotsLite.Particle.Aurthoring
             var types = new ComponentTypes(
                 typeof(Spring.SpecData),
                 typeof(Spring.StatesData),
-                typeof(Spring.StickySelfFirstTag),
-                typeof(Spring.StickyStateData),
-                typeof(Spring.StickyApplyData)
+                typeof(Spring.StickyStateData)
+                //typeof(Spring.StickySelfFirstTag),//
+                //typeof(Spring.StickyApplyData)
             );
             em.AddComponents(mainEntity, types);
 
@@ -456,13 +456,13 @@ namespace DotsLite.Particle.Aurthoring
                     PointLength = segments + 1,
                 }
             );
-            em.SetComponentData(mainEntity,
-                new Spring.StickyApplyData
-                {
-                    FirstFactor = 0.0f,
-                    LastFactor = 1.0f,
-                }
-            );
+            //em.SetComponentData(mainEntity,
+            //    new Spring.StickyApplyData
+            //    {
+            //        FirstFactor = 0.0f,
+            //        LastFactor = 1.0f,
+            //    }
+            //);
 
             var buffer = em.AddBuffer<Spring.StatesData>(mainEntity);
             buffer.Length = segments + 1;
