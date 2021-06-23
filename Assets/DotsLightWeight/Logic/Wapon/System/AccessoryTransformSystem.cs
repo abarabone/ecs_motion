@@ -35,11 +35,11 @@ namespace DotsLite.Arms
 
     // ボーントランスフォームに組み込めればよいが、とりあえず独立で
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
-    [UpdateBefore(typeof(MoveSpringSystem))]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    //[UpdateBefore(typeof(EmitBulletSystem))]
-    //[UpdateBefore(typeof(EmitEffectSystem))]
+    //[UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    //[UpdateBefore(typeof(MoveSpringSystem))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateBefore(typeof(EmitBulletSystem))]
+    [UpdateBefore(typeof(EmitEffectSystem))]
     public class AccessoryTransformSystem : SystemBase
     {
 

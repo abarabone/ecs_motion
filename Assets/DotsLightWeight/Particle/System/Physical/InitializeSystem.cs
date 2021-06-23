@@ -37,7 +37,6 @@ namespace DotsLite.Particle
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
-    //[UpdateAfter(typeof(ObjectInitializeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class InitializeSystem : SystemBase
     {

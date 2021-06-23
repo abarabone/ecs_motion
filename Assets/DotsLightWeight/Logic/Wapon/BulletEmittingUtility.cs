@@ -151,7 +151,7 @@ namespace DotsLite.Arms
         /// 
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 CalcBulletDirection(quaternion dirrot, ref Random rnd, float accuracyRad)
+        public static float3 CalcBulletDirection(ref this Random rnd, quaternion dirrot, float accuracyRad)
         {
 
             var yrad = rnd.NextFloat(accuracyRad);

@@ -36,7 +36,7 @@ namespace DotsLite.Particle
 
     using Random = Unity.Mathematics.Random;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     [UpdateAfter(typeof(BulletInitializeSystem))]
     [UpdateAfter(typeof(MoveSpringInitializeSystem))]
@@ -62,7 +62,7 @@ namespace DotsLite.Particle
         }
     }
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     [UpdateAfter(typeof(MoveSpringSystem))]
     public class CopyMuzzlePositionToBulletSystem : SystemBase

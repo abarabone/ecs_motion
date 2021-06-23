@@ -61,7 +61,7 @@ namespace DotsLite.Arms.Authoring
                 holderEntity, units);
             initAllUnits_(conversionSystem,
                 holderEntity, postureEntity, stateEntity,
-                parentEntity, units, this.UseCameraSite ? Camera.main : null);
+                parentEntity, units, this.UseCameraSite);
 
             return;
 
@@ -157,7 +157,6 @@ namespace DotsLite.Arms.Authoring
                 IEnumerable<IEnumerable<IFunctionUnitAuthoring>> unitss, bool useCameraSite)
             {
                 var em = gcs.DstEntityManager;
-                //var camObject = cam?.GetComponent<IMuzzleLocalPostion>();
 
                 var qUnit =
                     from w in unitss.WithIndex()
@@ -173,6 +172,8 @@ namespace DotsLite.Arms.Authoring
                 void addFunctionUnitComponents_
                     (Entity muzzle, IMuzzleLocalPostion unitObject, int waponId, int unitId)
                 {
+                    var cam = gcs.GetPrimaryEntity(Camera.main);
+                    var cammzl = gcs.GetEntities(Camera.main).Last();
                     var unit = gcs.GetPrimaryEntity(unitObject as MonoBehaviour);
 
                     var _types = new List<ComponentType>
@@ -194,12 +195,6 @@ namespace DotsLite.Arms.Authoring
                     em.AddComponents(unit, types);
 
                     em.SetComponentData(unit,
-                        new Emitter.BulletMuzzleLinkData
-                        {
-                            MuzzleEntity = useCameraSite ? gcs.GetPrimaryEntity(Camera.main) : unit,
-                        }
-                    );
-                    em.SetComponentData(unit,
                         new Emitter.MuzzleTransformData
                         {
                             MuzzlePositionLocal = unitObject.Local.As_float4(),
@@ -207,12 +202,18 @@ namespace DotsLite.Arms.Authoring
                         }
                     );
 
+                    em.SetComponentData(unit,
+                        new Emitter.BulletMuzzleLinkData
+                        {
+                            MuzzleEntity = useCameraSite ? cammzl : unit,
+                        }
+                    );
                     if (unitObject.UseEffect)
                     {
                         em.SetComponentData(unit,
                             new Emitter.EffectMuzzleLinkData
                             {
-                                MuzzleEntity = muzzle,
+                                MuzzleEntity = unit,
                             }
                         );
                     }

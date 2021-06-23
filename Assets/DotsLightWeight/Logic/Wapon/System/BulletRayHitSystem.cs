@@ -81,18 +81,18 @@ namespace DotsLite.Arms
             var corpss = this.GetComponentDataFromEntity<CorpsGroup.Data>(isReadOnly: true);
 
             var dt = this.Time.DeltaTime;
-            var predtrcp = dt * TimeEx.PrevDeltaTimeRcp;
+            var dtrate = dt * TimeEx.PrevDeltaTimeRcp;
 
             this.Entities
                 .WithBurst()
                 .WithAll<Bullet.RayTag>()
                 //.WithNone<Bullet.EmitterTag>()// 
-                .WithReadOnly(damages)
-                .WithReadOnly(emits)
-                .WithReadOnly(springs)
+                //.WithReadOnly(damages)
+                //.WithReadOnly(emits)
+                //.WithReadOnly(springs)
                 .WithReadOnly(targets)
-                .WithReadOnly(parts)
-                .WithReadOnly(corpss)
+                //.WithReadOnly(parts)
+                //.WithReadOnly(corpss)
                 .WithReadOnly(cw)
                 .WithNativeDisableParallelForRestriction(sthit)
                 .WithNativeDisableContainerSafetyRestriction(sthit)
@@ -117,29 +117,29 @@ namespace DotsLite.Arms
                         if (!hit_.isHit) return;
 
 
-                        var v = (pos.Value - vfact.PrePosition.xyz) * predtrcp;
+                        var v = (pos.Value - vfact.PrePosition.xyz) * dtrate;
                         var hit = hit_.core;
 
-                        //if (damages.HasComponent(entity))
-                        if ((hres.Types & Bullet.HitResponseTypes.damage) != 0)
-                        {
-                            var damage = damages[entity].Damage;
-                            hit.Hit(chhit, sthit, parts, corpss, v, damage, corps);
-                        }
+                        ////if (damages.HasComponent(entity))
+                        //if ((hres.Types & Bullet.HitResponseTypes.damage) != 0)
+                        //{
+                        //    var damage = damages[entity].Damage;
+                        //    hit.Hit(chhit, sthit, parts, corpss, v, damage, corps);
+                        //}
 
-                        //if (emits.HasComponent(entity))
-                        if ((hres.Types & Bullet.HitResponseTypes.emit) != 0)
-                        {
-                            var emit = emits[entity];
-                            hit.Emit(cmd, eqi, emit, link, corps);
-                        }
+                        ////if (emits.HasComponent(entity))
+                        //if ((hres.Types & Bullet.HitResponseTypes.emit) != 0)
+                        //{
+                        //    var emit = emits[entity];
+                        //    hit.Emit(cmd, eqi, emit, link, corps);
+                        //}
 
-                        //if (springs.HasComponent(entity))
-                        if ((hres.Types & Bullet.HitResponseTypes.sticky) != 0)
-                        {
-                            var state = springs[entity];
-                            hit.Sticky(cmd, eqi, entity, state);
-                        }
+                        ////if (springs.HasComponent(entity))
+                        //if ((hres.Types & Bullet.HitResponseTypes.sticky) != 0)
+                        //{
+                        //    var state = springs[entity];
+                        //    hit.Sticky(cmd, eqi, entity, state);
+                        //}
 
 
                         if ((hres.Types & Bullet.HitResponseTypes.no_destroy) == 0)
