@@ -108,7 +108,6 @@ namespace DotsLite.Particle
                 .ForEach((
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     ref DynamicBuffer<Spring.StatesData> states,
-                    ref Psyllium.TranslationTailData tail,
                     in Spring.StickyApplyData sticky,
                     in Spring.SpecData spec) =>
                 {
@@ -133,7 +132,7 @@ namespace DotsLite.Particle
                     }
 
                     d = calcNewPositionLast_();
-                    tails.ElementAt(tails.Length - 1).Position = currpos + (d + gtt) * sticky.LastFactor;
+                    tails.ElementAt(tails.Length - 1).Position = currpos + (d + gtt);// * sticky.LastFactor;
                     states.ElementAt(states.Length - 1).PrePosition = currpos.As_float4();
 
                     return;

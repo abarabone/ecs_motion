@@ -56,9 +56,6 @@ Shader "Custom/Psyllium ptop uv blend"
             {
                 v2f o;
                 
-                const half2 uvspan = UvParam.xy;
-                const half2 uvtick = uvspan * 0.01f;// / 100;
-
 				const int ivec = BoneVectorOffset + i * 3;
 				const float4 buf0 = BoneVectorBuffer[ivec + 0];
 				const float4 buf1 = BoneVectorBuffer[ivec + 1];
@@ -84,6 +81,8 @@ Shader "Custom/Psyllium ptop uv blend"
 				//const float4 wvt = mul(lvt, mt);
                 o.vertex = mul(UNITY_MATRIX_VP, wvt);
                 
+                const half2 uvspan = UvParam.xy;
+                const half2 uvtick = uvspan * 0.01f;// / 100;
                 const uint4 uvp = asuint(buf2.zzzz) >> uint4(0, 8, 16, 24) & 255;
                 const half2 uvofs = uvp.xy * uvspan + uvtick;
                 const half2 uvsize = uvp.zw * uvspan - uvtick - uvtick;

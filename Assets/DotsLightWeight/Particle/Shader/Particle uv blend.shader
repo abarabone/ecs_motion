@@ -58,9 +58,6 @@ Shader "Custom/Particle uv blend"
             {
                 v2f o;
 
-                const half2 uvspan = UvParam.xy;
-                const half2 uvtick = uvspan * 0.01f;// / 100;
-
 				const int ivec = BoneVectorOffset + i * 2;
 				const float4 buf0 = BoneVectorBuffer[ivec + 0];
 				const float4 buf1 = BoneVectorBuffer[ivec + 1];
@@ -81,6 +78,8 @@ Shader "Custom/Particle uv blend"
                 //o.vertex = mul(UNITY_MATRIX_VP, half4(wpos, 1) + _vt);
                 o.vertex = mul(UNITY_MATRIX_VP, wpos + _vt);
 
+                const half2 uvspan = UvParam.xy;
+                const half2 uvtick = uvspan * 0.01f;// / 100;
                 const uint4 uvp = asuint(buf1.zzzz) >> uint4(0, 8, 16, 24) & 255;
                 const half2 uvofs = uvp.xy * uvspan + uvtick;
                 const half2 uvsize = uvp.zw * uvspan - uvtick - uvtick;

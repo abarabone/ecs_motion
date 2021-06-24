@@ -82,6 +82,8 @@ namespace DotsLite.Draw
                         var color = math.asfloat(additional.Color.ToUint());
 
                         var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        pModel[i++] = new float4(size);
+
                         pModel[i++] = new float4(pos.Value, color);
                         pModel[i++] = new float4(tail.Position, color);
 
@@ -90,7 +92,6 @@ namespace DotsLite.Draw
                             pModel[i + j] = tails[j].PositionAndColor;
                         }
 
-                        pModel[i + tails.Length] = new float4(size);
                     }
                 )
                 .ScheduleParallel();

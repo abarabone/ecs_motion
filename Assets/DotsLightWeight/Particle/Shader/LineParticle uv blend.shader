@@ -1,4 +1,4 @@
-﻿Shader "Custom/LineParticle"
+﻿Shader "Custom/LineParticle uv blend"
 {
 	
 	Properties
@@ -110,7 +110,12 @@
 
 					o.vertex = mul( UNITY_MATRIX_VP, float4(wvt, 1.0f) );
 					
-					o.uv = v.uv;
+					const half2 uvspan = UvParam.xy;
+					const half2 uvtick = uvspan * 0.01f;// / 100;
+					const uint4 uvp = asuint(cur.yyyy) >> uint4(0, 8, 16, 24) & 255;
+					const half2 uvofs = uvp.xy * uvspan + uvtick;
+					const half2 uvsize = uvp.zw * uvspan - uvtick - uvtick;
+					o.uv = uvofs + v.uv * uvsize;
 					
 					const fixed4 color = float4(asuint(cur.wwww) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
 					o.color = color;
