@@ -83,14 +83,14 @@ namespace DotsLite.Particle.Aurthoring
                     break;
                 case ParticleMeshType.LinePsyllium:
                     {
-                        var mesh = this.createLineParticleMesh_(this.LineParticleSegments, isPsylliumEdge: true);
+                        var mesh = this.createLineParticleMesh_(this.LineParticleSegments + 1, isPsylliumEdge: true);
                         var bonetype = (BoneType)(this.LineParticleSegments + 1 + 1);
                         createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, bonetype);
                     }
                     break;
                 case ParticleMeshType.LineBillboad:
                     {
-                        var mesh = this.createLineParticleMesh_(this.LineParticleSegments, isPsylliumEdge: false);
+                        var mesh = this.createLineParticleMesh_(this.LineParticleSegments + 1, isPsylliumEdge: false);
                         var bonetype = (BoneType)(this.LineParticleSegments + 1 + 1);
                         createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, bonetype);
                     }

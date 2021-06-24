@@ -79,6 +79,7 @@ namespace DotsLite.Particle
                 .WithName("copy_self")
                 .WithBurst()
                 .WithAll<Spring.StickySelfFirstTag>()
+                .WithNone<Particle.LifeTimeInitializeTag>()
                 .ForEach((
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     in Translation pos) =>
@@ -92,6 +93,7 @@ namespace DotsLite.Particle
             this.Entities
                 .WithName("copy_first_point")
                 .WithBurst()
+                .WithNone<Particle.LifeTimeInitializeTag>()
                 .ForEach((
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                     //ref Translation pos,
@@ -107,6 +109,7 @@ namespace DotsLite.Particle
             this.Entities
                 .WithName("copy_first_T")
                 .WithBurst()
+                .WithNone<Particle.LifeTimeInitializeTag>()
                 .WithReadOnly(poss)
                 .ForEach((
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
@@ -123,6 +126,7 @@ namespace DotsLite.Particle
             this.Entities
                 .WithName("copy_last_T")
                 .WithBurst()
+                .WithNone<Particle.LifeTimeInitializeTag>()
                 .WithReadOnly(poss)
                 .ForEach((
                     ref DynamicBuffer<LineParticle.TranslationTailLineData> tails,
