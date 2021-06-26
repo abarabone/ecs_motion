@@ -10,19 +10,19 @@ namespace DotsLite.WaveGrid
     using DotsLite.Misc;
 
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
-    public class WaveGridSystem : SystemBase
+    public class WaveGridCalculateSystem : SystemBase
     {
 
-        WaveGridData grid;
+        WaveGridMasterData grid;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.RequireSingletonForUpdate<WaveGridData>();
+            this.RequireSingletonForUpdate<WaveGridMasterData>();
 
-            if (!this.HasSingleton<WaveGridData>()) return;
-            this.grid = this.GetSingleton<WaveGridData>();
+            if (!this.HasSingleton<WaveGridMasterData>()) return;
+            this.grid = this.GetSingleton<WaveGridMasterData>();
         }
 
 
@@ -43,11 +43,11 @@ namespace DotsLite.WaveGrid
 
         struct WaveGridJob : IJobParallelFor
         {
-            public NativeArray<WaveUnit> Units;
+            public NativeArray<WaveGridPoint> Units;
 
             public void Execute(int index)
             {
-                throw new System.NotImplementedException();
+
             }
         }
     }

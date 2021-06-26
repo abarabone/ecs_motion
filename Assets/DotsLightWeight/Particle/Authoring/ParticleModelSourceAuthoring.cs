@@ -16,6 +16,7 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
     using DotsLite.Common.Extension;
+    using DotsLite.Authoring;
 
     /// <summary>
     /// 他メッシュとのアトラス対応は後回し

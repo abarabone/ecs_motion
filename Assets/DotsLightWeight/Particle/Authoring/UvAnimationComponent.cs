@@ -15,6 +15,7 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Model.Authoring;
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
+    using DotsLite.Authoring;
 
     [RequireComponent(typeof(ParticleAuthoring))]
     public class UvAnimationComponent :

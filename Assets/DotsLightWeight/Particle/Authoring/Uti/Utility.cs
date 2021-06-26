@@ -15,26 +15,7 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Model.Authoring;
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
-
-    [Serializable]
-    public struct BinaryLength2
-    {
-        public binary_length u;
-        public binary_length v;
-        public static implicit operator int2(BinaryLength2 src) => new int2((int)src.u, (int)src.v);
-    }
-    public enum binary_length
-    {
-        length_1 = 1,
-        length_2 = 2,
-        length_4 = 4,
-        length_8 = 8,
-        length_16 = 16,
-        //length_32 = 32,
-        //length_64 = 64,
-        //length_128 = 128,
-        //length_256 = 256,
-    }
+    using DotsLite.Authoring;
 
     public enum ParticleMeshType
     {
