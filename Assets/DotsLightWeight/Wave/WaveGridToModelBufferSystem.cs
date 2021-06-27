@@ -69,10 +69,12 @@ namespace DotsLite.Draw
         {
             using var barScope = bardep.WithDependencyScope();
 
-            var lengthInGrid = this.gridMaster.UnitLengthInGrid;
-            var wspan = this.gridMaster.NumGrids.x;
+            //var lengthInGrid = this.gridMaster.UnitLengthInGrid * sizeof(float);
+            var srcspan = this.gridMaster.NumGrids.x * this.gridMaster.UnitLengthInGrid.x * sizeof(float);
+            var dstspan = (this.gridMaster.UnitLengthInGrid.x + 1) * sizeof(float);
+            var count = this.gridMaster.UnitLengthInGrid.y + 1;
             var unitScale = this.gridMaster.UnitScale;
-            var units = this.gridMaster.Units;
+            var units = this.gridMaster.NextUnits;
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
@@ -96,15 +98,19 @@ namespace DotsLite.Draw
                     var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
                     var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
+                    var pUnit = (float*)units.GetUnsafeReadOnlyPtr();
+                    var pSrc = pUnit + (grid.GridId.x + grid.GridId.y * srcspan);
+
                     var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                    var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
-                    var p = pModel + i;
+                    var pDst = pModel + instanceBufferOffset;
+
+                    //UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, dstspan, count);
+
 
                     var lodUnitScale = unitScale * (1 << grid.LodLevel);
 
-                    *p++ = new float4(lodUnitScale);
-
-
+                    var i = offsetInfo.VectorOffsetPerInstance;
+                    //pDst[i] = new float4(lodUnitScale);
 
                 })
                 .ScheduleParallel();

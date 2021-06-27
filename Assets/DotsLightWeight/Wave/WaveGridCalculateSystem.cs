@@ -9,6 +9,7 @@ namespace DotsLite.WaveGrid
 {
     using DotsLite.Misc;
 
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     public class WaveGridCalculateSystem : SystemBase
     {
@@ -22,13 +23,7 @@ namespace DotsLite.WaveGrid
 
             if (!this.HasSingleton<WaveGridMasterData>()) return;
             this.grid = this.GetSingleton<WaveGridMasterData>();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            if (this.grid != null) this.grid.Dispose();
+            Debug.Log(this.grid);
         }
 
 
@@ -41,19 +36,22 @@ namespace DotsLite.WaveGrid
 
             this.Dependency = new WaveGridJob
             {
-                Units = this.grid.Units,
+                Prev = this.grid.PrevUnits,
+                Next = this.grid.NextUnits,
             }
-            .Schedule(this.grid.Units.Length, 1, this.Dependency);
+            .Schedule(this.grid.PrevUnits.Length, 1, this.Dependency);
 
         }
 
         struct WaveGridJob : IJobParallelFor
         {
-            public NativeArray<WaveGridPoint> Units;
+            public NativeArray<WaveGridPrevPoint> Prev;
+            public NativeArray<WaveGridNextPoint> Next;
 
             public void Execute(int index)
             {
-
+                this.Prev[index] = new WaveGridPrevPoint { };
+                this.Next[index] = new WaveGridNextPoint { };
             }
         }
     }

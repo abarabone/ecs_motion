@@ -28,6 +28,7 @@ namespace DotsLite.WaveGrid.Aurthoring
         public int MaxLodLevel;
 
         public Shader DrawShader;
+        public Texture Texture;
 
 
         /// <summary>
@@ -56,18 +57,23 @@ namespace DotsLite.WaveGrid.Aurthoring
             {
                 var mesh = MeshUtility.CreateGridMesh(lw, lh, this.UnitDistance);
                 var mat = new Material(this.DrawShader);
+                mat.mainTexture = this.Texture;
                 var boneLength = 1;
-                var optionalVectorLength = (lw * lh) >> 2;
+                var optionalVectorLength = (((lw + 1) * (lh + 1)) >> 2) + 1;
                 return gcs.CreateDrawModelEntityComponents(this.gameObject, mesh, mat, BoneType.T, boneLength, optionalVectorLength);
             }
 
 
             void initMasterEntityComponent_(Entity ent)
             {
-                var totalLength = ww * wh;
+                var totalLength = ww*lw * wh*lh + wh * lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
                 em.AddComponentData(ent, new WaveGridMasterData
                 {
-                    Units = new NativeArray<WaveGridPoint>(totalLength, Allocator.Persistent),
+                    PrevUnits = new NativeArray<WaveGridPrevPoint>(totalLength, Allocator.Persistent),
+                    NextUnits = new NativeArray<WaveGridNextPoint>(totalLength, Allocator.Persistent),
+                    NumGrids = this.NumGrids,
+                    UnitLengthInGrid = this.UnitLengthInGrid,
+                    UnitScale = this.UnitDistance,
                 });
             }
 

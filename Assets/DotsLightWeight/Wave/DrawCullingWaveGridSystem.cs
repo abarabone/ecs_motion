@@ -16,8 +16,8 @@ namespace DotsLite.Draw
     using DotsLite.SystemGroup;
     using DotsLite.Geometry;
     using DotsLite.Particle;
-    
 
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Culling))]
     public class DrawCullingWaveGridSystem : SystemBase
     {
@@ -42,7 +42,7 @@ namespace DotsLite.Draw
                 .ForEach((
                     ref DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData modellink,
-                    
+                    in WaveGrid.WaveGridData grid,
                     in Translation pos) =>
                 {
                     if (modellink.DrawModelEntityCurrent == Entity.Null)
