@@ -41,9 +41,9 @@ namespace DotsLite.Draw
                 .WithNone<DrawInstance.PostureLinkData>()
                 .ForEach((
                     ref DrawInstance.TargetWorkData target,
-                    in DrawInstance.ModelLinkData modellink
-
-                    ) =>
+                    in DrawInstance.ModelLinkData modellink,
+                    
+                    in Translation pos) =>
                 {
                     if (modellink.DrawModelEntityCurrent == Entity.Null)
                     {
@@ -52,19 +52,19 @@ namespace DotsLite.Draw
                     }
 
 
-                    var bbox = new AABB
-                    {
-                        //Center = pos.Value,
-                        //Extents = additional.Radius,
-                    };
+                    //var bbox = new AABB
+                    //{
+                    //    //Center = pos.Value,
+                    //    //Extents = additional.Radius,
+                    //};
 
-                    var isHit = viewFrustum.IsInside(bbox);
+                    //var isHit = viewFrustum.IsInside(bbox);
 
-                    if (!isHit)
-                    {
-                        target.DrawInstanceId = -1;
-                        return;
-                    }
+                    //if (!isHit)
+                    //{
+                    //    target.DrawInstanceId = -1;
+                    //    return;
+                    //}
 
 
                     var drawModelData = drawModels[modellink.DrawModelEntityCurrent];

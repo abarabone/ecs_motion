@@ -8,8 +8,8 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
-
 using System;
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsLite.Draw
 {
@@ -20,6 +20,7 @@ namespace DotsLite.Draw
     using DotsLite.Particle;
     using DotsLite.Dependency;
     using DotsLite.Model;
+    using DotsLite.WaveGrid;
 
 
     //[DisableAutoCreation]
@@ -30,7 +31,6 @@ namespace DotsLite.Draw
     public class WaveGridToModelBufferSystem : DependencyAccessableSystemBase
     {
 
-
         BarrierDependency.Sender bardep;
 
         protected override void OnCreate()
@@ -40,26 +40,39 @@ namespace DotsLite.Draw
             this.bardep = BarrierDependency.Sender.Create<DrawMeshCsSystem>(this);
 
         }
+
+
+        WaveGridMasterData gridMaster;
+
         protected override void OnStartRunning()
         {
-            this.Entities
-                .WithoutBurst()
-                .ForEach((
-                    in BillboadModel.IndexToUvData touv,
-                    in DrawModel.GeometryData geom) =>
-                {
-                    var span = touv.CellSpan;
-                    var p = new float4(span, 0, 0);
+            this.RequireSingletonForUpdate<WaveGridMasterData>();
 
-                    geom.Material.SetVector("UvParam", p);
-                })
-                .Run();
+            if (!this.HasSingleton<WaveGridMasterData>()) return;
+            this.gridMaster = this.GetSingleton<WaveGridMasterData>();
+
+            //this.Entities
+            //    .WithoutBurst()
+            //    .ForEach((
+            //        in BillboadModel.IndexToUvData touv,
+            //        in DrawModel.GeometryData geom) =>
+            //    {
+            //        var span = touv.CellSpan;
+            //        var p = new float4(span, 0, 0);
+
+            //        geom.Material.SetVector("UvParam", p);
+            //    })
+            //    .Run();
         }
 
         protected unsafe override void OnUpdate()
         {
             using var barScope = bardep.WithDependencyScope();
 
+            var lengthInGrid = this.gridMaster.UnitLengthInGrid;
+            var wspan = this.gridMaster.NumGrids.x;
+            var unitScale = this.gridMaster.UnitScale;
+            var units = this.gridMaster.Units;
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
@@ -70,9 +83,9 @@ namespace DotsLite.Draw
 
                 .ForEach((
                     in DrawInstance.TargetWorkData target,
-                    in DrawInstance.ModelLinkData linker
-
-                    ) =>
+                    in DrawInstance.ModelLinkData linker,
+                    in WaveGridData grid,
+                    in Translation pos) =>
                 {
                     if (target.DrawInstanceId == -1) return;
 
@@ -83,11 +96,16 @@ namespace DotsLite.Draw
                     var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
                     var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
-                    var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
-
-
                     var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                    //pModel[i + 0] = new float4(pos.Value, 1.0f);
+                    var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
+                    var p = pModel + i;
+
+                    var lodUnitScale = unitScale * (1 << grid.LodLevel);
+
+                    *p++ = new float4(lodUnitScale);
+
+
+
                 })
                 .ScheduleParallel();
         }

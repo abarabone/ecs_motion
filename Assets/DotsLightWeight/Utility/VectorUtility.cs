@@ -120,6 +120,17 @@ namespace DotsLite.Utilities
 
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		static public float3 x_y(this float2 v, float value = 0.0f)
+		{
+			return new float3(v.x, value, v.y);
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		static public float3 xy_(this float2 v, float value = 0.0f)
+		{
+			return new float3(v.x, v.y, value);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		static public float4 As_float4(this float3 v, float w = 0.0f)
 		{
 			return new float4(v, w);

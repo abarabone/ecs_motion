@@ -89,6 +89,37 @@ namespace DotsLite.Geometry
 		//	}
 		//}
 
+
+
+		public static Mesh CreateGridMesh(int segmentX, int segmentY, float unitDistance)
+		{
+			var mesh = new Mesh();
+			var w = segmentX + 1;
+			var h = segmentY + 1;
+
+			var qVtxs =
+				from ix in Enumerable.Range(0, w)
+				from iz in Enumerable.Range(0, h)
+				select new Vector3(ix, 0, iz) * unitDistance
+				;
+			mesh.SetVertices(qVtxs.ToArray());
+
+			var qIdx =
+				from ix in Enumerable.Range(0, w - 1)
+				from iz in Enumerable.Range(0, h - 1)
+				let i0 = ix + (iz + 0) * w
+				let i1 = ix + (iz + 1) * w
+				from i in new int[]
+				{
+				i0+0, i0+1, i1+0,//0, 1, 2,
+                i1+0, i0+1, i1+1,//2, 1, 3,
+                }
+				select i
+				;
+			mesh.SetIndices(qIdx.ToArray(), MeshTopology.Triangles, 0);
+
+			return mesh;
+		}
 	}
 
 }

@@ -16,6 +16,7 @@ namespace DotsLite.WaveGrid
         public NativeArray<WaveGridPoint> Units;
         public int2 UnitLengthInGrid;
         public int2 NumGrids;
+        public float UnitScale;
 
         public void Dispose()
         {
@@ -31,7 +32,8 @@ namespace DotsLite.WaveGrid
 
     public struct WaveGridData : IComponentData
     {
-        public int2 gridid;
+        public int LodLevel;
+        public int2 GridId;
         public float UnitScaleOnLod;
     }
 }

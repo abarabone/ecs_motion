@@ -17,13 +17,14 @@ namespace DotsLite.WaveGrid.Aurthoring
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
     using DotsLite.Authoring;
+    using DotsLite.Utilities;
 
     public class WaveGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         public float UnitDistance;
         public BinaryLength2 UnitLengthInGrid;
-        public int2 NumGrids;
+        public BinaryLength2 NumGrids;
         public int MaxLodLevel;
 
         public Shader DrawShader;
@@ -36,47 +37,54 @@ namespace DotsLite.WaveGrid.Aurthoring
         {
             var gcs = conversionSystem;
             var em = dstManager;
-            var w = (int)this.UnitLengthInGrid.u;
-            var h = (int)this.UnitLengthInGrid.v;
+
+            var ww = (int)this.NumGrids.u;
+            var wh = (int)this.NumGrids.v;
+            var lw = (int)this.UnitLengthInGrid.u;
+            var lh = (int)this.UnitLengthInGrid.v;
+
 
             initMasterEntityComponent_(entity);
 
             var model = createModelEntity_();
-            createAllGrids_(this.NumGrids, this.MaxLodLevel, model);
+            createAllGrids_(this.MaxLodLevel, model);
 
             return;
 
 
             Entity createModelEntity_()
             {
-                var mesh = createGridMesh_();
+                var mesh = MeshUtility.CreateGridMesh(lw, lh, this.UnitDistance);
                 var mat = new Material(this.DrawShader);
                 var boneLength = 1;
-                var optionalVectorLength = (w * h) >> 2;
+                var optionalVectorLength = (lw * lh) >> 2;
                 return gcs.CreateDrawModelEntityComponents(this.gameObject, mesh, mat, BoneType.T, boneLength, optionalVectorLength);
             }
 
+
             void initMasterEntityComponent_(Entity ent)
             {
-                var totalLength = w * h;
+                var totalLength = ww * wh;
                 em.AddComponentData(ent, new WaveGridMasterData
                 {
                     Units = new NativeArray<WaveGridPoint>(totalLength, Allocator.Persistent),
                 });
             }
 
-            void createAllGrids_(int2 numgrids, int lodlevel, Entity model)
+
+            void createAllGrids_(int lodlevel, Entity model)
             {
                 var q =
-                    from ix in Enumerable.Range(0, numgrids.x >> lodlevel)
-                    from iy in Enumerable.Range(0, numgrids.y >> lodlevel)
+                    from ix in Enumerable.Range(0, ww >> lodlevel)
+                    from iy in Enumerable.Range(0, wh >> lodlevel)
                     select new int2(ix, iy);
                 q.ForEach(i => createGridEntity_(lodlevel, i, model));
 
                 if (lodlevel - 1 < 0) return;
 
-                createAllGrids_(numgrids, lodlevel - 1, model);
+                createAllGrids_(lodlevel - 1, model);
             }
+
 
             void createGridEntity_(int lodlevel, int2 i, Entity model)
             {
@@ -90,14 +98,15 @@ namespace DotsLite.WaveGrid.Aurthoring
                     typeof(WaveGridData),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
+                    typeof(Translation)
                 });
                 em.AddComponents(ent, types);
 
-                
+
                 em.SetComponentData(ent, new WaveGridData
                 {
-                    gridid = i,
-                    UnitScaleOnLod = this.UnitDistance * lodlevel,
+                    GridId = i,
+                    UnitScaleOnLod = this.UnitDistance * (1 << lodlevel),
                 });
 
                 em.SetComponentData(ent,
@@ -112,37 +121,19 @@ namespace DotsLite.WaveGrid.Aurthoring
                         DrawInstanceId = -1,
                     }
                 );
-            }
 
-            Mesh createGridMesh_()
-            {
-                var mesh = new Mesh();
-
-                var qVtxs =
-                    from ix in Enumerable.Range(0, w)
-                    from iz in Enumerable.Range(0, h)
-                    select new Vector3(ix, 0, iz) * this.UnitDistance
-                    ;
-                mesh.SetVertices(qVtxs.ToArray());
-
-                var qIdx =
-                    from ix in Enumerable.Range(0, w - 1)
-                    from iz in Enumerable.Range(0, h - 1)
-                    let i0 = ix + (iz + 0) * w
-                    let i1 = ix + (iz + 1) * w
-                    from i in new int[]
+                var total = this.UnitDistance * (float2)((int2)this.UnitLengthInGrid * (int2)this.NumGrids);
+                var span = (float2)(int2)this.UnitLengthInGrid * this.UnitDistance * (1 << lodlevel);
+                var startPosition = this.transform.position.As_float3().xz - (float2)total * 0.5f;
+                var offset = (float2)i * span;
+                em.SetComponentData(ent,
+                    new Translation
                     {
-                        i0+0, i0+1, i1+0,
-                        i1+0, i0+1, i1+1,
-                        //0, 1, 2,
-                        //2, 1, 3,
+                        Value = (startPosition + offset).x_y(),
                     }
-                    select i
-                    ;
-                mesh.SetIndices(qIdx.ToArray(), MeshTopology.Triangles, 0);
-
-                return mesh;
+                );
             }
+
         }
 
     }

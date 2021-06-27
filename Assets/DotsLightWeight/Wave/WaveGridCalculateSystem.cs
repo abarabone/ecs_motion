@@ -15,14 +15,20 @@ namespace DotsLite.WaveGrid
 
         WaveGridMasterData grid;
 
-        protected override void OnCreate()
-        {
-            base.OnCreate();
 
+        protected override void OnStartRunning()
+        {
             this.RequireSingletonForUpdate<WaveGridMasterData>();
 
             if (!this.HasSingleton<WaveGridMasterData>()) return;
             this.grid = this.GetSingleton<WaveGridMasterData>();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (this.grid != null) this.grid.Dispose();
         }
 
 
