@@ -66,7 +66,7 @@ namespace DotsLite.WaveGrid.Aurthoring
 
             void initMasterEntityComponent_(Entity ent)
             {
-                var totalLength = ww*lw * wh*lh + wh * lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
+                var totalLength = ww*lw * wh*lh + wh*lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
                 em.AddComponentData(ent, new WaveGridMasterData
                 {
                     PrevUnits = new NativeArray<WaveGridPrevPoint>(totalLength, Allocator.Persistent),

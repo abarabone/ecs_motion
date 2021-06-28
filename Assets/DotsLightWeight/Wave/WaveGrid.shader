@@ -56,9 +56,9 @@ Shader "Custom/WaveGrid"
 				UNITY_FOG_COORDS(2)
 			};
 
-
+			
 			StructuredBuffer<float4> BoneVectorBuffer;
-			int	BoneLengthEveryInstance;
+			int	VectorLengthPerInstance;
 			int BoneVectorOffset;
 
 			sampler2D	_MainTex;
@@ -78,18 +78,19 @@ Shader "Custom/WaveGrid"
 			{
 				v2f o;
 
-				int ibase = i * BoneLengthEveryInstance;
+				int ibase = BoneVectorOffset + i * VectorLengthPerInstance;
+				int inext = ibase + VectorLengthPerInstance;
 				int ih = asint(v.vertex.y);
-				float whscale = 1;//BoneVectorBuffer[ibase + BoneLengthEveryInstance - 1].w;
 
-				float3 wpos = BoneVectorBuffer[ibase + BoneVectorOffset].xyz;
+				float whscale = BoneVectorBuffer[inext - 2].w;
+
+				float3 wpos = BoneVectorBuffer[inext - 1].xyz;
 				float3 lvt = float3(v.vertex.xz * whscale, get_h(ih, ibase)).xzy;
-				//float3 lvt = v.vertex;
 
 				float4	wvt = UnityObjectToClipPos(wpos + lvt);
 
 				o.vertex = wvt;
-				o.uv = lvt.xz;//v.uv;
+				o.uv = lvt.xz * (1.0f/16.0f);//v.uv;
 				o.color = float4(1,1,1,1);
 
 				return o;

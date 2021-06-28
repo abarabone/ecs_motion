@@ -69,10 +69,15 @@ namespace DotsLite.Draw
         {
             using var barScope = bardep.WithDependencyScope();
 
+            var srcw = this.gridMaster.UnitLengthInGrid.x;
+            var srcww = this.gridMaster.NumGrids.x * this.gridMaster.UnitLengthInGrid.x;
+            var srch = this.gridMaster.UnitLengthInGrid.y;
+            var srcwwh = srcww * srch;
+
             //var lengthInGrid = this.gridMaster.UnitLengthInGrid * sizeof(float);
-            var srcspan = this.gridMaster.NumGrids.x * this.gridMaster.UnitLengthInGrid.x * sizeof(float);
-            var dstspan = (this.gridMaster.UnitLengthInGrid.x + 1) * sizeof(float);
-            var count = this.gridMaster.UnitLengthInGrid.y + 1;
+            var srcspan = srcww * sizeof(float);
+            var dstspan = (srcw + 1) * sizeof(float);
+            var count = srch + 1;
             var unitScale = this.gridMaster.UnitScale;
             var units = this.gridMaster.NextUnits;
 
@@ -101,22 +106,20 @@ namespace DotsLite.Draw
 
 
                     var pUnit = (float*)units.GetUnsafeReadOnlyPtr();
-                    var pSrc = pUnit + (grid.GridId.x + grid.GridId.y * srcspan);
+                    var pSrc = pUnit + (grid.GridId.x * srcw + grid.GridId.y * srcwwh);
 
                     var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
                     var pDst = pModel + instanceBufferOffset;
 
                     var i = offsetInfo.VectorOffsetPerInstance;
 
+
                     UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, dstspan, count);
-                    pDst[3] = new float4(5,1,3,1);
 
                     var lodUnitScale = unitScale * (1 << grid.LodLevel);
                     ((float*)(pDst + i))[-1] = lodUnitScale;
 
-
                     pDst[i] = pos.Value.As_float4();
-                    //*pDst = pos.Value.As_float4();
 
                 })
                 .ScheduleParallel();
