@@ -59,7 +59,7 @@ namespace DotsLite.WaveGrid.Aurthoring
                 var mat = new Material(this.DrawShader);
                 mat.mainTexture = this.Texture;
                 var boneLength = 1;
-                var optionalVectorLength = (((lw + 1) * (lh + 1)) >> 2) + 1;
+                var optionalVectorLength = (((lw + 1) * (lh + 1)) >> 2) + 1;Debug.Log(optionalVectorLength);
                 return gcs.CreateDrawModelEntityComponents(this.gameObject, mesh, mat, BoneType.T, boneLength, optionalVectorLength);
             }
 

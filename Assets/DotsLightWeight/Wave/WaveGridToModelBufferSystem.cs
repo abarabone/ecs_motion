@@ -21,7 +21,7 @@ namespace DotsLite.Draw
     using DotsLite.Dependency;
     using DotsLite.Model;
     using DotsLite.WaveGrid;
-
+    using DotsLite.Utilities;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
@@ -98,19 +98,25 @@ namespace DotsLite.Draw
                     var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
                     var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
+
+
                     var pUnit = (float*)units.GetUnsafeReadOnlyPtr();
                     var pSrc = pUnit + (grid.GridId.x + grid.GridId.y * srcspan);
 
                     var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
                     var pDst = pModel + instanceBufferOffset;
 
-                    //UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, dstspan, count);
+                    var i = offsetInfo.VectorOffsetPerInstance;
 
+                    UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, dstspan, count);
+                    pDst[3] = new float4(5,1,3,1);
 
                     var lodUnitScale = unitScale * (1 << grid.LodLevel);
+                    ((float*)(pDst + i))[-1] = lodUnitScale;
 
-                    var i = offsetInfo.VectorOffsetPerInstance;
-                    //pDst[i] = new float4(lodUnitScale);
+
+                    pDst[i] = pos.Value.As_float4();
+                    //*pDst = pos.Value.As_float4();
 
                 })
                 .ScheduleParallel();

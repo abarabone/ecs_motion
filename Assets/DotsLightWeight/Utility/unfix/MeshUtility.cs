@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.Linq;
 using System.Threading.Tasks;
 using System;
+using Unity.Mathematics;
 
 namespace DotsLite.Geometry
 {
@@ -100,7 +101,7 @@ namespace DotsLite.Geometry
 			var qVtxs =
 				from ix in Enumerable.Range(0, w)
 				from iz in Enumerable.Range(0, h)
-				select new Vector3(ix, 0, iz) * unitDistance
+				select new Vector3(ix, math.asfloat(ix + iz * w), iz) * unitDistance
 				;
 			mesh.SetVertices(qVtxs.ToArray());
 
@@ -111,8 +112,8 @@ namespace DotsLite.Geometry
 				let i1 = ix + (iz + 1) * w
 				from i in new int[]
 				{
-				i0+0, i0+1, i1+0,//0, 1, 2,
-                i1+0, i0+1, i1+1,//2, 1, 3,
+					i0+0, i0+1, i1+0,//0, 1, 2,
+					i1+0, i0+1, i1+1,//2, 1, 3,
                 }
 				select i
 				;
