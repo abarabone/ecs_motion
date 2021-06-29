@@ -79,6 +79,7 @@ namespace DotsLite.Arms
                 .WithBurst()
                 .WithAll<Particle.LifeTimeInitializeTag>()
                 .WithReadOnly(poss)
+                .WithNativeDisableContainerSafetyRestriction(poss)
                 .WithReadOnly(rots)
                 .ForEach((
                     int nativeThreadIndex, int entityInQueryIndex,
