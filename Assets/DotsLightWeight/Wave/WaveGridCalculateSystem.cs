@@ -5,6 +5,8 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Burst;
 
 namespace DotsLite.WaveGrid
 {
@@ -26,20 +28,20 @@ namespace DotsLite.WaveGrid
             this.grid = this.GetSingleton<WaveGridMasterData>();
             Debug.Log(this.grid);
 
-            this.grid.PrevUnits[00] = new WaveGridPrevPoint { Curr = -3f };
-            this.grid.PrevUnits[11] = new WaveGridPrevPoint { Curr = -3f };
-            this.grid.PrevUnits[12] = new WaveGridPrevPoint { Curr = -3f };
-            this.grid.PrevUnits[13] = new WaveGridPrevPoint { Curr = -3f };
-            this.grid.PrevUnits[14] = new WaveGridPrevPoint { Curr = -3f };
-            this.grid.PrevUnits[15] = new WaveGridPrevPoint { Curr = -3f };
-            this.grid.PrevUnits[16] = new WaveGridPrevPoint { Curr = -3f };
-            this.grid.PrevUnits[17] = new WaveGridPrevPoint { Curr = -3f };
-            this.grid.PrevUnits[18] = new WaveGridPrevPoint { Curr = -3f };
-            this.grid.PrevUnits[19] = new WaveGridPrevPoint { Curr = -3f };
+            this.grid.Currs[00] = -3f;
+            this.grid.Currs[11] = -3f;
+            this.grid.Currs[12] = -3f;
+            this.grid.Currs[13] = -3f;
+            this.grid.Currs[14] = -3f;
+            this.grid.Currs[15] = -3f;
+            this.grid.Currs[16] = -3f;
+            this.grid.Currs[17] = -3f;
+            this.grid.Currs[18] = -3f;
+            this.grid.Currs[19] = -3f;
         }
 
 
-        protected override void OnUpdate()
+        protected override unsafe void OnUpdate()
         {
             var dt = this.Time.DeltaTime * 5;
             var dtrate = dt * TimeEx.PrevDeltaTimeRcp;
@@ -51,28 +53,49 @@ namespace DotsLite.WaveGrid
 
             this.Dependency = new WaveGridCopyJob
             {
-                Prev = this.grid.PrevUnits,
-                Next = this.grid.NextUnits,
+                pNext = (float4*)grid.Nexts.GetUnsafeReadOnlyPtr(),
+                pCurr = (float4*)grid.Currs.GetUnsafePtr(),
+                pPrev = (float4*)grid.Prevs.GetUnsafePtr(),
             }
-            .Schedule(total, 1, this.Dependency);
+            .Schedule(total >> 2, 128, this.Dependency);
 
-            this.Dependency = new WaveGridCaluclationJob
+            //this.Dependency = new WaveGridCaluclationJob
+            //{
+            //    pNext = (float4*)grid.Nexts.GetUnsafePtr(),
+            //    pCurr = (float4*)grid.Currs.GetUnsafeReadOnlyPtr(),
+            //    pPrev = (float4*)grid.Prevs.GetUnsafeReadOnlyPtr(),
+            //    span = span,
+            //    harfsqdt = harfsqdt,
+            //}
+            //.Schedule(total >> 2, 128, this.Dependency);
+            this.Dependency = new WaveGridCaluclationSimpleJob
             {
-                Prev = this.grid.PrevUnits,
-                Next = this.grid.NextUnits,
+                Nexts = grid.Nexts,
+                Currs = grid.Currs,
+                Prevs = grid.Prevs,
                 span = span,
                 harfsqdt = harfsqdt,
             }
-            .Schedule(total, 1, this.Dependency);
+            .Schedule(total, 128, this.Dependency);
 
         }
 
-        struct WaveGridCaluclationJob : IJobParallelFor
+        [BurstCompile]
+        unsafe struct WaveGridCaluclationJob : IJobParallelFor
         {
-            [ReadOnly]
-            public NativeArray<WaveGridPrevPoint> Prev;
+            //[ReadOnly]
+            //public NativeArray<float4> Prevs;
+            //[ReadOnly]
+            //public NativeArray<float4> Currs;
 
-            public NativeArray<WaveGridNextPoint> Next;
+            //public NativeArray<float4> Nexts;
+
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public float4* pPrev;
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public float4* pCurr;
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public float4* pNext;
 
             public int2 span;
             public float harfsqdt;
@@ -88,34 +111,112 @@ namespace DotsLite.WaveGrid
                 var i = new int2(index & mask.x, index >> math.countbits(mask.x));
                 int _(int ix, int iy) => (ix & mask.x) + (iy & mask.y) * span.x;
 
-                var hc = this.Prev[index].Curr;
-                var hl = this.Prev[_(i.x-1, i.y)].Curr;
-                var hr = this.Prev[_(i.x+1, i.y)].Curr;
-                var hu = this.Prev[_(i.x, i.y-1)].Curr;
-                var hd = this.Prev[_(i.x, i.y+1)].Curr;
+                var hc = this.pCurr[index];
+                var hl = this.pCurr[_(i.x-1, i.y)];
+                var hr = this.pCurr[_(i.x+1, i.y)];
+                var hu = this.pCurr[_(i.x, i.y-1)];
+                var hd = this.pCurr[_(i.x, i.y+1)];
 
                 var aw = c2 * (hl - hc + hr - hc);
                 var ah = c2 * (hu - hc + hd - hc);
 
-                var hp = this.Prev[index + 0].Prev;
+                var hp = this.pPrev[index];
                 var hn = hc + (hc - hp) * d + (aw + ah) * harfsqdt;
 
-                this.Next[index] = new WaveGridNextPoint { Next = hn };
+                this.pNext[index] = hn;
             }
         }
 
-        struct WaveGridCopyJob : IJobParallelFor
+        [BurstCompile]
+        struct WaveGridCaluclationSimpleJob : IJobParallelFor
         {
+            [NoAlias]
             [ReadOnly]
-            public NativeArray<WaveGridNextPoint> Next;
+            public NativeArray<float> Prevs;
+            [NoAlias]
+            [ReadOnly]
+            public NativeArray<float> Currs;
 
-            public NativeArray<WaveGridPrevPoint> Prev;
+            [NoAlias]
+            public NativeArray<float> Nexts;
+
+            public int2 span;
+            public float harfsqdt;
 
             public void Execute(int index)
             {
-                var hc = this.Prev[index].Curr;
-                var hn = this.Next[index].Next;
-                this.Prev[index] = new WaveGridPrevPoint { Curr = hn, Prev = hc };
+                const float c2 = 0.8f;
+                const float d = 0.999f;
+
+                var span = this.span;
+                var mask = span - 1;
+
+                var i = new int2(index & mask.x, index >> math.countbits(mask.x));
+                int _(int ix, int iy) => (ix & mask.x) + (iy & mask.y) * span.x;
+
+                var hc = this.Currs[index];
+                var hl = this.Currs[_(i.x - 1, i.y)];
+                var hr = this.Currs[_(i.x + 1, i.y)];
+                var hu = this.Currs[_(i.x, i.y - 1)];
+                var hd = this.Currs[_(i.x, i.y + 1)];
+
+                var aw = c2 * (hl - hc + hr - hc);
+                var ah = c2 * (hu - hc + hd - hc);
+
+                var hp = this.Prevs[index];
+                var hn = hc + (hc - hp) * d + (aw + ah) * harfsqdt;
+
+                this.Nexts[index] = hn;
+            }
+        }
+
+        [BurstCompile]
+        unsafe struct WaveGridCopyJob : IJobParallelFor
+        {
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public float4* pPrev;
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public float4* pCurr;
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public float4* pNext;
+            //public NativeArray<float4> Prevs;
+
+            //public NativeArray<float4> Currs;
+
+            //[ReadOnly]
+            //public NativeArray<float4> Nexts;
+
+            public void Execute(int index)
+            {
+                var hc = this.pCurr[index];
+                var hn = this.pNext[index];
+                this.pPrev[index] = hc;
+                this.pCurr[index] = hn;
+            }
+        }
+
+        [BurstCompile]
+        unsafe struct WaveGridCopy256Job : IJobParallelFor
+        {
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public v2* pPrev;
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public float4* pCurr;
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public float4* pNext;
+            //public NativeArray<float4> Prevs;
+
+            //public NativeArray<float4> Currs;
+
+            //[ReadOnly]
+            //public NativeArray<float4> Nexts;
+
+            public void Execute(int index)
+            {
+                var hc = this.pCurr[index];
+                var hn = this.pNext[index];
+                this.pPrev[index] = hc;
+                this.pCurr[index] = hn;
             }
         }
     }

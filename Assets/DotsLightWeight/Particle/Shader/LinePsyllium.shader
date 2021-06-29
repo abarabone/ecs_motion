@@ -13,7 +13,9 @@
 		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 
 		Blend SrcAlpha One
-		Lighting Off ZWrite Off Fog
+		Lighting Off
+		//ZWrite Off
+		Fog
 		{
 			Mode Off
 		}

@@ -11,7 +11,9 @@ Shader "Custom/Psyllium ptop uv blend"
 		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
         Blend SrcAlpha OneMinusSrcAlpha
-		Lighting Off ZWrite Off Fog
+		Lighting Off
+        //ZWrite Off
+        Fog
 		{
 			Mode Off
 		}

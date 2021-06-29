@@ -11,24 +11,21 @@ Shader "Custom/WaveGrid"
 	
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
+        Blend SrcAlpha OneMinusSrcAlpha
+		Lighting Off
+		//ZWrite Off
+		Fog
+		{
+			Mode Off
+		}
+		Cull Off
+
 		LOD 200
 		
 		Pass
 		{
-			Lighting Off
-			LOD 200
-			
-
-			Tags
-			{
-				"Queue"				= "Geometry"
-				"IgnoreProjector"	= "True"
-				"RenderType"		= "Opaque"
-			//	"LightMode"			= "Vertex"
-			}
-
 			CGPROGRAM
 
 			//#pragma target 5.0
@@ -102,7 +99,7 @@ Shader "Custom/WaveGrid"
 			{
 				fixed4 texcol = tex2D(_MainTex, i.uv);
 				
-				fixed4 col = fixed4(texcol * i.color.xyz, 1.0);
+				fixed4 col = texcol * i.color;
 
 				UNITY_APPLY_FOG(i.fogCoord, col);
 

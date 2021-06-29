@@ -12,28 +12,34 @@ namespace DotsLite.WaveGrid
 {
     public class WaveGridMasterData : IComponentData, IDisposable
     {
-        public NativeArray<WaveGridPrevPoint> PrevUnits;
-        public NativeArray<WaveGridNextPoint> NextUnits;
+        //public NativeArray<WaveGridPrevPoint> PrevUnits;
+        //public NativeArray<WaveGridNextPoint> NextUnits;
+        public NativeArray<float> Nexts;
+        public NativeArray<float> Currs;
+        public NativeArray<float> Prevs;
         public int2 UnitLengthInGrid;
         public int2 NumGrids;
         public float UnitScale;
 
         public void Dispose()
         {
-            this.PrevUnits.Dispose();
-            this.NextUnits.Dispose();
+            //this.PrevUnits.Dispose();
+            //this.NextUnits.Dispose();
+            this.Nexts.Dispose();
+            this.Currs.Dispose();
+            this.Prevs.Dispose();
             Debug.Log("disp");
         }
     }
-    public struct WaveGridPrevPoint
-    {
-        public float Curr;
-        public float Prev;
-    }
-    public struct WaveGridNextPoint
-    {
-        public float Next;
-    }
+    //public struct WaveGridPrevPoint
+    //{
+    //    public float Curr;
+    //    public float Prev;
+    //}
+    //public struct WaveGridNextPoint
+    //{
+    //    public float Next;
+    //}
 
     public struct WaveGridData : IComponentData
     {

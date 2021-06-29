@@ -79,7 +79,7 @@ namespace DotsLite.Draw
             var dstspan = (srcw + 1) * sizeof(float);
             var count = srch + 1;
             var unitScale = this.gridMaster.UnitScale;
-            var units = this.gridMaster.NextUnits;
+            var units = this.gridMaster.Nexts;
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);

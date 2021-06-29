@@ -69,8 +69,9 @@ namespace DotsLite.WaveGrid.Aurthoring
                 var totalLength = ww*lw * wh*lh + wh*lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
                 em.AddComponentData(ent, new WaveGridMasterData
                 {
-                    PrevUnits = new NativeArray<WaveGridPrevPoint>(totalLength, Allocator.Persistent),
-                    NextUnits = new NativeArray<WaveGridNextPoint>(totalLength, Allocator.Persistent),
+                    Prevs = new NativeArray<float>(totalLength, Allocator.Persistent),
+                    Currs = new NativeArray<float>(totalLength, Allocator.Persistent),
+                    Nexts = new NativeArray<float>(totalLength, Allocator.Persistent),
                     NumGrids = this.NumGrids,
                     UnitLengthInGrid = this.UnitLengthInGrid,
                     UnitScale = this.UnitDistance,
