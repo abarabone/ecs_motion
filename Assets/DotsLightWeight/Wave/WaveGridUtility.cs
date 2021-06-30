@@ -11,7 +11,7 @@ using Unity.Transforms;
 using System;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.WaveGrid
+namespace DotsLite.HeightGrid
 {
     using DotsLite.CharacterMotion;
     using DotsLite.SystemGroup;
@@ -20,7 +20,7 @@ namespace DotsLite.WaveGrid
     using DotsLite.Particle;
     using DotsLite.Dependency;
     using DotsLite.Model;
-    using DotsLite.WaveGrid;
+    using DotsLite.HeightGrid;
 
     //public static class WaveGridUtility
     //{

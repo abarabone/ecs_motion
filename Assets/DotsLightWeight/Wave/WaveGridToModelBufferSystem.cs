@@ -20,7 +20,7 @@ namespace DotsLite.Draw
     using DotsLite.Particle;
     using DotsLite.Dependency;
     using DotsLite.Model;
-    using DotsLite.WaveGrid;
+    using DotsLite.HeightGrid;
     using DotsLite.Utilities;
 
     //[DisableAutoCreation]
@@ -42,14 +42,14 @@ namespace DotsLite.Draw
         }
 
 
-        WaveGridMasterData gridMaster;
+        Wave.GridMasterData gridMaster;
 
         protected override void OnStartRunning()
         {
-            this.RequireSingletonForUpdate<WaveGridMasterData>();
+            this.RequireSingletonForUpdate<Wave.GridMasterData>();
 
-            if (!this.HasSingleton<WaveGridMasterData>()) return;
-            this.gridMaster = this.GetSingleton<WaveGridMasterData>();
+            if (!this.HasSingleton<Wave.GridMasterData>()) return;
+            this.gridMaster = this.GetSingleton<Wave.GridMasterData>();
 
             //this.Entities
             //    .WithoutBurst()
@@ -86,12 +86,12 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
+                .WithAll<Height.GridLevel0Tag>()
                 .WithReadOnly(offsetsOfDrawModel)
-
                 .ForEach((
                     in DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData linker,
-                    in WaveGridData grid,
+                    in Height.GridData grid,
                     in Translation pos) =>
                 {
                     if (target.DrawInstanceId == -1) return;

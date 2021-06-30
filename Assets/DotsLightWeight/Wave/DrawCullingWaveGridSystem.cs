@@ -16,6 +16,7 @@ namespace DotsLite.Draw
     using DotsLite.SystemGroup;
     using DotsLite.Geometry;
     using DotsLite.Particle;
+    using DotsLite.HeightGrid;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Culling))]
@@ -42,7 +43,7 @@ namespace DotsLite.Draw
                 .ForEach((
                     ref DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData modellink,
-                    in WaveGrid.WaveGridData grid,
+                    in Height.GridData grid,
                     in Translation pos) =>
                 {
                     if (modellink.DrawModelEntityCurrent == Entity.Null)

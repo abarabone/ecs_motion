@@ -8,9 +8,9 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace DotsLite.WaveGrid.Aurthoring
+namespace DotsLite.HeightGrid.Aurthoring
 {
-    using DotsLite.WaveGrid;
+    using DotsLite.HeightGrid;
     using DotsLite.Model;
     using DotsLite.Draw;
     using DotsLite.Model.Authoring;
@@ -67,7 +67,7 @@ namespace DotsLite.WaveGrid.Aurthoring
             void initMasterEntityComponent_(Entity ent)
             {
                 var totalLength = ww*lw * wh*lh + wh*lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
-                em.AddComponentData(ent, new WaveGridMasterData
+                em.AddComponentData(ent, new Wave.GridMasterData
                 {
                     Prevs = new NativeArray<float>(totalLength, Allocator.Persistent),
                     Currs = new NativeArray<float>(totalLength, Allocator.Persistent),
@@ -100,17 +100,18 @@ namespace DotsLite.WaveGrid.Aurthoring
                 gcs.DstEntityManager.SetName_(ent, $"wavegrid@{lodlevel}:{i.x}:{i.y}");
 
 
-                var types = new ComponentTypes(new ComponentType[]
+                var types = new List<ComponentType>
                 {
-                    typeof(WaveGridData),
+                    typeof(Height.GridData),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(Translation)
-                });
-                em.AddComponents(ent, types);
+                    typeof(Translation),
+                };
+                if (lodlevel == 0) types.Add(typeof(Height.GridLevel0Tag));
+                em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
 
-                em.SetComponentData(ent, new WaveGridData
+                em.SetComponentData(ent, new Height.GridData
                 {
                     GridId = i,
                     UnitScaleOnLod = this.UnitDistance * (1 << lodlevel),

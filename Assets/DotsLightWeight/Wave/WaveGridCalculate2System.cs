@@ -9,7 +9,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
 
-namespace DotsLite.WaveGrid
+namespace DotsLite.HeightGrid
 {
     using DotsLite.Misc;
 
@@ -18,27 +18,27 @@ namespace DotsLite.WaveGrid
     public class WaveGridCalculate2System : SystemBase
     {
 
-        WaveGridMasterData grid;
+        Wave.GridMasterData gridMaster;
 
 
         protected override void OnStartRunning()
         {
-            this.RequireSingletonForUpdate<WaveGridMasterData>();
+            this.RequireSingletonForUpdate<Wave.GridMasterData>();
 
-            if (!this.HasSingleton<WaveGridMasterData>()) return;
-            this.grid = this.GetSingleton<WaveGridMasterData>();
-            Debug.Log(this.grid);
+            if (!this.HasSingleton<Wave.GridMasterData>()) return;
+            this.gridMaster = this.GetSingleton<Wave.GridMasterData>();
+            Debug.Log(this.gridMaster);
 
-            this.grid.Currs[10] = -3f;
-            this.grid.Currs[11] = -3f;
-            this.grid.Currs[12] = -3f;
-            this.grid.Currs[13] = -3f;
-            this.grid.Currs[14] = -3f;
-            this.grid.Currs[15] = -3f;
-            this.grid.Currs[16] = -3f;
-            this.grid.Currs[17] = -3f;
-            this.grid.Currs[18] = -3f;
-            this.grid.Currs[19] = -3f;
+            this.gridMaster.Currs[10] = -3f;
+            this.gridMaster.Currs[11] = -3f;
+            this.gridMaster.Currs[12] = -3f;
+            this.gridMaster.Currs[13] = -3f;
+            this.gridMaster.Currs[14] = -3f;
+            this.gridMaster.Currs[15] = -3f;
+            this.gridMaster.Currs[16] = -3f;
+            this.gridMaster.Currs[17] = -3f;
+            this.gridMaster.Currs[18] = -3f;
+            this.gridMaster.Currs[19] = -3f;
         }
 
 
@@ -49,20 +49,100 @@ namespace DotsLite.WaveGrid
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
 
-            var span = this.grid.NumGrids * this.grid.UnitLengthInGrid;
+            var spanInGrid = this.gridMaster.UnitLengthInGrid;
+            var unitLength = spanInGrid.x * spanInGrid.y;
+            var span = this.gridMaster.NumGrids * this.gridMaster.UnitLengthInGrid;
             var total = span.x * span.y;
-
             var span4 = new int2(span.x >> 2, span.y);
 
+            var pNextsRo = (float4*)this.gridMaster.Nexts.GetUnsafeReadOnlyPtr();
+            var pCurrsRw = (float4*)this.gridMaster.Currs.GetUnsafePtr();
+            var pPrevsRw = (float4*)this.gridMaster.Prevs.GetUnsafePtr();
 
             this.Entities
-                .ForEach((
-                    WaveGrid.WaveGridData grid
-
-                    ) =>
+                .WithName("copy")
+                .WithBurst()
+                //.WithReadOnly(pNextsRo)
+                .WithAll<Height.GridLevel0Tag>()
+                .WithNativeDisableUnsafePtrRestriction(pNextsRo)
+                .WithNativeDisableUnsafePtrRestriction(pCurrsRw)
+                .WithNativeDisableUnsafePtrRestriction(pPrevsRw)
+                .ForEach((in Height.GridData grid) =>
                 {
 
-                });
+                    var ipos = grid.GridId >> grid.LodLevel;
+
+                    for (var iu = 0; iu < unitLength; iu++)
+                    {
+                        var i = ipos.x + ipos.y * span4.x;
+
+                        pPrevsRw[i] = pCurrsRw[i];
+                        pCurrsRw[i] = pNextsRo[i];
+
+                        ipos.x++;
+                        ipos.y += ipos >> span4
+                    }
+
+                }))
+                .ScheduleParallel();
+            
+
+            var pNextsRw = (float4*)this.gridMaster.Nexts.GetUnsafePtr();
+            var pCurrsRo = (float4*)this.gridMaster.Currs.GetUnsafeReadOnlyPtr();
+            var pPrevsRo = (float4*)this.gridMaster.Prevs.GetUnsafeReadOnlyPtr();
+
+            this.Entities
+                .WithName("move")
+                .WithBurst()
+                .WithNativeDisableUnsafePtrRestriction(pNextsRw)
+                .WithNativeDisableUnsafePtrRestriction(pCurrsRo)
+                .WithNativeDisableUnsafePtrRestriction(pPrevsRo)
+                //.WithReadOnly(pCurrsRo)
+                //.WithReadOnly(pPrevsRo)
+                .WithAll<Height.GridLevel0Tag>()
+                .ForEach((in Height.GridData grid) =>
+                {
+
+                    var startpos = grid.GridId >> grid.LodLevel;
+                    var ipos = startpos.x + startpos.y * spanInGrid.x;
+                    for (var iu = 0; iu < unitLength; iu++)
+                    {
+                        const float c2 = 0.8f;
+                        const float d = 0.999f;
+
+                        var mask = span - 1;
+
+                        var i = new int2(ipos & mask.x, ipos >> math.countbits(mask.x));
+
+
+                        int h(int iy) => i.x + (iy & mask.y) * span.x;
+                        int w(int ix) => (ix & mask.x) + i.y * span.x;
+
+                        var hc = pCurrsRo[ipos];
+
+                        var hu = pCurrsRo[h(i.y - 1)];
+                        var hd = pCurrsRo[h(i.y + 1)];
+
+                        var hl = hc.wxyz;
+                        hl.x = pCurrsRo[w(i.x - 1)].w;
+                        var hr = hc.yzwx;
+                        hr.w = pCurrsRo[w(i.x + 1)].x;
+
+
+                        var hc2 = hc + hc;
+                        var aw = c2 * (hl + hr - hc2);
+                        var ah = c2 * (hu + hd - hc2);
+
+                        var hp = pPrevsRo[ipos];
+                        var hn = hc + (hc - hp) * d + (aw + ah) * harfsqdt;
+
+                        pNextsRw[ipos] = hn;
+
+                        ipos++;
+                    }
+
+                })
+                .ScheduleParallel();
 
         }
 

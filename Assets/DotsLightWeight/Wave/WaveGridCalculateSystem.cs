@@ -9,7 +9,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
 
-namespace DotsLite.WaveGrid
+namespace DotsLite.HeightGrid
 {
     using DotsLite.Misc;
 
@@ -18,27 +18,27 @@ namespace DotsLite.WaveGrid
     public class WaveGridCalculateSystem : SystemBase
     {
 
-        WaveGridMasterData grid;
+        Wave.GridMasterData gridMaster;
 
 
         protected override void OnStartRunning()
         {
-            this.RequireSingletonForUpdate<WaveGridMasterData>();
+            this.RequireSingletonForUpdate<Wave.GridMasterData>();
 
-            if (!this.HasSingleton<WaveGridMasterData>()) return;
-            this.grid = this.GetSingleton<WaveGridMasterData>();
-            Debug.Log(this.grid);
+            if (!this.HasSingleton<Wave.GridMasterData>()) return;
+            this.gridMaster = this.GetSingleton<Wave.GridMasterData>();
+            Debug.Log(this.gridMaster);
 
-            this.grid.Currs[10] = -3f;
-            this.grid.Currs[11] = -3f;
-            this.grid.Currs[12] = -3f;
-            this.grid.Currs[13] = -3f;
-            this.grid.Currs[14] = -3f;
-            this.grid.Currs[15] = -3f;
-            this.grid.Currs[16] = -3f;
-            this.grid.Currs[17] = -3f;
-            this.grid.Currs[18] = -3f;
-            this.grid.Currs[19] = -3f;
+            this.gridMaster.Currs[10] = -3f;
+            this.gridMaster.Currs[11] = -3f;
+            this.gridMaster.Currs[12] = -3f;
+            this.gridMaster.Currs[13] = -3f;
+            this.gridMaster.Currs[14] = -3f;
+            this.gridMaster.Currs[15] = -3f;
+            this.gridMaster.Currs[16] = -3f;
+            this.gridMaster.Currs[17] = -3f;
+            this.gridMaster.Currs[18] = -3f;
+            this.gridMaster.Currs[19] = -3f;
         }
 
 
@@ -49,7 +49,7 @@ namespace DotsLite.WaveGrid
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
 
-            var span = this.grid.NumGrids * this.grid.UnitLengthInGrid;
+            var span = this.gridMaster.NumGrids * this.gridMaster.UnitLengthInGrid;
             var total = span.x * span.y;
 
             var span4 = new int2(span.x >> 2, span.y);
@@ -87,18 +87,18 @@ namespace DotsLite.WaveGrid
             //}
             this.Dependency = new WaveGridCopyJob
             {
-                pNext = (float4*)grid.Nexts.GetUnsafeReadOnlyPtr(),
-                pCurr = (float4*)grid.Currs.GetUnsafePtr(),
-                pPrev = (float4*)grid.Prevs.GetUnsafePtr(),
+                pNext = (float4*)gridMaster.Nexts.GetUnsafeReadOnlyPtr(),
+                pCurr = (float4*)gridMaster.Currs.GetUnsafePtr(),
+                pPrev = (float4*)gridMaster.Prevs.GetUnsafePtr(),
             }
             .Schedule(total >> 3, 64, this.Dependency);
 
 
             this.Dependency = new WaveGridCaluclationJob
             {
-                pNext = (float4*)grid.Nexts.GetUnsafePtr(),
-                pCurr = (float4*)grid.Currs.GetUnsafeReadOnlyPtr(),
-                pPrev = (float4*)grid.Prevs.GetUnsafeReadOnlyPtr(),
+                pNext = (float4*)gridMaster.Nexts.GetUnsafePtr(),
+                pCurr = (float4*)gridMaster.Currs.GetUnsafeReadOnlyPtr(),
+                pPrev = (float4*)gridMaster.Prevs.GetUnsafeReadOnlyPtr(),
                 span = span4,
                 harfsqdt = harfsqdt,
             }
