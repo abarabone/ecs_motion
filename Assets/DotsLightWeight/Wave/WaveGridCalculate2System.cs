@@ -13,9 +13,9 @@ namespace DotsLite.WaveGrid
 {
     using DotsLite.Misc;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
-    public class WaveGridCalculateSystem : SystemBase
+    public class WaveGridCalculate2System : SystemBase
     {
 
         WaveGridMasterData grid;
@@ -55,63 +55,14 @@ namespace DotsLite.WaveGrid
             var span4 = new int2(span.x >> 2, span.y);
 
 
-            //if (X86.Avx2.IsAvx2Supported)
-            //{
-            //    this.Dependency = new WaveGridCopySimd256Avx2Job
-            //    {
-            //        pNext = (v256*)grid.Nexts.GetUnsafeReadOnlyPtr(),
-            //        pCurr = (v256*)grid.Currs.GetUnsafePtr(),
-            //        pPrev = (v256*)grid.Prevs.GetUnsafePtr(),
-            //    }
-            //    .Schedule(total >> 3, 128, this.Dependency);
-            //}
-            //else if (X86.Avx.IsAvxSupported)
-            //{
-            //    this.Dependency = new WaveGridCopySimd256AvxJob
-            //    {
-            //        pNext = (v256*)grid.Nexts.GetUnsafeReadOnlyPtr(),
-            //        pCurr = (v256*)grid.Currs.GetUnsafePtr(),
-            //        pPrev = (v256*)grid.Prevs.GetUnsafePtr(),
-            //    }
-            //    .Schedule(total >> 3, 128, this.Dependency);
-            //}
-            //else
-            //{
-            //    this.Dependency = new WaveGridCopyJob
-            //    {
-            //        pNext = (float4*)grid.Nexts.GetUnsafeReadOnlyPtr(),
-            //        pCurr = (float4*)grid.Currs.GetUnsafePtr(),
-            //        pPrev = (float4*)grid.Prevs.GetUnsafePtr(),
-            //    }
-            //    .Schedule(total >> 2, 128, this.Dependency);
-            //}
-            this.Dependency = new WaveGridCopyJob
-            {
-                pNext = (float4*)grid.Nexts.GetUnsafeReadOnlyPtr(),
-                pCurr = (float4*)grid.Currs.GetUnsafePtr(),
-                pPrev = (float4*)grid.Prevs.GetUnsafePtr(),
-            }
-            .Schedule(total >> 3, 64, this.Dependency);
+            this.Entities
+                .ForEach((
+                    WaveGrid.WaveGridData grid
 
+                    ) =>
+                {
 
-            this.Dependency = new WaveGridCaluclationJob
-            {
-                pNext = (float4*)grid.Nexts.GetUnsafePtr(),
-                pCurr = (float4*)grid.Currs.GetUnsafeReadOnlyPtr(),
-                pPrev = (float4*)grid.Prevs.GetUnsafeReadOnlyPtr(),
-                span = span4,
-                harfsqdt = harfsqdt,
-            }
-            .Schedule(total >> 2, 64, this.Dependency);
-            //this.Dependency = new WaveGridCaluclationSimpleJob
-            //{
-            //    Nexts = grid.Nexts,
-            //    Currs = grid.Currs.AsReadOnly(),
-            //    Prevs = grid.Prevs.AsReadOnly(),
-            //    span = span,
-            //    harfsqdt = harfsqdt,
-            //}
-            //.Schedule(total, 128, this.Dependency);
+                });
 
         }
 
