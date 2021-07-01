@@ -49,348 +49,157 @@ namespace DotsLite.HeightGrid
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
 
-            var lineInGrid = this.gridMaster.UnitLengthInGrid;
-            lineInGrid.x >>= 2;
-            var line = this.gridMaster.NumGrids * lineInGrid;
-            var span = new int2(lineInGrid.x, line.x);
+            var spanInGrid = this.gridMaster.UnitLengthInGrid;
+            spanInGrid.x >>= 2;
+            var span = this.gridMaster.NumGrids * spanInGrid;
+            var totalLen = span.x * span.y;
+            var lenInGrid = spanInGrid.x * spanInGrid.y;
 
-            var total = line.x * line.y;
-            var mask = line - 1;
+            var maskInGrid = spanInGrid - 1;
+            var mask = span - 1;
 
-            var pNextsRo = (float4*)this.gridMaster.Nexts.GetUnsafeReadOnlyPtr();
-            var pCurrsRw = (float4*)this.gridMaster.Currs.GetUnsafePtr();
-            var pPrevsRw = (float4*)this.gridMaster.Prevs.GetUnsafePtr();
+            var nexts = this.gridMaster.Nexts;
+            var currs = this.gridMaster.Currs;
+            var prevs = this.gridMaster.Prevs;
+
+            //var pNextsRo = (float4*)this.gridMaster.Nexts.GetUnsafeReadOnlyPtr();
+            //var pCurrsRw = (float4*)this.gridMaster.Currs.GetUnsafePtr();
+            //var pPrevsRw = (float4*)this.gridMaster.Prevs.GetUnsafePtr();
 
             this.Entities
                 .WithName("copy")
                 .WithBurst()
-                //.WithReadOnly(pNextsRo)
+                //.WithNativeDisableUnsafePtrRestriction(pNextsRo)
+                //.WithNativeDisableUnsafePtrRestriction(pCurrsRw)
+                //.WithNativeDisableUnsafePtrRestriction(pPrevsRw)
+                .WithNativeDisableParallelForRestriction(nexts)
+                .WithNativeDisableParallelForRestriction(currs)
+                .WithNativeDisableParallelForRestriction(prevs)
+                .WithNativeDisableContainerSafetyRestriction(nexts)
+                .WithNativeDisableContainerSafetyRestriction(currs)
+                .WithNativeDisableContainerSafetyRestriction(prevs)
+                .WithReadOnly(nexts)
                 .WithAll<Height.GridLevel0Tag>()
-                .WithNativeDisableUnsafePtrRestriction(pNextsRo)
-                .WithNativeDisableUnsafePtrRestriction(pCurrsRw)
-                .WithNativeDisableUnsafePtrRestriction(pPrevsRw)
                 .ForEach((in Height.GridData grid) =>
                 {
 
-                    var ofs = grid.GridId * span;
-                    var ist = ofs.x + ofs.y;
+                    var pNextsRo = (float4*)nexts.GetUnsafeReadOnlyPtr();
+                    var pCurrsRw = (float4*)currs.GetUnsafePtr();
+                    var pPrevsRw = (float4*)prevs.GetUnsafePtr();
 
-                    for (var iy = 0; iy < lineInGrid.y; iy++)
+                    var ofs = grid.GridId * spanInGrid;
+
+                    for (var ig = 0; ig < lenInGrid >> 2; ig++)
                     {
-                        for (var ix = 0; ix < lineInGrid.x; ix++)
-                        {
-                            pPrevsRw[ist + ix] = pCurrsRw[ist + ix];
-                            pCurrsRw[ist + ix] = pNextsRo[ist + ix];
-                        }
-                        ist += span.y;
+                        var ig2 = ig << 2;
+                        var i = ofs + new int2(ig2 & maskInGrid.x, ig2 >> math.countbits(maskInGrid.x));
+                        var index = i.x + i.y * span.x;
+                        pPrevsRw[index + 0] = pCurrsRw[index + 0];
+                        pCurrsRw[index + 0] = pNextsRo[index + 0];
+                        pPrevsRw[index + 1] = pCurrsRw[index + 1];
+                        pCurrsRw[index + 1] = pNextsRo[index + 1];
+                        pPrevsRw[index + 2] = pCurrsRw[index + 2];
+                        pCurrsRw[index + 2] = pNextsRo[index + 2];
+                        pPrevsRw[index + 3] = pCurrsRw[index + 3];
+                        pCurrsRw[index + 3] = pNextsRo[index + 3];
                     }
+
+
+                    //var ofs = grid.GridId * spanInGrid;
+                    //var i = ofs.x + ofs.y * span.x;
+
+                    //{
+                    //    var pCurrsRo = (float4*)currs.GetUnsafeReadOnlyPtr();
+                    //    var pPrevsRw = (float4*)prevs.GetUnsafePtr();
+                    //    var pDst = pPrevsRw + i;
+                    //    var pSrc = pCurrsRo + i;
+                    //    var outspan = span.x * sizeof(float4);
+                    //    var elmspan = spanInGrid.x * sizeof(float4);
+                    //    var count = spanInGrid.y;
+                    //    UnsafeUtility.MemCpyStride(pDst, outspan, pSrc, outspan, elmspan, count);
+                    //}
+                    //{
+                    //    var pNextsRo = (float4*)nexts.GetUnsafeReadOnlyPtr();
+                    //    var pCurrsRw = (float4*)currs.GetUnsafePtr();
+                    //    var pDst = pCurrsRw + i;
+                    //    var pSrc = pNextsRo + i;
+                    //    var outspan = span.x * sizeof(float4);
+                    //    var elmspan = spanInGrid.x * sizeof(float4);
+                    //    var count = spanInGrid.y;
+                    //    UnsafeUtility.MemCpyStride(pDst, outspan, pSrc, outspan, elmspan, count);
+                    //}
 
                 })
                 .ScheduleParallel();
-            
 
-            var pNextsRw = (float4*)this.gridMaster.Nexts.GetUnsafePtr();
-            var pCurrsRo = (float4*)this.gridMaster.Currs.GetUnsafeReadOnlyPtr();
-            var pPrevsRo = (float4*)this.gridMaster.Prevs.GetUnsafeReadOnlyPtr();
+            //var pNextsRw = (float4*)this.gridMaster.Nexts.GetUnsafePtr();
+            //var pCurrsRo = (float4*)this.gridMaster.Currs.GetUnsafeReadOnlyPtr();
+            //var pPrevsRo = (float4*)this.gridMaster.Prevs.GetUnsafeReadOnlyPtr();
 
             this.Entities
                 .WithName("move")
                 .WithBurst()
-                .WithNativeDisableUnsafePtrRestriction(pNextsRw)
-                .WithNativeDisableUnsafePtrRestriction(pCurrsRo)
-                .WithNativeDisableUnsafePtrRestriction(pPrevsRo)
+                //.WithNativeDisableUnsafePtrRestriction(pNextsRw)
+                //.WithNativeDisableUnsafePtrRestriction(pCurrsRo)
+                //.WithNativeDisableUnsafePtrRestriction(pPrevsRo)
                 //.WithReadOnly(pCurrsRo)
                 //.WithReadOnly(pPrevsRo)
+                .WithReadOnly(prevs)
+                .WithReadOnly(currs)
+                .WithNativeDisableParallelForRestriction(nexts)
+                .WithNativeDisableParallelForRestriction(currs)
+                .WithNativeDisableParallelForRestriction(prevs)
+                .WithNativeDisableContainerSafetyRestriction(nexts)
+                .WithNativeDisableContainerSafetyRestriction(currs)
+                .WithNativeDisableContainerSafetyRestriction(prevs)
                 .WithAll<Height.GridLevel0Tag>()
                 .ForEach((in Height.GridData grid) =>
                 {
 
-                    var ofs = grid.GridId * lineInGrid;
+                    var pNextsRw = (float4*)nexts.GetUnsafePtr();
+                    var pCurrsRo = (float4*)currs.GetUnsafeReadOnlyPtr();
+                    var pPrevsRo = (float4*)prevs.GetUnsafeReadOnlyPtr();
 
-                    for (var iy = 0; iy < lineInGrid.y; iy++)
+                    var ofs = grid.GridId * spanInGrid;
+    
+                    for (var ig = 0; ig < lenInGrid; ig++)
                     {
-                        for (var ix = 0; ix < lineInGrid.x; ix++)
-                        {
-                            const float c2 = 0.8f;
-                            const float d = 0.999f;
+                        const float c2 = 0.8f;
+                        const float d = 0.999f;
 
-                            int c() => ofs.x + ix + (ofs.y + iy) * span.y;
-                            int h(int iy) => ofs.x + ix + ((ofs.y + iy) & mask.y) * span.y;
-                            int w(int ix) => ((ofs.x + ix) & mask.x) + (ofs.y + iy) * span.y;
+                        var i = ofs + new int2(ig & maskInGrid.x, ig >> math.countbits(maskInGrid.x));
+                        var index = i.x + i.y * span.x;
 
-                            var hc = pCurrsRo[c()];
-
-                            var hu = pCurrsRo[h(iy - 1)];
-                            var hd = pCurrsRo[h(iy + 1)];
-
-                            var hl = hc.wxyz;
-                            hl.x = pCurrsRo[w(ix - 1)].w;
-                            var hr = hc.yzwx;
-                            hr.w = pCurrsRo[w(ix + 1)].x;
+                        int h(int iy) => i.x + (iy & mask.y) * span.x;
+                        int w(int ix) => (ix & mask.x) + i.y * span.x;
 
 
-                            var hc2 = hc + hc;
-                            var aw = c2 * (hl + hr - hc2);
-                            var ah = c2 * (hu + hd - hc2);
+                        var hc = pCurrsRo[index];
 
-                            var hp = pPrevsRo[c()];
-                            var hn = hc + (hc - hp) * d + (aw + ah) * harfsqdt;
+                        var hu = pCurrsRo[h(i.y - 1)];
+                        var hd = pCurrsRo[h(i.y + 1)];
 
-                            pNextsRw[c()] = hn;
-                        }
+                        var hl = hc.wxyz;
+                        hl.x = pCurrsRo[w(i.x - 1)].w;
+                        var hr = hc.yzwx;
+                        hr.w = pCurrsRo[w(i.x + 1)].x;
+                        //var hl = pCurrsRo[w(i.x - 1)];
+                        //var hr = pCurrsRo[w(i.x + 1)];
+
+
+                        var hc2 = hc + hc;
+                        var aw = c2 * (hl + hr - hc2);
+                        var ah = c2 * (hu + hd - hc2);
+
+                        var hp = pPrevsRo[index];
+                        var hn = hc + (hc - hp) * d + (aw + ah) * harfsqdt;
+
+                        pNextsRw[index] = hn;
                     }
 
                 })
                 .ScheduleParallel();
 
-        }
-
-        [BurstCompile]
-        unsafe struct WaveGridCaluclationJob : IJobParallelFor
-        {
-            //[ReadOnly]
-            //public NativeArray<float4> Prevs;
-            //[ReadOnly]
-            //public NativeArray<float4> Currs;
-
-            //public NativeArray<float4> Nexts;
-
-            [NoAlias][ReadOnly]
-            [NativeDisableUnsafePtrRestriction] public float4* pPrev;
-            [NoAlias][ReadOnly]
-            [NativeDisableUnsafePtrRestriction] public float4* pCurr;
-            [NoAlias]
-            [NativeDisableUnsafePtrRestriction] public float4* pNext;
-
-            public int2 span;
-            public float harfsqdt;
-
-            [BurstCompile]
-            public void Execute(int index)
-            {
-                const float c2 = 0.8f;
-                const float d = 0.999f;
-
-                var span = this.span;
-                var mask = span - 1;
-
-                var i = new int2(index & mask.x, index >> math.countbits(mask.x));
-
-
-                int h(int iy) => i.x + (iy & mask.y) * span.x;
-                int w(int ix) => (ix & mask.x) + i.y * span.x;
-
-                var hc = this.pCurr[index];
-
-                var hu = this.pCurr[h(i.y - 1)];
-                var hd = this.pCurr[h(i.y + 1)];
-
-                var hl = hc.wxyz;
-                hl.x = this.pCurr[w(i.x - 1)].w;
-                var hr = hc.yzwx;
-                hr.w = this.pCurr[w(i.x + 1)].x;
-
-
-                ////var iw = new int4(i.x - 1, i.x + 1, i.x, i.x);
-                ////var ih = new int4(i.y, i.y, i.y - 1, i.y + 1);
-                //var iw = i.xxxx + new int4(-1, 1, 0, 0);
-                //var ih = i.yyyy + new int4(0, 0, -1, 1);
-                //var iwh = (iw & mask.xxxx) + (ih & mask.yyyy) * span.xxxx;
-
-                //var hc = this.pCurr[index];
-
-                //var hu = this.pCurr[iwh.z];
-                //var hd = this.pCurr[iwh.w];
-
-                //var hl = hc.wxyz;
-                //hl.x = this.pCurr[iwh.x].w;
-                //var hr = hc.yzwx;
-                //hr.w = this.pCurr[iwh.y].x;
-
-
-                var hc2 = hc + hc;
-                var aw = c2 * (hl + hr - hc2);
-                var ah = c2 * (hu + hd - hc2);
-
-                var hp = this.pPrev[index];
-                var hn = hc + (hc - hp) * d + (aw + ah) * harfsqdt;
-
-                this.pNext[index] = hn;
-            }
-        }
-
-        [BurstCompile]
-        struct WaveGridCaluclationSimpleJob : IJobParallelFor
-        {
-            [NoAlias]
-            [ReadOnly]
-            public NativeArray<float>.ReadOnly Prevs;
-            [NoAlias]
-            [ReadOnly]
-            public NativeArray<float>.ReadOnly Currs;
-
-            [NoAlias]
-            [NativeDisableContainerSafetyRestriction]
-            public NativeArray<float> Nexts;
-
-            public int2 span;
-            public float harfsqdt;
-
-            [BurstCompile]
-            public void Execute(int index)
-            {
-                const float c2 = 0.8f;
-                const float d = 0.999f;
-
-                var span = this.span;
-                var mask = span - 1;
-
-                var i = new int2(index & mask.x, index >> math.countbits(mask.x));
-                int _(int ix, int iy) => (ix & mask.x) + (iy & mask.y) * span.x;
-
-                var hc = this.Currs[index];
-                var hl = this.Currs[_(i.x - 1, i.y)];
-                var hr = this.Currs[_(i.x + 1, i.y)];
-                var hu = this.Currs[_(i.x, i.y - 1)];
-                var hd = this.Currs[_(i.x, i.y + 1)];
-
-                var aw = c2 * (hl - hc + hr - hc);
-                var ah = c2 * (hu - hc + hd - hc);
-
-                var hp = this.Prevs[index];
-                var hn = hc + (hc - hp) * d + (aw + ah) * harfsqdt;
-
-                this.Nexts[index] = hn;
-            }
-        }
-
-        [BurstCompile]
-        unsafe struct WaveGridCopyJob : IJobParallelFor
-        {
-            [NoAlias]
-            [NativeDisableUnsafePtrRestriction] public float4* pPrev;
-            [NoAlias]
-            [NativeDisableUnsafePtrRestriction] public float4* pCurr;
-            [NoAlias]
-            [ReadOnly]
-            [NativeDisableUnsafePtrRestriction] public float4* pNext;
-            //public NativeArray<float4> Prevs;
-
-            //public NativeArray<float4> Currs;
-
-            //[ReadOnly]
-            //public NativeArray<float4> Nexts;
-
-            [BurstCompile]
-            public void Execute(int index)
-            {
-                var i = index << 1;
-                this.pPrev[i + 0] = this.pCurr[i + 0];
-                this.pCurr[i + 0] = this.pNext[i + 0];
-                this.pPrev[i + 1] = this.pCurr[i + 1];
-                this.pCurr[i + 1] = this.pNext[i + 1];
-            }
-        }
-
-        [BurstCompile]
-        unsafe struct WaveGridCopySimd256Avx2Job : IJobParallelFor
-        {
-            [NoAlias]
-            [NativeDisableParallelForRestriction]
-            [NativeDisableUnsafePtrRestriction] public v256* pPrev;
-            [NoAlias]
-            [NativeDisableParallelForRestriction]
-            [NativeDisableUnsafePtrRestriction] public v256* pCurr;
-            [NoAlias]
-            [ReadOnly]
-            [NativeDisableParallelForRestriction]
-            [NativeDisableUnsafePtrRestriction] public v256* pNext;
-
-            [BurstCompile]
-            public void Execute(int index)
-            {
-                if (X86.Avx2.IsAvx2Supported)
-                {
-                    var hc = X86.Avx2.mm256_stream_load_si256(this.pCurr + index);
-                    var hn = X86.Avx2.mm256_stream_load_si256(this.pNext + index);
-                    X86.Avx.mm256_stream_si256(this.pPrev + index, hc);
-                    X86.Avx.mm256_stream_si256(this.pCurr + index, hn);
-                }
-            }
-        }
-
-        [BurstCompile]
-        unsafe struct WaveGridCopySimd256AvxJob : IJobParallelFor
-        {
-            [NoAlias]
-            [NativeDisableParallelForRestriction]
-            [NativeDisableUnsafePtrRestriction] public v256* pPrev;
-            [NoAlias]
-            [NativeDisableParallelForRestriction]
-            [NativeDisableUnsafePtrRestriction] public v256* pCurr;
-            [NoAlias]
-            [ReadOnly]
-            [NativeDisableParallelForRestriction]
-            [NativeDisableUnsafePtrRestriction] public v256* pNext;
-
-            [BurstCompile]
-            public void Execute(int index)
-            {
-                if (X86.Avx.IsAvxSupported)
-                {
-                    var hc = X86.Avx.mm256_load_si256(this.pCurr + index);
-                    var hn = X86.Avx.mm256_load_si256(this.pNext + index);
-                    X86.Avx.mm256_stream_si256(this.pPrev + index, hc);
-                    X86.Avx.mm256_stream_si256(this.pCurr + index, hn);
-                }
-            }
-        }
-
-        [BurstCompile]
-        unsafe struct WaveGridCopyJob2 : IJobParallelFor
-        {
-            [NoAlias]
-            [NativeDisableUnsafePtrRestriction] public void* pPrev;
-            [NoAlias]
-            [NativeDisableUnsafePtrRestriction] public void* pCurr;
-            [NoAlias] [ReadOnly]
-            [NativeDisableUnsafePtrRestriction] public void* pNext;
-
-            [BurstCompile]
-            public void Execute(int index)
-            {
-                if (X86.Avx2.IsAvx2Supported)
-                {
-                    var pcurr = (v256*)this.pCurr;
-                    var pprev = (v256*)this.pPrev;
-                    var pnext = (v256*)this.pNext;
-                    var hc = X86.Avx2.mm256_stream_load_si256(pcurr + index);
-                    var hn = X86.Avx2.mm256_stream_load_si256(pnext + index);
-                    X86.Avx.mm256_stream_si256(pprev + index, hc);
-                    X86.Avx.mm256_stream_si256(pcurr + index, hn);
-                }
-                else if (X86.Avx.IsAvxSupported)
-                {
-                    var pcurr = (v256*)this.pCurr;
-                    var pprev = (v256*)this.pPrev;
-                    var pnext = (v256*)this.pNext;
-                    var hc = X86.Avx.mm256_load_si256(pcurr + index);
-                    var hn = X86.Avx.mm256_load_si256(pnext + index);
-                    X86.Avx.mm256_stream_si256(pprev + index, hc);
-                    X86.Avx.mm256_stream_si256(pcurr + index, hn);
-                }
-                else
-                {
-                    var i = index << 1;
-                    var pcurr = (float4*)this.pCurr;
-                    var pprev = (float4*)this.pPrev;
-                    var pnext = (float4*)this.pNext;
-                    pprev[i + 0] = pcurr[i + 0];
-                    pcurr[i + 0] = pnext[i + 0];
-                    pprev[i + 1] = pcurr[i + 1];
-                    pcurr[i + 1] = pnext[i + 1];
-                }
-            }
         }
     }
 }

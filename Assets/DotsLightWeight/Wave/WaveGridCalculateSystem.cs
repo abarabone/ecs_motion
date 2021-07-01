@@ -44,7 +44,7 @@ namespace DotsLite.HeightGrid
 
         protected override unsafe void OnUpdate()
         {
-            var dt = this.Time.DeltaTime * 5;
+            var dt = this.Time.DeltaTime * 3;
             var dtrate = dt * TimeEx.PrevDeltaTimeRcp;
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
@@ -91,7 +91,7 @@ namespace DotsLite.HeightGrid
                 pCurr = (float4*)gridMaster.Currs.GetUnsafePtr(),
                 pPrev = (float4*)gridMaster.Prevs.GetUnsafePtr(),
             }
-            .Schedule(total >> 3, 64, this.Dependency);
+            .Schedule(total >> 2 >> 3, 256, this.Dependency);
 
 
             this.Dependency = new WaveGridCaluclationJob
@@ -102,7 +102,7 @@ namespace DotsLite.HeightGrid
                 span = span4,
                 harfsqdt = harfsqdt,
             }
-            .Schedule(total >> 2, 64, this.Dependency);
+            .Schedule(total >> 2, 256, this.Dependency);
             //this.Dependency = new WaveGridCaluclationSimpleJob
             //{
             //    Nexts = grid.Nexts,
@@ -254,11 +254,30 @@ namespace DotsLite.HeightGrid
             [BurstCompile]
             public void Execute(int index)
             {
-                var i = index << 1;
-                this.pPrev[i + 0] = this.pCurr[i + 0];
-                this.pCurr[i + 0] = this.pNext[i + 0];
-                this.pPrev[i + 1] = this.pCurr[i + 1];
-                this.pCurr[i + 1] = this.pNext[i + 1];
+                var i = index << 3;
+                this.pPrev[i] = this.pCurr[i];
+                this.pCurr[i] = this.pNext[i];
+                i++;
+                this.pPrev[i] = this.pCurr[i];
+                this.pCurr[i] = this.pNext[i];
+                i++;
+                this.pPrev[i] = this.pCurr[i];
+                this.pCurr[i] = this.pNext[i];
+                i++;
+                this.pPrev[i] = this.pCurr[i];
+                this.pCurr[i] = this.pNext[i];
+                i++;
+                this.pPrev[i] = this.pCurr[i];
+                this.pCurr[i] = this.pNext[i];
+                i++;
+                this.pPrev[i] = this.pCurr[i];
+                this.pCurr[i] = this.pNext[i];
+                i++;
+                this.pPrev[i] = this.pCurr[i];
+                this.pCurr[i] = this.pNext[i];
+                i++;
+                this.pPrev[i] = this.pCurr[i];
+                this.pCurr[i] = this.pNext[i];
             }
         }
 

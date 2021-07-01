@@ -83,6 +83,11 @@ namespace DotsLite.Arms
             var dt = this.Time.DeltaTime;
             var dtrate = dt * TimeEx.PrevDeltaTimeRcp;
 
+
+            var grid = this.GetSingleton<HeightGrid.Wave.GridMasterData>();//暫定
+            var currs = grid.Currs;
+            var xspan = grid.UnitLengthInGrid.x * grid.NumGrids.x;
+
             this.Entities
                 .WithBurst()
                 .WithAll<Bullet.RayTag>()
@@ -98,6 +103,7 @@ namespace DotsLite.Arms
                 .WithNativeDisableContainerSafetyRestriction(sthit)
                 .WithNativeDisableParallelForRestriction(chhit)
                 .WithNativeDisableContainerSafetyRestriction(chhit)
+                .WithNativeDisableContainerSafetyRestriction(currs)// 暫定
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -115,6 +121,14 @@ namespace DotsLite.Arms
                             (link.OwnerStateEntity, pos.Value, tail.Position, 1.0f, targets);
 
                         if (!hit_.isHit) return;
+
+                        // 暫定
+                        //var i2 = new int2((int)pos.Value.x, (int)pos.Value.z);
+                        //i2 += 32 * 8;
+                        var a = 100.0f;
+                        currs[currs.Length >> 1] -= a * dt * dt * 0.5f;
+                        //currs[currs.Length >> 1 + 1] += a * dt * dt * 0.25f;
+                        //currs[currs.Length >> 1 - 1] += a * dt * dt * 0.25f;
 
 
                         var v = (pos.Value - vfact.PrePosition.xyz) * dtrate;

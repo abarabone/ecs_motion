@@ -23,7 +23,7 @@ namespace DotsLite.HeightGrid.Aurthoring
     {
 
         public float UnitDistance;
-        public BinaryLength2 UnitLengthInGrid;
+        public GridBinaryLength2 UnitLengthInGrid;
         public BinaryLength2 NumGrids;
         public int MaxLodLevel;
 

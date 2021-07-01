@@ -11,6 +11,26 @@ using Unity.Mathematics;
 namespace DotsLite.HeightGrid
 {
 
+    [Serializable]
+    public struct GridBinaryLength2
+    {
+        public binary_length_grid u;
+        public binary_length_grid v;
+        public static implicit operator int2(GridBinaryLength2 src) => new int2((int)src.u, (int)src.v);
+    }
+    public enum binary_length_grid
+    {
+        //length_1 = 1,
+        //length_2 = 2,
+        //length_4 = 4,
+        length_8 = 8,
+        length_16 = 16,
+        length_32 = 32,
+        length_64 = 64,
+        length_128 = 128,
+        length_256 = 256,
+    }
+
     public static class Wave
     {
         public class GridMasterData : IComponentData, IDisposable

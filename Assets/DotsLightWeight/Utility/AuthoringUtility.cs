@@ -22,8 +22,8 @@ namespace DotsLite.Authoring
         length_4 = 4,
         length_8 = 8,
         length_16 = 16,
-        //length_32 = 32,
-        //length_64 = 64,
+        length_32 = 32,
+        length_64 = 64,
         //length_128 = 128,
         //length_256 = 256,
     }
