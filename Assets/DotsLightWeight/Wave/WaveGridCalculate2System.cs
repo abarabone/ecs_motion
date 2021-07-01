@@ -13,7 +13,7 @@ namespace DotsLite.HeightGrid
 {
     using DotsLite.Misc;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     public class WaveGridCalculate2System : SystemBase
     {
@@ -49,11 +49,13 @@ namespace DotsLite.HeightGrid
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
 
-            var spanInGrid = this.gridMaster.UnitLengthInGrid;
-            var unitLength = spanInGrid.x * spanInGrid.y;
-            var span = this.gridMaster.NumGrids * this.gridMaster.UnitLengthInGrid;
-            var total = span.x * span.y;
-            var span4 = new int2(span.x >> 2, span.y);
+            var lineInGrid = this.gridMaster.UnitLengthInGrid;
+            lineInGrid.x >>= 2;
+            var line = this.gridMaster.NumGrids * lineInGrid;
+            var span = new int2(lineInGrid.x, line.x);
+
+            var total = line.x * line.y;
+            var mask = line - 1;
 
             var pNextsRo = (float4*)this.gridMaster.Nexts.GetUnsafeReadOnlyPtr();
             var pCurrsRw = (float4*)this.gridMaster.Currs.GetUnsafePtr();
@@ -70,20 +72,20 @@ namespace DotsLite.HeightGrid
                 .ForEach((in Height.GridData grid) =>
                 {
 
-                    var ipos = grid.GridId >> grid.LodLevel;
+                    var ofs = grid.GridId * span;
+                    var ist = ofs.x + ofs.y;
 
-                    for (var iu = 0; iu < unitLength; iu++)
+                    for (var iy = 0; iy < lineInGrid.y; iy++)
                     {
-                        var i = ipos.x + ipos.y * span4.x;
-
-                        pPrevsRw[i] = pCurrsRw[i];
-                        pCurrsRw[i] = pNextsRo[i];
-
-                        ipos.x++;
-                        ipos.y += ipos >> span4
+                        for (var ix = 0; ix < lineInGrid.x; ix++)
+                        {
+                            pPrevsRw[ist + ix] = pCurrsRw[ist + ix];
+                            pCurrsRw[ist + ix] = pNextsRo[ist + ix];
+                        }
+                        ist += span.y;
                     }
 
-                }))
+                })
                 .ScheduleParallel();
             
 
@@ -103,42 +105,39 @@ namespace DotsLite.HeightGrid
                 .ForEach((in Height.GridData grid) =>
                 {
 
-                    var startpos = grid.GridId >> grid.LodLevel;
-                    var ipos = startpos.x + startpos.y * spanInGrid.x;
-                    for (var iu = 0; iu < unitLength; iu++)
+                    var ofs = grid.GridId * lineInGrid;
+
+                    for (var iy = 0; iy < lineInGrid.y; iy++)
                     {
-                        const float c2 = 0.8f;
-                        const float d = 0.999f;
+                        for (var ix = 0; ix < lineInGrid.x; ix++)
+                        {
+                            const float c2 = 0.8f;
+                            const float d = 0.999f;
 
-                        var mask = span - 1;
+                            int c() => ofs.x + ix + (ofs.y + iy) * span.y;
+                            int h(int iy) => ofs.x + ix + ((ofs.y + iy) & mask.y) * span.y;
+                            int w(int ix) => ((ofs.x + ix) & mask.x) + (ofs.y + iy) * span.y;
 
-                        var i = new int2(ipos & mask.x, ipos >> math.countbits(mask.x));
+                            var hc = pCurrsRo[c()];
 
+                            var hu = pCurrsRo[h(iy - 1)];
+                            var hd = pCurrsRo[h(iy + 1)];
 
-                        int h(int iy) => i.x + (iy & mask.y) * span.x;
-                        int w(int ix) => (ix & mask.x) + i.y * span.x;
-
-                        var hc = pCurrsRo[ipos];
-
-                        var hu = pCurrsRo[h(i.y - 1)];
-                        var hd = pCurrsRo[h(i.y + 1)];
-
-                        var hl = hc.wxyz;
-                        hl.x = pCurrsRo[w(i.x - 1)].w;
-                        var hr = hc.yzwx;
-                        hr.w = pCurrsRo[w(i.x + 1)].x;
+                            var hl = hc.wxyz;
+                            hl.x = pCurrsRo[w(ix - 1)].w;
+                            var hr = hc.yzwx;
+                            hr.w = pCurrsRo[w(ix + 1)].x;
 
 
-                        var hc2 = hc + hc;
-                        var aw = c2 * (hl + hr - hc2);
-                        var ah = c2 * (hu + hd - hc2);
+                            var hc2 = hc + hc;
+                            var aw = c2 * (hl + hr - hc2);
+                            var ah = c2 * (hu + hd - hc2);
 
-                        var hp = pPrevsRo[ipos];
-                        var hn = hc + (hc - hp) * d + (aw + ah) * harfsqdt;
+                            var hp = pPrevsRo[c()];
+                            var hn = hc + (hc - hp) * d + (aw + ah) * harfsqdt;
 
-                        pNextsRw[ipos] = hn;
-
-                        ipos++;
+                            pNextsRw[c()] = hn;
+                        }
                     }
 
                 })
