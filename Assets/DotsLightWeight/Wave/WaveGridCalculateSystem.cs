@@ -13,7 +13,7 @@ namespace DotsLite.HeightGrid
 {
     using DotsLite.Misc;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     public class WaveGridCalculateSystem : SystemBase
     {
@@ -29,16 +29,16 @@ namespace DotsLite.HeightGrid
             this.gridMaster = this.GetSingleton<Wave.GridMasterData>();
             Debug.Log(this.gridMaster);
 
-            this.gridMaster.Currs[10] = -3f;
-            this.gridMaster.Currs[11] = -3f;
-            this.gridMaster.Currs[12] = -3f;
-            this.gridMaster.Currs[13] = -3f;
-            this.gridMaster.Currs[14] = -3f;
-            this.gridMaster.Currs[15] = -3f;
-            this.gridMaster.Currs[16] = -3f;
-            this.gridMaster.Currs[17] = -3f;
-            this.gridMaster.Currs[18] = -3f;
-            this.gridMaster.Currs[19] = -3f;
+            this.gridMaster.Currs[10] = 3f;
+            this.gridMaster.Currs[11] = 3f;
+            this.gridMaster.Currs[12] = 3f;
+            this.gridMaster.Currs[13] = 3f;
+            this.gridMaster.Currs[14] = 3f;
+            this.gridMaster.Currs[15] = 3f;
+            this.gridMaster.Currs[16] = 3f;
+            this.gridMaster.Currs[17] = 3f;
+            this.gridMaster.Currs[18] = 3f;
+            this.gridMaster.Currs[19] = 3f;
         }
 
 
@@ -91,7 +91,7 @@ namespace DotsLite.HeightGrid
                 pCurr = (float4*)gridMaster.Currs.GetUnsafePtr(),
                 pPrev = (float4*)gridMaster.Prevs.GetUnsafePtr(),
             }
-            .Schedule(total >> 2 >> 3, 256, this.Dependency);
+            .Schedule(total >> 2 >> 3, 64, this.Dependency);
 
 
             this.Dependency = new WaveGridCaluclationJob
@@ -102,7 +102,7 @@ namespace DotsLite.HeightGrid
                 span = span4,
                 harfsqdt = harfsqdt,
             }
-            .Schedule(total >> 2, 256, this.Dependency);
+            .Schedule(total >> 2, 64, this.Dependency);
             //this.Dependency = new WaveGridCaluclationSimpleJob
             //{
             //    Nexts = grid.Nexts,
