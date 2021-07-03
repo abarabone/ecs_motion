@@ -13,6 +13,8 @@ namespace DotsLite.Authoring
     {
         public binary_length u;
         public binary_length v;
+        public int x { get => (int)this.u; set => this.u = (binary_length)value; }
+        public int y { get => (int)this.v; set => this.v = (binary_length)value; }
         public static implicit operator int2(BinaryLength2 src) => new int2((int)src.u, (int)src.v);
     }
     public enum binary_length

@@ -98,12 +98,14 @@ namespace DotsLite.Geometry
 			var w = segmentX + 1;
 			var h = segmentY + 1;
 
-			var qVtxs =
-				from ix in Enumerable.Range(0, w)
+			var qVtx =
 				from iz in Enumerable.Range(0, h)
-				select new Vector3(ix, math.asfloat(ix + iz * w), iz) * unitDistance
+				from ix in Enumerable.Range(0, w)
+				let heightIndex = ix + iz * w
+				let hi = math.asfloat(heightIndex)
+				select new Vector3(ix, hi, iz) * unitDistance
 				;
-			mesh.SetVertices(qVtxs.ToArray());
+			mesh.SetVertices(qVtx.ToArray());
 
 			var qIdx =
 				from ix in Enumerable.Range(0, w - 1)
@@ -115,6 +117,63 @@ namespace DotsLite.Geometry
 					i0+0, i0+1, i1+0,//0, 1, 2,
 					i1+0, i0+1, i1+1,//2, 1, 3,
                 }
+				select i
+				;
+			mesh.SetIndices(qIdx.ToArray(), MeshTopology.Triangles, 0);
+
+			return mesh;
+		}
+		public static Mesh CreateSlantHalfGridMesh(int segmentX, int segmentY, float unitDistance)
+		{
+			var mesh = new Mesh();
+			var w = segmentX + 1;
+			var h = segmentY + 1;
+			var unit = unitDistance;
+			var half = unit * 0.5f;
+
+			int toindex_(int ix, int iz) => ix + iz * w;
+			static int pack4_(int ul, int ur, int dl, int dr) => ul >> 0 | ur >> 8 | dl >> 16 | dr >> 24;
+			static int pack1to4_(int index) => index >> 0 | index >> 8 | index >> 16 | index >> 24;
+
+			var qVtxLine =
+				from iz in Enumerable.Range(0, h)
+				select
+					from ix in Enumerable.Range(0, w)
+					let heightIndex = toindex_(ix, iz)
+					let hi4 = pack1to4_(heightIndex)
+					let fhi = math.asfloat(hi4)
+					select new Vector3(ix, fhi, iz) * unit
+				;
+			var qVtxHalf =
+				from iz in Enumerable.Range(0, segmentY)
+				select
+					from ix in Enumerable.Range(0, segmentX)
+					let heightIndex0 = toindex_(ix + 0, iz + 0)
+					let heightIndex1 = toindex_(ix + 1, iz + 0)
+					let heightIndex2 = toindex_(ix + 0, iz + 1)
+					let heightIndex3 = toindex_(ix + 1, iz + 1)
+					let hi4 = pack4_(heightIndex0, heightIndex1, heightIndex2, heightIndex3)
+					let fhi = math.asfloat(hi4)
+					select new Vector3(half + ix, fhi, half + iz) * unit
+				;
+			var qVtx = qVtxLine.First().Concat(
+					(qVtxHalf, qVtxLine.Skip(1)).Zip().SelectMany(x => x.src0.Concat(x.src1))
+				);
+			mesh.SetVertices(qVtx.ToArray());
+
+			var qIdx =
+				from ix in Enumerable.Range(0, w - 1)
+				from iz in Enumerable.Range(0, h - 1)
+				let i0 = ix + (iz + 0) * (w + segmentX)
+				let ihf = i0 + w
+				let i1 = ix + (iz + 1) * (w + segmentX)
+				from i in new int[]
+				{
+					i0+0, i0+1, ihf,
+					i0+0, ihf, i1+0,
+					ihf, i0+1, i1+1,
+					i1+0, ihf, i1+1,
+				}
 				select i
 				;
 			mesh.SetIndices(qIdx.ToArray(), MeshTopology.Triangles, 0);

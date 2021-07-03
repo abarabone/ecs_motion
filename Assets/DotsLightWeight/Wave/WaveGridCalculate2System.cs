@@ -61,6 +61,8 @@ namespace DotsLite.HeightGrid
             var nexts = this.gridMaster.Nexts;
             var currs = this.gridMaster.Currs;
             var prevs = this.gridMaster.Prevs;
+            var d = this.gridMaster.Dumping;
+            var c2 = this.gridMaster.Constraint2;
 
             //var pNextsRo = (float4*)this.gridMaster.Nexts.GetUnsafeReadOnlyPtr();
             //var pCurrsRw = (float4*)this.gridMaster.Currs.GetUnsafePtr();
@@ -164,8 +166,8 @@ namespace DotsLite.HeightGrid
     
                     for (var ig = 0; ig < lenInGrid; ig++)
                     {
-                        const float c2 = 0.8f;
-                        const float d = 0.999f;
+                        //const float c2 = 0.8f;
+                        //const float d = 0.999f;
 
                         var i = ofs + new int2(ig & maskInGrid.x, ig >> math.countbits(maskInGrid.x));
                         var index = i.x + i.y * span.x;

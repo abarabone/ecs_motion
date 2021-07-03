@@ -25,11 +25,16 @@ namespace DotsLite.HeightGrid.Aurthoring
         public float UnitDistance;
         public GridBinaryLength2 UnitLengthInGrid;
         public BinaryLength2 NumGrids;
+        //public int2 NumGrids;
         public int MaxLodLevel;
 
         public Shader DrawShader;
         public Texture Texture;
 
+        public float Dumping = 0.999f;
+        public float Constraint2 = 0.8f;
+
+        public bool UseHalfSlantMesh;
 
         /// <summary>
         /// 
@@ -41,23 +46,25 @@ namespace DotsLite.HeightGrid.Aurthoring
             var gcs = conversionSystem;
             var em = dstManager;
 
-            var ww = (int)this.NumGrids.u;
-            var wh = (int)this.NumGrids.v;
-            var lw = (int)this.UnitLengthInGrid.u;
-            var lh = (int)this.UnitLengthInGrid.v;
+            var ww = this.NumGrids.x;
+            var wh = this.NumGrids.y;
+            var lw = this.UnitLengthInGrid.x;
+            var lh = this.UnitLengthInGrid.y;
 
+            var mesh = this.UseHalfSlantMesh
+                ? MeshUtility.CreateSlantHalfGridMesh(lw, lh, 1.0f)
+                : MeshUtility.CreateGridMesh(lw, lh, 1.0f);
 
             initMasterEntityComponent_(entity);
 
-            var model = createModelEntity_();
+            var model = createModelEntity_(mesh);
             createAllGrids_(this.MaxLodLevel, model);
 
             return;
 
 
-            Entity createModelEntity_()
+            Entity createModelEntity_(Mesh mesh)
             {
-                var mesh = MeshUtility.CreateGridMesh(lw, lh, this.UnitDistance);
                 var mat = new Material(this.DrawShader);
                 mat.mainTexture = this.Texture;
                 var boneLength = 1;
@@ -77,6 +84,8 @@ namespace DotsLite.HeightGrid.Aurthoring
                     NumGrids = this.NumGrids,
                     UnitLengthInGrid = this.UnitLengthInGrid,
                     UnitScale = this.UnitDistance,
+                    Dumping = this.Dumping,
+                    Constraint2 = this.Constraint2,
                 });
             }
 

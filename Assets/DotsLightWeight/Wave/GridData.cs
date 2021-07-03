@@ -16,6 +16,8 @@ namespace DotsLite.HeightGrid
     {
         public binary_length_grid u;
         public binary_length_grid v;
+        public int x { get => (int)this.u; set => this.u = (binary_length_grid)value; }
+        public int y { get => (int)this.v; set => this.v = (binary_length_grid)value; }
         public static implicit operator int2(GridBinaryLength2 src) => new int2((int)src.u, (int)src.v);
     }
     public enum binary_length_grid
@@ -42,6 +44,8 @@ namespace DotsLite.HeightGrid
             public int2 UnitLengthInGrid;
             public int2 NumGrids;
             public float UnitScale;
+            public float Dumping;
+            public float Constraint2;
 
             public void Dispose()
             {
@@ -79,6 +83,11 @@ namespace DotsLite.HeightGrid
             var wspan = master.UnitLengthInGrid.x * master.NumGrids.x;
             var i = grid.GridId;// >> grid.LodLevel;
             return i.x + i.y * wspan;
+        }
+
+        public static void aaaa()
+        {
+
         }
     }
 }

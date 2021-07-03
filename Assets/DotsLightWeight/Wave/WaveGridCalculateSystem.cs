@@ -44,7 +44,7 @@ namespace DotsLite.HeightGrid
 
         protected override unsafe void OnUpdate()
         {
-            var dt = this.Time.DeltaTime * 3;
+            var dt = this.Time.DeltaTime;// * 3;
             var dtrate = dt * TimeEx.PrevDeltaTimeRcp;
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
@@ -53,7 +53,6 @@ namespace DotsLite.HeightGrid
             var total = span.x * span.y;
 
             var span4 = new int2(span.x >> 2, span.y);
-
 
             //if (X86.Avx2.IsAvx2Supported)
             //{
@@ -101,6 +100,8 @@ namespace DotsLite.HeightGrid
                 pPrev = (float4*)gridMaster.Prevs.GetUnsafeReadOnlyPtr(),
                 span = span4,
                 harfsqdt = harfsqdt,
+                c2 = this.gridMaster.Constraint2,
+                d = this.gridMaster.Dumping,
             }
             .Schedule(total >> 2, 64, this.Dependency);
             //this.Dependency = new WaveGridCaluclationSimpleJob
@@ -134,12 +135,15 @@ namespace DotsLite.HeightGrid
 
             public int2 span;
             public float harfsqdt;
+            public float d;
+            public float c2;
+
 
             [BurstCompile]
             public void Execute(int index)
             {
-                const float c2 = 0.8f;
-                const float d = 0.999f;
+                //const float c2 = 0.8f;
+                //const float d = 0.999f;
 
                 var span = this.span;
                 var mask = span - 1;
