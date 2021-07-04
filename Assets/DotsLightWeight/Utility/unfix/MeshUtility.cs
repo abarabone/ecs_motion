@@ -157,7 +157,6 @@ namespace DotsLite.Geometry
 			var qVtx = qVtxLine.First().Concat(
 					(qVtxHalf, qVtxLine.Skip(1)).Zip().SelectMany(x => x.src0.Concat(x.src1))
 				);
-
 			//qVtx.Select(x => new float3(x))
 			//	.Select(x => (x.xz, i: math.asint(x.y)))
 			//	.ForEach(x => Debug.Log($"{x.xz} {x.i & 0xffff} {(x.i >> 16) & 0xffff}"));

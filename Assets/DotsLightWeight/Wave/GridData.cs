@@ -59,6 +59,9 @@ namespace DotsLite.HeightGrid
             public float UnitScale;
             public float Dumping;
             public float Constraint2;
+
+            public int2 TotalLength;
+            public float UnitScaleRcp;
         }
     }
 
@@ -104,6 +107,54 @@ namespace DotsLite.HeightGrid
 
 
         //    return int2.zero;
+        //}
+
+        public static unsafe float CalcWaveHeight(this Wave.GridMasterInfo info, float* pHeight, float2 point)
+        {
+            var xy = point - info.LeftTopPosition.xz;
+            var i = xy * info.UnitScaleRcp;
+
+            var index2 = (int2)(xy * info.UnitScaleRcp);
+
+            var serialIndex = index2.x + index2.y * info.TotalLength.x;
+
+            var i0 = serialIndex + 0;
+            var i1 = serialIndex + 1;
+            var i2 = serialIndex + index2.x + 0;
+            var i3 = serialIndex + index2.x + 1;
+
+            var h00 = pHeight[i0];
+            var h01 = pHeight[i1];
+            var h02 = pHeight[i2];
+
+            var h10 = pHeight[i2];
+            var h11 = pHeight[i1];
+            var h12 = pHeight[i3];
+
+
+        }
+        
+    }
+
+    public struct RightTriangle
+    {
+        public float3 BasePoint;
+        public float2 UvLengthRcp;
+
+        //public float3 GravityHit(float3 p, float length)
+        //{
+
+        //    var uv = p.xz - this.BasePoint.xz;
+
+        //    var nmuv = uv * this.UvLengthRcp;
+
+        //    var isHit = 1.0f >= nmuv.x + nmuv.y;
+        //}
+        //public float3 RaycastHit(float3 p, float3 dir, float length)
+        //{
+
+            
+
         //}
     }
 }
