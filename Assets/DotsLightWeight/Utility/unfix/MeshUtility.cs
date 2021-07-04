@@ -123,6 +123,63 @@ namespace DotsLite.Geometry
 
 			return mesh;
 		}
+		public static Mesh CreateSlantHalfGridMesh(int segmentX, int segmentY, float unitDistance)
+		{
+			var mesh = new Mesh();
+			var w = segmentX + 1;
+			var h = segmentY + 1;
+			var unit = unitDistance;
+			var half = unit * 0.5f;
+
+			int toindex_(int ix, int iz) => ix + iz * w;
+			static int pack2_(int u, int d) => (u << 0) | (d << 16);
+			static int pack1to2_(int index) => (index << 0) | (index << 16);
+
+			var qVtxLine =
+				from iz in Enumerable.Range(0, h)
+				select
+					from ix in Enumerable.Range(0, w)
+					let heightIndex = toindex_(ix, iz)
+					let hi = pack1to2_(heightIndex)
+					let fhi = math.asfloat(hi)
+					select new Vector3(ix, fhi, iz) * unit
+				;
+			var qVtxHalf =
+				from iz in Enumerable.Range(0, segmentY)
+				select
+					from ix in Enumerable.Range(0, segmentX)
+					let heightIndex0 = toindex_(ix + 0, iz + 0)
+					let heightIndex2 = toindex_(ix + 0, iz + 1)
+					let hi = pack2_(heightIndex0, heightIndex2)
+					let fhi = math.asfloat(hi)
+					select new Vector3(half + ix, fhi, half + iz) * unit
+				;
+			var qVtx = qVtxLine.First().Concat(
+					(qVtxHalf, qVtxLine.Skip(1)).Zip().SelectMany(x => x.src0.Concat(x.src1))
+				);
+
+			qVtx.Select(x => new float3(x)).ForEach(x => Debug.Log($"{x.xy} {math.asint(x.y) & 0xffff} {(math.asint(x.y) >> 16) & 0xffff}"));
+			mesh.SetVertices(qVtx.ToArray());
+
+			var qIdx =
+				from ix in Enumerable.Range(0, w - 1)
+				from iz in Enumerable.Range(0, h - 1)
+				let i0 = ix + (iz + 0) * (w + segmentX)
+				let ihf = i0 + w
+				let i1 = ix + (iz + 1) * (w + segmentX)
+				from i in new int[]
+				{
+					i0+0, i0+1, ihf,
+					i0+0, ihf, i1+0,
+					ihf, i0+1, i1+1,
+					i1+0, ihf, i1+1,
+				}
+				select i
+				;
+			mesh.SetIndices(qIdx.ToArray(), MeshTopology.Triangles, 0);
+
+			return mesh;
+		}
 		//public static Mesh CreateSlantHalfGridMesh(int segmentX, int segmentY, float unitDistance)
 		//{
 		//	var mesh = new Mesh();
@@ -180,61 +237,6 @@ namespace DotsLite.Geometry
 
 		//	return mesh;
 		//}
-		public static Mesh CreateSlantHalfGridMesh(int segmentX, int segmentY, float unitDistance)
-		{
-			var mesh = new Mesh();
-			var w = segmentX + 1;
-			var h = segmentY + 1;
-			var unit = unitDistance;
-			var half = unit * 0.5f;
-
-			int toindex_(int ix, int iz) => ix + iz * w;
-			static int pack2_(int u, int d) => (u << 0) | (d << 16);
-			static int pack1to2_(int index) => (index << 0) | (index << 16);
-
-			var qVtxLine =
-				from iz in Enumerable.Range(0, h)
-				select
-					from ix in Enumerable.Range(0, w)
-					let heightIndex = toindex_(ix, iz)
-					let hi = pack1to2_(heightIndex)
-					let fhi = math.asfloat(hi)
-					select new Vector3(ix, fhi, iz) * unit
-				;
-			var qVtxHalf =
-				from iz in Enumerable.Range(0, segmentY)
-				select
-					from ix in Enumerable.Range(0, segmentX)
-					let heightIndex0 = toindex_(ix + 0, iz + 0)
-					let heightIndex2 = toindex_(ix + 0, iz + 1)
-					let hi = pack2_(heightIndex0, heightIndex2)
-					let fhi = math.asfloat(hi)
-					select new Vector3(half + ix, fhi, half + iz) * unit
-				;
-			var qVtx = qVtxLine.First().Concat(
-					(qVtxHalf, qVtxLine.Skip(1)).Zip().SelectMany(x => x.src0.Concat(x.src1))
-				);
-			mesh.SetVertices(qVtx.ToArray());
-
-			var qIdx =
-				from ix in Enumerable.Range(0, w - 1)
-				from iz in Enumerable.Range(0, h - 1)
-				let i0 = ix + (iz + 0) * (w + segmentX)
-				let ihf = i0 + w
-				let i1 = ix + (iz + 1) * (w + segmentX)
-				from i in new int[]
-				{
-					i0+0, i0+1, ihf,
-					i0+0, ihf, i1+0,
-					ihf, i0+1, i1+1,
-					i1+0, ihf, i1+1,
-				}
-				select i
-				;
-			mesh.SetIndices(qIdx.ToArray(), MeshTopology.Triangles, 0);
-
-			return mesh;
-		}
 	}
 
 }

@@ -113,41 +113,41 @@ Shader "Custom/WaveGridSlantHalf"
 
 				return halfHeight;//vertexHeight * asVertex + halfHeight * asHalf;
 			}
-			float selectHeight_(int4 h4, int2 ih2)
-			{
-				const float asVertex = ih2.x == ih2.y;
-				const float asHalf = 1.0f - asVertex;
+			//float selectHeight_(int4 h4, int2 ih2)
+			//{
+			//	const float asVertex = ih2.x == ih2.y;
+			//	const float asHalf = 1.0f - asVertex;
 
-				const float vertexHeight = h4.x;
+			//	const float vertexHeight = h4.x;
 
-				const float uldrDelta = abs(h4.x - h4.w);
-				const float urdlDelta = abs(h4.y - h4.z);
-				const float as_uldr = uldrDelta > urdlDelta;
-				const float as_urdl = 1.0f - as_uldr;
-				const float4 h05 = h4 * 0.5f;
-				const float halfHeight =
-					(h4.x+h4.w) * as_uldr + (h4.y+h4.z) * as_urdl;
+			//	const float uldrDelta = abs(h4.x - h4.w);
+			//	const float urdlDelta = abs(h4.y - h4.z);
+			//	const float as_uldr = uldrDelta > urdlDelta;
+			//	const float as_urdl = 1.0f - as_uldr;
+			//	const float4 h05 = h4 * 0.5f;
+			//	const float halfHeight =
+			//		(h4.x+h4.w) * as_uldr + (h4.y+h4.z) * as_urdl;
 
-				return vertexHeight * asVertex + halfHeight * asHalf;
-			}
-			float selectHeight__(int4 h4, int2 ih2)
-			{
-				const float asVertex = ih2.x == ih2.y;
-				const float asHalf = 1.0f - asVertex;
+			//	return vertexHeight * asVertex + halfHeight * asHalf;
+			//}
+			//float selectHeight__(int4 h4, int2 ih2)
+			//{
+			//	const float asVertex = ih2.x == ih2.y;
+			//	const float asHalf = 1.0f - asVertex;
 
-				const float vertexHeight = h4.x;
+			//	const float vertexHeight = h4.x;
 
-				const float uldrDelta = abs(h4.x - h4.w);
-				const float urdlDelta = abs(h4.y - h4.z);
-				const float as_uldr = uldrDelta > urdlDelta;
-				const float as_urdl = 1.0f - as_uldr;
-				const float4 hf = h4 * 0.5f;
+			//	const float uldrDelta = abs(h4.x - h4.w);
+			//	const float urdlDelta = abs(h4.y - h4.z);
+			//	const float as_uldr = uldrDelta > urdlDelta;
+			//	const float as_urdl = 1.0f - as_uldr;
+			//	const float4 hf = h4 * 0.5f;
 
-				const float3 h = float3(vertexHeight, hf.x + hf.w, hf.y + hf.z);
-				const float3 mask = float3(asVertex, as_uldr * asHalf, as_urdl * asHalf);
+			//	const float3 h = float3(vertexHeight, hf.x + hf.w, hf.y + hf.z);
+			//	const float3 mask = float3(asVertex, as_uldr * asHalf, as_urdl * asHalf);
 
-				return dot(h, mask);
-			}
+			//	return dot(h, mask);
+			//}
 
 
 			v2f vert(appdata v , uint i : SV_InstanceID )
