@@ -150,11 +150,24 @@ namespace DotsLite.HeightGrid
 
         //    var isHit = 1.0f >= nmuv.x + nmuv.y;
         //}
-        //public float3 RaycastHit(float3 p, float3 dir, float length)
-        //{
+        public float3 RaycastHit(float3 p, float3 dir, float length)
+        {
 
-            
+            var a = math.cross(dir, )
 
-        //}
+        }
+    }
+
+    public struct Triangle
+    {
+        public float3 BasePoint;
+        public float2 UvLengthRcp;
+
+        public float3 RaycastHit(float3 p, float3 dir, float length)
+        {
+
+            var a = math.cross(dir, )
+
+        }
     }
 }
