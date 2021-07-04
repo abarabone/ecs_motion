@@ -88,7 +88,7 @@ Shader "Custom/WaveGrid"
 
 				o.vertex = wvt;
 				o.uv = lvt.xz * (1.0f/16.0f);//v.uv;
-				o.color = float4(1,1,1,1);
+				o.color = fixed4(1,1,1,wvt.z * 0.2f + 0.8f);
 
 				return o;
 			}

@@ -75,17 +75,22 @@ namespace DotsLite.HeightGrid.Aurthoring
 
             void initMasterEntityComponent_(Entity ent)
             {
+
                 var totalLength = ww*lw * wh*lh + wh*lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
                 em.AddComponentData(ent, new Wave.GridMasterData
                 {
                     Prevs = new NativeArray<float>(totalLength, Allocator.Persistent),
                     Currs = new NativeArray<float>(totalLength, Allocator.Persistent),
                     Nexts = new NativeArray<float>(totalLength, Allocator.Persistent),
-                    NumGrids = this.NumGrids,
-                    UnitLengthInGrid = this.UnitLengthInGrid,
-                    UnitScale = this.UnitDistance,
-                    Dumping = this.Dumping,
-                    Constraint2 = this.Constraint2,
+                    Info = new Wave.GridMasterInfo
+                    {
+                        NumGrids = this.NumGrids,
+                        UnitLengthInGrid = this.UnitLengthInGrid,
+                        UnitScale = this.UnitDistance,
+                        Dumping = this.Dumping,
+                        Constraint2 = this.Constraint2,
+                        LeftTopPosition = this.transform.position - new Vector3(ww * lw, 0.0f, wh * lh) * this.UnitDistance * 0.5f,
+                    }
                 });
             }
 

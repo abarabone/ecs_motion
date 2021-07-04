@@ -49,9 +49,10 @@ namespace DotsLite.HeightGrid
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
 
-            var spanInGrid = this.gridMaster.UnitLengthInGrid;
+            var gridinfo = this.gridMaster.Info;
+            var spanInGrid = gridinfo.UnitLengthInGrid;
             spanInGrid.x >>= 2;
-            var span = this.gridMaster.NumGrids * spanInGrid;
+            var span = gridinfo.NumGrids * spanInGrid;
             var totalLen = span.x * span.y;
             var lenInGrid = spanInGrid.x * spanInGrid.y;
 
@@ -61,8 +62,8 @@ namespace DotsLite.HeightGrid
             var nexts = this.gridMaster.Nexts;
             var currs = this.gridMaster.Currs;
             var prevs = this.gridMaster.Prevs;
-            var d = this.gridMaster.Dumping;
-            var c2 = this.gridMaster.Constraint2;
+            var d = gridinfo.Dumping;
+            var c2 = gridinfo.Constraint2;
 
             //var pNextsRo = (float4*)this.gridMaster.Nexts.GetUnsafeReadOnlyPtr();
             //var pCurrsRw = (float4*)this.gridMaster.Currs.GetUnsafePtr();

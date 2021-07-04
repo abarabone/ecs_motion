@@ -69,16 +69,17 @@ namespace DotsLite.Draw
         {
             using var barScope = bardep.WithDependencyScope();
 
-            var srcw = this.gridMaster.UnitLengthInGrid.x;
-            var srcww = this.gridMaster.NumGrids.x * this.gridMaster.UnitLengthInGrid.x;
-            var srch = this.gridMaster.UnitLengthInGrid.y;
+            var gridinfo = this.gridMaster.Info;
+            var srcw = gridinfo.UnitLengthInGrid.x;
+            var srcww = gridinfo.NumGrids.x * gridinfo.UnitLengthInGrid.x;
+            var srch = gridinfo.UnitLengthInGrid.y;
             var srcwwh = srcww * srch;
 
             //var lengthInGrid = this.gridMaster.UnitLengthInGrid * sizeof(float);
             var srcspan = srcww * sizeof(float);
             var dstspan = (srcw + 1) * sizeof(float);
             var count = srch + 1;
-            var unitScale = this.gridMaster.UnitScale;
+            var unitScale = gridinfo.UnitScale;
             var units = this.gridMaster.Nexts;
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );

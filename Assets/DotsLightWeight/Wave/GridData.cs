@@ -41,11 +41,7 @@ namespace DotsLite.HeightGrid
             public NativeArray<float> Currs;
             public NativeArray<float> Prevs;
 
-            public int2 UnitLengthInGrid;
-            public int2 NumGrids;
-            public float UnitScale;
-            public float Dumping;
-            public float Constraint2;
+            public GridMasterInfo Info;
 
             public void Dispose()
             {
@@ -54,6 +50,15 @@ namespace DotsLite.HeightGrid
                 this.Prevs.Dispose();
                 Debug.Log("disposed");
             }
+        }
+        public struct GridMasterInfo
+        {
+            public float3 LeftTopPosition;
+            public int2 UnitLengthInGrid;
+            public int2 NumGrids;
+            public float UnitScale;
+            public float Dumping;
+            public float Constraint2;
         }
     }
 
@@ -78,16 +83,27 @@ namespace DotsLite.HeightGrid
 
     public static partial class HeightGridUtility
     {
-        public static int ToLinear(this Height.GridData grid, Wave.GridMasterData master)
+        //public static int ToLinear(this Height.GridData grid, Wave.GridMasterData master)
+        //{
+        //    var wspan = master.UnitLengthInGrid.x * master.NumGrids.x;
+        //    var i = grid.GridId;// >> grid.LodLevel;
+        //    return i.x + i.y * wspan;
+        //}
+
+        public static int2 CalcHitIndex(this Wave.GridMasterData master, float2 point)
         {
-            var wspan = master.UnitLengthInGrid.x * master.NumGrids.x;
-            var i = grid.GridId;// >> grid.LodLevel;
-            return i.x + i.y * wspan;
+
+            master.LeftTopPosition.
+
+            return int2.zero;
         }
 
-        public static void aaaa()
-        {
+        //public static int2 CalcHitIndex(this Wave.GridMasterData master, float3 point, float3 dir, float length)
+        //{
 
-        }
+
+
+        //    return int2.zero;
+        //}
     }
 }

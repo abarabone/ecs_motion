@@ -103,7 +103,7 @@ Shader "Custom/WaveGridSlantHalf"
 				const int2 imaskr = ih2r & 3;
 				return float4(unmask(vhul, imaskl.x), unmask(vhur, imaskr.x), unmask(vhdl, imaskl.y), unmask(vhdr, imaskr.y));
 			}
-			float selectHeight(int4 h4, int2 ih2)
+			float selectHeight(float4 h4, int2 ih2)
 			{
 				const float asVertex = ih2.x == ih2.y;
 				const float asHalf = 1.0f - asVertex;
@@ -111,26 +111,25 @@ Shader "Custom/WaveGridSlantHalf"
 				const float vertexHeight = h4.x;
 				const float halfHeight = (h4.x + h4.y + h4.z + h4.w) * 0.25f;
 
-				return halfHeight;//vertexHeight * asVertex + halfHeight * asHalf;
+				return vertexHeight * asVertex + halfHeight * asHalf;
 			}
-			//float selectHeight_(int4 h4, int2 ih2)
-			//{
-			//	const float asVertex = ih2.x == ih2.y;
-			//	const float asHalf = 1.0f - asVertex;
+			float selectHeight_(float4 h4, int2 ih2)
+			{
+				const float asVertex = ih2.x == ih2.y;
+				const float asHalf = 1.0f - asVertex;
 
-			//	const float vertexHeight = h4.x;
+				const float vertexHeight = h4.x;
 
-			//	const float uldrDelta = abs(h4.x - h4.w);
-			//	const float urdlDelta = abs(h4.y - h4.z);
-			//	const float as_uldr = uldrDelta > urdlDelta;
-			//	const float as_urdl = 1.0f - as_uldr;
-			//	const float4 h05 = h4 * 0.5f;
-			//	const float halfHeight =
-			//		(h4.x+h4.w) * as_uldr + (h4.y+h4.z) * as_urdl;
+				const float uldrDelta = abs(h4.x - h4.w);
+				const float urdlDelta = abs(h4.y - h4.z);
+				const float as_uldr = uldrDelta > urdlDelta;
+				const float as_urdl = 1.0f - as_uldr;
+				const float halfHeight =
+					(h4.x+h4.w) * as_uldr + (h4.y+h4.z) * as_urdl;
 
-			//	return vertexHeight * asVertex + halfHeight * asHalf;
-			//}
-			//float selectHeight__(int4 h4, int2 ih2)
+				return vertexHeight * asVertex + halfHeight * 0.5f * asHalf;
+			}
+			//float selectHeight__(float4 h4, int2 ih2)
 			//{
 			//	const float asVertex = ih2.x == ih2.y;
 			//	const float asHalf = 1.0f - asVertex;
@@ -159,7 +158,7 @@ Shader "Custom/WaveGridSlantHalf"
 
 				const int2 indexHeight = unpack2(asint(v.vertex.y));
 				const float4 height = get_h4(indexHeight, ibase);
-				const float h = height.x;//selectHeight(height, indexHeight);
+				const float h = selectHeight(height, indexHeight);
 
 				const float whscale = BoneVectorBuffer[inext - 2].w;
 
@@ -168,9 +167,11 @@ Shader "Custom/WaveGridSlantHalf"
 
 				const float4 wvt = UnityObjectToClipPos(wpos + lvt);
 
+				const fixed dist = 0.5f;//1.0f - wvt.z;
+
 				o.vertex = wvt;
 				o.uv = lvt.xz * (1.0f/16.0f);//v.uv;
-				o.color = float4(1,1,1,1);
+				o.color = fixed4(1,1,1,1);
 
 				return o;
 			}
@@ -182,7 +183,7 @@ Shader "Custom/WaveGridSlantHalf"
 				fixed4 texcol = tex2D(_MainTex, i.uv);
 				
 				fixed4 col = texcol * i.color;
-
+				
 				UNITY_APPLY_FOG(i.fogCoord, col);
 
 				return col;

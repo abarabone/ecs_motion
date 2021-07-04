@@ -49,7 +49,8 @@ namespace DotsLite.HeightGrid
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
 
-            var span = this.gridMaster.NumGrids * this.gridMaster.UnitLengthInGrid;
+            var gridinfo = this.gridMaster.Info;
+            var span = gridinfo.NumGrids * gridinfo.UnitLengthInGrid;
             var total = span.x * span.y;
 
             var span4 = new int2(span.x >> 2, span.y);
@@ -100,8 +101,8 @@ namespace DotsLite.HeightGrid
                 pPrev = (float4*)gridMaster.Prevs.GetUnsafeReadOnlyPtr(),
                 span = span4,
                 harfsqdt = harfsqdt,
-                c2 = this.gridMaster.Constraint2,
-                d = this.gridMaster.Dumping,
+                c2 = gridinfo.Constraint2,
+                d = gridinfo.Dumping,
             }
             .Schedule(total >> 2, 64, this.Dependency);
             //this.Dependency = new WaveGridCaluclationSimpleJob

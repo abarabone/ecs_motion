@@ -86,7 +86,7 @@ namespace DotsLite.Arms
 
             var grid = this.GetSingleton<HeightGrid.Wave.GridMasterData>();//暫定
             var currs = grid.Currs;
-            var xspan = grid.UnitLengthInGrid.x * grid.NumGrids.x;
+            var xspan = grid.Info.UnitLengthInGrid.x * grid.Info.NumGrids.x;
 
             this.Entities
                 .WithBurst()
