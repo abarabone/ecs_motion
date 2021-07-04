@@ -90,13 +90,13 @@ namespace DotsLite.HeightGrid
         //    return i.x + i.y * wspan;
         //}
 
-        public static int2 CalcHitIndex(this Wave.GridMasterData master, float2 point)
-        {
+        //public static int2 CalcHitIndex(this Wave.GridMasterData master, float2 point)
+        //{
 
-            master.LeftTopPosition.
+        //    master.LeftTopPosition.
 
-            return int2.zero;
-        }
+        //    return int2.zero;
+        //}
 
         //public static int2 CalcHitIndex(this Wave.GridMasterData master, float3 point, float3 dir, float length)
         //{
