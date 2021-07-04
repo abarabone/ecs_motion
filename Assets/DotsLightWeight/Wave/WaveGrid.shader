@@ -60,7 +60,7 @@ Shader "Custom/WaveGrid"
 
 			sampler2D	_MainTex;
 			
-			static const uint4 element_mask_table[] =
+			static const float4 element_mask_table[] =
 			{
 				{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}
 			};

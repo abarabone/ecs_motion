@@ -60,7 +60,7 @@ Shader "Custom/WaveGridSlantHalf"
 
 			sampler2D	_MainTex;
 			
-			static const uint4 element_mask_table[] =
+			static const float4 element_mask_table[] =
 			{
 				{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}
 			};
@@ -159,7 +159,7 @@ Shader "Custom/WaveGridSlantHalf"
 
 				const int2 indexHeight = unpack2(asint(v.vertex.y));
 				const float4 height = get_h4(indexHeight, ibase);
-				const float h = selectHeight(height, indexHeight);
+				const float h = height.x;//selectHeight(height, indexHeight);
 
 				const float whscale = BoneVectorBuffer[inext - 2].w;
 
