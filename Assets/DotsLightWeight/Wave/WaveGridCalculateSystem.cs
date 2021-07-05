@@ -115,6 +115,19 @@ namespace DotsLite.HeightGrid
             //}
             //.Schedule(total, 128, this.Dependency);
 
+
+            //// ‚¨‚Ü‚¯
+            //var pnext = (float*)gridMaster.Nexts.GetUnsafeReadOnlyPtr();
+            //this.Entities
+            //    .WithNativeDisableUnsafePtrRestriction(pnext)
+            //    .WithAll<Character.PlayerTag>()
+            //    .ForEach((ref Unity.Transforms.Translation pos) =>
+            //    {
+            //        var point = pos.Value.xz;
+            //        var h = gridinfo.CalcWaveHeight(pnext, point);
+            //        pos.Value = new float3(point.x, h, point.y);
+            //    })
+            //    .Schedule();
         }
 
         [BurstCompile]

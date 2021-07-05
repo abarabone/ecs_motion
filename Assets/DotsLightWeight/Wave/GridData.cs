@@ -7,6 +7,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
+using System.Runtime.CompilerServices;
 
 namespace DotsLite.HeightGrid
 {
@@ -111,17 +112,17 @@ namespace DotsLite.HeightGrid
 
         public static unsafe float CalcWaveHeight(this Wave.GridMasterInfo info, float* pHeight, float2 point)
         {
-            var xy = point - info.LeftTopPosition.xz;
-            var i = xy * info.UnitScaleRcp;
+            var xz = point - info.LeftTopPosition.xz;
+            var i = xz * info.UnitScaleRcp;
 
-            var index2 = (int2)(xy * info.UnitScaleRcp);
+            var index2 = (int2)i;
 
             var serialIndex = index2.x + index2.y * info.TotalLength.x;
 
             var i0 = serialIndex + 0;
             var i1 = serialIndex + 1;
-            var i2 = serialIndex + index2.x + 0;
-            var i3 = serialIndex + index2.x + 1;
+            var i2 = serialIndex + info.TotalLength.x + 0;
+            var i3 = serialIndex + info.TotalLength.x + 1;
 
             var h00 = pHeight[i0];
             var h01 = pHeight[i1];
@@ -131,8 +132,26 @@ namespace DotsLite.HeightGrid
             var h11 = pHeight[i1];
             var h12 = pHeight[i3];
 
+            var curxz = xz - (float2)index2 * info.UnitScale;
+            var p = new float4(curxz.x, 0.0f, curxz.y, 1.0f);
+            var pl = new float4(h01, -1, h02, -h00);
+            var h = math.dot(pl, p);
 
+            return h00;
         }
+
+        //p0 = 0, h00, 0
+
+        //u1 = 1, h01, 0
+        //v1 = 0, h02, 1
+
+        //n = u1 x v1
+        //  = h01*1 - 0*h02, 0*0 - 1*1, 1*h02 - h01*0
+        //  = h01, -1, h02
+
+
+        //d = 0 * h01 + h00 * -1 + 0 * h02 = -h00
+        //pl = h01, -1, h02, -h00
 
     }
 
@@ -171,25 +190,35 @@ namespace DotsLite.Mathematics
         public float3 BasePoint;
         public float2 UvLengthRcp;
 
-        public float3 RaycastHit(float3 p, float3 dir, float length)
-        {
+        //public float3 RaycastHit(float3 p, float3 dir, float length)
+        //{
 
-            //var a = math.cross(dir, )
+        //    //var a = math.cross(dir, )
 
-        }
+        //}
     }
 
     public struct plane
     {
-        public float4 ax_by_cz_d;
-        public float4 value => this.ax_by_cz_d;
+        public float4 nd;
+        public float4 value => this.nd;
+        public float3 n => this.nd.xyz;
+        public float d => this.nd.w;
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public plane(float3 p, float3 n)
         {
-            var pn = p * n;
-            var d = - pn.x - pn.y - pn.z;
-            this.ax_by_cz_d = pn.As_float4(d);
+            this.nd = n.As_float4(math.dot(p, n));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool isFrontSide(float4 p) => this.distanceSigned(p) >= 0.0f;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool isFrontSide(float3 p) => this.distanceSigned(p) >= 0.0f;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float distanceSigned(float4 p) => math.dot(this.nd, p);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float distanceSigned(float3 p) => this.distanceSigned(p.As_float4(1.0f));
     }
 }
