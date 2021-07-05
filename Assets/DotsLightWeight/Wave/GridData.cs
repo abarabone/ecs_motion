@@ -133,7 +133,7 @@ namespace DotsLite.HeightGrid
 
 
         }
-        
+
     }
 
     public struct RightTriangle
@@ -150,15 +150,23 @@ namespace DotsLite.HeightGrid
 
         //    var isHit = 1.0f >= nmuv.x + nmuv.y;
         //}
-        public float3 RaycastHit(float3 p, float3 dir, float length)
-        {
+        //public float3 RaycastHit(float3 p, float3 dir, float length)
+        //{
 
-            var a = math.cross(dir, )
+        //    var a = math.cross(dir, )
 
-        }
+        //}
     }
+}
+namespace DotsLite.Mathematics
+{
+    using DotsLite.Common;
+    using DotsLite.Common.Extension;
+    using DotsLite.Misc;
+    using DotsLite.Utility;
+    using DotsLite.Utilities;
 
-    public struct Triangle
+    public struct triangle
     {
         public float3 BasePoint;
         public float2 UvLengthRcp;
@@ -166,8 +174,22 @@ namespace DotsLite.HeightGrid
         public float3 RaycastHit(float3 p, float3 dir, float length)
         {
 
-            var a = math.cross(dir, )
+            //var a = math.cross(dir, )
 
+        }
+    }
+
+    public struct plane
+    {
+        public float4 ax_by_cz_d;
+        public float4 value => this.ax_by_cz_d;
+
+
+        public plane(float3 p, float3 n)
+        {
+            var pn = p * n;
+            var d = - pn.x - pn.y - pn.z;
+            this.ax_by_cz_d = pn.As_float4(d);
         }
     }
 }
