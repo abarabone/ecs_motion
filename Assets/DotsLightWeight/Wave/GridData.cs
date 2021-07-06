@@ -11,6 +11,11 @@ using System.Runtime.CompilerServices;
 
 namespace DotsLite.HeightGrid
 {
+    using DotsLite.Common.Extension;
+    using DotsLite.Misc;
+    using DotsLite.Common;
+    using DotsLite.Utilities;
+
 
     [Serializable]
     public struct GridBinaryLength2
@@ -54,7 +59,7 @@ namespace DotsLite.HeightGrid
         }
         public struct GridMasterInfo
         {
-            public float3 LeftTopPosition;
+            public float3 LeftTopLocation;
             public int2 UnitLengthInGrid;
             public int2 NumGrids;
             public float UnitScale;
@@ -112,7 +117,7 @@ namespace DotsLite.HeightGrid
 
         public static unsafe float CalcWaveHeight(this Wave.GridMasterInfo info, float* pHeight, float2 point)
         {
-            var xz = point - info.LeftTopPosition.xz;
+            var xz = point - info.LeftTopLocation.xz;
             var i = xz * info.UnitScaleRcp;
 
             var index2 = (int2)i;
@@ -132,12 +137,20 @@ namespace DotsLite.HeightGrid
             var h11 = pHeight[i1];
             var h12 = pHeight[i3];
 
-            var curxz = xz - (float2)index2 * info.UnitScale;
+            var curxz = i - index2;
             var p = new float4(curxz.x, 0.0f, curxz.y, 1.0f);
-            var pl = new float4(h01, -1, h02, -h00);
+            //var pl = new float4(h01, -1, h02, h00);
+            var p00 = new float3(0, h00, 0);
+            var p01 = new float3(1, h01, 0);
+            var p02 = new float3(0, h02, 1);
+            var u = math.normalize(p01);
+            var v = math.normalize(p02);
+            var n = math.normalize(math.cross(v, u));
+            var pl = n.As_float4(math.dot(p.xyz, n));
             var h = math.dot(pl, p);
 
-            return h00;
+            Debug.Log($"{point} {info.LeftTopLocation.xz} {xz} {index2} {info.TotalLength.x} {serialIndex} {h00},{h01},{h02} {h}");
+            return h;
         }
 
         //p0 = 0, h00, 0
