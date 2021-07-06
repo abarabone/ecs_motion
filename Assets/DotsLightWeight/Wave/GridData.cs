@@ -138,19 +138,28 @@ namespace DotsLite.HeightGrid
             var h12 = pHeight[i3];
 
             var curxz = i - index2;
-            var p = new float4(curxz.x, 0.0f, curxz.y, 1.0f);
-            //var pl = new float4(h01, -1, h02, h00);
-            var p00 = new float3(0, h00, 0);
-            var p01 = new float3(1, h01, 0);
-            var p02 = new float3(0, h02, 1);
-            var u = math.normalize(p01);
-            var v = math.normalize(p02);
-            var n = math.normalize(math.cross(v, u));
-            var pl = n.As_float4(math.dot(p.xyz, n));
-            var h = math.dot(pl, p);
 
-            Debug.Log($"{point} {info.LeftTopLocation.xz} {xz} {index2} {info.TotalLength.x} {serialIndex} {h00},{h01},{h02} {h}");
-            return h;
+            float calc_(float h00, float h01, float h02)
+            {
+                var p = new float4(curxz.x, 0.0f, curxz.y, 1.0f);
+                //var pl = new float4(h01, -1, h02, h00);
+                var p00 = new float3(0, h00, 0);
+                var p01 = new float3(1, h01, 0);
+                var p02 = new float3(0, h02, 1);
+                var u = p01;// math.normalize(p01);
+                var v = p02;// math.normalize(p02);
+                var n = math.normalize(math.cross(v, u));
+                var pl = n.As_float4(math.dot(p00.xyz, n));
+                var res = p00 + n * math.dot(pl, p);
+                var h = res.y;
+
+                Debug.Log($"{point} {curxz} {info.LeftTopLocation.xz} {xz} {index2} {info.TotalLength.x} {serialIndex} {h00:f2},{h01:f2},{h02:f2} {h:f2}");
+                return h;
+            }
+            
+            return curxz.x + curxz.y > 1.0f
+                ? calc_(h12, h11, h10)
+                : calc_(h00, h01, h02);
         }
 
         //p0 = 0, h00, 0

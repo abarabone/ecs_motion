@@ -8,6 +8,8 @@ using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
+using Unity.Physics;
+using Unity.Physics.Extensions;
 
 namespace DotsLite.HeightGrid
 {
@@ -121,11 +123,12 @@ namespace DotsLite.HeightGrid
             this.Entities
                 .WithNativeDisableUnsafePtrRestriction(pnext)
                 .WithAll<Character.PlayerTag>()
-                .ForEach((ref Unity.Transforms.Translation pos) =>
+                //.ForEach((ref Unity.Transforms.Translation pos) =>
+                .ForEach((ref Unity.Physics.PhysicsVelocity v, in Unity.Transforms.Translation pos) =>
                 {
                     var point = pos.Value.xz;
                     var h = gridinfo.CalcWaveHeight(pnext, point);
-                    pos.Value = new float3(point.x, h, point.y);
+                    v.Linear += math.up() * math.clamp(h - pos.Value.y, 0.0f, 1.0f) * 0.2f;
                 })
                 .Schedule();
         }
