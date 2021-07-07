@@ -184,18 +184,18 @@ namespace DotsLite.HeightGrid
             //    return h;
             //}
 
-            float calc_(float h00, float h01, float h02)
+            float calc_(float h00, float h01, float h02, float2 lxz)
             {
                 var u = (h01 - h00) * lxz.x;
                 var v = (h02 - h00) * lxz.y;
                 var hf = (u + v) * 0.5f;
-                Debug.Log($"{lxz} {h00:f2},{h01:f2},{h02:f2} {h00+hf+hf:f2}");
+                //Debug.Log($"{lxz} {h00:f2},{h01:f2},{h02:f2} {h00+hf+hf:f2}");
                 return h00 + hf + hf;
             }
             var is1 = lxz.x + lxz.y > 1.0f;
             var h = is1
-                ? calc_(h00, h01, h02)
-                : calc_(h10, h02, h01);
+                ? calc_(h00, h01, h02, lxz)
+                : calc_(h10, h02, h01, 1-lxz);
 
             return h;
         }

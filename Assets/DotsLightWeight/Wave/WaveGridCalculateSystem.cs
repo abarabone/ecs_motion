@@ -14,6 +14,7 @@ using Unity.Physics.Extensions;
 namespace DotsLite.HeightGrid
 {
     using DotsLite.Misc;
+    using DotsLite.Utilities;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
@@ -123,12 +124,14 @@ namespace DotsLite.HeightGrid
             this.Entities
                 .WithNativeDisableUnsafePtrRestriction(pnext)
                 .WithAll<Character.PlayerTag>()
-                //.ForEach((ref Unity.Transforms.Translation pos) =>
-                .ForEach((ref Unity.Physics.PhysicsVelocity v, in Unity.Transforms.Translation pos) =>
+                .ForEach((ref Unity.Transforms.Translation pos) =>
+                //.ForEach((ref Unity.Physics.PhysicsVelocity v, in Unity.Transforms.Translation pos) =>
                 {
                     var point = pos.Value.xz;
                     var h = gridinfo.CalcWaveHeight(pnext, point);
-                    v.Linear += math.up() * math.clamp(h - pos.Value.y, 0.0f, 1.0f) * 0.2f;
+                    //v.Linear += math.up() * math.clamp(h - pos.Value.y, 0.0f, 1.0f) * 0.2f;
+                    var limh = math.clamp(h, 0.1f, 10000);
+                    pos.Value = point.x_y(limh);
                 })
                 .Schedule();
         }
