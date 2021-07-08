@@ -131,7 +131,8 @@ namespace DotsLite.HeightGrid
                     var h = gridinfo.CalcWaveHeight(pnext, point);
                     //v.Linear += math.up() * math.clamp(h - pos.Value.y, 0.0f, 1.0f) * 0.2f;
                     var limh = math.clamp(h, 0.1f, 10000);
-                    pos.Value = point.x_y(limh);
+                    //pos.Value = point.x_y(limh);
+
                 })
                 .Schedule();
         }
