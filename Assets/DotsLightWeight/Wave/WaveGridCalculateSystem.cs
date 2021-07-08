@@ -32,13 +32,13 @@ namespace DotsLite.HeightGrid
             this.gridMaster = this.GetSingleton<Wave.GridMasterData>();
             Debug.Log(this.gridMaster);
 
-            this.gridMaster.Currs[10] = 3f;
-            this.gridMaster.Currs[11] = 3f;
-            this.gridMaster.Currs[12] = 3f;
-            this.gridMaster.Currs[13] = 3f;
-            this.gridMaster.Currs[14] = 3f;
-            this.gridMaster.Currs[15] = 3f;
-            this.gridMaster.Currs[16] = 3f;
+            this.gridMaster.Currs[10] = -3f;
+            this.gridMaster.Currs[11] = -3f;
+            this.gridMaster.Currs[12] = -3f;
+            this.gridMaster.Currs[13] = -3f;
+            this.gridMaster.Currs[14] = -3f;
+            this.gridMaster.Currs[15] = -3f;
+            this.gridMaster.Currs[16] = -3f;
             this.gridMaster.Currs[17] = 3f;
             this.gridMaster.Currs[18] = 3f;
             this.gridMaster.Currs[19] = 3f;
@@ -125,11 +125,13 @@ namespace DotsLite.HeightGrid
                 .WithNativeDisableUnsafePtrRestriction(pnext)
                 .WithAll<Character.PlayerTag>()
                 //.ForEach((ref Unity.Transforms.Translation pos) =>
-                .ForEach((ref Unity.Physics.PhysicsVelocity v, in Unity.Transforms.Translation pos) =>
+                .ForEach((ref PhysicsVelocity v, in Unity.Transforms.Translation pos) =>
                 {
                     var point = pos.Value.xz;
                     var h = gridinfo.CalcWaveHeight(pnext, point);
-                    v.Linear += math.up() * (math.clamp(h - pos.Value.y, 0.0f, 1.0f) * 100.0f * dt);
+                    var a = math.clamp(h - pos.Value.y, 0.0f, 1.5f) * 5.0f;
+                    v.Linear += math.up() * a * dt;
+                    //pos.Value += math.up() * (a * harfsqdt);
                     //var limh = math.clamp(h, 0.1f, 10000);
                     //pos.Value = point.x_y(limh);
                 })
