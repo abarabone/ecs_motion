@@ -79,9 +79,10 @@ Shader "Custom/WaveGrid"
 				int inext = ibase + VectorLengthPerInstance;
 				int ih = asint(v.vertex.y);
 
-				float whscale = BoneVectorBuffer[inext - 2].w;
+				float4 additional = BoneVectorBuffer[inext - 1];
 
-				float3 wpos = BoneVectorBuffer[inext - 1].xyz;
+				float whscale = additional.w;
+				float3 wpos = additional.xyz;
 				float3 lvt = float3(v.vertex.xz * whscale, get_h(ih, ibase)).xzy;
 
 				float4	wvt = UnityObjectToClipPos(wpos + lvt);

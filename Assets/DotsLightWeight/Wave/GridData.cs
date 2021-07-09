@@ -115,7 +115,7 @@ namespace DotsLite.HeightGrid
         //    return int2.zero;
         //}
 
-        public static unsafe float CalcWaveHeight(this Wave.GridMasterInfo info, float* pHeight, float2 point)
+        public static unsafe float CalcVerticalHeight(this Wave.GridMasterInfo info, float* pHeight, float2 point)
         {
             var xz = point - info.LeftTopLocation.xz;
             var i = xz * info.UnitScaleRcp;
@@ -124,35 +124,41 @@ namespace DotsLite.HeightGrid
 
             var serialIndex = index2.x + index2.y * info.TotalLength.x;
 
-            var i0 = serialIndex + 0;
-            var i1 = serialIndex + 1;
-            var i2 = serialIndex + info.TotalLength.x + 0;
-            var i3 = serialIndex + info.TotalLength.x + 1;
-
-            var h00 = pHeight[i0];
-            var h01 = pHeight[i1];
-            var h02 = pHeight[i2];
-            var h03 = pHeight[i3];
+            //var h00 = pHeight[i0];
+            //var h01 = pHeight[i1];
+            //var h02 = pHeight[i2];
+            //var h03 = pHeight[i3];
 
             var lxz = i - index2;
             var lxzanti = 1 - lxz;
 
 
+
             var is1 = lxz.x + lxz.y > 1.0f;
 
-            var h0_ = new float3(h00, h01, h02);
-            var h1_ = new float3(h03, h02, h01);
+            var i0 = serialIndex + 0;
+            var i1 = serialIndex + 1;
+            var i2 = serialIndex + info.TotalLength.x + 0;
+            var i3 = serialIndex + info.TotalLength.x + 1;
+
+            var pH = pHeight;
+            var h0_ = new float3(pH[i0], pH[i1], pH[i2]);
+            var h1_ = new float3(pH[i3], pH[i2], pH[i1]);
+            //var h0_ = new float3(h00, h01, h02);
+            //var h1_ = new float3(h03, h02, h01);
             var h_ = math.select(h0_, h1_, is1);
 
-            var lxz0 = lxz;
-            var lxz1 = 1.0f - lxz;
-            var lxz_ = math.select(lxz0, lxz1, is1);
+            var lxz0_ = lxz;
+            var lxz1_ = 1.0f - lxz;
+            var lxz_ = math.select(lxz0_, lxz1_, is1);
 
-            var u = (h_.y - h_.x) * lxz.x;
-            var v = (h_.z - h_.x) * lxz.y;
-            var hf = (u + v) * 0.5f;
+            //var u = (h_.y - h_.x) * lxz_.x;
+            //var v = (h_.z - h_.x) * lxz_.y;
+            //var hf = (u + v) * 0.5f;
+            //var h = h_.x + hf + hf;
+            var uv = (h_.yz - h_.xx) * lxz_;
+            var h = h_.x + uv.x + uv.y;
 
-            var h = h_.x + hf + hf;
             Debug.DrawLine(point.x_y(-100.0f), point.x_y(h), Color.red);
 
             return h;
@@ -169,6 +175,12 @@ namespace DotsLite.HeightGrid
 
         //d = 0 * h01 + h00 * -1 + 0 * h02 = -h00
         //pl = h01, -1, h02, -h00
+
+
+        public static unsafe float RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 dir, float length)
+        {
+            return 0;
+        }
     }
 
     public struct RightTriangle

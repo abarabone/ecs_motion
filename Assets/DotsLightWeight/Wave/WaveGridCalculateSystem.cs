@@ -128,7 +128,7 @@ namespace DotsLite.HeightGrid
                 .ForEach((ref PhysicsVelocity v, in Unity.Transforms.Translation pos) =>
                 {
                     var point = pos.Value.xz;
-                    var h = gridinfo.CalcWaveHeight(pnext, point);
+                    var h = gridinfo.CalcVerticalHeight(pnext, point);
                     var a = math.clamp(h - pos.Value.y, 0.0f, 1.5f) * 5.0f;
                     v.Linear += math.up() * a * dt;
                     //pos.Value += math.up() * (a * harfsqdt);

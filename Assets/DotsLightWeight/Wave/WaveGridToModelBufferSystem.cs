@@ -69,6 +69,8 @@ namespace DotsLite.Draw
         {
             using var barScope = bardep.WithDependencyScope();
 
+            // length はセグメント数、頂点は + 1 個送る
+
             var gridinfo = this.gridMaster.Info;
             var srcw = gridinfo.UnitLengthInGrid.x;
             var srcww = gridinfo.NumGrids.x * gridinfo.UnitLengthInGrid.x;
@@ -115,12 +117,13 @@ namespace DotsLite.Draw
                     var i = offsetInfo.VectorOffsetPerInstance;
 
 
-                    UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, dstspan, count);
+                    var elementSize = dstspan;
+                    UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, elementSize, count);
 
                     var lodUnitScale = unitScale * (1 << grid.LodLevel);
-                    ((float*)(pDst + i))[-1] = lodUnitScale;
+                    //((float*)(pDst + i))[-1] = lodUnitScale;
 
-                    pDst[i] = pos.Value.As_float4();
+                    pDst[i] = pos.Value.As_float4(lodUnitScale);
 
                 })
                 .ScheduleParallel();
