@@ -117,45 +117,31 @@ namespace DotsLite.HeightGrid
 
         public static unsafe float CalcVerticalHeight(this Wave.GridMasterInfo info, float* pHeight, float2 point)
         {
-            var xz = point - info.LeftTopLocation.xz;
-            var i = xz * info.UnitScaleRcp;
+            var wxz = point - info.LeftTopLocation.xz;
+            var i = wxz * info.UnitScaleRcp;
 
             var index2 = (int2)i;
-
             var serialIndex = index2.x + index2.y * info.TotalLength.x;
-
-            //var h00 = pHeight[i0];
-            //var h01 = pHeight[i1];
-            //var h02 = pHeight[i2];
-            //var h03 = pHeight[i3];
-
-            var lxz = i - index2;
-            var lxzanti = 1 - lxz;
-
-
-
-            var is1 = lxz.x + lxz.y > 1.0f;
 
             var i0 = serialIndex + 0;
             var i1 = serialIndex + 1;
             var i2 = serialIndex + info.TotalLength.x + 0;
             var i3 = serialIndex + info.TotalLength.x + 1;
 
+
+            var lxz = i - index2;
+            var is1 = lxz.x + lxz.y > 1.0f;
+
             var pH = pHeight;
             var h0_ = new float3(pH[i0], pH[i1], pH[i2]);
             var h1_ = new float3(pH[i3], pH[i2], pH[i1]);
-            //var h0_ = new float3(h00, h01, h02);
-            //var h1_ = new float3(h03, h02, h01);
             var h_ = math.select(h0_, h1_, is1);
 
             var lxz0_ = lxz;
             var lxz1_ = 1.0f - lxz;
             var lxz_ = math.select(lxz0_, lxz1_, is1);
 
-            //var u = (h_.y - h_.x) * lxz_.x;
-            //var v = (h_.z - h_.x) * lxz_.y;
-            //var hf = (u + v) * 0.5f;
-            //var h = h_.x + hf + hf;
+
             var uv = (h_.yz - h_.xx) * lxz_;
             var h = h_.x + uv.x + uv.y;
 
@@ -164,17 +150,24 @@ namespace DotsLite.HeightGrid
             return h;
         }
 
-        //p0 = 0, h00, 0
+        //p0 = 0, h0, 0
 
-        //u1 = 1, h01, 0
-        //v1 = 0, h02, 1
+        //u = (1, h1, 0) - (0, h0, 0) => (1, h1-h0, 0)
+        //v = (0, h2, 1) - (0, h0, 0) => (0, h2-h0, 1)
 
-        //n = u1 x v1
-        //  = h01*1 - 0*h02, 0*0 - 1*1, 1*h02 - h01*0
-        //  = h01, -1, h02
+        //n_ = u x v
+        //  = (h1-h0)*1 - 0*(h2-h0), 0*0 - 1*1, 1*(h2-h0) - (h1-h0)*0
+        //  = h1-h0, -1, h2-h0
+
+        // l = sqrt((h1-h0) * (h1-h0) + 1 + (h2-h0) * (h2-h0))
+        // n = (h1-h0) / l, -1/l, (h2-h0) / l
 
         //d = 0 * h01 + h00 * -1 + 0 * h02 = -h00
         //pl = h01, -1, h02, -h00
+
+        // (h1-h0)^2 = h1 * h1 - 2 * h1 * h0 + h0 * h0
+        // (h2-h0)^2 = h2 * h2 - 2 * h2 * h0 + h0 * h0
+        // h1*h1 - 2*h1*h0 + 2*h0*h0 + h2*h2 - 2*h2*h0
 
 
         public static unsafe float RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 dir, float length)
