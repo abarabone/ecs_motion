@@ -169,9 +169,14 @@ namespace DotsLite.HeightGrid
         // (h2-h0)^2 = h2 * h2 - 2 * h2 * h0 + h0 * h0
         // h1*h1 - 2*h1*h0 + 2*h0*h0 + h2*h2 - 2*h2*h0
 
+        // d = (0 * (h1-h0)/l + h0 * -1/l + 0 * (h2-h0)/l)
+        //   = -h0 / l
+
 
         public static unsafe float RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 dir, float length)
         {
+
+
             return 0;
         }
     }
