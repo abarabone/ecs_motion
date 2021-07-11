@@ -115,12 +115,34 @@ namespace DotsLite.HeightGrid
         //    return int2.zero;
         //}
 
-        public static unsafe float CalcVerticalHeight(this Wave.GridMasterInfo info, float* pHeight, float2 point)
+
+        static unsafe int2 calcLocation(ref this Wave.GridMasterInfo info, float* pHeight, float2 point)
         {
             var wxz = point - info.LeftTopLocation.xz;
             var i = wxz * info.UnitScaleRcp;
 
             var index2 = (int2)i;
+            return index2;
+        }
+        static int calcSerialIndex(ref this Wave.GridMasterInfo info, int2 index2)
+        {
+            var serialIndex = index2.x + index2.y * info.TotalLength.x;
+
+            return serialIndex;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static unsafe float CalcVerticalHeight(ref this Wave.GridMasterInfo info, float* pHeight, float2 point)
+        {
+            var wxz = point - info.LeftTopLocation.xz;
+            var i = wxz * info.UnitScaleRcp;
+
+            var index2 = (int2)i;
+            if (math.any(index2 < int2.zero) || math.any(index2 >= info.TotalLength)) return float.NaN;
+
             var serialIndex = index2.x + index2.y * info.TotalLength.x;
 
             var i0 = serialIndex + 0;
@@ -176,6 +198,26 @@ namespace DotsLite.HeightGrid
         public static unsafe float RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 dir, float length)
         {
 
+
+            return 0;
+        }
+        public static unsafe float RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 end)
+        {
+            //start.xz 
+
+            return 0;
+        }
+        public static unsafe float RaycastHit(float3 h_, float2 lst, float2 led)
+        {
+            var lxz_ = new float4(lst, led);
+
+            var duv = h_.yzyz - h_.xxxx;
+            var uv = duv * lxz_;                // duv.xy : stuv, duv.zw : eduv
+            var h = h_.xx + uv.xz + uv.yw;      // h.x : hst, h.y : hed
+
+            var dsted = h.xxyy / lxz_;          // lst ‚Æ led ‚ÌŒX‚«
+
+            var isHit = 
 
             return 0;
         }
