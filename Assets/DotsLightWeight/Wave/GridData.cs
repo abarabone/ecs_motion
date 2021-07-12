@@ -217,9 +217,24 @@ namespace DotsLite.HeightGrid
 
             var dsted = h.xxyy / lxz_;          // lst ‚Æ led ‚ÌŒX‚«
 
-            var isHit = 
+
+
+
 
             return 0;
+        }
+        static float calcLineUv(float3 st, float3 ed)
+        {
+            var a = (ed.yy - st.yy) / (ed.xz - st.xz);
+            var b = st.xz * a - st.yy;
+        }
+        static float calcPlaneHit()
+        {
+            // ly = ua * lx + ub
+            // ly = va * lz + vb
+
+            // h1 = ua * uvx + 
+
         }
     }
 
