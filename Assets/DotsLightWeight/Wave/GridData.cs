@@ -219,14 +219,25 @@ namespace DotsLite.HeightGrid
             // h = a * p + b
             // a = (h1 - h0) / (p1 - p0)
             // b = h - a * p
-            var a = ;
-            var b = ;
+            var a = (wxz_ed.yy - wxz_st.yy) / (wxz_ed - wxz_st);
+            var b = wxz_ed.yy - a * wxz_ed;
 
 
+            var i0 = 0;
+            var i1 = 1;
+            var i2 = info.TotalLength.x + 0;
+            var i3 = info.TotalLength.x + 1;
+
+            var pH = pHeight;
             for (var iz = 0; iz < len.y; iz++)
             for (var ix = 0; ix < len.x; ix++)
             {
-                
+                    var i = ix + iz * info.TotalLength.x;
+                    var h0 = pH[i0 +];
+                    var h1 = pH[i1];
+                    var h2 = pH[i2];
+                    var wvh = new float3(i1, i0, i2);
+                RaycastHit();
             }
 
             return 0;
@@ -238,6 +249,11 @@ namespace DotsLite.HeightGrid
             // p = (lnb - wvb) / (lna - wva)
             // h = (wva * lnb - wvb * lna) / (lna - wva)
 
+            // wva = (wvh1 - wvh0) / (1 - 0)
+            // wvb = wvh0 - wva * 0;
+            // wvb = wvh1 - wva * 1;
+            var wva = wvh.xz - wvh.yy;
+            var wvb = 
 
         }
         //public static unsafe float RaycastHit(float3 h_, float2 lst, float2 led)
