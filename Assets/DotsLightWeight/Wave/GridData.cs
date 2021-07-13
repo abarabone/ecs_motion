@@ -197,45 +197,78 @@ namespace DotsLite.HeightGrid
 
         public static unsafe float RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 dir, float length)
         {
-
+            
 
             return 0;
         }
         public static unsafe float RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 end)
         {
-            //start.xz 
+            var wxz_st = start.xz - info.LeftTopLocation.xz;
+            var ist = wxz_st * info.UnitScaleRcp;
+
+            var wxz_ed = end.xz - info.LeftTopLocation.xz;
+            var ied = wxz_ed * info.UnitScaleRcp;
+
+            var index2st = (int2)ist;
+            var index2ed = (int2)ied;
+            //if (math.any(index2 < int2.zero) || math.any(index2 >= info.TotalLength)) return float.NaN;
+
+            var len = ied - ist + 1;
+
+
+            // h = a * p + b
+            // a = (h1 - h0) / (p1 - p0)
+            // b = h - a * p
+            var a = ;
+            var b = ;
+
+
+            for (var iz = 0; iz < len.y; iz++)
+            for (var ix = 0; ix < len.x; ix++)
+            {
+                
+            }
 
             return 0;
         }
-        public static unsafe float RaycastHit(float3 h_, float2 lst, float2 led)
+        public static unsafe float RaycastHit(float3 wvh, float2 lnst, float2 lned, float lna, float lnb)
         {
-            var lxz_ = new float4(lst, led);
+            // wvh = wva * wvp + wvb
+            // lnh = lna * lnp + lnb
+            // p = (lnb - wvb) / (lna - wva)
+            // h = (wva * lnb - wvb * lna) / (lna - wva)
 
-            var duv = h_.yzyz - h_.xxxx;
-            var uv = duv * lxz_;                // duv.xy : stuv, duv.zw : eduv
-            var h = h_.xx + uv.xz + uv.yw;      // h.x : hst, h.y : hed
-
-            var dsted = h.xxyy / lxz_;          // lst ‚Æ led ‚ÌŒX‚«
-
-
-
-
-
-            return 0;
-        }
-        static float calcLineUv(float3 st, float3 ed)
-        {
-            var a = (ed.yy - st.yy) / (ed.xz - st.xz);
-            var b = st.xz * a - st.yy;
-        }
-        static float calcPlaneHit()
-        {
-            // ly = ua * lx + ub
-            // ly = va * lz + vb
-
-            // h1 = ua * uvx + 
 
         }
+        //public static unsafe float RaycastHit(float3 h_, float2 lst, float2 led)
+        //{
+        //    var lxz_ = new float4(lst, led);
+
+        //    var duv = h_.yzyz - h_.xxxx;
+        //    var uv = duv * lxz_;                // duv.xy : stuv, duv.zw : eduv
+        //    var h = h_.xx + uv.xz + uv.yw;      // h.x : hst, h.y : hed
+
+        //    var dsted = h.xxyy / lxz_;          // lst ‚Æ led ‚ÌŒX‚«
+
+
+
+
+
+        //    return 0;
+        //}
+        //static float calcLineUv(float3 st, float3 ed)
+        //{
+        //    var a = (ed.yy - st.yy) / (ed.xz - st.xz);
+        //    var b = st.xz * a - st.yy;
+        //}
+        //static float calcPlaneHit()
+        //{
+        //    // ly = ua * lx + ub
+        //    // ly = va * lz + vb
+
+        //    // h1 = ua * uvx + 
+
+        //}
     }
 
     public struct RightTriangle
