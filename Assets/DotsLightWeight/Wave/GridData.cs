@@ -201,7 +201,7 @@ namespace DotsLite.HeightGrid
 
             return 0;
         }
-        public static unsafe float RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 end)
+        public static unsafe (bool isHit, float3 p) RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 end)
         {
             var wxz_st = start.xz - info.LeftTopLocation.xz;
             var ist = wxz_st * info.UnitScaleRcp;
@@ -219,8 +219,8 @@ namespace DotsLite.HeightGrid
             // h = a * p + b
             // a = (h1 - h0) / (p1 - p0)
             // b = h - a * p
-            var a = (wxz_ed.yy - wxz_st.yy) / (wxz_ed - wxz_st);
-            var b = wxz_ed.yy - a * wxz_ed;
+            var lna = (wxz_ed.yy - wxz_st.yy) / (wxz_ed - wxz_st);
+            var lnb = wxz_ed.yy - lna * wxz_ed;
 
 
             var i0 = 0;
@@ -230,31 +230,54 @@ namespace DotsLite.HeightGrid
 
             var pH = pHeight;
             for (var iz = 0; iz < len.y; iz++)
-            for (var ix = 0; ix < len.x; ix++)
+            for (var ix = 0; ix < len.x; ix++)// 左右をつなげる処理まだやってない
             {
                     var i = ix + iz * info.TotalLength.x;
-                    var h0 = pH[i0 +];
-                    var h1 = pH[i1];
-                    var h2 = pH[i2];
-                    var wvh = new float3(i1, i0, i2);
-                RaycastHit();
-            }
+                    var h0 = pH[i0 + i];
+                    var h1 = pH[i1 + i];
+                    var h2 = pH[i2 + i];
+                    var h3 = pH[i3 + i];
 
-            return 0;
+                    var offset = new float2(ix, iz) * info.UnitScale;
+                    // i0 の点が xz の原点になるようにする
+
+                    var wvhA = new float3(h1, h0, h2);
+                    var lnstA = wxz_st - offset;
+                    var lnedA = wxz_ed - offset;
+                    var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
+
+                    if (resA.isHit) return resA;
+
+                    var wvhB = new float3(h2, h3, h1);
+                    var lnstB = 1.0f - lnstA;
+                    var lnedB = 1.0f - lnedA;
+                    var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
+
+                    if (resB.isHit) return resB;
+                }
+
+            return (false, default);
         }
-        public static unsafe float RaycastHit(float3 wvh, float2 lnst, float2 lned, float lna, float lnb)
+        public static unsafe (bool isHit, float3 p) RaycastHit(float3 wvh, float2 lnst, float2 lned, float2 lna, float2 lnb)
         {
+            // wva = (wvh1or2 - wvh0) / (1 - 0)
+            // wvb = wvh0 - wva * 0; wvh0 のとき
+            // wvb = wvh1or2 - wva * 1; wvh1or2 のとき
+            var wva = wvh.xz - wvh.yy;
+            var wvb = wvh.yy;
+
             // wvh = wva * wvp + wvb
             // lnh = lna * lnp + lnb
             // p = (lnb - wvb) / (lna - wva)
             // h = (wva * lnb - wvb * lna) / (lna - wva)
+            //var darcp = 1.0f / (lna - wva);
+            var darcp = math.rcp(lna - wva);
+            var uv = (lnb - wvb) * darcp;
+            var h = (wva * lnb - wvb * lna) * darcp;
 
-            // wva = (wvh1 - wvh0) / (1 - 0)
-            // wvb = wvh0 - wva * 0;
-            // wvb = wvh1 - wva * 1;
-            var wva = wvh.xz - wvh.yy;
-            var wvb = 
+            if (math.any(uv < 0.0f | uv > 1.0f)) return (false, default);
 
+            return (true, uv.x_y(h));
         }
         //public static unsafe float RaycastHit(float3 h_, float2 lst, float2 led)
         //{
