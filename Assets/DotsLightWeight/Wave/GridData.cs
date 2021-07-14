@@ -167,7 +167,7 @@ namespace DotsLite.HeightGrid
             var uv = (h_.yz - h_.xx) * lxz_;
             var h = h_.x + uv.x + uv.y;
 
-            Debug.DrawLine(point.x_y(-100.0f), point.x_y(h), Color.red);
+            //Debug.DrawLine(point.x_y(-100.0f), point.x_y(h), Color.red);
 
             return h;
         }
@@ -246,14 +246,14 @@ namespace DotsLite.HeightGrid
                     var lnedA = wxz_ed - offset;
                     var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// Ç†Ç∆Ç≈ãﬂÇ¢Ç‡ÇÃÇçÃópÇ∑ÇÈÇÊÇ§Ç…
 
-                    if (resA.isHit) return resA;
+                    if (resA.isHit) return (true, resA.p + offset.x_y());
 
-                    var wvhB = new float3(h2, h3, h1);
-                    var lnstB = 1.0f - lnstA;
-                    var lnedB = 1.0f - lnedA;
-                    var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
+                    //var wvhB = new float3(h2, h3, h1);
+                    //var lnstB = 1.0f - lnstA;
+                    //var lnedB = 1.0f - lnedA;
+                    //var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
 
-                    if (resB.isHit) return resB;
+                    //if (resB.isHit) return (true, resB.p + offset.x_y()); ;
                 }
 
             return (false, default);
@@ -277,7 +277,11 @@ namespace DotsLite.HeightGrid
 
             if (math.any(uv < 0.0f | uv > 1.0f)) return (false, default);
 
-            return (true, uv.x_y(h));
+            var lu = new float3(uv.x, h.x, 0);
+            var lv = new float3(0, h.y, uv.y);
+            var l = (lu + lv) * 0.5f;
+
+            return (true, l);
         }
         //public static unsafe float RaycastHit(float3 h_, float2 lst, float2 led)
         //{

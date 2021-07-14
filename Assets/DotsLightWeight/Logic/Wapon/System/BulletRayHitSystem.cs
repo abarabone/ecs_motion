@@ -11,6 +11,7 @@ using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine.XR;
 using Unity.Physics.Systems;
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsLite.Arms
 {
@@ -28,6 +29,8 @@ namespace DotsLite.Arms
     using DotsLite.Collision;
     using DotsLite.Targeting;
     using DotsLite.Misc;
+    using DotsLite.HeightGrid;
+    using DotsLite.Utilities;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
@@ -57,7 +60,7 @@ namespace DotsLite.Arms
         }
 
 
-        protected override void OnUpdate()
+        protected unsafe override void OnUpdate()
         {
             using var cmdScope = this.cmddep.WithDependencyScope();
             using var phyScope = this.phydep.WithDependencyScope();
@@ -87,6 +90,8 @@ namespace DotsLite.Arms
             var grid = this.GetSingleton<HeightGrid.Wave.GridMasterData>();//暫定
             var currs = grid.Currs;
             var xspan = grid.Info.UnitLengthInGrid.x * grid.Info.NumGrids.x;
+            var ginfo = grid.Info;
+            var p = (float*)currs.GetUnsafeReadOnlyPtr();
 
             this.Entities
                 .WithBurst()
@@ -104,6 +109,7 @@ namespace DotsLite.Arms
                 .WithNativeDisableParallelForRestriction(chhit)
                 .WithNativeDisableContainerSafetyRestriction(chhit)
                 .WithNativeDisableContainerSafetyRestriction(currs)// 暫定
+                .WithNativeDisableUnsafePtrRestriction(p)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -129,6 +135,8 @@ namespace DotsLite.Arms
                         currs[currs.Length >> 1] -= a * dt * dt * 0.5f;
                         //currs[currs.Length >> 1 + 1] += a * dt * dt * 0.25f;
                         //currs[currs.Length >> 1 - 1] += a * dt * dt * 0.25f;
+                        var res = ginfo.RaycastHit(p, tail.Position, pos.Value);
+                        if (res.isHit) Debug.DrawLine(res.p.xz.x_y(-100.0f), res.p, Color.green);
 
 
                         var v = (pos.Value - vfact.PrePosition.xyz) * dtrate;
