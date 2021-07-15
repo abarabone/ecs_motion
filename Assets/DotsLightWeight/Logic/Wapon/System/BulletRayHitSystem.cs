@@ -140,7 +140,7 @@ namespace DotsLite.Arms
                             var a = -10.0f;
                             currs[serialIndex] -= a * dt * dt * 0.5f;
                         }
-                        var res = ginfo.RaycastHit(p, pos.Value, tail.Position);
+                        var res = ginfo.RaycastHit(p, tail.Position, pos.Value);
                         if (res.isHit) Debug.DrawLine(res.p.xz.x_y(-100.0f), res.p, Color.green);
 
 

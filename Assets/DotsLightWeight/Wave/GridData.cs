@@ -212,9 +212,9 @@ namespace DotsLite.HeightGrid
             var index2st = (int2)ist;
             var index2ed = (int2)ied;
             //if (math.any(index2 < int2.zero) || math.any(index2 >= info.TotalLength)) return float.NaN;
-
-            var len = ied - ist + 1;
-
+            
+            var len = index2ed - index2st + 1;
+            
 
             // h = a * p + b
             // a = (h1 - h0) / (p1 - p0)
@@ -246,14 +246,14 @@ namespace DotsLite.HeightGrid
                     var lnedA = wxz_ed - offset;
                     var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// ‚ ‚Æ‚Å‹ß‚¢‚à‚Ì‚ğÌ—p‚·‚é‚æ‚¤‚É
 
-                    if (resA.isHit) return (true, resA.p + offset.x_y());
+                    if (resA.isHit) return (resA.isHit, resA.p + offset.x_y());
 
                     //var wvhB = new float3(h2, h3, h1);
                     //var lnstB = 1.0f - lnstA;
                     //var lnedB = 1.0f - lnedA;
                     //var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
 
-                    //if (resB.isHit) return (true, resB.p + offset.x_y()); ;
+                    //if (resB.isHit) return (resB.isHit, resB.p + offset.x_y()); ;
                 }
 
             return (false, default);
