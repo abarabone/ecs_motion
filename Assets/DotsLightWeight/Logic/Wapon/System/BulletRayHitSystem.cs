@@ -128,15 +128,21 @@ namespace DotsLite.Arms
 
                         if (!hit_.isHit) return;
 
+
                         // 暫定
-                        //var i2 = new int2((int)pos.Value.x, (int)pos.Value.z);
-                        //i2 += 32 * 8;
-                        var a = 100.0f;
-                        currs[currs.Length >> 1] -= a * dt * dt * 0.5f;
-                        //currs[currs.Length >> 1 + 1] += a * dt * dt * 0.25f;
-                        //currs[currs.Length >> 1 - 1] += a * dt * dt * 0.25f;
-                        var res = ginfo.RaycastHit(p, tail.Position, pos.Value);
+                        var h = ginfo.CalcVerticalHeight(p, pos.Value.xz);
+                        var wxz = pos.Value.xz - ginfo.LeftTopLocation.xz;
+                        var i = wxz * ginfo.UnitScaleRcp;
+                        var index2 = (int2)i;
+                        if (!(math.any(index2 < int2.zero) || math.any(index2 >= ginfo.TotalLength)))
+                        {
+                            var serialIndex = index2.x + index2.y * ginfo.TotalLength.x;
+                            var a = -10.0f;
+                            currs[serialIndex] -= a * dt * dt * 0.5f;
+                        }
+                        var res = ginfo.RaycastHit(p, pos.Value, tail.Position);
                         if (res.isHit) Debug.DrawLine(res.p.xz.x_y(-100.0f), res.p, Color.green);
+
 
 
                         var v = (pos.Value - vfact.PrePosition.xyz) * dtrate;

@@ -167,7 +167,7 @@ namespace DotsLite.HeightGrid
             var uv = (h_.yz - h_.xx) * lxz_;
             var h = h_.x + uv.x + uv.y;
 
-            //Debug.DrawLine(point.x_y(-100.0f), point.x_y(h), Color.red);
+            Debug.DrawLine(point.x_y(-100.0f), point.x_y(h), Color.red);
 
             return h;
         }

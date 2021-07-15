@@ -117,6 +117,8 @@ namespace DotsLite.Draw
                     var i = offsetInfo.VectorOffsetPerInstance;
 
 
+                    pDst[i - 1] = float4.zero;// これをやらないと、シェーダーの　dot(vh, mask) で不定値が入ってしまう
+
                     var elementSize = dstspan;
                     UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, elementSize, count);
 

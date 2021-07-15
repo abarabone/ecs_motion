@@ -108,8 +108,8 @@ namespace DotsLite.Geometry
 			mesh.SetVertices(qVtx.ToArray());
 
 			var qIdx =
-				from ix in Enumerable.Range(0, w - 1)
-				from iz in Enumerable.Range(0, h - 1)
+				from ix in Enumerable.Range(0, segmentX)
+				from iz in Enumerable.Range(0, segmentY)
 				let i0 = ix + (iz + 0) * w
 				let i1 = ix + (iz + 1) * w
 				from i in new int[]
