@@ -108,7 +108,7 @@ namespace DotsLite.Arms
                 .WithNativeDisableContainerSafetyRestriction(sthit)
                 .WithNativeDisableParallelForRestriction(chhit)
                 .WithNativeDisableContainerSafetyRestriction(chhit)
-                .WithNativeDisableContainerSafetyRestriction(currs)// 暫定
+                //.WithNativeDisableContainerSafetyRestriction(currs)// 暫定
                 .WithNativeDisableUnsafePtrRestriction(p)
                 .ForEach(
                     (
@@ -130,16 +130,16 @@ namespace DotsLite.Arms
 
 
                         // 暫定
-                        var h = ginfo.CalcVerticalHeight(p, pos.Value.xz);
-                        var wxz = pos.Value.xz - ginfo.LeftTopLocation.xz;
-                        var i = wxz * ginfo.UnitScaleRcp;
-                        var index2 = (int2)i;
-                        if (!(math.any(index2 < int2.zero) || math.any(index2 >= ginfo.TotalLength)))
-                        {
-                            var serialIndex = index2.x + index2.y * ginfo.TotalLength.x;
-                            var a = -10.0f;
-                            currs[serialIndex] -= a * dt * dt * 0.5f;
-                        }
+                        //var h = ginfo.CalcVerticalHeight(p, pos.Value.xz);
+                        //var wxz = pos.Value.xz - ginfo.LeftTopLocation.xz;
+                        //var i = wxz * ginfo.UnitScaleRcp;
+                        //var index2 = (int2)i;
+                        //if (!(math.any(index2 < int2.zero) || math.any(index2 >= ginfo.TotalLength)))
+                        //{
+                        //    var serialIndex = index2.x + index2.y * ginfo.TotalLength.x;
+                        //    var a = -10.0f;
+                        //    currs[serialIndex] -= a * dt * dt * 0.5f;
+                        //}
                         var res = ginfo.RaycastHit(p, tail.Position, pos.Value);
                         if (res.isHit) Debug.DrawLine(res.p.xz.x_y(-100.0f), res.p, Color.green);
 
