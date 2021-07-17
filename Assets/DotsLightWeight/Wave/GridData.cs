@@ -274,6 +274,7 @@ namespace DotsLite.HeightGrid
             // wvb = wvh1or2 - wva * 1; wvh1or2 ‚Ì‚Æ‚«
             var wva = wvh.xz - wvh.yy;
             var wvb = wvh.yy;
+            //Debug.Log($"{wva} {wvb} {wvh.xz - wva}");
 
             // wvh = wva * wvp + wvb
             // lnh = lna * lnp + lnb
@@ -283,6 +284,7 @@ namespace DotsLite.HeightGrid
             var darcp = math.rcp(lna - wva);
             var uv = (lnb - wvb) * darcp;
             var h = (wva * lnb - wvb * lna) * darcp;
+            Debug.Log($"{uv} {h}");
 
             if (math.any(uv < 0.0f | uv > 1.0f)) return (false, default);
             Debug.Log("hit");
