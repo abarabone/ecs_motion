@@ -209,6 +209,11 @@ namespace DotsLite.HeightGrid
             var wxz_ed = end.xz - info.LeftTopLocation.xz;
             var ied = wxz_ed * info.UnitScaleRcp;
 
+            //var ist = math.min(ist_, ied_);
+            //var ied = math.max(ist_, ied_);
+
+
+
             //Debug.Log($"ww {start.xz} {end.xz} {info.LeftTopLocation.xz}");
             //Debug.Log($"wxz {wxz_st} {wxz_ed}");
             Debug.Log($"ist {ist} ied {ied}");
@@ -217,7 +222,9 @@ namespace DotsLite.HeightGrid
             var index2ed = (int2)ied;
             //if (math.any(index2 < int2.zero) || math.any(index2 >= info.TotalLength)) return float.NaN;
             
-            var len = index2ed - index2st + 1 + 2;
+            var imin = math.min(index2ed, index2st);
+            var imax = math.max(index2ed, index2st);
+            var len = imax - imin + 1;
 
 
             //// h = a * p + b
@@ -251,19 +258,19 @@ namespace DotsLite.HeightGrid
                     // h = a * p + b
                     // a = (h1 - h0) / (p1 - p0)
                     // b = h - a * p
-                    var ist_ = ist - index2st + offset;
-                    var ied_ = ied - index2ed + offset;
-                    var lna = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (ied_ - ist_);
-            var lnb = end.yy * info.UnitScaleRcp - lna * ied_;
-            Debug.Log($"lna:{lna} lnb:{lnb} {start.yy * info.UnitScaleRcp - lna * ist_}");
+                    var st = ist - index2st + offset;
+                    var ed = ied - index2ed + offset;
+                    var lna = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (ed - st);
+            var lnb = end.yy * info.UnitScaleRcp - lna * ed;
+            Debug.Log($"lna:{lna} lnb:{lnb} {start.yy * info.UnitScaleRcp - lna * st}");
 
 
-                    //var wvhA = new float3(h1, h0, h2);
-                    //var lnstA = ist - index2st + offset;
-                    //var lnedA = ied - index2ed + offset;
-                    //var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// Ç†Ç∆Ç≈ãﬂÇ¢Ç‡ÇÃÇçÃópÇ∑ÇÈÇÊÇ§Ç…
+                    var wvhA = new float3(h1, h0, h2);
+                    var lnstA = ist - index2st + offset;
+                    var lnedA = ied - index2ed + offset;
+                    var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// Ç†Ç∆Ç≈ãﬂÇ¢Ç‡ÇÃÇçÃópÇ∑ÇÈÇÊÇ§Ç…
 
-                    //if (resA.isHit) return (resA.isHit, resA.p);
+                    if (resA.isHit) return (resA.isHit, resA.p);
 
                     //var wvhB = new float3(h2, h3, h1);
                     //var lnstB = 1.0f - lnstA;
