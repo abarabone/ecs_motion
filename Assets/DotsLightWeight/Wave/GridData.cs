@@ -235,39 +235,42 @@ namespace DotsLite.HeightGrid
             //Debug.Log($"ln {lna} {lnb} {start.yy - lna * ist}");
 
 
-            var i0 = 0;
-            var i1 = 1;
-            var i2 = info.TotalLength.x + 0;
-            var i3 = info.TotalLength.x + 1;
+            var i0 = index2st.x + 0;
+            var i1 = index2st.x + 1;
+            var i2 = index2st.y * info.TotalLength.x + 0;
+            var i3 = index2st.y * info.TotalLength.x + 1;
 
             var pH = pHeight;
+
+            var ibasest = ist - index2st;
+            var ibaseed = ied - index2st;// st にあわせたい
             for (var iz = 0; iz < len.y; iz++)
             for (var ix = 0; ix < len.x; ix++)// 左右をつなげる処理まだやってない
             {
                     Debug.Log($"{ix} {iz}");
-                    var i = ix + iz * info.TotalLength.x;
-                    var h0 = pH[i0 + i] * info.UnitScaleRcp;
-                    var h1 = pH[i1 + i] * info.UnitScaleRcp;
-                    var h2 = pH[i2 + i] * info.UnitScaleRcp;
-                    var h3 = pH[i3 + i] * info.UnitScaleRcp;
+                    var ofs = ix + iz * info.TotalLength.x;
+                    var h0 = pH[i0 + ofs] * info.UnitScaleRcp;
+                    var h1 = pH[i1 + ofs] * info.UnitScaleRcp;
+                    var h2 = pH[i2 + ofs] * info.UnitScaleRcp;
+                    var h3 = pH[i3 + ofs] * info.UnitScaleRcp;
 
-                    var offset = new float2(ix, iz);// * info.UnitScale;
+                    var i = new float2(ix, iz);// * info.UnitScale;
                                                     //// i0 の点が xz の原点になるようにする
                                                     //Debug.Log($"{offset}");
 
                     // h = a * p + b
                     // a = (h1 - h0) / (p1 - p0)
                     // b = h - a * p
-                    var st = ist - index2st + offset;
-                    var ed = ied - index2ed + offset;
-                    var lna = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (ed - st);
-            var lnb = end.yy * info.UnitScaleRcp - lna * ed;
-            Debug.Log($"lna:{lna} lnb:{lnb} {start.yy * info.UnitScaleRcp - lna * st}");
+                    var lst = ibasest - i;
+                    var led = ibaseed - i;
+                    var lna = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (led - lst) ;
+            var lnb = end.yy * info.UnitScaleRcp - lna *led;
+            Debug.Log($"lna:{lna} lnb:{lnb} {start.yy * info.UnitScaleRcp - lna * lst}");
 
 
                     var wvhA = new float3(h1, h0, h2);
-                    var lnstA = ist - index2st + offset;
-                    var lnedA = ied - index2ed + offset;
+                    var lnstA = lst;//ist - i;
+                    var lnedA = lst;// ied - i;
                     var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
 
                     if (resA.isHit) return (resA.isHit, resA.p);
