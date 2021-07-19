@@ -230,9 +230,9 @@ namespace DotsLite.HeightGrid
             //// h = a * p + b
             //// a = (h1 - h0) / (p1 - p0)
             //// b = h - a * p
-            //var lna = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (ied - ist);
-            //var lnb = end.yy * info.UnitScaleRcp - lna * ied;
-            //Debug.Log($"ln {lna} {lnb} {start.yy - lna * ist}");
+            var lnax = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (ied - ist);
+            var lnbx = end.yy * info.UnitScaleRcp - lnax * ied;
+            Debug.Log($"ln outer {lnax} {lnbx} {start.yy * info.UnitScaleRcp - lnax * ist}");
 
 
             var i0 = index2st.x + 0;
@@ -270,7 +270,7 @@ namespace DotsLite.HeightGrid
 
                     var wvhA = new float3(h1, h0, h2);
                     var lnstA = lst;//ist - i;
-                    var lnedA = lst;// ied - i;
+                    var lnedA = led;// lst;// ied - i;
                     var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// Ç†Ç∆Ç≈ãﬂÇ¢Ç‡ÇÃÇçÃópÇ∑ÇÈÇÊÇ§Ç…
 
                     if (resA.isHit) return (resA.isHit, resA.p);
@@ -294,7 +294,7 @@ namespace DotsLite.HeightGrid
             // wvb = wvh1or2 - wva * 1; wvh1or2 ÇÃÇ∆Ç´
             var wva = wvh.xz - wvh.yy;
             var wvb = wvh.yy;
-            Debug.Log($"wv {wvh} {wva} {wvb}");
+            Debug.Log($"wv {wvh} {wva} {wvb} {wvh.xz - wva}");
 
             // wvh = wva * wvp + wvb
             // lnh = lna * lnp + lnb
@@ -302,9 +302,14 @@ namespace DotsLite.HeightGrid
             // h = (wva * lnb - wvb * lna) / (lna - wva)
             //var darcp = 1.0f / (lna - wva);
             var darcp = math.rcp(lna - wva);
-            var uv = (lnb - wvb) * darcp;
+            var uv = -(lnb - wvb) * darcp;
             var h = (wva * lnb - wvb * lna) * darcp;
             Debug.Log($"uvh {uv} {h}");
+
+            var darcp2 = math.rcp(wva - lna);
+            var uv2 = (wvb - lnb) * darcp2;
+            var h2 = (wvb * lna - wva * lnb) * darcp2;
+            Debug.Log($"uvh2 {uv2} {h2}");
 
             if (math.any(uv < 0.0f | uv > 1.0f)) return (false, default);
             Debug.Log("hit");
