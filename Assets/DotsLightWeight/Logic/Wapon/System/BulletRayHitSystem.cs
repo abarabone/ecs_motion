@@ -123,11 +123,6 @@ namespace DotsLite.Arms
                     {
                         var eqi = entityInQueryIndex;
                         
-                        var hit_ = cw.BulletHitRay
-                            (link.OwnerStateEntity, pos.Value, tail.Position, 1.0f, targets);
-
-                        if (!hit_.isHit) return;
-
 
                         // 暫定
                         //var h = ginfo.CalcVerticalHeight(p, pos.Value.xz);
@@ -142,6 +137,13 @@ namespace DotsLite.Arms
                         //}
                         var res = ginfo.RaycastHit(p, tail.Position, pos.Value);
                         if (res.isHit) Debug.DrawLine(res.p.xz.x_y(-100.0f), res.p, Color.green);
+
+
+                        var hit_ = cw.BulletHitRay
+                            (link.OwnerStateEntity, pos.Value, tail.Position, 1.0f, targets);
+
+                        if (!hit_.isHit) return;
+
 
 
 

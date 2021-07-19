@@ -15,6 +15,7 @@ namespace DotsLite.HeightGrid
     using DotsLite.Misc;
     using DotsLite.Common;
     using DotsLite.Utilities;
+    using DotsLite.Mathematics;
 
 
     [Serializable]
@@ -216,7 +217,7 @@ namespace DotsLite.HeightGrid
 
             //Debug.Log($"ww {start.xz} {end.xz} {info.LeftTopLocation.xz}");
             //Debug.Log($"wxz {wxz_st} {wxz_ed}");
-            Debug.Log($"ist {ist} ied {ied}");
+            //Debug.Log($"ist {ist} ied {ied}");
 
             var index2st = (int2)ist;
             var index2ed = (int2)ied;
@@ -232,7 +233,7 @@ namespace DotsLite.HeightGrid
             //// b = h - a * p
             var lnax = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (ied - ist);
             var lnbx = end.yy * info.UnitScaleRcp - lnax * ied;
-            Debug.Log($"ln outer {lnax} {lnbx} {start.yy * info.UnitScaleRcp - lnax * ist}");
+            //Debug.Log($"ln outer {lnax} {lnbx} {start.yy * info.UnitScaleRcp - lnax * ist}");
 
 
             var i0 = index2st.x + 0;
@@ -247,12 +248,16 @@ namespace DotsLite.HeightGrid
             for (var iz = 0; iz < len.y; iz++)
             for (var ix = 0; ix < len.x; ix++)// 左右をつなげる処理まだやってない
             {
-                    Debug.Log($"{ix} {iz}");
+                    //Debug.Log($"{ix} {iz}");
                     var ofs = ix + iz * info.TotalLength.x;
-                    var h0 = pH[i0 + ofs] * info.UnitScaleRcp;
-                    var h1 = pH[i1 + ofs] * info.UnitScaleRcp;
-                    var h2 = pH[i2 + ofs] * info.UnitScaleRcp;
-                    var h3 = pH[i3 + ofs] * info.UnitScaleRcp;
+                    //var h0 = pH[i0 + ofs] * info.UnitScaleRcp;
+                    //var h1 = pH[i1 + ofs] * info.UnitScaleRcp;
+                    //var h2 = pH[i2 + ofs] * info.UnitScaleRcp;
+                    //var h3 = pH[i3 + ofs] * info.UnitScaleRcp;
+                    var h0 = pH[i0 + ofs];// * info.UnitScaleRcp;
+                    var h1 = pH[i1 + ofs];// * info.UnitScaleRcp;
+                    var h2 = pH[i2 + ofs];// * info.UnitScaleRcp;
+                    var h3 = pH[i3 + ofs];// * info.UnitScaleRcp;
 
                     var i = new float2(ix, iz);// * info.UnitScale;
                                                     //// i0 の点が xz の原点になるようにする
@@ -265,36 +270,60 @@ namespace DotsLite.HeightGrid
                     var led = ibaseed - i;
                     var lna = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (led - lst) ;
             var lnb = end.yy * info.UnitScaleRcp - lna *led;
-            Debug.Log($"lna:{lna} lnb:{lnb} {start.yy * info.UnitScaleRcp - lna * lst}");
+            //Debug.Log($"lna:{lna} lnb:{lnb} {start.yy * info.UnitScaleRcp - lna * lst}");
 
 
                     var wvhA = new float3(h1, h0, h2);
                     var lnstA = lst;//ist - i;
                     var lnedA = led;// lst;// ied - i;
-                    var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
+                    //var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
+                    var resA = RaycastHit2(info, wvhA, i, i+new float2(1,0), i + new float2(0, 1), start, end);// あとで近いものを採用するように
 
                     if (resA.isHit) return (resA.isHit, resA.p);
 
-                    //var wvhB = new float3(h2, h3, h1);
-                    //var lnstB = 1.0f - lnstA;
-                    //var lnedB = 1.0f - lnedA;
+                    var wvhB = new float3(h2, h3, h1);
+                    var lnstB = 1.0f - lnstA;
+                    var lnedB = 1.0f - lnedA;
                     //var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
+                    var resB = RaycastHit2(info, wvhB, i + new float2(1, 1), i + new float2(0, 1), i + new float2(1, 0), start, end);
 
-                    //if (resB.isHit) return (resB.isHit, resB.p);
+                    if (resB.isHit) return (resB.isHit, resB.p);
                 }
 
             return (false, default);
         }
+        public static unsafe (bool isHit, float3 p) RaycastHit2(
+            Wave.GridMasterInfo info, float3 wvh, float2 i0, float2 i1, float2 i2, float3 st, float3 ed)
+        {
+            var p0 = info.LeftTopLocation + i0.x_y(wvh.y) * info.UnitScale;
+            var p1 = info.LeftTopLocation + i1.x_y(wvh.x) * info.UnitScale;
+            var p2 = info.LeftTopLocation + i2.x_y(wvh.z) * info.UnitScale;
+            var pl = new Plane(p0, p1, p2);
+
+            var ray = new Ray(st, math.normalize(ed - st));
+            var isHitPl = pl.Raycast(ray, out var t);
+            var p = t * ray.direction.As_float3() + st;
+            if (!isHitPl) return (false, default);
+
+            var c0 = math.cross(p - p0, p1 - p0);
+            var c1 = math.cross(p - p1, p2 - p1);
+            var c2 = math.cross(p - p2, p0 - p2);
+
+            var isHit = math.sign(math.dot(c0, c1)) == math.sign(math.dot(c0, c2));
+            if (isHit) Debug.Log(p);
+            
+            return (isHit, p);
+        }
         public static unsafe (bool isHit, float3 p) RaycastHit(float3 wvh, float2 lnst, float2 lned, float2 lna, float2 lnb)
         {
-            Debug.Log($"ln {lnst} {lned} {lna} {lnb}");
+            //Debug.Log($"ln {lnst} {lned} {lna} {lnb}");
 
             // wva = (wvh1or2 - wvh0) / (1 - 0)
             // wvb = wvh0 - wva * 0; wvh0 のとき
             // wvb = wvh1or2 - wva * 1; wvh1or2 のとき
             var wva = wvh.xz - wvh.yy;
             var wvb = wvh.yy;
-            Debug.Log($"wv {wvh} {wva} {wvb} {wvh.xz - wva}");
+            //Debug.Log($"wv {wvh} {wva} {wvb} {wvh.xz - wva}");
 
             // wvh = wva * wvp + wvb
             // lnh = lna * lnp + lnb
@@ -302,17 +331,17 @@ namespace DotsLite.HeightGrid
             // h = (wva * lnb - wvb * lna) / (lna - wva)
             //var darcp = 1.0f / (lna - wva);
             var darcp = math.rcp(lna - wva);
-            var uv = -(lnb - wvb) * darcp;
+            var uv = (lnb - wvb) * darcp;
             var h = (wva * lnb - wvb * lna) * darcp;
-            Debug.Log($"uvh {uv} {h}");
+            //Debug.Log($"uvh {uv} {h}");
 
-            var darcp2 = math.rcp(wva - lna);
-            var uv2 = (wvb - lnb) * darcp2;
-            var h2 = (wvb * lna - wva * lnb) * darcp2;
-            Debug.Log($"uvh2 {uv2} {h2}");
+            //var darcp2 = math.rcp(wva - lna);
+            //var uv2 = (wvb - lnb) * darcp2;
+            //var h2 = (wvb * lna - wva * lnb) * darcp2;
+            ////Debug.Log($"uvh2 {uv2} {h2}");
 
             if (math.any(uv < 0.0f | uv > 1.0f)) return (false, default);
-            Debug.Log("hit");
+            Debug.Log("hit"); Debug.Log($"uvh {uv} {h}");
 
             var lu = new float3(uv.x, h.x, 0);
             var lv = new float3(0, h.y, uv.y);
@@ -405,6 +434,13 @@ namespace DotsLite.Mathematics
         public plane(float3 p, float3 n)
         {
             this.nd = n.As_float4(math.dot(p, n));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public plane(float3 p0, float3 p1, float3 p2)
+        {
+            var up = math.cross((p1 - p0), (p2 - p0));
+            var n = math.normalize(up);
+            this = new plane(p0, n);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
