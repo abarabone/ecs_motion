@@ -87,15 +87,10 @@ namespace DotsLite.Arms
             var dtrate = dt * TimeEx.PrevDeltaTimeRcp;
 
 
-            var grid = this.GetSingleton<HeightGrid.Wave.GridMasterData>();//暫定
-            var currs = grid.Currs;
-            var xspan = grid.Info.UnitLengthInGrid.x * grid.Info.NumGrids.x;
-            var ginfo = grid.Info;
-            var p = (float*)currs.GetUnsafeReadOnlyPtr();
-
             this.Entities
                 .WithBurst()
                 .WithAll<Bullet.RayTag>()
+                .WithNone<Particle.LifeTimeInitializeTag>()
                 //.WithNone<Bullet.EmitterTag>()// 
                 .WithReadOnly(damages)
                 .WithReadOnly(emits)
@@ -108,8 +103,6 @@ namespace DotsLite.Arms
                 .WithNativeDisableContainerSafetyRestriction(sthit)
                 .WithNativeDisableParallelForRestriction(chhit)
                 .WithNativeDisableContainerSafetyRestriction(chhit)
-                //.WithNativeDisableContainerSafetyRestriction(currs)// 暫定
-                .WithNativeDisableUnsafePtrRestriction(p)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -123,22 +116,6 @@ namespace DotsLite.Arms
                     {
                         var eqi = entityInQueryIndex;
                         
-
-                        // 暫定
-                        //var h = ginfo.CalcVerticalHeight(p, pos.Value.xz);
-                        //var wxz = pos.Value.xz - ginfo.LeftTopLocation.xz;
-                        //var i = wxz * ginfo.UnitScaleRcp;
-                        //var index2 = (int2)i;
-                        //if (!(math.any(index2 < int2.zero) || math.any(index2 >= ginfo.TotalLength)))
-                        //{
-                        //    var serialIndex = index2.x + index2.y * ginfo.TotalLength.x;
-                        //    var a = -10.0f;
-                        //    currs[serialIndex] -= a * dt * dt * 0.5f;
-                        //}
-                        var res = ginfo.RaycastHit(p, tail.Position, pos.Value);
-                        if (res.isHit) Debug.DrawLine(res.p.xz.x_y(-100.0f), res.p, Color.green);
-
-
                         var hit_ = cw.BulletHitRay
                             (link.OwnerStateEntity, pos.Value, tail.Position, 1.0f, targets);
 

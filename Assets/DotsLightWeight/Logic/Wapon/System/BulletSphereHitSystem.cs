@@ -85,6 +85,7 @@ namespace DotsLite.Arms
             this.Entities
                 .WithBurst()
                 .WithAll<Bullet.SphereTag>()
+                .WithNone<Particle.LifeTimeInitializeTag>()
                 .WithReadOnly(damages)
                 .WithReadOnly(emits)
                 .WithReadOnly(targets)

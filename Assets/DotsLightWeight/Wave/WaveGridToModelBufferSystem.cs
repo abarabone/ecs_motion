@@ -42,14 +42,14 @@ namespace DotsLite.Draw
         }
 
 
-        Wave.GridMasterData gridMaster;
+        GridMaster.Data gridMaster;
 
         protected override void OnStartRunning()
         {
-            this.RequireSingletonForUpdate<Wave.GridMasterData>();
+            this.RequireSingletonForUpdate<GridMaster.Data>();
 
-            if (!this.HasSingleton<Wave.GridMasterData>()) return;
-            this.gridMaster = this.GetSingleton<Wave.GridMasterData>();
+            if (!this.HasSingleton<GridMaster.Data>()) return;
+            this.gridMaster = this.GetSingleton<GridMaster.Data>();
 
             //this.Entities
             //    .WithoutBurst()

@@ -40,15 +40,15 @@ namespace DotsLite.HeightGrid
         length_256 = 256,
     }
 
-    public static class Wave
+    public static class GridMaster
     {
-        public class GridMasterData : IComponentData, IDisposable
+        public class Data : IComponentData, IDisposable
         {
             public NativeArray<float> Nexts;
             public NativeArray<float> Currs;
             public NativeArray<float> Prevs;
 
-            public GridMasterInfo Info;
+            public Info Info;
 
             public void Dispose()
             {
@@ -58,7 +58,7 @@ namespace DotsLite.HeightGrid
                 Debug.Log("disposed");
             }
         }
-        public struct GridMasterInfo
+        public struct Info
         {
             public float3 LeftTopLocation;
             public int2 UnitLengthInGrid;
@@ -69,6 +69,11 @@ namespace DotsLite.HeightGrid
 
             public int2 TotalLength;
             public float UnitScaleRcp;
+        }
+
+        public struct Emitting : IComponentData
+        {
+            public Entity SplashPrefab;
         }
     }
 
@@ -117,7 +122,7 @@ namespace DotsLite.HeightGrid
         //}
 
 
-        static unsafe int2 calcLocation(ref this Wave.GridMasterInfo info, float* pHeight, float2 point)
+        static unsafe int2 calcLocation(ref this GridMaster.Info info, float* pHeight, float2 point)
         {
             var wxz = point - info.LeftTopLocation.xz;
             var i = wxz * info.UnitScaleRcp;
@@ -125,7 +130,7 @@ namespace DotsLite.HeightGrid
             var index2 = (int2)i;
             return index2;
         }
-        static int calcSerialIndex(ref this Wave.GridMasterInfo info, int2 index2)
+        static int calcSerialIndex(ref this GridMaster.Info info, int2 index2)
         {
             var serialIndex = index2.x + index2.y * info.TotalLength.x;
 
@@ -136,7 +141,7 @@ namespace DotsLite.HeightGrid
         /// <summary>
         /// 
         /// </summary>
-        public static unsafe float CalcVerticalHeight(ref this Wave.GridMasterInfo info, float* pHeight, float2 point)
+        public static unsafe float CalcVerticalHeight(ref this GridMaster.Info info, float* pHeight, float2 point)
         {
             var wxz = point - info.LeftTopLocation.xz;
             var i = wxz * info.UnitScaleRcp;
@@ -196,13 +201,13 @@ namespace DotsLite.HeightGrid
         //   = -h0 / l
 
 
-        public static unsafe float RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 dir, float length)
+        public static unsafe float RaycastHit(this GridMaster.Info info, float* pHeight, float3 start, float3 dir, float length)
         {
             
 
             return 0;
         }
-        public static unsafe (bool isHit, float3 p) RaycastHit(this Wave.GridMasterInfo info, float* pHeight, float3 start, float3 end)
+        public static unsafe (bool isHit, float3 p) RaycastHit(this GridMaster.Info info, float* pHeight, float3 start, float3 end)
         {
             var wxz_st = start.xz - info.LeftTopLocation.xz;
             var ist = wxz_st * info.UnitScaleRcp;
@@ -263,7 +268,7 @@ namespace DotsLite.HeightGrid
                                                     //// i0 の点が xz の原点になるようにする
                                                     //Debug.Log($"{offset}");
 
-                    Debug.Log($"{start} {end} {i} {imin} {imax} {i + imin}");
+                    //Debug.Log($"{start} {end} {i} {imin} {imax} {i + imin}");
                     // h = a * p + b
                     // a = (h1 - h0) / (p1 - p0)
                     // b = h - a * p
@@ -271,16 +276,16 @@ namespace DotsLite.HeightGrid
                     var led = ibaseed - i;
                     var lna = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (led - lst) ;
             var lnb = end.yy * info.UnitScaleRcp - lna *led;
-            //Debug.Log($"lna:{lna} lnb:{lnb} {start.yy * info.UnitScaleRcp - lna * lst}");
+                    //Debug.Log($"lna:{lna} lnb:{lnb} {start.yy * info.UnitScaleRcp - lna * lst}");
 
 
-                    //var wvhA = new float3(h1, h0, h2);
-                    //var lnstA = lst;//ist - i;
-                    //var lnedA = led;// lst;// ied - i;
-                    ////var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
-                    //var resA = RaycastHit2(info, wvhA, imin + i, imin + i + new float2(1,0), imin + i + new float2(0, 1), start, end);// あとで近いものを採用するように
+                    var wvhA = new float3(h1, h0, h2);
+                    var lnstA = lst;//ist - i;
+                    var lnedA = led;// lst;// ied - i;
+                    //var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
+                    var resA = RaycastHit2(info, wvhA, imin + i, imin + i + new float2(1, 0), imin + i + new float2(0, 1), start, end);// あとで近いものを採用するように
 
-                    //if (resA.isHit) return (resA.isHit, resA.p);
+                    if (resA.isHit) return (resA.isHit, resA.p);
 
                     //var wvhB = new float3(h2, h3, h1);
                     //var lnstB = 1.0f - lnstA;
@@ -294,7 +299,7 @@ namespace DotsLite.HeightGrid
             return (false, default);
         }
         public static unsafe (bool isHit, float3 p) RaycastHit2(
-            Wave.GridMasterInfo info, float3 wvh, float2 i0, float2 i1, float2 i2, float3 st, float3 ed)
+            GridMaster.Info info, float3 wvh, float2 i0, float2 i1, float2 i2, float3 st, float3 ed)
         {
             var p0 = info.LeftTopLocation + (i0 * info.UnitScale).x_y(wvh.y);
             var p1 = info.LeftTopLocation + (i1 * info.UnitScale).x_y(wvh.x);
@@ -304,14 +309,14 @@ namespace DotsLite.HeightGrid
             var ray = new Ray(st, math.normalize(ed - st));
             var isHitPl = pl.Raycast(ray, out var t);
             var p = t * ray.direction.As_float3() + st;
-            //if (!isHitPl) return (false, default);
+            if ((!isHitPl) & (t == 0)) return (false, default);
 
             var c0 = math.cross(p - p0, p1 - p0);
             var c1 = math.cross(p - p1, p2 - p1);
             var c2 = math.cross(p - p2, p0 - p2);
 
             var isHit = math.sign(math.dot(c0, c1)) == math.sign(math.dot(c0, c2));
-            if (isHit) Debug.Log(p);
+            //if (isHit) Debug.Log(p);
             
             return (isHit, p);
         }

@@ -19,6 +19,7 @@ namespace DotsLite.HeightGrid.Aurthoring
     using DotsLite.Authoring;
     using DotsLite.Utilities;
     using DotsLite.Misc;
+    using DotsLite.Particle.Aurthoring;
 
     public class WaveGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -36,6 +37,11 @@ namespace DotsLite.HeightGrid.Aurthoring
         public float Constraint2 = 0.8f;
 
         public bool UseHalfSlantMesh;
+
+
+        public ParticleAuthoringBase SplashPrefab;
+
+
 
         /// <summary>
         /// 
@@ -61,6 +67,8 @@ namespace DotsLite.HeightGrid.Aurthoring
             var model = createModelEntity_(mesh);
             createAllGrids_(this.MaxLodLevel, model);
 
+            initEmitting_(entity);
+
             return;
 
 
@@ -80,12 +88,12 @@ namespace DotsLite.HeightGrid.Aurthoring
                 var totalLength = ww*lw * wh*lh + wh*lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
                 var pos = this.transform.position - new Vector3(ww * lw, 0.0f, wh * lh) * this.UnitDistance * 0.5f;
 
-                em.AddComponentData(ent, new Wave.GridMasterData
+                em.AddComponentData(ent, new GridMaster.Data
                 {
                     Prevs = new NativeArray<float>(totalLength, Allocator.Persistent),
                     Currs = new NativeArray<float>(totalLength, Allocator.Persistent),
                     Nexts = new NativeArray<float>(totalLength, Allocator.Persistent),
-                    Info = new Wave.GridMasterInfo
+                    Info = new GridMaster.Info
                     {
                         NumGrids = this.NumGrids,
                         UnitLengthInGrid = this.UnitLengthInGrid,
@@ -162,6 +170,18 @@ namespace DotsLite.HeightGrid.Aurthoring
                         Value = (startPosition + offset).x_y(),
                     }
                 );
+            }
+
+
+            void initEmitting_(Entity entity)
+            {
+                var gcs = conversionSystem;
+                var em = gcs.DstEntityManager;
+
+                em.AddComponentData(entity, new GridMaster.Emitting
+                {
+                    SplashPrefab = gcs.GetPrimaryEntity(this.SplashPrefab),
+                });
             }
 
         }

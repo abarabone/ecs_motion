@@ -18,15 +18,15 @@ namespace DotsLite.HeightGrid
     public class WaveGridCalculate2System : SystemBase
     {
 
-        Wave.GridMasterData gridMaster;
+        GridMaster.Data gridMaster;
 
 
         protected override void OnStartRunning()
         {
-            this.RequireSingletonForUpdate<Wave.GridMasterData>();
+            this.RequireSingletonForUpdate<GridMaster.Data>();
 
-            if (!this.HasSingleton<Wave.GridMasterData>()) return;
-            this.gridMaster = this.GetSingleton<Wave.GridMasterData>();
+            if (!this.HasSingleton<GridMaster.Data>()) return;
+            this.gridMaster = this.GetSingleton<GridMaster.Data>();
             Debug.Log(this.gridMaster);
 
             this.gridMaster.Currs[10] = -3f;
