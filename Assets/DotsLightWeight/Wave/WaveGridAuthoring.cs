@@ -18,6 +18,7 @@ namespace DotsLite.HeightGrid.Aurthoring
     using DotsLite.Geometry;
     using DotsLite.Authoring;
     using DotsLite.Utilities;
+    using DotsLite.Misc;
 
     public class WaveGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -91,7 +92,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                         UnitScale = this.UnitDistance,
                         Dumping = this.Dumping,
                         Constraint2 = this.Constraint2,
-                        LeftTopLocation = pos,
+                        LeftTopLocation = pos.As_float3().xz.x_y(),
 
                         TotalLength = this.NumGrids * (int2)this.UnitLengthInGrid,
                         UnitScaleRcp = 1 / this.UnitDistance,

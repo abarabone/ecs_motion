@@ -243,8 +243,8 @@ namespace DotsLite.HeightGrid
 
             var pH = pHeight;
 
-            var ibasest = ist - index2st;
-            var ibaseed = ied - index2st;// st にあわせたい
+            var ibasest = ist - imin;
+            var ibaseed = ied - imin;// st にあわせたい
             for (var iz = 0; iz < len.y; iz++)
             for (var ix = 0; ix < len.x; ix++)// 左右をつなげる処理まだやってない
             {
@@ -277,17 +277,17 @@ namespace DotsLite.HeightGrid
                     var lnstA = lst;//ist - i;
                     var lnedA = led;// lst;// ied - i;
                     //var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
-                    var resA = RaycastHit2(info, wvhA, i, i+new float2(1,0), i + new float2(0, 1), start, end);// あとで近いものを採用するように
+                    var resA = RaycastHit2(info, wvhA, imin + i, imin + i + new float2(1,0), imin + i + new float2(0, 1), start, end);// あとで近いものを採用するように
 
                     if (resA.isHit) return (resA.isHit, resA.p);
 
-                    var wvhB = new float3(h2, h3, h1);
-                    var lnstB = 1.0f - lnstA;
-                    var lnedB = 1.0f - lnedA;
-                    //var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
-                    var resB = RaycastHit2(info, wvhB, i + new float2(1, 1), i + new float2(0, 1), i + new float2(1, 0), start, end);
+                    //var wvhB = new float3(h2, h3, h1);
+                    //var lnstB = 1.0f - lnstA;
+                    //var lnedB = 1.0f - lnedA;
+                    ////var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
+                    //var resB = RaycastHit2(info, wvhB, imin + i + new float2(1, 1), imin + i + new float2(0, 1), imin + i + new float2(1, 0), start, end);
 
-                    if (resB.isHit) return (resB.isHit, resB.p);
+                    //if (resB.isHit) return (resB.isHit, resB.p);
                 }
 
             return (false, default);
@@ -295,15 +295,15 @@ namespace DotsLite.HeightGrid
         public static unsafe (bool isHit, float3 p) RaycastHit2(
             Wave.GridMasterInfo info, float3 wvh, float2 i0, float2 i1, float2 i2, float3 st, float3 ed)
         {
-            var p0 = info.LeftTopLocation + i0.x_y(wvh.y) * info.UnitScale;
-            var p1 = info.LeftTopLocation + i1.x_y(wvh.x) * info.UnitScale;
-            var p2 = info.LeftTopLocation + i2.x_y(wvh.z) * info.UnitScale;
+            var p0 = info.LeftTopLocation + (i0 * info.UnitScale).x_y(wvh.y);
+            var p1 = info.LeftTopLocation + (i1 * info.UnitScale).x_y(wvh.x);
+            var p2 = info.LeftTopLocation + (i2 * info.UnitScale).x_y(wvh.z);
             var pl = new Plane(p0, p1, p2);
 
             var ray = new Ray(st, math.normalize(ed - st));
             var isHitPl = pl.Raycast(ray, out var t);
             var p = t * ray.direction.As_float3() + st;
-            if (!isHitPl) return (false, default);
+            //if (!isHitPl) return (false, default);
 
             var c0 = math.cross(p - p0, p1 - p0);
             var c1 = math.cross(p - p1, p2 - p1);
