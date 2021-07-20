@@ -263,6 +263,7 @@ namespace DotsLite.HeightGrid
                                                     //// i0 の点が xz の原点になるようにする
                                                     //Debug.Log($"{offset}");
 
+                    Debug.Log($"{start} {end} {i} {imin} {imax} {i + imin}");
                     // h = a * p + b
                     // a = (h1 - h0) / (p1 - p0)
                     // b = h - a * p
@@ -273,13 +274,13 @@ namespace DotsLite.HeightGrid
             //Debug.Log($"lna:{lna} lnb:{lnb} {start.yy * info.UnitScaleRcp - lna * lst}");
 
 
-                    var wvhA = new float3(h1, h0, h2);
-                    var lnstA = lst;//ist - i;
-                    var lnedA = led;// lst;// ied - i;
-                    //var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
-                    var resA = RaycastHit2(info, wvhA, imin + i, imin + i + new float2(1,0), imin + i + new float2(0, 1), start, end);// あとで近いものを採用するように
+                    //var wvhA = new float3(h1, h0, h2);
+                    //var lnstA = lst;//ist - i;
+                    //var lnedA = led;// lst;// ied - i;
+                    ////var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
+                    //var resA = RaycastHit2(info, wvhA, imin + i, imin + i + new float2(1,0), imin + i + new float2(0, 1), start, end);// あとで近いものを採用するように
 
-                    if (resA.isHit) return (resA.isHit, resA.p);
+                    //if (resA.isHit) return (resA.isHit, resA.p);
 
                     //var wvhB = new float3(h2, h3, h1);
                     //var lnstB = 1.0f - lnstA;
