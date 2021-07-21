@@ -287,13 +287,13 @@ namespace DotsLite.HeightGrid
 
                     if (resA.isHit) return (resA.isHit, resA.p);
 
-                    //var wvhB = new float3(h2, h3, h1);
-                    //var lnstB = 1.0f - lnstA;
-                    //var lnedB = 1.0f - lnedA;
-                    ////var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
-                    //var resB = RaycastHit2(info, wvhB, imin + i + new float2(1, 1), imin + i + new float2(0, 1), imin + i + new float2(1, 0), start, end);
+                    var wvhB = new float3(h2, h3, h1);
+                    var lnstB = 1.0f - lnstA;
+                    var lnedB = 1.0f - lnedA;
+                    //var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
+                    var resB = RaycastHit2(info, wvhB, imin + i + new float2(1, 1), imin + i + new float2(0, 1), imin + i + new float2(1, 0), start, end);
 
-                    //if (resB.isHit) return (resB.isHit, resB.p);
+                    if (resB.isHit) return (resB.isHit, resB.p);
                 }
 
             return (false, default);
@@ -308,8 +308,9 @@ namespace DotsLite.HeightGrid
 
             var ray = new Ray(st, math.normalize(ed - st));
             var isHitPl = pl.Raycast(ray, out var t);
-            var p = t * ray.direction.As_float3() + st;
-            if ((!isHitPl) & (t == 0)) return (false, default);
+            var p = t * 1.0f * ray.direction.As_float3() + st;
+            if (!isHitPl && t <= 0) return (false, default);
+            if (t > math.dot(ray.direction, ed - st)) return (false, default);
 
             var c0 = math.cross(p - p0, p1 - p0);
             var c1 = math.cross(p - p1, p2 - p1);

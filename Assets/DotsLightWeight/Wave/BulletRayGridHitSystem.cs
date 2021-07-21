@@ -82,7 +82,7 @@ namespace DotsLite.Arms
             var currs = grid.Currs;
             var xspan = grid.Info.UnitLengthInGrid.x * grid.Info.NumGrids.x;
             var ginfo = grid.Info;
-            var p = (float*)currs.GetUnsafeReadOnlyPtr();
+            var p = (float*)currs.GetUnsafePtr();
 
             this.Entities
                 .WithBurst()
@@ -90,6 +90,7 @@ namespace DotsLite.Arms
                 .WithNone<Particle.LifeTimeInitializeTag>()
                 //.WithReadOnly(targets)
                 .WithNativeDisableUnsafePtrRestriction(p)
+                .WithNativeDisableContainerSafetyRestriction(currs)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -120,6 +121,20 @@ namespace DotsLite.Arms
 
                         var ent = cmd.Instantiate(eqi, emit.SplashPrefab);
                         cmd.SetComponent(eqi, ent, new Translation { Value = res.p });
+
+                        Debug.DrawRay(res.p, Vector3.up, Color.green, 0.5f);
+
+                        var wp = res.p;
+                        var i = wp * ginfo.UnitScaleRcp;
+                        var index2 = (int2)i.xz;
+                        var serialIndex = index2.x + index2.y * ginfo.TotalLength.x;
+                        var a = -1.0f;
+                        var d = a * dt * dt * 0.5f;
+                        var wxz = (float2)index2 * ginfo.UnitScale;
+                        currs[serialIndex + 0] -= d * math.length((wxz + new float2(0,0)).x_y(currs[serialIndex + 0]) - wp);
+                        currs[serialIndex + 1] -= d * math.length((wxz + new float2(1,0)).x_y(currs[serialIndex + 1]) - wp);
+                        currs[serialIndex + ginfo.TotalLength.x + 0] -= d * math.length((wxz + new float2(0, 1)).x_y(currs[serialIndex + ginfo.TotalLength.x + 0]) - wp);
+                        currs[serialIndex + ginfo.TotalLength.x + 1] -= d * math.length((wxz + new float2(1, 1)).x_y(currs[serialIndex + ginfo.TotalLength.x + 1]) - wp);
                     }
                 )
                 .ScheduleParallel();
