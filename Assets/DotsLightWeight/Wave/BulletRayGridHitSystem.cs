@@ -116,7 +116,7 @@ namespace DotsLite.Arms
                         //    var a = -10.0f;
                         //    currs[serialIndex] -= a * dt * dt * 0.5f;
                         //}
-                        var res = ginfo.RaycastHit(p, tail.Position, pos.Value);
+                        var res = ginfo.RaycastHit2(p, tail.Position, pos.Value);
                         if (!res.isHit) return;
 
                         var ent = cmd.Instantiate(eqi, emit.SplashPrefab);
@@ -124,9 +124,9 @@ namespace DotsLite.Arms
 
                         Debug.DrawRay(res.p, Vector3.up, Color.green, 0.5f);
 
-                        var wp = res.p;
-                        var i = wp * ginfo.UnitScaleRcp;
-                        var index2 = (int2)i.xz;
+                        var wp = res.p - ginfo.LeftTopLocation;
+                        var i = wp.xz * ginfo.UnitScaleRcp;
+                        var index2 = (int2)i;
                         var serialIndex = index2.x + index2.y * ginfo.TotalLength.x;
                         var a = -1.0f;
                         var d = a * dt * dt * 0.5f;

@@ -255,14 +255,10 @@ namespace DotsLite.HeightGrid
             {
                     //Debug.Log($"{ix} {iz}");
                     var ofs = ix + iz * info.TotalLength.x;
-                    //var h0 = pH[i0 + ofs] * info.UnitScaleRcp;
-                    //var h1 = pH[i1 + ofs] * info.UnitScaleRcp;
-                    //var h2 = pH[i2 + ofs] * info.UnitScaleRcp;
-                    //var h3 = pH[i3 + ofs] * info.UnitScaleRcp;
-                    var h0 = pH[i0 + ofs];// * info.UnitScaleRcp;
-                    var h1 = pH[i1 + ofs];// * info.UnitScaleRcp;
-                    var h2 = pH[i2 + ofs];// * info.UnitScaleRcp;
-                    var h3 = pH[i3 + ofs];// * info.UnitScaleRcp;
+                    var h0 = pH[i0 + ofs] * info.UnitScaleRcp;
+                    var h1 = pH[i1 + ofs] * info.UnitScaleRcp;
+                    var h2 = pH[i2 + ofs] * info.UnitScaleRcp;
+                    var h3 = pH[i3 + ofs] * info.UnitScaleRcp;
 
                     var i = new float2(ix, iz);// * info.UnitScale;
                                                     //// i0 の点が xz の原点になるようにする
@@ -282,44 +278,19 @@ namespace DotsLite.HeightGrid
                     var wvhA = new float3(h1, h0, h2);
                     var lnstA = lst;//ist - i;
                     var lnedA = led;// lst;// ied - i;
-                    //var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
-                    var resA = RaycastHit2(info, wvhA, imin + i, imin + i + new float2(1, 0), imin + i + new float2(0, 1), start, end);// あとで近いものを採用するように
-
+                    var resA = RaycastHit(wvhA, lnstA, lnedA, lna, lnb);// あとで近いものを採用するように
+                    
                     if (resA.isHit) return (resA.isHit, resA.p);
 
                     var wvhB = new float3(h2, h3, h1);
                     var lnstB = 1.0f - lnstA;
                     var lnedB = 1.0f - lnedA;
-                    //var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
-                    var resB = RaycastHit2(info, wvhB, imin + i + new float2(1, 1), imin + i + new float2(0, 1), imin + i + new float2(1, 0), start, end);
-
+                    var resB = RaycastHit(wvhB, lnstB, lnedB, lna, lnb);
+                    
                     if (resB.isHit) return (resB.isHit, resB.p);
                 }
 
             return (false, default);
-        }
-        public static unsafe (bool isHit, float3 p) RaycastHit2(
-            GridMaster.Info info, float3 wvh, float2 i0, float2 i1, float2 i2, float3 st, float3 ed)
-        {
-            var p0 = info.LeftTopLocation + (i0 * info.UnitScale).x_y(wvh.y);
-            var p1 = info.LeftTopLocation + (i1 * info.UnitScale).x_y(wvh.x);
-            var p2 = info.LeftTopLocation + (i2 * info.UnitScale).x_y(wvh.z);
-            var pl = new Plane(p0, p1, p2);
-
-            var ray = new Ray(st, math.normalize(ed - st));
-            var isHitPl = pl.Raycast(ray, out var t);
-            var p = t * 1.0f * ray.direction.As_float3() + st;
-            if (!isHitPl && t <= 0) return (false, default);
-            if (t > math.dot(ray.direction, ed - st)) return (false, default);
-
-            var c0 = math.cross(p - p0, p1 - p0);
-            var c1 = math.cross(p - p1, p2 - p1);
-            var c2 = math.cross(p - p2, p0 - p2);
-
-            var isHit = math.sign(math.dot(c0, c1)) == math.sign(math.dot(c0, c2));
-            //if (isHit) Debug.Log(p);
-            
-            return (isHit, p);
         }
         public static unsafe (bool isHit, float3 p) RaycastHit(float3 wvh, float2 lnst, float2 lned, float2 lna, float2 lnb)
         {
@@ -385,6 +356,116 @@ namespace DotsLite.HeightGrid
         //    // h1 = ua * uvx + 
 
         //}
+
+
+        public static unsafe (bool isHit, float3 p) RaycastHit2(
+            this GridMaster.Info info, float* pHeight, float3 start, float3 end)
+        {
+            var wxz_st = start.xz - info.LeftTopLocation.xz;
+            var ist = wxz_st * info.UnitScaleRcp;
+
+            var wxz_ed = end.xz - info.LeftTopLocation.xz;
+            var ied = wxz_ed * info.UnitScaleRcp;
+
+            //var ist = math.min(ist_, ied_);
+            //var ied = math.max(ist_, ied_);
+
+
+
+            //Debug.Log($"ww {start.xz} {end.xz} {info.LeftTopLocation.xz}");
+            //Debug.Log($"wxz {wxz_st} {wxz_ed}");
+            //Debug.Log($"ist {ist} ied {ied}");
+
+            var index2st = (int2)ist;
+            var index2ed = (int2)ied;
+            //if (math.any(index2 < int2.zero) || math.any(index2 >= info.TotalLength)) return float.NaN;
+
+            var imin = math.min(index2ed, index2st);
+            var imax = math.max(index2ed, index2st);
+            var len = imax - imin + 1;
+
+
+            //// h = a * p + b
+            //// a = (h1 - h0) / (p1 - p0)
+            //// b = h - a * p
+            var lnax = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (ied - ist);
+            var lnbx = end.yy * info.UnitScaleRcp - lnax * ied;
+            //Debug.Log($"ln outer {lnax} {lnbx} {start.yy * info.UnitScaleRcp - lnax * ist}");
+
+
+            var i0 = index2st.x + 0;
+            var i1 = index2st.x + 1;
+            var i2 = index2st.y * info.TotalLength.x + 0;
+            var i3 = index2st.y * info.TotalLength.x + 1;
+
+            var pH = pHeight;
+
+            var ibasest = ist - imin;
+            var ibaseed = ied - imin;// st にあわせたい
+            for (var iz = 0; iz < len.y; iz++)
+                for (var ix = 0; ix < len.x; ix++)// 左右をつなげる処理まだやってない
+                {
+                    //Debug.Log($"{ix} {iz}");
+                    var ofs = ix + iz * info.TotalLength.x;
+                    var h0 = pH[i0 + ofs];
+                    var h1 = pH[i1 + ofs];
+                    var h2 = pH[i2 + ofs];
+                    var h3 = pH[i3 + ofs];
+
+                    var i = new float2(ix, iz);
+                                               //// i0 の点が xz の原点になるようにする
+                                               //Debug.Log($"{offset}");
+
+                    //Debug.Log($"{start} {end} {i} {imin} {imax} {i + imin}");
+                    // h = a * p + b
+                    // a = (h1 - h0) / (p1 - p0)
+                    // b = h - a * p
+                    var lst = ibasest - i;
+                    var led = ibaseed - i;
+                    var lna = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (led - lst);
+                    var lnb = end.yy * info.UnitScaleRcp - lna * led;
+
+
+                    var wvhA = new float3(h1, h0, h2);
+                    var lnstA = lst;
+                    var lnedA = led;// あとで近いものを採用するように
+                    var resA = RaycastHit2(info, wvhA, imin + i, imin + i + new float2(1, 0), imin + i + new float2(0, 1), start, end);// あとで近いものを採用するように
+
+                    if (resA.isHit) return (resA.isHit, resA.p);
+
+                    var wvhB = new float3(h2, h3, h1);
+                    var lnstB = 1.0f - lnstA;
+                    var lnedB = 1.0f - lnedA;
+                    var resB = RaycastHit2(info, wvhB, imin + i + new float2(1, 1), imin + i + new float2(0, 1), imin + i + new float2(1, 0), start, end);
+
+                    if (resB.isHit) return (resB.isHit, resB.p);
+                }
+
+            return (false, default);
+        }
+        public static unsafe (bool isHit, float3 p) RaycastHit2(
+            GridMaster.Info info, float3 wvh, float2 i0, float2 i1, float2 i2, float3 st, float3 ed)
+        {
+            var p0 = info.LeftTopLocation + (i0 * info.UnitScale).x_y(wvh.y);
+            var p1 = info.LeftTopLocation + (i1 * info.UnitScale).x_y(wvh.x);
+            var p2 = info.LeftTopLocation + (i2 * info.UnitScale).x_y(wvh.z);
+            var pl = new Plane(p0, p1, p2);
+
+            var ray = new Ray(st, math.normalize(ed - st));
+            var isHitPl = pl.Raycast(ray, out var t);
+            var p = t * 1.0f * ray.direction.As_float3() + st;
+            if (!isHitPl && t <= 0) return (false, default);
+            if (t > math.dot(ray.direction, ed - st)) return (false, default);
+
+            var c0 = math.cross(p - p0, p1 - p0);
+            var c1 = math.cross(p - p1, p2 - p1);
+            var c2 = math.cross(p - p2, p0 - p2);
+
+            var isHit = math.sign(math.dot(c0, c1)) == math.sign(math.dot(c0, c2));
+            //if (isHit) Debug.Log(p);
+            
+            return (isHit, p);
+        }
     }
 
     public struct RightTriangle
