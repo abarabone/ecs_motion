@@ -450,6 +450,7 @@ namespace DotsLite.HeightGrid
             var p1 = info.LeftTopLocation + (i1 * info.UnitScale).x_y(wvh.x);
             var p2 = info.LeftTopLocation + (i2 * info.UnitScale).x_y(wvh.z);
             var pl = new Plane(p0, p1, p2);
+            Debug.Log($"{p0} {p1} {p2}");
 
             var ray = new Ray(st, math.normalize(ed - st));
             var isHitPl = pl.Raycast(ray, out var t);
@@ -462,8 +463,8 @@ namespace DotsLite.HeightGrid
             var c2 = math.cross(p - p2, p0 - p2);
 
             var isHit = math.sign(math.dot(c0, c1)) == math.sign(math.dot(c0, c2));
-            //if (isHit) Debug.Log(p);
-            
+            if (isHit) Debug.Log(p);
+
             return (isHit, p);
         }
     }

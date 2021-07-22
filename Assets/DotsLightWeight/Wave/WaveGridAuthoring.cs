@@ -21,7 +21,7 @@ namespace DotsLite.HeightGrid.Aurthoring
     using DotsLite.Misc;
     using DotsLite.Particle.Aurthoring;
 
-    public class WaveGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class WaveGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public float UnitDistance;
@@ -41,6 +41,11 @@ namespace DotsLite.HeightGrid.Aurthoring
 
         public ParticleAuthoringBase SplashPrefab;
 
+
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            referencedPrefabs.Add(this.SplashPrefab.gameObject);
+        }
 
 
         /// <summary>
