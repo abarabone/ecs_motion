@@ -385,18 +385,10 @@ namespace DotsLite.HeightGrid
             var len = imax - imin + 1;
 
 
-            //// h = a * p + b
-            //// a = (h1 - h0) / (p1 - p0)
-            //// b = h - a * p
-            var lnax = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (ied - ist);
-            var lnbx = end.yy * info.UnitScaleRcp - lnax * ied;
-            //Debug.Log($"ln outer {lnax} {lnbx} {start.yy * info.UnitScaleRcp - lnax * ist}");
-
-
-            var i0 = index2st.x + 0;
-            var i1 = index2st.x + 1;
-            var i2 = index2st.y * info.TotalLength.x + 0;
-            var i3 = index2st.y * info.TotalLength.x + 1;
+            var i0 = imin.x + imin.y * info.TotalLength.x + 0;
+            var i1 = imin.x + imin.y * info.TotalLength.x + 1;
+            var i2 = i0 + info.TotalLength.x;
+            var i3 = i1 + info.TotalLength.x;
 
             var pH = pHeight;
 
@@ -413,17 +405,12 @@ namespace DotsLite.HeightGrid
                     var h3 = pH[i3 + ofs];
 
                     var i = new float2(ix, iz);
-                                               //// i0 の点が xz の原点になるようにする
-                                               //Debug.Log($"{offset}");
+                    //// i0 の点が xz の原点になるようにする
+                    //Debug.Log($"{offset}");
 
                     //Debug.Log($"{start} {end} {i} {imin} {imax} {i + imin}");
-                    // h = a * p + b
-                    // a = (h1 - h0) / (p1 - p0)
-                    // b = h - a * p
                     var lst = ibasest - i;
                     var led = ibaseed - i;
-                    var lna = (end.yy * info.UnitScaleRcp - start.yy * info.UnitScaleRcp) / (led - lst);
-                    var lnb = end.yy * info.UnitScaleRcp - lna * led;
 
 
                     var wvhA = new float3(h1, h0, h2);
@@ -450,20 +437,26 @@ namespace DotsLite.HeightGrid
             var p1 = info.LeftTopLocation + (i1 * info.UnitScale).x_y(wvh.x);
             var p2 = info.LeftTopLocation + (i2 * info.UnitScale).x_y(wvh.z);
             var pl = new Plane(p0, p1, p2);
-            Debug.Log($"{p0} {p1} {p2}");
 
             var ray = new Ray(st, math.normalize(ed - st));
             var isHitPl = pl.Raycast(ray, out var t);
-            var p = t * 1.0f * ray.direction.As_float3() + st;
+            //Debug.Log($"{p0} {p1} {p2} {isHitPl} {t}");
             if (!isHitPl && t <= 0) return (false, default);
             if (t > math.dot(ray.direction, ed - st)) return (false, default);
 
+            var p = t * 1.0f * ray.direction.As_float3() + st;
             var c0 = math.cross(p - p0, p1 - p0);
             var c1 = math.cross(p - p1, p2 - p1);
             var c2 = math.cross(p - p2, p0 - p2);
 
             var isHit = math.sign(math.dot(c0, c1)) == math.sign(math.dot(c0, c2));
-            if (isHit) Debug.Log(p);
+            //if (isHit) Debug.Log(p);
+            if (isHit)
+            {
+                Debug.DrawLine(p0, p1, Color.green, 10, true);
+                Debug.DrawLine(p1, p2, Color.green, 10, true);
+                Debug.DrawLine(p2, p0, Color.green, 10, true);
+            }
 
             return (isHit, p);
         }
