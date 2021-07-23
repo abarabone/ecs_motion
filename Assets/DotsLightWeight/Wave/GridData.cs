@@ -367,10 +367,6 @@ namespace DotsLite.HeightGrid
             var wxz_ed = end.xz - info.LeftTopLocation.xz;
             var ied = wxz_ed * info.UnitScaleRcp;
 
-            //var ist = math.min(ist_, ied_);
-            //var ied = math.max(ist_, ied_);
-
-
 
             //Debug.Log($"ww {start.xz} {end.xz} {info.LeftTopLocation.xz}");
             //Debug.Log($"wxz {wxz_st} {wxz_ed}");
@@ -378,11 +374,11 @@ namespace DotsLite.HeightGrid
 
             var index2st = (int2)ist;
             var index2ed = (int2)ied;
-            //if (math.any(index2 < int2.zero) || math.any(index2 >= info.TotalLength)) return float.NaN;
 
             var imin = math.min(index2ed, index2st);
             var imax = math.max(index2ed, index2st);
             var len = imax - imin + 1;
+            if (math.any(imin < int2.zero) || math.any(imax >= info.TotalLength)) return (false, float.NaN);
 
 
             var i0 = imin.x + imin.y * info.TotalLength.x + 0;
@@ -405,26 +401,17 @@ namespace DotsLite.HeightGrid
                     var h3 = pH[i3 + ofs];
 
                     var i = new float2(ix, iz);
-                    //// i0 の点が xz の原点になるようにする
-                    //Debug.Log($"{offset}");
-
-                    //Debug.Log($"{start} {end} {i} {imin} {imax} {i + imin}");
-                    var lst = ibasest - i;
-                    var led = ibaseed - i;
-
+                    var ixz0 = imin + i + new float2(0, 0);
+                    var ixz1 = imin + i + new float2(1, 0);
+                    var ixz2 = imin + i + new float2(0, 1);
+                    var ixz3 = imin + i + new float2(1, 1);
 
                     var wvhA = new float3(h1, h0, h2);
-                    var lnstA = lst;
-                    var lnedA = led;// あとで近いものを採用するように
-                    var resA = RaycastHit2(info, wvhA, imin + i, imin + i + new float2(1, 0), imin + i + new float2(0, 1), start, end);// あとで近いものを採用するように
-
+                    var resA = RaycastHit2(info, wvhA, ixz0, ixz1, ixz2, start, end);// あとで近いものを採用するように
                     if (resA.isHit) return (resA.isHit, resA.p);
 
                     var wvhB = new float3(h2, h3, h1);
-                    var lnstB = 1.0f - lnstA;
-                    var lnedB = 1.0f - lnedA;
-                    var resB = RaycastHit2(info, wvhB, imin + i + new float2(1, 1), imin + i + new float2(0, 1), imin + i + new float2(1, 0), start, end);
-
+                    var resB = RaycastHit2(info, wvhB, ixz3, ixz2, ixz1, start, end);
                     if (resB.isHit) return (resB.isHit, resB.p);
                 }
 
@@ -441,8 +428,8 @@ namespace DotsLite.HeightGrid
             var ray = new Ray(st, math.normalize(ed - st));
             var isHitPl = pl.Raycast(ray, out var t);
             //Debug.Log($"{p0} {p1} {p2} {isHitPl} {t}");
-            if (!isHitPl && t <= 0) return (false, default);
-            if (t > math.dot(ray.direction, ed - st)) return (false, default);
+            if (!isHitPl && t <= 0) return (false, float.NaN);
+            if (t > math.dot(ray.direction, ed - st)) return (false, float.NaN);
 
             var p = t * 1.0f * ray.direction.As_float3() + st;
             var c0 = math.cross(p - p0, p1 - p0);
