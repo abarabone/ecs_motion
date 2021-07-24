@@ -86,6 +86,7 @@ namespace DotsLite.Arms
 
             this.Entities
                 .WithBurst()
+                .WithAll<GridMaster.Data>()
                 .WithAll<Bullet.RayTag>()
                 .WithNone<Particle.LifeTimeInitializeTag>()
                 //.WithReadOnly(targets)

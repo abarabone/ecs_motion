@@ -24,11 +24,16 @@ namespace DotsLite.HeightGrid
         GridMaster.Data gridMaster;
 
 
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            this.RequireSingletonForUpdate<GridMaster.Data>();
+        }
         protected override void OnStartRunning()
         {
-            this.RequireSingletonForUpdate<GridMaster.Data>();
+            //if (!this.HasSingleton<GridMaster.Data>()) return;
 
-            if (!this.HasSingleton<GridMaster.Data>()) return;
             this.gridMaster = this.GetSingleton<GridMaster.Data>();
             Debug.Log(this.gridMaster);
 

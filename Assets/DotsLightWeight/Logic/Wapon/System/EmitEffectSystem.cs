@@ -119,9 +119,9 @@ namespace DotsLite.Arms
                         in Emitter.StateData state,
                         in Emitter.TriggerData trigger,
                         in Emitter.EffectEmittingData emitter,
-                        in Emitter.OwnerLinkData slink,
-                        in Translation pos,
-                        in CorpsGroup.TargetWithArmsData corps
+                        //in Emitter.OwnerLinkData slink,
+                        in Translation pos
+                        //in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
                         var eqi = entityInQueryIndex;
