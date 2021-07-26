@@ -56,7 +56,7 @@ namespace DotsLite.Draw
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
-                        in StructureMain.PartDestructionData destruction
+                        in Main.PartDestructionData destruction
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;

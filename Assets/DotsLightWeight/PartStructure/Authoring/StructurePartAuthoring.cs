@@ -96,7 +96,7 @@ namespace DotsLite.Structure.Authoring
                 var ent = gcs.GetPrimaryEntity(part);
                 var addtypes = new ComponentTypes
                 (
-                    typeof(StructurePart.PartData),
+                    typeof(Part.PartData),
                     typeof(Collision.Hit.TargetData),
                     typeof(Disabled)
                 );
@@ -104,7 +104,7 @@ namespace DotsLite.Structure.Authoring
 
 
                 em.SetComponentData(ent,
-                    new StructurePart.PartData
+                    new Part.PartData
                     {
                         PartId = partId,
                         //Life = 
@@ -156,7 +156,7 @@ namespace DotsLite.Structure.Authoring
 
                 var types = em_.CreateArchetype
                 (
-                    typeof(StructurePartDebris.Data),
+                    typeof(PartDebris.Data),
                     typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
@@ -173,7 +173,7 @@ namespace DotsLite.Structure.Authoring
 
 
                 em_.SetComponentData(prefabEnt,
-                    new StructurePartDebris.Data
+                    new PartDebris.Data
                     {
                         LifeTime = 5.0f,
                     }
@@ -215,7 +215,7 @@ namespace DotsLite.Structure.Authoring
                 var partEnt = gcs.GetPrimaryEntity(part);
 
                 em_.AddComponentData(partEnt,
-                    new StructurePart.DebrisPrefabData
+                    new Part.DebrisPrefabData
                     {
                         DebrisPrefab = prefabEnt,
                     }

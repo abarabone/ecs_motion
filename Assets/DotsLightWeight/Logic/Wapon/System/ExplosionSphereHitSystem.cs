@@ -43,7 +43,7 @@ namespace DotsLite.Arms
 
         PhysicsHitDependency.Sender phydep;
 
-        HitMessage<Structure.HitMessage>.Sender stSender;
+        HitMessage<Structure.PartHitMessage>.Sender stSender;
         HitMessage<Character.HitMessage>.Sender chSender;
 
 
@@ -56,7 +56,7 @@ namespace DotsLite.Arms
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
 
-            this.stSender = HitMessage<Structure.HitMessage>.Sender.Create<StructureHitMessageApplySystem>(this);
+            this.stSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
         }
 
@@ -76,7 +76,7 @@ namespace DotsLite.Arms
 
 
             var targets = this.GetComponentDataFromEntity<Hit.TargetData>(isReadOnly: true);
-            var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+            var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
 
             var corpss = this.GetComponentDataFromEntity<CorpsGroup.Data>(isReadOnly: true);
 

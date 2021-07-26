@@ -64,7 +64,7 @@ namespace DotsLite.Draw
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        ref StructurePartDebris.Data debris
+                        ref PartDebris.Data debris
                     ) =>
                     {
 

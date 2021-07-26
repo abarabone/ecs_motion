@@ -32,7 +32,7 @@ namespace DotsLite.Draw
         /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class StructureSwitchingSystem : DependencyAccessableSystemBase
+    public class StructureLodSwitchingSystem : DependencyAccessableSystemBase
     {
 
 
@@ -55,13 +55,13 @@ namespace DotsLite.Draw
 
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             //var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);
-            var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+            var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
             var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
 
             this.Entities
                 .WithBurst()
-                .WithAll<StructureMain.MainTag>()
+                .WithAll<Main.MainTag>()
                 .WithReadOnly(linkedGroups)
                 //.WithReadOnly(excludes)
                 .WithReadOnly(parts)
@@ -69,7 +69,7 @@ namespace DotsLite.Draw
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
-                        in StructureMain.BinderLinkData binder,
+                        in Main.BinderLinkData binder,
                         in DrawInstance.ModelLinkData model,
                         in DrawInstance.ModelLod2LinkData lod2
                     )
@@ -107,7 +107,7 @@ namespace DotsLite.Draw
                 int uniqueIndex, Entity entity,
                 EntityCommandBuffer.ParallelWriter cmd,
                 DynamicBuffer<LinkedEntityGroup> children,
-                ComponentDataFromEntity<StructurePart.PartData> partData
+                ComponentDataFromEntity<Part.PartData> partData
             )
         {
 
@@ -133,7 +133,7 @@ namespace DotsLite.Draw
                 int uniqueIndex, Entity entity,
                 EntityCommandBuffer.ParallelWriter cmd,
                 DynamicBuffer<LinkedEntityGroup> children,
-                ComponentDataFromEntity<StructurePart.PartData> partData
+                ComponentDataFromEntity<Part.PartData> partData
             )
         {
 

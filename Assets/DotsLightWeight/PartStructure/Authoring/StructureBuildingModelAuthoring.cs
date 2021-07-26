@@ -253,14 +253,14 @@ namespace DotsLite.Structure.Authoring
             (
                 new ComponentType[]
                 {
-                    typeof(StructureMain.MainTag),
+                    typeof(Main.MainTag),
                     typeof(DrawInstance.MeshTag),
                     //typeof(NonUniformScale),//暫定
                     //typeof(ObjectMain.ObjectMainTag),
-                    typeof(StructureMain.BinderLinkData),//暫定
+                    typeof(Main.BinderLinkData),//暫定
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(StructureMain.PartDestructionData),
+                    typeof(Main.PartDestructionData),
                 }
             );
             em.AddComponents(mainEntity, mainAddtypes);
@@ -272,7 +272,7 @@ namespace DotsLite.Structure.Authoring
             //    }
             //);
             em.SetComponentData(mainEntity,
-                new StructureMain.BinderLinkData
+                new Main.BinderLinkData
                 {
                     BinderEntity = binderEntity,
                 }

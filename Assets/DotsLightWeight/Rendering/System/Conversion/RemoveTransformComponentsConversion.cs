@@ -37,10 +37,10 @@ namespace DotsLite.Model.Authoring
                         em.RemoveComponent<PreviousParent>(ent);
                         em.RemoveComponent<Parent>(ent);
                         em.RemoveComponent<Child>(ent);
-                        //em.RemoveComponent<Translation>(ent);
-                        //em.RemoveComponent<Rotation>(ent);
-                        //em.RemoveComponent<NonUniformScale>(ent);
-                        //em.RemoveComponent<Scale>(ent);
+                        if (c.isRemoveTranslation) em.RemoveComponent<Translation>(ent);
+                        if (c.isRemoveRotation) em.RemoveComponent<Rotation>(ent);
+                        if (c.isRemoveNonUniformScale) em.RemoveComponent<NonUniformScale>(ent);
+                        if (c.isRemoveScale) em.RemoveComponent<Scale>(ent);
 
                     }
                 }

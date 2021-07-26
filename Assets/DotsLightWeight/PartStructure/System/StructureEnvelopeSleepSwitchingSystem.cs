@@ -29,7 +29,7 @@ namespace DotsLite.Draw
 
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class StructureSleepSwitchingSystem : DependencyAccessableSystemBase
+    public class StructureEnvelopeSleepSwitchingSystem : DependencyAccessableSystemBase
     {
 
 
@@ -52,7 +52,7 @@ namespace DotsLite.Draw
 
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             //var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);
-            var parts = this.GetComponentDataFromEntity<StructurePart.PartData>(isReadOnly: true);
+            var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
             var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
 

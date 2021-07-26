@@ -13,7 +13,7 @@ namespace DotsLite.Structure
 {
     using DotsLite.Dependency;
 
-    public struct HitMessage : IHitMessage
+    public struct EnvelopeHitMessage : IHitMessage
     {
         public int PartId;
         public Entity PartEntity;
@@ -24,11 +24,11 @@ namespace DotsLite.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class StructureHitMessageApplySystem : DependencyAccessableSystemBase, HitMessage<HitMessage>.IRecievable
+    public class StructureEnvelopeHitMessageApplySystem : DependencyAccessableSystemBase, HitMessage<EnvelopeHitMessage>.IRecievable
     {
 
 
-        public HitMessage<HitMessage>.Reciever Reciever { get; private set; }
+        public HitMessage<EnvelopeHitMessage>.Reciever Reciever { get; private set; }
 
         CommandBufferDependency.Sender cmddep;
 
@@ -37,7 +37,7 @@ namespace DotsLite.Structure
         {
             base.OnCreate();
 
-            this.Reciever = new HitMessage<HitMessage>.Reciever(10000);
+            this.Reciever = new HitMessage<EnvelopeHitMessage>.Reciever(10000);
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
@@ -55,8 +55,8 @@ namespace DotsLite.Structure
             
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
-            var destructions = this.GetComponentDataFromEntity<StructureMain.PartDestructionData>();
-            var prefabs = this.GetComponentDataFromEntity<StructurePart.DebrisPrefabData>(isReadOnly: true);
+            var destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>();
+            var prefabs = this.GetComponentDataFromEntity<Part.DebrisPrefabData>(isReadOnly: true);
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
 
@@ -73,16 +73,16 @@ namespace DotsLite.Structure
 
 
         [BurstCompile]
-        public struct JobExecution : HitMessage<HitMessage>.IApplyJobExecutionForEach
+        public struct JobExecution : HitMessage<EnvelopeHitMessage>.IApplyJobExecutionForEach
         {
 
             public EntityCommandBuffer.ParallelWriter Cmd;
 
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<StructureMain.PartDestructionData> Destructions;
+            public ComponentDataFromEntity<Main.PartDestructionData> Destructions;
 
             [ReadOnly]
-            public ComponentDataFromEntity<StructurePart.DebrisPrefabData> Prefabs;
+            public ComponentDataFromEntity<Part.DebrisPrefabData> Prefabs;
             [ReadOnly]
             public ComponentDataFromEntity<Rotation> Rotations;
             [ReadOnly]
@@ -90,7 +90,7 @@ namespace DotsLite.Structure
 
 
             [BurstCompile]
-            public void Execute(int index, Entity targetEntity, HitMessage hitMessage)
+            public void Execute(int index, Entity targetEntity, PartHitMessage hitMessage)
             {
                 var destruction = this.Destructions[targetEntity];
 

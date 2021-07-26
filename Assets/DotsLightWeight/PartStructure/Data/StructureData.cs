@@ -23,7 +23,7 @@ namespace DotsLite.Structure
 
 
 
-    static public partial class StructureMain
+    static public partial class Main
     {
 
         public struct MainTag : IComponentData
@@ -78,7 +78,7 @@ namespace DotsLite.Structure
     }
 
 
-    static public partial class StructurePart
+    static public partial class Part
     {
 
         public struct PartData : IComponentData
@@ -105,7 +105,7 @@ namespace DotsLite.Structure
 
     }
 
-    static public partial class StructurePartDebris
+    static public partial class PartDebris
     {
 
         public struct Data : IComponentData

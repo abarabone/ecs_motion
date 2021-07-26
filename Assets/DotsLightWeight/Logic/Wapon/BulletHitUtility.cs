@@ -44,7 +44,7 @@ namespace DotsLite.Arms
     using CatId = PhysicsCategoryNamesId;
     using CatFlag = PhysicsCategoryNamesFlag;
 
-    using StructureHitHolder = NativeMultiHashMap<Entity, Structure.HitMessage>;
+    using StructureHitHolder = NativeMultiHashMap<Entity, Structure.PartHitMessage>;
 
 
     static public class BulletHitUtility
@@ -160,13 +160,13 @@ namespace DotsLite.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void PostStructureHitMessage(
             this HitResultCore hit,
-            HitMessage<Structure.HitMessage>.ParallelWriter hitHolder,
-            ComponentDataFromEntity<StructurePart.PartData> parts)
+            HitMessage<Structure.PartHitMessage>.ParallelWriter hitHolder,
+            ComponentDataFromEntity<Part.PartData> parts)
         {
             if (!parts.HasComponent(hit.hitEntity)) return;
 
             hitHolder.Add(hit.stateEntity,
-                new Structure.HitMessage
+                new Structure.PartHitMessage
                 {
                     Position = hit.posision,
                     Normale = hit.normal,
@@ -224,8 +224,8 @@ namespace DotsLite.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void Hit(this HitResultCore hit,
             HitMessage<Character.HitMessage>.ParallelWriter chhit,
-            HitMessage<Structure.HitMessage>.ParallelWriter sthit,
-            ComponentDataFromEntity<StructurePart.PartData> parts,
+            HitMessage<Structure.PartHitMessage>.ParallelWriter sthit,
+            ComponentDataFromEntity<Part.PartData> parts,
             ComponentDataFromEntity<CorpsGroup.Data> corpss,
             float3 v, float damage,
             CorpsGroup.TargetWithArmsData corps)
