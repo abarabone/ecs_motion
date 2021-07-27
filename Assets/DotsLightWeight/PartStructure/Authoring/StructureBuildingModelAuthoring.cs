@@ -56,9 +56,9 @@ namespace DotsLite.Structure.Authoring
         public PartColliderMode ColliderMode;
         public enum PartColliderMode
         {
-            separate,
-            compound,
-            mesh,
+            separate,   // パーツごとにコライダを持つ。
+            compound,   // すべてのコライダを結合する。未実装
+            mesh,       // １つのメッシュコライダーにする。未実装
         }
 
 
