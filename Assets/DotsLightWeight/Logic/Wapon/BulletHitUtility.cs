@@ -169,7 +169,7 @@ namespace DotsLite.Arms
                 new Structure.PartHitMessage
                 {
                     Position = hit.posision,
-                    Normale = hit.normal,
+                    Normal = hit.normal,
                     PartEntity = hit.hitEntity,
                     PartId = parts[hit.hitEntity].PartId,
                     //Force = ,
