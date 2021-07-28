@@ -8,7 +8,7 @@ Shader "Custom/Psyllium ptop add"
     }
     SubShader
     {
-		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
+		Tags { "Queue" = "Transparent+1" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
 		Blend SrcAlpha One
 		Lighting Off

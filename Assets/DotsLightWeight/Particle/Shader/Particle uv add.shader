@@ -10,13 +10,13 @@ Shader "Custom/Particle uv add"
     }
     SubShader
     {
-		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
+		Tags { "Queue" = "Transparent+1" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
 		Blend SrcAlpha One
         //Blend SrcAlpha OneMinusSrcAlpha
         //Blend One One
 		Lighting Off
-        ZWrite Off
+        //ZWrite Off
         Fog
 		{
 			Mode Off

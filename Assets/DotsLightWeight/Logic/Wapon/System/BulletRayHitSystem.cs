@@ -124,7 +124,7 @@ namespace DotsLite.Arms
 
 
 
-                        var v = (pos.Value - vfact.PrePosition.xyz) * dtrate;
+                        var v = (pos.Value - vfact.PrePosition.xyz) * dtrate * 100.0f;
                         var hit = hit_.core;
 
                         //if (damages.HasComponent(entity))
