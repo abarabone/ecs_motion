@@ -77,13 +77,13 @@
 //        {
 //            using var cmdScope = this.cmddep.WithDependencyScope();
 //            using var phyScope = this.phydep.WithDependencyScope();
-//            using var sthitScope = this.stSender.WithDependencyScope();
+//            using var pthitScope = this.stSender.WithDependencyScope();
 //            using var chhitScope = this.chSender.WithDependencyScope();
 
 
 //            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 //            var cw = phyScope.PhysicsWorld.CollisionWorld;
-//            var sthit = sthitScope.MessagerAsParallelWriter;
+//            var pthit = pthitScope.MessagerAsParallelWriter;
 //            var chhit = chhitScope.MessagerAsParallelWriter;
 
 

@@ -64,13 +64,13 @@ namespace DotsLite.Arms
         {
             using var cmdScope = this.cmddep.WithDependencyScope();
             using var phyScope = this.phydep.WithDependencyScope();
-            using var sthitScope = this.stSender.WithDependencyScope();
+            using var pthitScope = this.stSender.WithDependencyScope();
             using var chhitScope = this.chSender.WithDependencyScope();
 
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             var cw = phyScope.PhysicsWorld.CollisionWorld;
-            var sthit = sthitScope.MessagerAsParallelWriter;
+            var pthit = pthitScope.MessagerAsParallelWriter;
             var chhit =chhitScope.MessagerAsParallelWriter;
 
 
@@ -99,8 +99,8 @@ namespace DotsLite.Arms
                 .WithReadOnly(parts)
                 .WithReadOnly(corpss)
                 .WithReadOnly(cw)
-                .WithNativeDisableParallelForRestriction(sthit)
-                .WithNativeDisableContainerSafetyRestriction(sthit)
+                .WithNativeDisableParallelForRestriction(pthit)
+                .WithNativeDisableContainerSafetyRestriction(pthit)
                 .WithNativeDisableParallelForRestriction(chhit)
                 .WithNativeDisableContainerSafetyRestriction(chhit)
                 .ForEach(
@@ -131,7 +131,7 @@ namespace DotsLite.Arms
                         if ((hres.Types & Bullet.HitResponseTypes.damage) != 0)
                         {
                             var damage = damages[entity].Damage;
-                            hit.Hit(chhit, sthit, parts, corpss, v, damage, corps);
+                            hit.Hit(chhit, pthit, parts, corpss, v, damage, corps);
                         }
 
                         //if (emits.HasComponent(entity))

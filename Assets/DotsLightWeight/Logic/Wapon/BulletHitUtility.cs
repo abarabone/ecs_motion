@@ -224,7 +224,7 @@ namespace DotsLite.Arms
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public void Hit(this HitResultCore hit,
             HitMessage<Character.HitMessage>.ParallelWriter chhit,
-            HitMessage<Structure.PartHitMessage>.ParallelWriter sthit,
+            HitMessage<Structure.PartHitMessage>.ParallelWriter pthit,
             ComponentDataFromEntity<Part.PartData> parts,
             ComponentDataFromEntity<CorpsGroup.Data> corpss,
             float3 v, float damage,
@@ -235,7 +235,7 @@ namespace DotsLite.Arms
             {
                 case HitType.part:
 
-                    hit.PostStructureHitMessage(sthit, parts);
+                    hit.PostStructureHitMessage(pthit, parts);
                     break;
 
 

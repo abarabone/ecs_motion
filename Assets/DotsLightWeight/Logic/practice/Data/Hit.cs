@@ -22,7 +22,7 @@ namespace DotsLite.Collision
         none = 0,
         charactor = 1,
         part = 2,
-
+        envelope = 3,
     }
 
 

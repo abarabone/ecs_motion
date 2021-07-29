@@ -40,7 +40,7 @@ namespace DotsLite.Arms
 
         PhysicsHitDependency.Sender phydep;
 
-        HitMessage<Structure.PartHitMessage>.Sender stSender;
+        HitMessage<Structure.PartHitMessage>.Sender ptSender;
         HitMessage<Character.HitMessage>.Sender chSender;
 
 
@@ -52,7 +52,7 @@ namespace DotsLite.Arms
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
 
-            this.stSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
+            this.ptSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
         }
 
@@ -61,13 +61,13 @@ namespace DotsLite.Arms
         {
             using var cmdScope = this.cmddep.WithDependencyScope();
             using var phyScope = this.phydep.WithDependencyScope();
-            using var sthitScope = this.stSender.WithDependencyScope();
+            using var pthitScope = this.ptSender.WithDependencyScope();
             using var chhitScope = this.chSender.WithDependencyScope();
 
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             var cw = phyScope.PhysicsWorld.CollisionWorld;
-            var sthit = sthitScope.MessagerAsParallelWriter;
+            var pthit = pthitScope.MessagerAsParallelWriter;
             var chhit = chhitScope.MessagerAsParallelWriter;
 
 
@@ -92,8 +92,8 @@ namespace DotsLite.Arms
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
                 .WithReadOnly(corpss)
-                .WithNativeDisableParallelForRestriction(sthit)
-                .WithNativeDisableContainerSafetyRestriction(sthit)
+                .WithNativeDisableParallelForRestriction(pthit)
+                .WithNativeDisableContainerSafetyRestriction(pthit)
                 .WithNativeDisableParallelForRestriction(chhit)
                 .WithNativeDisableContainerSafetyRestriction(chhit)
                 .ForEach(
@@ -121,7 +121,7 @@ namespace DotsLite.Arms
                         if (damages.HasComponent(entity))
                         {
                             var damage = damages[entity].Damage;
-                            hit.Hit(chhit, sthit, parts, corpss, v, damage, corps);
+                            hit.Hit(chhit, pthit, parts, corpss, v, damage, corps);
                         }
 
                         if (emits.HasComponent(entity))

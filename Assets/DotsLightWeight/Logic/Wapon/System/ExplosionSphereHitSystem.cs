@@ -32,7 +32,7 @@ namespace DotsLite.Arms
     using CatFlag = PhysicsCategoryNamesFlag;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
@@ -43,7 +43,8 @@ namespace DotsLite.Arms
 
         PhysicsHitDependency.Sender phydep;
 
-        HitMessage<Structure.PartHitMessage>.Sender stSender;
+        HitMessage<Structure.EnvelopeHitMessage>.Sender stSender;
+        HitMessage<Structure.PartHitMessage>.Sender ptSender;
         HitMessage<Character.HitMessage>.Sender chSender;
 
 
@@ -56,7 +57,8 @@ namespace DotsLite.Arms
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
 
-            this.stSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
+            this.stSender = HitMessage<Structure.EnvelopeHitMessage>.Sender.Create<StructureEnvelopeHitMessageApplySystem>(this);
+            this.ptSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
         }
 
@@ -66,12 +68,14 @@ namespace DotsLite.Arms
             using var cmdScope = this.cmddep.WithDependencyScope();
             using var phyScope = this.phydep.WithDependencyScope();
             using var sthitScope = this.stSender.WithDependencyScope();
+            using var pthitScope = this.ptSender.WithDependencyScope();
             using var chhitScope = this.chSender.WithDependencyScope();
 
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             var cw = phyScope.PhysicsWorld.CollisionWorld;
             var sthit = sthitScope.MessagerAsParallelWriter;
+            var pthit = pthitScope.MessagerAsParallelWriter;
             var chhit = chhitScope.MessagerAsParallelWriter;
 
 
@@ -84,13 +88,15 @@ namespace DotsLite.Arms
 
             this.Entities
                 .WithBurst()
-                .WithAll<Bullet.SphereTag>()
+                //.WithAll<Bullet.SphereTag>()
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
                 .WithReadOnly(corpss)
-                .WithNativeDisableParallelForRestriction(sthit)
-                .WithNativeDisableContainerSafetyRestriction(sthit)
+                //.WithNativeDisableParallelForRestriction(sthit)
+                //.WithNativeDisableContainerSafetyRestriction(sthit)
+                .WithNativeDisableParallelForRestriction(pthit)
+                .WithNativeDisableContainerSafetyRestriction(pthit)
                 .WithNativeDisableParallelForRestriction(chhit)
                 .WithNativeDisableContainerSafetyRestriction(chhit)
                 .ForEach(
@@ -106,7 +112,7 @@ namespace DotsLite.Arms
                         var filter = new CollisionFilter
                         {
                             BelongsTo = CollisionFilter.Default.BelongsTo,
-                            CollidesWith = CatFlag.datail | CatFlag.field | CatFlag.detenv,
+                            CollidesWith = CatFlag.datail | CatFlag.envelope | CatFlag.detenv,
                         };
 
                         using var results = new NativeList<DistanceHitResult>(512, Allocator.Temp);
@@ -122,9 +128,14 @@ namespace DotsLite.Arms
 
                             switch (hit.hitType)
                             {
+                                case HitType.envelope:
+
+
+                                    break;
+
                                 case HitType.part:
 
-                                    hit.PostStructureHitMessage(sthit, parts);
+                                    hit.PostStructureHitMessage(pthit, parts);
                                     break;
 
 
