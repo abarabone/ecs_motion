@@ -18,7 +18,7 @@ namespace DotsLite.Structure
         public int PartId;
         public Entity PartEntity;
         public float3 Position;
-        public float3 Normale;
+        public float3 Normal;
     }
 
 
