@@ -130,12 +130,12 @@ namespace DotsLite.Arms
                             {
                                 case HitType.envelope:
 
-
+                                    hit.PostStructureEnvelopeHitMessage(sthit);
                                     break;
 
                                 case HitType.part:
 
-                                    hit.PostStructureHitMessage(pthit, parts);
+                                    hit.PostStructurePartHitMessage(pthit, parts);
                                     break;
 
 

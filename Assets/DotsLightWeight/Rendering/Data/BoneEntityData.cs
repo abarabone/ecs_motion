@@ -44,8 +44,17 @@ namespace DotsLite.Draw
 
     }
 
+    public static class Tf
+    {
+        /// <summary>
+        /// ボーン変形に先立って、各軸方向にスケーリングさせる。
+        /// </summary>
+        public struct PreScalingData : IComponentData
+        {
+            public float4 Scale;
+        }
+    }
 }
-
 
 namespace DotsLite.Model
 {
@@ -53,9 +62,11 @@ namespace DotsLite.Model
     // ボーンのベクトル数も兼ねている
     public enum BoneType
     {
+        ST = 2,
+        SRT = 3,
         T = 1,
-        TR = 2,
-        TRS = 3,
+        RT = 2,
+        RTS = 3,
         Matrix4x3 = 3,
         PtoP = 2,
         P1uv = 2,

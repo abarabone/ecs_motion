@@ -16,7 +16,7 @@ using UnityEngine.InputSystem;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-namespace DotsLite.Draw
+namespace DotsLite.Structure
 {
     using DotsLite.Misc;
     using DotsLite.Utilities;
@@ -27,7 +27,7 @@ namespace DotsLite.Draw
     using DotsLite.Dependency;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class StructureEnvelopeSleepSwitchingSystem : DependencyAccessableSystemBase
     {
@@ -55,19 +55,38 @@ namespace DotsLite.Draw
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
             var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
+            const float l = 0.1f;
+            var limit = new float3(l, l, l);// l * l, l * l, l * l);
+
+            //var curtime = (float)this.Time.ElapsedTime;
+            var dt = this.Time.DeltaTime;
 
             this.Entities
                 .WithBurst()
+                .WithAll<PhysicsVelocity>()
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    ref Main.SleepTimerData timer,
+                    in Translation pos) =>
+                    //in PhysicsVelocity v) =>
+                {
+                    var eqi = entityInQueryIndex;
 
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex
-                    )
-                =>
-                    {
+                    //var isStillness = math.all(math.abs(v.Linear) < limit) & math.all(math.abs(v.Angular) < limit);
+                    var isStillness = math.all(math.abs(pos.Value - timer.PrePosition) < limit);
 
-                    }
-                )
+                    timer.PrePositionAndTime = math.select(
+                        new float4(pos.Value, 0.0f),
+                        new float4(pos.Value, timer.StillnessTime + dt),
+                        isStillness);
+
+                    const float margin = 2.0f;
+                    if (timer.StillnessTime < margin) return;
+
+                    timer.PrePositionAndTime = 0.0f;
+                    cmd.RemoveComponent<PhysicsVelocity>(eqi, entity);
+
+                })
                 .ScheduleParallel();
         }
     }

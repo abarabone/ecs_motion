@@ -154,11 +154,31 @@ namespace DotsLite.Arms
 
 
 
+        // コマンドバッファで直接コンポーネントを渡す、でもいいのかも
+        // → 加算とかする場合だめかも
+
         /// <summary>
         /// 
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public void PostStructureHitMessage(
+        static public void PostStructureEnvelopeHitMessage(
+            this HitResultCore hit,
+            HitMessage<Structure.EnvelopeHitMessage>.ParallelWriter hitHolder)
+        {
+            hitHolder.Add(hit.stateEntity,
+                new Structure.EnvelopeHitMessage
+                {
+
+                }
+            );
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public void PostStructurePartHitMessage(
             this HitResultCore hit,
             HitMessage<Structure.PartHitMessage>.ParallelWriter hitHolder,
             ComponentDataFromEntity<Part.PartData> parts)
@@ -235,7 +255,7 @@ namespace DotsLite.Arms
             {
                 case HitType.part:
 
-                    hit.PostStructureHitMessage(pthit, parts);
+                    hit.PostStructurePartHitMessage(pthit, parts);
                     break;
 
 

@@ -50,7 +50,7 @@ namespace DotsLite.Particle.Aurthoring.disable
                 var mat = new Material( srcMaterial );
                 var mesh = createMesh();
 
-                const BoneType BoneType = BoneType.TR;
+                const BoneType BoneType = BoneType.RT;
                 const int boneLength = 1;
 
                 var modelEntity_ = gcs.CreateDrawModelEntityComponents( main, mesh, mat, BoneType, boneLength );

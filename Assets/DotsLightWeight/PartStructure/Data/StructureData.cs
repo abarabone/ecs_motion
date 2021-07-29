@@ -70,9 +70,11 @@ namespace DotsLite.Structure
         //    public Entity NextEntity;
         //}
 
-        public struct SleepTimeData : IComponentData
+        public struct SleepTimerData : IComponentData
         {
-            public float StillnessTime;
+            public float4 PrePositionAndTime;
+            public float3 PrePosition => this.PrePositionAndTime.xyz;
+            public float StillnessTime => this.PrePositionAndTime.w;
         }
 
     }

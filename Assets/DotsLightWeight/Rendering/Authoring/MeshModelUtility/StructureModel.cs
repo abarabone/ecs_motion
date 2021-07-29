@@ -42,7 +42,7 @@ namespace DotsLite.Structure.Authoring
             mat.enableInstancing = true;
             mat.mainTexture = atlas;
 
-            const BoneType boneType = BoneType.TR;
+            const BoneType boneType = BoneType.RT;
             const int boneLength = 1;
             const int vectorOffsetPerInstance = 4;
 

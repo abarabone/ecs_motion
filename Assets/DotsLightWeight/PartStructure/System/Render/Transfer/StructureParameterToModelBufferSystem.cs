@@ -66,7 +66,7 @@ namespace DotsLite.Draw
                         //var boneInfo = boneinfoOfDrawModel[linker.DrawModelEntityCurrent];
 
                         var pDstBase = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        var boneVectorLength = (int)BoneType.TR;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
+                        var boneVectorLength = (int)BoneType.RT;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
                         var instanceVectorLength = boneVectorLength + offsetInfo.VectorOffsetPerInstance;
 
                         var i = target.DrawInstanceId * instanceVectorLength;

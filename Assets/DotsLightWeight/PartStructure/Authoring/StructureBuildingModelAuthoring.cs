@@ -261,6 +261,8 @@ namespace DotsLite.Structure.Authoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(Main.PartDestructionData),
+                    typeof(Collision.Hit.TargetData),
+                    typeof(Main.SleepTimerData),
                 }
             );
             em.AddComponents(mainEntity, mainAddtypes);
@@ -287,6 +289,14 @@ namespace DotsLite.Structure.Authoring
                 new DrawInstance.TargetWorkData
                 {
                     DrawInstanceId = -1,
+                }
+            );
+
+            em.SetComponentData(mainEntity,
+                new Collision.Hit.TargetData
+                {
+                    MainEntity = gcs.GetPrimaryEntity(main),
+                    HitType = Collision.HitType.envelope,
                 }
             );
 

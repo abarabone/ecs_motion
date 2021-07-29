@@ -75,7 +75,7 @@ namespace DotsLite.Model.Authoring
             mat.enableInstancing = true;
             mat.mainTexture = atlas;
 
-            const BoneType BoneType = BoneType.TR;
+            const BoneType BoneType = BoneType.RT;
             var boneLength = Bones.Length;
 
             gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
