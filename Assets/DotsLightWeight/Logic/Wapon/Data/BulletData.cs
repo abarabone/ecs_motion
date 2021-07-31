@@ -20,6 +20,12 @@ namespace DotsLite.Arms
     using DotsLite.Targeting;
 
 
+    //public static partial class HitState
+    //{
+    //    public struct HittableTag : IComponentData
+    //    { }
+    //}
+
     static public partial class Bullet
     {
 
@@ -147,6 +153,9 @@ namespace DotsLite.Arms
         {
             public float HitRadius;
         }
+
+        public struct HittableTag : IComponentData
+        { }
     }
 
 }

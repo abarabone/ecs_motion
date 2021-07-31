@@ -88,17 +88,18 @@ namespace DotsLite.Arms
 
             this.Entities
                 .WithBurst()
+                .WithAll<Explosion.HittableTag>()
                 //.WithAll<Bullet.SphereTag>()
                 .WithReadOnly(targets)
                 .WithReadOnly(parts)
                 .WithReadOnly(cw)
                 .WithReadOnly(corpss)
-                //.WithNativeDisableParallelForRestriction(sthit)
-                //.WithNativeDisableContainerSafetyRestriction(sthit)
+                .WithNativeDisableParallelForRestriction(sthit)
+                .WithNativeDisableContainerSafetyRestriction(sthit)
                 .WithNativeDisableParallelForRestriction(pthit)
                 .WithNativeDisableContainerSafetyRestriction(pthit)
-                .WithNativeDisableParallelForRestriction(chhit)
-                .WithNativeDisableContainerSafetyRestriction(chhit)
+                //.WithNativeDisableParallelForRestriction(chhit)
+                //.WithNativeDisableContainerSafetyRestriction(chhit)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -108,6 +109,9 @@ namespace DotsLite.Arms
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
                     {
+                        var eqi = entityInQueryIndex;
+                        cmd.RemoveComponent<Explosion.HittableTag>(eqi, entity);
+
 
                         var filter = new CollisionFilter
                         {
@@ -145,7 +149,7 @@ namespace DotsLite.Arms
                                     if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
 
                                     var pow = spec.HitRadius * math.rcp(hit_.distance) * (hit.posision - pos.Value);
-                                    hit.PostCharacterHitMessage(chhit, 1.0f, pow);
+                                    //hit.PostCharacterHitMessage(chhit, 1.0f, pow);
                                     break;
 
 
@@ -154,7 +158,6 @@ namespace DotsLite.Arms
                             }
                         }
 
-                        //cmd.DestroyEntity(entityInQueryIndex, entity);
                     }
                 )
                 .ScheduleParallel();

@@ -49,6 +49,7 @@ namespace DotsLite.Arms.Authoring
                 var bulletEntity = gcs_.GetPrimaryEntity(bullet_);
                 var types = new ComponentTypes(new ComponentType[]
                 {
+                    typeof(Explosion.HittableTag),
                     typeof(Bullet.PointDamageSpecData),
                     typeof(Explosion.SpecData),
                     typeof(CorpsGroup.TargetWithArmsData),
