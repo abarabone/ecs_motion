@@ -11,6 +11,7 @@ using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine.XR;
 using Unity.Physics.Systems;
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsLite.Arms
 {
@@ -63,7 +64,7 @@ namespace DotsLite.Arms
         }
 
 
-        protected override void OnUpdate()
+        protected unsafe override void OnUpdate()
         {
             using var cmdScope = this.cmddep.WithDependencyScope();
             using var phyScope = this.phydep.WithDependencyScope();
@@ -126,8 +127,9 @@ namespace DotsLite.Arms
                         if (!isHit) return;
 
 
-                        foreach (var hit_ in results)
+                        for (var i = 0; i < results.Length; i++)
                         {
+                            ref var hit_ = ref UnsafeUtility.ArrayElementAsRef<DistanceHitResult>(results.GetUnsafePtr(), i);
                             var hit = hit_.core;
 
                             switch (hit.hitType)
