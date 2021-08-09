@@ -92,16 +92,16 @@ namespace DotsLite.Arms
 
 
         [BurstCompile]
-        struct HitEventJob : ITriggerEventsJob
+        struct HitEventJob : ICollisionEventsJob
         {
             //[ReadOnly] public ComponentDataFromEntity<Ball> balls;
             //[ReadOnly] public ComponentDataFromEntity<Lifetime> lifetimes;
             public EntityCommandBuffer cmd;
 
-            public void Execute(TriggerEvent triggerEvent)
+            public void Execute(CollisionEvent ev)
             {
-                var entA = triggerEvent.EntityA;
-                var entB = triggerEvent.EntityB;
+                var entA = ev.EntityA;
+                var entB = ev.EntityB;
 
                 Debug.Log($"collision {entA} {entB}");
             }
