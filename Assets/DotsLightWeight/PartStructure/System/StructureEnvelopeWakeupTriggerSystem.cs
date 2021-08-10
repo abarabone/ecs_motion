@@ -9,6 +9,7 @@ using Unity.Mathematics;
 ////using Microsoft.CSharp.RuntimeBinder;
 using Unity.Entities.UniversalDelegates;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.CompilerServices;
 using UnityEngine.XR;
 using Unity.Physics.Systems;
 using Unity.Collections.LowLevel.Unsafe;
@@ -34,16 +35,15 @@ namespace DotsLite.Arms
     using DotsLite.Utilities;
 
     //[DisableAutoCreation]
-    //[UpdateAfter(typeof(EndFramePhysicsSystem))]
+    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+    [UpdateAfter(typeof(EndFramePhysicsSystem))]
+    //[UpdateAfter(typeof())]
     public class StructureEnvelopeWakeupTriggerSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;
-
         //PhysicsHitDependency.Sender phydep;
 
-        //HitMessage<Structure.PartHitMessage>.Sender stSender;
-        //HitMessage<Character.HitMessage>.Sender chSender;
 
         private BuildPhysicsWorld buildPhysicsWorld;
         private StepPhysicsWorld stepPhysicsWorld;
@@ -56,9 +56,6 @@ namespace DotsLite.Arms
 
             //this.phydep = PhysicsHitDependency.Sender.Create(this);
 
-            //this.stSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
-            //this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
-
             buildPhysicsWorld = World.GetOrCreateSystem<BuildPhysicsWorld>();
             stepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
         }
@@ -68,14 +65,10 @@ namespace DotsLite.Arms
         {
             using var cmdScope = this.cmddep.WithDependencyScope();
             //using var phyScope = this.phydep.WithDependencyScope();
-            //using var pthitScope = this.stSender.WithDependencyScope();
-            //using var chhitScope = this.chSender.WithDependencyScope();
 
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             //var cw = phyScope.PhysicsWorld.CollisionWorld;
-            //var pthit = pthitScope.MessagerAsParallelWriter;
-            //var chhit = chhitScope.MessagerAsParallelWriter;
 
 
             var dt = this.Time.DeltaTime;
@@ -84,7 +77,9 @@ namespace DotsLite.Arms
 
             this.Dependency = new HitEventJob
             {
-
+                structureMain = this.GetComponentDataFromEntity<Structure.Main.MainTag>(isReadOnly: true),
+                velocities = this.GetComponentDataFromEntity<PhysicsVelocity>(isReadOnly: true),
+                cmd = cmd,
             }
             .Schedule(this.stepPhysicsWorld.Simulation, ref this.buildPhysicsWorld.PhysicsWorld, this.Dependency);
 
@@ -94,17 +89,44 @@ namespace DotsLite.Arms
         [BurstCompile]
         struct HitEventJob : ICollisionEventsJob
         {
-            //[ReadOnly] public ComponentDataFromEntity<Ball> balls;
-            //[ReadOnly] public ComponentDataFromEntity<Lifetime> lifetimes;
-            public EntityCommandBuffer cmd;
+            [ReadOnly] public ComponentDataFromEntity<Structure.Main.MainTag> structureMain;
+            [ReadOnly] public ComponentDataFromEntity<PhysicsVelocity> velocities;
+
+            public EntityCommandBuffer.ParallelWriter cmd;
+
 
             public void Execute(CollisionEvent ev)
             {
                 var entA = ev.EntityA;
                 var entB = ev.EntityB;
 
-                Debug.Log($"collision {entA} {entB}");
+                var isStA = this.structureMain.HasComponent(entA);
+                var isStB = this.structureMain.HasComponent(entB);
+
+                // Ç«ÇøÇÁÇ‡ structure main Ç≈Ç»ÇØÇÍÇŒÇ»ÇÁÇ»Ç¢
+                if (!(isStA & isStB)) return;
+                //Debug.Log($"collision {entA} {entB}");
+
+                var isRbA = this.velocities.HasComponent(entA);
+                var isRbB = this.velocities.HasComponent(entB);
+
+                // ï–ï˚ÇæÇØÇ™çÑëÃÇ≈Ç»ÇØÇÍÇŒÇ»ÇÁÇ»Ç¢
+                if (isRbA & isRbB) return;
+
+
+                // çÑëÃÇ≈Ç»Ç¢ï˚ÇçÑëÃÇ…Ç∑ÇÈ
+                if (isRbA)
+                {
+                    this.cmd.AddComponent<PhysicsVelocity>(ev.BodyIndexA, entA);
+                    return;
+                }
+                if (isRbB)
+                {
+                    this.cmd.AddComponent<PhysicsVelocity>(ev.BodyIndexB, entB);
+                    return;
+                }
             }
+
         }
     }
 

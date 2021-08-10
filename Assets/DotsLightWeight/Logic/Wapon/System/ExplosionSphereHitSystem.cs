@@ -140,8 +140,8 @@ namespace DotsLite.Arms
                                     break;
 
                                 case HitType.part:
-
-                                    hit.PostStructurePartHitMessage(pthit, parts);
+                                    
+                                    if (!isHit) hit.PostStructurePartHitMessage(pthit, parts);
                                     break;
 
 
