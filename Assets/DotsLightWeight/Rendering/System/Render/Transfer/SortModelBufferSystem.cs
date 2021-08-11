@@ -20,65 +20,38 @@ namespace DotsLite.Draw
     /// <summary>
     /// 
     /// </summary>
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Sort))]
-    public class SortModelBufferSystem : SystemBase, BarrierDependency.IRecievable
+    public class SortModelBufferSystem : SystemBase
     {
 
 
-        public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();
-
-
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            this.Reciever.Dispose();
-        }
 
         protected override unsafe void OnUpdate()
         {
-            this.Reciever.CompleteAllDependentJobs(this.Dependency);
-
-            var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
-            var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
-            computeBuffer.SetData(nativeBuffer.AsNativeArray());
-
-            //Debug.Log("start");
-            //for (var i = 0; i < nativeBuffer.length_; i++)
-            //{
-            //    Debug.Log($"{i} {nativeBuffer.pBuffer[i]}");
-            //}
-
             this.Entities
-                .WithoutBurst()
+                //.WithBurst()
                 .ForEach(
                     (
                         in DrawModel.InstanceCounterData counter,
-                        in DrawModel.InstanceOffsetData offset,
-                        in DrawModel.ComputeArgumentsBufferData shaderArg,
-                        in DrawModel.GeometryData geom
+                        in DrawModel.InstanceOffsetData offset
                     ) =>
                     {
                         if (counter.InstanceCounter.Count == 0) return;
 
-                        var mesh = geom.Mesh;
-                        var mat = geom.Material;
-                        var args = shaderArg.InstanceArgumentsBuffer;
+                        var p = offset.pVectorOffsetPerModelInBuffer;
+                        var length = counter.InstanceCounter.Count;
 
-                        var vectorOffset = offset.pVectorOffsetPerModelInBuffer - nativeBuffer.pBuffer;
-                        mat.SetInt("BoneVectorOffset", (int)vectorOffset);
+                        //UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, elementSize, count);
 
-                        var instanceCount = counter.InstanceCounter.Count;
-                        var argparams = new IndirectArgumentsForInstancing(mesh, instanceCount);
-                        args.SetData(ref argparams);
 
-                        var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
-                        Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, args);
+                        //NativeSortExtension.Sort(p, length), ;
+
+
+
                     }
                 )
-                .Run();
+                ;
         }
 
     }
