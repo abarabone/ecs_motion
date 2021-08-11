@@ -58,6 +58,13 @@ namespace DotsLite.Draw
         }
 
 
+        public struct SortSettingData : IComponentData
+        {
+            public bool IsSortAsc;
+        }
+
+
+
         // class object -------------
         // ジョブからは使えないので、基本的には DrawMesh() 関連で使用
 

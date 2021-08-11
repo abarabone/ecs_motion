@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
+using System;
 
 namespace DotsLite.Draw
 {
@@ -29,23 +30,52 @@ namespace DotsLite.Draw
 
         protected override unsafe void OnUpdate()
         {
+            var campos = Camera.main.transform.position.As_float3();
+
+
             this.Entities
                 //.WithBurst()
                 .ForEach(
                     (
                         in DrawModel.InstanceCounterData counter,
-                        in DrawModel.InstanceOffsetData offset
+                        in DrawModel.InstanceOffsetData offset,
+                        in DrawModel.BoneVectorSettingData info,
+                        in DrawModel.SortSettingData sort
                     ) =>
                     {
                         if (counter.InstanceCounter.Count == 0) return;
 
-                        var p = offset.pVectorOffsetPerModelInBuffer;
+
                         var length = counter.InstanceCounter.Count;
+                        using var distsq_work = new NativeArray<DistanceUnit>(length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
-                        //UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, elementSize, count);
+
+                        var pSrc = offset.pVectorOffsetPerModelInBuffer;
+                        var dst = distsq_work;
+
+                        var src_span = info.VectorLengthInBone + offset.VectorOffsetPerInstance;
+                        var src_ofs = offset.VectorOffsetPerInstance;
+
+                        for (var i = 0; i < length; i++)
+                        {
+                            var pos = pSrc[i * src_span + src_ofs];
+
+                            dst[i] = new DistanceUnit
+                            {
+                                index = i,
+                                distsq = math.distancesq(pos.xyz, campos),
+                            };
+                        }
 
 
-                        //NativeSortExtension.Sort(p, length), ;
+                        if (sort.IsSortAsc)
+                        {
+                            distsq_work.Sort(new DistanceSortAsc());
+                        }
+                        else
+                        {
+                            distsq_work.Sort(new DistanceSortDesc());
+                        }
 
 
 
@@ -54,5 +84,32 @@ namespace DotsLite.Draw
                 ;
         }
 
+        //static NativeArray<DistanceUnit> buildSortSorce_()
+        //{
+
+        //}
+        //static NativeArray<DistanceUnit> sort_()
+        //{
+
+        //}
+        //static void back_()
+        //{
+
+        //}
+    }
+
+    public struct DistanceUnit
+    {
+        public int index;
+        public float distsq;
+    }
+
+    public struct DistanceSortAsc : IComparer<DistanceUnit>
+    {
+        public int Compare(DistanceUnit a, DistanceUnit b) => a.distsq.CompareTo(b.distsq);
+    }
+    public struct DistanceSortDesc : IComparer<DistanceUnit>
+    {
+        public int Compare(DistanceUnit a, DistanceUnit b) => b.distsq.CompareTo(a.distsq);
     }
 }
