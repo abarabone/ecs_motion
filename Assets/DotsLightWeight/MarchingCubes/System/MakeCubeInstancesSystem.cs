@@ -16,9 +16,9 @@ namespace DotsLite.MarchingCubes
     using Utilities;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MonolithicBone))]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    [UpdateBefore(typeof(DrawMeshCsSystem))]
+    //[UpdateBefore(typeof(DrawMeshCsSystem))]
     public class MakeCubeInstancesSystem : SystemBase
     {
 

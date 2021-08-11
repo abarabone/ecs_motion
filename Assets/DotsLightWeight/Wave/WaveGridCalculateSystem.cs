@@ -17,7 +17,7 @@ namespace DotsLite.HeightGrid
     using DotsLite.Utilities;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     public class WaveGridCalculateSystem : SystemBase
     {
 

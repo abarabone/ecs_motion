@@ -22,7 +22,7 @@ namespace DotsLite.CharacterMotion
     using DotsLite.Draw;
 
     [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transform.MotionBone ) )]
     public class StreamToBoneSystem : SystemBase
     {
 

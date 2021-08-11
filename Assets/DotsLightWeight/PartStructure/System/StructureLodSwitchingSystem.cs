@@ -31,7 +31,7 @@ namespace DotsLite.Draw
         /// linked entity 番号を固定で使ってしまったので、問題でたらちゃんとなおさなければならない
         /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class StructureLodSwitchingSystem : DependencyAccessableSystemBase
     {
 

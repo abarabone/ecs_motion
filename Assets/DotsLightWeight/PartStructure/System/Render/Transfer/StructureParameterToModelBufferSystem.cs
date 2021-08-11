@@ -23,9 +23,9 @@ namespace DotsLite.Draw
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer) )]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    [UpdateBefore(typeof(DrawMeshCsSystem))]
+    //[UpdateBefore(typeof(DrawMeshCsSystem))]
     public class StructureParameterToModelBufferSystem : DependencyAccessableSystemBase
     {
 

@@ -6,7 +6,7 @@ namespace DotsLite.Draw
 
     ////[UpdateBefore( typeof( DrawCullingSystem ) )]
     ////[UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.ResetCounter))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.ResetCounter))]
     public class DrawInstanceCounterResetSystem : ComponentSystem
     {
 

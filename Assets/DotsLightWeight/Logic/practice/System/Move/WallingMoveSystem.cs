@@ -54,7 +54,7 @@ namespace DotsLite.Character
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     public class WallingMoveSystem : DependencyAccessableSystemBase
     {
 

@@ -17,10 +17,10 @@ namespace DotsLite.Draw
     /// TRSだが、現在はTRのみ対応
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    [UpdateBefore(typeof(DrawMeshCsSystem))]
+    //[UpdateBefore(typeof(DrawMeshCsSystem))]
     public class DrawSingleBoneMesh_TRS_ToModelBufferSystem : DependencyAccessableSystemBase
     {
 

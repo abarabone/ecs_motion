@@ -18,7 +18,7 @@ namespace DotsLite.CharacterMotion
     //[UpdateAfter(typeof())]
     //[UpdateAfter(typeof(MotionProgressSystem))]//MotionB
     [UpdateBefore(typeof(StreamToBoneSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     public class MotionStreamInterporationWithoutCullingSystem : SystemBase
     {
 

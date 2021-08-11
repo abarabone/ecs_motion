@@ -24,10 +24,10 @@ namespace DotsLite.Draw
     using DotsLite.Utilities;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    [UpdateBefore(typeof(DrawMeshCsSystem))]
+    //[UpdateBefore(typeof(DrawMeshCsSystem))]
     public class WaveGridToModelBufferSystem : DependencyAccessableSystemBase
     {
 

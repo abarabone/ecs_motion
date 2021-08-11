@@ -16,7 +16,7 @@ namespace DotsLite.CharacterMotion
     using DotsLite.Dependency;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
     public class MotionInitializeSystem : DependencyAccessableSystemBase
     {

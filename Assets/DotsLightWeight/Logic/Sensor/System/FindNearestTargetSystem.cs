@@ -32,7 +32,7 @@ namespace DotsLite.Character
 
     //[DisableAutoCreation]
     [UpdateAfter(typeof(TargetSensorWakeupAndCopyPositionSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class FindNearestTargeSystem : DependencyAccessableSystemBase
     {
 

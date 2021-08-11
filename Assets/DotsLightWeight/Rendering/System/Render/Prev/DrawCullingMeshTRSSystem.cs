@@ -19,7 +19,7 @@ namespace DotsLite.Draw
     
 
     ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Culling))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.Render.DrawPrev.Culling))]
     public class DrawCullingMeshTrsSystem : SystemBase
     {
 

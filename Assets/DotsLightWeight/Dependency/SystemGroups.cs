@@ -18,6 +18,11 @@ using Unity.Physics.Systems;
 using DotsLite.Geometry;
 using System.Runtime.InteropServices;
 
+
+// update 順序は、システムの順序
+// ジョブ同士はシステムの順序で dependency が組まれると思われる
+// ただしジョブと update 間の実行順は制御できないので、そのためのバリアである、と推測する
+
 namespace DotsLite.SystemGroup
 {
 
@@ -52,15 +57,15 @@ namespace DotsLite.SystemGroup
 
         [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
         [UpdateBefore(typeof(BuildPhysicsWorld))]
-        public class InitializeSystemGroup : ComponentSystemGroup
+        public class Initialize : ComponentSystemGroup
         { }
 
         namespace Move
         {
             [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
             [UpdateBefore(typeof(BuildPhysicsWorld))]
-            [UpdateAfter(typeof(InitializeSystemGroup))]
-            public class ObjectMoveSystemGroup : ComponentSystemGroup
+            [UpdateAfter(typeof(Initialize))]
+            public class ObjectMove : ComponentSystemGroup
             { }
         }
 
@@ -71,7 +76,7 @@ namespace DotsLite.SystemGroup
             [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
             [UpdateAfter(typeof(ExportPhysicsWorld))]
             [UpdateBefore(typeof(EndFramePhysicsSystem))]
-            public class HitSystemGroup : ComponentSystemGroup
+            public class Hit : ComponentSystemGroup
             { }
         }
 
@@ -85,31 +90,31 @@ namespace DotsLite.SystemGroup
         {
 
             [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-            public class ObjectLogicSystemGroup : ComponentSystemGroup
+            public class ObjectLogic : ComponentSystemGroup
             { }
 
         }
 
 
-        namespace DrawModel
+        namespace Render
         {
 
             [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-            public class DrawPrevSystemGroup : ComponentSystemGroup
+            public class DrawPrev : ComponentSystemGroup
             {
-                [UpdateInGroup(typeof(DrawPrevSystemGroup))]
+                [UpdateInGroup(typeof(DrawPrev))]
                 public class ResetCounter : ComponentSystemGroup { }
 
-                [UpdateInGroup(typeof(DrawPrevSystemGroup))]
+                [UpdateInGroup(typeof(DrawPrev))]
                 public class Lod : ComponentSystemGroup { }
 
-                [UpdateInGroup(typeof(DrawPrevSystemGroup))] [UpdateAfter(typeof(ResetCounter))] [UpdateAfter(typeof(Lod))]
+                [UpdateInGroup(typeof(DrawPrev))] [UpdateAfter(typeof(ResetCounter))] [UpdateAfter(typeof(Lod))]
                 public class Culling : ComponentSystemGroup { }
 
-                [UpdateInGroup(typeof(DrawPrevSystemGroup))] [UpdateAfter(typeof(Culling))]
+                [UpdateInGroup(typeof(DrawPrev))] [UpdateAfter(typeof(Culling))]
                 public class Marking : ComponentSystemGroup { }
                 
-                [UpdateInGroup(typeof(DrawPrevSystemGroup))] [UpdateAfter(typeof(Culling))]
+                [UpdateInGroup(typeof(DrawPrev))] [UpdateAfter(typeof(Culling))]
                 public class TempAlloc : ComponentSystemGroup { }
             }
 
@@ -121,32 +126,66 @@ namespace DotsLite.SystemGroup
             //{ }
 
 
-            namespace MonolithicBoneTransform
-            {
+            //namespace MonolithicBoneTransform
+            //{
 
-                [UpdateInGroup(typeof(PresentationSystemGroup))]
-                [UpdateAfter(typeof(DrawPrevSystemGroup))]
-                public class MonolithicBoneTransformSystemGroup : ComponentSystemGroup
-                { }
+            //    [UpdateInGroup(typeof(PresentationSystemGroup))]
+            //    [UpdateAfter(typeof(DrawPrevSystemGroup))]
+            //    public class MonolithicBoneTransformSystemGroup : ComponentSystemGroup
+            //    { }
 
-            }
+            //}
 
-            namespace MotionBoneTransform
-            {
+            //namespace MotionBoneTransform
+            //{
 
-                [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-                [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
-                public class MotionSystemGroup : ComponentSystemGroup
-                { }
+            //    [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+            //    [UpdateAfter( typeof( DrawPrevSystemGroup ) )]
+            //    public class MotionSystemGroup : ComponentSystemGroup
+            //    { }
 
-            }
+            //}
 
+
+            // グループを小分けにしてしまうと、スケジュールの自由度が制限されてしまうかも…
 
             [UpdateInGroup( typeof( PresentationSystemGroup ) )]
-            [UpdateAfter(typeof(MotionBoneTransform.MotionSystemGroup))]
-            [UpdateAfter(typeof(MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
-            public class DrawSystemGroup : ComponentSystemGroup
-            { }
+            [UpdateAfter(typeof(DrawPrev))]
+            //[UpdateAfter(typeof(MotionBoneTransform.MotionSystemGroup))]
+            //[UpdateAfter(typeof(MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
+            public class Draw : ComponentSystemGroup
+            {
+
+                [UpdateInGroup(typeof(Draw))]
+                public class Transform : ComponentSystemGroup
+                {
+                    [UpdateInGroup(typeof(Transform))]
+                    public class MonolithicBone : ComponentSystemGroup { }
+
+                    [UpdateInGroup(typeof(Transform))]
+                    public class MotionBone : ComponentSystemGroup { }
+                }
+
+                [UpdateInGroup(typeof(Draw))]
+                [UpdateAfter(typeof(Transform))]
+                public class Transfer : ComponentSystemGroup { }
+
+                [UpdateInGroup(typeof(Draw))]
+                [UpdateAfter(typeof(Transfer))]
+                public class Sort : ComponentSystemGroup { }
+
+                [UpdateInGroup(typeof(Draw))]
+                [UpdateAfter(typeof(Sort))]
+                public class Call : ComponentSystemGroup { }
+            }
+
+            [UpdateInGroup(typeof(PresentationSystemGroup))]
+            [UpdateAfter(typeof(Draw))]
+            public class DrawAfter : ComponentSystemGroup
+            {
+                [UpdateInGroup(typeof(DrawAfter))]
+                public class TempFree : ComponentSystemGroup { }
+            }
 
             //[UpdateInGroup( typeof( PresentationSystemGroup ) )]
             ////[DisableAutoCreation]

@@ -24,7 +24,7 @@ namespace DotsLite.Character
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class AntMoveDirectionSystem : SystemBase
     {
 

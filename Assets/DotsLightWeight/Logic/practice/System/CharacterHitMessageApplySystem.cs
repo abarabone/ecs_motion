@@ -25,7 +25,7 @@ namespace DotsLite.Character
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class CharacterHitMessageApplySystem : DependencyAccessableSystemBase, HitMessage<HitMessage>.IRecievable
     {
 

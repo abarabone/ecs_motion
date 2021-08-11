@@ -28,7 +28,7 @@ namespace DotsLite.Model
 
 
     ////[DisableAutoCreation]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup.Transform.MotionBone))]
     //[UpdateAfter(typeof(StreamToBoneSystem))]
     //public class BoneTransformLeveldSystem : SystemBase
     //{

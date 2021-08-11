@@ -28,7 +28,7 @@ namespace DotsLite.Model
     using LeveledLinkData = Bone.Lv02LinkData;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     [UpdateAfter(typeof(BoneTransformLeveld01System))]
     public class BoneTransformLeveld02System : SystemBase
     {

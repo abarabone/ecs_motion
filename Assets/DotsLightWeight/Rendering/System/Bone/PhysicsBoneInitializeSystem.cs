@@ -26,7 +26,7 @@ namespace DotsLite.Collision
     //[DisableAutoCreation]
     //[UpdateInGroup( typeof( BonePhysicsSystemGroup ) )]
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     public class PhysicsBoneInitializeSystem : DependencyAccessableSystemBase
     {
 

@@ -41,7 +41,7 @@ namespace DotsLite.Arms
     /// </summary>
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(CameraMoveSystem))]
     [UpdateAfter(typeof(WaponTriggerSystem))]
     [UpdateAfter(typeof(EmitTimeProgressSystem))]

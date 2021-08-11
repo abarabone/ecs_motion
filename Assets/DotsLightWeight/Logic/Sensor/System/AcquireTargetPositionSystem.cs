@@ -29,7 +29,7 @@ namespace DotsLite.Character
 
     //[DisableAutoCreation]
     [UpdateAfter(typeof(FindNearestTargeSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class AcquireTargetPosiionSystem : DependencyAccessableSystemBase
     {
 

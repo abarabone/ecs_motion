@@ -31,7 +31,7 @@ namespace DotsLite.Character
     // 索敵に失敗したケースも、索敵の１ケースとして任意の位置をポーリングする←未実装
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class TargetSensorWakeupAndCopyPositionSystem : DependencyAccessableSystemBase
     {
 

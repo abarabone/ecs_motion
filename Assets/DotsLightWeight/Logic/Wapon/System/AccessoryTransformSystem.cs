@@ -37,7 +37,7 @@ namespace DotsLite.Arms
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     //[UpdateBefore(typeof(MoveSpringSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateBefore(typeof(EmitBulletSystem))]
     [UpdateBefore(typeof(EmitEffectSystem))]
     public class AccessoryTransformSystem : SystemBase

@@ -8,15 +8,14 @@ namespace DotsLite.Draw
     using DotsLite.Misc;
 
     /// <summary>
-    /// ジョブで依存関係をスケジュールしてバッファを確保したいが、うまくいかない
-    /// そもそもジョブで確保できるのか、外部に渡せるのかもわからない
+    /// 
     /// </summary>
     //[DisableAutoCreation]
     ////[UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
     //////[UpdateBefore( typeof( BoneToDrawInstanceSystem ) )]
     ////[UpdateAfter(typeof(DrawCullingSystem))]
     ////[UpdateAfter(typeof(DrawCullingSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.TempAlloc))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.TempAlloc))]
     public class DrawInstanceTempBufferAllocateSystem : SystemBase
     {
 
@@ -54,8 +53,8 @@ namespace DotsLite.Draw
 
             this.Job
                 .WithBurst()
-                .WithDisposeOnCompletion( chunks )
-                .WithNativeDisableParallelForRestriction( nativeBuffers )
+                .WithDisposeOnCompletion(chunks)
+                .WithNativeDisableParallelForRestriction(nativeBuffers)
                 .WithCode(
                     () =>
                     {

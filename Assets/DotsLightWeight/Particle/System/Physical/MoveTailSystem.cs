@@ -36,7 +36,7 @@ namespace DotsLite.Particle
     using Random = Unity.Mathematics.Random;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     [UpdateBefore(typeof(MoveAccSystem))]
     public class MoveTailSystem : SystemBase
     {

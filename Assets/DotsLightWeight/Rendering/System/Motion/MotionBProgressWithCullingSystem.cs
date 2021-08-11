@@ -22,7 +22,7 @@ namespace DotsLite.CharacterMotion
     [UpdateAfter(typeof(MotionBInitializeSystem))]
     //[UpdateBefore(typeof(MotionStreamInterporationSystem))]
     [UpdateBefore(typeof(MotionStreamInterporationWithCullingSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     public class MotionProgressWithCullingSystem : SystemBase//JobComponentSystem
     {
 

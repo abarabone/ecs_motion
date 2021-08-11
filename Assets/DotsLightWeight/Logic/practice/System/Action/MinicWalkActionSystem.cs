@@ -32,7 +32,7 @@ namespace DotsLite.Character.Action
     /// </summary>
     //[DisableAutoCreation]
     //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.Logic.ObjectLogic ) )]
     public class MinicrWalkActionSystem : DependencyAccessableSystemBase
     {
 

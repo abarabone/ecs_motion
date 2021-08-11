@@ -31,7 +31,7 @@ namespace DotsLite.Draw
         /// （現在は生存管理だけ）
         /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     //[UpdateAfter(typeof())]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
     public class StructurePartDebrisMoveSystem : DependencyAccessableSystemBase

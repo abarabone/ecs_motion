@@ -38,7 +38,7 @@ namespace DotsLite.Particle
     using Unity.Physics.Authoring;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class ParticleLifeTimeSystem : DependencyAccessableSystemBase
     {
 

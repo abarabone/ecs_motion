@@ -22,7 +22,7 @@ namespace DotsLite.Draw
     //[DisableAutoCreation]
     ////[UpdateBefore(typeof(DrawCullingSystem))]
     ////[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Lod))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.Lod))]
     public class DrawLodSelectorSingleEntitySystem : SystemBase
     {
 

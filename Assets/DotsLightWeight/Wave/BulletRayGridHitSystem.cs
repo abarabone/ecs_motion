@@ -33,7 +33,7 @@ namespace DotsLite.Arms
     using DotsLite.Utilities;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.Hit))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
     public class BulletRayGridHitSystem : DependencyAccessableSystemBase

@@ -34,7 +34,7 @@ namespace DotsLite.Character
     //[DisableAutoCreation]
     [UpdateAfter(typeof(WallingMoveSystem))]
     [UpdateAfter(typeof(FreeFallWithHitSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
     public class SwitchWallingAndFreeFallWithHitSystem : DependencyAccessableSystemBase
     {

@@ -34,7 +34,7 @@ namespace DotsLite.Character
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.HitSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.Hit))]
     public class IsGroundAroundSystem : SystemBase
     {
         

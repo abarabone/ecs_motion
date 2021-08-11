@@ -33,7 +33,7 @@ namespace DotsLite.Arms
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.InitializeSystemGroup))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(WaponSelectorSystem))]
     //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]//
     public class WaponTriggerSystem : SystemBase

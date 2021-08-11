@@ -36,7 +36,7 @@ namespace DotsLite.Arms
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(WaponTriggerSystem))]
     public class EmitTimeProgressSystem : SystemBase
     {

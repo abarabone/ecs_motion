@@ -23,7 +23,7 @@ namespace DotsLite.Character
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
     ////[UpdateInGroup(typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
     //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class CameraMoveSystem : SystemBase//ComponentSystem
     {
 

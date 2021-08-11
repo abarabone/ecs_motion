@@ -26,7 +26,7 @@
 
 
 //    //[DisableAutoCreation]
-//    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
+//    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawSystemGroup.Transform.MotionBone))]
 //    [UpdateAfter(typeof(StreamToBoneSystem))]
 //    public abstract class BoneTransformLeveledSystem<TBoneLinkData> : SystemBase where TBoneLinkData:Bone.ILvLinkData
 //    {

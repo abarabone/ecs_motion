@@ -19,7 +19,7 @@ namespace DotsLite.Draw
     using DotsLite.HeightGrid;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Culling))]
+    [UpdateInGroup(typeof( SystemGroup.Presentation.Render.DrawPrev.Culling))]
     public class DrawCullingWaveGridSystem : SystemBase
     {
 

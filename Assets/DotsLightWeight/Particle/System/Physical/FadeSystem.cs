@@ -39,7 +39,7 @@ namespace DotsLite.Particle
 
     //[DisableAutoCreation]
     [UpdateAfter(typeof(ParticleLifeTimeSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class FadeSystem : SystemBase
     {
 

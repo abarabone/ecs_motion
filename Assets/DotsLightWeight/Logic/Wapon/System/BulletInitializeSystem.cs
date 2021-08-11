@@ -58,7 +58,7 @@ namespace DotsLite.Arms
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(ObjectInitializeSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateBefore(typeof(InitializeSystem))]
     public class BulletInitializeSystem : SystemBase
     {

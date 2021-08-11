@@ -20,7 +20,7 @@ namespace DotsLite.Structure
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class StructureEnvelopeHitMessageApplySystem : DependencyAccessableSystemBase, HitMessage<EnvelopeHitMessage>.IRecievable
     {
 

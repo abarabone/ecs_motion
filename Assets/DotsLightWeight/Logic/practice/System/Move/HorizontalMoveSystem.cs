@@ -28,7 +28,7 @@ namespace DotsLite.Character
     /// ジャンプが必要なら、地面と接触していればジャンプする。←暫定
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     public class HorizontalMoveSystem : SystemBase
     {
 

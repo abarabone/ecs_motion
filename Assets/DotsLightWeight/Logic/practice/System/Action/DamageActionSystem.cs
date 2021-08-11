@@ -33,7 +33,7 @@ namespace DotsLite.Character.Action
     /// </summary>
     //[DisableAutoCreation]
     [UpdateAfter(typeof(AntMoveDirectionSystem))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class DamageActionSystem : DependencyAccessableSystemBase
     {
 

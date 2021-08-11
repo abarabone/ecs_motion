@@ -21,7 +21,7 @@ namespace DotsLite.Draw
     /// </summary>
     ////[UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
     ////[UpdateAfter( typeof( DrawCullingSystem ) )]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup.Marking))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.Marking))]
     public class MarkDrawTargetBoneSystem : SystemBase
     {
 

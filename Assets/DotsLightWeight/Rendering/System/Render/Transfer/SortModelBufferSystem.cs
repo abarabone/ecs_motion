@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,25 +11,18 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsLite.Draw
 {
-    
+
     using DotsLite.Misc;
     using DotsLite.SystemGroup;
     using DotsLite.Utilities;
     using DotsLite.Dependency;
 
-    ////[DisableAutoCreation]
-    //[UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    //public class BeginDrawCsBarier : EntityCommandBufferSystem
-    //{ }
-
-
     /// <summary>
-    /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
+    /// 
     /// </summary>
-    //[DisableAutoCreation]
-    //[UpdateAfter(typeof( BeginDrawCsBarier ) )]
-    [UpdateInGroup(typeof( SystemGroup.Presentation.Render.Draw.Call ) )]
-    public class DrawMeshCsSystem : SystemBase, BarrierDependency.IRecievable
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Sort))]
+    public class SortModelBufferSystem : SystemBase, BarrierDependency.IRecievable
     {
 
 
@@ -50,7 +43,7 @@ namespace DotsLite.Draw
 
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
-            computeBuffer.SetData( nativeBuffer.AsNativeArray() );
+            computeBuffer.SetData(nativeBuffer.AsNativeArray());
 
             //Debug.Log("start");
             //for (var i = 0; i < nativeBuffer.length_; i++)
@@ -73,16 +66,16 @@ namespace DotsLite.Draw
                         var mesh = geom.Mesh;
                         var mat = geom.Material;
                         var args = shaderArg.InstanceArgumentsBuffer;
-                        
+
                         var vectorOffset = offset.pVectorOffsetPerModelInBuffer - nativeBuffer.pBuffer;
-                        mat.SetInt( "BoneVectorOffset", (int)vectorOffset );
+                        mat.SetInt("BoneVectorOffset", (int)vectorOffset);
 
                         var instanceCount = counter.InstanceCounter.Count;
-                        var argparams = new IndirectArgumentsForInstancing( mesh, instanceCount );
-                        args.SetData( ref argparams );
+                        var argparams = new IndirectArgumentsForInstancing(mesh, instanceCount);
+                        args.SetData(ref argparams);
 
                         var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
-                        Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
+                        Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, args);
                     }
                 )
                 .Run();

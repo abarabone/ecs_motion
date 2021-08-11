@@ -16,7 +16,7 @@ namespace DotsLite.CharacterMotion
 {
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MotionBoneTransform.MotionSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     public class MotionStreamProgressAndInterporationSystem : SystemBase
     {
 

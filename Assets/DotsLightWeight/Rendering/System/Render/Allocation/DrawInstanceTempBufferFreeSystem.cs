@@ -6,8 +6,8 @@ namespace DotsLite.Draw
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    [UpdateAfter( typeof( DrawMeshCsSystem ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.Render.DrawAfter.TempFree ) )]
+    //[UpdateAfter( typeof( DrawMeshCsSystem ) )]
     public class DrawInstanceTempBufferFreeSystem : SystemBase
     {
 

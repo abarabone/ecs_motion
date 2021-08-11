@@ -23,7 +23,7 @@ namespace DotsLite.Draw.disable
     /// 物理をつけたパーティクル用　暫定でのこしてある　長さ固定なのでいまいち
     /// </summary>
     [DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
+    [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw ) )]
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawMeshCsSystem))]

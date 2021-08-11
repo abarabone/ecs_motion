@@ -38,7 +38,7 @@ namespace DotsLite.Particle.disable
 
     // êÊì™ÇæÇØ Tail ÇÃÉoÅ[ÉWÉáÉì
     [DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(BulletInitializeSystem))]
     public class MoveSpringInitializeSystem : SystemBase
     {
@@ -77,7 +77,7 @@ namespace DotsLite.Particle.disable
     }
 
     [DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
+    [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     public class MoveSpringSystem : SystemBase
     {
 
