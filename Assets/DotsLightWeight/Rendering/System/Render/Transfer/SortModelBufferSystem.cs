@@ -9,6 +9,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace DotsLite.Draw
 {
@@ -47,35 +48,12 @@ namespace DotsLite.Draw
 
 
                         var length = counter.InstanceCounter.Count;
-                        using var distsq_work = new NativeArray<DistanceUnit>(length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
+                        using var distsq_work = buildSortingArray_(campos, length, offset, info);
 
-                        var pSrc = offset.pVectorOffsetPerModelInBuffer;
-                        var dst = distsq_work;
+                        sort_(distsq_work, sort);
 
-                        var src_span = info.VectorLengthInBone + offset.VectorOffsetPerInstance;
-                        var src_ofs = offset.VectorOffsetPerInstance;
-
-                        for (var i = 0; i < length; i++)
-                        {
-                            var pos = pSrc[i * src_span + src_ofs];
-
-                            dst[i] = new DistanceUnit
-                            {
-                                index = i,
-                                distsq = math.distancesq(pos.xyz, campos),
-                            };
-                        }
-
-
-                        if (sort.IsSortAsc)
-                        {
-                            distsq_work.Sort(new DistanceSortAsc());
-                        }
-                        else
-                        {
-                            distsq_work.Sort(new DistanceSortDesc());
-                        }
+                        writeBack_();
 
 
 
@@ -84,18 +62,65 @@ namespace DotsLite.Draw
                 ;
         }
 
-        //static NativeArray<DistanceUnit> buildSortSorce_()
-        //{
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe NativeArray<DistanceUnit> buildSortingArray_(
+            float3 campos, int length,
+            DrawModel.InstanceOffsetData offset, DrawModel.BoneVectorSettingData info)
+        {
+            var distsq_work = new NativeArray<DistanceUnit>(length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
-        //}
-        //static NativeArray<DistanceUnit> sort_()
-        //{
 
-        //}
-        //static void back_()
-        //{
+            var pSrc = offset.pVectorOffsetPerModelInBuffer;
+            var dst = distsq_work;
 
-        //}
+            var src_span = info.VectorLengthInBone + offset.VectorOffsetPerInstance;
+            var src_ofs = offset.VectorOffsetPerInstance;
+
+            for (var i = 0; i < distsq_work.Length; i++)
+            {
+                var pos = pSrc[i * src_span + src_ofs];
+
+                dst[i] = new DistanceUnit
+                {
+                    index = i,
+                    distsq = math.distancesq(pos.xyz, campos),
+                };
+            }
+
+            return distsq_work;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void sort_(NativeArray<DistanceUnit> distsq_work, DrawModel.SortSettingData sort)
+        {
+            if (sort.IsSortAsc)
+            {
+                distsq_work.Sort(new DistanceSortAsc());
+            }
+            else
+            {
+                distsq_work.Sort(new DistanceSortDesc());
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void writeBack_(
+            NativeArray<DistanceUnit> distsq_work,
+            DrawModel.InstanceOffsetData offset, DrawModel.BoneVectorSettingData info)
+        {
+            var src = distsq_work;
+            var pDst = offset.pVectorOffsetPerModelInBuffer;
+
+            var span = info.VectorLengthInBone + offset.VectorOffsetPerInstance;
+            var size = span * sizeof(float4);
+
+            for (var i = 0; i < distsq_work.Length; i++)
+            {
+                var isrc = src[i].index * span;
+                var idst = i * span;
+                UnsafeUtility.MemCpy(pDst + idst, pDst + isrc, size);
+            }
+        }
     }
 
     public struct DistanceUnit
