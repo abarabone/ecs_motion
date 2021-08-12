@@ -53,13 +53,13 @@ namespace DotsLite.Draw
 
                         sort_(distsq_work, sort);
 
-                        writeBack_();
+                        //writeBack_();
 
 
 
                     }
                 )
-                ;
+                .ScheduleParallel();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
