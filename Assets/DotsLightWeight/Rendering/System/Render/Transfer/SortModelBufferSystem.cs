@@ -54,22 +54,22 @@ namespace DotsLite.Draw
             var useTempJobBuffer = this.HasSingleton<DrawSystem.TransformBufferUseTempJobTag>();
 
 
-            this.Job
-                .WithBurst()
-                .WithCode(() =>
-                {
-                    if (useTempJobBuffer)
-                    {
-                        swapBuffer_(drawSysEnt, sortingBuffers, nativeBuffers);
-                    }
-                    else
-                    {
-                        var nativebuffer = nativeBuffers[drawSysEnt];
-                        var sortingbuffer = sortingBuffers[drawSysEnt];
-                        copyBuffer_(sortingbuffer, nativebuffer);
-                    }
-                })
-                .Schedule();
+            //this.Job
+            //    .WithBurst()
+            //    .WithCode(() =>
+            //    {
+            //        if (useTempJobBuffer)
+            //        {
+            //            swapBuffer_(drawSysEnt, sortingBuffers, nativeBuffers);
+            //        }
+            //        else
+            //        {
+            //            var nativebuffer = nativeBuffers[drawSysEnt];
+            //            var sortingbuffer = sortingBuffers[drawSysEnt];
+            //            copyBuffer_(sortingbuffer, nativebuffer);
+            //        }
+            //    })
+            //    .Schedule();
 
 
             this.Entities
@@ -96,26 +96,26 @@ namespace DotsLite.Draw
 
                         sort_(distsq_work, sort);
 
-                        writeBack_(distsq_work, sortingbuffer, nativebuffer, offset, info);
+                        //writeBack_(distsq_work, sortingbuffer, nativebuffer, offset, info);
                     }
                 )
                 .ScheduleParallel();
 
 
-            this.Job
-                .WithBurst()
-                .WithCode(() =>
-                {
-                    if (useTempJobBuffer)
-                    {
-                        sortingBuffers[drawSysEnt].Transforms.Dispose();
-                    }
-                    else
-                    {
+            //this.Job
+            //    .WithBurst()
+            //    .WithCode(() =>
+            //    {
+            //        if (useTempJobBuffer)
+            //        {
+            //            sortingBuffers[drawSysEnt].Transforms.Dispose();
+            //        }
+            //        else
+            //        {
 
-                    }
-                })
-                .Schedule();
+            //        }
+            //    })
+            //    .Schedule();
         }
 
 
@@ -161,6 +161,7 @@ namespace DotsLite.Draw
 
             var src_span = info.VectorLengthInBone + offset.VectorOffsetPerInstance;
             var src_ofs = offset.VectorOffsetPerInstance;
+            Debug.Log($"info {src_span} {src_ofs}");
 
             for (var i = 0; i < distsq_work.Length; i++)
             {
@@ -182,7 +183,9 @@ namespace DotsLite.Draw
             switch (sort.Order)
             {
                 case DrawModel.SortOrder.acs:
+                    for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"pre {distsq_work[i].index} {distsq_work[i].distsq}");
                     distsq_work.Sort(new DistanceSortAsc());
+                    for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"pre {distsq_work[i].index} {distsq_work[i].distsq}");
                     break;
 
                 case DrawModel.SortOrder.desc:
@@ -225,10 +228,12 @@ namespace DotsLite.Draw
 
     public struct DistanceSortAsc : IComparer<DistanceUnit>
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Compare(DistanceUnit a, DistanceUnit b) => a.distsq.CompareTo(b.distsq);
     }
     public struct DistanceSortDesc : IComparer<DistanceUnit>
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Compare(DistanceUnit a, DistanceUnit b) => b.distsq.CompareTo(a.distsq);
     }
 }
