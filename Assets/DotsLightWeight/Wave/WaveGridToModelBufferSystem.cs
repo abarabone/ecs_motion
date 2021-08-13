@@ -23,7 +23,7 @@ namespace DotsLite.Draw
     using DotsLite.HeightGrid;
     using DotsLite.Utilities;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
@@ -69,6 +69,10 @@ namespace DotsLite.Draw
         {
             using var barScope = bardep.WithDependencyScope();
 
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
+            var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
+            
+
             // length はセグメント数、頂点は + 1 個送る
 
             var gridinfo = this.gridMaster.Info;
@@ -111,7 +115,8 @@ namespace DotsLite.Draw
                     var pUnit = (float*)units.GetUnsafeReadOnlyPtr();
                     var pSrc = pUnit + (grid.GridId.x * srcw + grid.GridId.y * srcwwh);
 
-                    var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                    //var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                    var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.VectorOffsetPerModel;
                     var pDst = pModel + instanceBufferOffset;
 
                     var i = offsetInfo.VectorOffsetPerInstance;

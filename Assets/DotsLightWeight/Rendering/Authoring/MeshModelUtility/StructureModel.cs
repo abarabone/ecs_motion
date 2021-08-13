@@ -47,7 +47,7 @@ namespace DotsLite.Structure.Authoring
             const int vectorOffsetPerInstance = 4;
 
             gcs.CreateDrawModelEntityComponents
-                (this.Obj, mesh, mat, boneType, boneLength, vectorOffsetPerInstance);
+                (this.Obj, mesh, mat, boneType, boneLength, DrawModel.SortOrder.desc, vectorOffsetPerInstance);
         }
 
 

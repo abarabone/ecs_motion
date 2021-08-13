@@ -45,11 +45,15 @@ namespace DotsLite.Draw.disable
             using var barScope = bardep.WithDependencyScope();
 
 
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
+            var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
+
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
 
             this.Entities
                 .WithBurst()
+                .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.PsylliumTag>()
                 .WithNone<DrawInstance.MeshTag>()
@@ -70,7 +74,8 @@ namespace DotsLite.Draw.disable
                         var size = additional.Radius;
                         var color = math.asfloat(additional.Color.ToUint());
 
-                        var pInstance = offsetsOfDrawModel[ linker.DrawModelEntityCurrent ].pVectorOffsetPerModelInBuffer;
+                        var pInstance = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetsOfDrawModel[linker.DrawModelEntityCurrent].VectorOffsetPerModel;
+                        //var pInstance = offsetsOfDrawModel[ linker.DrawModelEntityCurrent ].pVectorOffsetPerModelInBuffer;
                         pInstance[ i + 0 ] = new float4( pos.Value, size );
                         pInstance[ i + 1 ] = new float4( pos.Value + math.forward( rot.Value ), color );
                     }

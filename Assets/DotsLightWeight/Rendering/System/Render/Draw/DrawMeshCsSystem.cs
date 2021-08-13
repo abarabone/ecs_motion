@@ -73,8 +73,8 @@ namespace DotsLite.Draw
                         var mesh = geom.Mesh;
                         var mat = geom.Material;
                         var args = shaderArg.InstanceArgumentsBuffer;
-                        
-                        var vectorOffset = offset.pVectorOffsetPerModelInBuffer - nativeBuffer.pBuffer;
+
+                        var vectorOffset = offset.VectorOffsetPerModel;
                         mat.SetInt( "BoneVectorOffset", (int)vectorOffset );
 
                         var instanceCount = counter.InstanceCounter.Count;

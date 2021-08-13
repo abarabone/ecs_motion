@@ -45,6 +45,12 @@ namespace DotsLite.Draw
 
         public struct TransformBufferUseTempJobTag : IComponentData
         { }
+
+
+        public struct SortingNativeTransformBufferData : IComponentData
+        {
+            public SimpleNativeBuffer<float4> Transforms;
+        }
     }
 
 }

@@ -61,11 +61,15 @@ namespace DotsLite.Draw
             using var barScope = bardep.WithDependencyScope();
 
 
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
+            var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
+
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
+                .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.BillBoadTag>()
                 .WithNone<DrawInstance.MeshTag>()
@@ -94,7 +98,7 @@ namespace DotsLite.Draw
                     var dir = rotdir.Direction;
                     var uvindex = math.asfloat(cursor.CalcUvIndex(touv));
 
-                    var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                    var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.VectorOffsetPerModel;
                     pModel[i + 0] = new float4(pos.Value, 1.0f);
                     pModel[i + 1] = new float4(dir * size, uvindex, color);
                 })

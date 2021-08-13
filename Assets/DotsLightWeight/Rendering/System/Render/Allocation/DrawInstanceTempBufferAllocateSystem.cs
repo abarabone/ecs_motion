@@ -60,12 +60,9 @@ namespace DotsLite.Draw
                     {
                         var totalVectorLength = sumAndSetVectorOffsets_();
 
-                        var nativeBuffer = useTempJobBuffer
-                            ? allocateNativeBuffer_(totalVectorLength)
-                            : nativeBuffers[drawSysEnt].Transforms
-                            ;
-
-                        calculateVectorOffsetPointersInBuffer_(nativeBuffer.pBuffer);
+                        if (!useTempJobBuffer) return;
+                        
+                        nativeBuffers[drawSysEnt] = allocateNativeBuffer_(totalVectorLength);
                     }
                 )
                 .Schedule();
@@ -105,33 +102,15 @@ namespace DotsLite.Draw
                 return sum;
             }
 
-            SimpleNativeBuffer<float4> allocateNativeBuffer_(int totalVectorLength)
+            DrawSystem.NativeTransformBufferData allocateNativeBuffer_(int totalVectorLength)
             {
                 var nativeBuffer
                     = new SimpleNativeBuffer<float4>(totalVectorLength, Allocator.TempJob);
 
-                nativeBuffers[drawSysEnt]
+                var nativeTransformBuffer
                     = new DrawSystem.NativeTransformBufferData { Transforms = nativeBuffer };
 
-                return nativeBuffer;
-            }
-
-            void calculateVectorOffsetPointersInBuffer_( float4* pBufferStart )
-            {
-                for( var i = 0; i < chunks.Length; i++ )
-                {
-                    var chunk = chunks[ i ];
-                    var offsets = chunk.GetNativeArray( instanceOffsetType );
-
-                    for( var j = 0; j < chunk.Count; j++ )
-                    {
-                        var offset = offsets[ j ];
-
-                        offset.pVectorOffsetPerModelInBuffer = pBufferStart + offset.VectorOffsetPerModel;
-
-                        offsets[j] = offset;
-                    }
-                }
+                return nativeTransformBuffer;
             }
 
         }

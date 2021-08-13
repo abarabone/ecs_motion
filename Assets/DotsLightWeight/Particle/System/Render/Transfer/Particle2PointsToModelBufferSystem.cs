@@ -45,11 +45,15 @@ namespace DotsLite.Draw
             using var barScope = bardep.WithDependencyScope();
 
 
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
+            var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
+
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
+                .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.PsylliumTag>()
                 .WithNone<DrawInstance.MeshTag>()
@@ -80,7 +84,7 @@ namespace DotsLite.Draw
 
                         tail.Size = size;
 
-                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.VectorOffsetPerModel;
                         pModel[i + 0] = tail.PositionAndSize;
                         pModel[i + 1] = new float4(pos.Value, color);
                     }

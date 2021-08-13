@@ -45,11 +45,15 @@ namespace DotsLite.Draw
             using var barScope = bardep.WithDependencyScope();
 
 
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
+            var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
+
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
             //var boneinfoOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneVectorSettingData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
+                .WithReadOnly(nativeBuffers)
                 //.WithAll<Structure.ShowNearTag>()
                 .WithReadOnly( offsetsOfDrawModel )
                 .ForEach(
@@ -65,7 +69,7 @@ namespace DotsLite.Draw
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
                         //var boneInfo = boneinfoOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var pDstBase = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.VectorOffsetPerModel;
                         var boneVectorLength = (int)BoneType.RT;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
                         var instanceVectorLength = boneVectorLength + offsetInfo.VectorOffsetPerInstance;
 
@@ -73,7 +77,7 @@ namespace DotsLite.Draw
                         var size = offsetInfo.VectorOffsetPerInstance * sizeof(float4);
                         fixed (void* pSrc = destruction.Destructions)
                         {
-                            UnsafeUtility.MemCpy(pDstBase + i, pSrc, size);
+                            UnsafeUtility.MemCpy(pModel + i, pSrc, size);
                         }
                     }
                 )

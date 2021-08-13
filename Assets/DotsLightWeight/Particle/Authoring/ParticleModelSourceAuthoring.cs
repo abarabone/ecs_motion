@@ -65,20 +65,20 @@ namespace DotsLite.Particle.Aurthoring
                 case ParticleMeshType.billboadUv:
                     {
                         var mesh = this.createBillboadMesh();
-                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.P1uv);
+                        initModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.P1uv);
                         addParamComponents_(conversionSystem, entity, this.Division);
                     }
                     break;
                 case ParticleMeshType.psyllium:
                     {
                         var mesh = this.createPsylliumMesh();
-                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.PtoP);
+                        initModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.PtoP);
                     }
                     break;
                 case ParticleMeshType.psylliumUv:
                     {
                         var mesh = this.createPsylliumMesh();
-                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.PtoPuv);
+                        initModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, BoneType.PtoPuv);
                         addParamComponents_(conversionSystem, entity, this.Division);
                     }
                     break;
@@ -86,14 +86,14 @@ namespace DotsLite.Particle.Aurthoring
                     {
                         var mesh = this.createLineParticleMesh_(this.LineParticleSegments + 1, isPsylliumEdge: true);
                         var bonetype = (BoneType)(this.LineParticleSegments + 1 + 1);
-                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, bonetype);
+                        initModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, bonetype);
                     }
                     break;
                 case ParticleMeshType.LineBillboad:
                     {
                         var mesh = this.createLineParticleMesh_(this.LineParticleSegments + 1, isPsylliumEdge: false);
                         var bonetype = (BoneType)(this.LineParticleSegments + 1 + 1);
-                        createModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, bonetype);
+                        initModelEntity_(conversionSystem, entity, this.gameObject, this.DrawShader, mesh, tex, bonetype);
                     }
                     break;
                 default:
@@ -103,7 +103,7 @@ namespace DotsLite.Particle.Aurthoring
             return;
 
 
-            static void createModelEntity_(
+            static void initModelEntity_(
                 GameObjectConversionSystem gcs, Entity entity, GameObject main,
                 Shader shader, Mesh mesh, Texture tex, BoneType bonetype)
             {
@@ -111,8 +111,9 @@ namespace DotsLite.Particle.Aurthoring
                 mat.mainTexture = tex;
 
                 const int boneLength = 1;
+                const DrawModel.SortOrder order = DrawModel.SortOrder.acs;
 
-                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, bonetype, boneLength);
+                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, bonetype, boneLength, order);
             }
 
             static void addParamComponents_(

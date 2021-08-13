@@ -40,11 +40,15 @@ namespace DotsLite.Draw
             using var barScope = bardep.WithDependencyScope();
 
 
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
+            var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
+
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
 
             this.Entities
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
+                .WithReadOnly(nativeBuffers)
                 .WithAll<DrawInstance.MeshTag>()
                 .WithNone<DrawInstance.BoneModelTag>()
                 .ForEach(
@@ -65,7 +69,7 @@ namespace DotsLite.Draw
                         var lengthOfInstance = 2 + offsetInfo.VectorOffsetPerInstance;// あとでスケールに対応させる
                         var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorOffsetPerInstance;
 
-                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                        var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.VectorOffsetPerModel;
                         pModel[i + 0] = new float4(pos.Value, 1.0f);
                         pModel[i + 1] = rot.Value.value;
 

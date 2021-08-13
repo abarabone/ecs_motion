@@ -47,7 +47,7 @@ namespace DotsLite.Draw
         }
         public unsafe struct InstanceOffsetData : IComponentData
         {
-            public float4* pVectorOffsetPerModelInBuffer;
+            //public float4* pVectorOffsetPerModelInBuffer;
             public int VectorOffsetPerModel;
             public int VectorOffsetPerInstance;
         }
@@ -60,7 +60,13 @@ namespace DotsLite.Draw
 
         public struct SortSettingData : IComponentData
         {
-            public bool IsSortAsc;
+            public SortOrder Order;
+        }
+        public enum SortOrder
+        {
+            none,
+            acs,
+            desc,
         }
 
 
