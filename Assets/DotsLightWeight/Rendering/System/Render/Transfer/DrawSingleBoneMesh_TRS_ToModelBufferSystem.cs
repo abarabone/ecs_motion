@@ -43,7 +43,7 @@ namespace DotsLite.Draw
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>( isReadOnly: true );
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>( isReadOnly: true );
 
             this.Entities
                 .WithBurst()
@@ -66,10 +66,10 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var lengthOfInstance = 2 + offsetInfo.VectorOffsetPerInstance;// あとでスケールに対応させる
-                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.VectorOffsetPerInstance;
+                        var lengthOfInstance = 2 + offsetInfo.OptionalVectorLengthPerInstance;// あとでスケールに対応させる
+                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.OptionalVectorLengthPerInstance;
 
-                        var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.VectorOffsetPerModel;
+                        var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
                         pModel[i + 0] = new float4(pos.Value, 1.0f);
                         pModel[i + 1] = rot.Value.value;
 

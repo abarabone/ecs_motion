@@ -89,7 +89,7 @@ namespace DotsLite.Draw
             var units = this.gridMaster.Nexts;
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
@@ -107,7 +107,7 @@ namespace DotsLite.Draw
                     var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
                     const int vectorLength = (int)BoneType.T;
-                    var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
+                    var lengthOfInstance = offsetInfo.OptionalVectorLengthPerInstance + vectorLength;
                     var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
 
@@ -116,10 +116,10 @@ namespace DotsLite.Draw
                     var pSrc = pUnit + (grid.GridId.x * srcw + grid.GridId.y * srcwwh);
 
                     //var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                    var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.VectorOffsetPerModel;
+                    var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
                     var pDst = pModel + instanceBufferOffset;
 
-                    var i = offsetInfo.VectorOffsetPerInstance;
+                    var i = offsetInfo.OptionalVectorLengthPerInstance;
 
 
                     pDst[i - 1] = float4.zero;// これをやらないと、シェーダーの　dot(vh, mask) で不定値が入ってしまう

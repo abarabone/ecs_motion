@@ -48,7 +48,7 @@ namespace DotsLite.Draw
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>(isReadOnly: true);
             //var boneinfoOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneVectorSettingData>(isReadOnly: true);
 
             this.Entities
@@ -69,12 +69,12 @@ namespace DotsLite.Draw
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
                         //var boneInfo = boneinfoOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.VectorOffsetPerModel;
+                        var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
                         var boneVectorLength = (int)BoneType.RT;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
-                        var instanceVectorLength = boneVectorLength + offsetInfo.VectorOffsetPerInstance;
+                        var instanceVectorLength = boneVectorLength + offsetInfo.OptionalVectorLengthPerInstance;
 
                         var i = target.DrawInstanceId * instanceVectorLength;
-                        var size = offsetInfo.VectorOffsetPerInstance * sizeof(float4);
+                        var size = offsetInfo.OptionalVectorLengthPerInstance * sizeof(float4);
                         fixed (void* pSrc = destruction.Destructions)
                         {
                             UnsafeUtility.MemCpy(pModel + i, pSrc, size);

@@ -63,7 +63,7 @@ namespace DotsLite.Draw
                 .ForEach(
                     (
                         in DrawModel.InstanceCounterData counter,
-                        in DrawModel.InstanceOffsetData offset,
+                        in DrawModel.VectorIndexData offset,
                         in DrawModel.ComputeArgumentsBufferData shaderArg,
                         in DrawModel.GeometryData geom
                     ) =>
@@ -74,7 +74,7 @@ namespace DotsLite.Draw
                         var mat = geom.Material;
                         var args = shaderArg.InstanceArgumentsBuffer;
 
-                        var vectorOffset = offset.VectorOffsetPerModel;
+                        var vectorOffset = offset.ModelStartIndex;
                         mat.SetInt( "BoneVectorOffset", (int)vectorOffset );
 
                         var instanceCount = counter.InstanceCounter.Count;

@@ -12,7 +12,7 @@ Shader "Custom/Psyllium ptop add"
 		
 		Blend SrcAlpha One
 		Lighting Off
-        ZWrite Off
+        //ZWrite Off
         Fog
 		{
 			Mode Off

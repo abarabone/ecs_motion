@@ -54,32 +54,34 @@ namespace DotsLite.Draw
             var useTempJobBuffer = this.HasSingleton<DrawSystem.TransformBufferUseTempJobTag>();
 
 
-            //this.Job
-            //    .WithBurst()
-            //    .WithCode(() =>
-            //    {
-            //        if (useTempJobBuffer)
-            //        {
-            //            swapBuffer_(drawSysEnt, sortingBuffers, nativeBuffers);
-            //        }
-            //        else
-            //        {
-            //            var nativebuffer = nativeBuffers[drawSysEnt];
-            //            var sortingbuffer = sortingBuffers[drawSysEnt];
-            //            copyBuffer_(sortingbuffer, nativebuffer);
-            //        }
-            //    })
-            //    .Schedule();
+            this.Job
+                .WithName("prev")
+                .WithBurst()
+                .WithCode(() =>
+                {
+                    if (useTempJobBuffer)
+                    {
+                        swapBuffer_(drawSysEnt, sortingBuffers, nativeBuffers);
+                    }
+                    else
+                    {
+                        var nativebuffer = nativeBuffers[drawSysEnt];
+                        var sortingbuffer = sortingBuffers[drawSysEnt];
+                        copyBuffer_(sortingbuffer, nativebuffer);
+                    }
+                })
+                .Schedule();
 
 
             this.Entities
+                .WithName("sort")
                 .WithBurst()
                 .WithReadOnly(sortingBuffers)
                 .WithReadOnly(nativeBuffers)
                 .ForEach(
                     (
                         in DrawModel.InstanceCounterData counter,
-                        in DrawModel.InstanceOffsetData offset,
+                        in DrawModel.VectorIndexData offset,
                         in DrawModel.BoneVectorSettingData info,
                         in DrawModel.SortSettingData sort
                     ) =>
@@ -96,26 +98,27 @@ namespace DotsLite.Draw
 
                         sort_(distsq_work, sort);
 
-                        //writeBack_(distsq_work, sortingbuffer, nativebuffer, offset, info);
+                        writeBack_(distsq_work, sortingbuffer, nativebuffer, offset, info);
                     }
                 )
                 .ScheduleParallel();
 
 
-            //this.Job
-            //    .WithBurst()
-            //    .WithCode(() =>
-            //    {
-            //        if (useTempJobBuffer)
-            //        {
-            //            sortingBuffers[drawSysEnt].Transforms.Dispose();
-            //        }
-            //        else
-            //        {
+            this.Job
+                .WithName("after")
+                .WithBurst()
+                .WithCode(() =>
+                {
+                    if (useTempJobBuffer)
+                    {
+                        sortingBuffers[drawSysEnt].Transforms.Dispose();
+                    }
+                    else
+                    {
 
-            //        }
-            //    })
-            //    .Schedule();
+                    }
+                })
+                .Schedule();
         }
 
 
@@ -134,7 +137,7 @@ namespace DotsLite.Draw
 
             nativeBuffers[drawSysEnt] = new DrawSystem.NativeTransformBufferData
             {
-                Transforms = new SimpleNativeBuffer<float4>(srcbuffer.Length)
+                Transforms = new SimpleNativeBuffer<float4>(srcbuffer.Length, Allocator.TempJob)
             };
         }
 
@@ -151,17 +154,17 @@ namespace DotsLite.Draw
         static unsafe NativeArray<DistanceUnit> buildSortingArray_(
             float3 campos, int length,
             DrawSystem.SortingNativeTransformBufferData sortingSource,
-            DrawModel.InstanceOffsetData offset, DrawModel.BoneVectorSettingData info)
+            DrawModel.VectorIndexData offset, DrawModel.BoneVectorSettingData info)
         {
             var distsq_work = new NativeArray<DistanceUnit>(length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
 
-            var pSrc = sortingSource.Transforms.pBuffer + offset.VectorOffsetPerModel;
+            var pSrc = sortingSource.Transforms.pBuffer + offset.ModelStartIndex;
             var dst = distsq_work;
 
-            var src_span = info.VectorLengthInBone + offset.VectorOffsetPerInstance;
-            var src_ofs = offset.VectorOffsetPerInstance;
-            Debug.Log($"info {src_span} {src_ofs}");
+            var src_span = offset.OptionalVectorLengthPerInstance + info.VectorLengthInBone * info.BoneLength;
+            var src_ofs = offset.OptionalVectorLengthPerInstance;
+            //Debug.Log($"info {src_span} {src_ofs}");
 
             for (var i = 0; i < distsq_work.Length; i++)
             {
@@ -180,12 +183,11 @@ namespace DotsLite.Draw
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void sort_(NativeArray<DistanceUnit> distsq_work, DrawModel.SortSettingData sort)
         {
+            //for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"pre {distsq_work[i].index} {distsq_work[i].distsq}");
             switch (sort.Order)
             {
                 case DrawModel.SortOrder.acs:
-                    for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"pre {distsq_work[i].index} {distsq_work[i].distsq}");
                     distsq_work.Sort(new DistanceSortAsc());
-                    for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"pre {distsq_work[i].index} {distsq_work[i].distsq}");
                     break;
 
                 case DrawModel.SortOrder.desc:
@@ -195,6 +197,7 @@ namespace DotsLite.Draw
                 default:
                     break;
             }
+            //for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"aft {distsq_work[i].index} {distsq_work[i].distsq}");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -202,14 +205,15 @@ namespace DotsLite.Draw
             NativeArray<DistanceUnit> distsq_work,
             DrawSystem.SortingNativeTransformBufferData sortingSource,
             DrawSystem.NativeTransformBufferData nativebuffer,
-            DrawModel.InstanceOffsetData offset, DrawModel.BoneVectorSettingData info)
+            DrawModel.VectorIndexData offset, DrawModel.BoneVectorSettingData info)
         {
             var src = distsq_work;
-            var pSrc = sortingSource.Transforms.pBuffer + offset.VectorOffsetPerModel;
-            var pDst = nativebuffer.Transforms.pBuffer + offset.VectorOffsetPerModel;
+            var pSrc = sortingSource.Transforms.pBuffer + offset.ModelStartIndex;
+            var pDst = nativebuffer.Transforms.pBuffer + offset.ModelStartIndex;
 
-            var span = info.VectorLengthInBone + offset.VectorOffsetPerInstance;
+            var span = offset.OptionalVectorLengthPerInstance + info.VectorLengthInBone * info.BoneLength;
             var size = span * sizeof(float4);
+            //Debug.Log($"{offset.OptionalVectorLengthPerInstance} {info.VectorLengthInBone} {info.BoneLength} / {span} {size}");
 
             for (var i = 0; i < distsq_work.Length; i++)
             {
@@ -229,7 +233,7 @@ namespace DotsLite.Draw
     public struct DistanceSortAsc : IComparer<DistanceUnit>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Compare(DistanceUnit a, DistanceUnit b) => a.distsq.CompareTo(b.distsq);
+        public int Compare(DistanceUnit a, DistanceUnit b) => b.distsq.CompareTo(a.distsq);
     }
     public struct DistanceSortDesc : IComparer<DistanceUnit>
     {

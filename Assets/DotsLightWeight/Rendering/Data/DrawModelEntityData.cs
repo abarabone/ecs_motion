@@ -45,11 +45,11 @@ namespace DotsLite.Draw
         {
             public ThreadSafeCounter<Persistent> InstanceCounter;
         }
-        public unsafe struct InstanceOffsetData : IComponentData
+        public unsafe struct VectorIndexData : IComponentData
         {
             //public float4* pVectorOffsetPerModelInBuffer;
-            public int VectorOffsetPerModel;
-            public int VectorOffsetPerInstance;
+            public int ModelStartIndex;
+            public int OptionalVectorLengthPerInstance;
         }
 
         public struct BoundingBoxData : IComponentData

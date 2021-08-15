@@ -65,7 +65,7 @@ namespace DotsLite.Draw
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
@@ -98,7 +98,7 @@ namespace DotsLite.Draw
                     var dir = rotdir.Direction;
                     var uvindex = math.asfloat(cursor.CalcUvIndex(touv));
 
-                    var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.VectorOffsetPerModel;
+                    var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
                     pModel[i + 0] = new float4(pos.Value, 1.0f);
                     pModel[i + 1] = new float4(dir * size, uvindex, color);
                 })

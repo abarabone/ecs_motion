@@ -86,7 +86,7 @@ namespace DotsLite.Draw.Authoring
                 {
                     typeof( DrawModel.BoneVectorSettingData ),
                     typeof( DrawModel.InstanceCounterData ),
-                    typeof( DrawModel.InstanceOffsetData ),
+                    typeof( DrawModel.VectorIndexData ),
                     typeof( DrawModel.BoundingBoxData ),
                     typeof( DrawModel.GeometryData ),
                     typeof( DrawModel.ComputeArgumentsBufferData )
@@ -124,9 +124,9 @@ namespace DotsLite.Draw.Authoring
                     }
                 );
                 em_.SetComponentData(ent_,
-                    new DrawModel.InstanceOffsetData
+                    new DrawModel.VectorIndexData
                     {
-                        VectorOffsetPerInstance = instanceDataVectorLength_,
+                        OptionalVectorLengthPerInstance = instanceDataVectorLength_,
                     }
                 );
 
