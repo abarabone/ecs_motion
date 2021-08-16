@@ -72,7 +72,7 @@ namespace DotsLite.Draw.disable
                         var i = target.DrawInstanceId * 2;
 
                         var size = additional.Radius;
-                        var color = math.asfloat(additional.Color.ToUint());
+                        var color = math.asfloat(additional.BlendColor.ToUint());
 
                         var pInstance = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetsOfDrawModel[linker.DrawModelEntityCurrent].ModelStartIndex;
                         //var pInstance = offsetsOfDrawModel[ linker.DrawModelEntityCurrent ].pVectorOffsetPerModelInBuffer;

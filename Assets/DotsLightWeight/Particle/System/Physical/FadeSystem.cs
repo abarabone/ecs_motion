@@ -84,7 +84,7 @@ namespace DotsLite.Particle
 
                         fade.Current = math.clamp(next, fade.Min, fade.Max);
 
-                        data.Color.a = (byte)(fade.Current * 255);
+                        data.BlendColor.a = (byte)(fade.Current * 255);
                     }
                 )
                 .ScheduleParallel();

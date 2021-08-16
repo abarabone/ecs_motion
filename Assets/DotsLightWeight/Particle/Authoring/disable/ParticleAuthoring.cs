@@ -98,7 +98,7 @@ namespace DotsLite.Particle.Aurthoring.disable
             var gcs = conversionSystem;
 
 
-            gcs.AddParticleComponents(this.gameObject, this.ModelSource, this.ParticleColor, this.StartRadius);
+            gcs.AddParticleComponents(this.gameObject, this.ModelSource, this.ParticleColor, this.ParticleColor, this.StartRadius);
 
             switch (this.ModelSource.ParticleType)
             {

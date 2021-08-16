@@ -81,7 +81,7 @@ namespace DotsLite.Draw
                         var i = instanceBufferOffset + offsetInfo.OptionalVectorLengthPerInstance;
 
                         var size = additional.Radius;
-                        var color = math.asfloat(additional.Color.ToUint());
+                        var color = math.asfloat(additional.BlendColor.ToUint());
 
                         var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
 
@@ -90,7 +90,7 @@ namespace DotsLite.Draw
                         for (var j = 0; j < tails.Length; j++)
                         {
                             //pModel[i + j] = tails[j].PositionAndColor;
-                            pModel[i + j] = tails[j].Position.As_float4(math.asfloat(additional.Color.ToUint()));// 暫定
+                            pModel[i + j] = tails[j].Position.As_float4(math.asfloat(additional.BlendColor.ToUint()));// 暫定
                         }
                     }
                 )

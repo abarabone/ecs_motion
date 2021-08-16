@@ -31,7 +31,7 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
-            var alphaFirst = this.GetComponent<ParticleAuthoring>().ParticleColor.a;
+            var alphaFirst = this.GetComponent<ParticleAuthoring>().BlendColor.a;
             gcs.AddAlphaFadeComponents(this.gameObject, alphaFirst, this.AlphaLast, this.AlphaTimeSpanSec);
         }
     }

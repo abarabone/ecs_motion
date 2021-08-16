@@ -88,7 +88,7 @@ namespace DotsLite.Draw
                     ////var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
 
                     var size = additional.Radius;
-                    var color = math.asfloat(additional.Color.ToUint());
+                    var color = math.asfloat(additional.BlendColor.ToUint());
                     var uvindex = math.asfloat(cursor.CalcUvIndex(touv));
 
                     var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;

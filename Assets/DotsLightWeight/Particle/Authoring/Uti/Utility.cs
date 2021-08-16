@@ -34,7 +34,8 @@ namespace DotsLite.Particle.Aurthoring
 
 
         public static void AddParticleComponents(
-            this GameObjectConversionSystem gcs, GameObject main, ParticleModelSourceAuthoring modelSource, Color32 color, float radius)
+            this GameObjectConversionSystem gcs, GameObject main, ParticleModelSourceAuthoring modelSource,
+            Color32 blendcolor, Color32 addcolor, float radius)
         {
             var em = gcs.DstEntityManager;
 
@@ -70,7 +71,8 @@ namespace DotsLite.Particle.Aurthoring
             em.SetComponentData(mainEntity,
                 new Particle.AdditionalData
                 {
-                    Color = color,
+                    BlendColor = blendcolor,
+                    AddColor = addcolor,
                     Radius = radius,
                 }
             );

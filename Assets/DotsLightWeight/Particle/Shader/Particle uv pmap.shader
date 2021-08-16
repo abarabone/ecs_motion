@@ -70,7 +70,7 @@ Shader "Custom/Particle uv pmap"
                 const half2 roted = mul(rot, v.vertex.xy);
 				const half4 lvt = half4(roted, 0, 0);
                 //const half3 wpos = buf0.xyz;
-                const half4 wpos = buf0;
+                const half4 wpos = half4(buf0.xyz, 1.0f);
 
                 //const half4 vpos = mul(UNITY_MATRIX_V, half4(wpos, 1));
                 //o.vertex = mul(UNITY_MATRIX_P, vpos + lvt);
@@ -82,14 +82,16 @@ Shader "Custom/Particle uv pmap"
 
                 const half2 uvspan = UvParam.xy;
                 const half2 uvtick = uvspan * 0.01f;// / 100;
-                const uint4 uvp = asuint(buf1.zzzz) >> uint4(0, 8, 16, 24) & 255;
+                const uint4 uvp = asuint(buf0.wwww) >> uint4(0, 8, 16, 24) & 255;
                 const half2 uvofs = uvp.xy * uvspan + uvtick;
                 const half2 uvsize = uvp.zw * uvspan - uvtick - uvtick;
                 o.uv = uvofs + v.uv * uvsize;
 
                 //const fixed4 color = float4(asuint(buf1.wwww) >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
-                const fixed4 color = float4(asuint(buf1.wwww) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
-                o.color = color;// * 6;
+                const fixed4 blendcolor = float4(asuint(buf1.wwww) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
+                const fixed4 addcolor = float4(asuint(buf1.zzzz) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
+	            o.color = fixed4(blendcolor.rgb * blendcolor.a, blendcolor.a);  //事前乗算
+	            o.color.rgb += addcolor.rgb * (1 + addcolor.a * 6);             //加算成分追加
                 
                 UNITY_TRANSFER_FOG(o, o.vertex);
 
@@ -99,10 +101,13 @@ Shader "Custom/Particle uv pmap"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.uv);
-                col.rgba *= i.color;
-                UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
+                fixed4 o;
+
+                fixed4 tex = tex2D(_MainTex, i.uv);
+                tex.rgb *= tex.a;
+                o = tex * i.color;
+                UNITY_APPLY_FOG(i.fogCoord, o);
+                return o;
             }
             ENDCG
         }

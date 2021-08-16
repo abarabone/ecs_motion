@@ -94,7 +94,7 @@ namespace DotsLite.Particle.Aurthoring.disable
                 em.SetComponentData( mainEntity,
                     new Particle.AdditionalData
                     {
-                        Color = this.Material.color,
+                        BlendColor = this.Material.color,
                         Radius = this.DefaultRadius,
                     }
                 );

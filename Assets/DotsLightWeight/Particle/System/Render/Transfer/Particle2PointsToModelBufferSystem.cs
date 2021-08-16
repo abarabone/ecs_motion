@@ -80,7 +80,7 @@ namespace DotsLite.Draw
                         var i = instanceBufferOffset + offsetInfo.OptionalVectorLengthPerInstance;
 
                         var size = additional.Radius;
-                        var color = math.asfloat(additional.Color.ToUint());
+                        var color = math.asfloat(additional.BlendColor.ToUint());
 
                         tail.Size = size;
 

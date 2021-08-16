@@ -27,7 +27,8 @@ namespace DotsLite.Particle.Aurthoring
         public ParticleModelSourceAuthoring ModelSource;
 
 
-        public Color ParticleColor = new Color(1, 1, 1, 1);
+        public Color BlendColor = new Color(1, 1, 1, 1);
+        public Color AddColor = new Color(0, 0, 0, 0);
         public float Radius;
 
         [Header("Texture Cell Option")]
@@ -54,7 +55,7 @@ namespace DotsLite.Particle.Aurthoring
             var gcs = conversionSystem;
 
 
-            gcs.AddParticleComponents(this.gameObject, this.ModelSource, this.ParticleColor, this.Radius);
+            gcs.AddParticleComponents(this.gameObject, this.ModelSource, this.BlendColor, this.AddColor, this.Radius);
 
             var useSpring = this.GetComponent<SpringComponent>() != null;
             if (!useSpring) gcs.AddMoveTagComponents(this.gameObject);
