@@ -6,7 +6,7 @@ Shader "Custom/Particle uv pmap"
     {
 		[NoScaleOffset]
         _MainTex ("Texture", 2D) = "white" {}
-		_Color("Main Color", Color) = (1,1,1)
+		//_Color("Main Color", Color) = (1,1,1)
     }
     SubShader
     {
@@ -94,7 +94,6 @@ Shader "Custom/Particle uv pmap"
 	            o.color.rgb += addcolor.rgb * (1 + addcolor.a * 6);             //加算成分追加
                 
                 UNITY_TRANSFER_FOG(o, o.vertex);
-
                 return o;
             }
 
@@ -106,7 +105,7 @@ Shader "Custom/Particle uv pmap"
                 fixed4 tex = tex2D(_MainTex, i.uv);
                 tex.rgb *= tex.a;
                 o = tex * i.color;
-                UNITY_APPLY_FOG(i.fogCoord, o);
+                ////UNITY_APPLY_FOG(i.fogCoord, o);
                 return o;
             }
             ENDCG
