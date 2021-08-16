@@ -12,7 +12,7 @@ Shader "Custom/Particle uv pmap"
     {
 		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
-        Blend SrcAlpha OneMinusSrcAlpha
+        Blend One OneMinusSrcAlpha
 		Lighting Off
         ZWrite Off
         Fog
@@ -88,8 +88,8 @@ Shader "Custom/Particle uv pmap"
                 o.uv = uvofs + v.uv * uvsize;
 
                 //const fixed4 color = float4(asuint(buf1.wwww) >> uint4(24, 16, 8, 0) & 255) * (1. / 255.);
-                const fixed4 blendcolor = float4(asuint(buf1.wwww) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
                 const fixed4 addcolor = float4(asuint(buf1.zzzz) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
+                const fixed4 blendcolor = float4(asuint(buf1.wwww) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
 	            o.color = fixed4(blendcolor.rgb * blendcolor.a, blendcolor.a);  //事前乗算
 	            o.color.rgb += addcolor.rgb * (1 + addcolor.a * 6);             //加算成分追加
                 
