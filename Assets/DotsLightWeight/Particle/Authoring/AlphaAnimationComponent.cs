@@ -21,8 +21,13 @@ namespace DotsLite.Particle.Aurthoring
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public float AlphaTimeSpanSec;
-        public float AlphaLast;
+        public float BlendAlphaTimeSpanSec;
+        public float BlendAlphaLast;
+        public float DelayBlend;
+
+        public float AdditiveAlphaTimeSpanSec;
+        public float AdditiveAlphaLast;
+        public float DelayAdditive;
 
         /// <summary>
         /// 
@@ -31,8 +36,11 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
-            var alphaFirst = this.GetComponent<ParticleAuthoring>().BlendColor.a;
-            gcs.AddAlphaFadeComponents(this.gameObject, alphaFirst, this.AlphaLast, this.AlphaTimeSpanSec);
+            var blendAlphaFirst = this.GetComponent<ParticleAuthoring>().BlendColor.a;
+            gcs.AddBlendAlphaFadeComponents(this.gameObject, blendAlphaFirst, this.BlendAlphaLast, this.BlendAlphaTimeSpanSec, this.DelayBlend);
+
+            var additiveAlphaFirst = this.GetComponent<ParticleAuthoring>().AddColor.a;
+            gcs.AddAdditiveAlphaFadeComponents(this.gameObject, additiveAlphaFirst, this.AdditiveAlphaLast, this.AdditiveAlphaTimeSpanSec, this.DelayAdditive);
         }
     }
 }

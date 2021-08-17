@@ -95,7 +95,7 @@ Shader "Custom/Psyllium ptop uv pmap"
                 const fixed4 addcolor = float4(asuint(buf2.zzzz) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
                 const fixed4 blendcolor = float4(asuint(buf2.wwww) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
 	            o.color = fixed4(blendcolor.rgb * blendcolor.a, blendcolor.a);  //事前乗算
-	            o.color.rgb += addcolor.rgb * (1 + addcolor.a * 6);             //加算成分追加
+	            o.color.rgb += addcolor.rgb * addcolor.a;                       //加算成分追加
                 UNITY_TRANSFER_FOG(o, o.vertex);
 
                 return o;
@@ -105,16 +105,13 @@ Shader "Custom/Psyllium ptop uv pmap"
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 o;
-
+                
                 fixed4 tex = tex2D(_MainTex, i.uv);
+                UNITY_APPLY_FOG(i.fogCoord, tex.rgb);
                 tex.rgb *= tex.a;
                 o = tex * i.color;
-                UNITY_APPLY_FOG(i.fogCoord, o);
+                //UNITY_APPLY_FOG(i.fogCoord, o);// 事前乗算アルファに対応させる方法がわからない
                 return o;
-                //fixed4 col = tex2D(_MainTex, i.uv);
-                //col.rgba *= i.color;
-                //UNITY_APPLY_FOG(i.fogCoord, col);
-                //return col;
             }
             ENDCG
         }

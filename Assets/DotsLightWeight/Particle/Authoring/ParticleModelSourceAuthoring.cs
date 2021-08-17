@@ -109,6 +109,7 @@ namespace DotsLite.Particle.Aurthoring
             {
                 var mat = new Material(shader);
                 mat.mainTexture = tex;
+                //mat.EnableKeyword("_ALPHAPREMULTIPLY_ON");
 
                 const int boneLength = 1;
                 const DrawModel.SortOrder order = DrawModel.SortOrder.acs;

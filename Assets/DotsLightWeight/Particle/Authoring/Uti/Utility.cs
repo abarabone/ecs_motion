@@ -315,25 +315,52 @@ namespace DotsLite.Particle.Aurthoring
         }
 
 
-        public static void AddAlphaFadeComponents(
-            this GameObjectConversionSystem gcs, GameObject main, float firstValue, float lastValue, float timeSpan)
+        public static void AddBlendAlphaFadeComponents(
+            this GameObjectConversionSystem gcs, GameObject main,
+            float firstValue, float lastValue, float timeSpan, float delay)
         {
             var em = gcs.DstEntityManager;
 
             var mainEntity = gcs.GetPrimaryEntity(main);
 
             var types = new ComponentTypes(
-                typeof(BillBoad.AlphaFadeData)
+                typeof(BillBoad.BlendAlphaFadeData)
             );
             em.AddComponents(mainEntity, types);
 
             em.SetComponentData(mainEntity,
-                new BillBoad.AlphaFadeData
+                new BillBoad.BlendAlphaFadeData
                 {
                     Current = firstValue,
                     Min = math.min(firstValue, lastValue),
                     Max = math.max(firstValue, lastValue),
                     SpeedPerSec = (lastValue - firstValue) / timeSpan,
+                    Delay = delay,
+                }
+            );
+        }
+
+        public static void AddAdditiveAlphaFadeComponents(
+            this GameObjectConversionSystem gcs, GameObject main,
+            float firstValue, float lastValue, float timeSpan, float delay)
+        {
+            var em = gcs.DstEntityManager;
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(
+                typeof(BillBoad.AdditiveAlphaFadeData)
+            );
+            em.AddComponents(mainEntity, types);
+
+            em.SetComponentData(mainEntity,
+                new BillBoad.AdditiveAlphaFadeData
+                {
+                    Current = firstValue,
+                    Min = math.min(firstValue, lastValue),
+                    Max = math.max(firstValue, lastValue),
+                    SpeedPerSec = (lastValue - firstValue) / timeSpan,
+                    Delay = delay,
                 }
             );
         }

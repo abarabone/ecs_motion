@@ -71,20 +71,37 @@ namespace DotsLite.Particle
             //    .ScheduleParallel();
 
             this.Entities
+                .WithName("Initialize")
+                .WithAll<Particle.LifeTimeInitializeTag>()
+                .WithBurst()
+                .ForEach(
+                    (
+                        ref BillBoad.RotationData rot
+                    ) =>
+                    {
+
+
+
+                    }
+                )
+                .ScheduleParallel();
+
+            this.Entities
                 .WithName("Fade")
                 .WithBurst()
                 .ForEach(
                     (
                         ref Particle.AdditionalData data,
-                        ref BillBoad.AlphaFadeData fade
+                        ref BillBoad.BlendAlphaFadeData blend,
+                        ref BillBoad.AdditiveAlphaFadeData additive
                     ) =>
                     {
 
-                        var next = fade.Current + fade.SpeedPerSec * dt;
+                        var next = blend.Current + blend.SpeedPerSec * dt;
 
-                        fade.Current = math.clamp(next, fade.Min, fade.Max);
+                        blend.Current = math.clamp(next, blend.Min, blend.Max);
 
-                        data.BlendColor.a = (byte)(fade.Current * 255);
+                        data.BlendColor.a = (byte)(blend.Current * 255);
                     }
                 )
                 .ScheduleParallel();
