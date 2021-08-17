@@ -95,7 +95,7 @@ namespace DotsLite.Draw
 
                     var size = additional.Radius;
                     var blendcolor = math.asfloat(additional.BlendColor.ToUint());
-                    var addcolor = math.asfloat(additional.AddColor.ToUint());
+                    var addcolor = math.asfloat(additional.AdditiveColor.ToUint());
                     var dir = rotdir.Direction;
                     var uvindex = math.asfloat(cursor.CalcUvIndex(touv));
 

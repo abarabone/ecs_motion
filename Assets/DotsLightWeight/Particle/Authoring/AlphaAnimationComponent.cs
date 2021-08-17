@@ -21,10 +21,12 @@ namespace DotsLite.Particle.Aurthoring
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
 
+        [Header("Blend")]
         public float BlendAlphaTimeSpanSec;
         public float BlendAlphaLast;
         public float DelayBlend;
 
+        [Header("Additive")]
         public float AdditiveAlphaTimeSpanSec;
         public float AdditiveAlphaLast;
         public float DelayAdditive;

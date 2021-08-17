@@ -72,7 +72,7 @@ namespace DotsLite.Particle.Aurthoring
                 new Particle.AdditionalData
                 {
                     BlendColor = blendcolor,
-                    AddColor = addcolor,
+                    AdditiveColor = addcolor,
                     Radius = radius,
                 }
             );
@@ -331,11 +331,14 @@ namespace DotsLite.Particle.Aurthoring
             em.SetComponentData(mainEntity,
                 new BillBoad.BlendAlphaFadeData
                 {
-                    Current = firstValue,
-                    Min = math.min(firstValue, lastValue),
-                    Max = math.max(firstValue, lastValue),
-                    SpeedPerSec = (lastValue - firstValue) / timeSpan,
-                    Delay = delay,
+                    Fader = new BillBoad.AnimationUnit
+                    {
+                        Current = firstValue,
+                        Min = math.min(firstValue, lastValue),
+                        Max = math.max(firstValue, lastValue),
+                        SpeedPerSec = (lastValue - firstValue) / timeSpan,
+                        Delay = delay,
+                    }
                 }
             );
         }
@@ -356,11 +359,14 @@ namespace DotsLite.Particle.Aurthoring
             em.SetComponentData(mainEntity,
                 new BillBoad.AdditiveAlphaFadeData
                 {
-                    Current = firstValue,
-                    Min = math.min(firstValue, lastValue),
-                    Max = math.max(firstValue, lastValue),
-                    SpeedPerSec = (lastValue - firstValue) / timeSpan,
-                    Delay = delay,
+                    Fader = new BillBoad.AnimationUnit
+                    {
+                        Current = firstValue,
+                        Min = math.min(firstValue, lastValue),
+                        Max = math.max(firstValue, lastValue),
+                        SpeedPerSec = (lastValue - firstValue) / timeSpan,
+                        Delay = delay,
+                    }
                 }
             );
         }

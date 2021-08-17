@@ -14,6 +14,7 @@ using UnityEngine.Assertions.Must;
 using Unity.Physics;
 using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
+using System.Runtime.CompilerServices;
 
 
 namespace DotsLite.Particle
@@ -71,22 +72,6 @@ namespace DotsLite.Particle
             //    .ScheduleParallel();
 
             this.Entities
-                .WithName("Initialize")
-                .WithAll<Particle.LifeTimeInitializeTag>()
-                .WithBurst()
-                .ForEach(
-                    (
-                        ref BillBoad.RotationData rot
-                    ) =>
-                    {
-
-
-
-                    }
-                )
-                .ScheduleParallel();
-
-            this.Entities
                 .WithName("Fade")
                 .WithBurst()
                 .ForEach(
@@ -96,15 +81,24 @@ namespace DotsLite.Particle
                         ref BillBoad.AdditiveAlphaFadeData additive
                     ) =>
                     {
+                        data.BlendColor.a = fade_(ref blend.Fader, dt);
 
-                        var next = blend.Current + blend.SpeedPerSec * dt;
-
-                        blend.Current = math.clamp(next, blend.Min, blend.Max);
-
-                        data.BlendColor.a = (byte)(blend.Current * 255);
+                        data.AdditiveColor.a = fade_(ref additive.Fader, dt);
                     }
                 )
                 .ScheduleParallel();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static byte fade_(ref BillBoad.AnimationUnit fader, float dt)
+        {
+
+            fader.Delay -= dt;
+            var speed = math.select(fader.SpeedPerSec, 0, fader.Delay > 0);
+
+            var next = fader.Current + speed * dt;
+            fader.Current = math.clamp(next, fader.Min, fader.Max);
+            return (byte)(fader.Current * 255);
         }
 
     }

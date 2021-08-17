@@ -51,7 +51,7 @@ namespace DotsLite.Particle
         public struct AdditionalData : IComponentData
         {
             public Color32 BlendColor;
-            public Color32 AddColor;
+            public Color32 AdditiveColor;
             public float Radius;
         }
 
