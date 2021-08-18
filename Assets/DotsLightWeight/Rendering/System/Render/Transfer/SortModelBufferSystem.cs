@@ -67,7 +67,7 @@ namespace DotsLite.Draw
                     {
                         var nativebuffer = nativeBuffers[drawSysEnt];
                         var sortingbuffer = sortingBuffers[drawSysEnt];
-                        copyBuffer_(sortingbuffer, nativebuffer);
+                        //copyBuffer_(sortingbuffer, nativebuffer, offset, info, );
                     }
                 })
                 .Schedule();
@@ -93,12 +93,40 @@ namespace DotsLite.Draw
                         var nativebuffer = nativeBuffers[drawSysEnt];
                         var sortingbuffer = sortingBuffers[drawSysEnt];
 
-                        using var distsq_work =
-                            buildSortingArray_(campos, length, sortingbuffer, offset, info);
+                        switch (sort.Order)
+                        {
+                            case DrawModel.SortOrder.acs:
+                                {
+                                    using var distsq_work =
+                                        buildSortingArray_(campos, length, sortingbuffer, offset, info);
 
-                        sort_(distsq_work, sort);
+                                    distsq_work.Sort(new DistanceSortAsc());
 
-                        writeBack_(distsq_work, sortingbuffer, nativebuffer, offset, info);
+                                    writeBack_(distsq_work, sortingbuffer, nativebuffer, offset, info);
+                                }
+                                break;
+
+                            case DrawModel.SortOrder.desc:
+                                {
+                                    using var distsq_work =
+                                        buildSortingArray_(campos, length, sortingbuffer, offset, info);
+
+                                    distsq_work.Sort(new DistanceSortDesc());
+
+                                    writeBack_(distsq_work, sortingbuffer, nativebuffer, offset, info);
+                                }
+                                break;
+
+                            default:
+                                copyModelArray_(sortingbuffer, nativebuffer, offset, info, length);
+                                break;
+                        }
+                        //using var distsq_work =
+                        //    buildSortingArray_(campos, length, sortingbuffer, offset, info);
+
+                        //sort_(distsq_work, sort);
+
+                        //writeBack_(distsq_work, sortingbuffer, nativebuffer, offset, info);
                     }
                 )
                 .ScheduleParallel();
@@ -115,7 +143,7 @@ namespace DotsLite.Draw
                     }
                     else
                     {
-
+                        // ‚È‚É‚à‚µ‚È‚¢
                     }
                 })
                 .Schedule();
@@ -141,12 +169,30 @@ namespace DotsLite.Draw
             };
         }
 
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static unsafe void copyBuffer_(
+        //    DrawSystem.SortingNativeTransformBufferData sortingSource,
+        //    DrawSystem.NativeTransformBufferData nativebuffer,
+        //    int )
+        //{
+        //    var pSrc = nativebuffer.Transforms.pBuffer;
+        //    var pDst = sortingSource.Transforms.pBuffer;
+        //    var totalsize = sizeof(float4) * nativebuffer.Transforms.Length;
+        //    UnsafeUtility.MemCpy(pDst, pSrc, totalsize);
+        //}
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void copyBuffer_(
+        static unsafe void copyBuffer_(
             DrawSystem.SortingNativeTransformBufferData sortingSource,
-            DrawSystem.NativeTransformBufferData nativebuffer)
+            DrawSystem.NativeTransformBufferData nativebuffer,
+            DrawModel.VectorIndexData offset, DrawModel.BoneVectorSettingData info, int length)
         {
+            var pSrc = nativebuffer.Transforms.pBuffer + offset.ModelStartIndex;
+            var pDst = sortingSource.Transforms.pBuffer + offset.ModelStartIndex;
 
+            var span = offset.OptionalVectorLengthPerInstance + info.VectorLengthInBone * info.BoneLength;
+            var size = span * sizeof(float4);
+
+            UnsafeUtility.MemCpy(pDst, pSrc, size * length);
         }
 
 
@@ -180,25 +226,25 @@ namespace DotsLite.Draw
             return distsq_work;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void sort_(NativeArray<DistanceUnit> distsq_work, DrawModel.SortSettingData sort)
-        {
-            //for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"pre {distsq_work[i].index} {distsq_work[i].distsq}");
-            switch (sort.Order)
-            {
-                case DrawModel.SortOrder.acs:
-                    distsq_work.Sort(new DistanceSortAsc());
-                    break;
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static void sort_(NativeArray<DistanceUnit> distsq_work, DrawModel.SortSettingData sort)
+        //{
+        //    //for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"pre {distsq_work[i].index} {distsq_work[i].distsq}");
+        //    switch (sort.Order)
+        //    {
+        //        case DrawModel.SortOrder.acs:
+        //            distsq_work.Sort(new DistanceSortAsc());
+        //            break;
 
-                case DrawModel.SortOrder.desc:
-                    distsq_work.Sort(new DistanceSortDesc());
-                    break;
+        //        case DrawModel.SortOrder.desc:
+        //            distsq_work.Sort(new DistanceSortDesc());
+        //            break;
 
-                default:
-                    break;
-            }
-            //for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"aft {distsq_work[i].index} {distsq_work[i].distsq}");
-        }
+        //        default:
+        //            break;
+        //    }
+        //    //for (var i = 0; i < distsq_work.Length; i++) Debug.Log($"aft {distsq_work[i].index} {distsq_work[i].distsq}");
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void writeBack_(
@@ -222,6 +268,21 @@ namespace DotsLite.Draw
                 UnsafeUtility.MemCpy(pDst + idst, pSrc + isrc, size);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void copyModelArray_(
+            DrawSystem.SortingNativeTransformBufferData sortingSource,
+            DrawSystem.NativeTransformBufferData nativebuffer,
+            DrawModel.VectorIndexData offset, DrawModel.BoneVectorSettingData info, int length)
+        {
+            var pSrc = sortingSource.Transforms.pBuffer + offset.ModelStartIndex;
+            var pDst = nativebuffer.Transforms.pBuffer + offset.ModelStartIndex;
+
+            var span = offset.OptionalVectorLengthPerInstance + info.VectorLengthInBone * info.BoneLength;
+            var size = span * sizeof(float4);
+
+            UnsafeUtility.MemCpy(pDst, pSrc, size * length);
+        }
     }
 
     public struct DistanceUnit
@@ -238,6 +299,6 @@ namespace DotsLite.Draw
     public struct DistanceSortDesc : IComparer<DistanceUnit>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Compare(DistanceUnit a, DistanceUnit b) => b.distsq.CompareTo(a.distsq);
+        public int Compare(DistanceUnit a, DistanceUnit b) => a.distsq.CompareTo(b.distsq);
     }
 }

@@ -39,7 +39,7 @@ namespace DotsLite.Draw
 
         public struct TransformBufferInfoData : IComponentData
         {
-            public int VectorLength;
+            public int CurrentVectorLength;
         }
 
 

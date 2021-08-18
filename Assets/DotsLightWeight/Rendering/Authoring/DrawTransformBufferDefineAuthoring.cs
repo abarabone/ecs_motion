@@ -48,7 +48,7 @@ namespace DotsLite.Draw.Authoring
             static void initNativeBufferComponent_(
                 Entity ent, EntityManager em, int vectorLength, bool useTempBuffer)
             {
-                if (!useTempBuffer) return;
+                if (useTempBuffer) return;
 
                 em.SetComponentData(ent,
                     new DrawSystem.NativeTransformBufferData
@@ -75,14 +75,12 @@ namespace DotsLite.Draw.Authoring
                 Entity ent, EntityManager em, int vectorLength, bool useTempBuffer, bool useSort)
             {
                 if (!useSort) return;
+                if (useTempBuffer) return;
 
                 em.SetComponentData(ent,
                     new DrawSystem.SortingNativeTransformBufferData
                     {
-                        Transforms = useTempBuffer
-                            ? new SimpleNativeBuffer<float4>(vectorLength, Allocator.Persistent)
-                            : new SimpleNativeBuffer<float4>()
-                            ,
+                        Transforms = new SimpleNativeBuffer<float4>(vectorLength, Allocator.Persistent)
                     }
                 );
             }
