@@ -35,7 +35,8 @@ namespace DotsLite.Draw.Authoring
             {
                 var types = new List<ComponentType>() {
                     typeof(DrawSystem.ComputeTransformBufferData),
-                    typeof(DrawSystem.NativeTransformBufferData)
+                    typeof(DrawSystem.NativeTransformBufferData),
+                    typeof(DrawSystem.TransformBufferInfoData)// temp buffer Ç≈ÇÕåªèÛïsóv
                 };
                 if (useTempBuffer) types.Add(typeof(DrawSystem.TransformBufferUseTempJobTag));
                 if (useSort) types.Add(typeof(DrawSystem.SortingNativeTransformBufferData));

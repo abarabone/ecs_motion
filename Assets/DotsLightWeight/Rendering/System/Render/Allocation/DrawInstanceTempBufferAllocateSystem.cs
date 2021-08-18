@@ -41,6 +41,7 @@ namespace DotsLite.Draw
         protected override unsafe void OnUpdate()
         {
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
+            var bufferinfos = this.GetComponentDataFromEntity<DrawSystem.TransformBufferInfoData>();
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
             var instanceOffsetType = this.GetComponentTypeHandle<DrawModel.VectorIndexData>();
@@ -59,6 +60,10 @@ namespace DotsLite.Draw
                     () =>
                     {
                         var totalVectorLength = sumAndSetVectorOffsets_();
+                        bufferinfos[drawSysEnt] = new DrawSystem.TransformBufferInfoData
+                        {
+                            CurrentVectorLength = totalVectorLength
+                        };// temp buffer では現状不要
 
                         if (!useTempJobBuffer) return;
                         

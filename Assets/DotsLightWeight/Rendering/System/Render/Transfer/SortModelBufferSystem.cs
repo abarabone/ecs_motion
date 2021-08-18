@@ -49,6 +49,7 @@ namespace DotsLite.Draw
 
             var sortingBuffers = this.GetComponentDataFromEntity<DrawSystem.SortingNativeTransformBufferData>();
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
+            var bufferinfos = this.GetComponentDataFromEntity<DrawSystem.TransformBufferInfoData>(isReadOnly: true);
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
             var useTempJobBuffer = this.HasSingleton<DrawSystem.TransformBufferUseTempJobTag>();
@@ -57,6 +58,7 @@ namespace DotsLite.Draw
             this.Job
                 .WithName("prev")
                 .WithBurst()
+                .WithReadOnly(bufferinfos)
                 .WithCode(() =>
                 {
                     if (useTempJobBuffer)
@@ -67,7 +69,8 @@ namespace DotsLite.Draw
                     {
                         var nativebuffer = nativeBuffers[drawSysEnt];
                         var sortingbuffer = sortingBuffers[drawSysEnt];
-                        //copyBuffer_(sortingbuffer, nativebuffer, offset, info, );
+                        var info = bufferinfos[drawSysEnt];
+                        copyBuffer_(sortingbuffer, nativebuffer, info.CurrentVectorLength);
                     }
                 })
                 .Schedule();
@@ -169,30 +172,15 @@ namespace DotsLite.Draw
             };
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static unsafe void copyBuffer_(
-        //    DrawSystem.SortingNativeTransformBufferData sortingSource,
-        //    DrawSystem.NativeTransformBufferData nativebuffer,
-        //    int )
-        //{
-        //    var pSrc = nativebuffer.Transforms.pBuffer;
-        //    var pDst = sortingSource.Transforms.pBuffer;
-        //    var totalsize = sizeof(float4) * nativebuffer.Transforms.Length;
-        //    UnsafeUtility.MemCpy(pDst, pSrc, totalsize);
-        //}
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void copyBuffer_(
             DrawSystem.SortingNativeTransformBufferData sortingSource,
-            DrawSystem.NativeTransformBufferData nativebuffer,
-            DrawModel.VectorIndexData offset, DrawModel.BoneVectorSettingData info, int length)
+            DrawSystem.NativeTransformBufferData nativebuffer, int vectorlength)
         {
-            var pSrc = nativebuffer.Transforms.pBuffer + offset.ModelStartIndex;
-            var pDst = sortingSource.Transforms.pBuffer + offset.ModelStartIndex;
+            var pSrc = nativebuffer.Transforms.pBuffer;
+            var pDst = sortingSource.Transforms.pBuffer;
 
-            var span = offset.OptionalVectorLengthPerInstance + info.VectorLengthInBone * info.BoneLength;
-            var size = span * sizeof(float4);
-
-            UnsafeUtility.MemCpy(pDst, pSrc, size * length);
+            UnsafeUtility.MemCpy(pDst, pSrc, sizeof(float4) * vectorlength);
         }
 
 
