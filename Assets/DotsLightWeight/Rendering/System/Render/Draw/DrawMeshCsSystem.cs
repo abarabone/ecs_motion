@@ -50,7 +50,8 @@ namespace DotsLite.Draw
 
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
-            computeBuffer.SetData( nativeBuffer.AsNativeArray() );
+            var bufferInfo = this.GetSingleton<DrawSystem.TransformBufferInfoData>();
+            computeBuffer.SetData( nativeBuffer.AsNativeArray(bufferInfo.CurrentVectorLength) );
 
             //Debug.Log("start");
             //for (var i = 0; i < nativeBuffer.length_; i++)
