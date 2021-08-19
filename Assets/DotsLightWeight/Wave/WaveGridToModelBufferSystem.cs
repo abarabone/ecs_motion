@@ -23,7 +23,7 @@ namespace DotsLite.Draw
     using DotsLite.HeightGrid;
     using DotsLite.Utilities;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
@@ -69,7 +69,7 @@ namespace DotsLite.Draw
         {
             using var barScope = bardep.WithDependencyScope();
 
-            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
             
 
@@ -94,6 +94,7 @@ namespace DotsLite.Draw
             this.Entities
                 .WithBurst()
                 .WithAll<Height.GridLevel0Tag>()
+                .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 .ForEach((
                     in DrawInstance.TargetWorkData target,
