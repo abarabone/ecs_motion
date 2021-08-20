@@ -19,6 +19,7 @@ namespace DotsLite.Particle.Aurthoring.disable
 
     /// <summary>
     /// 他メッシュとのアトラス対応は後回し
+    /// コンポーネントにわけるため廃止予定
     /// </summary>
     public class ParticleAuthoring :
         ParticleAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
@@ -98,7 +99,7 @@ namespace DotsLite.Particle.Aurthoring.disable
             var gcs = conversionSystem;
 
 
-            gcs.AddParticleComponents(this.gameObject, this.ModelSource, this.ParticleColor, this.StartRadius);
+            gcs.AddParticleComponents(this.gameObject, this.ModelSource, this.ParticleColor, this.ParticleColor, this.StartRadius);
 
             switch (this.ModelSource.ParticleType)
             {
@@ -133,7 +134,7 @@ namespace DotsLite.Particle.Aurthoring.disable
 
             if (this.UseLifeTime) gcs.AddLifeTimeComponents(this.gameObject, this.LifeTimeSec);
             if (this.UseAnimationRadius) gcs.AddSizingComponents(this.gameObject, this.StartRadius, this.EndRadius, this.EndTimeForRadius);
-            if (this.UseAnimationAlpha) gcs.AddAlphaFadeComponents(this.gameObject, this.ParticleColor.a, this.AlphaLast, this.AlphaTimeSpanSec);
+            if (this.UseAnimationAlpha) gcs.AddBlendAlphaFadeComponents(this.gameObject, this.ParticleColor.a, this.AlphaLast, this.AlphaTimeSpanSec, 0);
             if (this.UseAnimationRotation) gcs.AddRotationComponents(this.gameObject, this.MinRotationDegreesPerSec, this.MaxRotationDegreesPerSec);
             if (this.UseMoveEasing) gcs.AddEasingComponents(this.gameObject, this.EasingRatePerSec, this.MinDistanceOffset, this.MaxDistanceOffset, this.UseDirectionNormal, this.DirectionOffset);
 

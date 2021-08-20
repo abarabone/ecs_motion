@@ -17,6 +17,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.CharacterMotion.Authoring;
     using DotsLite.Geometry;
     using DotsLite.Utilities;
+    using DotsLite.Draw;
 
     [Serializable]
     public class CharacterModel<TIdx, TVtx> : IMeshModel, IMeshModelLod
@@ -78,7 +79,7 @@ namespace DotsLite.Model.Authoring
             const BoneType BoneType = BoneType.RT;
             var boneLength = Bones.Length;
 
-            gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength);
+            gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
         }
 
         public (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner

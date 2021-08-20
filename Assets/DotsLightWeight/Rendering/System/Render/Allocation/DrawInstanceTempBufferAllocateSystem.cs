@@ -31,7 +31,7 @@ namespace DotsLite.Draw
 
             this.drawQuery = this.GetEntityQuery(
                 ComponentType.ReadOnly<DrawModel.InstanceCounterData>(),
-                ComponentType.ReadWrite<DrawModel.InstanceOffsetData>(),
+                ComponentType.ReadWrite<DrawModel.VectorIndexData>(),
                 ComponentType.ReadOnly<DrawModel.BoneVectorSettingData>()
             );
         }
@@ -41,9 +41,10 @@ namespace DotsLite.Draw
         protected override unsafe void OnUpdate()
         {
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>();
+            var bufferinfos = this.GetComponentDataFromEntity<DrawSystem.TransformBufferInfoData>();
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
-            var instanceOffsetType = this.GetComponentTypeHandle<DrawModel.InstanceOffsetData>();
+            var instanceOffsetType = this.GetComponentTypeHandle<DrawModel.VectorIndexData>();
             var instanceCounterType = this.GetComponentTypeHandle<DrawModel.InstanceCounterData>();// isReadOnly: true );
             var boneInfoType = this.GetComponentTypeHandle<DrawModel.BoneVectorSettingData>();// isReadOnly: true );
 
@@ -59,13 +60,14 @@ namespace DotsLite.Draw
                     () =>
                     {
                         var totalVectorLength = sumAndSetVectorOffsets_();
+                        bufferinfos[drawSysEnt] = new DrawSystem.TransformBufferInfoData
+                        {
+                            CurrentVectorLength = totalVectorLength
+                        };// temp buffer では現状不要
 
-                        var nativeBuffer = useTempJobBuffer
-                            ? allocateNativeBuffer_(totalVectorLength)
-                            : nativeBuffers[drawSysEnt].Transforms
-                            ;
-
-                        calculateVectorOffsetPointersInBuffer_(nativeBuffer.pBuffer);
+                        if (!useTempJobBuffer) return;
+                        
+                        nativeBuffers[drawSysEnt] = allocateNativeBuffer_(totalVectorLength);
                     }
                 )
                 .Schedule();
@@ -86,12 +88,12 @@ namespace DotsLite.Draw
 
                     for( var j = 0; j < chunk.Count; j++ )
                     {
-                        var instanceOffset = offsets[j].VectorOffsetPerInstance;
+                        var instanceOffset = offsets[j].OptionalVectorLengthPerInstance;
 
-                        offsets[ j ] = new DrawModel.InstanceOffsetData
+                        offsets[ j ] = new DrawModel.VectorIndexData
                         {
-                            VectorOffsetPerModel = sum,
-                            VectorOffsetPerInstance = instanceOffset,
+                            ModelStartIndex = sum,
+                            OptionalVectorLengthPerInstance = instanceOffset,
                         };
 
                         var instanceCount = counters[ j ].InstanceCounter.Count;
@@ -105,33 +107,15 @@ namespace DotsLite.Draw
                 return sum;
             }
 
-            SimpleNativeBuffer<float4> allocateNativeBuffer_(int totalVectorLength)
+            DrawSystem.NativeTransformBufferData allocateNativeBuffer_(int totalVectorLength)
             {
                 var nativeBuffer
                     = new SimpleNativeBuffer<float4>(totalVectorLength, Allocator.TempJob);
 
-                nativeBuffers[drawSysEnt]
+                var nativeTransformBuffer
                     = new DrawSystem.NativeTransformBufferData { Transforms = nativeBuffer };
 
-                return nativeBuffer;
-            }
-
-            void calculateVectorOffsetPointersInBuffer_( float4* pBufferStart )
-            {
-                for( var i = 0; i < chunks.Length; i++ )
-                {
-                    var chunk = chunks[ i ];
-                    var offsets = chunk.GetNativeArray( instanceOffsetType );
-
-                    for( var j = 0; j < chunk.Count; j++ )
-                    {
-                        var offset = offsets[ j ];
-
-                        offset.pVectorOffsetPerModelInBuffer = pBufferStart + offset.VectorOffsetPerModel;
-
-                        offsets[j] = offset;
-                    }
-                }
+                return nativeTransformBuffer;
             }
 
         }

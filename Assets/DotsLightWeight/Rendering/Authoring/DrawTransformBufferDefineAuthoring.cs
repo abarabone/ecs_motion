@@ -14,53 +14,43 @@ namespace DotsLite.Draw.Authoring
 
         public int TransformBufferMaxVectorLength;
 
-        public bool UseTempJobNativeBuffer;
-
+        public bool UseTempJobNativeBuffer;// コンピュートバッファーは TransformBufferMaxVectorLength 固定なのでいまいち感ある
+        public bool UseDrawInstanceSort;
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            switch (this.UseTempJobNativeBuffer)
-            {
-                case true:
-                    initEntityTempJob_(entity, dstManager);
-                    initComputeBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength);
-                    removeComponents_(entity, dstManager);
-                    break;
+            initEntity_(entity, dstManager, this.UseTempJobNativeBuffer, this.UseDrawInstanceSort);
+            
+            initNativeBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength, this.UseTempJobNativeBuffer);
+            
+            initComputeBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength);
 
-                case false:
-                    initEntityStatic_(entity, dstManager);
-                    initNativeBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength);
-                    initComputeBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength);
-                    removeComponents_(entity, dstManager);
-                    break;
-            }
+            initSortingBufferComponent_(entity, dstManager, this.TransformBufferMaxVectorLength, this.UseTempJobNativeBuffer, this.UseDrawInstanceSort);
+
             return;
 
 
-            static void initEntityTempJob_(Entity ent, EntityManager em)
+            static void initEntity_(Entity ent, EntityManager em, bool useTempBuffer, bool useSort)
             {
-                var types = new ComponentTypes(
-                    typeof(DrawSystem.TransformBufferUseTempJobTag),
+                var types = new List<ComponentType>() {
                     typeof(DrawSystem.ComputeTransformBufferData),
-                    typeof(DrawSystem.NativeTransformBufferData)
-                );
-                em.AddComponents(ent, types);
+                    typeof(DrawSystem.NativeTransformBufferData),
+                    typeof(DrawSystem.TransformBufferInfoData)// temp buffer では現状不要
+                };
+                if (useTempBuffer) types.Add(typeof(DrawSystem.TransformBufferUseTempJobTag));
+                if (useSort) types.Add(typeof(DrawSystem.SortingNativeTransformBufferData));
+
+                em.AddComponents(ent, new ComponentTypes(types.ToArray()));
                 em.SetName_(ent, "draw system");
 
             }
-            static void initEntityStatic_(Entity ent, EntityManager em)
-            {
-                var types = new ComponentTypes(
-                    typeof(DrawSystem.ComputeTransformBufferData),
-                    typeof(DrawSystem.NativeTransformBufferData)
-                );
-                em.AddComponents(ent, types);
-                em.SetName_(ent, "draw system");
-            }
 
-            static void initNativeBufferComponent_(Entity ent, EntityManager em, int vectorLength)
+            static void initNativeBufferComponent_(
+                Entity ent, EntityManager em, int vectorLength, bool useTempBuffer)
             {
+                if (useTempBuffer) return;
+
                 em.SetComponentData(ent,
                     new DrawSystem.NativeTransformBufferData
                     {
@@ -82,12 +72,20 @@ namespace DotsLite.Draw.Authoring
                 );
             }
 
-            static void removeComponents_(Entity ent, EntityManager em)
+            static void initSortingBufferComponent_(
+                Entity ent, EntityManager em, int vectorLength, bool useTempBuffer, bool useSort)
             {
-                em.RemoveComponent<Translation>(ent);
-                em.RemoveComponent<Rotation>(ent);
-                em.RemoveComponent<LocalToWorld>(ent);
+                if (!useSort) return;
+                if (useTempBuffer) return;
+
+                em.SetComponentData(ent,
+                    new DrawSystem.SortingNativeTransformBufferData
+                    {
+                        Transforms = new SimpleNativeBuffer<float4>(vectorLength, Allocator.Persistent)
+                    }
+                );
             }
+
         }
     }
 }

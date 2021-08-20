@@ -76,14 +76,25 @@ namespace DotsLite.Particle
             public float MaxSpeed;
         }
 
-        public struct AlphaFadeData : IComponentData
+        public struct BlendAlphaFadeData : IComponentData
+        {
+            public AnimationUnit Fader;
+        }
+        public struct AdditiveAlphaFadeData : IComponentData
+        {
+            public AnimationUnit Fader;
+        }
+
+        public struct AnimationUnit
         {
             public float Current;
             public float SpeedPerSec;
             public float Min;
             public float Max;
+            public float Delay;
         }
     }
+
 
     //public static partial class BillBoadCustom
     //{

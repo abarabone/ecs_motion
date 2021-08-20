@@ -46,11 +46,15 @@ namespace DotsLite.Draw
             using var barScope = bardep.WithDependencyScope();
 
 
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
+            var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
+
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
+                .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithAll<DrawInstance.LineParticleTag>()
                 .WithAll<Spring.StatesData>()//
@@ -71,22 +75,22 @@ namespace DotsLite.Draw
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
                         var vectorLength = tails.Length + 1;
-                        var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
+                        var lengthOfInstance = offsetInfo.OptionalVectorLengthPerInstance + vectorLength;
                         var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
-                        var i = instanceBufferOffset + offsetInfo.VectorOffsetPerInstance;
+                        var i = instanceBufferOffset + offsetInfo.OptionalVectorLengthPerInstance;
 
                         var size = additional.Radius;
-                        var color = math.asfloat(additional.Color.ToUint());
+                        var color = math.asfloat(additional.BlendColor.ToUint());
 
-                        var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
-                        
+                        var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
+
                         pModel[i++] = new float4(size);
 
                         for (var j = 0; j < tails.Length; j++)
                         {
                             //pModel[i + j] = tails[j].PositionAndColor;
-                            pModel[i + j] = tails[j].Position.As_float4(math.asfloat(additional.Color.ToUint()));// 暫定
+                            pModel[i + j] = tails[j].Position.As_float4(math.asfloat(additional.BlendColor.ToUint()));// 暫定
                         }
                     }
                 )

@@ -52,8 +52,9 @@ namespace DotsLite.Particle.Aurthoring.disable
 
                 const BoneType BoneType = BoneType.RT;
                 const int boneLength = 1;
+                const DrawModel.SortOrder order = DrawModel.SortOrder.acs;
 
-                var modelEntity_ = gcs.CreateDrawModelEntityComponents( main, mesh, mat, BoneType, boneLength );
+                var modelEntity_ = gcs.CreateDrawModelEntityComponents( main, mesh, mat, BoneType, boneLength, order );
             }
 
             void initPsylliumEntityComponents_( GameObjectConversionSystem gcs, GameObject main )
@@ -93,7 +94,7 @@ namespace DotsLite.Particle.Aurthoring.disable
                 em.SetComponentData( mainEntity,
                     new Particle.AdditionalData
                     {
-                        Color = this.Material.color,
+                        BlendColor = this.Material.color,
                         Radius = this.DefaultRadius,
                     }
                 );

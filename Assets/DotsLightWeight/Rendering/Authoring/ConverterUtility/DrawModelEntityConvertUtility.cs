@@ -22,6 +22,7 @@ namespace DotsLite.Draw.Authoring
     using DotsLite.Geometry;
     using DotsLite.Model;
     using Unity.Physics;
+    using DotsLite.Draw;
 
     using Material = UnityEngine.Material;
 
@@ -32,26 +33,31 @@ namespace DotsLite.Draw.Authoring
         static public Entity CreateDrawModelEntityComponents(
             this GameObjectConversionSystem gcs, GameObject topGameObject,
             Mesh mesh, Material mat,
-            BoneType BoneType, int boneLength, int instanceDataVectorLength = 0)
+            BoneType BoneType, int boneLength,
+            DrawModel.SortOrder order,// = DrawModel.SortOrder.none)
+            int instanceDataVectorLength = 0)
         {
             var em = gcs.DstEntityManager;
             var ent = em.CreateEntity();
-            return InitDrawModelEntityComponents(gcs, topGameObject, ent, mesh, mat, BoneType, boneLength, instanceDataVectorLength);
+            return InitDrawModelEntityComponents(
+                gcs, topGameObject, ent, mesh, mat, BoneType, boneLength, order, instanceDataVectorLength);
         }
 
 
         static public Entity InitDrawModelEntityComponents(
             this GameObjectConversionSystem gcs, GameObject topGameObject, Entity drawModelEntity,
             Mesh mesh, Material mat,
-            BoneType BoneType, int boneLength, int instanceDataVectorLength = 0)
+            BoneType BoneType, int boneLength,
+            DrawModel.SortOrder order,// = DrawModel.SortOrder.none
+            int instanceDataVectorLength = 0)
         {
 
             var em = gcs.DstEntityManager;
 
             setShaderProps_( em, mat, mesh, boneLength * (int)BoneType + instanceDataVectorLength );
 
-            addComponents_( gcs, topGameObject, drawModelEntity);
-            initInfomationData_( em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength );
+            addComponents_( gcs, topGameObject, drawModelEntity, order != DrawModel.SortOrder.none);
+            initInfomationData_( em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength, order );
             initResourceData_(em, drawModelEntity, mat, mesh);
 
             return drawModelEntity;
@@ -71,20 +77,22 @@ namespace DotsLite.Draw.Authoring
             }
 
 
-            static void addComponents_(GameObjectConversionSystem gcs, GameObject top, Entity drawModelEntity)
+            static void addComponents_(GameObjectConversionSystem gcs, GameObject top, Entity drawModelEntity, bool useSort)
             {
                 var em = gcs.DstEntityManager;
 
 
-                var types = new ComponentTypes(new ComponentType[] {
+                var types = new List<ComponentType>
+                {
                     typeof( DrawModel.BoneVectorSettingData ),
                     typeof( DrawModel.InstanceCounterData ),
-                    typeof( DrawModel.InstanceOffsetData ),
+                    typeof( DrawModel.VectorIndexData ),
                     typeof( DrawModel.BoundingBoxData ),
                     typeof( DrawModel.GeometryData ),
                     typeof( DrawModel.ComputeArgumentsBufferData )
-                });
-                em.AddComponents(drawModelEntity, types);
+                };
+                if (useSort) types.Add(typeof(DrawModel.SortSettingData));
+                em.AddComponents(drawModelEntity, new ComponentTypes(types.ToArray()));
 
                 gcs.AddToModelEntityDictionary(top, drawModelEntity);
 
@@ -95,7 +103,7 @@ namespace DotsLite.Draw.Authoring
 
             void initInfomationData_(
                 EntityManager em_, Entity ent_,
-                Bounds bbox_, int boneLength_, BoneType BoneType_, int instanceDataVectorLength_)
+                Bounds bbox_, int boneLength_, BoneType BoneType_, int instanceDataVectorLength_, DrawModel.SortOrder order)
             {
 
                 em_.SetComponentData(ent_,
@@ -116,11 +124,16 @@ namespace DotsLite.Draw.Authoring
                     }
                 );
                 em_.SetComponentData(ent_,
-                    new DrawModel.InstanceOffsetData
+                    new DrawModel.VectorIndexData
                     {
-                        VectorOffsetPerInstance = instanceDataVectorLength_,
+                        OptionalVectorLengthPerInstance = instanceDataVectorLength_,
                     }
                 );
+
+                if (order != DrawModel.SortOrder.none)
+                {
+                    em_.SetComponentData(ent_, new DrawModel.SortSettingData { Order = order });
+                }
             }
 
             void initResourceData_

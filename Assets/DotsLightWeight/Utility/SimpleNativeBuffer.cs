@@ -54,6 +54,7 @@ namespace DotsLite.Draw
 
     public static class SimpleNativeBufferUtility
     {
+
         static public unsafe NativeArray<T> AsNativeArray<T>(ref this SimpleNativeBuffer<T> buffer)
             where T : unmanaged
         {
@@ -67,5 +68,21 @@ namespace DotsLite.Draw
 
             return na;
         }
+
+
+        static public unsafe NativeArray<T> AsNativeArray<T>(ref this SimpleNativeBuffer<T> buffer, int length)
+            where T : unmanaged
+        {
+            var na = NativeArrayUnsafeUtility
+                .ConvertExistingDataToNativeArray<T>(buffer.pBuffer, length, Allocator.None);
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            NativeArrayUnsafeUtility
+                .SetAtomicSafetyHandle(ref na, AtomicSafetyHandle.GetTempUnsafePtrSliceHandle());
+#endif
+
+            return na;
+        }
+
     }
 }

@@ -34,7 +34,8 @@ namespace DotsLite.Particle.Aurthoring
 
 
         public static void AddParticleComponents(
-            this GameObjectConversionSystem gcs, GameObject main, ParticleModelSourceAuthoring modelSource, Color32 color, float radius)
+            this GameObjectConversionSystem gcs, GameObject main, ParticleModelSourceAuthoring modelSource,
+            Color32 blendcolor, Color32 addcolor, float radius)
         {
             var em = gcs.DstEntityManager;
 
@@ -70,7 +71,8 @@ namespace DotsLite.Particle.Aurthoring
             em.SetComponentData(mainEntity,
                 new Particle.AdditionalData
                 {
-                    Color = color,
+                    BlendColor = blendcolor,
+                    AdditiveColor = addcolor,
                     Radius = radius,
                 }
             );
@@ -313,25 +315,58 @@ namespace DotsLite.Particle.Aurthoring
         }
 
 
-        public static void AddAlphaFadeComponents(
-            this GameObjectConversionSystem gcs, GameObject main, float firstValue, float lastValue, float timeSpan)
+        public static void AddBlendAlphaFadeComponents(
+            this GameObjectConversionSystem gcs, GameObject main,
+            float firstValue, float lastValue, float timeSpan, float delay)
         {
             var em = gcs.DstEntityManager;
 
             var mainEntity = gcs.GetPrimaryEntity(main);
 
             var types = new ComponentTypes(
-                typeof(BillBoad.AlphaFadeData)
+                typeof(BillBoad.BlendAlphaFadeData)
             );
             em.AddComponents(mainEntity, types);
 
             em.SetComponentData(mainEntity,
-                new BillBoad.AlphaFadeData
+                new BillBoad.BlendAlphaFadeData
                 {
-                    Current = firstValue,
-                    Min = math.min(firstValue, lastValue),
-                    Max = math.max(firstValue, lastValue),
-                    SpeedPerSec = (lastValue - firstValue) / timeSpan,
+                    Fader = new BillBoad.AnimationUnit
+                    {
+                        Current = firstValue,
+                        Min = math.min(firstValue, lastValue),
+                        Max = math.max(firstValue, lastValue),
+                        SpeedPerSec = (lastValue - firstValue) / timeSpan,
+                        Delay = delay,
+                    }
+                }
+            );
+        }
+
+        public static void AddAdditiveAlphaFadeComponents(
+            this GameObjectConversionSystem gcs, GameObject main,
+            float firstValue, float lastValue, float timeSpan, float delay)
+        {
+            var em = gcs.DstEntityManager;
+
+            var mainEntity = gcs.GetPrimaryEntity(main);
+
+            var types = new ComponentTypes(
+                typeof(BillBoad.AdditiveAlphaFadeData)
+            );
+            em.AddComponents(mainEntity, types);
+
+            em.SetComponentData(mainEntity,
+                new BillBoad.AdditiveAlphaFadeData
+                {
+                    Fader = new BillBoad.AnimationUnit
+                    {
+                        Current = firstValue,
+                        Min = math.min(firstValue, lastValue),
+                        Max = math.max(firstValue, lastValue),
+                        SpeedPerSec = (lastValue - firstValue) / timeSpan,
+                        Delay = delay,
+                    }
                 }
             );
         }

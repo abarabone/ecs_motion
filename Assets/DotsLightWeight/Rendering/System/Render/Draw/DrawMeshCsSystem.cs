@@ -50,7 +50,8 @@ namespace DotsLite.Draw
 
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
-            computeBuffer.SetData( nativeBuffer.AsNativeArray() );
+            var bufferInfo = this.GetSingleton<DrawSystem.TransformBufferInfoData>();
+            computeBuffer.SetData( nativeBuffer.AsNativeArray(bufferInfo.CurrentVectorLength) );
 
             //Debug.Log("start");
             //for (var i = 0; i < nativeBuffer.length_; i++)
@@ -63,7 +64,7 @@ namespace DotsLite.Draw
                 .ForEach(
                     (
                         in DrawModel.InstanceCounterData counter,
-                        in DrawModel.InstanceOffsetData offset,
+                        in DrawModel.VectorIndexData offset,
                         in DrawModel.ComputeArgumentsBufferData shaderArg,
                         in DrawModel.GeometryData geom
                     ) =>
@@ -73,8 +74,8 @@ namespace DotsLite.Draw
                         var mesh = geom.Mesh;
                         var mat = geom.Material;
                         var args = shaderArg.InstanceArgumentsBuffer;
-                        
-                        var vectorOffset = offset.pVectorOffsetPerModelInBuffer - nativeBuffer.pBuffer;
+
+                        var vectorOffset = offset.ModelStartIndex;
                         mat.SetInt( "BoneVectorOffset", (int)vectorOffset );
 
                         var instanceCount = counter.InstanceCounter.Count;

@@ -14,7 +14,7 @@ Shader "Custom/Particle uv blend"
 		
         Blend SrcAlpha OneMinusSrcAlpha
 		Lighting Off
-        //ZWrite Off
+        ZWrite Off
         Fog
 		{
 			Mode Off

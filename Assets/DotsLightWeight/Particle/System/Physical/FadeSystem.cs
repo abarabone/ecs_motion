@@ -14,6 +14,7 @@ using UnityEngine.Assertions.Must;
 using Unity.Physics;
 using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
+using System.Runtime.CompilerServices;
 
 
 namespace DotsLite.Particle
@@ -76,18 +77,28 @@ namespace DotsLite.Particle
                 .ForEach(
                     (
                         ref Particle.AdditionalData data,
-                        ref BillBoad.AlphaFadeData fade
+                        ref BillBoad.BlendAlphaFadeData blend,
+                        ref BillBoad.AdditiveAlphaFadeData additive
                     ) =>
                     {
+                        data.BlendColor.a = fade_(ref blend.Fader, dt);
 
-                        var next = fade.Current + fade.SpeedPerSec * dt;
-
-                        fade.Current = math.clamp(next, fade.Min, fade.Max);
-
-                        data.Color.a = (byte)(fade.Current * 255);
+                        data.AdditiveColor.a = fade_(ref additive.Fader, dt);
                     }
                 )
                 .ScheduleParallel();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static byte fade_(ref BillBoad.AnimationUnit fader, float dt)
+        {
+
+            fader.Delay -= dt;
+            var speed = math.select(fader.SpeedPerSec, 0, fader.Delay > 0);
+
+            var next = fader.Current + speed * dt;
+            fader.Current = math.clamp(next, fader.Min, fader.Max);
+            return (byte)(fader.Current * 255);
         }
 
     }

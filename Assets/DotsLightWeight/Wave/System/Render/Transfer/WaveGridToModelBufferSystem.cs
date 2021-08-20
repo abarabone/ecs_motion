@@ -39,6 +39,7 @@ namespace DotsLite.Draw
 
             this.bardep = BarrierDependency.Sender.Create<DrawMeshCsSystem>(this);
 
+            this.RequireSingletonForUpdate<GridMaster.Data>();
         }
 
 
@@ -69,6 +70,10 @@ namespace DotsLite.Draw
         {
             using var barScope = bardep.WithDependencyScope();
 
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
+            var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
+            
+
             // length はセグメント数、頂点は + 1 個送る
 
             var gridinfo = this.gridMaster.Info;
@@ -85,11 +90,12 @@ namespace DotsLite.Draw
             var units = this.gridMaster.Nexts;
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.InstanceOffsetData>(isReadOnly: true);
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
                 .WithAll<Height.GridLevel0Tag>()
+                .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 .ForEach((
                     in DrawInstance.TargetWorkData target,
@@ -103,7 +109,7 @@ namespace DotsLite.Draw
                     var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
                     const int vectorLength = (int)BoneType.T;
-                    var lengthOfInstance = offsetInfo.VectorOffsetPerInstance + vectorLength;
+                    var lengthOfInstance = offsetInfo.OptionalVectorLengthPerInstance + vectorLength;
                     var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
 
@@ -111,10 +117,11 @@ namespace DotsLite.Draw
                     var pUnit = (float*)units.GetUnsafeReadOnlyPtr();
                     var pSrc = pUnit + (grid.GridId.x * srcw + grid.GridId.y * srcwwh);
 
-                    var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                    //var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
+                    var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
                     var pDst = pModel + instanceBufferOffset;
 
-                    var i = offsetInfo.VectorOffsetPerInstance;
+                    var i = offsetInfo.OptionalVectorLengthPerInstance;
 
 
                     pDst[i - 1] = float4.zero;// これをやらないと、シェーダーの　dot(vh, mask) で不定値が入ってしまう
