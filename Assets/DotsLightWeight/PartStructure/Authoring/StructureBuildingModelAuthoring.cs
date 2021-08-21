@@ -110,7 +110,7 @@ namespace DotsLite.Structure.Authoring
             setBoneForPartMultiEntities_(gcs, posture, near, near.transform);
 
             trimEntities_(gcs, st);
-            if (env.GetComponent<DynamicToStaticRigidBody>().As() != null) addExcludeTransform_(gcs, far, near);
+            //if (env.GetComponent<DynamicToStaticRigidBody>().As() != null) addExcludeTransform_(gcs, far, near);
         }
 
         static public void CreateStructureEntitiesInArea
@@ -341,17 +341,17 @@ namespace DotsLite.Structure.Authoring
         }
 
 
-        static void addExcludeTransform_(
-            GameObjectConversionSystem gcs, GameObject far, GameObject partTop)
-        {
-            var qFar = far.transform.WrapEnumerable();
-            var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()//true)
-                .Select(pt => pt.transform);
+        //static void addExcludeTransform_(
+        //    GameObjectConversionSystem gcs, GameObject far, GameObject partTop)
+        //{
+        //    var qFar = far.transform.WrapEnumerable();
+        //    var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()//true)
+        //        .Select(pt => pt.transform);
 
-            qFar.Concat(qPart)
-                .Select(x => gcs.GetPrimaryEntity(x))
-                .ForEach(x => gcs.DstEntityManager.AddComponent<Model.TransformOption.ExcludeTransformTag>(x));
-        }
+        //    qFar.Concat(qPart)
+        //        .Select(x => gcs.GetPrimaryEntity(x))
+        //        .ForEach(x => gcs.DstEntityManager.AddComponent<Model.TransformOption.ExcludeTransformTag>(x));
+        //}
 
 
 
