@@ -29,6 +29,8 @@ namespace DotsLite.Draw
 
         /// <summary>
         /// linked entity 番号を固定で使ってしまったので、問題でたらちゃんとなおさなければならない
+        /// 
+        /// 全オブジェクトを毎フレーム処理するのは無駄なので、コリジョンなどで処理したほうがよさそう
         /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
@@ -75,14 +77,16 @@ namespace DotsLite.Draw
                     )
                 =>
                     {
+                        var eqi = entityInQueryIndex;
                         var children = linkedGroups[binder.BinderEntity];
                         
+
                         var isNearComponent = disableds.HasComponent(children[2].Value);
                         var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
 
                         if (isNearModel & !isNearComponent)
                         {
-                            changeToNear(entityInQueryIndex, entity, cmd, children, parts);
+                            children.ChangeToNear(cmd, eqi, parts);
                         }
 
 
@@ -91,113 +95,13 @@ namespace DotsLite.Draw
 
                         if (isFarModel & !isFarComponent)
                         {
-                            changeToFar(entityInQueryIndex, entity, cmd, children, parts);
+                            children.ChangeToFar(cmd, eqi, parts);
                         }
 
                     }
                 )
                 .ScheduleParallel();
         }
-
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void changeToNear
-            (
-                int uniqueIndex, Entity entity,
-                EntityCommandBuffer.ParallelWriter cmd,
-                DynamicBuffer<LinkedEntityGroup> children,
-                ComponentDataFromEntity<Part.PartData> partData
-            )
-        {
-
-            //cmd.AddComponent<Structure.ShowNearTag>(uniqueIndex, entity);
-
-            cmd.AddComponent<Disabled>(uniqueIndex, children[2].Value);
-
-
-            for (var i = 3; i < children.Length; i++)
-            {
-                var child = children[i].Value;
-                if (!partData.HasComponent(child)) continue;
-
-                cmd.RemoveComponent<Disabled>(uniqueIndex, children[i].Value);
-            }
-        }
-
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void changeToFar
-            (
-                int uniqueIndex, Entity entity,
-                EntityCommandBuffer.ParallelWriter cmd,
-                DynamicBuffer<LinkedEntityGroup> children,
-                ComponentDataFromEntity<Part.PartData> partData
-            )
-        {
-
-            //cmd.RemoveComponent<Structure.ShowNearTag>(uniqueIndex, entity);
-
-            cmd.RemoveComponent<Disabled>(uniqueIndex, children[2].Value);
-
-
-            for (var i = 3; i < children.Length; i++)
-            {
-                var child = children[i].Value;
-                if (!partData.HasComponent(child)) continue;
-
-                cmd.AddComponent<Disabled>(uniqueIndex, children[i].Value);
-            }
-        }
-
-
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static void changeToNear
-        //    (
-        //        Entity mainEntity, int uniqueIndex,
-        //        EntityCommandBuffer.ParallelWriter cmd,
-        //        DynamicBuffer<LinkedEntityGroup> children,
-        //        ComponentDataFromEntity<StructurePart.PartData> partData
-        //    )
-        //{
-
-        //    cmd.AddComponent<PhysicsExclude>(uniqueIndex, mainEntity);
-
-
-        //    for (var i = 2; i < children.Length; i++)
-        //    {
-        //        var child = children[i].Value;
-        //        if (!partData.HasComponent(child)) continue;
-
-        //        cmd.RemoveComponent<Disabled>(uniqueIndex, child);
-        //    }
-        //}
-
-
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static void changeToFar
-        //    (
-        //        Entity mainEntity, int uniqueIndex,
-        //        EntityCommandBuffer.ParallelWriter cmd,
-        //        DynamicBuffer<LinkedEntityGroup> children,
-        //        ComponentDataFromEntity<StructurePart.PartData> partData
-        //    )
-        //{
-
-        //    cmd.RemoveComponent<PhysicsExclude>(uniqueIndex, mainEntity);
-
-
-        //    for (var i = 2; i < children.Length; i++)
-        //    {
-        //        var child = children[i].Value;
-        //        if (!partData.HasComponent(child)) continue;
-
-        //        cmd.AddComponent<Disabled>(uniqueIndex, child);
-        //    }
-        //}
 
 
     }

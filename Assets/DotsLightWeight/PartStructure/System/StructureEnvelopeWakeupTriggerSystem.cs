@@ -19,7 +19,7 @@ using Unity.Physics;
 namespace DotsLite.Arms
 {
     using DotsLite.Dependency;
-    using DotsLite.Model;
+    //using DotsLite.Model;
     using DotsLite.Model.Authoring;
     using DotsLite.Arms;
     using DotsLite.Character;
@@ -79,6 +79,11 @@ namespace DotsLite.Arms
             {
                 structureMain = this.GetComponentDataFromEntity<Structure.Main.MainTag>(isReadOnly: true),
                 velocities = this.GetComponentDataFromEntity<PhysicsVelocity>(isReadOnly: true),
+
+                binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
+                parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
+                linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
+
                 cmd = cmd,
             }
             .Schedule(this.stepPhysicsWorld.Simulation, ref this.buildPhysicsWorld.PhysicsWorld, this.Dependency);
@@ -91,6 +96,10 @@ namespace DotsLite.Arms
         {
             [ReadOnly] public ComponentDataFromEntity<Structure.Main.MainTag> structureMain;
             [ReadOnly] public ComponentDataFromEntity<PhysicsVelocity> velocities;
+
+            [ReadOnly] public ComponentDataFromEntity<Structure.Main.BinderLinkData> binderLinks;
+            [ReadOnly] public ComponentDataFromEntity<Structure.Part.PartData> parts;
+            [ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
 
             public EntityCommandBuffer.ParallelWriter cmd;
 
@@ -118,11 +127,17 @@ namespace DotsLite.Arms
                 if (isRbA)
                 {
                     this.cmd.AddComponent<PhysicsVelocity>(ev.BodyIndexA, entA);
+                    var binder = this.binderLinks[entA];
+                    var children = this.linkedGroups[binder.BinderEntity];
+                    children.RemoveComponentsToAllBones<Model.TransformOption.ExcludeTransformTag>(this.cmd, ev.BodyIndexA, this.parts);
                     return;
                 }
                 if (isRbB)
                 {
                     this.cmd.AddComponent<PhysicsVelocity>(ev.BodyIndexB, entB);
+                    var binder = this.binderLinks[entB];
+                    var children = this.linkedGroups[binder.BinderEntity];
+                    children.RemoveComponentsToAllBones<Model.TransformOption.ExcludeTransformTag>(this.cmd, ev.BodyIndexB, this.parts);
                     return;
                 }
             }

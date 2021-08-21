@@ -110,6 +110,7 @@ namespace DotsLite.Structure.Authoring
             setBoneForPartMultiEntities_(gcs, posture, near, near.transform);
 
             trimEntities_(gcs, st);
+            if (env.GetComponent<DynamicToStaticRigidBody>().As() != null) addExcludeTransform_(gcs, far, near);
         }
 
         static public void CreateStructureEntitiesInArea
@@ -154,7 +155,7 @@ namespace DotsLite.Structure.Authoring
             setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
 
             trimEntities_(gcs, st);
-            orderTrimEntities(gcs, st);
+            orderTrimEntities_(gcs, st);
         }
 
         static public void CreateStructureEntities_Compound
@@ -178,7 +179,7 @@ namespace DotsLite.Structure.Authoring
             setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
 
             trimEntities_(gcs, st);
-            orderTrimEntities(gcs, st);
+            orderTrimEntities_(gcs, st);
         }
 
 
@@ -208,7 +209,7 @@ namespace DotsLite.Structure.Authoring
                 em.DestroyEntity(ent);
             }
         }
-        static void orderTrimEntities(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+        static void orderTrimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
             var em = gcs.DstEntityManager;
 
@@ -337,6 +338,19 @@ namespace DotsLite.Structure.Authoring
             var qNear = near.transform.WrapEnumerable();
 
             gcs.InitBoneEntities(parent, qNear, root, EnBoneType.jobs_per_depth);
+        }
+
+
+        static void addExcludeTransform_(
+            GameObjectConversionSystem gcs, GameObject far, GameObject partTop)
+        {
+            var qFar = far.transform.WrapEnumerable();
+            var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()//true)
+                .Select(pt => pt.transform);
+
+            qFar.Concat(qPart)
+                .Select(x => gcs.GetPrimaryEntity(x))
+                .ForEach(x => gcs.DstEntityManager.AddComponent<Model.TransformOption.ExcludeTransformTag>(x));
         }
 
 

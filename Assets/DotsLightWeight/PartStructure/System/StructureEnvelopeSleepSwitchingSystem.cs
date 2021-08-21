@@ -53,7 +53,7 @@ namespace DotsLite.Structure
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             //var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
-            var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
+            //var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
             const float l = 0.1f;
             var limit = new float3(l, l, l);// l * l, l * l, l * l);
@@ -64,9 +64,12 @@ namespace DotsLite.Structure
             this.Entities
                 .WithBurst()
                 .WithAll<PhysicsVelocity>()
+                .WithReadOnly(parts)
+                .WithReadOnly(linkedGroups)
                 .ForEach((
                     Entity entity, int entityInQueryIndex,
                     ref Main.SleepTimerData timer,
+                    in Main.BinderLinkData binder,
                     in Translation pos) =>
                     //in PhysicsVelocity v) =>
                 {
@@ -83,8 +86,12 @@ namespace DotsLite.Structure
                     const float margin = 2.0f;
                     if (timer.StillnessTime < margin) return;
 
+
                     timer.PrePositionAndTime = 0.0f;
                     cmd.RemoveComponent<PhysicsVelocity>(eqi, entity);
+
+                    var children = linkedGroups[binder.BinderEntity];
+                    children.AddComponentsToAllBones<Model.TransformOption.ExcludeTransformTag>(cmd, eqi, parts);
 
                 })
                 .ScheduleParallel();
