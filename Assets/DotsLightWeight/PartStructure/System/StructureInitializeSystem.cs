@@ -31,7 +31,9 @@ namespace DotsLite.Draw
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    //[UpdateInGroup(typeof(PresentationSystemGroup))]
+    [UpdateAfter(typeof(end))]
     public class StructureInitializeSystem : DependencyAccessableSystemBase
     {
 
@@ -64,8 +66,7 @@ namespace DotsLite.Draw
                 .WithReadOnly(parts)
                 .ForEach((
                     Entity entity, int entityInQueryIndex,
-                    in Main.BinderLinkData binder
-                ) =>
+                    in Main.BinderLinkData binder) =>
                 {
                     var eqi = entityInQueryIndex;
 
