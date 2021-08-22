@@ -264,7 +264,7 @@ namespace DotsLite.Structure.Authoring
                     typeof(Main.PartDestructionData),
                     typeof(Collision.Hit.TargetData),
                     typeof(Main.SleepTimerData),
-                    typeof(Main.InitializeTag)
+                    typeof(Main.TransformOnceTag)
                 }
             );
             em.AddComponents(mainEntity, mainAddtypes);

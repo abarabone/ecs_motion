@@ -29,8 +29,10 @@ namespace DotsLite.Structure
         public struct MainTag : IComponentData
         { }
 
-        public struct InitializeTag : IComponentData
-        { }
+        public struct TransformOnceTag : IComponentData
+        {
+            public int count;
+        }
 
         public struct SleepingTag : IComponentData
         { }

@@ -31,10 +31,9 @@ namespace DotsLite.Draw
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    //[UpdateInGroup(typeof(PresentationSystemGroup))]
-    [UpdateAfter(typeof(end))]
-    public class StructureInitializeSystem : DependencyAccessableSystemBase
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform))]
+    [UpdateAfter(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
+    public class StructureTransformInitializeSystem : DependencyAccessableSystemBase
     {
 
 
@@ -61,20 +60,24 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
-                .WithAll<Main.MainTag, Structure.Main.InitializeTag>()
+                //.WithAll<Main.MainTag, Structure.Main.TransformOnceTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
                 .ForEach((
                     Entity entity, int entityInQueryIndex,
+                    ref Main.TransformOnceTag init,
                     in Main.BinderLinkData binder) =>
                 {
                     var eqi = entityInQueryIndex;
+
+                    if (init.count < 1) return;
+                    init.count++;
 
                     // 最初の１回だけはトランスフォームが走るようにしたい
                     var children = linkedGroups[binder.BinderEntity];
                     children.AddComponentsToAllBones<Model.TransformOption.ExcludeTransformTag>(cmd, eqi, parts);
 
-                    cmd.RemoveComponent<Structure.Main.InitializeTag>(eqi, entity);
+                    cmd.RemoveComponent<Structure.Main.TransformOnceTag>(eqi, entity);
                 })
                 .ScheduleParallel();
         }
