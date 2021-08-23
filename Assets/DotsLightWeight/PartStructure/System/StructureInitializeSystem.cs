@@ -28,7 +28,12 @@ namespace DotsLite.Draw
 
 
     /// <summary>
-    /// 
+    /// ・常にトランスフォームが走るのは無駄
+    /// ・スリープ中はトランスフォーム不要
+    /// ・スリープに切り替わる時にＴＦをオフにすればよい？
+    /// ・far か near の disable になっているほうに反映されない
+    /// ・切り替わる時に一度、両方トランスフォームすればいい？
+    /// ・必要なのは、コライダの位置を正しくするため
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform))]
@@ -70,8 +75,8 @@ namespace DotsLite.Draw
                 {
                     var eqi = entityInQueryIndex;
 
-                    if (init.count < 1) return;
                     init.count++;
+                    if (init.count < 2) return;
 
                     // 最初の１回だけはトランスフォームが走るようにしたい
                     var children = linkedGroups[binder.BinderEntity];
