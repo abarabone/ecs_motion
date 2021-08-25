@@ -11,6 +11,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Physics;
+using Unity.Burst.CompilerServices;
 
 namespace DotsLite.Model
 {
@@ -25,7 +26,7 @@ namespace DotsLite.Model
     using DotsLite.CharacterMotion;
 
     using LeveledLinkData = Bone.Lv01LinkData;
-
+    
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     [UpdateAfter(typeof(StreamToBoneSystem))]
@@ -47,8 +48,8 @@ namespace DotsLite.Model
                 .WithNone<TransformOption.ExcludeTransformTag>()
                 .WithReadOnly(poss)
                 .WithReadOnly(rots)
-                .WithReadOnly(masses)
-                .WithNativeDisableParallelForRestriction(velocities)
+                //.WithReadOnly(masses)
+                //.WithNativeDisableParallelForRestriction(velocities)
                 .WithNativeDisableContainerSafetyRestriction(poss)
                 .WithNativeDisableContainerSafetyRestriction(rots)
                 .ForEach(
@@ -62,17 +63,18 @@ namespace DotsLite.Model
                         var parentpos = poss[parent];
                         var parentrot = rots[parent];
 
-                        var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
-                        if (im != 0.0f && velocities.HasComponent(entity))
-                        {
-                            var mass = masses[entity];
-                            velocities[entity] = local.BoneTransform
-                                (in parentpos, in parentrot, in pos, in rot, in mass, deltaTime);
-                        }
-                        else
-                        {
-                            local.BoneTransform(in parentpos, in parentrot, ref pos, ref rot);
-                        }
+                        //var im = masses.HasComponent(entity) ? masses[entity].InverseMass : 0.0f;
+                        //if (im != 0.0f && velocities.HasComponent(entity))
+                        //{
+                        //    var mass = masses[entity];
+                        //    velocities[entity] = local.BoneTransform
+                        //        (in parentpos, in parentrot, in pos, in rot, in mass, deltaTime);
+                        //}
+                        //else
+                        //{
+                        //    local.BoneTransform(in parentpos, in parentrot, ref pos, ref rot);
+                        //}
+                        local.BoneTransform(in parentpos, in parentrot, ref pos, ref rot);
 
                         //BoneUtility.BoneTransform(in parentpos, in parentrot, in local, ref pos, ref rot);
                         //var ppos = parentpos.Value;
