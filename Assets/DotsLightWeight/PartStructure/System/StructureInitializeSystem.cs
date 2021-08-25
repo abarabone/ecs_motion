@@ -30,12 +30,15 @@ namespace DotsLite.Draw
     /// <summary>
     /// ・常にトランスフォームが走るのは無駄
     /// ・スリープ中はトランスフォーム不要
-    /// ・スリープに切り替わる時にＴＦをオフにすればよい？
-    /// ・far か near の disable になっているほうに反映されない
+    /// 　→スリープに切り替わる時にＴＦをオフにすればよい？
+    /// 　→ far か near の disable になっているほうに反映されない
     /// ・切り替わる時に一度、両方トランスフォームすればいい？
-    /// ・必要なのは、コライダの位置を正しくするため
+    /// 　・コライダの位置を正しくするため → far, near
+    /// 　・デブリの発生位置 → near
+    /// 　→ 
+    /// ・ far/near の切り替え時にＴＦするっていう手もある？
     /// </summary>
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform))]
     [UpdateAfter(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     public class StructureTransformInitializeSystem : DependencyAccessableSystemBase

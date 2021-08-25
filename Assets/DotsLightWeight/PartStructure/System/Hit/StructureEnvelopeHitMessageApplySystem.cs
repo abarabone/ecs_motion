@@ -86,9 +86,7 @@ namespace DotsLite.Structure
                 //}
 
 
-                this.Cmd.AddComponent(index, targetEntity,
-                    new Unity.Physics.PhysicsVelocity { }
-                );
+                this.Cmd.AddComponent(index, targetEntity, new Unity.Physics.PhysicsVelocity { });
 
             }
         }
