@@ -43,7 +43,7 @@
 
 //            this.Entities
 //                .WithBurst()
-//                .WithNone<TransformOption.ExcludeTransformTag>()
+//                .WithAll<Bone.TransformTargetTag>()
 //                .WithReadOnly(poss)
 //                .WithReadOnly(rots)
 //                .WithReadOnly(masses)

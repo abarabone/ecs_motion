@@ -55,7 +55,7 @@ namespace DotsLite.Structure
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
             //var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
-            const float l = 0.1f;
+            const float l = 0.01f;
             var limit = new float3(l, l, l);// l * l, l * l, l * l);
 
             //var curtime = (float)this.Time.ElapsedTime;
@@ -75,24 +75,37 @@ namespace DotsLite.Structure
                 {
                     var eqi = entityInQueryIndex;
 
-                    //var isStillness = math.all(math.abs(v.Linear) < limit) & math.all(math.abs(v.Angular) < limit);
-                    var isStillness = math.all(math.abs(pos.Value - timer.PrePosition) < limit);
 
-                    timer.PrePositionAndTime = math.select(
-                        new float4(pos.Value, 0.0f),
-                        new float4(pos.Value, timer.StillnessTime + dt),
-                        isStillness);
+                    if (isTimerCompleted_(in timer))
+                    {
+                        resetTimer_(ref timer);
+                        changeComponentsToSleep_(in binder);
+                        return;
+                    }
 
-                    const float margin = 2.0f;
-                    if (timer.StillnessTime < margin) return;
+                    progressTimer_IfNotMove_(ref timer, in pos);
+                    return;
 
 
-                    timer.PrePositionAndTime = 0.0f;
-                    cmd.RemoveComponent<PhysicsVelocity>(eqi, entity);
+                    bool isTimerCompleted_(in Main.SleepTimerData timer) =>
+                        timer.StillnessTime >= Main.SleepTimerData.Margin;
 
-                    var children = linkedGroups[binder.BinderEntity];
-                    children.AddComponentsToAllBones<Model.TransformOption.ExcludeTransformTag>(cmd, eqi, parts);
+                    void resetTimer_(ref Main.SleepTimerData timer) =>
+                        timer.PrePositionAndTime = 0.0f;
 
+                    void changeComponentsToSleep_(in Main.BinderLinkData binder) =>
+                        cmd.ChangeComponentsToSleep(entity, eqi, binder, parts, linkedGroups);
+
+                    void progressTimer_IfNotMove_(ref Main.SleepTimerData timer, in Translation pos)
+                    {
+                        //var isStillness = math.all(math.abs(v.Linear) < limit) & math.all(math.abs(v.Angular) < limit);
+                        var isStillness = math.all(math.abs(pos.Value - timer.PrePosition) < limit);
+
+                        timer.PrePositionAndTime = math.select(
+                            new float4(pos.Value, 0.0f),
+                            new float4(pos.Value, timer.StillnessTime + dt),
+                            isStillness);
+                    }
                 })
                 .ScheduleParallel();
         }

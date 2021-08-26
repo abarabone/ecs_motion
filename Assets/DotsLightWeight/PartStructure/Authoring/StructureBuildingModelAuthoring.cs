@@ -263,8 +263,7 @@ namespace DotsLite.Structure.Authoring
                     typeof(DrawInstance.TargetWorkData),
                     typeof(Main.PartDestructionData),
                     typeof(Collision.Hit.TargetData),
-                    typeof(Main.SleepTimerData),
-                    typeof(Main.TransformOnceTag)
+                    typeof(Main.SleepTimerData)
                 }
             );
             em.AddComponents(mainEntity, mainAddtypes);
@@ -302,6 +301,12 @@ namespace DotsLite.Structure.Authoring
                 }
             );
 
+            em.SetComponentData(mainEntity,
+                new Main.SleepTimerData
+                {
+                    PrePositionAndTime = new float4(0, 0, 0, Main.SleepTimerData.Margin),
+                }
+            );
 
             var draw = mainEntity;
             var lods = new IMeshModelLod[] { near, far };

@@ -126,18 +126,14 @@ namespace DotsLite.Arms
                 // çÑëÃÇ≈Ç»Ç¢ï˚ÇçÑëÃÇ…Ç∑ÇÈ
                 if (isRbA)
                 {
-                    this.cmd.AddComponent<PhysicsVelocity>(ev.BodyIndexA, entA);
                     var binder = this.binderLinks[entA];
-                    var children = this.linkedGroups[binder.BinderEntity];
-                    children.RemoveComponentsToAllBones<Model.TransformOption.ExcludeTransformTag>(this.cmd, ev.BodyIndexA, this.parts);
+                    this.cmd.ChangeComponentsToWakeUp(entA, ev.BodyIndexA, binder, this.parts, this.linkedGroups);
                     return;
                 }
                 if (isRbB)
                 {
-                    this.cmd.AddComponent<PhysicsVelocity>(ev.BodyIndexB, entB);
                     var binder = this.binderLinks[entB];
-                    var children = this.linkedGroups[binder.BinderEntity];
-                    children.RemoveComponentsToAllBones<Model.TransformOption.ExcludeTransformTag>(this.cmd, ev.BodyIndexB, this.parts);
+                    this.cmd.ChangeComponentsToWakeUp(entB, ev.BodyIndexB, binder, this.parts, this.linkedGroups);
                     return;
                 }
             }

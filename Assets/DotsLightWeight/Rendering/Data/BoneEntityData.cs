@@ -73,27 +73,31 @@ namespace DotsLite.Model
         PtoPuv = 3,
     }
 
-    static public partial class TransformOption
-    {
+    //static public partial class TransformOption
+    //{
 
-        /// <summary>
-        /// トランスフォームをやらない。スリープなどで使用。
-        /// job_per_depth では bone entity に、reelup_chain では posture entity につける。
-        /// </summary>
-        public struct ExcludeTransformTag : IComponentData
-        { }
+    //    /// <summary>
+    //    /// トランスフォームをやらない。スリープなどで使用。
+    //    /// job_per_depth では bone entity に、reelup_chain では posture entity につける。
+    //    /// </summary>
+    //    public struct ExcludeTransformTag : IComponentData
+    //    { }
 
-        /// <summary>
-        /// トランスフォームを強制する。パーツごとの静的コライダなどで有用か？
-        /// job_per_depth では bone entity に、reelup_chain では posture entity につける。
-        /// </summary>
-        public struct ForceTransformTag : IComponentData
-        { }
+    //    /// <summary>
+    //    /// トランスフォームを強制する。パーツごとの静的コライダなどで有用か？
+    //    /// job_per_depth では bone entity に、reelup_chain では posture entity につける。
+    //    /// </summary>
+    //    public struct ForceTransformTag : IComponentData
+    //    { }
 
-    }
+    //}
 
     static public partial class Bone
     {
+
+        public struct TransformTargetTag : IComponentData
+        { }
+
 
         public struct PostureLinkData : IComponentData
         {

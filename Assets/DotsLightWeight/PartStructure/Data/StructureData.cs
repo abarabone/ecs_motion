@@ -29,16 +29,18 @@ namespace DotsLite.Structure
         public struct MainTag : IComponentData
         { }
 
-        public struct TransformOnceTag : IComponentData
+        public struct SleepingTag : IComponentData
+        { }
+
+        public struct TransformOnlyOnceTag : IComponentData
         {
             public int count;
         }
 
-        public struct SleepingTag : IComponentData
+        public struct NearTag : IComponentData
         { }
-
-        //public struct ShowNearTag : IComponentData
-        //{ }
+        public struct FarTag : IComponentData
+        { }
 
 
         // 暫定　後で直したい
@@ -80,6 +82,8 @@ namespace DotsLite.Structure
             public float4 PrePositionAndTime;
             public float3 PrePosition => this.PrePositionAndTime.xyz;
             public float StillnessTime => this.PrePositionAndTime.w;
+
+            public static float Margin => 2.0f;
         }
 
     }

@@ -58,6 +58,36 @@ namespace DotsLite.Structure
 
 
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ChangeComponentsToSleep(
+            this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
+            Main.BinderLinkData binder,
+            ComponentDataFromEntity<Part.PartData> parts,
+            BufferFromEntity<LinkedEntityGroup> linkedGroups)
+        {
+            cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
+
+            var children = linkedGroups[binder.BinderEntity];
+            children.RemoveComponentsToAllBones<Model.Bone.TransformTargetTag>(cmd, uniqueIndex, parts);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ChangeComponentsToWakeUp(
+            this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
+            Main.BinderLinkData binder,
+            ComponentDataFromEntity<Part.PartData> parts,
+            BufferFromEntity<LinkedEntityGroup> linkedGroups)
+        {
+            cmd.AddComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
+
+            var children = linkedGroups[binder.BinderEntity];
+            children.AddComponentsToAllBones<Model.Bone.TransformTargetTag>(cmd, uniqueIndex, parts);
+        }
+
+
+
+
         /// <summary>
         /// far および near parts すべてのエンティティに、コンポーネントを付加する。
         /// </summary>
