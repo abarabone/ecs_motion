@@ -85,6 +85,7 @@ namespace DotsLite.Draw
                     var children = linkedGroups[binder.BinderEntity];
                     children.AddComponentsToAllBones<Model.TransformOption.ExcludeTransformTag>(cmd, eqi, parts);
 
+
                     cmd.RemoveComponent<Structure.Main.TransformOnceTag>(eqi, entity);
                 })
                 .ScheduleParallel();
