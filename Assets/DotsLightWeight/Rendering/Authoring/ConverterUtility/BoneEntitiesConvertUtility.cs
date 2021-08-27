@@ -191,6 +191,7 @@ namespace DotsLite.Model.Authoring
         {
             return new ComponentTypes
             (
+                typeof(Bone.TransformTargetTag),
                 //typeof( DrawTransform.LinkData ),
                 //typeof( DrawTransform.IndexData ),
                 //typeof( DrawTransform.TargetWorkData ),
