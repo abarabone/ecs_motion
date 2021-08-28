@@ -37,6 +37,33 @@ namespace DotsLite.Draw
     /// 　・デブリの発生位置 → near
     /// 　→ 
     /// ・ far/near の切り替え時にＴＦするっていう手もある？
+    /// sleep on
+    ///ＴＦ抑制 ボーンタグ消去
+    ///wake up
+
+    ///ＴＦオン ボーンタグ追加
+
+
+    ///far/near
+
+    ///enable/disable disable タグ追加／削除
+
+    ///far/near with sleep
+
+    ///near/farＴＦ一度 ボーンタグ追加＋oncetag
+    ///oncetag
+
+    ///enable/disable disable タグ追加／削除
+
+    ///near with sleep
+
+    ///near enable/far disable disable タグ追加／削除
+    ///farＴＦ一度 ボーンタグ追加＋oncetag
+
+    ///far with sleep
+
+    ///far enable/near disable disable タグ追加／削除
+    ///nearＴＦ一度 ボーンタグ追加＋oncetag
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform))]
