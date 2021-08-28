@@ -14,6 +14,64 @@ namespace DotsLite.Structure
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void AddComponentToFar<T>(
+            this EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
+            DynamicBuffer<LinkedEntityGroup> children, T component = default)
+        where T : struct, IComponentData
+        {
+
+            cmd.AddComponent<T>(uniqueIndex, children[2].Value, component);
+
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void AddComponentToNearParts<T>(
+            this EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
+            DynamicBuffer<LinkedEntityGroup> children,
+            ComponentDataFromEntity<Part.PartData> partData, T component = default)
+        where T : struct, IComponentData
+        {
+            for (var i = 3; i < children.Length; i++)
+            {
+                var child = children[i].Value;
+                if (!partData.HasComponent(child)) continue;
+
+                cmd.AddComponent<T>(uniqueIndex, children[i].Value, component);
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void RemoveComponentFromFar<T>(
+            this EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
+            DynamicBuffer<LinkedEntityGroup> children)
+        where T : struct, IComponentData
+        {
+
+            cmd.RemoveComponent<T>(uniqueIndex, children[2].Value);
+
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void RemoveComponentFromNearParts<T>(
+            this EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
+            DynamicBuffer<LinkedEntityGroup> children,
+            ComponentDataFromEntity<Part.PartData> partData)
+        where T : struct, IComponentData
+        {
+            for (var i = 3; i < children.Length; i++)
+            {
+                var child = children[i].Value;
+                if (!partData.HasComponent(child)) continue;
+
+                cmd.RemoveComponent<T>(uniqueIndex, children[i].Value);
+            }
+        }
+
+
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ChangeToNear
             (
                 this DynamicBuffer<LinkedEntityGroup> children,
@@ -22,16 +80,10 @@ namespace DotsLite.Structure
             )
         {
 
-            cmd.AddComponent<Disabled>(uniqueIndex, children[2].Value);
+            cmd.AddComponentToFar<Disabled>(uniqueIndex, children);
 
+            cmd.RemoveComponentFromNearParts<Disabled>(uniqueIndex, children, partData);
 
-            for (var i = 3; i < children.Length; i++)
-            {
-                var child = children[i].Value;
-                if (!partData.HasComponent(child)) continue;
-
-                cmd.RemoveComponent<Disabled>(uniqueIndex, children[i].Value);
-            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -43,16 +95,10 @@ namespace DotsLite.Structure
             )
         {
 
-            cmd.RemoveComponent<Disabled>(uniqueIndex, children[2].Value);
+            cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
 
+            cmd.AddComponentToNearParts<Disabled>(uniqueIndex, children, partData);
 
-            for (var i = 3; i < children.Length; i++)
-            {
-                var child = children[i].Value;
-                if (!partData.HasComponent(child)) continue;
-
-                cmd.AddComponent<Disabled>(uniqueIndex, children[i].Value);
-            }
         }
 
 

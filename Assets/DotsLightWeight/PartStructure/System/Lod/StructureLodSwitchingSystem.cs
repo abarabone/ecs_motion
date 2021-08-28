@@ -56,7 +56,6 @@ namespace DotsLite.Draw
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
-            //var excludes = this.GetComponentDataFromEntity<PhysicsExclude>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
             var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
@@ -65,7 +64,6 @@ namespace DotsLite.Draw
                 .WithBurst()
                 .WithAll<Main.MainTag>()
                 .WithReadOnly(linkedGroups)
-                //.WithReadOnly(excludes)
                 .WithReadOnly(parts)
                 .WithReadOnly(disableds)
                 .ForEach(
@@ -96,6 +94,47 @@ namespace DotsLite.Draw
                         if (isFarModel & !isFarComponent)
                         {
                             children.ChangeToFar(cmd, eqi, parts);
+                        }
+
+                    }
+                )
+                .ScheduleParallel();
+
+
+            this.Entities
+                .WithBurst()
+                .WithAll<Main.MainTag, Main.SleepingTag>()
+                .WithReadOnly(linkedGroups)
+                .WithReadOnly(parts)
+                .WithReadOnly(disableds)
+                .ForEach(
+                    (
+                        Entity entity, int entityInQueryIndex,
+                        in Main.BinderLinkData binder,
+                        in DrawInstance.ModelLinkData model,
+                        in DrawInstance.ModelLod2LinkData lod2
+                    )
+                =>
+                    {
+                        var eqi = entityInQueryIndex;
+                        var children = linkedGroups[binder.BinderEntity];
+
+
+                        var isNearComponent = disableds.HasComponent(children[2].Value);
+                        var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
+
+                        if (isNearModel & !isNearComponent)
+                        {
+                            cmd.AddComponentToNearParts<Main.TransformOnlyOnceTag>(eqi, children, parts);
+                        }
+
+
+                        var isFarComponent = !isNearComponent;
+                        var isFarModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityFar;
+
+                        if (isFarModel & !isFarComponent)
+                        {
+                            cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(eqi, children);
                         }
 
                     }

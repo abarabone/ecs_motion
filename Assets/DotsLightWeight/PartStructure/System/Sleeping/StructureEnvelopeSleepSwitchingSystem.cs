@@ -63,7 +63,8 @@ namespace DotsLite.Structure
 
             this.Entities
                 .WithBurst()
-                .WithAll<PhysicsVelocity>()
+                //.WithAll<PhysicsVelocity>()
+                .WithNone<Main.SleepingTag>()
                 .WithReadOnly(parts)
                 .WithReadOnly(linkedGroups)
                 .ForEach((
@@ -78,7 +79,7 @@ namespace DotsLite.Structure
 
                     if (isTimerCompleted_(in timer))
                     {
-                        resetTimer_(ref timer);
+                        //resetTimer_(ref timer);
                         changeComponentsToSleep_(in binder);
                         return;
                     }
