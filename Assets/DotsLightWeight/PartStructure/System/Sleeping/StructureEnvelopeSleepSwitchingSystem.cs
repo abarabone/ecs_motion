@@ -63,8 +63,8 @@ namespace DotsLite.Structure
 
             this.Entities
                 .WithBurst()
-                //.WithAll<PhysicsVelocity>()
                 .WithNone<Main.SleepingTag>()
+                .WithAll<Main.FarTag>()
                 .WithReadOnly(parts)
                 .WithReadOnly(linkedGroups)
                 .ForEach((
@@ -72,14 +72,13 @@ namespace DotsLite.Structure
                     ref Main.SleepTimerData timer,
                     in Main.BinderLinkData binder,
                     in Translation pos) =>
-                    //in PhysicsVelocity v) =>
                 {
                     var eqi = entityInQueryIndex;
 
 
                     if (isTimerCompleted_(in timer))
                     {
-                        //resetTimer_(ref timer);
+                        resetTimer_(ref timer);
                         changeComponentsToSleep_(in binder);
                         return;
                     }
@@ -88,27 +87,63 @@ namespace DotsLite.Structure
                     return;
 
 
-                    bool isTimerCompleted_(in Main.SleepTimerData timer) =>
-                        timer.StillnessTime >= Main.SleepTimerData.Margin;
-
-                    void resetTimer_(ref Main.SleepTimerData timer) =>
-                        timer.PrePositionAndTime = 0.0f;
-
                     void changeComponentsToSleep_(in Main.BinderLinkData binder) =>
-                        cmd.ChangeComponentsToSleep(entity, eqi, binder, parts, linkedGroups);
-
-                    void progressTimer_IfNotMove_(ref Main.SleepTimerData timer, in Translation pos)
-                    {
-                        //var isStillness = math.all(math.abs(v.Linear) < limit) & math.all(math.abs(v.Angular) < limit);
-                        var isStillness = math.all(math.abs(pos.Value - timer.PrePosition) < limit);
-
-                        timer.PrePositionAndTime = math.select(
-                            new float4(pos.Value, 0.0f),
-                            new float4(pos.Value, timer.StillnessTime + dt),
-                            isStillness);
-                    }
+                        cmd.ChangeComponentsToSleepOnFar(entity, eqi, binder, parts, linkedGroups);
                 })
                 .ScheduleParallel();
+
+
+            this.Entities
+                .WithBurst()
+                .WithNone<Main.SleepingTag>()
+                .WithAll<Main.NearTag>()
+                .WithReadOnly(parts)
+                .WithReadOnly(linkedGroups)
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    ref Main.SleepTimerData timer,
+                    in Main.BinderLinkData binder,
+                    in Translation pos) =>
+                {
+                    var eqi = entityInQueryIndex;
+
+
+                    if (isTimerCompleted_(in timer))
+                    {
+                        resetTimer_(ref timer);
+                        changeComponentsToSleep_(in binder);
+                        return;
+                    }
+
+                    progressTimer_IfNotMove_(ref timer, in pos);
+                    return;
+
+
+                    void changeComponentsToSleep_(in Main.BinderLinkData binder) =>
+                        cmd.ChangeComponentsToSleepOnNear(entity, eqi, binder, parts, linkedGroups);
+
+                })
+                .ScheduleParallel();
+
+            return;
+
+
+            static bool isTimerCompleted_(in Main.SleepTimerData timer) =>
+                timer.StillnessTime >= Main.SleepTimerData.Margin;
+
+            static void resetTimer_(ref Main.SleepTimerData timer) =>
+                timer.PrePositionAndTime = 0.0f;
+
+            void progressTimer_IfNotMove_(ref Main.SleepTimerData timer, in Translation pos)
+            {
+                //var isStillness = math.all(math.abs(v.Linear) < limit) & math.all(math.abs(v.Angular) < limit);
+                var isStillness = math.all(math.abs(pos.Value - timer.PrePosition) < limit);
+
+                timer.PrePositionAndTime = math.select(
+                    new float4(pos.Value, 0.0f),
+                    new float4(pos.Value, timer.StillnessTime + dt),
+                    isStillness);
+            }
         }
     }
 }

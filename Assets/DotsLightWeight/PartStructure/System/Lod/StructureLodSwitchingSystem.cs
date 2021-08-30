@@ -84,7 +84,7 @@ namespace DotsLite.Draw
 
                         if (isNearModel & !isNearComponent)
                         {
-                            children.ChangeToNear(cmd, eqi, parts);
+                            children.ChangeToNear(cmd, eqi, entity, parts);
                         }
 
 
@@ -93,48 +93,7 @@ namespace DotsLite.Draw
 
                         if (isFarModel & !isFarComponent)
                         {
-                            children.ChangeToFar(cmd, eqi, parts);
-                        }
-
-                    }
-                )
-                .ScheduleParallel();
-
-
-            this.Entities
-                .WithBurst()
-                .WithAll<Main.MainTag, Main.SleepingTag>()
-                .WithReadOnly(linkedGroups)
-                .WithReadOnly(parts)
-                .WithReadOnly(disableds)
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        in Main.BinderLinkData binder,
-                        in DrawInstance.ModelLinkData model,
-                        in DrawInstance.ModelLod2LinkData lod2
-                    )
-                =>
-                    {
-                        var eqi = entityInQueryIndex;
-                        var children = linkedGroups[binder.BinderEntity];
-
-
-                        var isNearComponent = disableds.HasComponent(children[2].Value);
-                        var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
-
-                        if (isNearModel & !isNearComponent)
-                        {
-                            cmd.AddComponentToNearParts<Main.TransformOnlyOnceTag>(eqi, children, parts);
-                        }
-
-
-                        var isFarComponent = !isNearComponent;
-                        var isFarModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityFar;
-
-                        if (isFarModel & !isFarComponent)
-                        {
-                            cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(eqi, children);
+                            children.ChangeToFar(cmd, eqi, entity, parts);
                         }
 
                     }
