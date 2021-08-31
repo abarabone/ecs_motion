@@ -56,12 +56,29 @@ namespace DotsLite.Structure
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ChangeComponentsToSleep(
+            this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
+            Main.BinderLinkData binder,
+            ComponentDataFromEntity<Part.PartData> parts,
+            BufferFromEntity<LinkedEntityGroup> linkedGroups)
+        {
+            cmd.AddComponent<Main.SleepingTag>(uniqueIndex, entity);
+            cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
+
+            var children = linkedGroups[binder.BinderEntity];
+            cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(uniqueIndex, children);
+            cmd.AddComponentToFar<Model.Bone.TransformTargetTag>(uniqueIndex, children);
+            cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
+            cmd.AddAddAndRemoveComponentsFromNearParts<Model.Bone.TransformTargetTag, Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ChangeComponentsToSleepOnFar(
             this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
             Main.BinderLinkData binder,
             ComponentDataFromEntity<Part.PartData> parts,
             BufferFromEntity<LinkedEntityGroup> linkedGroups)
         {
+            cmd.AddComponent<Main.SleepingTag>(uniqueIndex, entity);
             cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
 
             var children = linkedGroups[binder.BinderEntity];
@@ -75,6 +92,7 @@ namespace DotsLite.Structure
             ComponentDataFromEntity<Part.PartData> parts,
             BufferFromEntity<LinkedEntityGroup> linkedGroups)
         {
+            cmd.AddComponent<Main.SleepingTag>(uniqueIndex, entity);
             cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
 
             var children = linkedGroups[binder.BinderEntity];
@@ -90,6 +108,7 @@ namespace DotsLite.Structure
             ComponentDataFromEntity<Part.PartData> parts,
             BufferFromEntity<LinkedEntityGroup> linkedGroups)
         {
+            cmd.RemoveComponent<Main.SleepingTag>(uniqueIndex, entity);
             cmd.AddComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
 
             var children = linkedGroups[binder.BinderEntity];
@@ -176,7 +195,7 @@ namespace DotsLite.Structure
                 var child = children[i].Value;
                 if (!partData.HasComponent(child)) continue;
 
-                cmd.AddComponent<T>(uniqueIndex, children[i].Value, component);
+                cmd.AddComponent(uniqueIndex, children[i].Value, component);
             }
         }
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -247,22 +266,41 @@ namespace DotsLite.Structure
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void AddAndRemoveComponentsFromNearParts<T0, T1>(
+        private static void AddAndRemoveComponentsFromNearParts<TAdd, TRemove>(
             this EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
             DynamicBuffer<LinkedEntityGroup> children,
-            ComponentDataFromEntity<Part.PartData> partData, T0 component0 = default)
-        where T0 : struct, IComponentData
-        where T1 : struct, IComponentData
+            ComponentDataFromEntity<Part.PartData> partData, TAdd component0 = default)
+        where TAdd : struct, IComponentData
+        where TRemove : struct, IComponentData
         {
             for (var i = 3; i < children.Length; i++)
             {
                 var child = children[i].Value;
                 if (!partData.HasComponent(child)) continue;
 
-                cmd.AddComponent<T0>(uniqueIndex, children[i].Value);
-                cmd.RemoveComponent<T1>(uniqueIndex, children[i].Value);
+                cmd.AddComponent(uniqueIndex, children[i].Value, component0);
+                cmd.RemoveComponent<TRemove>(uniqueIndex, children[i].Value);
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void AddAddAndRemoveComponentsFromNearParts<TAdd0, TAdd1, TRemove>(
+            this EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
+            DynamicBuffer<LinkedEntityGroup> children,
+            ComponentDataFromEntity<Part.PartData> partData, TAdd0 component0 = default, TAdd1 component1 = default)
+        where TAdd0 : struct, IComponentData
+        where TAdd1 : struct, IComponentData
+        where TRemove : struct, IComponentData
+        {
+            for (var i = 3; i < children.Length; i++)
+            {
+                var child = children[i].Value;
+                if (!partData.HasComponent(child)) continue;
+
+                cmd.AddComponent(uniqueIndex, children[i].Value, component0);
+                cmd.AddComponent(uniqueIndex, children[i].Value, component1);
+                cmd.RemoveComponent<TRemove>(uniqueIndex, children[i].Value);
+            }
+        }
     }
 }

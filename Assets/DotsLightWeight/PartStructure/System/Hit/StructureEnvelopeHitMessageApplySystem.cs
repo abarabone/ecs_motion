@@ -56,7 +56,10 @@ namespace DotsLite.Structure
             this.Dependency = new JobExecution
             {
                 Cmd = cmd,
-            }
+                binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
+                parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
+                linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
+        }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
         }
 
@@ -68,7 +71,9 @@ namespace DotsLite.Structure
 
             public EntityCommandBuffer.ParallelWriter Cmd;
             //public float CurrentTime;
-
+            [ReadOnly] public ComponentDataFromEntity<Structure.Main.BinderLinkData> binderLinks;
+            [ReadOnly] public ComponentDataFromEntity<Structure.Part.PartData> parts;
+            [ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
 
             [BurstCompile]
             public void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, EnvelopeHitMessage>.Enumerator msgs)
@@ -86,8 +91,9 @@ namespace DotsLite.Structure
                 //}
 
 
-                this.Cmd.AddComponent(index, targetEntity, new Unity.Physics.PhysicsVelocity { });
-
+                //this.Cmd.AddComponent(index, targetEntity, new Unity.Physics.PhysicsVelocity { });
+                var binder = this.binderLinks[targetEntity];
+                this.Cmd.ChangeComponentsToWakeUp(targetEntity, index, binder, this.parts, this.linkedGroups);
             }
         }
     }

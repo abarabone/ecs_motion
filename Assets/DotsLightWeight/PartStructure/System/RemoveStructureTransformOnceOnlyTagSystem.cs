@@ -65,7 +65,7 @@ namespace DotsLite.Draw
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform))]
     [UpdateAfter(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
-    public class RemoveStructureTransformOnceOnlySystem : DependencyAccessableSystemBase
+    public class RemoveStructureTransformOnceOnlyTagSystem : DependencyAccessableSystemBase
     {
 
 
@@ -94,6 +94,7 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
+                .WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag>()
                 .WithAll<Main.SleepingTag, Main.TransformOnlyOnceTag, Main.FarTag>()
                 .WithReadOnly(linkedGroups)
@@ -113,11 +114,13 @@ namespace DotsLite.Draw
                     cmd.RemoveComponentFromNearParts<Model.Bone.TransformTargetTag>(eqi, children, parts);
 
                     cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
+                    Debug.Log("sleep far");
                 })
                 .ScheduleParallel();
 
             this.Entities
                 .WithBurst()
+                .WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag>()
                 .WithAll<Main.SleepingTag, Main.TransformOnlyOnceTag, Main.NearTag>()
                 .WithReadOnly(linkedGroups)
@@ -136,6 +139,34 @@ namespace DotsLite.Draw
                     cmd.RemoveComponentFromFar<Model.Bone.TransformTargetTag>(eqi, children);
 
                     cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
+                    Debug.Log("sleep near");
+                })
+                .ScheduleParallel();
+
+            this.Entities
+                .WithBurst()
+                .WithAll<Main.MainTag, Main.SleepFirstTag>()
+                .WithAll<Main.SleepingTag>()//, Main.TransformOnlyOnceTag>()
+                .WithReadOnly(linkedGroups)
+                .WithReadOnly(parts)
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    //ref Main.TransformOnceTag init,
+                    in Main.BinderLinkData binder) =>
+                {
+                    var eqi = entityInQueryIndex;
+
+                    //init.count++;
+                    //if (init.count < 2) return;
+
+                    // 最初の１回だけはトランスフォームが走るようにしたい
+                    var children = linkedGroups[binder.BinderEntity];
+                    cmd.RemoveComponentFromFar<Model.Bone.TransformTargetTag>(eqi, children);
+                    cmd.RemoveComponentFromNearParts<Model.Bone.TransformTargetTag>(eqi, children, parts);
+
+                    cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
+                    cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
+                    Debug.Log("sleep first");
                 })
                 .ScheduleParallel();
         }

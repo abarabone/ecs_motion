@@ -34,8 +34,11 @@ namespace DotsLite.Structure
 
         public struct TransformOnlyOnceTag : IComponentData
         {
-            public int count;
+            //public int count;
         }
+
+        public struct SleepFirstTag : IComponentData
+        { }
 
         public struct NearTag : IComponentData
         { }

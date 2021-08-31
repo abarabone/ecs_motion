@@ -263,7 +263,8 @@ namespace DotsLite.Structure.Authoring
                     typeof(DrawInstance.TargetWorkData),
                     typeof(Main.PartDestructionData),
                     typeof(Collision.Hit.TargetData),
-                    typeof(Main.SleepTimerData)
+                    typeof(Main.SleepTimerData),
+                    typeof(Main.SleepFirstTag)// 暫定
                     //typeof(Main.SleepingTag)// １回トランスフォームが走るようにする
                 }
             );
