@@ -78,6 +78,7 @@ namespace DotsLite.Structure
                     {
                         resetTimer_(ref timer);
                         changeComponentsToSleep_(in binder);
+                        Debug.Log("to sleep far");
                         return;
                     }
 
@@ -196,6 +197,7 @@ namespace DotsLite.Structure
                     {
                         resetTimer_(ref timer);
                         changeComponentsToSleep_(in binder);
+                        Debug.Log("to sleep near");
                         return;
                     }
 
@@ -282,6 +284,7 @@ namespace DotsLite.Structure
                     {
                         resetTimer_(ref timer);
                         changeComponentsToSleep_(in binder);
+                        Debug.Log("to sleep first");
                         //cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
                         return;
                     }

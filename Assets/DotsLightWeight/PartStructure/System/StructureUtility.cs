@@ -86,7 +86,10 @@ namespace DotsLite.Structure
             cmd.AddAndRemoveComponentsFromNearParts<Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ChangeComponentsToSleepOnNear(
+        public static void 
+            
+            
+            (
             this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
             Main.BinderLinkData binder,
             ComponentDataFromEntity<Part.PartData> parts,
@@ -246,23 +249,23 @@ namespace DotsLite.Structure
                 cmd.RemoveComponent<T>(uniqueIndex, children[i].Value);
             }
         }
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //private static void RemoveComponentsFromNearParts<T0, T1>(
-        //    this EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
-        //    DynamicBuffer<LinkedEntityGroup> children,
-        //    ComponentDataFromEntity<Part.PartData> partData)
-        //where T0 : struct, IComponentData
-        //where T1 : struct, IComponentData
-        //{
-        //    for (var i = 3; i < children.Length; i++)
-        //    {
-        //        var child = children[i].Value;
-        //        if (!partData.HasComponent(child)) continue;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void RemoveComponentsFromNearParts<T0, T1>(
+            this EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex,
+            DynamicBuffer<LinkedEntityGroup> children,
+            ComponentDataFromEntity<Part.PartData> partData)
+        where T0 : struct, IComponentData
+        where T1 : struct, IComponentData
+        {
+            for (var i = 3; i < children.Length; i++)
+            {
+                var child = children[i].Value;
+                if (!partData.HasComponent(child)) continue;
 
-        //        cmd.RemoveComponent<T0>(uniqueIndex, children[i].Value);
-        //        cmd.RemoveComponent<T1>(uniqueIndex, children[i].Value);
-        //    }
-        //}
+                cmd.RemoveComponent<T0>(uniqueIndex, children[i].Value);
+                cmd.RemoveComponent<T1>(uniqueIndex, children[i].Value);
+            }
+        }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

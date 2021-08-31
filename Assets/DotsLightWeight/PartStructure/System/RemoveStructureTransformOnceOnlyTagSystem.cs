@@ -35,32 +35,6 @@ namespace DotsLite.Draw
     /// ・切り替わる時に一度、両方トランスフォームすればいい？
     /// 　・コライダの位置を正しくするため → far, near
     /// 　・デブリの発生位置 → near
-    /// 　→ 
-    /// ・ far/near の切り替え時にＴＦするっていう手もある？
-    /// 
-    /// sleep on
-    ///ＴＦ抑制 ボーンタグ消去
-    ///
-    ///wake up
-    ///ＴＦオン ボーンタグ追加
-    ///
-    ///far/near
-    ///enable/disable disable タグ追加／削除
-    ///
-    ///far/near with sleep
-    ///near/farＴＦ一度 ボーンタグ追加＋oncetag
-    ///
-    ///oncetag
-    ///enable/disable disable タグ追加／削除
-    ///
-    ///near with sleep
-    ///near enable/far disable disable タグ追加／削除
-    ///farＴＦ一度 ボーンタグ追加＋oncetag
-    ///
-    ///far with sleep
-    ///far enable/near disable disable タグ追加／削除
-    ///nearＴＦ一度 ボーンタグ追加＋oncetag
-    ///
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform))]
@@ -151,7 +125,7 @@ namespace DotsLite.Draw
                 .WithReadOnly(parts)
                 .ForEach((
                     Entity entity, int entityInQueryIndex,
-                    //ref Main.TransformOnceTag init,
+                    //ref Main.TransformOnlyOnceTag init,
                     in Main.BinderLinkData binder) =>
                 {
                     var eqi = entityInQueryIndex;
@@ -162,7 +136,8 @@ namespace DotsLite.Draw
                     // 最初の１回だけはトランスフォームが走るようにしたい
                     var children = linkedGroups[binder.BinderEntity];
                     cmd.RemoveComponentFromFar<Model.Bone.TransformTargetTag>(eqi, children);
-                    cmd.RemoveComponentFromNearParts<Model.Bone.TransformTargetTag>(eqi, children, parts);
+                    cmd.RemoveComponentFromFar<Disabled>(eqi, children);
+                    cmd.RemoveComponentsFromNearParts<Disabled, Model.Bone.TransformTargetTag>(eqi, children, parts);
 
                     cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
                     cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
