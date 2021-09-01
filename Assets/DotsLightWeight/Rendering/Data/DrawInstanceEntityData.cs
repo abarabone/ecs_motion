@@ -20,17 +20,17 @@ namespace DotsLite.Draw
     using DotsLite.Utilities;
 
 
-    public struct DrawInstanceEntity :
-        ITypedEntity<
-            DrawInstance.ModelLinkData,
-            DrawInstance.TargetWorkData
-        >
-    {
-        public Entity Entity { get; set; }
+    //public struct DrawInstanceEntity :
+    //    ITypedEntity<
+    //        DrawInstance.ModelLinkData,
+    //        DrawInstance.TargetWorkData
+    //    >
+    //{
+    //    public Entity Entity { get; set; }
 
-        static public implicit operator DrawInstanceEntity( Entity ent )
-            => new DrawInstanceEntity { Entity = ent };
-    }
+    //    static public implicit operator DrawInstanceEntity( Entity ent )
+    //        => new DrawInstanceEntity { Entity = ent };
+    //}
 
 
 
@@ -48,7 +48,6 @@ namespace DotsLite.Draw
         /// </summary>
         public struct BoneModelTag : IComponentData
         { }
-
 
 
         /// <summary>
@@ -106,7 +105,15 @@ namespace DotsLite.Draw
         }
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct NeedLodCurrentTag : IComponentData
+        { }
+        public struct LodCurrentIsFarTag : IComponentData
+        { }
+        public struct LodCurrentIsNearTag : IComponentData
+        { }
 
         ///// <summary>
         ///// カリング用オブジェクトＡＡＢＢ

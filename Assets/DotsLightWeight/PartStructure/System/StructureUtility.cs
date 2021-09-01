@@ -55,22 +55,24 @@ namespace DotsLite.Structure
 
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ChangeComponentsToSleep(
-            this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
-            Main.BinderLinkData binder,
-            ComponentDataFromEntity<Part.PartData> parts,
-            BufferFromEntity<LinkedEntityGroup> linkedGroups)
-        {
-            cmd.AddComponent<Main.SleepingTag>(uniqueIndex, entity);
-            cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static void ChangeComponentsToSleep(
+        //    this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
+        //    Main.BinderLinkData binder,
+        //    ComponentDataFromEntity<Part.PartData> parts,
+        //    BufferFromEntity<LinkedEntityGroup> linkedGroups)
+        //{
+        //    cmd.AddComponent<Main.SleepingTag>(uniqueIndex, entity);
+        //    cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
 
-            var children = linkedGroups[binder.BinderEntity];
-            cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(uniqueIndex, children);
-            cmd.AddComponentToFar<Model.Bone.TransformTargetTag>(uniqueIndex, children);
-            cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
-            cmd.AddAddAndRemoveComponentsFromNearParts<Model.Bone.TransformTargetTag, Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
-        }
+        //    var children = linkedGroups[binder.BinderEntity];
+
+        //    cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(uniqueIndex, children);
+        //    cmd.AddComponentToFar<Model.Bone.TransformTargetTag>(uniqueIndex, children);
+        //    cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
+
+        //    cmd.AddAddAndRemoveComponentsFromNearParts<Model.Bone.TransformTargetTag, Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
+        //}
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ChangeComponentsToSleepOnFar(
             this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
@@ -82,14 +84,15 @@ namespace DotsLite.Structure
             cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
 
             var children = linkedGroups[binder.BinderEntity];
+            
+            // change to sleep
             cmd.RemoveComponentFromFar<Model.Bone.TransformTargetTag>(uniqueIndex, children);
+
+            // transform once only
             cmd.AddAndRemoveComponentsFromNearParts<Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void 
-            
-            
-            (
+        public static void ChangeComponentsToSleepOnNear(
             this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
             Main.BinderLinkData binder,
             ComponentDataFromEntity<Part.PartData> parts,
@@ -99,8 +102,12 @@ namespace DotsLite.Structure
             cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
 
             var children = linkedGroups[binder.BinderEntity];
+
+            // transform once only
             cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(uniqueIndex, children);
             cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
+
+            // change to sleep
             cmd.RemoveComponentFromNearParts<Model.Bone.TransformTargetTag>(uniqueIndex, children, parts);
         }
 

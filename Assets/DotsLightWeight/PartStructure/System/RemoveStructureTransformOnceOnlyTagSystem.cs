@@ -60,90 +60,104 @@ namespace DotsLite.Draw
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
-            var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
-            var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
+            this.Entities
+                .WithBurst()
+                .WithAll<Main.TransformOnlyOnceTag>()
+                .ForEach((Entity entity, int entityInQueryIndex) =>
+                {
+                    var eqi = entityInQueryIndex;
 
+                    //init.count++;
+                    //if (init.count < 2) return;
+
+                    cmd.RemoveComponent<Model.Bone.TransformTargetTag>(eqi, entity);
+                    cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
+                })
+                .ScheduleParallel();
+
+            //var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
+            //var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
 
             // far near を限定してしまってもよいのだろうか？途中で切り替わったりしない？
 
-            this.Entities
-                .WithBurst()
-                .WithNone<Main.SleepFirstTag>()
-                .WithAll<Main.MainTag>()
-                .WithAll<Main.SleepingTag, Main.TransformOnlyOnceTag, Main.FarTag>()
-                .WithReadOnly(linkedGroups)
-                .WithReadOnly(parts)
-                .ForEach((
-                    Entity entity, int entityInQueryIndex,
-                    //ref Main.TransformOnceTag init,
-                    in Main.BinderLinkData binder) =>
-                {
-                    var eqi = entityInQueryIndex;
+            //this.Entities
+            //    .WithBurst()
+            //    .WithNone<Main.SleepFirstTag>()
+            //    .WithAll<Main.MainTag>()
+            //    .WithAll<Main.SleepingTag, Main.TransformOnlyOnceTag, Main.FarTag>()
+            //    .WithReadOnly(linkedGroups)
+            //    .WithReadOnly(parts)
+            //    .ForEach((
+            //        Entity entity, int entityInQueryIndex,
+            //        //ref Main.TransformOnceTag init,
+            //        in Main.BinderLinkData binder) =>
+            //    {
+            //        var eqi = entityInQueryIndex;
 
-                    //init.count++;
-                    //if (init.count < 2) return;
+            //        //init.count++;
+            //        //if (init.count < 2) return;
 
-                    // 最初の１回だけはトランスフォームが走るようにしたい
-                    var children = linkedGroups[binder.BinderEntity];
-                    cmd.RemoveComponentFromNearParts<Model.Bone.TransformTargetTag>(eqi, children, parts);
+            //        // 最初の１回だけはトランスフォームが走るようにしたい
+            //        var children = linkedGroups[binder.BinderEntity];
+            //        cmd.RemoveComponentFromNearParts<Model.Bone.TransformTargetTag>(eqi, children, parts);
 
-                    cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
-                    Debug.Log("sleep far");
-                })
-                .ScheduleParallel();
+            //        cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
+            //        Debug.Log("sleep far");
+            //    })
+            //    .ScheduleParallel();
 
-            this.Entities
-                .WithBurst()
-                .WithNone<Main.SleepFirstTag>()
-                .WithAll<Main.MainTag>()
-                .WithAll<Main.SleepingTag, Main.TransformOnlyOnceTag, Main.NearTag>()
-                .WithReadOnly(linkedGroups)
-                .ForEach((
-                    Entity entity, int entityInQueryIndex,
-                    //ref Main.TransformOnceTag init,
-                    in Main.BinderLinkData binder) =>
-                {
-                    var eqi = entityInQueryIndex;
+            //this.Entities
+            //    .WithBurst()
+            //    .WithNone<Main.SleepFirstTag>()
+            //    .WithAll<Main.MainTag>()
+            //    .WithAll<Main.SleepingTag, Main.TransformOnlyOnceTag, Main.NearTag>()
+            //    .WithReadOnly(linkedGroups)
+            //    .ForEach((
+            //        Entity entity, int entityInQueryIndex,
+            //        //ref Main.TransformOnceTag init,
+            //        in Main.BinderLinkData binder) =>
+            //    {
+            //        var eqi = entityInQueryIndex;
 
-                    //init.count++;
-                    //if (init.count < 2) return;
+            //        //init.count++;
+            //        //if (init.count < 2) return;
 
-                    // 最初の１回だけはトランスフォームが走るようにしたい
-                    var children = linkedGroups[binder.BinderEntity];
-                    cmd.RemoveComponentFromFar<Model.Bone.TransformTargetTag>(eqi, children);
+            //        // 最初の１回だけはトランスフォームが走るようにしたい
+            //        var children = linkedGroups[binder.BinderEntity];
+            //        cmd.RemoveComponentFromFar<Model.Bone.TransformTargetTag>(eqi, children);
 
-                    cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
-                    Debug.Log("sleep near");
-                })
-                .ScheduleParallel();
+            //        cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
+            //        Debug.Log("sleep near");
+            //    })
+            //    .ScheduleParallel();
 
-            this.Entities
-                .WithBurst()
-                .WithAll<Main.MainTag, Main.SleepFirstTag>()
-                .WithAll<Main.SleepingTag>()//, Main.TransformOnlyOnceTag>()
-                .WithReadOnly(linkedGroups)
-                .WithReadOnly(parts)
-                .ForEach((
-                    Entity entity, int entityInQueryIndex,
-                    //ref Main.TransformOnlyOnceTag init,
-                    in Main.BinderLinkData binder) =>
-                {
-                    var eqi = entityInQueryIndex;
+            //this.Entities
+            //    .WithBurst()
+            //    .WithAll<Main.MainTag, Main.SleepFirstTag>()
+            //    .WithAll<Main.SleepingTag>()//, Main.TransformOnlyOnceTag>()
+            //    .WithReadOnly(linkedGroups)
+            //    .WithReadOnly(parts)
+            //    .ForEach((
+            //        Entity entity, int entityInQueryIndex,
+            //        //ref Main.TransformOnlyOnceTag init,
+            //        in Main.BinderLinkData binder) =>
+            //    {
+            //        var eqi = entityInQueryIndex;
 
-                    //init.count++;
-                    //if (init.count < 2) return;
+            //        //init.count++;
+            //        //if (init.count < 2) return;
 
-                    // 最初の１回だけはトランスフォームが走るようにしたい
-                    var children = linkedGroups[binder.BinderEntity];
-                    cmd.RemoveComponentFromFar<Model.Bone.TransformTargetTag>(eqi, children);
-                    cmd.RemoveComponentFromFar<Disabled>(eqi, children);
-                    cmd.RemoveComponentsFromNearParts<Disabled, Model.Bone.TransformTargetTag>(eqi, children, parts);
+            //        // 最初の１回だけはトランスフォームが走るようにしたい
+            //        var children = linkedGroups[binder.BinderEntity];
+            //        cmd.RemoveComponentFromFar<Model.Bone.TransformTargetTag>(eqi, children);
+            //        //cmd.RemoveComponentFromFar<Disabled>(eqi, children);
+            //        cmd.RemoveComponentsFromNearParts<Disabled, Model.Bone.TransformTargetTag>(eqi, children, parts);
 
-                    cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
-                    cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
-                    Debug.Log("sleep first");
-                })
-                .ScheduleParallel();
+            //        cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
+            //        cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
+            //        Debug.Log("sleep first");
+            //    })
+            //    .ScheduleParallel();
         }
 
 

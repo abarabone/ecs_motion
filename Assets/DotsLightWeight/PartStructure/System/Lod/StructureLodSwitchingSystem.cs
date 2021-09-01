@@ -27,11 +27,11 @@ namespace DotsLite.Draw
     using DotsLite.Dependency;
 
 
-        /// <summary>
-        /// linked entity 番号を固定で使ってしまったので、問題でたらちゃんとなおさなければならない
-        /// 
-        /// 全オブジェクトを毎フレーム処理するのは無駄なので、コリジョンなどで処理したほうがよさそう
-        /// </summary>
+    /// <summary>
+    /// linked entity 番号を固定で使ってしまったので、問題でたらちゃんとなおさなければならない
+    /// 
+    /// 全オブジェクトを毎フレーム処理するのは無駄なので、コリジョンなどで処理したほうがよさそう
+    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class StructureLodSwitchingSystem : DependencyAccessableSystemBase
@@ -60,12 +60,57 @@ namespace DotsLite.Draw
             var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
 
-            this.Entities
+            //this.Entities
+            //    .WithBurst()
+            //    .WithNone<Main.SleepFirstTag>()
+            //    .WithAll<Main.MainTag>()
+            //    .WithReadOnly(linkedGroups)
+            //    .WithReadOnly(parts)
+            //    .WithReadOnly(disableds)
+            //    .ForEach(
+            //        (
+            //            Entity entity, int entityInQueryIndex,
+            //            in Main.BinderLinkData binder,
+            //            in DrawInstance.ModelLinkData model,
+            //            in DrawInstance.ModelLod2LinkData lod2
+            //        )
+            //    =>
+            //        {
+            //            var eqi = entityInQueryIndex;
+            //            var children = linkedGroups[binder.BinderEntity];
+            //            var isFarDisable = disableds.HasComponent(children[2].Value);
+
+
+            //            var isNearComponent = isFarDisable;
+            //            var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
+
+            //            if (isNearModel & !isNearComponent)
+            //            {
+            //                children.ChangeToNear(cmd, eqi, entity, parts);
+            //                return;
+            //            }
+
+
+            //            var isFarComponent = !isFarDisable;
+            //            var isFarModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityFar;
+
+            //            if (isFarModel & !isFarComponent)
+            //            {
+            //                children.ChangeToFar(cmd, eqi, entity, parts);
+            //                return;
+            //            }
+
+            //        }
+            //    )
+            //    .ScheduleParallel();
+
+            var dep0 = this.Entities
                 .WithBurst()
-                .WithAll<Main.MainTag>()
+                .WithNone<Main.SleepFirstTag>()
+                .WithAll<Main.MainTag, Main.FarTag>()
+                .WithNone<DrawInstance.LodCurrentIsNearTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
-                .WithReadOnly(disableds)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -77,28 +122,37 @@ namespace DotsLite.Draw
                     {
                         var eqi = entityInQueryIndex;
                         var children = linkedGroups[binder.BinderEntity];
-                        
 
-                        var isNearComponent = disableds.HasComponent(children[2].Value);
-                        var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
-
-                        if (isNearModel & !isNearComponent)
-                        {
-                            children.ChangeToNear(cmd, eqi, entity, parts);
-                        }
-
-
-                        var isFarComponent = !isNearComponent;
-                        var isFarModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityFar;
-
-                        if (isFarModel & !isFarComponent)
-                        {
-                            children.ChangeToFar(cmd, eqi, entity, parts);
-                        }
+                        children.ChangeToNear(cmd, eqi, entity, parts);
 
                     }
                 )
-                .ScheduleParallel();
+                .ScheduleParallel(this.Dependency);
+
+            var dep1 = this.Entities
+                .WithBurst()
+                .WithNone<Main.SleepFirstTag>()
+                .WithAll<Main.MainTag, Main.NearTag>()
+                .WithNone<DrawInstance.LodCurrentIsFarTag>()
+                .WithReadOnly(linkedGroups)
+                .WithReadOnly(parts)
+                .ForEach(
+                    (
+                        Entity entity, int entityInQueryIndex,
+                        in Main.BinderLinkData binder,
+                        in DrawInstance.ModelLinkData model,
+                        in DrawInstance.ModelLod2LinkData lod2
+                    )
+                =>
+                    {
+                        var eqi = entityInQueryIndex;
+                        var children = linkedGroups[binder.BinderEntity];
+
+                        children.ChangeToFar(cmd, eqi, entity, parts);
+
+                    }
+                )
+                .ScheduleParallel(this.Dependency);
         }
 
 
