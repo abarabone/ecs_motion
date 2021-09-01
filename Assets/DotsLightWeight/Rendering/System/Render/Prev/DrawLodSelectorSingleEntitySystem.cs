@@ -48,8 +48,8 @@ namespace DotsLite.Draw
 
             var campos = Camera.main.transform.position.As_float3();
 
-            
-            var dep0 = this.Entities
+
+            this.Entities
                 .WithName("LodOnly")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithNone<DrawInstance.NeedLodCurrentTag>()
@@ -62,9 +62,9 @@ namespace DotsLite.Draw
                     modelLink.DrawModelEntityCurrent = selectModel_(pos.Value, campos, lodLink, modelLink);
 
                 })
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();
 
-            var dep1 = this.Entities
+            this.Entities
                 .WithName("LodAddTag")
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
                 .WithAll<DrawInstance.NeedLodCurrentTag>()
@@ -102,9 +102,7 @@ namespace DotsLite.Draw
                     //    selectModel_WithAddTag_(cmd, eqi, entity, pos.Value, campos, lodLink, modelLink);
 
                 })
-                .ScheduleParallel(this.Dependency);
-
-            JobHandle.CombineDependencies(dep0, dep1);
+                .ScheduleParallel();
         }
 
 

@@ -34,6 +34,8 @@ namespace DotsLite.Draw
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.Lod))]
+    //[UpdateAfter(typeof(DrawLodSelectorSingleEntitySystem))]
     public class StructureLodSwitchingSystem : DependencyAccessableSystemBase
     {
 
@@ -111,22 +113,18 @@ namespace DotsLite.Draw
                 .WithNone<DrawInstance.LodCurrentIsNearTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        in Main.BinderLinkData binder,
-                        in DrawInstance.ModelLinkData model,
-                        in DrawInstance.ModelLod2LinkData lod2
-                    )
-                =>
-                    {
-                        var eqi = entityInQueryIndex;
-                        var children = linkedGroups[binder.BinderEntity];
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    in Main.BinderLinkData binder,
+                    in DrawInstance.ModelLinkData model,
+                    in DrawInstance.ModelLod2LinkData lod2) =>
+                {
+                    var eqi = entityInQueryIndex;
+                    var children = linkedGroups[binder.BinderEntity];
 
-                        children.ChangeToNear(cmd, eqi, entity, parts);
+                    children.ChangeToNear(cmd, eqi, entity, parts);
 
-                    }
-                )
+                })
                 .ScheduleParallel(this.Dependency);
 
             var dep1 = this.Entities
@@ -136,23 +134,21 @@ namespace DotsLite.Draw
                 .WithNone<DrawInstance.LodCurrentIsFarTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
-                .ForEach(
-                    (
-                        Entity entity, int entityInQueryIndex,
-                        in Main.BinderLinkData binder,
-                        in DrawInstance.ModelLinkData model,
-                        in DrawInstance.ModelLod2LinkData lod2
-                    )
-                =>
-                    {
-                        var eqi = entityInQueryIndex;
-                        var children = linkedGroups[binder.BinderEntity];
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    in Main.BinderLinkData binder,
+                    in DrawInstance.ModelLinkData model,
+                    in DrawInstance.ModelLod2LinkData lod2) =>
+                {
+                    var eqi = entityInQueryIndex;
+                    var children = linkedGroups[binder.BinderEntity];
 
-                        children.ChangeToFar(cmd, eqi, entity, parts);
+                    children.ChangeToFar(cmd, eqi, entity, parts);
 
-                    }
-                )
+                })
                 .ScheduleParallel(this.Dependency);
+
+            JobHandle.CombineDependencies(dep0, dep1);
         }
 
 

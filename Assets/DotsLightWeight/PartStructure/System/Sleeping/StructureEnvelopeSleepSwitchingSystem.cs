@@ -49,8 +49,8 @@ namespace DotsLite.Structure
 
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
-
-            var dep0 = this.Entities
+            
+            this.Entities
                 .WithName("first")
                 .WithBurst()
                 .WithAll<Main.SleepFirstTag>()
@@ -60,7 +60,7 @@ namespace DotsLite.Structure
 
                     cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
                 })
-                .Schedule(this.Dependency);
+                .Schedule();
 
 
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
@@ -72,7 +72,7 @@ namespace DotsLite.Structure
             //var curtime = (float)this.Time.ElapsedTime;
             var dt = this.Time.DeltaTime;
 
-            var dep1 = this.Entities
+            this.Entities
                 .WithName("far")
                 .WithBurst()
                 .WithNone<Main.SleepingTag, Main.SleepFirstTag>()
@@ -104,7 +104,7 @@ namespace DotsLite.Structure
                     //void changeComponentsToSleep_(in Main.BinderLinkData binder) =>
                     //    cmd.ChangeComponentsToSleepOnFar(entity, eqi, binder, parts, linkedGroups);
                 })
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();
 
             //// ‚È‚ñ‚©‚Å‚«‚È‚¢
             //var dep2 = this.Entities
@@ -145,7 +145,7 @@ namespace DotsLite.Structure
             //this.Dependency = JobHandle.CombineDependencies(dep0, dep1, dep2);
             //return;
 
-            this.Dependency = JobHandle.CombineDependencies(dep0, dep1);
+            //this.Dependency = JobHandle.CombineDependencies(dep0, dep1);
             return;
 
 

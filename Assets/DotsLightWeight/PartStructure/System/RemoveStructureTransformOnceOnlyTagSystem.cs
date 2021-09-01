@@ -37,8 +37,9 @@ namespace DotsLite.Draw
     /// 　・デブリの発生位置 → near
     /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform))]
-    [UpdateAfter(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform))]
+    //[UpdateAfter(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class RemoveStructureTransformOnceOnlyTagSystem : DependencyAccessableSystemBase
     {
 

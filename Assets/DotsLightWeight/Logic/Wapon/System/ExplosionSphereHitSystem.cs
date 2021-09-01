@@ -35,6 +35,7 @@ namespace DotsLite.Arms
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.Hit))]
+    [UpdateAfter(typeof(BulletSphereHitSystem))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
     public class ExplosionSphereHitSystem : DependencyAccessableSystemBase
@@ -48,6 +49,7 @@ namespace DotsLite.Arms
         HitMessage<Structure.PartHitMessage>.Sender ptSender;
         HitMessage<Character.HitMessage>.Sender chSender;
 
+        //DependencyAccessableSystemBase prevHitSystem;
 
 
         protected override void OnCreate()
@@ -61,6 +63,8 @@ namespace DotsLite.Arms
             this.stSender = HitMessage<Structure.EnvelopeHitMessage>.Sender.Create<StructureEnvelopeHitMessageApplySystem>(this);
             this.ptSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
+
+            //this.prevHitSystem = World.GetExistingSystem<BulletSphereHitSystem>();
         }
 
 
@@ -165,6 +169,8 @@ namespace DotsLite.Arms
                     }
                 )
                 .ScheduleParallel();
+
+            //this.AddInputDependency(this.prevHitSystem.GetOutputDependency());
         }
 
     }
