@@ -136,7 +136,7 @@ namespace DotsLite.Arms
             var collector = new ClosestTargetedHitExcludeSelfCollector<DistanceHit>(radius, selfStateEntity, links);
 
             var isHit = cw.OverlapSphereCustom(pos, radius, ref collector, filter);
-
+            
 
             return new BulletHit
             {
@@ -250,7 +250,6 @@ namespace DotsLite.Arms
             float3 v, float damage,
             CorpsGroup.TargetWithArmsData corps)
         {
-
             switch (hit.hitType)
             {
                 case HitType.part:
