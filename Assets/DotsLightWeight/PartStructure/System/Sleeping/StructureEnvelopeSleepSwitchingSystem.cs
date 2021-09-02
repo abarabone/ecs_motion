@@ -61,7 +61,7 @@ namespace DotsLite.Structure
                     cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
                 })
                 .Schedule();
-
+            return;
 
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);

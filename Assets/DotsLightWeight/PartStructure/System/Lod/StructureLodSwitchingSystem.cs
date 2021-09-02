@@ -61,7 +61,6 @@ namespace DotsLite.Draw
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
             var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
-
             //this.Entities
             //    .WithBurst()
             //    .WithNone<Main.SleepFirstTag>()
@@ -106,11 +105,54 @@ namespace DotsLite.Draw
             //    )
             //    .ScheduleParallel();
 
-            var dep0_ = this.Entities
-                .WithName("FirsNear")
+            //this.Entities
+            //    .WithBurst()
+            //    .WithAll<Main.SleepFirstTag>()
+            //    .WithReadOnly(linkedGroups)
+            //    .WithReadOnly(parts)
+            //    .ForEach(
+            //        (
+            //            Entity entity, int entityInQueryIndex,
+            //            in Main.BinderLinkData binder,
+            //            in DrawInstance.ModelLinkData model,
+            //            in DrawInstance.ModelLod2LinkData lod2
+            //        )
+            //    =>
+            //        {
+            //            var eqi = entityInQueryIndex;
+            //            var children = linkedGroups[binder.BinderEntity];
+
+
+            //            var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
+
+            //            if (isNearModel)
+            //            {
+            //                children.ChangeToNear(cmd, eqi, entity, parts);
+            //                Debug.Log("to near first");
+            //                return;
+            //            }
+
+
+            //            var isFarModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityFar;
+
+            //            if (isFarModel)
+            //            {
+            //                children.ChangeToFar(cmd, eqi, entity, parts);
+            //                Debug.Log("to far first");
+            //                return;
+            //            }
+
+            //        }
+            //    )
+            //    .ScheduleParallel();
+
+            //var dep0_ = this.Entities
+            this.Entities
+                .WithName("FirstNear")
                 .WithBurst()
-                .WithAll<Main.MainTag, Main.SleepFirstTag>()
-                .WithNone<DrawInstance.LodCurrentIsNearTag>()
+                .WithAll<Main.MainTag>()
+                .WithAll<DrawInstance.LodCurrentIsNearTag>()
+                .WithNone<Main.NearTag, Main.FarTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
                 .ForEach((
@@ -123,15 +165,18 @@ namespace DotsLite.Draw
                     var children = linkedGroups[binder.BinderEntity];
 
                     children.ChangeToNear(cmd, eqi, entity, parts);
+                    Debug.Log("to near first");
 
                 })
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();// this.Dependency);
 
-            var dep1_ = this.Entities
+            //var dep1_ = this.Entities
+            this.Entities
                 .WithName("FirstFar")
                 .WithBurst()
-                .WithAll<Main.MainTag, Main.SleepFirstTag>()
-                .WithNone<DrawInstance.LodCurrentIsFarTag>()
+                .WithAll<Main.MainTag>()
+                .WithAll<DrawInstance.LodCurrentIsFarTag>()
+                .WithNone<Main.NearTag, Main.FarTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
                 .ForEach((
@@ -144,16 +189,18 @@ namespace DotsLite.Draw
                     var children = linkedGroups[binder.BinderEntity];
 
                     children.ChangeToFar(cmd, eqi, entity, parts);
+                    Debug.Log("to far first");
 
                 })
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();// this.Dependency);
 
-            var dep0 = this.Entities
+            //var dep0 = this.Entities
+            this.Entities
                 .WithName("ToNear")
                 .WithBurst()
                 .WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag, Main.FarTag>()
-                .WithNone<DrawInstance.LodCurrentIsNearTag>()
+                .WithAll<DrawInstance.LodCurrentIsNearTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
                 .ForEach((
@@ -166,16 +213,17 @@ namespace DotsLite.Draw
                     var children = linkedGroups[binder.BinderEntity];
 
                     children.ChangeToNear(cmd, eqi, entity, parts);
-
+                    Debug.Log("to near");
                 })
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();// this.Dependency);
 
-            var dep1 = this.Entities
+            //var dep1 = this.Entities
+            this.Entities
                 .WithName("ToFar")
                 .WithBurst()
                 .WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag, Main.NearTag>()
-                .WithNone<DrawInstance.LodCurrentIsFarTag>()
+                .WithAll<DrawInstance.LodCurrentIsFarTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
                 .ForEach((
@@ -188,12 +236,12 @@ namespace DotsLite.Draw
                     var children = linkedGroups[binder.BinderEntity];
 
                     children.ChangeToFar(cmd, eqi, entity, parts);
-
+                    Debug.Log("to far");
                 })
-                .ScheduleParallel(this.Dependency);
+                .ScheduleParallel();// this.Dependency);
 
-            using var jobs = new NativeList<JobHandle>(4, Allocator.Temp) {dep0_, dep1_, dep0, dep1};
-            this.Dependency = JobHandle.CombineDependencies(jobs);
+            //using var jobs = new NativeList<JobHandle>(4, Allocator.Temp) {dep0_, dep1_, dep0, dep1};
+            //this.Dependency = JobHandle.CombineDependencies(jobs);
         }
 
 
