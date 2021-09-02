@@ -106,7 +106,50 @@ namespace DotsLite.Draw
             //    )
             //    .ScheduleParallel();
 
+            var dep0_ = this.Entities
+                .WithName("FirsNear")
+                .WithBurst()
+                .WithAll<Main.MainTag, Main.SleepFirstTag>()
+                .WithNone<DrawInstance.LodCurrentIsNearTag>()
+                .WithReadOnly(linkedGroups)
+                .WithReadOnly(parts)
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    in Main.BinderLinkData binder,
+                    in DrawInstance.ModelLinkData model,
+                    in DrawInstance.ModelLod2LinkData lod2) =>
+                {
+                    var eqi = entityInQueryIndex;
+                    var children = linkedGroups[binder.BinderEntity];
+
+                    children.ChangeToNear(cmd, eqi, entity, parts);
+
+                })
+                .ScheduleParallel(this.Dependency);
+
+            var dep1_ = this.Entities
+                .WithName("FirstFar")
+                .WithBurst()
+                .WithAll<Main.MainTag, Main.SleepFirstTag>()
+                .WithNone<DrawInstance.LodCurrentIsFarTag>()
+                .WithReadOnly(linkedGroups)
+                .WithReadOnly(parts)
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    in Main.BinderLinkData binder,
+                    in DrawInstance.ModelLinkData model,
+                    in DrawInstance.ModelLod2LinkData lod2) =>
+                {
+                    var eqi = entityInQueryIndex;
+                    var children = linkedGroups[binder.BinderEntity];
+
+                    children.ChangeToFar(cmd, eqi, entity, parts);
+
+                })
+                .ScheduleParallel(this.Dependency);
+
             var dep0 = this.Entities
+                .WithName("ToNear")
                 .WithBurst()
                 .WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag, Main.FarTag>()
@@ -128,6 +171,7 @@ namespace DotsLite.Draw
                 .ScheduleParallel(this.Dependency);
 
             var dep1 = this.Entities
+                .WithName("ToFar")
                 .WithBurst()
                 .WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag, Main.NearTag>()
@@ -148,7 +192,8 @@ namespace DotsLite.Draw
                 })
                 .ScheduleParallel(this.Dependency);
 
-            JobHandle.CombineDependencies(dep0, dep1);
+            using var jobs = new NativeList<JobHandle>(4, Allocator.Temp) {dep0_, dep1_, dep0, dep1};
+            this.Dependency = JobHandle.CombineDependencies(jobs);
         }
 
 
