@@ -37,14 +37,12 @@ namespace DotsLite.Structure
             public int count;
         }
 
-        //public struct SleepFirstTag : IComponentData
-        //{ }
-
         public struct NearTag : IComponentData
         { }
         public struct FarTag : IComponentData
         { }
-
+        //public struct NoShowTag : IComponentData
+        //{ }
 
         // 暫定　後で直したい
         public struct BinderLinkData : IComponentData

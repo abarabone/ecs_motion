@@ -61,91 +61,6 @@ namespace DotsLite.Draw
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
             var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
-            //this.Entities
-            //    .WithBurst()
-            //    .WithNone<Main.SleepFirstTag>()
-            //    .WithAll<Main.MainTag>()
-            //    .WithReadOnly(linkedGroups)
-            //    .WithReadOnly(parts)
-            //    .WithReadOnly(disableds)
-            //    .ForEach(
-            //        (
-            //            Entity entity, int entityInQueryIndex,
-            //            in Main.BinderLinkData binder,
-            //            in DrawInstance.ModelLinkData model,
-            //            in DrawInstance.ModelLod2LinkData lod2
-            //        )
-            //    =>
-            //        {
-            //            var eqi = entityInQueryIndex;
-            //            var children = linkedGroups[binder.BinderEntity];
-            //            var isFarDisable = disableds.HasComponent(children[2].Value);
-
-
-            //            var isNearComponent = isFarDisable;
-            //            var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
-
-            //            if (isNearModel & !isNearComponent)
-            //            {
-            //                children.ChangeToNear(cmd, eqi, entity, parts);
-            //                return;
-            //            }
-
-
-            //            var isFarComponent = !isFarDisable;
-            //            var isFarModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityFar;
-
-            //            if (isFarModel & !isFarComponent)
-            //            {
-            //                children.ChangeToFar(cmd, eqi, entity, parts);
-            //                return;
-            //            }
-
-            //        }
-            //    )
-            //    .ScheduleParallel();
-
-            //this.Entities
-            //    .WithBurst()
-            //    .WithAll<Main.SleepFirstTag>()
-            //    .WithReadOnly(linkedGroups)
-            //    .WithReadOnly(parts)
-            //    .ForEach(
-            //        (
-            //            Entity entity, int entityInQueryIndex,
-            //            in Main.BinderLinkData binder,
-            //            in DrawInstance.ModelLinkData model,
-            //            in DrawInstance.ModelLod2LinkData lod2
-            //        )
-            //    =>
-            //        {
-            //            var eqi = entityInQueryIndex;
-            //            var children = linkedGroups[binder.BinderEntity];
-
-
-            //            var isNearModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityNear;
-
-            //            if (isNearModel)
-            //            {
-            //                children.ChangeToNear(cmd, eqi, entity, parts);
-            //                Debug.Log("to near first");
-            //                return;
-            //            }
-
-
-            //            var isFarModel = model.DrawModelEntityCurrent == lod2.DrawModelEntityFar;
-
-            //            if (isFarModel)
-            //            {
-            //                children.ChangeToFar(cmd, eqi, entity, parts);
-            //                Debug.Log("to far first");
-            //                return;
-            //            }
-
-            //        }
-            //    )
-            //    .ScheduleParallel();
-
             //var dep0_ = this.Entities
             this.Entities
                 .WithName("FirstNear")
@@ -165,7 +80,7 @@ namespace DotsLite.Draw
                     var children = linkedGroups[binder.BinderEntity];
 
                     children.ChangeToNear(cmd, eqi, entity, parts);
-                    Debug.Log("to near first");
+                    //Debug.Log("to near first");
 
                 })
                 .ScheduleParallel();// this.Dependency);
@@ -175,7 +90,8 @@ namespace DotsLite.Draw
                 .WithName("FirstFar")
                 .WithBurst()
                 .WithAll<Main.MainTag>()
-                .WithAll<DrawInstance.LodCurrentIsFarTag>()
+                .WithNone<DrawInstance.LodCurrentIsNearTag>()
+                //.WithAll<DrawInstance.LodCurrentIsFarTag>()// model が null のケースも far とみなすようにした
                 .WithNone<Main.NearTag, Main.FarTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
@@ -189,7 +105,7 @@ namespace DotsLite.Draw
                     var children = linkedGroups[binder.BinderEntity];
 
                     children.ChangeToFar(cmd, eqi, entity, parts);
-                    Debug.Log("to far first");
+                    //Debug.Log("to far first");
 
                 })
                 .ScheduleParallel();// this.Dependency);
@@ -198,7 +114,6 @@ namespace DotsLite.Draw
             this.Entities
                 .WithName("ToNear")
                 .WithBurst()
-                //.WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag, Main.FarTag>()
                 .WithAll<DrawInstance.LodCurrentIsNearTag>()
                 .WithReadOnly(linkedGroups)
@@ -213,7 +128,7 @@ namespace DotsLite.Draw
                     var children = linkedGroups[binder.BinderEntity];
 
                     children.ChangeToNear(cmd, eqi, entity, parts);
-                    Debug.Log("to near");
+                    //Debug.Log("to near");
                 })
                 .ScheduleParallel();// this.Dependency);
 
@@ -221,9 +136,9 @@ namespace DotsLite.Draw
             this.Entities
                 .WithName("ToFar")
                 .WithBurst()
-                //.WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag, Main.NearTag>()
-                .WithAll<DrawInstance.LodCurrentIsFarTag>()
+                .WithNone<DrawInstance.LodCurrentIsNearTag>()
+                //.WithAll<DrawInstance.LodCurrentIsFarTag>()// model が null のケースも far とみなすようにした
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
                 .ForEach((
@@ -236,7 +151,7 @@ namespace DotsLite.Draw
                     var children = linkedGroups[binder.BinderEntity];
 
                     children.ChangeToFar(cmd, eqi, entity, parts);
-                    Debug.Log("to far");
+                    //Debug.Log("to far");
                 })
                 .ScheduleParallel();// this.Dependency);
 

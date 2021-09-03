@@ -50,19 +50,6 @@ namespace DotsLite.Structure
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             
-            //this.Entities
-            //    .WithName("first")
-            //    .WithBurst()
-            //    .WithAll<Main.SleepFirstTag>()
-            //    .ForEach((Entity entity, int entityInQueryIndex) =>
-            //    {
-            //        var eqi = entityInQueryIndex;
-
-            //        cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
-            //    })
-            //    .Schedule();
-            //return;
-
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
 
@@ -93,16 +80,11 @@ namespace DotsLite.Structure
                         resetTimer_(ref timer);
                         //changeComponentsToSleep_(in binder);
                         cmd.ChangeComponentsToSleepOnFar(entity, eqi, binder, parts, linkedGroups);
-                        Debug.Log("to sleep far");
+                        //Debug.Log("to sleep far");
                         return;
                     }
 
                     progressTimer_IfNotMove_(ref timer, in pos);
-                    return;
-
-
-                    //void changeComponentsToSleep_(in Main.BinderLinkData binder) =>
-                    //    cmd.ChangeComponentsToSleepOnFar(entity, eqi, binder, parts, linkedGroups);
                 })
                 .ScheduleParallel();
 
@@ -110,7 +92,7 @@ namespace DotsLite.Structure
             //var dep2 = this.Entities
             //    .WithName("near")
             //    .WithBurst()
-            //    .WithNone<Main.SleepingTag, Main.SleepFirstTag>()
+            //    .WithNone<Main.SleepingTag>()
             //    .WithAll<Main.NearTag>()
             //    .WithReadOnly(parts)
             //    .WithReadOnly(linkedGroups)
@@ -221,17 +203,11 @@ namespace DotsLite.Structure
                         resetTimer_(ref timer);
                         //changeComponentsToSleep_(in binder);
                         cmd.ChangeComponentsToSleepOnNear(entity, eqi, binder, parts, linkedGroups);
-                        Debug.Log("to sleep near");
+                        //Debug.Log("to sleep near");
                         return;
                     }
 
                     progressTimer_IfNotMove_(ref timer, in pos);
-                    return;
-
-
-                    //void changeComponentsToSleep_(in Main.BinderLinkData binder) =>
-                    //    cmd.ChangeComponentsToSleepOnNear(entity, eqi, binder, parts, linkedGroups);
-
                 })
                 .ScheduleParallel();
 
@@ -257,91 +233,4 @@ namespace DotsLite.Structure
         }
     }
 
-    ////[DisableAutoCreation]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    //public class StructureEnvelopeSleepSwitchingSystem_ : DependencyAccessableSystemBase
-    //{
-
-
-    //    CommandBufferDependency.Sender cmddep;
-
-
-    //    protected override void OnCreate()
-    //    {
-    //        base.OnCreate();
-
-    //        this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-    //    }
-
-    //    protected override void OnUpdate()
-    //    {
-    //        using var cmdScope = this.cmddep.WithDependencyScope();
-
-
-    //        var cmd = cmdScope.CommandBuffer.AsParallelWriter();
-
-    //        var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
-    //        var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
-
-    //        const float l = 0.01f;
-    //        var limit = new float3(l, l, l);// l * l, l * l, l * l);
-
-    //        //var curtime = (float)this.Time.ElapsedTime;
-    //        var dt = this.Time.DeltaTime;
-
-    //        this.Entities
-    //            .WithBurst()
-    //            .WithAll<Main.SleepFirstTag>()
-    //            .WithNone<Main.SleepingTag>()
-    //            .WithReadOnly(parts)
-    //            .WithReadOnly(linkedGroups)
-    //            .ForEach((
-    //                Entity entity, int entityInQueryIndex,
-    //                ref Main.SleepTimerData timer,
-    //                in Main.BinderLinkData binder,
-    //                in Translation pos) =>
-    //            {
-    //                var eqi = entityInQueryIndex;
-
-
-    //                if (isTimerCompleted_(in timer))
-    //                {
-    //                    resetTimer_(ref timer);
-    //                    changeComponentsToSleep_(in binder);
-    //                    Debug.Log("to sleep first");
-    //                    //cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
-    //                    return;
-    //                }
-
-    //                progressTimer_IfNotMove_(ref timer, in pos);
-    //                return;
-
-
-    //                void changeComponentsToSleep_(in Main.BinderLinkData binder) =>
-    //                    cmd.ChangeComponentsToSleep(entity, eqi, binder, parts, linkedGroups);
-
-    //            })
-    //            .ScheduleParallel();
-
-    //        return;
-
-
-    //        static bool isTimerCompleted_(in Main.SleepTimerData timer) =>
-    //            timer.StillnessTime >= Main.SleepTimerData.Margin;
-
-    //        static void resetTimer_(ref Main.SleepTimerData timer) =>
-    //            timer.PrePositionAndTime = 0.0f;
-
-    //        void progressTimer_IfNotMove_(ref Main.SleepTimerData timer, in Translation pos)
-    //        {
-    //            //var isStillness = math.all(math.abs(v.Linear) < limit) & math.all(math.abs(v.Angular) < limit);
-    //            var isStillness = math.all(math.abs(pos.Value - timer.PrePosition) < limit);
-
-    //            timer.PrePositionAndTime = math.select(
-    //                new float4(pos.Value, 0.0f),
-    //                new float4(pos.Value, timer.StillnessTime + dt),
-    //                isStillness);
-    //        }
-    //    }
-    //}
 }
