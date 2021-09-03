@@ -37,8 +37,8 @@ namespace DotsLite.Structure
             public int count;
         }
 
-        public struct SleepFirstTag : IComponentData
-        { }
+        //public struct SleepFirstTag : IComponentData
+        //{ }
 
         public struct NearTag : IComponentData
         { }
