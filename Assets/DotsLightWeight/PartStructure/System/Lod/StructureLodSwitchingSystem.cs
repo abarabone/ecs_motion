@@ -198,7 +198,7 @@ namespace DotsLite.Draw
             this.Entities
                 .WithName("ToNear")
                 .WithBurst()
-                .WithNone<Main.SleepFirstTag>()
+                //.WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag, Main.FarTag>()
                 .WithAll<DrawInstance.LodCurrentIsNearTag>()
                 .WithReadOnly(linkedGroups)
@@ -221,7 +221,7 @@ namespace DotsLite.Draw
             this.Entities
                 .WithName("ToFar")
                 .WithBurst()
-                .WithNone<Main.SleepFirstTag>()
+                //.WithNone<Main.SleepFirstTag>()
                 .WithAll<Main.MainTag, Main.NearTag>()
                 .WithAll<DrawInstance.LodCurrentIsFarTag>()
                 .WithReadOnly(linkedGroups)

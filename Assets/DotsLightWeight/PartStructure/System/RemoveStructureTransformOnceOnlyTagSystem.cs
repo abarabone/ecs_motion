@@ -71,8 +71,9 @@ namespace DotsLite.Draw
                     //init.count++;
                     //if (init.count < 2) return;
 
-                    cmd.RemoveComponent<Model.Bone.TransformTargetTag>(eqi, entity);
                     cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
+                    cmd.RemoveComponent<Model.Bone.TransformTargetTag>(eqi, entity);
+                    cmd.AddComponent<Disabled>(eqi, entity);
                 })
                 .ScheduleParallel();
 

@@ -50,18 +50,18 @@ namespace DotsLite.Structure
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             
-            this.Entities
-                .WithName("first")
-                .WithBurst()
-                .WithAll<Main.SleepFirstTag>()
-                .ForEach((Entity entity, int entityInQueryIndex) =>
-                {
-                    var eqi = entityInQueryIndex;
+            //this.Entities
+            //    .WithName("first")
+            //    .WithBurst()
+            //    .WithAll<Main.SleepFirstTag>()
+            //    .ForEach((Entity entity, int entityInQueryIndex) =>
+            //    {
+            //        var eqi = entityInQueryIndex;
 
-                    cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
-                })
-                .Schedule();
-            return;
+            //        cmd.RemoveComponent<Main.SleepFirstTag>(eqi, entity);
+            //    })
+            //    .Schedule();
+            //return;
 
             var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
@@ -75,7 +75,7 @@ namespace DotsLite.Structure
             this.Entities
                 .WithName("far")
                 .WithBurst()
-                .WithNone<Main.SleepingTag, Main.SleepFirstTag>()
+                .WithNone<Main.SleepingTag>()
                 .WithAll<Main.FarTag>()
                 .WithReadOnly(parts)
                 .WithReadOnly(linkedGroups)
@@ -93,7 +93,7 @@ namespace DotsLite.Structure
                         resetTimer_(ref timer);
                         //changeComponentsToSleep_(in binder);
                         cmd.ChangeComponentsToSleepOnFar(entity, eqi, binder, parts, linkedGroups);
-                        //Debug.Log("to sleep far");
+                        Debug.Log("to sleep far");
                         return;
                     }
 
@@ -203,7 +203,7 @@ namespace DotsLite.Structure
             this.Entities
                 .WithName("near")
                 .WithBurst()
-                .WithNone<Main.SleepingTag, Main.SleepFirstTag>()
+                .WithNone<Main.SleepingTag>()
                 .WithAll<Main.NearTag>()
                 .WithReadOnly(parts)
                 .WithReadOnly(linkedGroups)
@@ -219,8 +219,9 @@ namespace DotsLite.Structure
                     if (isTimerCompleted_(in timer))
                     {
                         resetTimer_(ref timer);
-                        changeComponentsToSleep_(in binder);
-                        //Debug.Log("to sleep near");
+                        //changeComponentsToSleep_(in binder);
+                        cmd.ChangeComponentsToSleepOnNear(entity, eqi, binder, parts, linkedGroups);
+                        Debug.Log("to sleep near");
                         return;
                     }
 
@@ -228,8 +229,8 @@ namespace DotsLite.Structure
                     return;
 
 
-                    void changeComponentsToSleep_(in Main.BinderLinkData binder) =>
-                        cmd.ChangeComponentsToSleepOnNear(entity, eqi, binder, parts, linkedGroups);
+                    //void changeComponentsToSleep_(in Main.BinderLinkData binder) =>
+                    //    cmd.ChangeComponentsToSleepOnNear(entity, eqi, binder, parts, linkedGroups);
 
                 })
                 .ScheduleParallel();
