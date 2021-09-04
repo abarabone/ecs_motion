@@ -26,6 +26,12 @@ namespace DotsLite.Draw
     using System.Runtime.CompilerServices;
     using DotsLite.Dependency;
 
+    static class _
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void _log(string msg) => Debug.Log(msg);
+        //public static void _log(string msg) { }
+    }
 
     /// <summary>
     /// linked entity 番号を固定で使ってしまったので、問題でたらちゃんとなおさなければならない
@@ -38,6 +44,9 @@ namespace DotsLite.Draw
     //[UpdateAfter(typeof(DrawLodSelectorSingleEntitySystem))]
     public class StructureLodSwitchingSystem : DependencyAccessableSystemBase
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void _log(string msg) => Debug.Log(msg);
+        //static void _log(string msg) { }
 
 
         CommandBufferDependency.Sender cmddep;
@@ -61,11 +70,35 @@ namespace DotsLite.Draw
             var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
             var disableds = this.GetComponentDataFromEntity<Disabled>(isReadOnly: true);
 
+            this.Entities
+                .WithName("FirstNull")
+                .WithBurst()
+                .WithAll<Main.MainTag>()
+                .WithAll<DrawInstance.LodCurrentIsFarTag>()
+                .WithNone<Main.NearTag, Main.FarTag>()
+                .WithReadOnly(linkedGroups)
+                .WithReadOnly(parts)
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    in Main.BinderLinkData binder,
+                    in DrawInstance.ModelLinkData model,
+                    in DrawInstance.ModelLod2LinkData lod2) =>
+                {
+                    var eqi = entityInQueryIndex;
+                    var children = linkedGroups[binder.BinderEntity];
+
+                    children.ChangeComponentsToFar(cmd, eqi, entity, parts);
+                    _._log("to null model first");
+
+                })
+                .ScheduleParallel();
+
             //var dep0_ = this.Entities
             this.Entities
                 .WithName("FirstNear")
                 .WithBurst()
                 .WithAll<Main.MainTag>()
+
                 .WithAll<DrawInstance.LodCurrentIsNearTag>()
                 .WithNone<Main.NearTag, Main.FarTag>()
                 .WithReadOnly(linkedGroups)
@@ -79,9 +112,8 @@ namespace DotsLite.Draw
                     var eqi = entityInQueryIndex;
                     var children = linkedGroups[binder.BinderEntity];
 
-                    children.ChangeToNear(cmd, eqi, entity, parts);
-                    //Debug.Log("to near first");
-
+                    children.ChangeComponentsToNear(cmd, eqi, entity, parts);
+                    _._log("to near first");
                 })
                 .ScheduleParallel();// this.Dependency);
 
@@ -90,8 +122,8 @@ namespace DotsLite.Draw
                 .WithName("FirstFar")
                 .WithBurst()
                 .WithAll<Main.MainTag>()
-                .WithNone<DrawInstance.LodCurrentIsNearTag>()
-                //.WithAll<DrawInstance.LodCurrentIsFarTag>()// model が null のケースも far とみなすようにした
+                //.WithNone<DrawInstance.LodCurrentIsNearTag>()
+                .WithAll<DrawInstance.LodCurrentIsFarTag>()
                 .WithNone<Main.NearTag, Main.FarTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
@@ -104,9 +136,8 @@ namespace DotsLite.Draw
                     var eqi = entityInQueryIndex;
                     var children = linkedGroups[binder.BinderEntity];
 
-                    children.ChangeToFar(cmd, eqi, entity, parts);
-                    //Debug.Log("to far first");
-
+                    children.ChangeComponentsToFar(cmd, eqi, entity, parts);
+                    _._log("to far first");
                 })
                 .ScheduleParallel();// this.Dependency);
 
@@ -127,8 +158,8 @@ namespace DotsLite.Draw
                     var eqi = entityInQueryIndex;
                     var children = linkedGroups[binder.BinderEntity];
 
-                    children.ChangeToNear(cmd, eqi, entity, parts);
-                    //Debug.Log("to near");
+                    children.ChangeComponentsToNear(cmd, eqi, entity, parts);
+                    _._log("to near");
                 })
                 .ScheduleParallel();// this.Dependency);
 
@@ -137,8 +168,7 @@ namespace DotsLite.Draw
                 .WithName("ToFar")
                 .WithBurst()
                 .WithAll<Main.MainTag, Main.NearTag>()
-                .WithNone<DrawInstance.LodCurrentIsNearTag>()
-                //.WithAll<DrawInstance.LodCurrentIsFarTag>()// model が null のケースも far とみなすようにした
+                .WithAll<DrawInstance.LodCurrentIsFarTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)
                 .ForEach((
@@ -150,8 +180,8 @@ namespace DotsLite.Draw
                     var eqi = entityInQueryIndex;
                     var children = linkedGroups[binder.BinderEntity];
 
-                    children.ChangeToFar(cmd, eqi, entity, parts);
-                    //Debug.Log("to far");
+                    children.ChangeComponentsToFar(cmd, eqi, entity, parts);
+                    _._log("to far");
                 })
                 .ScheduleParallel();// this.Dependency);
 

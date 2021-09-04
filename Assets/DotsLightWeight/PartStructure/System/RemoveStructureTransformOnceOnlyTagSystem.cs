@@ -37,9 +37,11 @@ namespace DotsLite.Draw
     /// 　・デブリの発生位置 → near
     /// </summary>
     //[DisableAutoCreation]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MonolithicBone))]
     //[UpdateAfter(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    //[UpdateInGroup(typeof(InitializationSystemGroup))]
+    //[UpdateAfter(typeof(BeginInitializationEntityCommandBufferSystem))]
     public class RemoveStructureTransformOnceOnlyTagSystem : DependencyAccessableSystemBase
     {
 
@@ -63,14 +65,12 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
-                .WithAll<Main.TransformOnlyOnceTag>()
-                .ForEach((Entity entity, int entityInQueryIndex) =>
+                //.WithAll<Main.TransformOnlyOnceTag>()
+                .ForEach((Entity entity, int entityInQueryIndex, ref Main.TransformOnlyOnceTag init) =>
                 {
+                    if (init.count++ < 1) return;// できればタグ操作だけでやりたいんだけど…
+
                     var eqi = entityInQueryIndex;
-
-                    //init.count++;
-                    //if (init.count < 2) return;
-
                     cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
                     cmd.RemoveComponent<Model.Bone.TransformTargetTag>(eqi, entity);
                     cmd.AddComponent<Disabled>(eqi, entity);

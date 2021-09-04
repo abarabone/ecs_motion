@@ -16,39 +16,29 @@ namespace DotsLite.Structure
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ChangeToNear
-            (
-                this DynamicBuffer<LinkedEntityGroup> children,
-                EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex, Entity entity,
-                ComponentDataFromEntity<Part.PartData> partData
-            )
+        public static void ChangeComponentsToNear(
+            this DynamicBuffer<LinkedEntityGroup> children,
+            EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex, Entity entity,
+            ComponentDataFromEntity<Part.PartData> partData)
         {
-
             cmd.RemoveComponent<Main.FarTag>(uniqueIndex, entity);
             cmd.AddComponent<Main.NearTag>(uniqueIndex, entity);
 
             cmd.AddComponentToFar<Disabled>(uniqueIndex, children);
-
             cmd.RemoveComponentFromNearParts<Disabled>(uniqueIndex, children, partData);
-
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ChangeToFar
-            (
-                this DynamicBuffer<LinkedEntityGroup> children,
-                EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex, Entity entity,
-                ComponentDataFromEntity<Part.PartData> partData
-            )
+        public static void ChangeComponentsToFar(
+            this DynamicBuffer<LinkedEntityGroup> children,
+            EntityCommandBuffer.ParallelWriter cmd, int uniqueIndex, Entity entity,
+            ComponentDataFromEntity<Part.PartData> partData)
         {
-
             cmd.RemoveComponent<Main.NearTag>(uniqueIndex, entity);
             cmd.AddComponent<Main.FarTag>(uniqueIndex, entity);
 
             cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
-
             cmd.AddComponentToNearParts<Disabled>(uniqueIndex, children, partData);
-
         }
 
 

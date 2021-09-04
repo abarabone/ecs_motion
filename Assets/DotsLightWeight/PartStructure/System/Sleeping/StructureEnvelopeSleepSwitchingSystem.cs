@@ -26,6 +26,12 @@ namespace DotsLite.Structure
     using System.Runtime.CompilerServices;
     using DotsLite.Dependency;
 
+    static class _
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void _log(string msg) => Debug.Log(msg);
+        //public static void _log(string msg) { }
+    }
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
@@ -78,9 +84,8 @@ namespace DotsLite.Structure
                     if (isTimerCompleted_(in timer))
                     {
                         resetTimer_(ref timer);
-                        //changeComponentsToSleep_(in binder);
                         cmd.ChangeComponentsToSleepOnFar(entity, eqi, binder, parts, linkedGroups);
-                        //Debug.Log("to sleep far");
+                        _._log("to sleep far");
                         return;
                     }
 
@@ -201,9 +206,8 @@ namespace DotsLite.Structure
                     if (isTimerCompleted_(in timer))
                     {
                         resetTimer_(ref timer);
-                        //changeComponentsToSleep_(in binder);
                         cmd.ChangeComponentsToSleepOnNear(entity, eqi, binder, parts, linkedGroups);
-                        //Debug.Log("to sleep near");
+                        _._log("to sleep near");
                         return;
                     }
 
