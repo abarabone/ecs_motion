@@ -88,12 +88,22 @@ namespace DotsLite.Draw
                     {
                         cmd.AddComponent<DrawInstance.LodCurrentIsNearTag>(eqi, entity);
                         cmd.RemoveComponent<DrawInstance.LodCurrentIsFarTag>(eqi, entity);
+                        cmd.RemoveComponent<DrawInstance.LodCurrentIsNothingTag>(eqi, entity);
                         return;
                     }
 
                     if (nextModel == lodLink.DrawModelEntityFar)
                     {
                         cmd.AddComponent<DrawInstance.LodCurrentIsFarTag>(eqi, entity);
+                        cmd.RemoveComponent<DrawInstance.LodCurrentIsNearTag>(eqi, entity);
+                        cmd.RemoveComponent<DrawInstance.LodCurrentIsNothingTag>(eqi, entity);
+                        return;
+                    }
+
+                    //if (nextModel == Entity.Null)
+                    {
+                        cmd.AddComponent<DrawInstance.LodCurrentIsNothingTag>(eqi, entity);
+                        cmd.RemoveComponent<DrawInstance.LodCurrentIsFarTag>(eqi, entity);
                         cmd.RemoveComponent<DrawInstance.LodCurrentIsNearTag>(eqi, entity);
                         return;
                     }

@@ -66,30 +66,48 @@ namespace DotsLite.Structure
             var dt = this.Time.DeltaTime;
 
             this.Entities
-                .WithName("far")
+                //.WithName("far")
                 .WithBurst()
                 .WithNone<Main.SleepingTag>()
                 .WithAll<Main.FarTag>()
+                //.WithAny<Main.FarTag, Main.NearTag>()
                 .WithReadOnly(parts)
                 .WithReadOnly(linkedGroups)
                 .ForEach((
                     Entity entity, int entityInQueryIndex,
                     ref Main.SleepTimerData timer,
                     in Main.BinderLinkData binder,
+                    in Draw.DrawInstance.ModelLinkData model,
+                    in Draw.DrawInstance.ModelLod2LinkData mlink,
                     in Translation pos) =>
                 {
                     var eqi = entityInQueryIndex;
 
 
-                    if (isTimerCompleted_(in timer))
+                    if (!isTimerCompleted_(in timer))
+                    {
+                        progressTimer_IfNotMove_(ref timer, in pos);
+                        return;
+                    }
+
+
+                    // íºê⁄îªï ÇµÇƒÇµÇ‹Ç§Ç∆ÅAnear Ç…Ç»ÇÈëOÇÃà íuÇ≈ÇsÇeÇµÇƒÇµÇ‹Ç§ÇÃÇ≈ÇæÇﬂ
+                    //if (model.DrawModelEntityCurrent == mlink.DrawModelEntityNear)
+                    //{
+                        //resetTimer_(ref timer);
+
+                        //cmd.ChangeComponentsToSleepOnNear(entity, eqi, binder, parts, linkedGroups);
+                        //_._log("to sleep near");
+                        //return;
+                    //}
+                    //if (model.DrawModelEntityCurrent == mlink.DrawModelEntityFar) // null Ç‡ä‹ÇﬂÇÈÇΩÇﬂ
                     {
                         resetTimer_(ref timer);
+
                         cmd.ChangeComponentsToSleepOnFar(entity, eqi, binder, parts, linkedGroups);
                         _._log("to sleep far");
                         return;
                     }
-
-                    progressTimer_IfNotMove_(ref timer, in pos);
                 })
                 .ScheduleParallel();
 

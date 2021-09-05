@@ -114,6 +114,8 @@ namespace DotsLite.Draw
         { }
         public struct LodCurrentIsNearTag : IComponentData
         { }
+        public struct LodCurrentIsNothingTag : IComponentData
+        { }
 
         ///// <summary>
         ///// カリング用オブジェクトＡＡＢＢ
