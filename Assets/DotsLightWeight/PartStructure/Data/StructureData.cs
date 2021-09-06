@@ -37,6 +37,7 @@ namespace DotsLite.Structure
             public int count;
         }
 
+        // draw instance の lod タグと組み合わせて、切り替え時だけシステムが走るようにする
         public struct NearTag : IComponentData
         { }
         public struct FarTag : IComponentData
