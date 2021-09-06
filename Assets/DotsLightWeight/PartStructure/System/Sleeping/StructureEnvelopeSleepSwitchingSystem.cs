@@ -66,7 +66,7 @@ namespace DotsLite.Structure
             var dt = this.Time.DeltaTime;
 
             this.Entities
-                //.WithName("far")
+                .WithName("far")
                 .WithBurst()
                 .WithNone<Main.SleepingTag>()
                 .WithAll<Main.FarTag>()
@@ -110,6 +110,40 @@ namespace DotsLite.Structure
                     }
                 })
                 .ScheduleParallel();
+
+            //this.Entities
+            //    .WithName("all")
+            //    .WithBurst()
+            //    .WithNone<Main.SleepingTag>()
+            //    .WithNone<Main.FarTag, Main.NearTag>()
+            //    .WithReadOnly(parts)
+            //    .WithReadOnly(linkedGroups)
+            //    .ForEach((
+            //        Entity entity, int entityInQueryIndex,
+            //        ref Main.SleepTimerData timer,
+            //        in Main.BinderLinkData binder,
+            //        in Draw.DrawInstance.ModelLinkData model,
+            //        in Draw.DrawInstance.ModelLod2LinkData mlink,
+            //        in Translation pos) =>
+            //    {
+            //        var eqi = entityInQueryIndex;
+
+
+            //        if (!isTimerCompleted_(in timer))
+            //        {
+            //            progressTimer_IfNotMove_(ref timer, in pos);
+            //            return;
+            //        }
+
+            //        {
+            //            resetTimer_(ref timer);
+
+            //            cmd.ChangeComponentsToSleep(entity, eqi, binder, parts, linkedGroups);
+            //            _._log("to sleep");
+            //            return;
+            //        }
+            //    })
+            //    .ScheduleParallel();
 
             //// ‚È‚ñ‚©‚Å‚«‚È‚¢
             //var dep2 = this.Entities

@@ -45,24 +45,27 @@ namespace DotsLite.Structure
 
 
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static void ChangeComponentsToSleep(
-        //    this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
-        //    Main.BinderLinkData binder,
-        //    ComponentDataFromEntity<Part.PartData> parts,
-        //    BufferFromEntity<LinkedEntityGroup> linkedGroups)
-        //{
-        //    cmd.AddComponent<Main.SleepingTag>(uniqueIndex, entity);
-        //    cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ChangeComponentsToSleep(
+            this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
+            Main.BinderLinkData binder,
+            ComponentDataFromEntity<Part.PartData> parts,
+            BufferFromEntity<LinkedEntityGroup> linkedGroups)
+        {
+            cmd.AddComponent<Main.SleepingTag>(uniqueIndex, entity);
+            cmd.RemoveComponent<Unity.Physics.PhysicsVelocity>(uniqueIndex, entity);
 
-        //    var children = linkedGroups[binder.BinderEntity];
+            var children = linkedGroups[binder.BinderEntity];
 
-        //    cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(uniqueIndex, children);
-        //    cmd.AddComponentToFar<Model.Bone.TransformTargetTag>(uniqueIndex, children);
-        //    cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
+            // transform once only
+            //cmd.AddComponentToFar<Model.Bone.TransformTargetTag>(uniqueIndex, children);
+            cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(uniqueIndex, children);
+            cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
 
-        //    cmd.AddAddAndRemoveComponentsFromNearParts<Model.Bone.TransformTargetTag, Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
-        //}
+            // transform once only
+            //cmd.AddAddAndRemoveComponentsFromNearParts<Model.Bone.TransformTargetTag, Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
+            cmd.AddAndRemoveComponentsFromNearParts<Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ChangeComponentsToSleepOnFar(
             this EntityCommandBuffer.ParallelWriter cmd, Entity entity, int uniqueIndex,
