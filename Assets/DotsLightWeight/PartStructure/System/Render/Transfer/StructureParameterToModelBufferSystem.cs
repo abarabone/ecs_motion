@@ -8,8 +8,6 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
-
-
 using DotsLite.CharacterMotion;
 using DotsLite.SystemGroup;
 using Unity.Collections.LowLevel.Unsafe;
@@ -53,6 +51,7 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
+                .WithAll<DrawInstance.LodCurrentIsNearTag>()// 1フレーム遅れるので対策は必要
                 .WithReadOnly(nativeBuffers)
                 //.WithAll<Structure.ShowNearTag>()
                 .WithReadOnly( offsetsOfDrawModel )
@@ -69,16 +68,23 @@ namespace DotsLite.Draw
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
                         //var boneInfo = boneinfoOfDrawModel[linker.DrawModelEntityCurrent];
 
+                        if (offsetInfo.OptionalVectorLengthPerInstance == 0) return;// １フレーム分の対策
+
+
                         var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
                         var boneVectorLength = (int)BoneType.RT;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
                         var instanceVectorLength = boneVectorLength + offsetInfo.OptionalVectorLengthPerInstance;
 
                         var i = target.DrawInstanceId * instanceVectorLength;
-                        var size = offsetInfo.OptionalVectorLengthPerInstance * sizeof(float4);
-                        fixed (void* pSrc = destruction.Destructions)
-                        {
-                            UnsafeUtility.MemCpy(pModel + i, pSrc, size);
-                        }
+                        //var size = offsetInfo.OptionalVectorLengthPerInstance * sizeof(float4);
+                        //fixed (void* pSrc = destruction.Destructions)
+                        //{
+                        //    UnsafeUtility.MemCpy(pModel + i, pSrc, size);
+                        //}
+                        pModel[i + 0] = math.asfloat(destruction._values0);
+                        pModel[i + 1] = math.asfloat(destruction._values1);
+                        pModel[i + 2] = math.asfloat(destruction._values2);
+                        pModel[i + 3] = math.asfloat(destruction._values3);
                     }
                 )
                 .ScheduleParallel();
