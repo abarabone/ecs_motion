@@ -68,7 +68,7 @@ namespace DotsLite.Draw
                 //.WithAll<Bone.TransformOnlyOnceTag>()
                 .ForEach((Entity entity, int entityInQueryIndex, ref Bone.TransformOnlyOnceTag init) =>
                 {
-                    if (init.count++ < 1) return;// 暫定　できればタグ操作だけでやりたいんだけど…
+                    //if (init.count++ < 1) return;// 暫定　できればタグ操作だけでやりたいんだけど…
 
                     var eqi = entityInQueryIndex;
                     cmd.RemoveComponent<Bone.TransformOnlyOnceTag>(eqi, entity);
