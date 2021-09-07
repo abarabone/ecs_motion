@@ -256,95 +256,95 @@ namespace DotsLite.Structure
     }
 
 
-    /// <summary>
-    /// とりあえず、far/near なしのスリープはここでやる
-    /// すべての子を一度トランスフォームする
-    /// </summary>
+    ///// <summary>
+    ///// とりあえず、far/near なしのスリープはここでやる
+    ///// すべての子を一度トランスフォームする
+    ///// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class StructureEnvelopeSleepSwitchingSystem_First : DependencyAccessableSystemBase
-    {
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    //public class StructureEnvelopeSleepSwitchingSystem_First : DependencyAccessableSystemBase
+    //{
 
 
-        CommandBufferDependency.Sender cmddep;
+    //    CommandBufferDependency.Sender cmddep;
 
 
-        protected override void OnCreate()
-        {
-            base.OnCreate();
+    //    protected override void OnCreate()
+    //    {
+    //        base.OnCreate();
 
-            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-        }
+    //        this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+    //    }
 
-        protected override void OnUpdate()
-        {
-            using var cmdScope = this.cmddep.WithDependencyScope();
-
-
-            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
-
-            var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
-            var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
-
-            const float l = 0.01f;
-            var limit = new float3(l, l, l);// l * l, l * l, l * l);
-
-            //var curtime = (float)this.Time.ElapsedTime;
-            var dt = this.Time.DeltaTime;
-
-            this.Entities
-                .WithName("all")
-                .WithBurst()
-                .WithNone<Main.SleepingTag>()
-                .WithNone<Main.FarTag, Main.NearTag>()
-                .WithReadOnly(parts)
-                .WithReadOnly(linkedGroups)
-                .ForEach((
-                    Entity entity, int entityInQueryIndex,
-                    ref Main.SleepTimerData timer,
-                    in Main.BinderLinkData binder,
-                    in Draw.DrawInstance.ModelLinkData model,
-                    in Draw.DrawInstance.ModelLod2LinkData mlink,
-                    in Translation pos) =>
-                {
-                    var eqi = entityInQueryIndex;
+    //    protected override void OnUpdate()
+    //    {
+    //        using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-                    if (!isTimerCompleted_(in timer))
-                    {
-                        progressTimer_IfNotMove_(ref timer, in pos);
-                        return;
-                    }
+    //        var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
-                    {
-                        resetTimer_(ref timer);
+    //        var linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true);
+    //        var parts = this.GetComponentDataFromEntity<Part.PartData>(isReadOnly: true);
 
-                        cmd.ChangeComponentsToSleep(entity, eqi, binder, parts, linkedGroups);
-                        _._log("to sleep first");
-                        return;
-                    }
-                })
-                .ScheduleParallel();
+    //        const float l = 0.01f;
+    //        var limit = new float3(l, l, l);// l * l, l * l, l * l);
 
-            return;
+    //        //var curtime = (float)this.Time.ElapsedTime;
+    //        var dt = this.Time.DeltaTime;
+
+    //        this.Entities
+    //            .WithName("all")
+    //            .WithBurst()
+    //            .WithNone<Main.SleepingTag>()
+    //            .WithNone<Main.FarTag, Main.NearTag>()
+    //            .WithReadOnly(parts)
+    //            .WithReadOnly(linkedGroups)
+    //            .ForEach((
+    //                Entity entity, int entityInQueryIndex,
+    //                ref Main.SleepTimerData timer,
+    //                in Main.BinderLinkData binder,
+    //                in Draw.DrawInstance.ModelLinkData model,
+    //                in Draw.DrawInstance.ModelLod2LinkData mlink,
+    //                in Translation pos) =>
+    //            {
+    //                var eqi = entityInQueryIndex;
 
 
-            static bool isTimerCompleted_(in Main.SleepTimerData timer) =>
-                timer.StillnessTime >= Main.SleepTimerData.Margin;
+    //                if (!isTimerCompleted_(in timer))
+    //                {
+    //                    progressTimer_IfNotMove_(ref timer, in pos);
+    //                    return;
+    //                }
 
-            static void resetTimer_(ref Main.SleepTimerData timer) =>
-                timer.PrePositionAndTime = 0.0f;
+    //                {
+    //                    resetTimer_(ref timer);
 
-            void progressTimer_IfNotMove_(ref Main.SleepTimerData timer, in Translation pos)
-            {
-                //var isStillness = math.all(math.abs(v.Linear) < limit) & math.all(math.abs(v.Angular) < limit);
-                var isStillness = math.all(math.abs(pos.Value - timer.PrePosition) < limit);
+    //                    cmd.ChangeComponentsToSleep(entity, eqi, binder, parts, linkedGroups);
+    //                    _._log("to sleep first");
+    //                    return;
+    //                }
+    //            })
+    //            .ScheduleParallel();
 
-                timer.PrePositionAndTime = math.select(
-                    new float4(pos.Value, 0.0f),
-                    new float4(pos.Value, timer.StillnessTime + dt),
-                    isStillness);
-            }
-        }
+    //        return;
+
+
+    //        static bool isTimerCompleted_(in Main.SleepTimerData timer) =>
+    //            timer.StillnessTime >= Main.SleepTimerData.Margin;
+
+    //        static void resetTimer_(ref Main.SleepTimerData timer) =>
+    //            timer.PrePositionAndTime = 0.0f;
+
+    //        void progressTimer_IfNotMove_(ref Main.SleepTimerData timer, in Translation pos)
+    //        {
+    //            //var isStillness = math.all(math.abs(v.Linear) < limit) & math.all(math.abs(v.Angular) < limit);
+    //            var isStillness = math.all(math.abs(pos.Value - timer.PrePosition) < limit);
+
+    //            timer.PrePositionAndTime = math.select(
+    //                new float4(pos.Value, 0.0f),
+    //                new float4(pos.Value, timer.StillnessTime + dt),
+    //                isStillness);
+    //        }
+    //    }
     }
 }
