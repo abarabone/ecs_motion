@@ -284,7 +284,9 @@ namespace DotsLite.Structure.Authoring
             em.SetComponentData(mainEntity,
                 new DrawInstance.ModelLinkData
                 {
-                    DrawModelEntityCurrent = Entity.Null,//gcs_.GetFromModelEntityDictionary(far_.objectTop),//(top_),
+                    //DrawModelEntityCurrent = Entity.Null,//gcs_.GetFromModelEntityDictionary(far_.objectTop),//(top_),
+                    DrawModelEntityCurrent = mainEntity,// ダミーとして、モデルでないものを入れとく（危険かなぁ…）
+                    // 最初のＬＯＤ判定で Null もタグ付けさせるため
                 }
             );
             em.SetComponentData(mainEntity,

@@ -123,7 +123,7 @@ namespace DotsLite.Draw
                 .WithBurst()
                 .WithAll<Main.MainTag>()
                 //.WithNone<DrawInstance.LodCurrentIsNearTag>()
-                .WithAny<DrawInstance.LodCurrentIsFarTag>()
+                .WithAny<DrawInstance.LodCurrentIsFarTag, DrawInstance.LodCurrentIsNothingTag>()
                 .WithNone<Main.NearTag, Main.FarTag>()
                 .WithReadOnly(linkedGroups)
                 .WithReadOnly(parts)

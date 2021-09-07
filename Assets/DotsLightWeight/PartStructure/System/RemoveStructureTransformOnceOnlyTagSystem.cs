@@ -65,8 +65,8 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
-                //.WithAll<Bone.TransformOnlyOnceTag>()
-                .ForEach((Entity entity, int entityInQueryIndex, ref Bone.TransformOnlyOnceTag init) =>
+                .WithAll<Bone.TransformOnlyOnceTag>()
+                .ForEach((Entity entity, int entityInQueryIndex) =>//, ref Bone.TransformOnlyOnceTag init) =>
                 {
                     //if (init.count++ < 1) return;// 暫定　できればタグ操作だけでやりたいんだけど…
 
