@@ -69,6 +69,7 @@ namespace DotsLite.Draw
                         //var boneInfo = boneinfoOfDrawModel[linker.DrawModelEntityCurrent];
 
                         if (offsetInfo.OptionalVectorLengthPerInstance == 0) return;// １フレーム分の対策
+                        // ただし、far でテクスチャに part 情報を入れる場合は、下記が必要となる
 
 
                         var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;

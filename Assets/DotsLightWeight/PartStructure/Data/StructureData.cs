@@ -32,10 +32,6 @@ namespace DotsLite.Structure
         public struct SleepingTag : IComponentData
         { }
 
-        public struct TransformOnlyOnceTag : IComponentData
-        {
-            public int count;
-        }
 
         // draw instance の lod タグと組み合わせて、切り替え時だけシステムが走るようにする
         public struct NearTag : IComponentData
@@ -88,6 +84,16 @@ namespace DotsLite.Structure
             public static float Margin => 2.0f;
         }
 
+    }
+
+
+    static public partial class Bone
+    {
+        public struct TransformOnlyOnceTag : IComponentData
+        {
+            public int count;// 暫定
+            //public bool WithoutDisable;// 暫定　だめ　これをやると、結局無駄なＴＦが続いてしまう
+        }
     }
 
 

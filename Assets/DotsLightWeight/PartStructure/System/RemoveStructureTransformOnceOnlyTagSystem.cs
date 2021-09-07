@@ -65,13 +65,13 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
-                //.WithAll<Main.TransformOnlyOnceTag>()
-                .ForEach((Entity entity, int entityInQueryIndex, ref Main.TransformOnlyOnceTag init) =>
+                //.WithAll<Bone.TransformOnlyOnceTag>()
+                .ForEach((Entity entity, int entityInQueryIndex, ref Bone.TransformOnlyOnceTag init) =>
                 {
-                    if (init.count++ < 1) return;// できればタグ操作だけでやりたいんだけど…
+                    if (init.count++ < 1) return;// 暫定　できればタグ操作だけでやりたいんだけど…
 
                     var eqi = entityInQueryIndex;
-                    cmd.RemoveComponent<Main.TransformOnlyOnceTag>(eqi, entity);
+                    cmd.RemoveComponent<Bone.TransformOnlyOnceTag>(eqi, entity);
                     cmd.RemoveComponent<Model.Bone.TransformTargetTag>(eqi, entity);
                     cmd.AddComponent<Disabled>(eqi, entity);
                 })

@@ -256,9 +256,13 @@ namespace DotsLite.Structure
     }
 
 
+    /// <summary>
+    /// とりあえず、far/near なしのスリープはここでやる
+    /// すべての子を一度トランスフォームする
+    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class StructureEnvelopeSleepSwitchingSystem_first : DependencyAccessableSystemBase
+    public class StructureEnvelopeSleepSwitchingSystem_First : DependencyAccessableSystemBase
     {
 
 

@@ -94,52 +94,52 @@ namespace DotsLite.Draw
             //    })
             //    .ScheduleParallel();
 
-            ////var dep0_ = this.Entities
-            //this.Entities
-            //    .WithName("FirstNear")
-            //    .WithBurst()
-            //    .WithAll<Main.MainTag>()
-            //    .WithAll<DrawInstance.LodCurrentIsNearTag>()
-            //    .WithNone<Main.NearTag, Main.FarTag>()
-            //    .WithReadOnly(linkedGroups)
-            //    .WithReadOnly(parts)
-            //    .ForEach((
-            //        Entity entity, int entityInQueryIndex,
-            //        in Main.BinderLinkData binder,
-            //        in DrawInstance.ModelLinkData model,
-            //        in DrawInstance.ModelLod2LinkData lod2) =>
-            //    {
-            //        var eqi = entityInQueryIndex;
-            //        var children = linkedGroups[binder.BinderEntity];
+            //var dep0_ = this.Entities
+            this.Entities
+                .WithName("FirstNear")
+                .WithBurst()
+                .WithAll<Main.MainTag>()
+                .WithAll<DrawInstance.LodCurrentIsNearTag>()
+                .WithNone<Main.NearTag, Main.FarTag>()
+                .WithReadOnly(linkedGroups)
+                .WithReadOnly(parts)
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    in Main.BinderLinkData binder,
+                    in DrawInstance.ModelLinkData model,
+                    in DrawInstance.ModelLod2LinkData lod2) =>
+                {
+                    var eqi = entityInQueryIndex;
+                    var children = linkedGroups[binder.BinderEntity];
 
-            //        children.ChangeComponentsToNear(cmd, eqi, entity, parts);
-            //        _._log("to near first");
-            //    })
-            //    .ScheduleParallel();// this.Dependency);
+                    children.ChangeComponentsToNear(cmd, eqi, entity, parts);
+                    _._log("to near first");
+                })
+                .ScheduleParallel();// this.Dependency);
 
-            ////var dep1_ = this.Entities
-            //this.Entities
-            //    .WithName("FirstFar")
-            //    .WithBurst()
-            //    .WithAll<Main.MainTag>()
-            //    //.WithNone<DrawInstance.LodCurrentIsNearTag>()
-            //    .WithAny<DrawInstance.LodCurrentIsFarTag>()
-            //    .WithNone<Main.NearTag, Main.FarTag>()
-            //    .WithReadOnly(linkedGroups)
-            //    .WithReadOnly(parts)
-            //    .ForEach((
-            //        Entity entity, int entityInQueryIndex,
-            //        in Main.BinderLinkData binder,
-            //        in DrawInstance.ModelLinkData model,
-            //        in DrawInstance.ModelLod2LinkData lod2) =>
-            //    {
-            //        var eqi = entityInQueryIndex;
-            //        var children = linkedGroups[binder.BinderEntity];
+            //var dep1_ = this.Entities
+            this.Entities
+                .WithName("FirstFar")
+                .WithBurst()
+                .WithAll<Main.MainTag>()
+                //.WithNone<DrawInstance.LodCurrentIsNearTag>()
+                .WithAny<DrawInstance.LodCurrentIsFarTag>()
+                .WithNone<Main.NearTag, Main.FarTag>()
+                .WithReadOnly(linkedGroups)
+                .WithReadOnly(parts)
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    in Main.BinderLinkData binder,
+                    in DrawInstance.ModelLinkData model,
+                    in DrawInstance.ModelLod2LinkData lod2) =>
+                {
+                    var eqi = entityInQueryIndex;
+                    var children = linkedGroups[binder.BinderEntity];
 
-            //        children.ChangeComponentsToFar(cmd, eqi, entity, parts);
-            //        _._log("to far first");
-            //    })
-            //    .ScheduleParallel();// this.Dependency);
+                    children.ChangeComponentsToFar(cmd, eqi, entity, parts);
+                    _._log("to far first");
+                })
+                .ScheduleParallel();// this.Dependency);
 
             //var dep0 = this.Entities
             this.Entities

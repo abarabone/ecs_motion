@@ -59,12 +59,12 @@ namespace DotsLite.Structure
 
             // transform once only
             //cmd.AddComponentToFar<Model.Bone.TransformTargetTag>(uniqueIndex, children);
-            cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(uniqueIndex, children);
+            cmd.AddComponentToFar<Bone.TransformOnlyOnceTag>(uniqueIndex, children);//, new Bone.TransformOnlyOnceTag { WithoutDisable = true });
             cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
 
             // transform once only
-            //cmd.AddAddAndRemoveComponentsFromNearParts<Model.Bone.TransformTargetTag, Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
-            cmd.AddAndRemoveComponentsFromNearParts<Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
+            //cmd.AddAddAndRemoveComponentsFromNearParts<Model.Bone.TransformTargetTag, Bone.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
+            cmd.AddAndRemoveComponentsFromNearParts<Bone.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);//, new Bone.TransformOnlyOnceTag { WithoutDisable = true });
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ChangeComponentsToSleepOnFar(
@@ -82,7 +82,7 @@ namespace DotsLite.Structure
             cmd.RemoveComponentFromFar<Model.Bone.TransformTargetTag>(uniqueIndex, children);
 
             // transform once only
-            cmd.AddAndRemoveComponentsFromNearParts<Main.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
+            cmd.AddAndRemoveComponentsFromNearParts<Bone.TransformOnlyOnceTag, Disabled>(uniqueIndex, children, parts);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ChangeComponentsToSleepOnNear(
@@ -97,7 +97,7 @@ namespace DotsLite.Structure
             var children = linkedGroups[binder.BinderEntity];
 
             // transform once only
-            cmd.AddComponentToFar<Main.TransformOnlyOnceTag>(uniqueIndex, children);
+            cmd.AddComponentToFar<Bone.TransformOnlyOnceTag>(uniqueIndex, children);
             cmd.RemoveComponentFromFar<Disabled>(uniqueIndex, children);
 
             // change to sleep
