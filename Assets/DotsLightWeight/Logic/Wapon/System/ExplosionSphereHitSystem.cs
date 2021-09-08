@@ -124,14 +124,14 @@ namespace DotsLite.Arms
                             CollidesWith = CatFlag.datail | CatFlag.envelope | CatFlag.detenv,
                         };
 
-                        using var results = new NativeList<DistanceHitResult>(512, Allocator.Temp);
+
+                        using var results = new NativeList<DistanceHitResult>(spec.NumMaxHitCollecting, Allocator.Temp);
                         var collector = targets.GetAllDistanceCollector(spec.HitRadius, results);
                         var isHit = cw.OverlapSphereCustom(pos.Value, spec.HitRadius, ref collector, filter);
 
                         if (!isHit) return;
 
 
-                        //for (var i = 0; i < results.Length; i++)
                         for (var i = 0; i < collector.NumHits; i++)
                         {
                             ref var hit_ = ref UnsafeUtility.ArrayElementAsRef<DistanceHitResult>(results.GetUnsafePtr(), i);
@@ -147,7 +147,7 @@ namespace DotsLite.Arms
 
                                 case HitType.part:
 
-                                    //hit.PostStructurePartHitMessage(pthit, parts);
+                                    hit.PostStructurePartHitMessage(pthit, parts);
                                     if (!isHit) hit.PostStructurePartHitMessage(pthit, parts);
                                     break;
 
@@ -158,7 +158,7 @@ namespace DotsLite.Arms
                                     if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
 
                                     var pow = spec.HitRadius * math.rcp(hit_.distance) * (hit.posision - pos.Value);
-                                    //hit.PostCharacterHitMessage(chhit, 1.0f, pow);
+                                    hit.PostCharacterHitMessage(chhit, 1.0f, pow);
                                     break;
 
 

@@ -74,7 +74,7 @@ namespace DotsLite.Structure
 
 
         [BurstCompile]
-        public struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForEach
+        public struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForKey
         {
 
             public EntityCommandBuffer.ParallelWriter Cmd;
@@ -110,6 +110,11 @@ namespace DotsLite.Structure
                 createDebris_(this.Cmd, index, prefab, rot, pos);
                 destroyPart_(this.Cmd, index, part);
             }
+            public void Execute(
+                int index, Entity targetEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
+            {
+
+            }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static void createDebris_
@@ -132,6 +137,65 @@ namespace DotsLite.Structure
                 cmd_.DestroyEntity(uniqueIndex_, part_);
             }
         }
+        //[BurstCompile]
+        //public struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForEach
+        //{
+
+        //    public EntityCommandBuffer.ParallelWriter Cmd;
+
+        //    [NativeDisableParallelForRestriction]
+        //    public ComponentDataFromEntity<Main.PartDestructionData> Destructions;
+
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<Part.DebrisPrefabData> Prefabs;
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<Rotation> Rotations;
+        //    [ReadOnly]
+        //    public ComponentDataFromEntity<Translation> Positions;
+
+
+        //    [BurstCompile]
+        //    public void Execute(int index, Entity targetEntity, PartHitMessage hitMessage)
+        //    {
+        //        var destruction = this.Destructions[targetEntity];
+
+        //        // 複数の子パーツから１つの親構造物のフラグを立てることがあるので、並列化の際に注意が必要
+        //        // 今回は、同じ key は同じスレッドで処理されるので成立する。
+        //        destruction.SetDestroyed(hitMessage.PartId);
+
+        //        this.Destructions[targetEntity] = destruction;
+
+
+        //        var part = hitMessage.PartEntity;
+        //        var prefab = this.Prefabs[part].DebrisPrefab;
+        //        var rot = this.Rotations[part];
+        //        var pos = this.Positions[part];
+
+        //        createDebris_(this.Cmd, index, prefab, rot, pos);
+        //        destroyPart_(this.Cmd, index, part);
+        //    }
+
+        //    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //    static void createDebris_
+        //        (
+        //            EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity debrisPrefab_,
+        //            Rotation rot_, Translation pos_
+        //        )
+        //    {
+
+        //        var ent = cmd_.Instantiate(uniqueIndex_, debrisPrefab_);
+        //        cmd_.SetComponent(uniqueIndex_, ent, rot_);
+        //        cmd_.SetComponent(uniqueIndex_, ent, pos_);
+
+        //    }
+
+        //    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //    static void destroyPart_
+        //        (EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity part_)
+        //    {
+        //        cmd_.DestroyEntity(uniqueIndex_, part_);
+        //    }
+        //}
     }
 
 }

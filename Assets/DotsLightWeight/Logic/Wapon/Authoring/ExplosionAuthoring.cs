@@ -31,7 +31,7 @@ namespace DotsLite.Arms.Authoring
         public ParticleAuthoringBase Emitting;
 
         public float Radius;
-
+        public int NumMaxHit;
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -62,6 +62,7 @@ namespace DotsLite.Arms.Authoring
                     new Explosion.SpecData
                     {
                         HitRadius = this.Radius,
+                        NumMaxHitCollecting = this.NumMaxHit,
                     }
                 );
             }

@@ -152,6 +152,7 @@ namespace DotsLite.Arms
         public struct SpecData : IComponentData
         {
             public float HitRadius;
+            public int NumMaxHitCollecting;
         }
 
         public struct HittableTag : IComponentData
