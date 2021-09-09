@@ -100,14 +100,15 @@ namespace DotsLite.Structure.Authoring
             var near = st.NearModel.Obj;
             var env = st.Envelope;
             var posture = st.GetComponentInChildren<PostureAuthoring>();
+            var parts = near.GetComponentsInChildren<StructurePartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
             initBinderEntity_(gcs, top, posture);
-            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel);
+            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
 
             setBoneForFarEntity_(gcs, posture, far, top.transform);
-            setBoneForPartMultiEntities_(gcs, posture, near, near.transform);
+            setBoneForPartMultiEntities_(gcs, posture, parts, near.transform);
 
             trimEntities_(gcs, st);
             //if (env.GetComponent<DynamicToStaticRigidBody>().As() != null) addExcludeTransform_(gcs, far, near);
@@ -142,12 +143,12 @@ namespace DotsLite.Structure.Authoring
             var near = st.NearModel.Obj;
             var env = st.Envelope;
             var posture = st.GetComponentInChildren<PostureAuthoring>();
-            //var patrs = near.GetComponentsInChildren<StructurePartAuthoring>();
+            var parts = near.GetComponentsInChildren<StructurePartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
             initBinderEntity_(gcs, top, posture);
-            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel);
+            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
 
             initMeshColliderEntity(gcs, near);
 
@@ -166,12 +167,12 @@ namespace DotsLite.Structure.Authoring
             var near = st.NearModel.Obj;
             var env = st.Envelope;
             var posture = st.GetComponentInChildren<PostureAuthoring>();
-            //var patrs = near.GetComponentsInChildren<StructurePartAuthoring>();
+            var parts = near.GetComponentsInChildren<StructurePartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
             initBinderEntity_(gcs, top, posture);
-            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel);
+            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
 
             initCompoundColliderEntity(gcs, near);
 
@@ -241,8 +242,9 @@ namespace DotsLite.Structure.Authoring
             em_.SetName_(binderEntity, $"{top.name} binder");
         }
 
-        static void initMainEntity_
-            (GameObjectConversionSystem gcs, StructureBuildingModelAuthoring top, PostureAuthoring main, IMeshModelLod near, IMeshModelLod far)
+        static void initMainEntity_(
+            GameObjectConversionSystem gcs, StructureBuildingModelAuthoring top, PostureAuthoring main,
+            IMeshModelLod near, IMeshModelLod far, int partLength)
         {
             var em = gcs.DstEntityManager;
 
@@ -304,6 +306,13 @@ namespace DotsLite.Structure.Authoring
                 }
             );
 
+
+            em.SetComponentData(mainEntity,
+                new Main.PartDestructionData
+                {
+                    partLength = partLength,
+                }
+            );
             em.SetComponentData(mainEntity,
                 new Main.SleepTimerData
                 {
@@ -323,6 +332,7 @@ namespace DotsLite.Structure.Authoring
         }
 
 
+
         static void setBoneForFarEntity_
             (GameObjectConversionSystem gcs, PostureAuthoring parent, GameObject far, Transform root)
         {
@@ -333,12 +343,11 @@ namespace DotsLite.Structure.Authoring
 
 
         static void setBoneForPartMultiEntities_
-            (GameObjectConversionSystem gcs, PostureAuthoring parent, GameObject partTop, Transform root)
+            (GameObjectConversionSystem gcs, PostureAuthoring parent, IEnumerable<StructurePartAuthoring> parts, Transform root)
         {
-            var qPart = partTop.GetComponentsInChildren<StructurePartAuthoring>()//true)
-                .Select(pt => pt.transform);
+            var qTfPart = parts.Select(pt => pt.transform);
 
-            gcs.InitBoneEntities(parent, qPart, root, EnBoneType.jobs_per_depth);
+            gcs.InitBoneEntities(parent, qTfPart, root, EnBoneType.jobs_per_depth);
         }
 
         static void setBoneForNearSingleEntity_

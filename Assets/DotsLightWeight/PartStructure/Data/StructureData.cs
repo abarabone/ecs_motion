@@ -64,10 +64,12 @@ namespace DotsLite.Structure
             [FieldOffset(32)] public uint4 _values2;
             [FieldOffset(48)] public uint4 _values3;
 
-            public void SetDestroyed( int id ) => this.Destructions[id >> 5] |= (uint)(1 << id);
-            public void SetAlive( int id ) => this.Destructions[id >> 5] &= ~(uint)(1 << id);
+            [FieldOffset(64)] public int partLength;
 
-            public uint IsDestroyed(int id) => (uint)( this.Destructions[id >> 5] & ~(1 << id) );
+            public void SetDestroyed( int id ) => this.Destructions[id >> 5] |= (uint)(1 << (id & 0b11111));
+            public void SetAlive( int id ) => this.Destructions[id >> 5] &= ~(uint)(1 << (id & 0b11111));
+
+            public bool IsDestroyed(int id) => (this.Destructions[id >> 5] & (uint)(1 << (id & 0b11111))) != 0;
         }
 
         //public struct PartLinkData : IComponentData
@@ -91,7 +93,7 @@ namespace DotsLite.Structure
     {
         public struct TransformOnlyOnceTag : IComponentData
         {
-            public int count;// 暫定
+            //public int count;// 暫定
             //public bool WithoutDisable;// 暫定　だめ　これをやると、結局無駄なＴＦが続いてしまう
         }
     }

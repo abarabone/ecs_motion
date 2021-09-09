@@ -132,7 +132,7 @@ namespace DotsLite.Arms
                         if (!isHit) return;
 
 
-                        for (var i = 0; i < collector.NumHits; i++)
+                        for (var i = 0; i < 2; i++)
                         {
                             ref var hit_ = ref UnsafeUtility.ArrayElementAsRef<DistanceHitResult>(results.GetUnsafePtr(), i);
                             var hit = hit_.core;
