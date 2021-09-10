@@ -141,7 +141,7 @@ namespace DotsLite.Structure
         //        var child = children[i].Value;
         //        if (!partData.HasComponent(child)) continue;
 
-        //        cmd.AddComponent<T>(uniqueIndex, children[i].Value);
+        //        cmd.AddComponent<T>(uniqueIndex, child);
         //    }
         //}
 
@@ -166,7 +166,7 @@ namespace DotsLite.Structure
         //        var child = children[i].Value;
         //        if (!partData.HasComponent(child)) continue;
 
-        //        cmd.RemoveComponent<T>(uniqueIndex, children[i].Value);
+        //        cmd.RemoveComponent<T>(uniqueIndex, child);
         //    }
         //}
 
@@ -196,7 +196,7 @@ namespace DotsLite.Structure
                 var child = children[i].Value;
                 if (!partData.HasComponent(child)) continue;
 
-                cmd.AddComponent(uniqueIndex, children[i].Value, component);
+                cmd.AddComponent(uniqueIndex, child, component);
             }
         }
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -213,8 +213,8 @@ namespace DotsLite.Structure
         //        var child = children[i].Value;
         //        if (!partData.HasComponent(child)) continue;
 
-        //        cmd.AddComponent<T0>(uniqueIndex, children[i].Value, component0);
-        //        cmd.AddComponent<T1>(uniqueIndex, children[i].Value, component1);
+        //        cmd.AddComponent<T0>(uniqueIndex, child, component0);
+        //        cmd.AddComponent<T1>(uniqueIndex, child, component1);
         //    }
         //}
 
@@ -244,7 +244,7 @@ namespace DotsLite.Structure
                 var child = children[i].Value;
                 if (!partData.HasComponent(child)) continue;
 
-                cmd.RemoveComponent<T>(uniqueIndex, children[i].Value);
+                cmd.RemoveComponent<T>(uniqueIndex, child);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -260,8 +260,8 @@ namespace DotsLite.Structure
                 var child = children[i].Value;
                 if (!partData.HasComponent(child)) continue;
 
-                cmd.RemoveComponent<T0>(uniqueIndex, children[i].Value);
-                cmd.RemoveComponent<T1>(uniqueIndex, children[i].Value);
+                cmd.RemoveComponent<T0>(uniqueIndex, child);
+                cmd.RemoveComponent<T1>(uniqueIndex, child);
             }
         }
 
@@ -279,8 +279,8 @@ namespace DotsLite.Structure
                 var child = children[i].Value;
                 if (!partData.HasComponent(child)) continue;
 
-                cmd.AddComponent(uniqueIndex, children[i].Value, component0);
-                cmd.RemoveComponent<TRemove>(uniqueIndex, children[i].Value);
+                cmd.AddComponent(uniqueIndex, child, component0);
+                cmd.RemoveComponent<TRemove>(uniqueIndex, child);
             }
         }
 
@@ -298,9 +298,9 @@ namespace DotsLite.Structure
                 var child = children[i].Value;
                 if (!partData.HasComponent(child)) continue;
 
-                cmd.AddComponent(uniqueIndex, children[i].Value, component0);
-                cmd.AddComponent(uniqueIndex, children[i].Value, component1);
-                cmd.RemoveComponent<TRemove>(uniqueIndex, children[i].Value);
+                cmd.AddComponent(uniqueIndex, child, component0);
+                cmd.AddComponent(uniqueIndex, child, component1);
+                cmd.RemoveComponent<TRemove>(uniqueIndex, child);
             }
         }
     }

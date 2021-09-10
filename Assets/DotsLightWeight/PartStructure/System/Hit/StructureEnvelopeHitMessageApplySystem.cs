@@ -90,7 +90,6 @@ namespace DotsLite.Structure
 
                 //}
 
-
                 //this.Cmd.AddComponent(index, targetEntity, new Unity.Physics.PhysicsVelocity { });
                 var binder = this.binderLinks[targetEntity];
                 this.Cmd.ChangeComponentsToWakeUp(targetEntity, index, binder, this.parts, this.linkedGroups);
