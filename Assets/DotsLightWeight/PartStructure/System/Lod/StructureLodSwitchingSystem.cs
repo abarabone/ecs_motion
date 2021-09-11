@@ -26,12 +26,7 @@ namespace DotsLite.Draw
     using System.Runtime.CompilerServices;
     using DotsLite.Dependency;
 
-    static class _
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void _log(string msg) => Debug.Log(msg);
-        //public static void _log(string msg) { }
-    }
+    using DotsLite.Utility.Log.NoShow;
 
     /// <summary>
     /// linked entity 番号を固定で使ってしまったので、問題でたらちゃんとなおさなければならない
@@ -44,10 +39,6 @@ namespace DotsLite.Draw
     //[UpdateAfter(typeof(DrawLodSelectorSingleEntitySystem))]
     public class StructureLodSwitchingSystem : DependencyAccessableSystemBase
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void _log(string msg) => Debug.Log(msg);
-        //static void _log(string msg) { }
-
 
         CommandBufferDependency.Sender cmddep;
 

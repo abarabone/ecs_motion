@@ -14,6 +14,9 @@ namespace DotsLite.Structure
 {
     using DotsLite.Dependency;
 
+    using DotsLite.Utility.Log.NoShow;
+
+
     public struct PartHitMessage : IHitMessage
     {
         public int PartId;
@@ -26,7 +29,7 @@ namespace DotsLite.Structure
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(StructureEnvelopeHitMessageApplySystem))]
-    [UpdateAfter(typeof(StructureEnvelopeWakeupTriggerSystem))]
+    //[UpdateAfter(typeof(StructureEnvelopeWakeupTriggerSystem))]
     public class StructurePartHitMessageApplySystem : DependencyAccessableSystemBase, HitMessage<PartHitMessage>.IRecievable
     {
 
@@ -68,9 +71,9 @@ namespace DotsLite.Structure
                 Rotations = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true),
                 Positions = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
 
-                binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
-                parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
-                linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
+                //binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
+                //parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
+                //linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
         }
@@ -90,10 +93,10 @@ namespace DotsLite.Structure
             [ReadOnly] public ComponentDataFromEntity<Rotation> Rotations;
             [ReadOnly] public ComponentDataFromEntity<Translation> Positions;
 
-            // メイン用
-            [ReadOnly] public ComponentDataFromEntity<Structure.Main.BinderLinkData> binderLinks;
-            [ReadOnly] public ComponentDataFromEntity<Structure.Part.PartData> parts;
-            [ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
+            //// メイン用
+            //[ReadOnly] public ComponentDataFromEntity<Structure.Main.BinderLinkData> binderLinks;
+            //[ReadOnly] public ComponentDataFromEntity<Structure.Part.PartData> parts;
+            //[ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
 
 
             [BurstCompile]
@@ -121,7 +124,7 @@ namespace DotsLite.Structure
 
                 foreach (var msg in hitMessages)
                 {
-                    Debug.Log($"{msg.PartId} {(uint)(destruction.Destructions[msg.PartId >> 5] & (uint)(1 << (msg.PartId & 0b11111)))} {destruction.IsDestroyed(msg.PartId)} {this.Prefabs.HasComponent(msg.PartEntity)}");
+                    _._log($"{msg.PartId} {(uint)(destruction.Destructions[msg.PartId >> 5] & (uint)(1 << (msg.PartId & 0b11111)))} {destruction.IsDestroyed(msg.PartId)} {this.Prefabs.HasComponent(msg.PartEntity)}");
                     if (destruction.IsDestroyed(msg.PartId)) continue;
                     if (!this.Positions.HasComponent(msg.PartEntity)) continue;
 
@@ -138,7 +141,7 @@ namespace DotsLite.Structure
             {
                 foreach (var part in targetParts)
                 {
-                    Debug.Log($"{part}");
+                    _._log($"{part}");
                     var prefab = this.Prefabs[part].DebrisPrefab;
                     var rot = this.Rotations[part];
                     var pos = this.Positions[part];
@@ -168,80 +171,21 @@ namespace DotsLite.Structure
             }
 
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            void wakeupMain_(int uniqueIndex, Entity mainEntity)
-            {
-                //this.Cmd.AddComponent(index, targetEntity, new Unity.Physics.PhysicsVelocity { });
-                var binder = this.binderLinks[mainEntity];
-                this.cmd.ChangeComponentsToWakeUp(mainEntity, uniqueIndex, binder, this.parts, this.linkedGroups);
-            }
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            //void wakeupMain_(int uniqueIndex, Entity mainEntity)
+            //{
+            //    //this.Cmd.AddComponent(index, targetEntity, new Unity.Physics.PhysicsVelocity { });
+            //    var binder = this.binderLinks[mainEntity];
+            //    this.cmd.ChangeComponentsToWakeUp(mainEntity, uniqueIndex, binder, this.parts, this.linkedGroups);
+            //}
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static void applyDamgeToMain_()
-            {
-                var damage = 0.0f;
-                var force = float3.zero;
-            }
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            //static void applyDamgeToMain_()
+            //{
+            //    var damage = 0.0f;
+            //    var force = float3.zero;
+            //}
         }
-        //[BurstCompile]
-        //public struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForEach
-        //{
-
-        //    public EntityCommandBuffer.ParallelWriter Cmd;
-
-        //    [NativeDisableParallelForRestriction]
-        //    public ComponentDataFromEntity<Main.PartDestructionData> Destructions;
-
-        //    [ReadOnly]
-        //    public ComponentDataFromEntity<Part.DebrisPrefabData> Prefabs;
-        //    [ReadOnly]
-        //    public ComponentDataFromEntity<Rotation> Rotations;
-        //    [ReadOnly]
-        //    public ComponentDataFromEntity<Translation> Positions;
-
-
-        //    [BurstCompile]
-        //    public void Execute(int index, Entity targetEntity, PartHitMessage hitMessage)
-        //    {
-        //        var destruction = this.Destructions[targetEntity];
-
-        //        // 複数の子パーツから１つの親構造物のフラグを立てることがあるので、並列化の際に注意が必要
-        //        // 今回は、同じ key は同じスレッドで処理されるので成立する。
-        //        destruction.SetDestroyed(hitMessage.PartId);
-
-        //        this.Destructions[targetEntity] = destruction;
-
-
-        //        var part = hitMessage.PartEntity;
-        //        var prefab = this.Prefabs[part].DebrisPrefab;
-        //        var rot = this.Rotations[part];
-        //        var pos = this.Positions[part];
-
-        //        createDebris_(this.Cmd, index, prefab, rot, pos);
-        //        destroyPart_(this.Cmd, index, part);
-        //    }
-
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //    static void createDebris_
-        //        (
-        //            EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity debrisPrefab_,
-        //            Rotation rot_, Translation pos_
-        //        )
-        //    {
-
-        //        var ent = cmd_.Instantiate(uniqueIndex_, debrisPrefab_);
-        //        cmd_.SetComponent(uniqueIndex_, ent, rot_);
-        //        cmd_.SetComponent(uniqueIndex_, ent, pos_);
-
-        //    }
-
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //    static void destroyPart_
-        //        (EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity part_)
-        //    {
-        //        cmd_.DestroyEntity(uniqueIndex_, part_);
-        //    }
-        //}
     }
 
 }

@@ -26,12 +26,7 @@ namespace DotsLite.Structure
     using System.Runtime.CompilerServices;
     using DotsLite.Dependency;
 
-    static class _
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void _log(string msg) => Debug.Log(msg);
-        //public static void _log(string msg) { }
-    }
+    using DotsLite.Utility.Log.NoShow;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]

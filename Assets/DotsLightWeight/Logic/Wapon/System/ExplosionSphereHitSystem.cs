@@ -133,14 +133,13 @@ namespace DotsLite.Arms
                         if (!isHit) return;
 
 
-                        for (var i = 0; i < 2; i++)
+                        for (var i = 0; i < collector.NumHits; i++)
                         {
                             ref var hit_ = ref UnsafeUtility.ArrayElementAsRef<DistanceHitResult>(results.GetUnsafePtr(), i);
                             var hit = hit_.core;
 
                             switch (hit.hitType)
                             {
-                                // parts apply で起こせばよいので、envelope は必要ない
                                 // parts の destroy と main での wakeup components 制御が競合する問題もある
                                 // （なので envelope 同志の衝突での wakeup 着脱と競合する可能性もはらんでいるかも？？ em 専用 system をつくるべきなのかなぁ）
                                 case HitType.envelope:
