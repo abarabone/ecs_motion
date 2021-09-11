@@ -103,8 +103,8 @@ namespace DotsLite.Arms
                 .WithNativeDisableContainerSafetyRestriction(sthit)
                 .WithNativeDisableParallelForRestriction(pthit)
                 .WithNativeDisableContainerSafetyRestriction(pthit)
-                //.WithNativeDisableParallelForRestriction(chhit)
-                //.WithNativeDisableContainerSafetyRestriction(chhit)
+                .WithNativeDisableParallelForRestriction(chhit)
+                .WithNativeDisableContainerSafetyRestriction(chhit)
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,
@@ -122,6 +122,7 @@ namespace DotsLite.Arms
                         {
                             BelongsTo = CollisionFilter.Default.BelongsTo,
                             CollidesWith = CatFlag.datail | CatFlag.envelope | CatFlag.detenv,
+                            //CollidesWith = CatFlag.datail | CatFlag.detenv,
                         };
 
 
@@ -139,6 +140,9 @@ namespace DotsLite.Arms
 
                             switch (hit.hitType)
                             {
+                                // parts apply で起こせばよいので、envelope は必要ない
+                                // parts の destroy と main での wakeup components 制御が競合する問題もある
+                                // （なので envelope 同志の衝突での wakeup 着脱と競合する可能性もはらんでいるかも？？ em 専用 system をつくるべきなのかなぁ）
                                 case HitType.envelope:
 
                                     hit.PostStructureEnvelopeHitMessage(sthit);

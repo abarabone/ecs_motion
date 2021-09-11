@@ -19,6 +19,8 @@ namespace DotsLite.Structure
     }
 
 
+    // parts の destroy とここでの wakeup components 着脱が競合する可能性もはらんでいるかも？？ em 専用 system をつくるべきなのかなぁ
+    // ↑システムの順序をちゃんとしたら大丈夫だった！
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class StructureEnvelopeHitMessageApplySystem : DependencyAccessableSystemBase, HitMessage<EnvelopeHitMessage>.IRecievable

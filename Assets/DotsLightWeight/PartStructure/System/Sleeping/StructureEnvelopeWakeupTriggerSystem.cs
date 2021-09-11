@@ -16,7 +16,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Burst;
 using Unity.Physics;
 
-namespace DotsLite.Arms
+namespace DotsLite.Structure
 {
     using DotsLite.Dependency;
     //using DotsLite.Model;
