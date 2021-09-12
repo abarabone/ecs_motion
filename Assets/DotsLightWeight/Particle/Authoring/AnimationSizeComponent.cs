@@ -17,13 +17,12 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Geometry;
 
     [RequireComponent(typeof(ParticleAuthoring))]
-    public class RotationAnimationComponent :
+    public class AnimationSizeComponent :
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public float MinRotationDegreesPerSec;
-        public float MaxRotationDegreesPerSec;
-        
+        public float EndRadius;
+        public float EndTimeSpanSec;
 
         /// <summary>
         /// 
@@ -32,7 +31,8 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
-            gcs.AddRotationComponents(this.gameObject, this.MinRotationDegreesPerSec, this.MaxRotationDegreesPerSec);
+            var radiusFirst = this.GetComponent<ParticleAuthoring>().Radius;
+            gcs.AddSizingComponents(this.gameObject, radiusFirst, this.EndRadius, this.EndTimeSpanSec);
         }
     }
 }

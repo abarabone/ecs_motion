@@ -74,28 +74,30 @@ namespace DotsLite.Particle
             this.Entities
                 .WithName("Fade")
                 .WithBurst()
-                .ForEach(
-                    (
-                        ref Particle.AdditionalData data,
-                        ref BillBoad.BlendAlphaFadeData blend,
-                        ref BillBoad.AdditiveAlphaFadeData additive
-                    ) =>
-                    {
-                        data.BlendColor.a = fade_(ref blend.Fader, dt);
+                .ForEach((
+                    ref Particle.OptionalData data,
+                    ref BillBoad.BlendAlphaFadeData blend,
+                    ref BillBoad.AdditiveAlphaFadeData additive) =>
+                {
+                    data.BlendColor.a = fade_(ref blend.Fader, dt);
 
-                        data.AdditiveColor.a = fade_(ref additive.Fader, dt);
-                    }
-                )
+                    data.AdditiveColor.a = fade_(ref additive.Fader, dt);
+                })
                 .ScheduleParallel();
         }
 
+        /// <summary>
+        /// 値を増加させる。増加分は speed per sec による。
+        /// speed はマイナスもあり得る。
+        /// ただし、min と max は超えない。
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static byte fade_(ref BillBoad.AnimationUnit fader, float dt)
         {
-
             fader.Delay -= dt;
-            var speed = math.select(fader.SpeedPerSec, 0, fader.Delay > 0);
-
+            //var speed = math.select(fader.SpeedPerSec, 0, fader.Delay > 0);
+            var speed = fader.SpeedPerSec * (1.0f - math.step(0, fader.Delay));
+            
             var next = fader.Current + speed * dt;
             fader.Current = math.clamp(next, fader.Min, fader.Max);
             return (byte)(fader.Current * 255);

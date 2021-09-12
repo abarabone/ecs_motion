@@ -93,6 +93,14 @@ namespace DotsLite.Particle
             public float Max;
             public float Delay;
         }
+        public struct Animation4Unit
+        {
+            public float4 Current;
+            public float4 SpeedPerSec;
+            public float4 Min;
+            public float4 Max;
+            public float4 Delay;
+        }
     }
 
 

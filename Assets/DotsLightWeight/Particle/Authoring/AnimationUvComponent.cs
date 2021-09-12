@@ -15,14 +15,16 @@ namespace DotsLite.Particle.Aurthoring
     using DotsLite.Model.Authoring;
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
+    using DotsLite.Authoring;
 
     [RequireComponent(typeof(ParticleAuthoring))]
-    public class SizeAnimationComponent :
+    public class AnimationUvComponent :
         ParticleAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public float EndRadius;
-        public float EndTimeSpanSec;
+        public int CellIndexLast;
+        public binary_length CellIndexLength;
+        public float AnimationTimeSpanSec;
 
         /// <summary>
         /// 
@@ -31,8 +33,9 @@ namespace DotsLite.Particle.Aurthoring
         {
             var gcs = conversionSystem;
 
-            var radiusFirst = this.GetComponent<ParticleAuthoring>().Radius;
-            gcs.AddSizingComponents(this.gameObject, radiusFirst, this.EndRadius, this.EndTimeSpanSec);
+            var baseindex = this.GetComponent<ParticleAuthoring>().CellIndex;
+            gcs.AddUvAnimationComponents(this.gameObject,
+                this.CellIndexLength, baseindex, this.CellIndexLast, this.AnimationTimeSpanSec);
         }
     }
 }

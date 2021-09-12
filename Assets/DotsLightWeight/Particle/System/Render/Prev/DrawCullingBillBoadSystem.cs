@@ -59,7 +59,7 @@ namespace DotsLite.Draw
                 .ForEach((
                     ref DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData modellink,
-                    in Particle.AdditionalData additional,
+                    in Particle.OptionalData additional,
                     in Translation pos) =>
                 {
                     if (modellink.DrawModelEntityCurrent == Entity.Null)

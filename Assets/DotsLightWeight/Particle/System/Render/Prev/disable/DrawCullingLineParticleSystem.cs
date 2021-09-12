@@ -65,7 +65,7 @@ namespace DotsLite.Draw.disable
                             in DrawInstance.ModelLinkData modellink,
                             in DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                             in Translation pos,
-                            in Particle.AdditionalData additional
+                            in Particle.OptionalData additional
                         ) =>
                         {
                             if (modellink.DrawModelEntityCurrent == Entity.Null)

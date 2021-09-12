@@ -45,7 +45,7 @@ namespace DotsLite.Arms
         HitMessage<Character.HitMessage>.Sender chSender;
 
 
-        //DependencyAccessableSystemBase prevHitSystem;
+        DependencyAccessableSystemBase prevHitSystem;
 
 
 
@@ -60,7 +60,7 @@ namespace DotsLite.Arms
             this.ptSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
 
-            //this.prevHitSystem = World.GetExistingSystem<BulletRayHitSystem>();
+            this.prevHitSystem = World.GetExistingSystem<BulletRayHitSystem>();
         }
 
 
@@ -109,7 +109,7 @@ namespace DotsLite.Arms
                         in Translation pos,
                         in Particle.VelocityFactorData vfact,
                         in Bullet.LinkData link,
-                        in Particle.AdditionalData additional,
+                        in Particle.OptionalData additional,
                         //in Bullet.PointDamageSpecData damage,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>
@@ -143,7 +143,7 @@ namespace DotsLite.Arms
                 )
                 .ScheduleParallel();
 
-            //this.AddInputDependency(this.prevHitSystem.GetOutputDependency());
+            this.AddInputDependency(this.prevHitSystem.GetOutputDependency());
         }
 
     }

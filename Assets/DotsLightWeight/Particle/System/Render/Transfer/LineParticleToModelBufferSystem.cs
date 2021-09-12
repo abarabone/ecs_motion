@@ -67,7 +67,7 @@ namespace DotsLite.Draw
                         in DynamicBuffer<LineParticle.TranslationTailLineData> tails,
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
-                        in Particle.AdditionalData additional
+                        in Particle.OptionalData additional
                     )
                 =>
                     {

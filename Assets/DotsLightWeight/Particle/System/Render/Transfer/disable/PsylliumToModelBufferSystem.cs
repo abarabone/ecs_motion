@@ -61,7 +61,7 @@ namespace DotsLite.Draw.disable
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
-                        in Particle.AdditionalData additional,
+                        in Particle.OptionalData additional,
                         in Translation pos,
                         in Rotation rot
                     ) =>

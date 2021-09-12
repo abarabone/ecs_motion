@@ -71,7 +71,7 @@ namespace DotsLite.Particle.Aurthoring.disable
                     typeof(DrawInstance.PsylliumTag),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(Particle.AdditionalData),
+                    typeof(Particle.OptionalData),
                     typeof(Translation),
                     typeof(Psyllium.TranslationTailData)
                 );
@@ -92,7 +92,7 @@ namespace DotsLite.Particle.Aurthoring.disable
                     }
                 );
                 em.SetComponentData( mainEntity,
-                    new Particle.AdditionalData
+                    new Particle.OptionalData
                     {
                         BlendColor = this.Material.color,
                         Radius = this.DefaultRadius,

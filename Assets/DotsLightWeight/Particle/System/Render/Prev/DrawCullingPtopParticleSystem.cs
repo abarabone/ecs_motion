@@ -62,7 +62,7 @@ namespace DotsLite.Draw
                             in DrawInstance.ModelLinkData modellink,
                             in Psyllium.TranslationTailData tail,
                             in Translation pos,
-                            in Particle.AdditionalData additional
+                            in Particle.OptionalData additional
                         ) =>
                         {
                             if (modellink.DrawModelEntityCurrent == Entity.Null)

@@ -109,7 +109,7 @@ namespace DotsLite.Arms
                     (
                         Entity entity, int entityInQueryIndex,
                         in Translation pos,
-                        in Particle.AdditionalData additional,
+                        in Particle.OptionalData additional,
                         in Explosion.SpecData spec,
                         in CorpsGroup.TargetWithArmsData corps
                     ) =>

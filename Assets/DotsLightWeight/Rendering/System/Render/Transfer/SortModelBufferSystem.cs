@@ -20,7 +20,7 @@ namespace DotsLite.Draw
     using DotsLite.Dependency;
 
     /// <summary>
-    /// 描画ゼロでもスレッド使ってしまうかも
+    /// 描画ゼロでもスレッド使ってしまうかも　そのうちなんとかしたい
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Sort))]

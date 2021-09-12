@@ -50,7 +50,7 @@ namespace DotsLite.Particle.Aurthoring
                 typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                 typeof(DrawInstance.ModelLinkData),
                 typeof(DrawInstance.TargetWorkData),
-                typeof(Particle.AdditionalData),
+                typeof(Particle.OptionalData),
             });
             em.AddComponents(mainEntity, types);
 
@@ -69,7 +69,7 @@ namespace DotsLite.Particle.Aurthoring
             );
 
             em.SetComponentData(mainEntity,
-                new Particle.AdditionalData
+                new Particle.OptionalData
                 {
                     BlendColor = blendcolor,
                     AdditiveColor = addcolor,

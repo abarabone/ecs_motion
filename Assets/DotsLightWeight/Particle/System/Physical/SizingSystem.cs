@@ -75,7 +75,7 @@ namespace DotsLite.Particle
                 .WithBurst()
                 .ForEach(
                     (
-                        ref Particle.AdditionalData data,
+                        ref Particle.OptionalData data,
                         in BillBoad.SizeAnimationData anim,
                         in Particle.LifeTimeData timer
                     ) =>

@@ -48,12 +48,14 @@ namespace DotsLite.Particle
             public Entity NextNodeEntity;
         }
 
-        public struct AdditionalData : IComponentData
+        public struct OptionalData : IComponentData
         {
             public Color32 BlendColor;
             public Color32 AdditiveColor;
             public float Radius;
         }
+        // blend : src.rgb * src.a + dst.rgb * (1 - src.a)
+        // add   : src.rgb * src.a * dst.rgb
 
         public struct VelocityFactorData : IComponentData
         {

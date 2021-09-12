@@ -52,7 +52,7 @@ namespace DotsLite.Particle
                 .ForEach((
                     ref Psyllium.TranslationTailData tail,
                     in Translation pos,
-                    in Particle.AdditionalData data) =>
+                    in Particle.OptionalData data) =>
                 {
                     tail.PositionAndSize = pos.Value.As_float4(data.Radius);
                 })

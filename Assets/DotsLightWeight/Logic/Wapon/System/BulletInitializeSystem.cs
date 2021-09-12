@@ -89,7 +89,7 @@ namespace DotsLite.Arms
                     ref Bullet.LinkData link,
                     ref CorpsGroup.TargetWithArmsData corps,
                     in Bullet.MoveSpecData spec,
-                    in Particle.AdditionalData data,
+                    in Particle.OptionalData data,
                     in Bullet.InitializeFromEmitterData init) =>
                 {
                     var tid = nativeThreadIndex;

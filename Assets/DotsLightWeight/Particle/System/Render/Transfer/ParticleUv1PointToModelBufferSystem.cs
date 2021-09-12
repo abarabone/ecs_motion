@@ -76,7 +76,7 @@ namespace DotsLite.Draw
                 .ForEach((
                     in DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData linker,
-                    in Particle.AdditionalData additional,
+                    in Particle.OptionalData additional,
                     in BillBoad.UvCursorData cursor,
                     in BillBoad.CursorToUvIndexData touv,
                     in BillBoad.RotationData rotdir,
