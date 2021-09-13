@@ -330,15 +330,15 @@ namespace DotsLite.Particle.Aurthoring
             );
             em.AddComponents(mainEntity, types);
 
-            var firstValue = new float2(blend.firstValue, add.firstValue);
-            var lastValue = new float2(blend.lastValue, add.lastValue);
-            var timeSpan = new float2(blend.timeSpan, add.timeSpan);
-            var delay = new float2(blend.delay, add.delay);
+            var firstValue = new float4(blend.firstValue, add.firstValue, 0, 0);
+            var lastValue = new float4(blend.lastValue, add.lastValue, 0, 0);
+            var timeSpan = new float4(blend.timeSpan, add.timeSpan, 0, 0);
+            var delay = new float4(blend.delay, add.delay, 0, 0);
 
             em.SetComponentData(mainEntity,
                 new BillBoad.AlphaFadeData
                 {
-                    Fader = new BillBoad.Animation2Unit
+                    xBlend_yAdd = new BillBoad.Animation4Unit
                     {
                         Current = firstValue,
                         Min = math.min(firstValue, lastValue),

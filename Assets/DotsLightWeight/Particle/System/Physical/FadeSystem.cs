@@ -72,17 +72,19 @@ namespace DotsLite.Particle
             //    .ScheduleParallel();
 
             this.Entities
-                .WithName("Fade")
+                .WithName("AlphaBlendAdd")
                 .WithBurst()
                 .ForEach((
                     ref Particle.OptionalData data,
                     ref BillBoad.AlphaFadeData fader) =>
                 {
-                    fade2_(ref fader.Fader, dt);
+                    var next = fade4_(fader.xBlend_yAdd, dt);
 
-                    var a = (int2)(fader.Fader.Current * 255);
+                    var a = (int2)(next.xy * 255);
                     data.BlendColor.a = (byte)a.x;
                     data.AdditiveColor.a = (byte)a.y;
+
+                    fader.xBlend_yAdd.Current = next;
                 })
                 .ScheduleParallel();
         }
@@ -93,25 +95,22 @@ namespace DotsLite.Particle
         /// ÇΩÇæÇµÅAmin Ç∆ max ÇÕí¥Ç¶Ç»Ç¢ÅB
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void fade_(ref BillBoad.AnimationUnit fader, float dt)
+        static float fade_(ref BillBoad.AnimationUnit fader, float dt)
         {
             fader.Delay -= dt;
-            //var speed = math.select(fader.SpeedPerSec, 0, fader.Delay > 0);
             var speed = fader.SpeedPerSec * (1.0f - math.step(0, fader.Delay));
             
             var next = fader.Current + speed * dt;
-            fader.Current = math.clamp(next, fader.Min, fader.Max);
+            return math.clamp(next, fader.Min, fader.Max);
         }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void fade2_(ref BillBoad.Animation2Unit fader, float dt)
+        static float4 fade4_(BillBoad.Animation4Unit fader, float dt)
         {
             fader.Delay -= dt;
-            //var speed = math.select(fader.SpeedPerSec, 0, fader.Delay > 0);
             var speed = fader.SpeedPerSec * (1.0f - math.step(0, fader.Delay));
 
             var next = fader.Current + speed * dt;
-            fader.Current = math.clamp(next, fader.Min, fader.Max);
+            return math.clamp(next, fader.Min, fader.Max);
         }
 
     }

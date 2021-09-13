@@ -86,7 +86,7 @@ namespace DotsLite.Particle
         //}
         public struct AlphaFadeData : IComponentData
         {
-            public Animation2Unit Fader;    // x : blend, y : add
+            public Animation4Unit xBlend_yAdd;    // x : blend, y : add
         }
 
         public struct AnimationUnit
@@ -97,13 +97,13 @@ namespace DotsLite.Particle
             public float Max;
             public float Delay;
         }
-        public struct Animation2Unit
+        public struct Animation4Unit
         {
-            public float2 Current;
-            public float2 SpeedPerSec;
-            public float2 Min;
-            public float2 Max;
-            public float2 Delay;
+            public float4 Current;
+            public float4 SpeedPerSec;
+            public float4 Min;
+            public float4 Max;
+            public float4 Delay;
         }
     }
 
