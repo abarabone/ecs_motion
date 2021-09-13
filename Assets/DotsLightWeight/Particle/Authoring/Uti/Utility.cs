@@ -315,23 +315,30 @@ namespace DotsLite.Particle.Aurthoring
         }
 
 
-        public static void AddBlendAlphaFadeComponents(
+
+        public static void AddAlphaFadeComponent(
             this GameObjectConversionSystem gcs, GameObject main,
-            float firstValue, float lastValue, float timeSpan, float delay)
+            (float firstValue, float lastValue, float timeSpan, float delay) blend,
+            (float firstValue, float lastValue, float timeSpan, float delay) add)
         {
             var em = gcs.DstEntityManager;
 
             var mainEntity = gcs.GetPrimaryEntity(main);
 
             var types = new ComponentTypes(
-                typeof(BillBoad.BlendAlphaFadeData)
+                typeof(BillBoad.AlphaFadeData)
             );
             em.AddComponents(mainEntity, types);
 
+            var firstValue = new float2(blend.firstValue, add.firstValue);
+            var lastValue = new float2(blend.lastValue, add.lastValue);
+            var timeSpan = new float2(blend.timeSpan, add.timeSpan);
+            var delay = new float2(blend.delay, add.delay);
+
             em.SetComponentData(mainEntity,
-                new BillBoad.BlendAlphaFadeData
+                new BillBoad.AlphaFadeData
                 {
-                    Fader = new BillBoad.AnimationUnit
+                    Fader = new BillBoad.Animation2Unit
                     {
                         Current = firstValue,
                         Min = math.min(firstValue, lastValue),
@@ -343,33 +350,61 @@ namespace DotsLite.Particle.Aurthoring
             );
         }
 
-        public static void AddAdditiveAlphaFadeComponents(
-            this GameObjectConversionSystem gcs, GameObject main,
-            float firstValue, float lastValue, float timeSpan, float delay)
-        {
-            var em = gcs.DstEntityManager;
+        //public static void AddBlendAlphaFadeComponents(
+        //    this GameObjectConversionSystem gcs, GameObject main,
+        //    float firstValue, float lastValue, float timeSpan, float delay)
+        //{
+        //    var em = gcs.DstEntityManager;
 
-            var mainEntity = gcs.GetPrimaryEntity(main);
+        //    var mainEntity = gcs.GetPrimaryEntity(main);
 
-            var types = new ComponentTypes(
-                typeof(BillBoad.AdditiveAlphaFadeData)
-            );
-            em.AddComponents(mainEntity, types);
+        //    var types = new ComponentTypes(
+        //        typeof(BillBoad.BlendAlphaFadeData)
+        //    );
+        //    em.AddComponents(mainEntity, types);
 
-            em.SetComponentData(mainEntity,
-                new BillBoad.AdditiveAlphaFadeData
-                {
-                    Fader = new BillBoad.AnimationUnit
-                    {
-                        Current = firstValue,
-                        Min = math.min(firstValue, lastValue),
-                        Max = math.max(firstValue, lastValue),
-                        SpeedPerSec = (lastValue - firstValue) / timeSpan,
-                        Delay = delay,
-                    }
-                }
-            );
-        }
+        //    em.SetComponentData(mainEntity,
+        //        new BillBoad.BlendAlphaFadeData
+        //        {
+        //            Fader = new BillBoad.AnimationUnit
+        //            {
+        //                Current = firstValue,
+        //                Min = math.min(firstValue, lastValue),
+        //                Max = math.max(firstValue, lastValue),
+        //                SpeedPerSec = (lastValue - firstValue) / timeSpan,
+        //                Delay = delay,
+        //            }
+        //        }
+        //    );
+        //}
+
+        //public static void AddAdditiveAlphaFadeComponents(
+        //    this GameObjectConversionSystem gcs, GameObject main,
+        //    float firstValue, float lastValue, float timeSpan, float delay)
+        //{
+        //    var em = gcs.DstEntityManager;
+
+        //    var mainEntity = gcs.GetPrimaryEntity(main);
+
+        //    var types = new ComponentTypes(
+        //        typeof(BillBoad.AdditiveAlphaFadeData)
+        //    );
+        //    em.AddComponents(mainEntity, types);
+
+        //    em.SetComponentData(mainEntity,
+        //        new BillBoad.AdditiveAlphaFadeData
+        //        {
+        //            Fader = new BillBoad.AnimationUnit
+        //            {
+        //                Current = firstValue,
+        //                Min = math.min(firstValue, lastValue),
+        //                Max = math.max(firstValue, lastValue),
+        //                SpeedPerSec = (lastValue - firstValue) / timeSpan,
+        //                Delay = delay,
+        //            }
+        //        }
+        //    );
+        //}
 
 
         public static void AddSizingComponents(

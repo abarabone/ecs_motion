@@ -56,6 +56,7 @@ namespace DotsLite.Particle
         }
         // blend : src.rgb * src.a + dst.rgb * (1 - src.a)
         // add   : src.rgb * src.a * dst.rgb
+        // src は tex や col、dst は レンダーテクスチャ等の画面
 
         public struct VelocityFactorData : IComponentData
         {

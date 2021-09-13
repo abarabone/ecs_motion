@@ -92,6 +92,7 @@ Shader "Custom/Particle uv pmap"
                 const fixed4 blendcolor = float4(asuint(buf1.wwww) >> uint4(0, 8, 16, 24) & 255) * (1. / 255.);
 	            o.color = fixed4(blendcolor.rgb * blendcolor.a, blendcolor.a);  //事前乗算
 	            o.color.rgb += addcolor.rgb * addcolor.a;                       //加算成分追加
+
                 
                 UNITY_TRANSFER_FOG(o, o.vertex);
                 return o;
@@ -103,10 +104,9 @@ Shader "Custom/Particle uv pmap"
                 fixed4 o;
 
                 fixed4 tex = tex2D(_MainTex, i.uv);
-                UNITY_APPLY_FOG(i.fogCoord, tex.rgb);
+                UNITY_APPLY_FOG(i.fogCoord, tex.rgb);// 事前乗算アルファに対応させる方法がわからない…これでいいのか？
                 tex.rgb *= tex.a;
                 o = tex * i.color;
-                //UNITY_APPLY_FOG(i.fogCoord, o);// 事前乗算アルファに対応させる方法がわからない
                 return o;
             }
             ENDCG

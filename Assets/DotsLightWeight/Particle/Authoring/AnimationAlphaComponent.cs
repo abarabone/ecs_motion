@@ -37,12 +37,17 @@ namespace DotsLite.Particle.Aurthoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             var gcs = conversionSystem;
+            var particleAuthor = this.GetComponent<ParticleAuthoring>();
 
-            var blendAlphaFirst = this.GetComponent<ParticleAuthoring>().BlendColor.a;
-            gcs.AddBlendAlphaFadeComponents(this.gameObject, blendAlphaFirst, this.BlendAlphaLast, this.BlendAlphaTimeSpanSec, this.DelayBlend);
+            //var blendAlphaFirst = this.GetComponent<ParticleAuthoring>().BlendColor.a;
+            //gcs.AddBlendAlphaFadeComponents(this.gameObject, blendAlphaFirst, this.BlendAlphaLast, this.BlendAlphaTimeSpanSec, this.DelayBlend);
 
-            var additiveAlphaFirst = this.GetComponent<ParticleAuthoring>().AddColor.a;
-            gcs.AddAdditiveAlphaFadeComponents(this.gameObject, additiveAlphaFirst, this.AdditiveAlphaLast, this.AdditiveAlphaTimeSpanSec, this.DelayAdditive);
+            //var additiveAlphaFirst = this.GetComponent<ParticleAuthoring>().AddColor.a;
+            //gcs.AddAdditiveAlphaFadeComponents(this.gameObject, additiveAlphaFirst, this.AdditiveAlphaLast, this.AdditiveAlphaTimeSpanSec, this.DelayAdditive);
+
+            var blend = (particleAuthor.BlendColor.a, this.BlendAlphaLast, this.BlendAlphaTimeSpanSec, this.DelayBlend);
+            var add = (particleAuthor.AddColor.a, this.AdditiveAlphaLast, this.AdditiveAlphaTimeSpanSec, this.DelayAdditive);
+            gcs.AddAlphaFadeComponent(this.gameObject, blend, add);
         }
     }
 }
