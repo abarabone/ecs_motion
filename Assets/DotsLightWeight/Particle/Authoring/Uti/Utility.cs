@@ -343,7 +343,7 @@ namespace DotsLite.Particle.Aurthoring
                         Current = firstValue,
                         Min = math.min(firstValue, lastValue),
                         Max = math.max(firstValue, lastValue),
-                        SpeedPerSec = (lastValue - firstValue) / timeSpan,
+                        SpeedPerSec = new float4(((lastValue - firstValue) / timeSpan).xy, 0, 0),
                         Delay = delay,
                     }
                 }

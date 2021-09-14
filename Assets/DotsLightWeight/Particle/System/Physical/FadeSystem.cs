@@ -78,13 +78,11 @@ namespace DotsLite.Particle
                     ref Particle.OptionalData data,
                     ref BillBoad.AlphaFadeData fader) =>
                 {
-                    var next = fade4_(fader.xBlend_yAdd, dt);
+                    var next = fade4_(ref fader.xBlend_yAdd, dt);
 
                     var a = (int2)(next.xy * 255);
                     data.BlendColor.a = (byte)a.x;
                     data.AdditiveColor.a = (byte)a.y;
-
-                    fader.xBlend_yAdd.Current = next;
                 })
                 .ScheduleParallel();
         }
@@ -99,18 +97,20 @@ namespace DotsLite.Particle
         {
             fader.Delay -= dt;
             var speed = fader.SpeedPerSec * (1.0f - math.step(0, fader.Delay));
-            
-            var next = fader.Current + speed * dt;
-            return math.clamp(next, fader.Min, fader.Max);
+
+            var d = fader.Current + speed * dt;
+            fader.Current = math.clamp(d, fader.Min, fader.Max);
+            return fader.Current;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static float4 fade4_(BillBoad.Animation4Unit fader, float dt)
+        static float4 fade4_(ref BillBoad.Animation4Unit fader, float dt)
         {
             fader.Delay -= dt;
-            var speed = fader.SpeedPerSec * (1.0f - math.step(0, fader.Delay));
+            var speed = fader.SpeedPerSec * (1 - math.step(0, fader.Delay));
 
-            var next = fader.Current + speed * dt;
-            return math.clamp(next, fader.Min, fader.Max);
+            var d = fader.Current + speed * dt;
+            fader.Current = math.clamp(d, fader.Min, fader.Max);
+            return fader.Current;
         }
 
     }
