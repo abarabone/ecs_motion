@@ -11,7 +11,7 @@ using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.MarchingCubes.old
+namespace DotsLite.MarchingCubes
 {
     static public class CubeUtility
     {
@@ -65,130 +65,130 @@ namespace DotsLite.MarchingCubes.old
 
 
 
-        static public (NativeList<int> tris, NativeList<float3> vtxs) MakeCollisionMeshData
-            (IEnumerable<CubeInstance> cubeInstances, int[][] srcIdxLists, float3[] srcVtxList)
-        {
-            var dstIdxs = new NativeList<int>(32 * 32 * 32 * 12 / 2, Allocator.Temp);
-            var dstVtxs = new NativeList<float3>(32 * 32 * 32 * 12 / 2, Allocator.Temp);
+        //static public (NativeList<int> tris, NativeList<float3> vtxs) MakeCollisionMeshData
+        //    ( IEnumerable<CubeInstance> cubeInstances, int[][] srcIdxLists, float3[] srcVtxList )
+        //{
+        //    var dstIdxs = new NativeList<int>( 32*32*32*12 / 2, Allocator.Temp );
+        //    var dstVtxs = new NativeList<float3>( 32*32*32*12 / 2, Allocator.Temp );
 
-            var vtxOffset = 0;
-            //for( var i = 0; i < cubeInstances.Length; i++ )
-            foreach (var ci in cubeInstances)
-            {
-                vtxOffset = addCube_(ci.instance, vtxOffset);
-            }
+        //    var vtxOffset = 0;
+        //    //for( var i = 0; i < cubeInstances.Length; i++ )
+        //    foreach( var ci in cubeInstances )
+        //    {
+        //        vtxOffset = addCube_( ci.instance, vtxOffset );
+        //    }
 
-            return (dstIdxs, dstVtxs);
-
-
-            int addCube_(uint cubeInstance, int vtxOffset_)
-            {
-                //var cubeId = cubeInstance & 0xff;
-                //if( cubeId == 0 || cubeId == 255 ) return vtxOffset_;
-
-                //var center = new float3( cubeInstance >> 8 & 0xff, -( cubeInstance >> 16 & 0xff ), -( cubeInstance >> 24 & 0xff ) );
-
-                var (center, gridId, cubeId) = CubeUtility.FromCubeInstance(cubeInstance);
-                if (cubeId == 0 || cubeId == 255) return vtxOffset_;
-
-                var srcIdxList = srcIdxLists[cubeId - 1];
-
-                for (var i = 0; i < srcIdxList.Length; i++)
-                {
-                    var srcIdx = srcIdxList[i];
-                    dstIdxs.Add(vtxOffset_ + srcIdx);
-                }
-                for (var i = 0; i < srcVtxList.Length; i++)
-                {
-                    dstVtxs.Add(srcVtxList[i] + center);
-                }
-
-                return vtxOffset_ + srcVtxList.Length;
-            }
-        }
+        //    return (dstIdxs, dstVtxs);
 
 
+        //    int addCube_( uint cubeInstance, int vtxOffset_ )
+        //    {
+        //        //var cubeId = cubeInstance & 0xff;
+        //        //if( cubeId == 0 || cubeId == 255 ) return vtxOffset_;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public uint ToNearGridId(int3 nearGridId) =>
-            (uint)nearGridId.z << 18 | (uint)nearGridId.y << 9 | (uint)nearGridId.x << 0;
+        //        //var center = new float3( cubeInstance >> 8 & 0xff, -( cubeInstance >> 16 & 0xff ), -( cubeInstance >> 24 & 0xff ) );
 
+        //        var (center, gridId, cubeId) = CubeUtility.FromCubeInstance( cubeInstance );
+        //        if( cubeId == 0 || cubeId == 255 ) return vtxOffset_;
 
-        static public void GetNearGridList
-            (NativeArray<GridInstanceData> gridData, float3 gridScale)
-        {
+        //        var srcIdxList = srcIdxLists[ cubeId - 1 ];
 
-            var posDict = new NativeHashMap<float3, int>(gridData.Length, Allocator.Temp);
+        //        for( var i = 0; i < srcIdxList.Length; i++ )
+        //        {
+        //            var srcIdx = srcIdxList[ i ];
+        //            dstIdxs.Add( vtxOffset_ + srcIdx );
+        //        }
+        //        for( var i = 0; i < srcVtxList.Length; i++ )
+        //        {
+        //            dstVtxs.Add( srcVtxList[ i ] + center );
+        //        }
 
-            var i_to_gridpos = gridScale * new float3(1, -1, -1);
-
-            addToDict_();
-            getNearGridIds_();
-
-            posDict.Dispose();
-            return;
-
-
-            void addToDict_()
-            {
-                for (var i = 0; i < gridData.Length; i++)
-                {
-                    var pos = gridData[i].Position;
-                    posDict.Add(pos.xyz * i_to_gridpos, i);
-                }
-            }
-            void getNearGridIds_()
-            {
-                for (var i = 0; i < gridData.Length; i++)
-                {
-                    var data = gridData[i];
-                    var pos = data.Position;
-
-                    var currentpos = pos.xyz * i_to_gridpos;
-                    posDict.TryGetValue(currentpos, out var currentId);
-
-                    //data.current = (ushort)currentId;
+        //        return vtxOffset_ + srcVtxList.Length;
+        //    }
+        //}
 
 
-                    var prevx = currentpos + new float3(-1, 0, 0);
-                    var prevy = currentpos + new float3(0, -1, 0);
-                    var prevz = currentpos + new float3(0, 0, -1);
 
-                    var prevId = new int3(-1, -1, -1);// デフォルトを -1 にしようとしたが…
-
-                    posDict.TryGetValue(prevx, out prevId.x); // 失敗すると 0 が入るので、-1 は維持されない
-                    posDict.TryGetValue(prevy, out prevId.y);
-                    posDict.TryGetValue(prevz, out prevId.z);
-
-                    //data.left = (ushort)prevId.x;
-                    //data.up = (ushort)prevId.y;
-                    //data.back = (ushort)prevId.z;
+        //[MethodImpl( MethodImplOptions.AggressiveInlining )]
+        //static public uint ToNearGridId( int3 nearGridId ) =>
+        //    (uint)nearGridId.z << 18 | (uint)nearGridId.y << 9 | (uint)nearGridId.x << 0;
 
 
-                    var nextx = currentpos + new int3(1, 0, 0);
-                    var nexty = currentpos + new int3(0, 1, 0);
-                    var nextz = currentpos + new int3(0, 0, 1);
+        //static public void GetNearGridList
+        //    (NativeArray<GridInstanceData> gridData, float3 gridScale)
+        //{
 
-                    var nextId = new int3(-1, -1, -1);
+        //    var posDict = new NativeHashMap<float3, int>( gridData.Length, Allocator.Temp );
 
-                    posDict.TryGetValue(nextx, out nextId.x);
-                    posDict.TryGetValue(nexty, out nextId.y);
-                    posDict.TryGetValue(nextz, out nextId.z);
+        //    var i_to_gridpos = gridScale * new float3(1,-1,-1);
 
-                    //data.right = (ushort)nextId.x;
-                    //data.down = (ushort)nextId.y;
-                    //data.forward = (ushort)nextId.z;
+        //    addToDict_();
+        //    getNearGridIds_();
+
+        //    posDict.Dispose();
+        //    return;
 
 
-                    data.ortho.x = (uint)(prevId.z << 0 | prevId.y << 16);
-                    data.ortho.y = (uint)(prevId.x << 0 | currentId << 16);
-                    data.ortho.z = (uint)(nextId.x << 0 | nextId.y << 16);
-                    data.ortho.w = (uint)(nextId.z << 0);
+        //    void addToDict_()
+        //    {
+        //        for( var i = 0; i < gridData.Length; i++ )
+        //        {
+        //            var pos = gridData[ i ].Position;
+        //            posDict.Add( pos.xyz * i_to_gridpos, i );
+        //        }
+        //    }
+        //    void getNearGridIds_()
+        //    {
+        //        for( var i = 0; i < gridData.Length; i++ )
+        //        {
+        //            var data = gridData[ i ];
+        //            var pos = data.Position;
 
-                    gridData[i] = data;
-                }
-            }
-        }
+        //            var currentpos = pos.xyz * i_to_gridpos;
+        //            posDict.TryGetValue( currentpos, out var currentId );
+
+        //            //data.current = (ushort)currentId;
+
+
+        //            var prevx = currentpos + new float3( -1,  0,  0 );
+        //            var prevy = currentpos + new float3(  0, -1,  0 );
+        //            var prevz = currentpos + new float3(  0,  0, -1 );
+
+        //            var prevId = new int3( -1, -1, -1 );// デフォルトを -1 にしようとしたが…
+
+        //            posDict.TryGetValue( prevx, out prevId.x ); // 失敗すると 0 が入るので、-1 は維持されない
+        //            posDict.TryGetValue( prevy, out prevId.y );
+        //            posDict.TryGetValue( prevz, out prevId.z );
+
+        //            //data.left = (ushort)prevId.x;
+        //            //data.up = (ushort)prevId.y;
+        //            //data.back = (ushort)prevId.z;
+
+
+        //            var nextx = currentpos + new int3( 1, 0, 0 );
+        //            var nexty = currentpos + new int3( 0, 1, 0 );
+        //            var nextz = currentpos + new int3( 0, 0, 1 );
+
+        //            var nextId = new int3( -1, -1, -1 );
+
+        //            posDict.TryGetValue( nextx, out nextId.x );
+        //            posDict.TryGetValue( nexty, out nextId.y );
+        //            posDict.TryGetValue( nextz, out nextId.z );
+
+        //            //data.right = (ushort)nextId.x;
+        //            //data.down = (ushort)nextId.y;
+        //            //data.forward = (ushort)nextId.z;
+
+
+        //            data.ortho.x = (uint)(prevId.z << 0 | prevId.y << 16);
+        //            data.ortho.y = (uint)(prevId.x << 0 | currentId << 16);
+        //            data.ortho.z = (uint)(nextId.x << 0 | nextId.y << 16);
+        //            data.ortho.w = (uint)(nextId.z << 0);
+
+        //            gridData[ i ] = data;
+        //        }
+        //    }
+        //}
 
 
     }

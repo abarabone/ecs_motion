@@ -1,229 +1,21 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System;
+using UnityEngine;
 using UnityEngine.Rendering;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.IO;
-using UnityEngine;
-using Unity.Entities;
-using Unity.Jobs;
+using System.Linq;
 using Unity.Collections;
-using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Entities;
+using System;
 
-namespace DotsLite.MarchingCubes.old
+namespace DotsLite.MarchingCubes
 {
 
-    using DotsLite.Draw;
-    using DotsLite.Utilities;
 
-
-
-    public class MarchingCubeGlobalData : IComponentData//, IDisposable
-    {
-        public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
-        public FreeStockList FreeStocks;
-
-        public GlobalResources Resources;
-
-
-        public MarchingCubeGlobalData Init(int maxFreeGrids, int maxGridInstances, MarchingCubeAsset asset)
-        {
-            this.DefaultGrids = new NativeArray<DotGrid32x32x32Unsafe>(2, Allocator.Persistent);
-            this.FreeStocks = new FreeStockList(maxFreeGrids);
-
-            this.DefaultGrids[(int)GridFillMode.Blank] = DotGridAllocater.Alloc(GridFillMode.Blank);
-            this.DefaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
-
-            this.Resources = new GlobalResources(asset, maxGridInstances);
-
-            return this;
-        }
-
-        public void Dispose()
-        {
-            this.Resources.Dispose();
-
-            this.DefaultGrids[(int)GridFillMode.Blank].Dispose();
-            this.DefaultGrids[(int)GridFillMode.Solid].Dispose();
-
-            this.FreeStocks.Dispose();
-            this.DefaultGrids.Dispose();
-        }
-    }
-
-    static public partial class Resource
-    {
-
-        public class Initialize : IComponentData
-        {
-            public MarchingCubeAsset Asset;
-            public int MaxGridLengthInShader;
-        }
-
-    }
-
-
-    static public partial class DotGridArea
-    {
-
-        public struct InitializeData : IComponentData
-        {
-            public GridFillMode FillMode;
-        }
-
-
-        public unsafe struct BufferData : IComponentData
-        {
-            public UnsafeList<DotGrid32x32x32Unsafe> Grids;
-        }
-
-        public class ResourceData : IComponentData
-        {
-            public DotGridAreaResources Resources;
-
-            public Material CubeMaterial;
-            public ComputeShader GridCubeIdSetShader;
-        }
-
-        public struct OutputCubesData : IComponentData
-        {
-            public UnsafeList<GridInstanceData> GridInstances;
-            public UnsafeList<CubeInstance> CubeInstances;
-            //public UnsafeRingQueue<CubeInstance*> CubeInstances;
-        }
-
-        public struct InfoData : IComponentData
-        {
-            public int3 GridLength;
-            public int3 GridWholeLength;
-        }
-        public struct InfoWorkData : IComponentData
-        {
-            public int3 GridSpan;
-        }
-
-        public struct Mode2 : IComponentData
-        { }
-        public struct Parallel : IComponentData
-        { }
-    }
-
-
-
-
-
-
-
-    static public partial class DotGridArea
-    {
-
-
-        static public ResourceData Init
-            (
-                this ResourceData res,
-                int maxCubeInstances, int maxGridInstances,
-                Material mat, ComputeShader cs
-            )
-        {
-            res.Resources = new DotGridAreaResources(maxCubeInstances, maxGridInstances);
-            //res.Resources.SetResourcesTo(mat, cs);
-            res.GridCubeIdSetShader = cs;
-            res.CubeMaterial = mat;
-
-            return res;
-        }
-
-
-
-
-        /// <summary>
-        /// グリッドエリアから、指定した位置のグリッドポインタを取得する。
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static public unsafe DotGrid32x32x32UnsafePtr GetGridFromArea
-            (
-                //ref this (DotGridArea.BufferData, DotGridArea.InfoWorkData) x,
-                ref DotGridArea.BufferData areaGrids,
-                ref DotGridArea.InfoWorkData areaInfo,
-                int ix, int iy, int iz
-            )
-        {
-            //ref var areaGrids = ref x.Item1;
-            //ref var areaInfo = ref x.Item2;
-            
-            var i3 = new int3(ix, iy, iz) + 1;
-            var i = math.dot(i3, areaInfo.GridSpan);
-
-            return new DotGrid32x32x32UnsafePtr { p = areaGrids.Grids.Ptr + i };
-        }
-    }
-
-
-
-
-
-    public struct DotGridAreaResources// : IDisposable
-    {
-        public ComputeBuffer ArgsBufferForInstancing;
-        public ComputeBuffer ArgsBufferForDispatch;
-
-        public ComputeBuffer GridInstancesBuffer;
-        public ComputeBuffer CubeInstancesBuffer;
-
-
-        public DotGridAreaResources(int maxCubeInstances, int maxGridInstances) : this()
-        {
-            this.ArgsBufferForInstancing = ComputeShaderUtility.CreateIndirectArgumentsBufferForInstancing();
-            this.ArgsBufferForDispatch = ComputeShaderUtility.CreateIndirectArgumentsBufferForDispatch();
-
-            this.CubeInstancesBuffer = ResourceAllocator.createCubeIdInstancingShaderBuffer_(maxCubeInstances);// 32 * 32 * 32 * maxGridLength);
-            this.GridInstancesBuffer = ResourceAllocator.createGridShaderBuffer_(maxGridInstances);// 512);
-        }
-
-        public void Dispose()
-        {
-            if (this.ArgsBufferForInstancing != null) this.ArgsBufferForInstancing.Dispose();
-            if (this.ArgsBufferForDispatch != null) this.ArgsBufferForDispatch.Dispose();
-
-            if (this.CubeInstancesBuffer != null) this.CubeInstancesBuffer.Dispose();
-            if (this.GridInstancesBuffer != null) this.GridInstancesBuffer.Dispose();
-        }
-    }
-
-
-
-    public struct GlobalResources : IDisposable
-    {
-        public ComputeBuffer StaticDataBuffer;
-        public RenderTexture GridCubeIdBuffer;
-
-        public Mesh mesh;
-
-
-        public GlobalResources(MarchingCubeAsset asset, int maxGridInstances) : this()
-        {
-            this.GridCubeIdBuffer = ResourceAllocator.createGridCubeIdShaderBuffer_(maxGridInstances);
-
-            var cubeVertexBuffer = ResourceAllocator.createCubeVertexBuffer_(asset.BaseVertexList);
-            var vertexNormalDict = ResourceAllocator.makeVertexNormalsDict_(asset.CubeIdAndVertexIndicesList);
-            var cubePatternBuffer = ResourceAllocator.createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList, vertexNormalDict);
-            var normalBuffer = ResourceAllocator.createNormalList_(vertexNormalDict);
-            this.StaticDataBuffer = ResourceAllocator.createCubeGeometryData_(cubeVertexBuffer, cubePatternBuffer, normalBuffer);
-
-            this.mesh = ResourceAllocator.createMesh_();
-        }
-
-        public void Dispose()
-        {
-            if (this.GridCubeIdBuffer != null) this.GridCubeIdBuffer.Release();
-            if (this.StaticDataBuffer != null) this.StaticDataBuffer.Dispose();
-        }
-
-    }
 
 
     public static class DrawResourceExtension_
@@ -453,11 +245,11 @@ namespace DotsLite.MarchingCubes.old
                 let y = (v.ofs.ortho1.x + 1, v.ofs.ortho1.y + 1, v.ofs.ortho1.z + 1, 0).PackToByte4Uint()
                 let z = (v.ofs.ortho2.x + 1, v.ofs.ortho2.y + 1, v.ofs.ortho2.z + 1, 0).PackToByte4Uint()
                 let w = ((int)(v.pos.x * 2) + 1, (int)(v.pos.y * 2) + 1, (int)(v.pos.z * 2) + 1, 0).PackToByte4Uint()
-                //let x = v.ivtx.x<<0 & 0xff | v.ivtx.y<<8 & 0xff00 | v.ivtx.z<<16 & 0xff0000
-                //let y = v.ofs.ortho1.x+1<<0 & 0xff | v.ofs.ortho1.y+1<<8 & 0xff00 | v.ofs.ortho1.z+1<<16 & 0xff0000
-                //let z = v.ofs.ortho2.x+1<<0 & 0xff | v.ofs.ortho2.y+1<<8 & 0xff00 | v.ofs.ortho2.z+1<<16 & 0xff0000
-                //let w = (int)(v.pos.x*2+1)<<0 & 0xff | (int)(v.pos.y*2+1)<<8 & 0xff00 | (int)(v.pos.z*2+1)<<16 & 0xff0000
-                select new uint4(x, y, z, w)
+            //let x = v.ivtx.x<<0 & 0xff | v.ivtx.y<<8 & 0xff00 | v.ivtx.z<<16 & 0xff0000
+            //let y = v.ofs.ortho1.x+1<<0 & 0xff | v.ofs.ortho1.y+1<<8 & 0xff00 | v.ofs.ortho1.z+1<<16 & 0xff0000
+            //let z = v.ofs.ortho2.x+1<<0 & 0xff | v.ofs.ortho2.y+1<<8 & 0xff00 | v.ofs.ortho2.z+1<<16 & 0xff0000
+            //let w = (int)(v.pos.x*2+1)<<0 & 0xff | (int)(v.pos.y*2+1)<<8 & 0xff00 | (int)(v.pos.z*2+1)<<16 & 0xff0000
+            select new uint4(x, y, z, w)
                 ;
 
             return q;
@@ -492,7 +284,6 @@ namespace DotsLite.MarchingCubes.old
         }
 
     }
-
 
 }
 
