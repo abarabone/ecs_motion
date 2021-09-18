@@ -19,6 +19,7 @@ namespace DotsLite.MarchingCubes
         NotFilled = -1,
         Blank = 0,
         Solid = 1,
+        Null = 2,
     };
 
     
@@ -32,7 +33,7 @@ namespace DotsLite.MarchingCubes
 
 
         public uint* pUnits;
-        public int CubeCount;
+        public int CubeCount;// DotCount に変更　あとで
 
 
         public bool IsFullOrEmpty => (this.CubeCount & (dotNum - 1) ) == 0;

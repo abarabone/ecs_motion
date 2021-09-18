@@ -41,24 +41,21 @@ namespace DotsLite.MarchingCubes.old
             this.Entities
                 .WithBurst()
                 .WithReadOnly(defaults)
-                .ForEach(
-                    (
-                        Entity ent,
-                        ref DotGridArea.BufferData buf,
-                        in DotGridArea.InitializeData init,
-                        in DotGridArea.InfoWorkData work,
-                        in DotGridArea.InfoData info
-                    ) =>
+                .ForEach((
+                    Entity ent,
+                    ref DotGridArea.BufferData buf,
+                    in DotGridArea.InitializeData init,
+                    in DotGridArea.InfoWorkData work,
+                    in DotGridArea.InfoData info) =>
+                {
+
+                    for (var i = 0; i < buf.Grids.length; i++)
                     {
-
-                        for (var i = 0; i < buf.Grids.length; i++)
-                        {
-                            buf.Grids[i] = defaults[(int)init.FillMode];
-                        }
-
-                        cmd.RemoveComponent<DotGridArea.InitializeData>(ent);
+                        buf.Grids[i] = defaults[(int)init.FillMode];
                     }
-                )
+
+                    cmd.RemoveComponent<DotGridArea.InitializeData>(ent);
+                })
                 .Run();
 
 

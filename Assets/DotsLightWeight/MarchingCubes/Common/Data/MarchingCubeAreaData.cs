@@ -36,12 +36,12 @@ namespace DotsLite.MarchingCubes
             public UnsafeList<DotGrid32x32x32Unsafe> Grids;
         }
 
-        public class ResourceData : IComponentData
+        public class ResourceGpuModeData : IComponentData
         {
-            public DotGridAreaResources Resources;
+            public DotGridAreaResourcesForGpu Resources;
 
+            public ComputeShader GridToCubeShader;
             public Material CubeMaterial;
-            public ComputeShader GridCubeIdSetShader;
         }
 
         //public struct OutputCubesData : IComponentData
@@ -61,10 +61,10 @@ namespace DotsLite.MarchingCubes
             public int3 GridSpan;
         }
 
-        public struct Mode2 : IComponentData
-        { }
-        public struct Parallel : IComponentData
-        { }
+        //public struct Mode2 : IComponentData
+        //{ }
+        //public struct Parallel : IComponentData
+        //{ }
     }
 
 
@@ -77,14 +77,14 @@ namespace DotsLite.MarchingCubes
     {
 
 
-        static public ResourceData Init(
-            this ResourceData res,
+        static public ResourceGpuModeData Init(
+            this ResourceGpuModeData res,
             int maxCubeInstances, int maxGridInstances,
             Material mat, ComputeShader cs)
         {
-            res.Resources = new DotGridAreaResources(maxCubeInstances, maxGridInstances);
+            res.Resources = new DotGridAreaResourcesForGpu(maxCubeInstances, maxGridInstances);
             //res.Resources.SetResourcesTo(mat, cs);
-            res.GridCubeIdSetShader = cs;
+            res.GridToCubeShader = cs;
             res.CubeMaterial = mat;
 
             return res;
@@ -117,82 +117,6 @@ namespace DotsLite.MarchingCubes
 
 
 
-    public struct DotGridAreaResources : IDisposable
-    {
-        public IndirectArgumentsBufferForInstancing ArgsBufferForInstancing;
-        public IndirectArgumentsBufferForDispatch ArgsBufferForDispatch;
-
-        public CubeIdInstancingShaderBuffer CubeInstances;
-        public GridInstancesBuffer GridInstances;
-
-
-        public DotGridAreaResources(int maxCubeInstances, int maxGridInstances) : this()
-        {
-            this.ArgsBufferForInstancing = IndirectArgumentsBufferForInstancing.Create();
-            this.ArgsBufferForDispatch = IndirectArgumentsBufferForDispatch.Create();
-
-            this.CubeInstances = CubeIdInstancingShaderBuffer.Create(maxCubeInstances);// 32 * 32 * 32 * maxGridLength);
-            this.GridInstances = GridInstancesBuffer.Create(maxGridInstances);// 512);
-        }
-
-        public void Dispose()
-        {
-            this.ArgsBufferForInstancing.Dispose();
-            this.ArgsBufferForDispatch.Dispose();
-
-            this.CubeInstances.Dispose();
-            this.GridInstances.Dispose();
-        }
-    }
-
-
-    public struct IndirectArgumentsBufferForInstancing : IDisposable
-    {
-        public ComputeBuffer Buffer { get; private set; }
-
-        public static IndirectArgumentsBufferForInstancing Create() => new IndirectArgumentsBufferForInstancing
-        {
-            Buffer = new ComputeBuffer(1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments, ComputeBufferMode.Immutable),
-        };
-
-        public void Dispose() => this.Buffer?.Release();
-    }
-
-    public struct IndirectArgumentsBufferForDispatch : IDisposable
-    {
-        public ComputeBuffer Buffer { get; private set; }
-
-        public static IndirectArgumentsBufferForDispatch Create() => new IndirectArgumentsBufferForDispatch
-        {
-            Buffer = new ComputeBuffer(1, sizeof(int) * 3, ComputeBufferType.IndirectArguments, ComputeBufferMode.Immutable),
-        };
-
-        public void Dispose() => this.Buffer?.Release();
-    }
-
-    public struct CubeIdInstancingShaderBuffer : IDisposable
-    {
-        public ComputeBuffer Buffer { get; private set; }
-
-        public static CubeIdInstancingShaderBuffer Create(int maxCubeInstances) => new CubeIdInstancingShaderBuffer
-        {
-            Buffer = new ComputeBuffer(maxCubeInstances, Marshal.SizeOf<uint>()),
-        };
-
-        public void Dispose() => this.Buffer?.Release();
-    }
-
-    public struct GridInstancesBuffer : IDisposable
-    {
-        public ComputeBuffer Buffer { get; private set; }
-
-        public static GridInstancesBuffer Create(int maxGridLength) => new GridInstancesBuffer
-        {
-            Buffer = new ComputeBuffer(maxGridLength, Marshal.SizeOf<float4>() * 2, ComputeBufferType.Constant),
-        };
-
-        public void Dispose() => this.Buffer?.Release();
-    }
 
 }
 
