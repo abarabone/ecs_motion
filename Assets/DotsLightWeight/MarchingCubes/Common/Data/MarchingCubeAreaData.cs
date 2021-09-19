@@ -31,10 +31,10 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        public unsafe struct BufferData : IComponentData
-        {
-            public UnsafeList<DotGrid32x32x32Unsafe> Grids;
-        }
+        //public unsafe struct BufferData : IComponentData
+        //{
+        //    public UnsafeList<DotGrid32x32x32Unsafe> Grids;
+        //}
 
         public class ResourceGpuModeData : IComponentData
         {
@@ -44,6 +44,10 @@ namespace DotsLite.MarchingCubes
             public Material CubeMaterial;
         }
 
+        public struct ShaderInputData
+        {
+            public UnsafeList<GridInstanceData> GridInstances;
+        }
         //public struct OutputCubesData : IComponentData
         //{
         //    public UnsafeList<GridInstanceData> GridInstances;

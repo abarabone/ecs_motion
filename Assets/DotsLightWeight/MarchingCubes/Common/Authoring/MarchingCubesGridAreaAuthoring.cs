@@ -54,7 +54,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     new ComponentType[]
                     {
                         typeof(DotGridArea.InitializeData),
-                        typeof(DotGridArea.BufferData),
+                        //typeof(DotGridArea.BufferData),
                         typeof(DotGridArea.InfoData),
                         typeof(DotGridArea.InfoWorkData),
                         //typeof(DotGridArea.OutputCubesData),
@@ -79,12 +79,12 @@ namespace DotsLite.MarchingCubes.Authoring
                         FillMode = fillMode_,
                     }
                 );
-                em.SetComponentData(ent,
-                    new DotGridArea.BufferData
-                    {
-                        Grids = allocGridArea_(totalSize, fillMode_),
-                    }
-                );
+                //em.SetComponentData(ent,
+                //    new DotGridArea.BufferData
+                //    {
+                //        Grids = allocGridArea_(totalSize, fillMode_),
+                //    }
+                //);
                 em.SetComponentData(ent,
                     new DotGridArea.InfoData
                     {
@@ -126,22 +126,22 @@ namespace DotsLite.MarchingCubes.Authoring
                 );
 
 
-                UnsafeList<DotGrid32x32x32Unsafe> allocGridArea_(int totalSize_, GridFillMode fillMode)
-                {
-                    var buffer = new UnsafeList<DotGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
-                    buffer.length = totalSize_;
+                //UnsafeList<DotGrid32x32x32Unsafe> allocGridArea_(int totalSize_, GridFillMode fillMode)
+                //{
+                //    var buffer = new UnsafeList<DotGrid32x32x32Unsafe>(totalSize, Allocator.Persistent);
+                //    buffer.length = totalSize_;
 
-                    //var gent = gcs_.GetPrimaryEntity(global_);
-                    //var defaultGrids = em.GetComponentData<MarchingCubeGlobalData>(gent).DefaultGrids;//em.GetBuffer<DotGridGlobal.DefualtGridData>(gent);
-                    //var defaultGrid = defaultGrids[(int)FillMode];//.GetDefaultGrid(fillMode);
+                //    //var gent = gcs_.GetPrimaryEntity(global_);
+                //    //var defaultGrids = em.GetComponentData<MarchingCubeGlobalData>(gent).DefaultGrids;//em.GetBuffer<DotGridGlobal.DefualtGridData>(gent);
+                //    //var defaultGrid = defaultGrids[(int)FillMode];//.GetDefaultGrid(fillMode);
 
-                    //for (var i = 0; i < totalSize; i++)
-                    //{
-                    //    buffer[i] = defaultGrid;
-                    //}
+                //    //for (var i = 0; i < totalSize; i++)
+                //    //{
+                //    //    buffer[i] = defaultGrid;
+                //    //}
                     
-                    return buffer;
-                }
+                //    return buffer;
+                //}
             }
 
 

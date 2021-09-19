@@ -16,7 +16,7 @@ namespace DotsLite.MarchingCubes.Authoring
     using DotsLite.Draw;
     using DotsLite.Model;
 
-    public class MarchingCubesAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class MarchingCubesGlobalAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         //public int MaxCubeInstances;

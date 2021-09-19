@@ -20,32 +20,37 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Draw;
     using DotsLite.Utilities;
 
+    public struct GridInstraction
+    {
+        public int id;
+        public Vector3 position;
+    }
 
     public struct DotGridAreaResourcesForGpu : IDisposable
     {
-        public CubeInstancingIndirectArgumentsBuffer CubeInstancingArgs;
+        public GridInstancesBuffer GridInstances;
         public GridToCubesDispatchIndirectArgumentsBuffer GridToCubesDispatchArgs;
 
         public CubeInstancingShaderBuffer CubeInstances;
-        public GridInstancesBuffer GridInstances;
+        public CubeInstancingIndirectArgumentsBuffer CubeInstancingArgs;
 
 
         public DotGridAreaResourcesForGpu(int maxCubeInstances, int maxGridInstances) : this()
         {
+            this.GridInstances = GridInstancesBuffer.Create(maxGridInstances);
             this.CubeInstancingArgs = CubeInstancingIndirectArgumentsBuffer.Create();
-            this.GridToCubesDispatchArgs = GridToCubesDispatchIndirectArgumentsBuffer.Create();
 
             this.CubeInstances = CubeInstancingShaderBuffer.Create(maxCubeInstances);
-            this.GridInstances = GridInstancesBuffer.Create(maxGridInstances);
+            this.GridToCubesDispatchArgs = GridToCubesDispatchIndirectArgumentsBuffer.Create();
         }
 
         public void Dispose()
         {
+            this.GridInstances.Dispose();
             this.CubeInstancingArgs.Dispose();
-            this.GridToCubesDispatchArgs.Dispose();
 
             this.CubeInstances.Dispose();
-            this.GridInstances.Dispose();
+            this.GridToCubesDispatchArgs.Dispose();
         }
     }
 
@@ -79,6 +84,18 @@ namespace DotsLite.MarchingCubes
     }
 
 
+
+    //public struct CubeInstancingIndirectArgumentsBuffer : IDisposable
+    //{
+    //    public ComputeBuffer Buffer { get; private set; }
+
+    //    public static CubeInstancingIndirectArgumentsBuffer Create() => new CubeInstancingIndirectArgumentsBuffer
+    //    {
+    //        Buffer = new ComputeBuffer(1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments, ComputeBufferMode.Immutable),
+    //    };
+
+    //    public void Dispose() => this.Buffer?.Release();
+    //}
 
 
     public struct CubeInstancingIndirectArgumentsBuffer : IDisposable
