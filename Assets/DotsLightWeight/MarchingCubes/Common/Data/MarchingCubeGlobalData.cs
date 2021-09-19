@@ -27,7 +27,7 @@ namespace DotsLite.MarchingCubes
         public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
         public FreeStockList FreeStocks;
 
-        public GlobalResources Resources;
+        public GlobalResources ShaderResources;
 
 
         public MarchingCubeGlobalData Init(int maxFreeGrids, int maxGridInstances, MarchingCubeAsset asset)
@@ -38,14 +38,14 @@ namespace DotsLite.MarchingCubes
             this.DefaultGrids[(int)GridFillMode.Blank] = DotGridAllocater.Alloc(GridFillMode.Blank);
             this.DefaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
 
-            this.Resources = new GlobalResources(asset, maxGridInstances);
+            this.ShaderResources = new GlobalResources(asset, maxGridInstances);
 
             return this;
         }
 
         public void Dispose()
         {
-            this.Resources.Dispose();
+            this.ShaderResources.Dispose();
 
             this.DefaultGrids[(int)GridFillMode.Blank].Dispose();
             this.DefaultGrids[(int)GridFillMode.Solid].Dispose();

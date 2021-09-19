@@ -27,13 +27,13 @@ namespace DotsLite.MarchingCubes
             mat.SetConstantBuffer(name, buffer, 0, buffer.stride * buffer.count);
         //static public void SetConstantBuffer(this Material mat, string name, ComputeBuffer buffer) =>
         //    mat.SetConstantBuffer(name, buffer, 0, buffer.stride * buffer.count);
-        static public void SetConstantBuffer(this Material mat, string name, ComputeBuffer buffer)
-        {
-            //Debug.Log($"{buffer.stride}");
-            var arr = new Vector4[buffer.stride / Marshal.SizeOf<Vector4>() * buffer.count];
-            buffer.GetData(arr);
-            mat.SetVectorArray(name, arr);
-        }
+        //static public void SetConstantBuffer(this Material mat, string name, ComputeBuffer buffer)
+        //{
+        //    //Debug.Log($"{buffer.stride}");
+        //    var arr = new Vector4[buffer.stride / Marshal.SizeOf<Vector4>() * buffer.count];
+        //    buffer.GetData(arr);
+        //    mat.SetVectorArray(name, arr);
+        //}
     }
 
 

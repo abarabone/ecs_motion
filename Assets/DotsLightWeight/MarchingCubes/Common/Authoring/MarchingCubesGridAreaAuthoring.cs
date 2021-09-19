@@ -36,7 +36,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            var global = this.GetComponentInParent<MarchingCubesAuthoring>().gameObject;//<MarchingCubesGlobalDataAuthoring>().gameObject;
+            var global = this.GetComponentInParent<MarchingCubesGlobalAuthoring>().gameObject;//<MarchingCubesGlobalDataAuthoring>().gameObject;
             var area = this.gameObject;
 
             setGridArea_(conversionSystem, global, area, this.FillMode);

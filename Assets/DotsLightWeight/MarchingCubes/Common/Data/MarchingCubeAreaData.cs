@@ -38,15 +38,15 @@ namespace DotsLite.MarchingCubes
 
         public class ResourceGpuModeData : IComponentData
         {
-            public DotGridAreaResourcesForGpu Resources;
+            public DotGridAreaResourcesForGpu ShaderResources;
 
             public ComputeShader GridToCubeShader;
             public Material CubeMaterial;
         }
 
-        public struct ShaderInputData
+        public struct ShaderInputData : IComponentData
         {
-            public UnsafeList<GridInstanceData> GridInstances;
+            public UnsafeList<GridInstraction> GridInstractions;
         }
         //public struct OutputCubesData : IComponentData
         //{
@@ -86,7 +86,7 @@ namespace DotsLite.MarchingCubes
             int maxCubeInstances, int maxGridInstances,
             Material mat, ComputeShader cs)
         {
-            res.Resources = new DotGridAreaResourcesForGpu(maxCubeInstances, maxGridInstances);
+            res.ShaderResources = new DotGridAreaResourcesForGpu(maxCubeInstances, maxGridInstances);
             //res.Resources.SetResourcesTo(mat, cs);
             res.GridToCubeShader = cs;
             res.CubeMaterial = mat;

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 005f062549a927b42a7f6579c196f4f4, type: 3}
+  m_Script: {fileID: 11500000, guid: 08f559eea5cffdf4d8cab428f897585d, type: 3}
   m_Name: Marching Cubes Resource
   m_EditorClassIdentifier: 
   BaseVertexList:
