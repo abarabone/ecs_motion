@@ -22,8 +22,20 @@ namespace DotsLite.MarchingCubes
 
     public struct GridInstraction
     {
-        public int id;
         public Vector3 position;
+        public int GridDynamicIndex;
+        public NearGridIndex GridStaticIndex;
+    }
+    public struct NearGridIndex
+    {
+        public int left_home;
+        public int left_down;
+        public int left_rear;
+        public int left_slant;
+        public int right_home;
+        public int right_down;
+        public int right_rear;
+        public int right_slant;
     }
 
     public struct DotGridAreaResourcesForGpu : IDisposable
@@ -51,6 +63,16 @@ namespace DotsLite.MarchingCubes
 
             this.CubeInstances.Dispose();
             this.GridToCubesDispatchArgs.Dispose();
+        }
+
+        public void SetResourcesTo(Material mat, ComputeShader cs)
+        {
+            mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
+
+            mat.SetConstantBuffer_("grid_constant", this.GridInstances.Buffer);
+            //mat.SetConstantBuffer("grids", res.GridInstancesBuffer);
+
+            cs?.SetBuffer(0, "src_instances", this.CubeInstances.Buffer);
         }
     }
 

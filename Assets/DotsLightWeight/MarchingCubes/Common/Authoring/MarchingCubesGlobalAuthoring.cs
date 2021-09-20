@@ -42,8 +42,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
                 var ent = gcs_.GetPrimaryEntity(global_);
                 em.AddComponentData(ent,
-                    new MarchingCubeGlobalData()
-                        .Init(this.MaxFreeGrids, this.MaxGridInstances, this.MarchingCubesAsset)
+                    MarchingCubeGlobalData.Create(this.MaxFreeGrids, this.MaxGridInstances, this.MarchingCubesAsset)
                 );
             }
 

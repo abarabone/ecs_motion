@@ -66,6 +66,34 @@ namespace DotsLite.MarchingCubes
             this.CubeGeometryConstants.Dispose();
         }
 
+        public void SetResourcesTo(Material mat, ComputeShader cs)
+        {
+            // せつめい - - - - - - - - - - - - - - - - -
+
+            //uint4 cube_patterns[ 254 ][2];
+            // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
+            // [1] : vertex normal index { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
+
+            //uint4 cube_vtxs[ 12 ];
+            // x: near vertex index (x>>0 | y>>8 | z>>16)
+            // y: near vertex index offset prev (left >>0 | up  >>8 | front>>16)
+            // z: near vertex index offset next (right>>0 | down>>8 | back >>16)
+            // w: pos(x>>0 | y>>8 | z>>16)
+
+            //uint3 grids[ 512 ][2];
+            // [0] : position as float3
+            // [1] : near grid id
+            // { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
+
+            // - - - - - - - - - - - - - - - - - - - - -
+
+            mat.SetConstantBuffer_("static_data", this.CubeGeometryConstants.Buffer);
+
+            mat.SetTexture("grid_cubeids", this.GridCubeIds.Texture);
+            //mat.SetBuffer( "grid_cubeids", res.GridCubeIdBuffer );
+
+            cs?.SetTexture(0, "dst_grid_cubeids", this.GridCubeIds.Texture);
+        }
     }
 
 
@@ -102,15 +130,15 @@ namespace DotsLite.MarchingCubes
 
         public static CubeGeometryConstantBuffer Create(MarchingCubeAsset asset)
         {
-            var cubeVertexBuffer = createCubeVertexBuffer_(asset.BaseVertexList);
             var vertexNormalDict = makeVertexNormalsDict_(asset.CubeIdAndVertexIndicesList);
-            var cubePatternBuffer = createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList, vertexNormalDict);
+
+            var cubeVertexBuffer = createCubeVertexBuffer_(asset.BaseVertexList);
             var normalBuffer = createNormalList_(vertexNormalDict);
-            var buffer = createCubeGeometryData_(cubeVertexBuffer, cubePatternBuffer, normalBuffer);
+            var cubePatternBuffer = createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList, vertexNormalDict);
 
             return new CubeGeometryConstantBuffer
             {
-                Buffer = buffer,
+                Buffer = createCubeGeometryData_(cubeVertexBuffer, cubePatternBuffer, normalBuffer),
             };
 
 
@@ -179,26 +207,6 @@ namespace DotsLite.MarchingCubes
                     .ToDictionary(x => x.x, x => x.i);
             }
 
-            static ComputeBuffer createCubeGeometryData_
-                (IEnumerable<uint4> cubeVertices, IEnumerable<uint4[]> cubePatterns, IEnumerable<float4> normalList)
-            {
-
-                var data = new[]
-                    {
-                    from x in cubeVertices select math.asfloat(x),
-                    from x in cubePatterns from y in x select math.asfloat(y),
-                    normalList,
-                }
-                    .SelectMany(x => x)
-                    .ToArray();
-
-                var buffer = new ComputeBuffer(data.Length, Marshal.SizeOf<float4>(), ComputeBufferType.Constant);
-
-                buffer.SetData(data);
-
-                return buffer;
-            }
-
             static IEnumerable<float4> createNormalList_(Dictionary<float3, int> normalToIdDict)
             {
                 var q =
@@ -224,8 +232,8 @@ namespace DotsLite.MarchingCubes
                     orderby cube.cubeId
                     select new[]
                     {
-                    toTriPositionIndex_( cube.vertexIndices ),
-                    toVtxNormalIndex_( cube.normalsForVertex, normalToIdDict )
+                        toTriPositionIndex_( cube.vertexIndices ),
+                        toVtxNormalIndex_( cube.normalsForVertex, normalToIdDict )
                     };
                 //q.SelectMany(x=>x).ForEach( x => Debug.Log(x) );
 
@@ -265,10 +273,30 @@ namespace DotsLite.MarchingCubes
                     //int ntoi( int i, int shift ) => (normalToIdDict_[ round_normal_(normals[ i ]) ] & 0xff) << shift;
                     int ntoi(int i)
                     {
-                        Debug.Log($"{i} @ {round_normal_(normals[i])} => {normalToIdDict_[round_normal_(normals[i])]}");
+                        //Debug.Log($"{i} @ {round_normal_(normals[i])} => {normalToIdDict_[round_normal_(normals[i])]}");
                         return normalToIdDict_[round_normal_(normals[i])];
                     }
                 }
+            }
+
+            static ComputeBuffer createCubeGeometryData_
+                (IEnumerable<uint4> cubeVertices, IEnumerable<uint4[]> cubePatterns, IEnumerable<float4> normalList)
+            {
+
+                var data = new[]
+                    {
+                    from x in cubeVertices select math.asfloat(x),
+                    from x in cubePatterns from y in x select math.asfloat(y),
+                    normalList,
+                }
+                    .SelectMany(x => x)
+                    .ToArray();
+
+                var buffer = new ComputeBuffer(data.Length, Marshal.SizeOf<float4>(), ComputeBufferType.Constant);
+
+                buffer.SetData(data);
+
+                return buffer;
             }
 
             static float3 round_normal_(float3 x)

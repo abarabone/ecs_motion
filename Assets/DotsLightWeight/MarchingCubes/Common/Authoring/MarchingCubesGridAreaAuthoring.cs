@@ -106,11 +106,8 @@ namespace DotsLite.MarchingCubes.Authoring
                 //    }
                 //);
                 em.SetComponentData(ent,
-                    new DotGridArea.ResourceGpuModeData()
-                        .Init(
-                            this.MaxCubeInstances, this.MaxGridInstances,
-                            mat, this.CubeAdjacentShader
-                        )
+                    DotGridArea.ResourceGpuModeData
+                        .Create(this.MaxCubeInstances, this.MaxGridInstances, mat, this.CubeAdjacentShader)
                 );
                 em.SetComponentData(ent,
                     new Rotation
