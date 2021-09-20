@@ -49,43 +49,42 @@ namespace DotsLite.MarchingCubes.Gpu
                     var mat = res.CubeMaterial;
                     var buf = res.ShaderResources;
 
-                    //if (cs == null) return;
+                    if (cs == null) return;
 
 
-                    //{
-                    //    //var gridInstances = output.GridInstances;//globaldata.GridInstances;
-                    //    //gridInstances.Length = abuf.GridInstancesBuffer.count;//
-                    //    //abuf.GridInstancesBuffer.SetData(gridInstances.AsNativeArray());
+                    {
+                        //var gridInstances = output.GridInstances;//globaldata.GridInstances;
+                        //gridInstances.Length = abuf.GridInstancesBuffer.count;//
+                        //abuf.GridInstancesBuffer.SetData(gridInstances.AsNativeArray());
 
-                    //    //var remain = (64 - (cubeInstances.Length & 0x3f)) & 0x3f;
-                    //    //for (var i = 0; i < remain; i++) cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
-                    //    //abuf.CubeInstancesBuffer.SetData(cubeInstances.AsNativeArray());
+                        //var remain = (64 - (cubeInstances.Length & 0x3f)) & 0x3f;
+                        //for (var i = 0; i < remain; i++) cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
+                        //abuf.CubeInstancesBuffer.SetData(cubeInstances.AsNativeArray());
 
-                        
+                        buf.CubeInstances.Buffer.SetCounterValue(0);
 
-                    //    var argparams = new IndirectArgumentsForDispatch(1, 1, 1);//32, 32);
-                    //    var args = buf.GridToCubesDispatchArgs.Buffer;
-                    //    args.SetData(ref argparams);
-                    //    cs.Dispatch(kernelIndex: 0, 1, 1, 1);
-                    //}
+                        //var argparams = new IndirectArgumentsForDispatch(1, 1, 1);
+                        //var args = buf.GridToCubesDispatchArgs.Buffer;
+                        //args.SetData(ref argparams);
+                        cs.Dispatch(kernelIndex: 0, 1, 1, 1);
+                    }
 
                     {
                         var mesh = globaldata.ShaderResources.mesh;
                         var iargs = buf.CubeInstancingArgs;
                         var src = buf.CubeInstances;
 
-                        var xs = (
-                            from x in Enumerable.Range(0, 32)
-                            from z in Enumerable.Range(0, 32)
-                            select CubeUtility.ToCubeInstance(x, 0, z, 0, (uint)(x+z))
-                        ).ToArray();
-                        buf.CubeInstances.Buffer.SetData(xs);
+                        //var xs = (
+                        //    from x in Enumerable.Range(0, 32)
+                        //    from z in Enumerable.Range(0, 32)
+                        //    select CubeUtility.ToCubeInstance(x, 0, z, 0, (uint)(x+z))
+                        //).ToArray();
+                        //buf.CubeInstances.Buffer.SetData(xs, 0, 0, buf.CubeInstances.Buffer.count);
 
-                        var instanceCount = xs.Count();// cubeInstances.Length;
-                        var iargparams = new IndirectArgumentsForInstancing(mesh, instanceCount);
-                        iargs.Buffer.SetData(ref iargparams);
-
-                        //ComputeBuffer.CopyCount(src.Buffer, iargs.Buffer, dstOffsetBytes: sizeof(int) * 1);
+                        //var instanceCount = 0;// src.Buffer.count;//xs.Count();// cubeInstances.Length;
+                        //var iargparams = new IndirectArgumentsForInstancing(mesh, instanceCount);
+                        //iargs.Buffer.SetData(ref iargparams);
+                        ComputeBuffer.CopyCount(src.Buffer, iargs.Buffer, dstOffsetBytes: sizeof(int) * 1);
 
                         var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };//
                         Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, iargs.Buffer);//

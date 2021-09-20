@@ -47,9 +47,10 @@ namespace DotsLite.MarchingCubes
                     {
                         var mat = ares.CubeMaterial;
                         var cs = ares.GridToCubeShader;
+                        var mesh = gres.mesh;
 
                         gres.SetResourcesTo(mat, cs);
-                        ares.ShaderResources.SetResourcesTo(mat, cs);
+                        ares.ShaderResources.SetResourcesTo(mat, cs, mesh);
                     }
                 )
                 .Run();
@@ -61,6 +62,7 @@ namespace DotsLite.MarchingCubes
 
 
         protected override unsafe void OnDestroy()
+        //protected override unsafe void OnStopRunning()
         {
             if (!this.HasSingleton<MarchingCubeGlobalData>()) return;
 
@@ -70,8 +72,8 @@ namespace DotsLite.MarchingCubes
                 .WithoutBurst()
                 .ForEach(
                     (
-                        DotGridArea.ResourceGpuModeData ares,
-                        ref DotGridArea.ShaderInputData buf
+                        DotGridArea.ResourceGpuModeData area
+                        //ref DotGridArea.ShaderInputData buf
                     ) =>
                     {
                         //for (var i = 0; i < buf.Grids.length; i++)
@@ -86,9 +88,9 @@ namespace DotsLite.MarchingCubes
 
                         //output.CubeInstances.Dispose();
                         //output.GridInstances.Dispose();
-                        buf.GridInstractions.Dispose();
+                        //buf.GridInstractions.Dispose();
 
-                        ares.ShaderResources.Dispose();
+                        area.ShaderResources.Dispose();
                     }
                 )
                 .Run();

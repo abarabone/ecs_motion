@@ -20,12 +20,14 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Draw;
     using DotsLite.Utilities;
 
+    [StructLayout(LayoutKind.Sequential)]
     public struct GridInstraction
     {
         public Vector3 position;
         public int GridDynamicIndex;
         public NearGridIndex GridStaticIndex;
     }
+    [StructLayout(LayoutKind.Sequential)]
     public struct NearGridIndex
     {
         public int left_home;
@@ -65,14 +67,16 @@ namespace DotsLite.MarchingCubes
             this.GridToCubesDispatchArgs.Dispose();
         }
 
-        public void SetResourcesTo(Material mat, ComputeShader cs)
+        public void SetResourcesTo(Material mat, ComputeShader cs, Mesh mesh)
         {
             mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
 
             mat.SetConstantBuffer_("grid_constant", this.GridInstances.Buffer);
-            //mat.SetConstantBuffer("grids", res.GridInstancesBuffer);
 
-            cs?.SetBuffer(0, "src_instances", this.CubeInstances.Buffer);
+            cs?.SetBuffer(0, "cube_instances", this.CubeInstances.Buffer);
+
+            var iargparams = new IndirectArgumentsForInstancing(mesh);
+            this.CubeInstancingArgs.Buffer.SetData(ref iargparams);
         }
     }
 
@@ -102,6 +106,16 @@ namespace DotsLite.MarchingCubes
 
             this.CubeInstances.Dispose();
             this.GridInstances.Dispose();
+        }
+
+        public void SetResourcesTo(Material mat, ComputeShader cs)
+        {
+            mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
+
+            mat.SetConstantBuffer_("grid_constant", this.GridInstances.Buffer);
+            //mat.SetConstantBuffer("grids", res.GridInstancesBuffer);
+
+            cs?.SetBuffer(0, "src_instances", this.CubeInstances.Buffer);
         }
     }
 
@@ -152,7 +166,7 @@ namespace DotsLite.MarchingCubes
 
         public static CubeInstancingShaderBuffer Create(int maxCubeInstances) => new CubeInstancingShaderBuffer
         {
-            Buffer = new ComputeBuffer(maxCubeInstances, Marshal.SizeOf<uint>()),
+            Buffer = new ComputeBuffer(maxCubeInstances, Marshal.SizeOf<uint>(), ComputeBufferType.Append),
         };
 
         public void Dispose() => this.Buffer?.Release();
