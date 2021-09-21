@@ -63,10 +63,8 @@ namespace DotsLite.MarchingCubes.Gpu
 
                         buf.CubeInstances.Buffer.SetCounterValue(0);
 
-                        //var argparams = new IndirectArgumentsForDispatch(1, 1, 1);
-                        //var args = buf.GridToCubesDispatchArgs.Buffer;
-                        //args.SetData(ref argparams);
-                        cs.Dispatch(kernelIndex: 0, 1, 1, 1);
+                        cs.Dispatch(kernelIndex: 0, 1, 32, 1);
+                        //Debug.Log(buf.CubeInstances.Buffer.count);
                     }
 
                     {

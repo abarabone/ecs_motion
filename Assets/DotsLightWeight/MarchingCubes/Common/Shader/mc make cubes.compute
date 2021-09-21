@@ -3,14 +3,14 @@
 AppendStructuredBuffer<uint> cube_instances;
 
 
-uint toCubeInstance(int ix, int iy, int iz, int gridId, uint cubeId)
+uint toCubeInstance(uint ix, uint iy, uint iz, uint gridId, uint cubeId)
 {
-    return (uint)iz << 26 | (uint)iy << 21 | (uint)ix << 16 | (uint)gridId << 8 | cubeId;
+    return iz << 26 | iy << 21 | ix << 16 | gridId << 8 | cubeId;
 }
 
 [numthreads(32, 1, 32)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	const uint cube = toCubeInstance(id.x, id.y, id.z, 0, 100);
+	const uint cube = toCubeInstance(id.x, gid.y, id.z, 0, 0xf0);
 	cube_instances.Append(cube);
 }

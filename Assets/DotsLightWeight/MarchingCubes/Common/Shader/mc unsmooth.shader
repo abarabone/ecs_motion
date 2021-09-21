@@ -218,7 +218,7 @@
 				const uint4 ivtx_packed = asuint(cube_patterns[cubeid][itri_to_ivtx]);
 				const uint ivtx_in_cube = unpack8bit_uint4_to_uint(ivtx_packed, v.vertex.y, v.vertex.x);
 
-				const uint4 cubeindex = data.xxxx >> uint4(16, 21, 26, 8) & uint4(0x1f, 0x1f, 0x1f, 0xff);
+				const uint4 cubeindex = data.xxxx >> uint4(16, 21, 26, 8) & uint4(0x1f, 0x1f, 0x1f, 0x1ff);
 				
 				const float3 gridpos = float3(0,0,0);//grids[cubeindex.w][grid_pos].xyz;//.position;//
 				const int3 cubepos = (int3)cubeindex.xyz * int3(1, -1, -1);
