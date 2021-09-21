@@ -32,7 +32,7 @@ namespace DotsLite.MarchingCubes
         public Mesh mesh;
 
 
-        public GlobalResources(MarchingCubeAsset asset, int maxGridInstances) : this()
+        public void Alloc(MarchingCubeAsset asset, int maxGridInstances)
         {
             this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances);
 
@@ -90,9 +90,13 @@ namespace DotsLite.MarchingCubes
             mat.SetConstantBuffer_("static_data", this.CubeGeometryConstants.Buffer);
 
             mat.SetTexture("grid_cubeids", this.GridCubeIds.Texture);
-            //mat.SetBuffer( "grid_cubeids", res.GridCubeIdBuffer );
 
             cs?.SetTexture(0, "dst_grid_cubeids", this.GridCubeIds.Texture);
+        }
+
+        public void SetBuffers()
+        {
+
         }
     }
 

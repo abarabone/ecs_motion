@@ -36,36 +36,6 @@ namespace DotsLite.MarchingCubes
         //    public UnsafeList<DotGrid32x32x32Unsafe> Grids;
         //}
 
-        public class ResourceGpuModeData : IComponentData
-        {
-            public DotGridAreaResourcesForGpu ShaderResources;
-
-            public ComputeShader GridToCubeShader;
-            public Material CubeMaterial;
-
-
-            static public ResourceGpuModeData Create(
-                int maxCubeInstances, int maxGridInstances, Material mat, ComputeShader cs)
-            {
-                return new ResourceGpuModeData
-                {
-                    ShaderResources = new DotGridAreaResourcesForGpu(maxCubeInstances, maxGridInstances),
-                    GridToCubeShader = cs,
-                    CubeMaterial = mat,
-                };
-            }
-        }
-
-        public struct ShaderInputData : IComponentData
-        {
-            public UnsafeList<GridInstraction> GridInstractions;
-        }
-        //public struct OutputCubesData : IComponentData
-        //{
-        //    public UnsafeList<GridInstanceData> GridInstances;
-        //    public UnsafeList<CubeInstance> CubeInstances;
-        //    //public UnsafeRingQueue<CubeInstance*> CubeInstances;
-        //}
 
         public struct InfoData : IComponentData
         {
@@ -77,47 +47,8 @@ namespace DotsLite.MarchingCubes
             public int3 GridSpan;
         }
 
-        //public struct Mode2 : IComponentData
-        //{ }
-        //public struct Parallel : IComponentData
-        //{ }
     }
 
-
-
-
-
-
-
-    static public partial class DotGridArea
-    {
-
-
-
-
-
-
-        ///// <summary>
-        ///// グリッドエリアから、指定した位置のグリッドポインタを取得する。
-        ///// </summary>
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static public unsafe DotGrid32x32x32UnsafePtr GetGridFromArea
-        //    (
-        //        //ref this (DotGridArea.BufferData, DotGridArea.InfoWorkData) x,
-        //        ref DotGridArea.BufferData areaGrids,
-        //        ref DotGridArea.InfoWorkData areaInfo,
-        //        int ix, int iy, int iz
-        //    )
-        //{
-        //    //ref var areaGrids = ref x.Item1;
-        //    //ref var areaInfo = ref x.Item2;
-            
-        //    var i3 = new int3(ix, iy, iz) + 1;
-        //    var i = math.dot(i3, areaInfo.GridSpan);
-
-        //    return new DotGrid32x32x32UnsafePtr { p = areaGrids.Grids.Ptr + i };
-        //}
-    }
 
 
 
