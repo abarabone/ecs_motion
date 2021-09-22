@@ -21,7 +21,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Utilities;
 
 
-    public struct DotGridAreaResourcesForBurst : IDisposable
+    public struct DotGridAreaResourcesForBurst// : IDisposable
     {
         //public CubeInstancingIndirectArgumentsBuffer ArgsBufferForInstancing;
         //public GridToCubesDispatchIndirectArgumentsBuffer ArgsBufferForDispatch;

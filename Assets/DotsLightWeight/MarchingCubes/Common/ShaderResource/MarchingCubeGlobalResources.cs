@@ -24,7 +24,7 @@ namespace DotsLite.MarchingCubes
 
 
 
-    public struct GlobalResources : IDisposable
+    public struct GlobalShaderResources : IDisposable
     {
         public CubeGeometryConstantBuffer CubeGeometryConstants;
         public GridCubeIdShaderBufferTexture GridCubeIds;
@@ -40,7 +40,6 @@ namespace DotsLite.MarchingCubes
 
             this.mesh = createMesh_();
         }
-
         static Mesh createMesh_()
         {
             var mesh_ = new Mesh();

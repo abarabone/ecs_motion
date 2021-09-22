@@ -25,10 +25,10 @@ namespace DotsLite.MarchingCubes
     static public partial class DotGridArea
     {
 
-        public struct InitializeData : IComponentData
-        {
-            public GridFillMode FillMode;
-        }
+        //public struct InitializeData : IComponentData
+        //{
+        //    public GridFillMode FillMode;
+        //}
 
 
         //public unsafe struct BufferData : IComponentData

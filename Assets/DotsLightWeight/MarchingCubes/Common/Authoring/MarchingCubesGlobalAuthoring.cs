@@ -41,9 +41,12 @@ namespace DotsLite.MarchingCubes.Authoring
                 var em = gcs_.DstEntityManager;
 
                 var ent = gcs_.GetPrimaryEntity(global_);
-                em.AddComponentData(ent,
-                    MarchingCubeGlobalData.Create(this.MaxFreeGrids, this.MaxGridInstances, this.MarchingCubesAsset)
-                );
+                em.AddComponentData(ent, new Global.InitializeData
+                {
+                    maxFreeGrids = this.MaxFreeGrids,
+                    maxGridInstances = this.MaxGridInstances,
+                    asset = this.MarchingCubesAsset,
+                });
             }
 
         }

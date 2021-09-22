@@ -28,7 +28,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public Texture2D Texture;
         public Shader DrawCubeShader;
-        public ComputeShader CubeAdjacentShader;
+        public ComputeShader GridToCubesShader;
 
         //public bool IsMode2;
         //public bool IsParallel;
@@ -76,7 +76,9 @@ namespace DotsLite.MarchingCubes.Authoring
                 em.SetComponentData(ent,
                     new DotGridArea.InitializeData
                     {
-                        FillMode = fillMode_,
+                        //FillMode = fillMode_,
+                        CubeMaterial = mat,
+                        GridToCubesShader = this.GridToCubesShader,
                     }
                 );
                 //em.SetComponentData(ent,
@@ -105,10 +107,10 @@ namespace DotsLite.MarchingCubes.Authoring
                 //        CubeInstances = new UnsafeList<CubeInstance>(this.MaxCubeInstances, Allocator.Persistent),
                 //    }
                 //);
-                em.SetComponentData(ent,
-                    DotGridArea.ResourceGpuModeData
-                        .Create(this.MaxCubeInstances, this.MaxGridInstances, mat, this.CubeAdjacentShader)
-                );
+                //em.SetComponentData(ent,
+                //    DotGridArea.ResourceGpuModeData
+                //        .Create(this.MaxCubeInstances, this.MaxGridInstances, mat, this.CubeAdjacentShader)
+                //);
                 em.SetComponentData(ent,
                     new Rotation
                     {

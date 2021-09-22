@@ -36,21 +36,47 @@ namespace DotsLite.MarchingCubes
             base.OnStartRunning();
             this.Enabled = false;
 
+
+            var em = this.EntityManager;
+
+            this.Entities
+                .WithoutBurst()
+                .ForEach((
+                    Entity ent,
+                    MarchingCubeGlobalData data,
+                    Global.InitializeData init) =>
+                {
+                    var shres = new GlobalShaderResources();
+                    shres.Alloc(init.asset, init.maxGridInstances);
+                    data.Alloc(init.maxFreeGrids, shres);
+
+                    //em.RemoveComponent<Global.InitializeData>(ent);
+                })
+                .Run();
+
+
             var gres = this.GetSingleton<MarchingCubeGlobalData>().ShaderResources;
 
             this.Entities
                 .WithoutBurst()
                 .ForEach(
                     (
-                        DotGridArea.ResourceGpuModeData ares
+                        DotGridArea.InitializeData init,
+                        DotGridArea.ResourceGpuModeData res
                     ) =>
                     {
-                        var mat = ares.CubeMaterial;
-                        var cs = ares.GridToCubeShader;
+                        var mat = init.CubeMaterial;
+                        var cs = init.GridToCubesShader;
                         var mesh = gres.mesh;
 
                         gres.SetResourcesTo(mat, cs);
-                        ares.ShaderResources.SetResourcesTo(mat, cs, mesh);
+
+                        var shres = new DotGridAreaResourcesForGpu();
+                        shres.SetResourcesTo(mat, cs);
+                        shres.SetBuffers(mesh);
+                        res.CubeMaterial = mat;
+                        res.GridToCubeShader = cs;
+                        res.ShaderResources = shres;
                     }
                 )
                 .Run();
