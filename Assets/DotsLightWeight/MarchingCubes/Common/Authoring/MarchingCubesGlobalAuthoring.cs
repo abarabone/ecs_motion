@@ -47,6 +47,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     maxGridInstances = this.MaxGridInstances,
                     asset = this.MarchingCubesAsset,
                 });
+                //em.AddComponentData(ent, new MarchingCubeGlobalData());
             }
 
         }

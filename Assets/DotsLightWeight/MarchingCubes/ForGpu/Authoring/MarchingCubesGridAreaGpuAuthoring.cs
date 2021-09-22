@@ -15,7 +15,7 @@ namespace DotsLite.MarchingCubes.Authoring
     using DotsLite.Draw;
     using DotsLite.Model;
 
-    public class MarchingCubesGridAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class MarchingCubesGridAreaGpuAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         public int3 GridLength;
@@ -58,7 +58,7 @@ namespace DotsLite.MarchingCubes.Authoring
                         typeof(DotGridArea.InfoData),
                         typeof(DotGridArea.InfoWorkData),
                         //typeof(DotGridArea.OutputCubesData),
-                        typeof(DotGridArea.ResourceGpuModeData),
+                        //typeof(DotGridArea.ResourceGpuModeData),
                         typeof(Rotation),
                         typeof(Translation)
                     }

@@ -29,28 +29,31 @@ namespace DotsLite.MarchingCubes
             base.OnCreate();
 
             //this.RequireSingletonForUpdate<Resource.Initialize>();
-            this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
+            //this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
         }
-        protected override void OnStartRunning()
+        protected override void OnUpdate()
         {
-            base.OnStartRunning();
-            this.Enabled = false;
+            //    base.OnStartRunning();
+            //    this.Enabled = false;
 
 
             var em = this.EntityManager;
 
             this.Entities
                 .WithoutBurst()
+                .WithStructuralChanges()
                 .ForEach((
                     Entity ent,
-                    MarchingCubeGlobalData data,
                     Global.InitializeData init) =>
                 {
                     var shres = new GlobalShaderResources();
                     shres.Alloc(init.asset, init.maxGridInstances);
+
+                    var data = new MarchingCubeGlobalData();
                     data.Alloc(init.maxFreeGrids, shres);
 
-                    //em.RemoveComponent<Global.InitializeData>(ent);
+                    em.AddComponentData(ent, data);
+                    em.RemoveComponent<Global.InitializeData>(ent);
                 })
                 .Run();
 
@@ -59,10 +62,11 @@ namespace DotsLite.MarchingCubes
 
             this.Entities
                 .WithoutBurst()
+                .WithStructuralChanges()
                 .ForEach(
                     (
-                        DotGridArea.InitializeData init,
-                        DotGridArea.ResourceGpuModeData res
+                        Entity ent,
+                        DotGridArea.InitializeData init
                     ) =>
                     {
                         var mat = init.CubeMaterial;
@@ -74,16 +78,23 @@ namespace DotsLite.MarchingCubes
                         var shres = new DotGridAreaResourcesForGpu();
                         shres.SetResourcesTo(mat, cs);
                         shres.SetBuffers(mesh);
-                        res.CubeMaterial = mat;
-                        res.GridToCubeShader = cs;
-                        res.ShaderResources = shres;
+
+                        var data = new DotGridArea.ResourceGpuModeData
+                        {
+                            CubeMaterial = mat,
+                            GridToCubeShader = cs,
+                            ShaderResources = shres,
+                        };
+
+                        em.AddComponentData(ent, data);
+                        em.RemoveComponent<DotGridArea.InitializeData>(ent);
                     }
                 )
                 .Run();
         }
 
-        protected unsafe override void OnUpdate()
-        { }
+        //protected unsafe override void OnUpdate()
+        //{ }
 
 
 
