@@ -47,7 +47,7 @@ namespace DotsLite.MarchingCubes
             defaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
 
             this.DefaultGrids = defaultGrids;
-            this.FreeStocks = new FreeStockList(maxFreeGrids);
+            //this.FreeStocks = new FreeStockList(maxFreeGrids);
             this.ShaderResources = shaderResource;
         }
 
@@ -58,7 +58,7 @@ namespace DotsLite.MarchingCubes
             this.DefaultGrids[(int)GridFillMode.Blank].Dispose();
             this.DefaultGrids[(int)GridFillMode.Solid].Dispose();
 
-            this.FreeStocks.Dispose();
+            //this.FreeStocks.Dispose();
             this.DefaultGrids.Dispose();
         }
     }

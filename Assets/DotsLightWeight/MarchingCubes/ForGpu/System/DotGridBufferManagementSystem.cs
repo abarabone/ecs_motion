@@ -103,7 +103,6 @@ namespace DotsLite.MarchingCubes
         protected override unsafe void OnDestroy()
         //protected override unsafe void OnStopRunning()
         {
-            base.OnDestroy();
             //if (!this.HasSingleton<MarchingCubeGlobalData>()) return;
 
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
