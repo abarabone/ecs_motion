@@ -21,7 +21,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Utilities;
 
 
-    public struct DotGridAreaResourcesForGpu : IDisposable
+    public struct DotGridAreaGpuResources : IDisposable
     {
         public GridInstructionsBuffer GridInstructions;
         //public GridToCubesDispatchIndirectArgumentsBuffer GridToCubesDispatchArgs;
@@ -30,9 +30,9 @@ namespace DotsLite.MarchingCubes
         public CubeInstancingIndirectArgumentsBuffer CubeInstancingArgs;
 
 
-        public void Alloc(int maxCubeInstances, int maxGridInstances)
+        public void Alloc(int maxCubeInstances, int maxGridInstructions)
         {
-            this.GridInstructions = GridInstructionsBuffer.Create(maxGridInstances);
+            this.GridInstructions = GridInstructionsBuffer.Create(maxGridInstructions);
             //this.GridToCubesDispatchArgs = GridToCubesDispatchIndirectArgumentsBuffer.Create();
 
             this.CubeInstances = CubeInstancingShaderBuffer.Create(maxCubeInstances);
@@ -57,9 +57,9 @@ namespace DotsLite.MarchingCubes
             cs?.SetBuffer(0, "cube_instances", this.CubeInstances.Buffer);
         }
 
-        public void SetBuffers(Mesh mesh)
+        public void SetArgumentBuffer(Mesh mesh)
         {
-            var iargparams = new IndirectArgumentsForInstancing(mesh);
+            var iargparams = new IndirectArgumentsForInstancing(mesh, 1);
             this.CubeInstancingArgs.Buffer.SetData(ref iargparams);
         }
     }

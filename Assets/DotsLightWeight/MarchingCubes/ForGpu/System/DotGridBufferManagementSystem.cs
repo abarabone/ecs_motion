@@ -28,7 +28,7 @@ namespace DotsLite.MarchingCubes
         {
             base.OnCreate();
 
-            //this.RequireSingletonForUpdate<Resource.Initialize>();
+            this.RequireSingletonForUpdate<Global.InitializeData>();
             //this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
         }
         protected override void OnUpdate()
@@ -69,15 +69,17 @@ namespace DotsLite.MarchingCubes
                         DotGridArea.InitializeData init
                     ) =>
                     {
+                        Debug.Log("kita");
                         var mat = init.CubeMaterial;
                         var cs = init.GridToCubesShader;
                         var mesh = gres.mesh;
 
                         gres.SetResourcesTo(mat, cs);
 
-                        var shres = new DotGridAreaResourcesForGpu();
+                        var shres = new DotGridAreaGpuResources();
+                        shres.Alloc(init.MaxCubeInstances, init.MaxGridInstructions);
                         shres.SetResourcesTo(mat, cs);
-                        shres.SetBuffers(mesh);
+                        shres.SetArgumentBuffer(mesh);
 
                         var data = new DotGridArea.ResourceGpuModeData
                         {
@@ -101,15 +103,18 @@ namespace DotsLite.MarchingCubes
         protected override unsafe void OnDestroy()
         //protected override unsafe void OnStopRunning()
         {
-            if (!this.HasSingleton<MarchingCubeGlobalData>()) return;
+            base.OnDestroy();
+            //if (!this.HasSingleton<MarchingCubeGlobalData>()) return;
 
             var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
 
             this.Entities
                 .WithoutBurst()
+                .WithStructuralChanges()
                 .ForEach(
                     (
-                        DotGridArea.ResourceGpuModeData area
+                        Entity entity,
+                        DotGridArea.ResourceGpuModeData rea
                         //ref DotGridArea.ShaderInputData buf
                     ) =>
                     {
@@ -127,7 +132,7 @@ namespace DotsLite.MarchingCubes
                         //output.GridInstances.Dispose();
                         //buf.GridInstractions.Dispose();
 
-                        area.ShaderResources.Dispose();
+                        rea.ShaderResources.Dispose();
                     }
                 )
                 .Run();
