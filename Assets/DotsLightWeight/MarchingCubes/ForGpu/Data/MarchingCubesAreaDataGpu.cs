@@ -35,12 +35,18 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        public class ResourceGpuModeData : IComponentData
+        public class ResourceGpuModeData : IComponentData, IDisposable
         {
             public DotGridAreaGpuResources ShaderResources;
 
             public ComputeShader GridToCubeShader;
             public Material CubeMaterial;
+
+            public void Dispose()
+            {
+                this.ShaderResources.Dispose();
+                Debug.Log("mc grid area disposed");
+            }
         }
 
         public struct ShaderInputData : IComponentData

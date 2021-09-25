@@ -21,25 +21,13 @@ namespace DotsLite.MarchingCubes
     public class DotGridBufferManagementSystem : SystemBase
     {
 
-
-        //EntityCommandBufferSystem cmdSystem;
-
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-
-            this.RequireSingletonForUpdate<Global.InitializeData>();
-            //this.RequireSingletonForUpdate<MarchingCubeGlobalData>();
-        }
         protected override void OnUpdate()
         {
-            //    base.OnStartRunning();
-            //    this.Enabled = false;
-
 
             var em = this.EntityManager;
 
             this.Entities
+                .WithName("Global")
                 .WithoutBurst()
                 .WithStructuralChanges()
                 .ForEach((
@@ -61,6 +49,7 @@ namespace DotsLite.MarchingCubes
             var gres = this.GetSingleton<MarchingCubeGlobalData>().ShaderResources;
 
             this.Entities
+                .WithName("GridArea")
                 .WithoutBurst()
                 .WithStructuralChanges()
                 .ForEach(
@@ -69,7 +58,6 @@ namespace DotsLite.MarchingCubes
                         DotGridArea.InitializeData init
                     ) =>
                     {
-                        Debug.Log("kita");
                         var mat = init.CubeMaterial;
                         var cs = init.GridToCubesShader;
                         var mesh = gres.mesh;
@@ -95,49 +83,7 @@ namespace DotsLite.MarchingCubes
                 .Run();
         }
 
-        //protected unsafe override void OnUpdate()
-        //{ }
-
-
-
-        protected override unsafe void OnDestroy()
-        //protected override unsafe void OnStopRunning()
-        {
-            //if (!this.HasSingleton<MarchingCubeGlobalData>()) return;
-
-            var globaldata = this.GetSingleton<MarchingCubeGlobalData>();
-
-            this.Entities
-                .WithoutBurst()
-                .WithStructuralChanges()
-                .ForEach(
-                    (
-                        Entity entity,
-                        DotGridArea.ResourceGpuModeData rea
-                        //ref DotGridArea.ShaderInputData buf
-                    ) =>
-                    {
-                        //for (var i = 0; i < buf.Grids.length; i++)
-                        //{
-                        //    var defs = globaldata.DefaultGrids;
-                        //    var grid = buf.Grids[i];
-                        //    if (grid.pUnits == null) continue;
-                        //    if (defs.IsDefault(grid)) continue;
-
-                        //    buf.Grids[i].Dispose();
-                        //}
-
-                        //output.CubeInstances.Dispose();
-                        //output.GridInstances.Dispose();
-                        //buf.GridInstractions.Dispose();
-
-                        rea.ShaderResources.Dispose();
-                    }
-                )
-                .Run();
-
-            globaldata.Dispose();
-        }
+        // IDisposable な component data は、自動的に .Dispose() されるようだ
 
     }
 }

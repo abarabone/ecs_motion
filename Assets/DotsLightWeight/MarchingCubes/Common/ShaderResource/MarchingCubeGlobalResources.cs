@@ -92,11 +92,6 @@ namespace DotsLite.MarchingCubes
 
             cs?.SetTexture(0, "dst_grid_cubeids", this.GridCubeIds.Texture);
         }
-
-        public void SetBuffers()
-        {
-
-        }
     }
 
 

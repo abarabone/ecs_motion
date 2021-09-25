@@ -35,7 +35,7 @@ namespace DotsLite.MarchingCubes
     public class MarchingCubeGlobalData : IComponentData, IDisposable
     {
         public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
-        public FreeStockList FreeStocks;
+        //public FreeStockList FreeStocks;
 
         public GlobalShaderResources ShaderResources;
 
@@ -60,18 +60,19 @@ namespace DotsLite.MarchingCubes
 
             //this.FreeStocks.Dispose();
             this.DefaultGrids.Dispose();
+            Debug.Log("mc global disposed");
         }
     }
 
-    static public partial class Resource
-    {
-        public class Initialize : IComponentData
-        {
-            public MarchingCubeAsset Asset;
-            public int MaxGridLengthInShader;
-        }
+    //static public partial class Resource
+    //{
+    //    public class Initialize : IComponentData
+    //    {
+    //        public MarchingCubeAsset Asset;
+    //        public int MaxGridLengthInShader;
+    //    }
 
-    }
+    //}
 
 
 
