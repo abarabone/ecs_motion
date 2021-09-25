@@ -23,7 +23,7 @@ namespace DotsLite.MarchingCubes.Authoring
         public GridFillMode FillMode;
 
         [Range(0, 512)]
-        public int MaxGridInstructions;
+        public int MaxGrids;
         public int MaxCubeInstances;
 
         public Texture2D Texture;
@@ -80,7 +80,7 @@ namespace DotsLite.MarchingCubes.Authoring
                         CubeMaterial = mat,
                         GridToCubesShader = this.GridToCubesShader,
                         MaxCubeInstances = this.MaxCubeInstances,
-                        MaxGridInstructions = this.MaxGridInstructions,
+                        MaxGrids = this.MaxGrids,
                     }
                 );
                 //em.SetComponentData(ent,

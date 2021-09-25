@@ -23,26 +23,32 @@ namespace DotsLite.MarchingCubes
 
     public struct DotGridAreaGpuResources : IDisposable
     {
+        public GridContentDataBuffer GridContentDataBuffer;
         public GridInstructionsBuffer GridInstructions;
-        //public GridToCubesDispatchIndirectArgumentsBuffer GridToCubesDispatchArgs;
 
         public CubeInstancingShaderBuffer CubeInstances;
         public CubeInstancingIndirectArgumentsBuffer CubeInstancingArgs;
 
 
-        public void Alloc(int maxCubeInstances, int maxGridInstructions)
+        public void Alloc(int maxCubeInstances, int maxGrids, int maxGridInstructions = 63)// cs の dispatch は 65535 までなので、65535/1024
         {
+            this.GridContentDataBuffer = GridContentDataBuffer.Create(maxGrids);
             this.GridInstructions = GridInstructionsBuffer.Create(maxGridInstructions);
-            //this.GridToCubesDispatchArgs = GridToCubesDispatchIndirectArgumentsBuffer.Create();
 
             this.CubeInstances = CubeInstancingShaderBuffer.Create(maxCubeInstances);
             this.CubeInstancingArgs = CubeInstancingIndirectArgumentsBuffer.Create();
+
+            var q =
+                from i in Enumerable.Range(0, 32 * 32)
+                select 0x55555555
+                ;
+            this.GridContentDataBuffer.Buffer.SetData(q.ToArray());
         }
 
         public void Dispose()
         {
+            this.GridContentDataBuffer.Dispose();
             this.GridInstructions.Dispose();
-            //this.GridToCubesDispatchArgs.Dispose();
 
             this.CubeInstances.Dispose();
             this.CubeInstancingArgs.Dispose();
@@ -50,16 +56,16 @@ namespace DotsLite.MarchingCubes
 
         public void SetResourcesTo(Material mat, ComputeShader cs)
         {
-            mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
-
-            mat.SetConstantBuffer_("grid_constant", this.GridInstructions.Buffer);
-
+            cs?.SetBuffer(0, "dotgrids", this.GridContentDataBuffer.Buffer);
             cs?.SetBuffer(0, "cube_instances", this.CubeInstances.Buffer);
+
+            mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
+            mat.SetConstantBuffer_("grid_constant", this.GridInstructions.Buffer);
         }
 
         public void SetArgumentBuffer(Mesh mesh)
         {
-            var iargparams = new IndirectArgumentsForInstancing(mesh, 1);
+            var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
             this.CubeInstancingArgs.Buffer.SetData(ref iargparams);
         }
     }
@@ -85,18 +91,6 @@ namespace DotsLite.MarchingCubes
         public int right_slant;
     }
 
-    //public struct CubeInstancingIndirectArgumentsBuffer : IDisposable
-    //{
-    //    public ComputeBuffer Buffer { get; private set; }
-
-    //    public static CubeInstancingIndirectArgumentsBuffer Create() => new CubeInstancingIndirectArgumentsBuffer
-    //    {
-    //        Buffer = new ComputeBuffer(1, sizeof(uint) * 5, ComputeBufferType.IndirectArguments, ComputeBufferMode.Immutable),
-    //    };
-
-    //    public void Dispose() => this.Buffer?.Release();
-    //}
-
 
     public struct CubeInstancingIndirectArgumentsBuffer : IDisposable
     {
@@ -111,18 +105,30 @@ namespace DotsLite.MarchingCubes
     }
 
 
-    //public struct GridToCubesDispatchIndirectArgumentsBuffer : IDisposable
-    //{
-    //    public ComputeBuffer Buffer { get; private set; }
+    public struct GridContentDataBuffer : IDisposable
+    {
+        public ComputeBuffer Buffer { get; private set; }
 
-    //    public static GridToCubesDispatchIndirectArgumentsBuffer Create() => new GridToCubesDispatchIndirectArgumentsBuffer
-    //    {
-    //        Buffer = new ComputeBuffer(1, sizeof(int) * 3, ComputeBufferType.IndirectArguments, ComputeBufferMode.Immutable),
-    //    };
+        public static GridContentDataBuffer Create(int maxGrids) => new GridContentDataBuffer
+        {
+            Buffer = new ComputeBuffer(32 * 32 * maxGrids, Marshal.SizeOf<uint>()),
+        };
 
-    //    public void Dispose() => this.Buffer?.Release();
-    //}
+        public void Dispose() => this.Buffer?.Release();
+    }
 
+    public struct GridInstructionsBuffer : IDisposable
+    {
+        public ComputeBuffer Buffer { get; private set; }
+
+        // cs の dispatch は 65535 までなので、65535/1024
+        public static GridInstructionsBuffer Create(int maxGridInstructions = 63) => new GridInstructionsBuffer
+        {
+            Buffer = new ComputeBuffer(maxGridInstructions, Marshal.SizeOf<float4>() * 2, ComputeBufferType.Constant),
+        };
+
+        public void Dispose() => this.Buffer?.Release();
+    }
 
     public struct CubeInstancingShaderBuffer : IDisposable
     {
@@ -136,18 +142,6 @@ namespace DotsLite.MarchingCubes
         public void Dispose() => this.Buffer?.Release();
     }
 
-
-    public struct GridInstructionsBuffer : IDisposable
-    {
-        public ComputeBuffer Buffer { get; private set; }
-
-        public static GridInstructionsBuffer Create(int maxGridLength) => new GridInstructionsBuffer
-        {
-            Buffer = new ComputeBuffer(maxGridLength, Marshal.SizeOf<float4>() * 2, ComputeBufferType.Constant),
-        };
-
-        public void Dispose() => this.Buffer?.Release();
-    }
 
 }
 

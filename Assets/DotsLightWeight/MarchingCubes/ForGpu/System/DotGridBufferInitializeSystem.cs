@@ -18,7 +18,7 @@ namespace DotsLite.MarchingCubes
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class DotGridBufferManagementSystem : SystemBase
+    public class DotGridBufferInitializeSystem : SystemBase
     {
 
         protected override void OnUpdate()
@@ -65,7 +65,7 @@ namespace DotsLite.MarchingCubes
                         gres.SetResourcesTo(mat, cs);
 
                         var shres = new DotGridAreaGpuResources();
-                        shres.Alloc(init.MaxCubeInstances, init.MaxGridInstructions);
+                        shres.Alloc(init.MaxCubeInstances, init.MaxGrids);
                         shres.SetResourcesTo(mat, cs);
                         shres.SetArgumentBuffer(mesh);
 

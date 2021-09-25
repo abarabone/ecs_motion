@@ -1,6 +1,97 @@
-#pragma kernel CSMain
+﻿#pragma kernel CSMain
 
 AppendStructuredBuffer<uint> cube_instances;
+
+
+//struct grid
+//{
+//	uint dotxlines[32][32];
+//};
+//StructuredBuffer<grid> dotgrids;
+StructuredBuffer<unit> dotgrids;
+
+struct CubeXLineBitwise
+{
+    uint _98109810;
+    uint _a921a921;
+    uint _ba32ba32;
+    uint _cb43cb43;
+    uint _dc54dc54;
+    uint _ed65ed65;
+    uint _fe76fe76;
+    uint __f870f87;
+};
+
+// あらかじめ共通段階（キューブ手前）までビット操作しておいたほうが速くなるかも、でも余計なエリアにストアするから、逆効果の可能性もある
+//CubeXLineBitwise bitwiseCubesXLine_( uint4 y0z0, uint4 y0z1, uint4 y1z0, uint4 y1z1 )
+CubeXLineBitwise bitwiseCubesXLine_(uint y0z0, uint y0z1, uint y1z0, uint y1z1)
+{
+    //CubeXLineBitwise blank;
+    //if( !any( y0z0 | y0z1 | y1z0 | y1z1 ) ) return blank;
+
+    // fedcba9876543210fedcba9876543210
+
+    const uint m1100 = 0xc0c0c0c0;//0b_11001100_11001100_11001100_11001100u;
+    const uint m0011 = m1100 >> 2;
+    // --dc--98--54--10--dc--98--54--10
+    // dc--98--54--10--dc--98--54--10--
+    // fe--ba--76--32--fe--ba--76--32--
+    // --fe--ba--76--32--fe--ba--76--32
+    const uint y0_dc985410 = y0z0 & m0011 | ( y0z1 & m0011 ) << 2;
+    const uint y0_feba7632 = ( y0z0 & m1100 ) >> 2 | y0z1 & m1100;
+    const uint y1_dc985410 = y1z0 & m0011 | ( y1z1 & m0011 ) << 2;
+    const uint y1_feba7632 = ( y1z0 & m1100 ) >> 2 | y1z1 & m1100;
+    // dcdc989854541010dcdc989854541010
+    // fefebaba76763232fefebaba76763232
+    // dcdc989854541010dcdc989854541010
+    // fefebaba76763232fefebaba76763232
+
+    const uint mf0 = 0xf0f0f0f0u;
+    const uint m0f = 0x0f0f0f0fu;
+    // ----9898----1010----9898----1010
+    // dcdc----5454----dcdc----5454----
+    // ----baba----3232----baba----3232
+    // fefe----7676----fefe----7676----
+    const uint _98109810 = y0_dc985410 & m0f | ( y1_dc985410 & m0f ) << 4;
+    const uint _dc54dc54 = ( y0_dc985410 & mf0 ) >> 4 | y1_dc985410 & mf0;
+    const uint _ba32ba32 = y0_feba7632 & m0f | ( y1_feba7632 & m0f ) << 4;
+    const uint _fe76fe76 = ( y0_feba7632 & mf0 ) >> 4 | y1_feba7632 & mf0;
+    // 98989898101010109898989810101010
+    // dcdcdcdc54545454dcdcdcdc54545454
+    // babababa32323232babababa32323232
+    // fefefefe76767676fefefefe76767676
+
+    const uint m55 = 0x55555555u;
+    const uint maa = 0xaaaaaaaau;
+    const uint _a921a921 = ( _ba32ba32 & m55 ) << 1 | ( _98109810 & maa ) >> 1;
+    const uint _cb43cb43 = ( _dc54dc54 & m55 ) << 1 | ( _ba32ba32 & maa ) >> 1;
+    const uint _ed65ed65 = ( _fe76fe76 & m55 ) << 1 | ( _dc54dc54 & maa ) >> 1;
+    const uint __f870f87 = ( _98109810 >> 8 & 0x555555u ) << 1 | ( _fe76fe76 & maa ) >> 1;
+    // a9a9a9a921212121a9a9a9a921212121
+    // cbcbcbcb43434343cbcbcbcb43434343
+    // edededed65656565edededed65656565
+    // -f-f-f-f878787870f0f0f0f87878787
+
+    CubeXLineBitwise res;
+    res._98109810 = _98109810;
+    res._a921a921 = _a921a921;
+    res._ba32ba32 = _ba32ba32;
+    res._cb43cb43 = _cb43cb43;
+    res._dc54dc54 = _dc54dc54;
+    res._ed65ed65 = _ed65ed65;
+    res._fe76fe76 = _fe76fe76;
+    res.__f870f87 = __f870f87;
+    return res;
+}
+
+uint4 bitwiseLastHalfCubeXLine_( uint4 y0z0r, uint4 y0z1r, uint4 y1z0r, uint4 y1z1r )
+{
+    return ( y0z0r & 1 ) << 25 | ( y0z1r & 1 ) << 27 | ( y1z0r & 1 ) << 29 | ( y1z1r & 1 ) << 31;
+}
+uint bitwiseLastHalfCubeXLine_( uint y0z0r, uint y0z1r, uint y1z0r, uint y1z1r )
+{
+    return ( y0z0r & 1 ) << 25 | ( y0z1r & 1 ) << 27 | ( y1z0r & 1 ) << 29 | ( y1z1r & 1 ) << 31;
+}
 
 
 uint toCubeInstance(uint ix, uint iy, uint iz, uint gridId, uint cubeId)
@@ -8,9 +99,28 @@ uint toCubeInstance(uint ix, uint iy, uint iz, uint gridId, uint cubeId)
     return iz << 26 | iy << 21 | ix << 16 | gridId << 8 | cubeId;
 }
 
-[numthreads(32, 1, 32)]
+//[numthreads(1, 32, 32)]
+[numthreads(1, 31, 31)]
 void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-	const uint cube = toCubeInstance(id.x, gid.y, id.z, 0, 0xf0);
-	cube_instances.Append(cube);
+    //const uint cube = toCubeInstance(id.x, gid.y, id.z, 0, 0xf0);
+    //cube_instances.Append(cube);
+
+    const int gridid = 0;
+    const uint y0z0 = dotgrids[gridid].dotxlines[id.z + 0][id.y + 0];
+    const uint y0z1 = dotgrids[gridid].dotxlines[id.z + 0][id.y + 1];
+    const uint y1z0 = dotgrids[gridid].dotxlines[id.z + 1][id.y + 0];
+    const uint y1z1 = dotgrids[gridid].dotxlines[id.z + 1][id.y + 1];
+    //const uint y0z0 = dotgrids[gridid];
+
+    const CubeXLineBitwise cubes = bitwiseCubesXLine_(y0z0, y0z1, y1z0, y1z1);
+
+    const uint cube0 = toCubeInstance(0, id.y, id.z, 0, cubes._98109810 >> (8*0) & 0xff);
+    cube_instances.Append(cube0);
+    const uint cube1 = toCubeInstance(1, id.y, id.z, 0, cubes._a921a921 >> (8*0) & 0xff);
+    cube_instances.Append(cube1);
+    const uint cube2 = toCubeInstance(2, id.y, id.z, 0, cubes._ba32ba32 >> (8*0) & 0xff);
+    cube_instances.Append(cube2);
+    const uint cube3 = toCubeInstance(3, id.y, id.z, 0, cubes._cb43cb43 >> (8*0) & 0xff);
+    cube_instances.Append(cube3);
 }
