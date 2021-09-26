@@ -12,18 +12,20 @@ StructuredBuffer<uint> dotgrids;
 
 struct CubeXLineBitwise
 {
-    uint _98109810;
-    uint _a921a921;
-    uint _ba32ba32;
-    uint _cb43cb43;
-    uint _dc54dc54;
-    uint _ed65ed65;
-    uint _fe76fe76;
-    uint __f870f87;
+    //uint _98109810;
+    //uint _a921a921;
+    //uint _ba32ba32;
+    //uint _cb43cb43;
+    //uint _dc54dc54;
+    //uint _ed65ed65;
+    //uint _fe76fe76;
+    //uint __f870f87;
+    uint cubes[8];
 };
 
 // あらかじめ共通段階（キューブ手前）までビット操作しておいたほうが速くなるかも、でも余計なエリアにストアするから、逆効果の可能性もある
 //CubeXLineBitwise bitwiseCubesXLine_( uint4 y0z0, uint4 y0z1, uint4 y1z0, uint4 y1z1 )
+//CubeXLineBitwise bitwiseCubesXLine_(uint y0z0, uint y0z1, uint y1z0, uint y1z1)
 CubeXLineBitwise bitwiseCubesXLine_(uint y0z0, uint y0z1, uint y1z0, uint y1z1)
 {
     //CubeXLineBitwise blank;
@@ -73,21 +75,30 @@ CubeXLineBitwise bitwiseCubesXLine_(uint y0z0, uint y0z1, uint y1z0, uint y1z1)
     // -f-f-f-f878787870f0f0f0f87878787
 
     CubeXLineBitwise res;
-    res._98109810 = _98109810;
-    res._a921a921 = _a921a921;
-    res._ba32ba32 = _ba32ba32;
-    res._cb43cb43 = _cb43cb43;
-    res._dc54dc54 = _dc54dc54;
-    res._ed65ed65 = _ed65ed65;
-    res._fe76fe76 = _fe76fe76;
-    res.__f870f87 = __f870f87;
+    //res._98109810 = _98109810;
+    //res._a921a921 = _a921a921;
+    //res._ba32ba32 = _ba32ba32;
+    //res._cb43cb43 = _cb43cb43;
+    //res._dc54dc54 = _dc54dc54;
+    //res._ed65ed65 = _ed65ed65;
+    //res._fe76fe76 = _fe76fe76;
+    //res.__f870f87 = __f870f87;
+    res.cubes[0] = _98109810;
+    res.cubes[1] = _a921a921;
+    res.cubes[2] = _ba32ba32;
+    res.cubes[3] = _cb43cb43;
+    res.cubes[4] = _dc54dc54;
+    res.cubes[5] = _ed65ed65;
+    res.cubes[6] = _fe76fe76;
+    res.cubes[7] = __f870f87;
     return res;
+
 }
 
-uint4 bitwiseLastHalfCubeXLine_( uint4 y0z0r, uint4 y0z1r, uint4 y1z0r, uint4 y1z1r )
-{
-    return ( y0z0r & 1 ) << 25 | ( y0z1r & 1 ) << 27 | ( y1z0r & 1 ) << 29 | ( y1z1r & 1 ) << 31;
-}
+//uint4 bitwiseLastHalfCubeXLine_( uint4 y0z0r, uint4 y0z1r, uint4 y1z0r, uint4 y1z1r )
+//{
+//    return ( y0z0r & 1 ) << 25 | ( y0z1r & 1 ) << 27 | ( y1z0r & 1 ) << 29 | ( y1z1r & 1 ) << 31;
+//}
 uint bitwiseLastHalfCubeXLine_( uint y0z0r, uint y0z1r, uint y1z0r, uint y1z1r )
 {
     return ( y0z0r & 1 ) << 25 | ( y0z1r & 1 ) << 27 | ( y1z0r & 1 ) << 29 | ( y1z1r & 1 ) << 31;
@@ -115,7 +126,7 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
     //const uint cube = toCubeInstance(id.x, gid.y, id.z, 0, 0xf0);
     //cube_instances.Append(cube);
-
+    
     const int gridid = 0;
     //const uint y0z0 = dotgrids[gridid].dotxlines[id.z + 0][id.y + 0];
     //const uint y0z1 = dotgrids[gridid].dotxlines[id.z + 0][id.y + 1];
@@ -128,12 +139,38 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
     const CubeXLineBitwise cubes = bitwiseCubesXLine_(y0z0, y0z1, y1z0, y1z1);
 
-    const uint cube0 = toCubeInstance(0, id.y, id.z, 0, cubes._98109810 >> (8*0) & 0xff);
-    cube_instances.Append(cube0);
-    const uint cube1 = toCubeInstance(1, id.y, id.z, 0, cubes._a921a921 >> (8*0) & 0xff);
-    cube_instances.Append(cube1);
-    const uint cube2 = toCubeInstance(2, id.y, id.z, 0, cubes._ba32ba32 >> (8*0) & 0xff);
-    cube_instances.Append(cube2);
-    const uint cube3 = toCubeInstance(3, id.y, id.z, 0, cubes._cb43cb43 >> (8*0) & 0xff);
-    cube_instances.Append(cube3);
+    //const uint cube0 = toCubeInstance(0, id.y, id.z, 0, cubes._98109810 >> (8*0) & 0xff);
+    //cube_instances.Append(cube0);
+    //const uint cube1 = toCubeInstance(1, id.y, id.z, 0, cubes._a921a921 >> (8*0) & 0xff);
+    //cube_instances.Append(cube1);
+    //const uint cube2 = toCubeInstance(2, id.y, id.z, 0, cubes._ba32ba32 >> (8*0) & 0xff);
+    //cube_instances.Append(cube2);
+    //const uint cube3 = toCubeInstance(3, id.y, id.z, 0, cubes._cb43cb43 >> (8*0) & 0xff);
+    //cube_instances.Append(cube3);
+    
+    //for (int i = 0; i < 8; i++)
+    //{
+    //    for (int j = 0; j < 4; j++)
+    //    {
+    [unroll] for (int i = 0; i < 8; i++)
+    {
+        const uint cubeset = cubes.cubes[i];
+
+        [unroll] for (int j = 0; j < 4; j++)
+        {
+            const int shift = j * 8;
+            const uint cube = cubeset >> shift & 0xff;
+
+            if (cube == 0) continue;
+
+            const uint instance = toCubeInstance(shift + i, id.y, id.z, gridid, cube);
+            cube_instances.Append(instance);
+            
+            //const int shift = j * 8;
+            //const uint cube = cubes.cubes[i] >> shift & 0xff;
+            //const uint instance = toCubeInstance(shift + i, id.y, id.z, gridid, cube);
+            //if (cube == 0) cube_instances.Append(instance);
+        }
+    }
+
 }
