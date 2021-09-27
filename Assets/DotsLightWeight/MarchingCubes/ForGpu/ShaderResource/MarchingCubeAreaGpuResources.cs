@@ -40,8 +40,7 @@ namespace DotsLite.MarchingCubes
 
             var q =
                 from i in Enumerable.Range(0, 32 * 32)
-                select (i / 32) == 0 ? 0x55555555u : 0xaaaaaaaau
-                //select (i & 1) == 0 ? 0x55555555u : 0xaaaaaaaau
+                select (i & 1) == 0 ? 0x55555555u : 0xaaaaaaaau
                 ;
             this.GridContentDataBuffer.Buffer.SetData(q.ToArray());
         }

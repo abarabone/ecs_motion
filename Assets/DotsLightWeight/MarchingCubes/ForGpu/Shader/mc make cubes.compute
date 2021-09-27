@@ -33,7 +33,7 @@ CubeXLineBitwise bitwiseCubesXLine_(uint y0z0, uint y0z1, uint y1z0, uint y1z1)
 
     // fedcba9876543210fedcba9876543210
 
-    const uint m1100 = 0xc0c0c0c0;//0b_11001100_11001100_11001100_11001100u;
+    const uint m1100 = 0xcccccccc;//0b_11001100_11001100_11001100_11001100u;
     const uint m0011 = m1100 >> 2;
     // --dc--98--54--10--dc--98--54--10
     // dc--98--54--10--dc--98--54--10--
@@ -148,15 +148,13 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
     //const uint cube3 = toCubeInstance(3, id.y, id.z, 0, cubes._cb43cb43 >> (8*0) & 0xff);
     //cube_instances.Append(cube3);
     
-    //for (int i = 0; i < 8; i++)
-    //{
-    //    for (int j = 0; j < 4; j++)
-    //    {
-    [unroll] for (int i = 0; i < 8; i++)
+    [unroll]
+    for (int i = 0; i < 8; i++)
     {
         const uint cubeset = cubes.cubes[i];
 
-        [unroll] for (int j = 0; j < 4; j++)
+        [unroll]
+        for (int j = 0; j < 4; j++)
         {
             const int shift = j * 8;
             const uint cube = cubeset >> shift & 0xff;
