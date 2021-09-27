@@ -31,16 +31,30 @@ namespace DotsLite.MarchingCubes
         //}
 
 
-        //public unsafe struct BufferData : IComponentData
+        //public unsafe struct LinkToGridData : IComponentData, IDisposable
         //{
         //    public UnsafeList<DotGrid32x32x32Unsafe> Grids;
+
+        //    public void Dispose()
+        //    {
+        //        foreach (var i in this.Grids)
+        //        {
+        //            if (i.pUnits != null) i.Dispose();
+        //        }
+        //        this.Grids.Dispose();
+        //        Debug.Log("Link to grid data disposed");
+        //    }
         //}
 
+        public struct DotGridPrefabData : IComponentData
+        {
+            public Entity Prefab;
+        }
 
         public struct InfoData : IComponentData
         {
             public int3 GridLength;
-            public int3 GridWholeLength;
+            //public int3 GridWholeLength;
         }
         public struct InfoWorkData : IComponentData
         {

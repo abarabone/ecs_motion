@@ -10,10 +10,12 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.MarchingCubes.Authoring
+namespace DotsLite.MarchingCubes.Gpu.Authoring
 {
     using DotsLite.Draw;
     using DotsLite.Model;
+    using DotsLite.MarchingCubes;
+    using DotsLite.MarchingCubes.Authoring;
 
     public class MarchingCubesGridAreaGpuAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -22,7 +24,6 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public GridFillMode FillMode;
 
-        [Range(0, 512)]
         public int MaxGrids;
         public int MaxCubeInstances;
 
@@ -53,8 +54,8 @@ namespace DotsLite.MarchingCubes.Authoring
                 var types = new ComponentTypes(
                     new ComponentType[]
                     {
-                        typeof(DotGridArea.InitializeData),
-                        //typeof(DotGridArea.BufferData),
+                        typeof(Gpu.DotGridArea.InitializeData),
+                        //typeof(DotGridArea.LinkToGridData),
                         typeof(DotGridArea.InfoData),
                         typeof(DotGridArea.InfoWorkData),
                         //typeof(DotGridArea.OutputCubesData),
@@ -67,14 +68,14 @@ namespace DotsLite.MarchingCubes.Authoring
                 //if (this.IsMode2) em.AddComponent<DotGridArea.Mode2>(ent);
 
 
-                var wholeLength = this.GridLength + 2;
-                var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
+                //var wholeLength = this.GridLength + 2;
+                //var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
 
                 var mat = new Material(this.DrawCubeShader);
                 mat.mainTexture = this.Texture;
 
                 em.SetComponentData(ent,
-                    new DotGridArea.InitializeData
+                    new Gpu.DotGridArea.InitializeData
                     {
                         //FillMode = fillMode_,
                         CubeMaterial = mat,
@@ -84,7 +85,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     }
                 );
                 //em.SetComponentData(ent,
-                //    new DotGridArea.BufferData
+                //    new DotGridArea.LinkToGridData
                 //    {
                 //        Grids = allocGridArea_(totalSize, fillMode_),
                 //    }
@@ -93,13 +94,14 @@ namespace DotsLite.MarchingCubes.Authoring
                     new DotGridArea.InfoData
                     {
                         GridLength = this.GridLength,
-                        GridWholeLength = wholeLength,
+                        //GridWholeLength = wholeLength,
                     }
                 );
                 em.SetComponentData(ent,
                     new DotGridArea.InfoWorkData
                     {
-                        GridSpan = new int3(1, wholeLength.x * wholeLength.z, wholeLength.x),
+                        //GridSpan = new int3(1, wholeLength.x * wholeLength.z, wholeLength.x),
+                        GridSpan = new int3(1, this.GridLength.x * this.GridLength.z, this.GridLength.x),
                     }
                 );
                 //em.SetComponentData(ent,

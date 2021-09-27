@@ -38,11 +38,32 @@ namespace DotsLite.MarchingCubes
             this.CubeInstances = CubeInstancingShaderBuffer.Create(maxCubeInstances);
             this.CubeInstancingArgs = CubeInstancingIndirectArgumentsBuffer.Create();
 
-            var q =
-                from i in Enumerable.Range(0, 32 * 32)
-                select (i & 1) == 0 ? 0x55555555u : 0xaaaaaaaau
-                ;
-            this.GridContentDataBuffer.Buffer.SetData(q.ToArray());
+            //// ----------------
+            //var qGrid =
+            //    from i in Enumerable.Range(0, 32 * 32)
+            //    //select (i & 1) == 0 ? 0x55555555u : 0xaaaaaaaau
+            //    select 0xffffffff
+            //    ;
+            //this.GridContentDataBuffer.Buffer.SetData(qGrid.Repeat(4).ToArray());
+            //var qGridInstruction =
+            //    from i in Enumerable.Range(0, 4)
+            //    select new GridInstraction
+            //    {
+            //        GridDynamicIndex = i,
+            //        GridStaticIndex = new NearGridIndex
+            //        {
+            //            left_home = i,
+            //            left_rear = i,
+            //            left_down =,
+            //            left_slant =,
+            //            right_home =,
+            //            right_rear =,
+            //            right_down =,
+            //            right_slant =,
+            //        },
+            //        position = new Vector3(i/2, 0, i%2),
+            //    };
+            //this.GridInstructions.Buffer.SetData(qGridInstruction.ToArray());
         }
 
         public void Dispose()

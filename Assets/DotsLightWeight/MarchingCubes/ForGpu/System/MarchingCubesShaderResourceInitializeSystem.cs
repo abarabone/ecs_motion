@@ -10,7 +10,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.MarchingCubes
+namespace DotsLite.MarchingCubes.Gpu
 {
     using MarchingCubes;
     using DotsLite.Draw;
@@ -18,7 +18,7 @@ namespace DotsLite.MarchingCubes
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class DotGridBufferInitializeSystem : SystemBase
+    public class MarchingCubesShaderResourceInitializeSystem : SystemBase
     {
 
         protected override void OnUpdate()

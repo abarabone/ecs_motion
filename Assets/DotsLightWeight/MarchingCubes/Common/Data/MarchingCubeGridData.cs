@@ -16,5 +16,27 @@ namespace DotsLite.MarchingCubes
 {
 
 
+
+    public static class DotGrid
+    {
+
+
+
+
+
+        public struct UnitData : IComponentData, IDisposable
+        {
+
+            public DotGrid32x32x32Unsafe Unit;
+
+
+            public void Dispose() => this.Unit.Dispose();
+        }
+
+    }
+
+
+
+
 }
 
