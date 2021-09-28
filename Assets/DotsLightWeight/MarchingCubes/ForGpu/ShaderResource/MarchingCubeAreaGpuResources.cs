@@ -102,14 +102,14 @@ namespace DotsLite.MarchingCubes
     [StructLayout(LayoutKind.Sequential)]
     public struct NearGridIndex
     {
-        public int left_home;
-        public int left_down;
-        public int left_rear;
-        public int left_slant;
-        public int right_home;
-        public int right_down;
-        public int right_rear;
-        public int right_slant;
+        public int left_home;   // 0, 0, 0
+        public int left_down;   // 0, 1, 0
+        public int left_rear;   // 0, 0, 1
+        public int left_slant;  // 0, 1, 1
+        public int right_home;  // 1, 0, 0
+        public int right_down;  // 1, 1, 0
+        public int right_rear;  // 1, 0, 1
+        public int right_slant; // 1, 1, 1
     }
 
 

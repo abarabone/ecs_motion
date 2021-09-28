@@ -15,7 +15,7 @@ struct GridInstruction
 {
     float3 position;
     int dynamic_grid_id;
-    int static_grid_id[2][4];
+    int static_grid_ids[2][2][2];
 };
 StructuredBuffer<GridInstruction> grid_instructions;
 
@@ -102,7 +102,10 @@ CubeXLineBitwise bitwiseCubesXLine_(uint y0z0, uint y0z1, uint y1z0, uint y1z1)
     res.cubes[6] = _fe76fe76;
     res.cubes[7] = __f870f87;
     return res;
-
+}
+uint bitwiseLastHalfCubeXLine_( uint y0z0r, uint y0z1r, uint y1z0r, uint y1z1r )
+{
+    return ( y0z0r & 1 ) << 25 | ( y0z1r & 1 ) << 27 | ( y1z0r & 1 ) << 29 | ( y1z1r & 1 ) << 31;
 }
 
 //uint4 bitwiseLastHalfCubeXLine_( uint4 y0z0r, uint4 y0z1r, uint4 y1z0r, uint4 y1z1r )
@@ -121,13 +124,23 @@ uint toCubeInstance(uint ix, uint iy, uint iz, uint gridId, uint cubeId)
 }
 
 
-int toIndex(int gridid, int iy, int iz)
+int toIndex(int gridid, int overx, int iy, int iz)
 {
-    const int g = gridid * 32 * 32;
+    const int overy = iy >> 5;
+    const int overz = iz >> 5;
+
+    const int static_grid_id = grid_instructions[gridid].static_grid_id[overx][overy][overz];
+
+    const int g = static_grid_id * 32 * 32;
     const int z = iz * 32;
     const int y = iy;
     return g + z + y;
 }
+
+
+
+
+
 
 
 //[numthreads(1, 32, 32)]
@@ -136,15 +149,15 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
 
     const int gridid = gid.x;
-    const uint y0z0 = dotgrids[toIndex(gridid, id.y + 0, id.z + 0)];
-    const uint y0z1 = dotgrids[toIndex(gridid, id.y + 0, id.z + 1)];
-    const uint y1z0 = dotgrids[toIndex(gridid, id.y + 1, id.z + 0)];
-    const uint y1z1 = dotgrids[toIndex(gridid, id.y + 1, id.z + 1)];
+    const uint y0z0 = dotgrids[toIndex(gridid, 0, id.y + 0, id.z + 0)];
+    const uint y0z1 = dotgrids[toIndex(gridid, 0, id.y + 0, id.z + 1)];
+    const uint y1z0 = dotgrids[toIndex(gridid, 0, id.y + 1, id.z + 0)];
+    const uint y1z1 = dotgrids[toIndex(gridid, 0, id.y + 1, id.z + 1)];
 
     const CubeXLineBitwise cubes = bitwiseCubesXLine_(y0z0, y0z1, y1z0, y1z1);
 
     [unroll]
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 7; i++)
     {
         const uint cubeset = cubes.cubes[i];
 
@@ -158,12 +171,14 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
             const uint instance = toCubeInstance(shift + i, id.y, id.z, gridid, cube);
             cube_instances.Append(instance);
-            
-            //const int shift = j * 8;
-            //const uint cube = cubes.cubes[i] >> shift & 0xff;
-            //const uint instance = toCubeInstance(shift + i, id.y, id.z, gridid, cube);
-            //if (cube == 0) cube_instances.Append(instance);
         }
+    }
+    {
+        const uint y0z0r = dotgrids[toIndex(gridid, 1, id.y + 0, id.z + 0)];
+        const uint y0z1r = dotgrids[toIndex(gridid, 1, id.y + 0, id.z + 1)];
+        const uint y1z0r = dotgrids[toIndex(gridid, 1, id.y + 1, id.z + 0)];
+        const uint y1z1r = dotgrids[toIndex(gridid, 1, id.y + 1, id.z + 1)];
+        const uint cube = cubes[7] | bitwiseLastHalfCubeXLine_(y0z0r, y0z1r, y1z0r, y1z1r);
     }
 
 }
