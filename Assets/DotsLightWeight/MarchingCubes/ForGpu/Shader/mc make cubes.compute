@@ -10,6 +10,16 @@ AppendStructuredBuffer<uint> cube_instances;
 //StructuredBuffer<grid> dotgrids;
 StructuredBuffer<uint> dotgrids;
 
+
+struct GridInstruction
+{
+    float3 position;
+    int dynamic_grid_id;
+    int static_grid_id[2][4];
+};
+StructuredBuffer<GridInstruction> grid_instructions;
+
+
 struct CubeXLineBitwise
 {
     //uint _98109810;
@@ -124,14 +134,8 @@ int toIndex(int gridid, int iy, int iz)
 [numthreads(1, 31, 31)]
 void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-    //const uint cube = toCubeInstance(id.x, gid.y, id.z, 0, 0xf0);
-    //cube_instances.Append(cube);
-    
-    const int gridid = 0;
-    //const uint y0z0 = dotgrids[gridid].dotxlines[id.z + 0][id.y + 0];
-    //const uint y0z1 = dotgrids[gridid].dotxlines[id.z + 0][id.y + 1];
-    //const uint y1z0 = dotgrids[gridid].dotxlines[id.z + 1][id.y + 0];
-    //const uint y1z1 = dotgrids[gridid].dotxlines[id.z + 1][id.y + 1];
+
+    const int gridid = gid.x;
     const uint y0z0 = dotgrids[toIndex(gridid, id.y + 0, id.z + 0)];
     const uint y0z1 = dotgrids[toIndex(gridid, id.y + 0, id.z + 1)];
     const uint y1z0 = dotgrids[toIndex(gridid, id.y + 1, id.z + 0)];
@@ -139,15 +143,6 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
     const CubeXLineBitwise cubes = bitwiseCubesXLine_(y0z0, y0z1, y1z0, y1z1);
 
-    //const uint cube0 = toCubeInstance(0, id.y, id.z, 0, cubes._98109810 >> (8*0) & 0xff);
-    //cube_instances.Append(cube0);
-    //const uint cube1 = toCubeInstance(1, id.y, id.z, 0, cubes._a921a921 >> (8*0) & 0xff);
-    //cube_instances.Append(cube1);
-    //const uint cube2 = toCubeInstance(2, id.y, id.z, 0, cubes._ba32ba32 >> (8*0) & 0xff);
-    //cube_instances.Append(cube2);
-    //const uint cube3 = toCubeInstance(3, id.y, id.z, 0, cubes._cb43cb43 >> (8*0) & 0xff);
-    //cube_instances.Append(cube3);
-    
     [unroll]
     for (int i = 0; i < 8; i++)
     {
