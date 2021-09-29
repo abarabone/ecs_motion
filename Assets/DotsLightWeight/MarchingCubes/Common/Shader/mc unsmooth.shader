@@ -76,12 +76,20 @@
 			CBUFFER_END;
 
 			
-			CBUFFER_START(grid_constant)
-				float4 grids[512][2];
-				// [0] : position as float3
-				// [1] : near grid id
-				// { x : back>>0 | up>>16  y : left>>0 | current>>16  z : right>>0 | down>>16  w : forward>>0 }
-			CBUFFER_END;
+			//CBUFFER_START(grid_constant)
+			//	float4 grids[512][2];
+			//	// [0] : position as float3
+			//	// [1] : near grid id
+			//	// { x : back>>0 | up>>16  y : left>>0 | current>>16  z : right>>0 | down>>16  w : forward>>0 }
+			//CBUFFER_END;
+			struct GridInstruction
+			{
+				float3 position;
+				int dynamic_grid_id;
+				int static_grid_ids[2][2][2];
+			};
+			StructuredBuffer<GridInstruction> grid_instructions;
+
 
 			static const uint grid_pos = 0;
 			static const uint grid_near_id = 1;
@@ -138,39 +146,39 @@
 
 
 
-			// cubeindex { x,y,z: cube inner 3d index  w: grid index }
+			//// cubeindex { x,y,z: cube inner 3d index  w: grid index }
 
-			int3 get_cube_offset_near(uint4 icube, uint ivtx_in_cube, uint ortho_selector)
-			{
-				const uint3 offset_packed = asuint(cube_vtxs[ivtx_in_cube].xyz);
-				const int3 offset = (int3)unpack8bits_uint3_to_uint3(offset_packed, ortho_selector) - 1;
-				return offset;
-			}
+			//int3 get_cube_offset_near(uint4 icube, uint ivtx_in_cube, uint ortho_selector)
+			//{
+			//	const uint3 offset_packed = asuint(cube_vtxs[ivtx_in_cube].xyz);
+			//	const int3 offset = (int3)unpack8bits_uint3_to_uint3(offset_packed, ortho_selector) - 1;
+			//	return offset;
+			//}
 
-			uint4 get_cubeindex_near(uint4 cubeindex, int3 cube_offset)
-			{
-				const int3 cubeindex_outer = (int3)cubeindex.xyz + cube_offset;
+			//uint4 get_cubeindex_near(uint4 cubeindex, int3 cube_offset)
+			//{
+			//	const int3 cubeindex_outer = (int3)cubeindex.xyz + cube_offset;
 
-				const int3 outer_offset = cubeindex_outer >> 5;
-				const uint grid_near_selector = dot(outer_offset, int3(1, 2, 3)) + 3;
+			//	const int3 outer_offset = cubeindex_outer >> 5;
+			//	const uint grid_near_selector = dot(outer_offset, int3(1, 2, 3)) + 3;
 				
-				const uint gridindex_current = cubeindex.w;
-				const uint4 gridindex_near_packed = asuint(grids[gridindex_current][grid_near_id]);//.near_id);//
-				const uint gridindex_near = unpack16bit_uint4_to_uint(gridindex_near_packed, grid_near_selector);
+			//	const uint gridindex_current = cubeindex.w;
+			//	const uint4 gridindex_near_packed = asuint(grids[gridindex_current][grid_near_id]);//.near_id);//
+			//	const uint gridindex_near = unpack16bit_uint4_to_uint(gridindex_near_packed, grid_near_selector);
 
-				const uint3 cubeindex_inner = cubeindex_outer & 0x1f;
+			//	const uint3 cubeindex_inner = cubeindex_outer & 0x1f;
 				
-				return uint4(cubeindex_inner, gridindex_near);
-			}
+			//	return uint4(cubeindex_inner, gridindex_near);
+			//}
 
-			uint get_cubeid_near(uint4 cubeindex)
-			{
-				const uint3 index = uint3(cubeindex.z * 32 + cubeindex.x, cubeindex.y, cubeindex.w);
-				return grid_cubeids[index];
+			//uint get_cubeid_near(uint4 cubeindex)
+			//{
+			//	const uint3 index = uint3(cubeindex.z * 32 + cubeindex.x, cubeindex.y, cubeindex.w);
+			//	return grid_cubeids[index];
 
-				//const int index = dot(cubeindex, cube_span);
-				//return grid_cubeids[index];
-			}
+			//	//const int index = dot(cubeindex, cube_span);
+			//	//return grid_cubeids[index];
+			//}
 
 			float3 get_vtx_normal(uint cubeid, uint ivtx_in_cube)
 			{
@@ -179,17 +187,17 @@
 				return normals[inml];
 			}
 
-			float3 get_vtx_normal_near(uint4 cubeindex_current, uint2 ivtx, uint ortho_selector, out uint4 cubeindex_near)
-			{
-				const int3 offset = get_cube_offset_near(cubeindex_current, ivtx.x, ortho_selector);
-				const uint4 cubeindex = get_cubeindex_near(cubeindex_current, offset);
+			//float3 get_vtx_normal_near(uint4 cubeindex_current, uint2 ivtx, uint ortho_selector, out uint4 cubeindex_near)
+			//{
+			//	const int3 offset = get_cube_offset_near(cubeindex_current, ivtx.x, ortho_selector);
+			//	const uint4 cubeindex = get_cubeindex_near(cubeindex_current, offset);
 
-				const uint cubeid = get_cubeid_near(cubeindex);
-				const float3 normal = get_vtx_normal(cubeid, ivtx.y);
+			//	const uint cubeid = get_cubeid_near(cubeindex);
+			//	const float3 normal = get_vtx_normal(cubeid, ivtx.y);
 
-				cubeindex_near = cubeindex;
-				return normal;
-			}
+			//	cubeindex_near = cubeindex;
+			//	return normal;
+			//}
 
 			float3 get_and_caluclate_triangle_to_vertex_normal(uint cubeid_current, uint ivtx_current, uint4 cubeindex_current)
 			{
@@ -220,7 +228,7 @@
 
 				const uint4 cubeindex = data.xxxx >> uint4(16, 21, 26, 8) & uint4(0x1f, 0x1f, 0x1f, 0x1ff);
 				
-				const float3 gridpos = float3(0,0,0);//grids[cubeindex.w][grid_pos].xyz;//.position;//
+				const float3 gridpos = grid_instructions[cubeindex.w].position;//grids[cubeindex.w][grid_pos].xyz;
 				const int3 cubepos = (int3)cubeindex.xyz * int3(1, -1, -1);
 
 				const uint cube_vtx_lpos_packed = asuint(cube_vtxs[ivtx_in_cube].w);
