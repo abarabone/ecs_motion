@@ -40,16 +40,25 @@ namespace DotsLite.MarchingCubes
 
             // ----------------
             var qGrid =
-                from i in Enumerable.Range(0, 32 * 32)
-                select (i & 1) == 0 ? 0x_5555_5555u : 0x_aaaa_aaaau
-                //select 0xffffffff
-                ;
-            this.GridContentDataBuffer.Buffer.SetData(qGrid.Repeat(6).ToArray());
+                from i in Enumerable.Range(0, 32 * 32 / 8)
+                //select (i & 4) == 0 ? 0x_1555_5554u : 0x_2aaa_aaa8u;
+                select new uint[]
+                {
+                    0,
+                    0x_1555_5554u,
+                    0x_1555_5554u,
+                    0x_1555_5554u,
+                    0x_2aaa_aaa8u,
+                    0x_2aaa_aaa8u,
+                    0x_2aaa_aaa8u,
+                    0x_2aaa_aaa8u,
+                };
+            this.GridContentDataBuffer.Buffer.SetData(qGrid.SelectMany(x => x).Repeat(4).ToArray());
             var qGridInstruction =
                 from i in Enumerable.Range(0, 4)
                 select new GridInstraction
                 {
-                    position = new float3(i / 2, 0, i % 2) * 32,
+                    position = new int3(i / 2, 0, i % 2) * 32,
                     GridDynamicIndex = i,
                     GridStaticIndex = new NearGridIndex
                     {

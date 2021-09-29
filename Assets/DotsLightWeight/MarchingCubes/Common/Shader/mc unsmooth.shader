@@ -210,7 +210,7 @@
 				//const float3 nm2 = get_vtx_normal_near(cubeindex_current, ivtx.wy, 2, cubeindex_near);
 				//const float3 nm3 = get_vtx_normal_near(cubeindex_near,    ivtx.wz, 1, cubeindex_near);
 
-				return normalize(nm0);// + nm1 + nm2 + nm3);
+				return nm0;//normalize(nm0 + nm1 + nm2 + nm3);
 			}
 
 
@@ -226,7 +226,7 @@
 				const uint4 ivtx_packed = asuint(cube_patterns[cubeid][itri_to_ivtx]);
 				const uint ivtx_in_cube = unpack8bit_uint4_to_uint(ivtx_packed, v.vertex.y, v.vertex.x);
 
-				const uint4 cubeindex = data.xxxx >> uint4(16, 21, 26, 8) & uint4(0x1f, 0x1f, 0x1f, 0x1ff);
+				const uint4 cubeindex = data.xxxx >> uint4(17, 22, 27, 8) & uint4(0x1f, 0x1f, 0x1f, 0x1ff);
 				
 				const float3 gridpos = grid_instructions[cubeindex.w].position;//grids[cubeindex.w][grid_pos].xyz;
 				const int3 cubepos = (int3)cubeindex.xyz * int3(1, -1, -1);

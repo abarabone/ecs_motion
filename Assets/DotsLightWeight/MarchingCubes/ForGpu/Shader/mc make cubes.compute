@@ -106,15 +106,16 @@ CubeXLineBitwise bitwiseCubesXLine_(uint y0z0, uint y0z1, uint y1z0, uint y1z1)
 //uint4 bitwiseLastHalfCubeXLine_( uint4 y0z0r, uint4 y0z1r, uint4 y1z0r, uint4 y1z1r )
 uint bitwiseLastHalfCubeXLine_( uint y0z0r, uint y0z1r, uint y1z0r, uint y1z1r )
 {
-    //return ( y0z0r & 1 ) << 25 | ( y0z1r & 1 ) << 27 | ( y1z0r & 1 ) << 29 | ( y1z1r & 1 ) << 31;
-    return ( y0z0r & 1 ) << 1 | ( y0z1r & 1 ) << 3 | ( y1z0r & 1 ) << 5 | ( y1z1r & 1 ) << 7;
+    return ( y0z0r & 1 ) << 25 | ( y0z1r & 1 ) << 27 | ( y1z0r & 1 ) << 29 | ( y1z1r & 1 ) << 31;
+    //return ( y0z0r & 1 ) << 1 | ( y0z1r & 1 ) << 3 | ( y1z0r & 1 ) << 5 | ( y1z1r & 1 ) << 7;
 }
 
 
 
 uint toCubeInstance(uint ix, uint iy, uint iz, uint gridId, uint cubeId)
 {
-    return iz << 26 | iy << 21 | ix << 16 | gridId << 8 | cubeId;
+    return iz << 27 | iy << 22 | ix << 17 | gridId << 8 | cubeId;
+    //return ((iz & 0x1f) << 27) | ((iy & 0x1f) << 22) | ((ix & 0x1f) << 17) | ((gridId & 0x1ff) << 8) | (cubeId & 0xff);
 }
 
 
@@ -140,8 +141,7 @@ int toIndex(int igid, int overx, int iy, int iz)
 
 
 
-//[numthreads(1, 32, 32)]
-[numthreads(1, 31, 31)]
+[numthreads(1, 32, 32)]
 void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
 
@@ -160,14 +160,14 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
     const CubeXLineBitwise cubes = bitwiseCubesXLine_(y0z0, y0z1, y1z0, y1z1);
 
     [unroll]
-    for (int i = 0; i < 7; i++)
+    for (uint i = 0; i < 7; i++)
     {
         const uint pack4cubes = cubes.cubes[i];
 
         [unroll]
-        for (int j = 0; j < 4; j++)
+        for (uint j = 0; j < 4; j++)
         {
-            const int shift = j * 8;
+            const uint shift = j * 8;
             const uint cube = pack4cubes >> shift & 0xff;
 
             if (cube == 0) continue;
@@ -180,9 +180,9 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
     const uint pack4cubes = cubes.cubes[7];
 
     [unroll]
-    for (int j = 0; j < 3; j++)
+    for (uint j = 0; j < 3; j++)
     {
-        const int shift = j * 8;
+        const uint shift = j * 8;
         const uint cube = pack4cubes >> shift & 0xff;
 
         if (cube == 0) continue;
@@ -203,9 +203,9 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
     
     const uint cube_r = bitwiseLastHalfCubeXLine_(y0z0r, y0z1r, y1z0r, y1z1r);
 
-    const int shift = 3 * 8;
-    //const uint cube = (pack4cubes | cube_r) >> shift & 0xff;
-    const uint cube = pack4cubes >> shift & 0xff | cube_r;
+    const uint shift = 3 * 8;
+    const uint cube = (pack4cubes | cube_r) >> shift & 0xff;
+    //const uint cube = pack4cubes >> shift & 0xff | cube_r;
 
     if (cube == 0) return;
 
