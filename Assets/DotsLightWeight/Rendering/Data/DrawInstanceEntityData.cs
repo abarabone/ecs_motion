@@ -136,6 +136,10 @@ namespace DotsLite.Draw
         //}
 
 
+        public struct WorldBbox : IComponentData
+        {
+            public AABB Bbox;
+        }
 
     }
 

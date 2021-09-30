@@ -20,7 +20,7 @@ namespace DotsLite.Draw
 
     ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.DrawPrev.Culling))]
-    public class DrawCullingMeshTrsSystem : SystemBase
+    public class DrawCullingMesh_TR_System : SystemBase
     {
 
         //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証

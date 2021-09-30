@@ -82,7 +82,10 @@ namespace DotsLite.Structure.Authoring
 
             //createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
             //createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
-            createDebrisPrefab_(conversionSystem, this.gameObject, this.PartModelOfMasterPrefab.Obj);
+            var prefab = createDebrisPrefab_(conversionSystem, this.gameObject, this.PartModelOfMasterPrefab.Obj);
+            var part = conversionSystem.GetPrimaryEntity(this.gameObject);
+
+            setPrefabToPart_(conversionSystem, part, prefab);
 
             return;
 
@@ -149,7 +152,7 @@ namespace DotsLite.Structure.Authoring
             //}
 
             // 同じプレハブをまとめることはできないだろうか？
-            static void createDebrisPrefab_(GameObjectConversionSystem gcs, GameObject part, GameObject master)
+            static Entity createDebrisPrefab_(GameObjectConversionSystem gcs, GameObject part, GameObject master)
             {
                 var em_ = gcs.DstEntityManager;
 
@@ -212,17 +215,21 @@ namespace DotsLite.Structure.Authoring
                 );
 
 
-                var partEnt = gcs.GetPrimaryEntity(part);
+                em_.SetName_(prefabEnt, $"{part.name} debris");
 
-                em_.AddComponentData(partEnt,
+                return prefabEnt;
+            }
+
+            void setPrefabToPart_(GameObjectConversionSystem gcs, Entity part, Entity prefab)
+            {
+                var em = gcs.DstEntityManager;
+
+                em.AddComponentData(part,
                     new Part.DebrisPrefabData
                     {
-                        DebrisPrefab = prefabEnt,
+                        DebrisPrefab = prefab,
                     }
                 );
-
-
-                em_.SetName_(prefabEnt, $"{part.name} debris");
             }
         }
 

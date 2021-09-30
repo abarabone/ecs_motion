@@ -17,8 +17,11 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
     using DotsLite.MarchingCubes;
     using DotsLite.MarchingCubes.Authoring;
 
-    public class MarchingCubesGridAreaGpuAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class MarchingCubesGridAreaGpuAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
+
+        public MarchingCubesDotGridGpuAuthoring GridPrefab;
+
 
         public int3 GridLength;
 
@@ -34,6 +37,10 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
         //public bool IsMode2;
         //public bool IsParallel;
 
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            referencedPrefabs.Add(this.GridPrefab.gameObject);
+        }
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -60,6 +67,7 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                         typeof(DotGridArea.InfoWorkData),
                         //typeof(DotGridArea.OutputCubesData),
                         //typeof(DotGridArea.ResourceGpuModeData),
+                        typeof(DotGridArea.DotGridPrefabData),
                         typeof(Rotation),
                         typeof(Translation)
                     }
@@ -128,6 +136,11 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                     }
                 );
 
+                em.SetComponentData(ent, new DotGridArea.DotGridPrefabData
+                {
+                    Prefab = gcs_.GetPrimaryEntity(this.GridPrefab),
+                });
+
 
                 //UnsafeList<DotGrid32x32x32Unsafe> allocGridArea_(int totalSize_, GridFillMode fillMode)
                 //{
@@ -149,6 +162,7 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
 
 
         }
+
     }
 
 }
