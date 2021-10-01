@@ -16,11 +16,14 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
     using DotsLite.Model;
     using DotsLite.MarchingCubes;
     using DotsLite.MarchingCubes.Authoring;
+    using DotsLite.Draw.Authoring;
 
     public class MarchingCubesGridAreaGpuAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public MarchingCubesDotGridGpuAuthoring GridPrefab;
+
+        public MarchingCubeAsset MarchingCubesAsset;
 
 
         public int3 GridLength;
@@ -48,6 +51,9 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
             var area = this.gameObject;
 
             setGridArea_(conversionSystem, global, area, this.FillMode);
+
+            //var mesh = this.MarchingCubesAsset.
+            //conversionSystem.InitDrawModelEntityComponents(this.gameObject, entity, );
 
             return;
 

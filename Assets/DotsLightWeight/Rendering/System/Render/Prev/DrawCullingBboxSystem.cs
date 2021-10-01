@@ -36,9 +36,8 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
-                .WithNativeDisableParallelForRestriction(drawModels)
-                .WithNativeDisableContainerSafetyRestriction(drawModels)
-                .WithReadOnly(bboxes)
+                //.WithNativeDisableParallelForRestriction(drawModels)
+                //.WithNativeDisableContainerSafetyRestriction(drawModels)
                 .WithNone<Psyllium.TranslationTailData>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .WithNone<DrawInstance.ModelLinkData>()

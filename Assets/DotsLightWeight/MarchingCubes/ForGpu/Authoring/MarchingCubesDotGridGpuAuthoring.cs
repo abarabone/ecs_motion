@@ -27,6 +27,7 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
+
             createDotGrid_(conversionSystem, this.gameObject);
 
             return;
