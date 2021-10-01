@@ -45,25 +45,55 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
             referencedPrefabs.Add(this.GridPrefab.gameObject);
         }
 
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public unsafe void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            var global = this.GetComponentInParent<MarchingCubesGlobalAuthoring>().gameObject;//<MarchingCubesGlobalDataAuthoring>().gameObject;
-            var area = this.gameObject;
 
-            setGridArea_(conversionSystem, global, area, this.FillMode);
+            initGridArea_(conversionSystem, entity);
 
-            //var mesh = this.MarchingCubesAsset.
-            //conversionSystem.InitDrawModelEntityComponents(this.gameObject, entity, );
+            initModel_(conversionSystem, entity);
 
             return;
 
 
-            void setGridArea_
-                (GameObjectConversionSystem gcs_, GameObject global_, GameObject area_, GridFillMode fillMode_)
+            void initModel_(GameObjectConversionSystem gcs, Entity ent)
+            {
+                var mesh = createMesh_();
+                var mat = new Material(this.DrawCubeShader);
+                mat.mainTexture = this.Texture;
+
+                var boneLength = 1;
+                var sort = DrawModel.SortOrder.acs;
+                var boneType = BoneType.T;
+                var dataLength = sizeof(NearGridIndex);
+                gcs.InitDrawModelEntityComponents(this.gameObject, ent, mesh, mat, boneType, boneLength, sort, dataLength);
+
+                return;
+
+
+                static Mesh createMesh_()
+                {
+                    var mesh_ = new Mesh();
+                    mesh_.name = "marching cube unit";
+
+                    var qVtx =
+                        from i in Enumerable.Range(0, 12)
+                        select new Vector3(i % 3, i / 3, 0)
+                        ;
+                    var qIdx =
+                        from i in Enumerable.Range(0, 3 * 4)
+                        select i
+                        ;
+                    mesh_.vertices = qVtx.ToArray();
+                    mesh_.triangles = qIdx.ToArray();
+
+                    return mesh_;
+                }
+            }
+
+            void initGridArea_(GameObjectConversionSystem gcs_, Entity ent)
             {
                 var em = gcs_.DstEntityManager;
 
-                var ent = gcs_.GetPrimaryEntity(area_);
                 var types = new ComponentTypes(
                     new ComponentType[]
                     {
@@ -72,7 +102,7 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                         typeof(DotGridArea.InfoData),
                         typeof(DotGridArea.InfoWorkData),
                         //typeof(DotGridArea.OutputCubesData),
-                        //typeof(DotGridArea.ResourceGpuModeData),
+                        typeof(Gpu.DotGridArea.ResourceGpuModeData),
                         typeof(DotGridArea.DotGridPrefabData),
                         typeof(Rotation),
                         typeof(Translation)

@@ -40,7 +40,7 @@ namespace DotsLite.MarchingCubes.Gpu
                     var data = new MarchingCubeGlobalData();
                     data.Alloc(init.maxFreeGrids, shres);
 
-                    em.AddComponentData(ent, data);
+                    em.SetComponentData(ent, data);
                     em.RemoveComponent<Global.InitializeData>(ent);
                 })
                 .Run();
@@ -76,7 +76,7 @@ namespace DotsLite.MarchingCubes.Gpu
                             ShaderResources = shres,
                         };
 
-                        em.AddComponentData(ent, data);
+                        em.SetComponentData(ent, data);
                         em.RemoveComponent<DotGridArea.InitializeData>(ent);
                     }
                 )
