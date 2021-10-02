@@ -9,6 +9,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Physics;
 
 namespace DotsLite.MarchingCubes.Gpu.Authoring
 {
@@ -28,21 +29,21 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
         {
 
 
-            createDotGrid_(conversionSystem, this.gameObject);
+            createDotGrid_(conversionSystem, entity);
 
             return;
 
 
-            static void createDotGrid_(GameObjectConversionSystem gcs, GameObject grid)
+            static void createDotGrid_(GameObjectConversionSystem gcs, Entity ent)
             {
                 var em = gcs.DstEntityManager;
 
-                var ent = gcs.GetPrimaryEntity(grid);
                 var types = new ComponentTypes(new ComponentType[]
                 {
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DotGrid.UnitData),
+                    //typeof(PhysicsCollider),
                 });
                 em.AddComponents(ent, types);
 

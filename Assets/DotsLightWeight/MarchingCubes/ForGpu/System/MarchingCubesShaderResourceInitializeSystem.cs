@@ -32,15 +32,11 @@ namespace DotsLite.MarchingCubes.Gpu
                 .WithStructuralChanges()
                 .ForEach((
                     Entity ent,
-                    Global.InitializeData init) =>
+                    Global.InitializeData init,
+                    MarchingCubeGlobalData data) =>
                 {
-                    var shres = new GlobalShaderResources();
-                    shres.Alloc(init.asset, init.maxGridInstances);
+                    data.Alloc(init.maxFreeGrids, init.asset, init.maxGridInstances);
 
-                    var data = new MarchingCubeGlobalData();
-                    data.Alloc(init.maxFreeGrids, shres);
-
-                    em.SetComponentData(ent, data);
                     em.RemoveComponent<Global.InitializeData>(ent);
                 })
                 .Run();
@@ -55,28 +51,26 @@ namespace DotsLite.MarchingCubes.Gpu
                 .ForEach(
                     (
                         Entity ent,
-                        DotGridArea.InitializeData init
+                        DotGridArea.InitializeData init,
+                        DotGridArea.ResourceGpuModeData data
                     ) =>
                     {
                         var mat = init.CubeMaterial;
                         var cs = init.GridToCubesShader;
                         var mesh = gres.mesh;
 
+
+                        data.CubeMaterial = mat;
+                        data.GridToCubeShader = cs;
+                        data.ShaderResources.Alloc(init.MaxCubeInstances, init.MaxGrids);
+
+
                         gres.SetResourcesTo(mat, cs);
 
-                        var shres = new DotGridAreaGpuResources();
-                        shres.Alloc(init.MaxCubeInstances, init.MaxGrids);
-                        shres.SetResourcesTo(mat, cs);
-                        shres.SetArgumentBuffer(mesh);
+                        data.ShaderResources.SetResourcesTo(mat, cs);
+                        data.ShaderResources.SetArgumentBuffer(mesh);
 
-                        var data = new DotGridArea.ResourceGpuModeData
-                        {
-                            CubeMaterial = mat,
-                            GridToCubeShader = cs,
-                            ShaderResources = shres,
-                        };
 
-                        em.SetComponentData(ent, data);
                         em.RemoveComponent<DotGridArea.InitializeData>(ent);
                     }
                 )

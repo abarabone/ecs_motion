@@ -52,7 +52,20 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
 
             initModel_(conversionSystem, entity);
 
+            setModelToPrefab_(conversionSystem, entity, conversionSystem.GetPrimaryEntity(this.GridPrefab));
+
             return;
+
+
+            void setModelToPrefab_(GameObjectConversionSystem gcs, Entity ent, Entity prefab)
+            {
+                var em = gcs.DstEntityManager;
+
+                em.AddComponentData(prefab, new DrawInstance.ModelLinkData
+                {
+                    DrawModelEntityCurrent = ent,
+                });
+            }
 
 
             void initModel_(GameObjectConversionSystem gcs, Entity ent)
@@ -155,10 +168,9 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                 //        CubeInstances = new UnsafeList<CubeInstance>(this.MaxCubeInstances, Allocator.Persistent),
                 //    }
                 //);
-                //em.SetComponentData(ent,
-                //    DotGridArea.ResourceGpuModeData
-                //        .Create(this.MaxCubeInstances, this.MaxGridInstances, mat, this.CubeAdjacentShader)
-                //);
+                em.SetComponentData(ent,
+                    new Gpu.DotGridArea.ResourceGpuModeData()
+                );
                 em.SetComponentData(ent,
                     new Rotation
                     {
