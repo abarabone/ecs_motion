@@ -16,8 +16,9 @@ namespace DotsLite.Draw
     using DotsLite.SystemGroup;
     using DotsLite.Geometry;
     using DotsLite.Particle;
-    
 
+
+    [DisableAutoCreation]
     ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.DrawPrev.Culling))]
     public class DrawCullingWorldBboxSystem : SystemBase
@@ -27,7 +28,6 @@ namespace DotsLite.Draw
         {
 
             var drawModels = this.GetComponentDataFromEntity<DrawModel.InstanceCounterData>();
-            var bboxes = this.GetComponentDataFromEntity<DrawModel.BoundingBoxData>(isReadOnly: true);
 
 
             var cam = Camera.main;
@@ -36,31 +36,38 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst(FloatMode.Fast, FloatPrecision.Standard)
-                //.WithNativeDisableParallelForRestriction(drawModels)
-                //.WithNativeDisableContainerSafetyRestriction(drawModels)
+                .WithNativeDisableParallelForRestriction(drawModels)
+                .WithNativeDisableContainerSafetyRestriction(drawModels)
                 .WithNone<Psyllium.TranslationTailData>()
                 .WithNone<DrawInstance.PostureLinkData>()
-                .WithNone<DrawInstance.ModelLinkData>()
                 .ForEach(
-                        (
-                            ref DrawInstance.TargetWorkData target,
-                            ref DrawModel.InstanceCounterData counter,
-                            in DrawInstance.WorldBbox wbbox
-                        ) =>
+                    (
+                        ref DrawInstance.TargetWorkData target,
+                        in DrawInstance.ModelLinkData modellink,
+                        in DrawInstance.WorldBbox wbbox
+                    ) =>
+                    {
+
+                        if (modellink.DrawModelEntityCurrent == Entity.Null)
                         {
-
-                            var isHit = viewFrustum.IsInside(wbbox.Bbox);
-
-                            if (!isHit)
-                            {
-                                target.DrawInstanceId = -1;
-                                return;
-                            }
-
-
-                            target.DrawInstanceId = counter.InstanceCounter.GetSerial();
-
+                            target.DrawInstanceId = -1;
+                            return;
                         }
+
+
+                        var isHit = viewFrustum.IsInside(wbbox.Bbox);
+
+                        if (!isHit)
+                        {
+                            target.DrawInstanceId = -1;
+                            return;
+                        }
+
+
+                        var drawModelData = drawModels[modellink.DrawModelEntityCurrent];
+
+                        target.DrawInstanceId = drawModelData.InstanceCounter.GetSerial();
+                    }
                 )
                 .ScheduleParallel();
 

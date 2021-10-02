@@ -112,6 +112,13 @@ namespace DotsLite.Geometry
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsInside(AABB bbox, Translation pos)
+        {
+            bbox.Center += pos.Value;
+            return IsInside(bbox);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsInside(AABB localBbox, Rotation rot, Translation pos, NonUniformScale scl) =>
             isInside<Scaling>(localBbox, rot, pos, scl);
         

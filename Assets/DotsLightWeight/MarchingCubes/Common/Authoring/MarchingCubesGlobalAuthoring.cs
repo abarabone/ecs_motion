@@ -31,23 +31,29 @@ namespace DotsLite.MarchingCubes.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            createDataEntity_(conversionSystem, this.gameObject);
+            createDataEntity_(conversionSystem, entity);
 
             return;
 
 
-            unsafe void createDataEntity_(GameObjectConversionSystem gcs_, GameObject global_)
+            unsafe void createDataEntity_(GameObjectConversionSystem gcs, Entity ent)
             {
-                var em = gcs_.DstEntityManager;
+                var em = gcs.DstEntityManager;
 
-                var ent = gcs_.GetPrimaryEntity(global_);
-                em.AddComponentData(ent, new Global.InitializeData
+                var types = new ComponentTypes(new ComponentType[]
+                {
+                    typeof(MarchingCubeGlobalData),
+                    typeof(Global.InitializeData),
+                });
+                em.AddComponents(ent, types);
+
+                em.SetComponentData(ent, new Global.InitializeData
                 {
                     maxFreeGrids = this.MaxFreeGrids,
                     maxGridInstances = this.MaxGridInstances,
                     asset = this.MarchingCubesAsset,
                 });
-                em.AddComponentData(ent, new MarchingCubeGlobalData());
+                em.SetComponentData(ent, new MarchingCubeGlobalData());
             }
 
         }

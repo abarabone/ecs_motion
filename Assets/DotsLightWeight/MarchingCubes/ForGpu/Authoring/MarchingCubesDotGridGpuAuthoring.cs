@@ -44,13 +44,9 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DotGrid.UnitData),
                     //typeof(PhysicsCollider),
+                    typeof(DotGrid.NeargridData),
                 });
                 em.AddComponents(ent, types);
-
-                //em.SetComponentData(ent, new DotGrid.UnitData
-                //{
-                //    Unit =
-                //});
             }
 
 

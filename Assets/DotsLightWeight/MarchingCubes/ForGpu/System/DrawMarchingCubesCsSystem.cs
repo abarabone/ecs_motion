@@ -15,10 +15,9 @@ namespace DotsLite.MarchingCubes.Gpu
     using DotsLite.Utilities;
     using DotsLite.MarchingCubes;
 
-    //[DisableAutoCreation]
-    //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    [UpdateAfter(typeof(DrawMeshCsSystem))]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
+    [UpdateAfter(typeof(DrawBufferToShaderDataSystem))]
     public class DrawMarchingCubeCsSystem : SystemBase
     {
         protected override void OnCreate()

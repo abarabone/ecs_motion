@@ -28,8 +28,6 @@ namespace DotsLite.Draw
     static public partial class DrawModel
     {
 
-        // struct ----------------
-
         //public struct BufferLinkerData : IComponentData
         //{
         //    public Entity BufferEntity;
@@ -70,9 +68,9 @@ namespace DotsLite.Draw
         }
 
 
+        public struct ExcludeDrawMeshCsTag : IComponentData
+        { }
 
-        // class object -------------
-        // ジョブからは使えないので、基本的には DrawMesh() 関連で使用
 
         public class ComputeArgumentsBufferData : IComponentData
         {

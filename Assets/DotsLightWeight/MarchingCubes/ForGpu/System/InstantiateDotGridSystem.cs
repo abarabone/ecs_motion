@@ -33,14 +33,22 @@ namespace DotsLite.MarchingCubes
                 .WithAll<Gpu.DotGridArea.InitializeData>()
                 .ForEach(
                     (
+                        Entity entity,
+                        ref DotGridArea.LinkToGridData grid,
                         in DotGridArea.DotGridPrefabData prefab
                     ) =>
                     {
 
+
+
+
                         var newent = em.Instantiate(prefab.Prefab);
 
-
-
+                        em.SetComponentData(entity, new DotGrid.UnitData
+                        {
+                            GridIndexInArea = new int3(0, 0, 0),
+                            Unit = new DotGrid32x32x32Unsafe(GridFillMode.Blank),
+                        });
                     }
                 )
                 .Run();

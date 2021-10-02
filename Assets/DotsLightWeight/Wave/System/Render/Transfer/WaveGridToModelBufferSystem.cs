@@ -37,7 +37,7 @@ namespace DotsLite.Draw
         {
             base.OnCreate();
 
-            this.bardep = BarrierDependency.Sender.Create<DrawMeshCsSystem>(this);
+            this.bardep = BarrierDependency.Sender.Create<DrawBufferToShaderDataSystem>(this);
 
             this.RequireSingletonForUpdate<GridMaster.Data>();
         }

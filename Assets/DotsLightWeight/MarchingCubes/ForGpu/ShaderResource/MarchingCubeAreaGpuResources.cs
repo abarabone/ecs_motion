@@ -62,14 +62,20 @@ namespace DotsLite.MarchingCubes
                     GridDynamicIndex = i,
                     GridStaticIndex = new NearGridIndex
                     {
-                        left_home = i,
-                        left_rear = 1-1,
-                        left_down = 1-1,
-                        left_slant = 1-1,
-                        right_home = 1-1,
-                        right_rear = 1-1,
-                        right_down = 1-1,
-                        right_slant = 1-1,
+                        left = new GridindexUnit
+                        {
+                            home = i,
+                            rear = 1 - 1,
+                            down = 1 - 1,
+                            slant = 1 - 1,
+                        },
+                        right = new GridindexUnit
+                        {
+                            home = 1 - 1,
+                            rear = 1 - 1,
+                            down = 1 - 1,
+                            slant = 1 - 1,
+                        },
                     },
                 };
             this.GridInstructions.Buffer.SetData(qGridInstruction.ToArray());
@@ -110,18 +116,30 @@ namespace DotsLite.MarchingCubes
         public int GridDynamicIndex;
         public NearGridIndex GridStaticIndex;
     }
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Explicit)]
     public struct NearGridIndex
     {
-        public int left_home;   // 0, 0, 0
-        public int left_rear;   // 0, 0, 1
-        public int left_down;   // 0, 1, 0
-        public int left_slant;  // 0, 1, 1
-        public int right_home;  // 1, 0, 0
-        public int right_rear;  // 1, 0, 1
-        public int right_down;  // 1, 1, 0
-        public int right_slant; // 1, 1, 1
+        [FieldOffset(0)] public GridindexUnit left;
+        [FieldOffset(16)] public GridindexUnit right;
+
+        [FieldOffset(0)] public int4 lPack4;
+        [FieldOffset(16)] public int4 rPack4;
     }
+    public struct GridindexUnit
+    {
+        public int home;
+        public int rear;
+        public int down;
+        public int slant;
+    }
+    // left_home;   // 0, 0, 0
+    // left_rear;   // 0, 0, 1
+    // left_down;   // 0, 1, 0
+    // left_slant;  // 0, 1, 1
+    // right_home;  // 1, 0, 0
+    // right_rear;  // 1, 0, 1
+    // right_down;  // 1, 1, 0
+    // right_slant; // 1, 1, 1
 
 
     public struct CubeInstancingIndirectArgumentsBuffer : IDisposable

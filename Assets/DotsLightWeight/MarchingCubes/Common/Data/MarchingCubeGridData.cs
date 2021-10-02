@@ -26,12 +26,17 @@ namespace DotsLite.MarchingCubes
 
         public struct UnitData : IComponentData, IDisposable
         {
-
+            public int3 GridIndexInArea;
             public DotGrid32x32x32Unsafe Unit;
 
 
             public void Dispose() => this.Unit.Dispose();
         }
+
+        //public struct NeargridData : IComponentData
+        //{
+        //    public NearGridIndex Index;
+        //}
 
     }
 

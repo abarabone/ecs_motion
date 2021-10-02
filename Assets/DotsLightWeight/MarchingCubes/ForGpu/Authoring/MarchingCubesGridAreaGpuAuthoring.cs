@@ -110,8 +110,9 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                 var types = new ComponentTypes(
                     new ComponentType[]
                     {
+                        typeof(DrawModel.ExcludeDrawMeshCsTag),
                         typeof(Gpu.DotGridArea.InitializeData),
-                        //typeof(DotGridArea.LinkToGridData),
+                        typeof(DotGridArea.LinkToGridData),
                         typeof(DotGridArea.InfoData),
                         typeof(DotGridArea.InfoWorkData),
                         //typeof(DotGridArea.OutputCubesData),
@@ -141,12 +142,17 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                         MaxGrids = this.MaxGrids,
                     }
                 );
-                //em.SetComponentData(ent,
-                //    new DotGridArea.LinkToGridData
-                //    {
-                //        Grids = allocGridArea_(totalSize, fillMode_),
-                //    }
-                //);
+
+                var totalsize = this.GridLength.x * this.GridLength.y * this.GridLength.z;
+                var pIds = (int*)UnsafeUtility.Malloc(totalsize, 4, Allocator.Persistent);
+                for (var i = 0; i < totalsize; i++) pIds[i] = -1;
+                em.SetComponentData(ent,
+                    new DotGridArea.LinkToGridData
+                    {
+                        pGridIds = pIds,
+                        GridLength = this.GridLength,
+                    }
+                );
                 em.SetComponentData(ent,
                     new DotGridArea.InfoData
                     {

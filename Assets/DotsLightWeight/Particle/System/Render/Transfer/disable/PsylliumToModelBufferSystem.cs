@@ -26,7 +26,7 @@ namespace DotsLite.Draw.disable
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw ) )]
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    [UpdateBefore(typeof(DrawMeshCsSystem))]
+    [UpdateBefore(typeof(DrawBufferToShaderDataSystem))]
     public class PsylliumToDrawModelBufferSystem : DependencyAccessableSystemBase
     {
 
@@ -37,7 +37,7 @@ namespace DotsLite.Draw.disable
         {
             base.OnCreate();
 
-            this.bardep = BarrierDependency.Sender.Create<DrawMeshCsSystem>(this);
+            this.bardep = BarrierDependency.Sender.Create<DrawBufferToShaderDataSystem>(this);
         }
 
         protected unsafe override void OnUpdate()

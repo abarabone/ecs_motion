@@ -16,7 +16,7 @@ namespace DotsLite.MarchingCubes.old
 
     //[DisableAutoCreation]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    [UpdateAfter(typeof(DrawMeshCsSystem))]
+    [UpdateAfter(typeof(DrawBufferToShaderDataSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     public class DrawMarchingCubeCsSystem : SystemBase
     {

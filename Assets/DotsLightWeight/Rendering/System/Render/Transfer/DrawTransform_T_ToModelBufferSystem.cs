@@ -17,7 +17,7 @@ namespace DotsLite.Draw
 {
     using DotsLite.Dependency;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     //[UpdateBefore(typeof(DrawMeshCsSystem))]
@@ -31,7 +31,7 @@ namespace DotsLite.Draw
         {
             base.OnCreate();
 
-            this.bardep = BarrierDependency.Sender.Create<DrawMeshCsSystem>(this);
+            this.bardep = BarrierDependency.Sender.Create<DrawBufferToShaderDataSystem>(this);
         }
 
         protected unsafe override void OnUpdate()

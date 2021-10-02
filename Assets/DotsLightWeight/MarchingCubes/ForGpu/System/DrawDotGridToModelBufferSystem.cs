@@ -12,16 +12,12 @@ using Unity.Transforms;
 namespace DotsLite.Draw
 {
     using DotsLite.Dependency;
+    using MarchingCubes.Gpu;
+    using MarchingCubes;
 
-    /// <summary>
-    /// TRSだが、現在はTRのみ対応
-    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
-    //[UpdateAfter(typeof())]
-    //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
-    //[UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class DrawSingleBoneMesh_TRS_ToModelBufferSystem : DependencyAccessableSystemBase
+    public class DrawDotGridToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 
@@ -49,16 +45,12 @@ namespace DotsLite.Draw
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithReadOnly(nativeBuffers)
-                .WithAll<DrawInstance.MeshTag>()
-                .WithNone<DrawInstance.BoneModelTag>()
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
                         in Translation pos,
-                        in Rotation rot//,
-                        //in NonUniformScale scl
-                        // ＴＲＳといいつつ、現状はＴＲ
+                        in DotGrid.NeargridData near
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
@@ -66,13 +58,13 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var lengthOfInstance = 2 + offsetInfo.OptionalVectorLengthPerInstance;// あとでスケールに対応させる
-                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.OptionalVectorLengthPerInstance;
+                        var lengthOfInstance = 1 + offsetInfo.OptionalVectorLengthPerInstance;
+                        var i = target.DrawInstanceId * lengthOfInstance;// + offsetInfo.OptionalVectorLengthPerInstance;
 
                         var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
-                        pModel[i + 0] = new float4(pos.Value, 1.0f);
-                        pModel[i + 1] = rot.Value.value;
-
+                        pModel[i + 0] = math.asfloat(near.Index.lPack4);
+                        pModel[i + 1] = math.asfloat(near.Index.rPack4);
+                        pModel[i + 2] = new float4(pos.Value, 1.0f);
                     }
                 )
                 .ScheduleParallel();

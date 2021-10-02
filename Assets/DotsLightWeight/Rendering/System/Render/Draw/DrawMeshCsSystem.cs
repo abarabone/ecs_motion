@@ -27,40 +27,16 @@ namespace DotsLite.Draw
     /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
     /// </summary>
     //[DisableAutoCreation]
-    //[UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.Draw.Call ) )]
-    public class DrawMeshCsSystem : SystemBase, BarrierDependency.IRecievable
+    [UpdateAfter(typeof(DrawBufferToShaderDataSystem))]
+    public class DrawMeshCsSystem : SystemBase
     {
-
-
-        public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();
-
-
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            this.Reciever.Dispose();
-        }
 
         protected override unsafe void OnUpdate()
         {
-            this.Reciever.CompleteAllDependentJobs(this.Dependency);
-
-            var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
-            var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
-            var bufferInfo = this.GetSingleton<DrawSystem.TransformBufferInfoData>();
-            computeBuffer.SetData( nativeBuffer.AsNativeArray(bufferInfo.CurrentVectorLength) );
-
-            //Debug.Log("start");
-            //for (var i = 0; i < nativeBuffer.length_; i++)
-            //{
-            //    Debug.Log($"{i} {nativeBuffer.pBuffer[i]}");
-            //}
-
             this.Entities
                 .WithoutBurst()
+                .WithNone<DrawModel.ExcludeDrawMeshCsTag>()
                 .ForEach(
                     (
                         in DrawModel.InstanceCounterData counter,
