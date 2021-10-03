@@ -30,7 +30,7 @@ namespace DotsLite.MarchingCubes
                 .WithName("GridArea")
                 .WithoutBurst()
                 .WithStructuralChanges()
-                .WithAll<Gpu.DotGridArea.InitializeData>()
+                .WithAll<DotGridArea.InitializeData>()
                 .ForEach(
                     (
                         Entity entity,
@@ -40,14 +40,26 @@ namespace DotsLite.MarchingCubes
                     {
 
 
+                        var i = new int3(0, 0, 0);
+                        var index = new DotGrid.GridIndex().Set(i, grid.GridSpan);
+
+                        grid.pGridIds[index.serial] = grid.nextSeed++;
 
 
                         var newent = em.Instantiate(prefab.Prefab);
 
-                        em.SetComponentData(entity, new DotGrid.UnitData
+                        em.SetComponentData(newent, new DotGrid.UnitData
                         {
-                            GridIndexInArea = new int3(0, 0, 0),
+                            GridIndexInArea = index,
                             Unit = new DotGrid32x32x32Unsafe(GridFillMode.Blank),
+                        });
+                        em.SetComponentData(newent, new DrawInstance.WorldBbox
+                        {
+                            Bbox = new AABB
+                            {
+                                Center = i * 32,
+                                Extents = new float3(32/2, 32/2, 32/2),
+                            }
                         });
                     }
                 )

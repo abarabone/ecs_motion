@@ -35,6 +35,7 @@ namespace DotsLite.MarchingCubes
         {
             public int* pGridIds;
             public int3 GridLength;
+            public int3 GridSpan;
             public int nextSeed;
 
             public void Dispose()

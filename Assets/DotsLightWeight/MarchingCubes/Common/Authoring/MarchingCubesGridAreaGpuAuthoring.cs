@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.MarchingCubes.Gpu.Authoring
+namespace DotsLite.MarchingCubes.Authoring
 {
     using DotsLite.Draw;
     using DotsLite.Model;
@@ -65,6 +65,10 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                 {
                     DrawModelEntityCurrent = ent,
                 });
+                em.AddComponentData(prefab, new DotGrid.ParentAreaData
+                {
+                    Parent = ent,
+                });
             }
 
 
@@ -111,12 +115,12 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                     new ComponentType[]
                     {
                         typeof(DrawModel.ExcludeDrawMeshCsTag),
-                        typeof(Gpu.DotGridArea.InitializeData),
+                        typeof(DotGridArea.InitializeData),
                         typeof(DotGridArea.LinkToGridData),
                         typeof(DotGridArea.InfoData),
                         typeof(DotGridArea.InfoWorkData),
                         //typeof(DotGridArea.OutputCubesData),
-                        typeof(Gpu.DotGridArea.ResourceGpuModeData),
+                        typeof(DotGridArea.ResourceGpuModeData),
                         typeof(DotGridArea.DotGridPrefabData),
                         typeof(Rotation),
                         typeof(Translation)
@@ -133,7 +137,7 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                 mat.mainTexture = this.Texture;
 
                 em.SetComponentData(ent,
-                    new Gpu.DotGridArea.InitializeData
+                    new DotGridArea.InitializeData
                     {
                         //FillMode = fillMode_,
                         CubeMaterial = mat,
@@ -151,6 +155,7 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                     {
                         pGridIds = pIds,
                         GridLength = this.GridLength,
+                        GridSpan = new int3(1, this.GridLength.x * this.GridLength.z, this.GridLength.x),
                     }
                 );
                 em.SetComponentData(ent,
@@ -175,7 +180,7 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                 //    }
                 //);
                 em.SetComponentData(ent,
-                    new Gpu.DotGridArea.ResourceGpuModeData()
+                    new DotGridArea.ResourceGpuModeData()
                 );
                 em.SetComponentData(ent,
                     new Rotation

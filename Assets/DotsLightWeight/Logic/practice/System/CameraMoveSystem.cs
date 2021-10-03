@@ -37,11 +37,11 @@ namespace DotsLite.Character
             this.RequireSingletonForUpdate<CharacterFollowCameraPositionData>();
 
 
-            if (Gamepad.current == null)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
+            //if (Gamepad.current == null)
+            //{
+            //    Cursor.lockState = CursorLockMode.Locked;
+            //    Cursor.visible = false;
+            //}
 
             //this.eq = this.Entities
             //    .WithAllReadOnly<Translation, Rotation, PlayerTag, MoveHandlingData>()
@@ -53,19 +53,19 @@ namespace DotsLite.Character
         {
             base.OnDestroy();
 
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            //Cursor.lockState = CursorLockMode.None;
+            //Cursor.visible = true;
         }
 
 
         protected override void OnUpdate()
         {
 
-            if (Keyboard.current.wasUpdatedThisFrame)
-            {
-                Cursor.lockState ^= CursorLockMode.Locked;
-                Cursor.visible ^= false;
-            }
+            //if (Keyboard.current.wasUpdatedThisFrame)
+            //{
+            //    Cursor.lockState ^= CursorLockMode.Locked;
+            //    Cursor.visible ^= false;
+            //}
 
 
             var tfCam = Camera.main.transform;

@@ -11,7 +11,7 @@ using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Physics;
 
-namespace DotsLite.MarchingCubes.Gpu.Authoring
+namespace DotsLite.MarchingCubes.Authoring
 {
     using DotsLite.Draw;
     using DotsLite.Model;
@@ -42,9 +42,10 @@ namespace DotsLite.MarchingCubes.Gpu.Authoring
                 {
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
+                    typeof(DrawInstance.WorldBbox),
                     typeof(DotGrid.UnitData),
+                    typeof(DotGrid.ParentAreaData),
                     //typeof(PhysicsCollider),
-                    typeof(DotGrid.NeargridData),
                 });
                 em.AddComponents(ent, types);
             }

@@ -14,7 +14,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.MarchingCubes.Gpu
+namespace DotsLite.MarchingCubes
 {
 
     using DotsLite.Draw;

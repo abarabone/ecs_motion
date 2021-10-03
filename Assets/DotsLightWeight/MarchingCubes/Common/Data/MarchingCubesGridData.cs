@@ -14,23 +14,41 @@ using System;
 
 namespace DotsLite.MarchingCubes
 {
-
+    using Utility;
+    using Utilities;
 
 
     public static class DotGrid
     {
 
 
+        public struct ParentAreaData : IComponentData
+        {
+            public Entity Parent;
+        }
 
 
 
         public struct UnitData : IComponentData, IDisposable
         {
-            public int3 GridIndexInArea;
+            public GridIndex GridIndexInArea;
             public DotGrid32x32x32Unsafe Unit;
 
-
             public void Dispose() => this.Unit.Dispose();
+        }
+
+        public struct GridIndex
+        {
+            public int4 value;
+            public int3 index => new int3(value.x, value.y, value.z);
+            public int serial => value.w;
+
+            public GridIndex Set(int3 index, int3 span)
+            {
+                var serial = math.dot(index, span);
+                this.value = new int4(index.x, index.y, index.z, serial);
+                return this;
+            }
         }
 
         //public struct NeargridData : IComponentData
