@@ -15,7 +15,7 @@ namespace DotsLite.MarchingCubes.Gpu
     using DotsLite.Utilities;
     using DotsLite.MarchingCubes;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     [UpdateAfter(typeof(DrawBufferToShaderDataSystem))]
     public class DrawMarchingCubeCsSystem : SystemBase
@@ -36,7 +36,10 @@ namespace DotsLite.MarchingCubes.Gpu
             this.Entities
                 .WithoutBurst()
                 .ForEach((
-                    //in DotGridArea.ShaderInputData inputs,
+                    in DrawModel.InstanceCounterData counter,
+                    in DrawModel.VectorIndexData offset,
+                        in DrawModel.ComputeArgumentsBufferData shaderArg,
+                        in DrawModel.GeometryData geom,
                     in DotGridArea.ResourceGpuModeData res) =>
                 {
                     //var cubeInstances = output.CubeInstances;//globaldata.CubeInstances;
@@ -62,13 +65,18 @@ namespace DotsLite.MarchingCubes.Gpu
 
                         buf.CubeInstances.Buffer.SetCounterValue(0);
 
-                        cs.Dispatch(kernelIndex: 0, 4, 1, 1);
+                        var vectorOffset = offset.ModelStartIndex;
+                        mat.SetInt("BoneVectorOffset", (int)vectorOffset);
+
+                        cs.Dispatch(kernelIndex: 0, counter.InstanceCounter.Count, 1, 1);
                         //Debug.Log(buf.CubeInstances.Buffer.count);
                     }
 
                     {
-                        var mesh = globaldata.ShaderResources.mesh;
+                        var mesh = geom.Mesh;
                         var iargs = buf.CubeInstancingArgs;
+                        //var mesh = globaldata.ShaderResources.mesh;
+                        //var iargs = shaderArg.InstanceArgumentsBuffer;//buf.CubeInstancingArgs;
                         var src = buf.CubeInstances;
 
                         //var xs = (

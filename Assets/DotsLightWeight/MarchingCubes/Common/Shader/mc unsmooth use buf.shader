@@ -48,7 +48,7 @@
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 
-
+			
 			StructuredBuffer<uint> cube_instances;
 			Texture2DArray<uint> grid_cubeids;
 			//StructuredBuffer<uint> grid_cubeids;
@@ -82,13 +82,19 @@
 			//	// [1] : near grid id
 			//	// { x : back>>0 | up>>16  y : left>>0 | current>>16  z : right>>0 | down>>16  w : forward>>0 }
 			//CBUFFER_END;
-			struct GridInstruction
-			{
-				float3 position;
-				int dynamic_grid_id;
-				int static_grid_ids[2][2][2];
-			};
-			StructuredBuffer<GridInstruction> grid_instructions;
+
+			//struct GridInstruction
+			//{
+			//	float3 position;
+			//	int dynamic_grid_id;
+			//	int static_grid_ids[2][2][2];
+			//};
+			//StructuredBuffer<GridInstruction> grid_instructions;
+
+			StructuredBuffer<float4> BoneVectorBuffer;
+			int	VectorLengthPerInstance;
+			int BoneVectorOffset;
+
 
 
 			static const uint grid_pos = 0;
@@ -228,8 +234,9 @@
 
 				const uint4 cubeindex = data.xxxx >> uint4(17, 22, 27, 8) & uint4(0x1f, 0x1f, 0x1f, 0x1ff);
 				
-				const float3 gridpos = grid_instructions[cubeindex.w].position;//grids[cubeindex.w][grid_pos].xyz;
-				const int3 cubepos = (int3)cubeindex.xyz * int3(1, -1, -1);
+				//const float3 gridpos = grid_instructions[cubeindex.w].position;//grids[cubeindex.w][grid_pos].xyz;
+				const int igrid = BoneVectorOffset + VectorLengthPerInstance * cubeindex.w;
+				const int3 cubepos = BoneVectorBuffer[igrid] + (int3)cubeindex.xyz * int3(1, -1, -1);
 
 				const uint cube_vtx_lpos_packed = asuint(cube_vtxs[ivtx_in_cube].w);
 				const float3 cube_vtx_lpos = ((int3)unpack8bits_uint_to_uint3(cube_vtx_lpos_packed) - 1) * 0.5f;
