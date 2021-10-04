@@ -18,7 +18,7 @@ namespace DotsLite.Draw
     using DotsLite.Particle;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.DrawPrev.Culling))]
     public class DrawCullingWorldBboxSystem : SystemBase

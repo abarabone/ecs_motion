@@ -127,7 +127,7 @@ static const uint4 element_mask_table[] =
 	{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}
 };
 
-int toIndex(int igid, int overx, int iy, int iz)
+int toIndex(int igrid, int overx, int iy, int iz)
 {
     const int overy = iy >> 5;
     const int overz = iz >> 5;
@@ -158,10 +158,10 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
     //const int igrid = gid.x;// instrucction grid id
     const int igrid = BoneVectorOffset + VectorLengthPerInstance * gid.x + 1;// 1 はポジション分
 
-    const int i00 = toIndex(igid, 0, id.y + 0, id.z + 0); if (i00 == -1) return;
-    const int i01 = toIndex(igid, 0, id.y + 0, id.z + 1); if (i01 == -1) return;
-    const int i10 = toIndex(igid, 0, id.y + 1, id.z + 0); if (i10 == -1) return;
-    const int i11 = toIndex(igid, 0, id.y + 1, id.z + 1); if (i11 == -1) return;
+    const int i00 = toIndex(igrid, 0, id.y + 0, id.z + 0); if (i00 == -1) return;
+    const int i01 = toIndex(igrid, 0, id.y + 0, id.z + 1); if (i01 == -1) return;
+    const int i10 = toIndex(igrid, 0, id.y + 1, id.z + 0); if (i10 == -1) return;
+    const int i11 = toIndex(igrid, 0, id.y + 1, id.z + 1); if (i11 == -1) return;
 
     const uint y0z0 = dotgrids[i00];
     const uint y0z1 = dotgrids[i01];
@@ -183,7 +183,7 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
             if (cube == 0) continue;
 
-            const uint instance = toCubeInstance(shift + i, id.y, id.z, igid, cube);
+            const uint instance = toCubeInstance(shift + i, id.y, id.z, igrid, cube);
             cube_instances.Append(instance);
         }
     }
@@ -198,14 +198,14 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
         if (cube == 0) continue;
 
-        const uint instance = toCubeInstance(shift + 7, id.y, id.z, igid, cube);
+        const uint instance = toCubeInstance(shift + 7, id.y, id.z, igrid, cube);
         cube_instances.Append(instance);
     }
 
-    const int i00r = toIndex(igid, 1, id.y + 0, id.z + 0); if (i00r == -1) return;
-    const int i01r = toIndex(igid, 1, id.y + 0, id.z + 1); if (i01r == -1) return;
-    const int i10r = toIndex(igid, 1, id.y + 1, id.z + 0); if (i10r == -1) return;
-    const int i11r = toIndex(igid, 1, id.y + 1, id.z + 1); if (i11r == -1) return;
+    const int i00r = toIndex(igrid, 1, id.y + 0, id.z + 0); if (i00r == -1) return;
+    const int i01r = toIndex(igrid, 1, id.y + 0, id.z + 1); if (i01r == -1) return;
+    const int i10r = toIndex(igrid, 1, id.y + 1, id.z + 0); if (i10r == -1) return;
+    const int i11r = toIndex(igrid, 1, id.y + 1, id.z + 1); if (i11r == -1) return;
     
     const uint y0z0r = dotgrids[i00r];
     const uint y0z1r = dotgrids[i01r];
@@ -220,6 +220,6 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
     if (cube == 0) return;
 
-    const uint instance = toCubeInstance(shift + 7, id.y, id.z, igid, cube);
+    const uint instance = toCubeInstance(shift + 7, id.y, id.z, igrid, cube);
     cube_instances.Append(instance);
 }

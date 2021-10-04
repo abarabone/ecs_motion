@@ -45,7 +45,7 @@ namespace DotsLite.MarchingCubes.Gpu
                     //var cubeInstances = output.CubeInstances;//globaldata.CubeInstances;
                     ////Debug.Log(instances.CubeInstances.length);
                     //if (cubeInstances.Length == 0) return;
-
+                    if (counter.InstanceCounter.Count == 0) return;
 
                     var cs = res.GridToCubeShader;
                     var mat = res.CubeMaterial;
@@ -66,13 +66,16 @@ namespace DotsLite.MarchingCubes.Gpu
                         buf.CubeInstances.Buffer.SetCounterValue(0);
 
                         var vectorOffset = offset.ModelStartIndex;
-                        mat.SetInt("BoneVectorOffset", (int)vectorOffset);
+                        cs.SetInt("BoneVectorOffset", (int)vectorOffset);
 
                         cs.Dispatch(kernelIndex: 0, counter.InstanceCounter.Count, 1, 1);
                         //Debug.Log(buf.CubeInstances.Buffer.count);
                     }
 
                     {
+                        var vectorOffset = offset.ModelStartIndex;
+                        mat.SetInt("BoneVectorOffset", (int)vectorOffset);
+
                         var mesh = geom.Mesh;
                         var iargs = buf.CubeInstancingArgs;
                         //var mesh = globaldata.ShaderResources.mesh;

@@ -50,7 +50,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
             initGridArea_(conversionSystem, entity);
 
-            initModel_(conversionSystem, entity);
+            initModel_(conversionSystem, entity, this.GridToCubesShader);
 
             setModelToPrefab_(conversionSystem, entity, conversionSystem.GetPrimaryEntity(this.GridPrefab));
 
@@ -72,7 +72,7 @@ namespace DotsLite.MarchingCubes.Authoring
             }
 
 
-            void initModel_(GameObjectConversionSystem gcs, Entity ent)
+            void initModel_(GameObjectConversionSystem gcs, Entity ent, ComputeShader cs)
             {
                 var mesh = createMesh_();
                 var mat = new Material(this.DrawCubeShader);
@@ -83,6 +83,12 @@ namespace DotsLite.MarchingCubes.Authoring
                 var boneType = BoneType.T;
                 var dataLength = sizeof(NearGridIndex);
                 gcs.InitDrawModelEntityComponents(this.gameObject, ent, mesh, mat, boneType, boneLength, sort, dataLength);
+
+                var em = gcs.DstEntityManager;
+                var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
+                var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
+                cs.SetFloat("VectorLengthPerInstance", 3);
+                cs.SetBuffer(0, "BoneVectorBuffer", boneVectorBuffer);
 
                 return;
 
