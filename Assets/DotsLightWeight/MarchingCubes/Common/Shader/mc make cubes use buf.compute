@@ -124,7 +124,6 @@ int BoneVectorOffset;
 
 static const uint4 element_mask_table[] =
 {
-	//{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}
 	{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}// 00, 01, 10, 11
 };
 
@@ -136,8 +135,8 @@ int toIndex(int igrid, int overx, int iy, int iz)
     const int _iz = iz & 0x1f;
 
     //const int _gid = grid_instructions[igrid].static_grid_ids[overx][overy][overz];
-    const int4 pack4 = BoneVectorBuffer[igrid + overx];
-    const int _gid = dot(pack4, element_mask_table[overy << 1 + overz]);
+    const float4 pack4 = BoneVectorBuffer[igrid + overx];
+    const int _gid = dot(pack4, element_mask_table[(overy << 1) + overz]);
 
     if (_gid == -1) return -1;
 
@@ -157,7 +156,7 @@ int toIndex(int igrid, int overx, int iy, int iz)
 void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
     //const int igrid = gid.x;// instrucction grid id
-    const int igrid = BoneVectorOffset + VectorLengthPerInstance * gid.x + 1;// 1 はポジション分
+    const int igrid = BoneVectorOffset + VectorLengthPerInstance * gid.x;
 
     const int i00 = toIndex(igrid, 0, id.y + 0, id.z + 0); if (i00 == -1) return;
     const int i01 = toIndex(igrid, 0, id.y + 0, id.z + 1); if (i01 == -1) return;
@@ -184,7 +183,7 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
             if (cube == 0) continue;
 
-            const uint instance = toCubeInstance(shift + i, id.y, id.z, igrid, cube);
+            const uint instance = toCubeInstance(shift + i, id.y, id.z, gid.x, cube);
             cube_instances.Append(instance);
         }
     }
@@ -199,7 +198,7 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
         if (cube == 0) continue;
 
-        const uint instance = toCubeInstance(shift + 7, id.y, id.z, igrid, cube);
+        const uint instance = toCubeInstance(shift + 7, id.y, id.z, gid.x, cube);
         cube_instances.Append(instance);
     }
 
@@ -221,6 +220,6 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
     if (cube == 0) return;
 
-    const uint instance = toCubeInstance(shift + 7, id.y, id.z, igrid, cube);
+    const uint instance = toCubeInstance(shift + 7, id.y, id.z, gid.x, cube);
     cube_instances.Append(instance);
 }

@@ -48,7 +48,8 @@ namespace DotsLite.MarchingCubes.Gpu
                     if (counter.InstanceCounter.Count == 0) return;
 
                     var cs = res.GridToCubeShader;
-                    var mat = geom.Material;//res.CubeMaterial;
+                    //var mat = geom.Material;
+                    var mat = res.CubeMaterial;
                     var buf = res.ShaderResources;
 
                     if (cs == null) return;
@@ -93,6 +94,9 @@ namespace DotsLite.MarchingCubes.Gpu
                         //var iargparams = new IndirectArgumentsForInstancing(mesh, instanceCount);
                         //iargs.Buffer.SetData(ref iargparams);
                         ComputeBuffer.CopyCount(src.Buffer, iargs.Buffer, dstOffsetBytes: sizeof(int) * 1);
+                        //var arr = new int[5];
+                        //iargs.Buffer.GetData(arr);
+                        //Debug.Log(arr[1]);
 
                         var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };//
                         Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, iargs.Buffer);//

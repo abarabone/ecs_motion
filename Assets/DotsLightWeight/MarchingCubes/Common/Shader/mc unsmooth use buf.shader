@@ -236,7 +236,7 @@
 				
 				//const float3 gridpos = grid_instructions[cubeindex.w].position;//grids[cubeindex.w][grid_pos].xyz;
 				const int igrid = BoneVectorOffset + VectorLengthPerInstance * cubeindex.w;
-				const float3 gridpos = BoneVectorBuffer[igrid].xyz;
+				const float3 gridpos = BoneVectorBuffer[igrid + 2].xyz;
 				const float3 cubepos = cubeindex.xyz * float3(1, -1, -1);
 
 				const uint cube_vtx_lpos_packed = asuint(cube_vtxs[ivtx_in_cube].w);

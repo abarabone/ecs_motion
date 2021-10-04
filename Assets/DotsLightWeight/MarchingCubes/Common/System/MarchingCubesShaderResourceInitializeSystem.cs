@@ -52,12 +52,13 @@ namespace DotsLite.MarchingCubes.Gpu
                     (
                         Entity ent,
                         DotGridArea.InitializeData init,
-                        DotGridArea.ResourceGpuModeData data
+                        DotGridArea.ResourceGpuModeData data,
+                        DrawModel.GeometryData geom
                     ) =>
                     {
-                        var mat = init.CubeMaterial;
+                        var mat = geom.Material;//init.CubeMaterial;
                         var cs = init.GridToCubesShader;
-                        var mesh = gres.mesh;
+                        var mesh = geom.Mesh;// gres.mesh;
 
 
                         data.CubeMaterial = mat;

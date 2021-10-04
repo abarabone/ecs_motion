@@ -79,6 +79,7 @@ namespace DotsLite.MarchingCubes
                     },
                 };
             this.GridInstructions.Buffer.SetData(qGridInstruction.ToArray());
+            this.CubeInstances.Buffer.SetData(CubeUtility.ToCubeInstance(0,0,0,0,3).WrapEnumerable().ToArray());
         }
 
         public void Dispose()

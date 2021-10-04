@@ -9,6 +9,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Transforms;
 
 namespace DotsLite.MarchingCubes
 {
@@ -41,26 +42,39 @@ namespace DotsLite.MarchingCubes
 
 
                         var i = new int3(0, 0, 0);
-                        var index = new DotGrid.GridIndex().Set(i, grid.GridSpan);
+                        create_(prefab.Prefab, new int3(0, 0, 0), ref grid);
+                        create_(prefab.Prefab, new int3(1, 0, 0), ref grid);
+                        create_(prefab.Prefab, new int3(0, 0, 1), ref grid);
+                        create_(prefab.Prefab, new int3(1, 0, 1), ref grid);
+                        return;
 
-                        grid.pGridIds[index.serial] = grid.nextSeed++;
 
-
-                        var newent = em.Instantiate(prefab.Prefab);
-
-                        em.SetComponentData(newent, new DotGrid.UnitData
+                        void create_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grid)
                         {
-                            GridIndexInArea = index,
-                            Unit = new DotGrid32x32x32Unsafe(GridFillMode.Blank),
-                        });
-                        em.SetComponentData(newent, new DrawInstance.WorldBbox
-                        {
-                            Bbox = new AABB
+                            var index = new DotGrid.GridIndex().Set(i, grid.GridSpan);
+
+                            grid.pGridIds[index.serial] = grid.nextSeed++;
+
+                            var newent = em.Instantiate(prefab);
+
+                            em.SetComponentData(newent, new DotGrid.UnitData
                             {
-                                Center = i * 32,
-                                Extents = new float3(32/2, 32/2, 32/2),
-                            }
-                        });
+                                GridIndexInArea = index,
+                                Unit = new DotGrid32x32x32Unsafe(GridFillMode.Blank),
+                            });
+                            em.SetComponentData(newent, new DrawInstance.WorldBbox
+                            {
+                                Bbox = new AABB
+                                {
+                                    Center = i * 32 + new float3(16, -16, -16),
+                                    Extents = new float3(32 / 2, 32 / 2, 32 / 2),
+                                }
+                            });
+                            em.SetComponentData(newent, new Translation
+                            {
+                                Value = i * 32,
+                            });
+                        }
                     }
                 )
                 .Run();
