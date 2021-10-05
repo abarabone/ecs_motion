@@ -24,7 +24,7 @@ namespace DotsLite.MarchingCubes
 
         public struct ParentAreaData : IComponentData
         {
-            public Entity Parent;
+            public Entity ParentArea;
         }
 
 

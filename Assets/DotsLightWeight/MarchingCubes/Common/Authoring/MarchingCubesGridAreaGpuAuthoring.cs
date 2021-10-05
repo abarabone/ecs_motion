@@ -67,7 +67,7 @@ namespace DotsLite.MarchingCubes.Authoring
                 });
                 em.AddComponentData(prefab, new DotGrid.ParentAreaData
                 {
-                    Parent = ent,
+                    ParentArea = ent,
                 });
             }
 

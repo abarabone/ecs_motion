@@ -47,6 +47,9 @@ namespace DotsLite.Arms
         HitMessage<Character.HitMessage>.Sender chSender;
 
 
+        //BarrierDependency.Sender bardep;
+        //BarrierDependency.Sender bardep2;
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -57,11 +60,17 @@ namespace DotsLite.Arms
 
             this.stSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
+
+            //this.bardep = BarrierDependency.Sender.Create<ExplosionSphereHitSystem>(this);
+            //this.bardep2 = BarrierDependency.Sender.Create<BulletSphereHitSystem>(this);
         }
 
 
         protected unsafe override void OnUpdate()
         {
+            //using var barScope = bardep.WithDependencyScope();
+            //using var barScope2 = bardep2.WithDependencyScope();
+
             using var cmdScope = this.cmddep.WithDependencyScope();
             using var phyScope = this.phydep.WithDependencyScope();
             using var pthitScope = this.stSender.WithDependencyScope();

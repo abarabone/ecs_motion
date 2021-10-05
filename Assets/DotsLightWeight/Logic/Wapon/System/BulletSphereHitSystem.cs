@@ -34,8 +34,18 @@ namespace DotsLite.Arms
     [UpdateAfter(typeof(BulletRayHitSystem))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
-    public class BulletSphereHitSystem : DependencyAccessableSystemBase
+    public class BulletSphereHitSystem : DependencyAccessableSystemBase//, BarrierDependency.IRecievable
     {
+
+        //public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();
+
+        //protected override void OnDestroy()
+        //{
+        //    base.OnDestroy();
+
+        //    this.Reciever.Dispose();
+        //}
+
 
         CommandBufferDependency.Sender cmddep;
 
@@ -45,7 +55,7 @@ namespace DotsLite.Arms
         HitMessage<Character.HitMessage>.Sender chSender;
 
 
-        DependencyAccessableSystemBase prevHitSystem;
+        //DependencyAccessableSystemBase prevHitSystem;
 
 
 
@@ -60,7 +70,7 @@ namespace DotsLite.Arms
             this.ptSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
 
-            this.prevHitSystem = World.GetExistingSystem<BulletRayHitSystem>();
+            //this.prevHitSystem = World.GetExistingSystem<BulletRayHitSystem>();
         }
 
 
@@ -143,7 +153,7 @@ namespace DotsLite.Arms
                 )
                 .ScheduleParallel();
 
-            this.AddInputDependency(this.prevHitSystem.GetOutputDependency());
+            //this.AddInputDependency(this.prevHitSystem.GetOutputDependency());
         }
 
     }

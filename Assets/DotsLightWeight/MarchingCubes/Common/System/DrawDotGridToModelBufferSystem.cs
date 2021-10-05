@@ -66,7 +66,7 @@ namespace DotsLite.Draw
 
                         var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
 
-                        var ids = pickupNeargridIds_(parent.Parent, data.GridIndexInArea);
+                        var ids = pickupNeargridIds_(parent.ParentArea, data.GridIndexInArea);
                         pModel[i + 0] = math.asfloat(ids.lPack4);
                         pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
 

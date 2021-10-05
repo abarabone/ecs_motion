@@ -38,8 +38,18 @@ namespace DotsLite.Arms
     [UpdateAfter(typeof(BulletSphereHitSystem))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
-    public class ExplosionSphereHitSystem : DependencyAccessableSystemBase
+    public class ExplosionSphereHitSystem : DependencyAccessableSystemBase//, BarrierDependency.IRecievable
     {
+
+        //public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();
+
+        //protected override void OnDestroy()
+        //{
+        //    base.OnDestroy();
+
+        //    this.Reciever.Dispose();
+        //}
+
 
         CommandBufferDependency.Sender cmddep;
 
