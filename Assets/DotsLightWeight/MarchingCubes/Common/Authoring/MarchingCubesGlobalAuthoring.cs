@@ -24,7 +24,7 @@ namespace DotsLite.MarchingCubes.Authoring
         public int MaxGridInstances;
         public int MaxFreeGrids;
 
-        public MarchingCubeAsset MarchingCubesAsset;
+        public MarchingCubesAsset MarchingCubesAsset;
         //public Material SrcMaterial;
         //public ComputeShader GridCubeIdSetShader;
 

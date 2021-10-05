@@ -6,7 +6,7 @@ using UnityEngine;
 namespace DotsLite.MarchingCubes
 {
 
-    public class MarchingCubeAsset : ScriptableObject
+    public class MarchingCubesAsset : ScriptableObject
     {
         public Vector3[] BaseVertexList;
         public CubeWrapper[] CubeIdAndVertexIndicesList;

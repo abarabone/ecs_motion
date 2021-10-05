@@ -132,7 +132,7 @@ namespace DotsLite.MarchingCubes
 
 
                 // アセットとして生成
-                var asset = ScriptableObject.CreateInstance<MarchingCubeAsset>();
+                var asset = ScriptableObject.CreateInstance<MarchingCubesAsset>();
                 var qCubeIndexLists =
                     //from x in Enumerable.Zip( cubeIdsAndIndexLists, cubeIdsAndTriangleNormals, (x,y)=>(x.cubeId, x.indices, y.normals) )
                     from i in cubeIdsAndIndexLists
@@ -141,7 +141,7 @@ namespace DotsLite.MarchingCubes
                     join vn in cubeIdAnd12VerticesNormalsList
                         on i.cubeId equals vn.cubeId
                     orderby i.cubeId
-                    select new MarchingCubeAsset.CubeWrapper
+                    select new MarchingCubesAsset.CubeWrapper
                     {
                         cubeId = i.cubeId,
                         vertexIndices = i.indices,

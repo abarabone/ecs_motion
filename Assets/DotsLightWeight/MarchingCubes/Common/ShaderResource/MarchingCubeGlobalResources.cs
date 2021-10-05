@@ -32,7 +32,7 @@ namespace DotsLite.MarchingCubes
         public Mesh mesh;
 
 
-        public void Alloc(MarchingCubeAsset asset, int maxGridInstances)
+        public void Alloc(MarchingCubesAsset asset, int maxGridInstances)
         {
             this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances);
 
@@ -126,7 +126,7 @@ namespace DotsLite.MarchingCubes
 
         public void Dispose() => this.Buffer?.Release();
 
-        public static CubeGeometryConstantBuffer Create(MarchingCubeAsset asset)
+        public static CubeGeometryConstantBuffer Create(MarchingCubesAsset asset)
         {
             var vertexNormalDict = makeVertexNormalsDict_(asset.CubeIdAndVertexIndicesList);
 
@@ -195,7 +195,7 @@ namespace DotsLite.MarchingCubes
                 return q;
             }
 
-            static Dictionary<float3, int> makeVertexNormalsDict_(MarchingCubeAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_)
+            static Dictionary<float3, int> makeVertexNormalsDict_(MarchingCubesAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_)
             {
                 return cubeIdsAndVtxIndexLists_
                     .SelectMany(x => x.normalsForVertex)
@@ -223,7 +223,7 @@ namespace DotsLite.MarchingCubes
             }
 
             static IEnumerable<uint4[]> createCubePatternBuffer_
-                (MarchingCubeAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict)
+                (MarchingCubesAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict)
             {
                 var q =
                     from cube in cubeIdsAndVtxIndexLists_

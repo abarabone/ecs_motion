@@ -30,7 +30,7 @@ namespace DotsLite.MarchingCubes.old
         public GlobalResources Resources;
 
 
-        public MarchingCubeGlobalData Init(int maxFreeGrids, int maxGridInstances, MarchingCubeAsset asset)
+        public MarchingCubeGlobalData Init(int maxFreeGrids, int maxGridInstances, MarchingCubesAsset asset)
         {
             this.DefaultGrids = new NativeArray<DotGrid32x32x32Unsafe>(2, Allocator.Persistent);
             this.FreeStocks = new FreeStockList(maxFreeGrids);
@@ -60,7 +60,7 @@ namespace DotsLite.MarchingCubes.old
 
         public class Initialize : IComponentData
         {
-            public MarchingCubeAsset Asset;
+            public MarchingCubesAsset Asset;
             public int MaxGridLengthInShader;
         }
 
@@ -204,7 +204,7 @@ namespace DotsLite.MarchingCubes.old
         public Mesh mesh;
 
 
-        public GlobalResources(MarchingCubeAsset asset, int maxGridInstances) : this()
+        public GlobalResources(MarchingCubesAsset asset, int maxGridInstances) : this()
         {
             this.GridCubeIdBuffer = ResourceAllocator.createGridCubeIdShaderBuffer_(maxGridInstances);
 
@@ -304,7 +304,7 @@ namespace DotsLite.MarchingCubes.old
             return new float3((float)Math.Round(x.x, digits), (float)Math.Round(x.y, digits), (float)Math.Round(x.z, digits));
             //return new float3( new half3( x ) );
         }
-        public static Dictionary<float3, int> makeVertexNormalsDict_(MarchingCubeAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_)
+        public static Dictionary<float3, int> makeVertexNormalsDict_(MarchingCubesAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_)
         {
             return cubeIdsAndVtxIndexLists_
                 .SelectMany(x => x.normalsForVertex)
@@ -354,7 +354,7 @@ namespace DotsLite.MarchingCubes.old
         }
 
         public static IEnumerable<uint4[]> createCubePatternBuffer_
-            (MarchingCubeAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict)
+            (MarchingCubesAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict)
         {
             var q =
                 from cube in cubeIdsAndVtxIndexLists_

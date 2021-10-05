@@ -23,7 +23,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public MarchingCubesDotGridGpuAuthoring GridPrefab;
 
-        public MarchingCubeAsset MarchingCubesAsset;
+        public MarchingCubesAsset MarchingCubesAsset;
 
 
         public int3 GridLength;

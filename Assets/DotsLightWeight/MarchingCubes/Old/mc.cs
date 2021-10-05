@@ -23,7 +23,7 @@ namespace DotsLite.MarchingCubes.old
 
     public class mc : MonoBehaviour
     {
-        public MarchingCubeAsset MarchingCubeAsset;
+        public MarchingCubesAsset MarchingCubeAsset;
         public Material Material;
 
         public ComputeShader setGridCubeIdShader;
@@ -247,7 +247,7 @@ namespace DotsLite.MarchingCubes.old
             public Mesh mesh;
             
 
-            public DrawResources( MarchingCubeAsset asset, int maxGridLength ) : this()
+            public DrawResources( MarchingCubesAsset asset, int maxGridLength ) : this()
             {
                 this.ArgsBufferForInstancing = ComputeShaderUtility.CreateIndirectArgumentsBufferForInstancing();
                 this.ArgsBufferForDispatch = ComputeShaderUtility.CreateIndirectArgumentsBufferForDispatch();
@@ -311,7 +311,7 @@ namespace DotsLite.MarchingCubes.old
                 return new float3( (float)Math.Round( x.x, digits ), (float)Math.Round( x.y, digits ), (float)Math.Round( x.z, digits ) );
                 //return new float3( new half3( x ) );
             }
-            Dictionary<float3, int> makeVertexNormalsDict_( MarchingCubeAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_ )
+            Dictionary<float3, int> makeVertexNormalsDict_( MarchingCubesAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_ )
             {
                 return cubeIdsAndVtxIndexLists_
                     .SelectMany( x => x.normalsForVertex )
@@ -343,7 +343,7 @@ namespace DotsLite.MarchingCubes.old
                 return buffer;
             }
 
-            ComputeBuffer createCubePatternBuffer_( MarchingCubeAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict )
+            ComputeBuffer createCubePatternBuffer_( MarchingCubesAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict )
             {
                 //var buffer = new ComputeBuffer( 254, Marshal.SizeOf<uint4>() * 2, ComputeBufferType.Constant );
                 var buffer = new ComputeBuffer( 254 * 2, Marshal.SizeOf<uint4>(), ComputeBufferType.Constant );
