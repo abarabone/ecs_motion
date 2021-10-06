@@ -51,11 +51,11 @@ namespace DotsLite.MarchingCubes
             }
         }
 
-        //public struct NeargridData : IComponentData
-        //{
-        //    public NearGridIndex Index;
-        //}
-
+        public struct UpdateDirtyRangeData : IComponentData
+        {
+            public uint begin;
+            public uint end;
+        }
     }
 
 

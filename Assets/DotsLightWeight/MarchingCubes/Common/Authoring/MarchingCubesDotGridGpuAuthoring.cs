@@ -46,6 +46,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     typeof(DotGrid.UnitData),
                     typeof(DotGrid.ParentAreaData),
                     //typeof(PhysicsCollider),
+                    typeof(DotGrid.UpdateDirtyRangeData),
                 });
                 em.AddComponents(ent, types);
             }

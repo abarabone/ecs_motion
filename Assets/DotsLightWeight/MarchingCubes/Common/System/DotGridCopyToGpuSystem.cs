@@ -43,7 +43,10 @@ namespace DotsLite.MarchingCubes
         {
             this.Reciever.CompleteAllDependentJobs(this.Dependency);
 
-            //foreach ()
+            foreach (var ent in this.MessageHolderSystem.Reciever.Holder.TargetEntities)
+            {
+
+            }
 
             this.MessageHolderSystem.Reciever.Holder.ClearAndSchedule(this.Dependency);
         }

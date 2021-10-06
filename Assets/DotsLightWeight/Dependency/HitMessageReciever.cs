@@ -154,6 +154,9 @@ namespace DotsLite.Dependency
                 //ParallelWriter writer;//
 
 
+                public NativeList<Entity> TargetEntities => this.keyEntities;
+
+
                 public HitMessageHolder(int capacity)
                 {
                     this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, Allocator.Persistent);
