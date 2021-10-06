@@ -70,11 +70,11 @@ namespace DotsLite.MarchingCubes
         {
             var isBackSuccess = fillMode switch
             {
-                GridFillMode.Blank => this.stocksPtr->PushToFront((UIntPtr)grid.pUnits),
-                GridFillMode.Solid => this.stocksPtr->PushToBack((UIntPtr)grid.pUnits),
+                GridFillMode.Blank => this.stocksPtr->PushToFront((UIntPtr)grid.pXline),
+                GridFillMode.Solid => this.stocksPtr->PushToBack((UIntPtr)grid.pXline),
                 _ => true
             };
-            if (!isBackSuccess) DotGridAllocater.Dispose((UIntPtr)grid.pUnits);
+            if (!isBackSuccess) DotGridAllocater.Dispose((UIntPtr)grid.pXline);
         }
         public void Back(DotGrid32x32x32Unsafe grid) => Back(grid, grid.FillModeBlankOrSolid);
     }

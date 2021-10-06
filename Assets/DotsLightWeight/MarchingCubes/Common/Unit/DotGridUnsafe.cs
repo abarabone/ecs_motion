@@ -32,7 +32,7 @@ namespace DotsLite.MarchingCubes
         public const int maxbitNum = 16;
 
 
-        public uint* pUnits;
+        public uint* pXline;
         public int CubeCount;// DotCount に変更　あとで
 
 
@@ -57,45 +57,45 @@ namespace DotsLite.MarchingCubes
             const int size = sizeof( uint ) * xlineInGrid;
 
             var x = DotGridAllocater.Alloc(fillmode, size);
-            this.pUnits = x.pUnits;
+            this.pXline = x.pXline;
             this.CubeCount = x.CubeCount;
         }
         public DotGrid32x32x32Unsafe(UIntPtr p, int cubeCount) : this()
         {
-            this.pUnits = (uint*)p;
+            this.pXline = (uint*)p;
             this.CubeCount = cubeCount;
         }
 
         public void Dispose()
         {
-            if( this.pUnits == null ) return;// struct なので、複製された場合はこのチェックも意味がない
+            if( this.pXline == null ) return;// struct なので、複製された場合はこのチェックも意味がない
 
-            DotGridAllocater.Dispose((UIntPtr)this.pUnits);
-            this.pUnits = null;
+            DotGridAllocater.Dispose((UIntPtr)this.pXline);
+            this.pXline = null;
         }
 
 
         public uint this[ int ix, int iy, int iz ]
         {
-            get => (uint)( this.pUnits[ (iy << shiftNum) + iz ] >> ix & 1 );
+            get => (uint)( this.pXline[ (iy << shiftNum) + iz ] >> ix & 1 );
             
             set
             {
                 //if (value != 0 && value != 1) new ArgumentException();
 
                 var i = (iy << shiftNum) + iz;
-                var prev = this.pUnits[i];
+                var prev = this.pXline[i];
                 if (value == 1)
                 {
                     var x = 1 << ix;
-                    this.pUnits[i] |= (uint)x;
-                    if (prev != this.pUnits[i]) this.CubeCount++;
+                    this.pXline[i] |= (uint)x;
+                    if (prev != this.pXline[i]) this.CubeCount++;
                 }
                 if(value == 0)
                 {
                     var x = ~1 << ix;
-                    this.pUnits[i] &= (uint)x;
-                    if (prev != this.pUnits[i]) this.CubeCount--;
+                    this.pXline[i] &= (uint)x;
+                    if (prev != this.pXline[i]) this.CubeCount--;
                 }
 
                 //var i = (iy << shiftNum) + iz;
