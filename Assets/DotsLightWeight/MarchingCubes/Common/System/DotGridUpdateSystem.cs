@@ -43,7 +43,7 @@ namespace DotsLite.MarchingCubes
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     public class DotGridUpdateSystem : DependencyAccessableSystemBase, HitMessage<DotGridUpdateMessage>.IRecievable
     {
 

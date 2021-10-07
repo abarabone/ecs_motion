@@ -12,11 +12,13 @@ using System.Runtime.CompilerServices;
 namespace DotsLite.MarchingCubes
 {
     using DotsLite.Dependency;
+    using DotsLite.Utilities;
 
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    [UpdateAfter(typeof(DotGridUpdateSystem))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
+    //[UpdateAfter(typeof(DotGridUpdateSystem))]
+    [UpdateBefore(typeof(Gpu.DrawMarchingCubeCsSystem))]
     public class DotGridCopyToGpuSystem : DependencyAccessableSystemBase, BarrierDependency.IRecievable
     {
 
@@ -43,9 +45,30 @@ namespace DotsLite.MarchingCubes
         {
             this.Reciever.CompleteAllDependentJobs(this.Dependency);
 
+
+            var em = this.EntityManager;
+
+            //var grids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true);
+            //var dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(isReadOnly: true);
+            //var parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true);
+
             foreach (var ent in this.MessageHolderSystem.Reciever.Holder.TargetEntities)
             {
+                //var grid = grids[ent];
+                //var dirty = dirties[ent];
+                //var parent = parents[ent];
+                var grid = em.GetComponentData<DotGrid.UnitData>(ent);
+                var dirty = em.GetComponentData<DotGrid.UpdateDirtyRangeData>(ent);
+                var parent = em.GetComponentData<DotGrid.ParentAreaData>(ent);
 
+                var p = grid.Unit.pXline;
+                var res = em.GetComponentData<DotGridArea.ResourceGpuModeData>(parent.ParentArea);
+
+                var arr = NativeUtility.PtrToNativeArray(p, 32 * 32);
+                var srcstart = (int)dirty.begin;
+                var dststart = grid.GridIndexInArea.serial * 32 * 32 + (int)dirty.begin;
+                var count = (int)dirty.end - (int)dirty.begin;
+                res.ShaderResources.GridContentDataBuffer.Buffer.SetData(arr, srcstart, dststart, count);
             }
 
             this.MessageHolderSystem.Reciever.Holder.ClearAndSchedule(this.Dependency);

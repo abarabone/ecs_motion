@@ -33,13 +33,14 @@ namespace DotsLite.MarchingCubes
         {
             public GridIndex GridIndexInArea;
             public DotGrid32x32x32Unsafe Unit;
+            public float scale;
 
             public void Dispose() => this.Unit.Dispose();
         }
-
         public struct GridIndex
         {
             public int4 value;
+
             public int3 index => new int3(value.x, value.y, value.z);
             public int serial => value.w;
 
@@ -50,6 +51,7 @@ namespace DotsLite.MarchingCubes
                 return this;
             }
         }
+
 
         public struct UpdateDirtyRangeData : IComponentData
         {

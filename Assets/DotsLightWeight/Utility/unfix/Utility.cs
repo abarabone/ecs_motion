@@ -229,10 +229,23 @@ namespace DotsLite.Utilities
         {
             var arr = NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<T>(list.Ptr, list.length, Allocator.Invalid);
 
+        #if ENABLE_UNITY_COLLECTIONS_CHECKS
             // これをやらないとNativeArrayのインデクサアクセス時に死ぬ
-            #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref arr, AtomicSafetyHandle.Create());
-            #endif
+            NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref arr, AtomicSafetyHandle.Create());
+        #endif
+
+            return arr;
+        }
+
+        public static NativeArray<T> PtrToNativeArray<T>(T* ptr, int length)
+            where T : unmanaged
+        {
+            var arr = NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<T>(ptr, length, Allocator.Invalid);
+
+        #if ENABLE_UNITY_COLLECTIONS_CHECKS
+            // これをやらないとNativeArrayのインデクサアクセス時に死ぬ
+            NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref arr, AtomicSafetyHandle.Create());
+        #endif
 
             return arr;
         }
