@@ -25,6 +25,23 @@ namespace DotsLite.Structure
         public float3 Normal;
     }
 
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public class tructurePartHitMessageAllocSystem : SystemBase
+    {
+        StructurePartHitMessageApplySystem sys;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+            this.sys = this.World.GetOrCreateSystem<StructurePartHitMessageApplySystem>();
+        }
+        protected override void OnUpdate()
+        {
+            this.sys.Reciever.Alloc(10000, Allocator.TempJob);
+        }
+    }
+
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
@@ -43,17 +60,17 @@ namespace DotsLite.Structure
         {
             base.OnCreate();
 
-            this.Reciever = new HitMessage<PartHitMessage>.Reciever(10000);
+            this.Reciever = new HitMessage<PartHitMessage>.Reciever();// 10000);
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
+        //protected override void OnDestroy()
+        //{
+        //    base.OnDestroy();
 
-            this.Reciever.Dispose();
-        }
+        //    this.Reciever.Dispose();
+        //}
 
         protected override void OnUpdate()
         {
@@ -77,7 +94,7 @@ namespace DotsLite.Structure
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
 
-            this.Dependency = this.Reciever.Holder.ScheduleClear(this.Dependency);
+            this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
 

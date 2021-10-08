@@ -81,7 +81,7 @@ namespace DotsLite.MarchingCubes
             {
                 dotgrids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
             }
-            .ScheduleParallelKey(this.Reciever, 32, this.Dependency, needClear: false);
+            .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
         }
 
 

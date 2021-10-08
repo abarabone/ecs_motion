@@ -18,6 +18,23 @@ namespace DotsLite.Structure
 
     }
 
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public class StructureEnvelopeHitMessageAllocSystem : SystemBase
+    {
+        StructureEnvelopeHitMessageApplySystem sys;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+            this.sys = this.World.GetOrCreateSystem<StructureEnvelopeHitMessageApplySystem>();
+        }
+        protected override void OnUpdate()
+        {
+            this.sys.Reciever.Alloc(10000, Allocator.TempJob);
+        }
+    }
+
 
     // parts の destroy とここでの wakeup components 着脱が競合する可能性もはらんでいるかも？？ em 専用 system をつくるべきなのかなぁ
     // ↑システムの順序をちゃんとしたら大丈夫だった！
@@ -36,16 +53,16 @@ namespace DotsLite.Structure
         {
             base.OnCreate();
 
-            this.Reciever = new HitMessage<EnvelopeHitMessage>.Reciever(10000);
+            this.Reciever = new HitMessage<EnvelopeHitMessage>.Reciever();// 10000);
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
+        //protected override void OnDestroy()
+        //{
+        //    base.OnDestroy();
 
-            this.Reciever.Dispose();
-        }
+        //    this.Reciever.Dispose();
+        //}
 
         protected override void OnUpdate()
         {
@@ -64,7 +81,7 @@ namespace DotsLite.Structure
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
 
-            this.Dependency = this.Reciever.Holder.ScheduleClear(this.Dependency);
+            this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
 

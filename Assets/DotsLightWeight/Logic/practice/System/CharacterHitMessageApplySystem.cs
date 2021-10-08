@@ -23,6 +23,22 @@ namespace DotsLite.Character
         public Targeting.Corps TargetCorps;
     }
 
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public class CharacterHitMessageAllocSystem : SystemBase
+    {
+        CharacterHitMessageApplySystem sys;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+            this.sys = this.World.GetOrCreateSystem<CharacterHitMessageApplySystem>();
+        }
+        protected override void OnUpdate()
+        {
+            this.sys.Reciever.Alloc(10000, Allocator.TempJob);
+        }
+    }
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
@@ -43,12 +59,12 @@ namespace DotsLite.Character
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
+        //protected override void OnDestroy()
+        //{
+        //    base.OnDestroy();
 
-            this.Reciever.Dispose();
-        }
+        //    this.Reciever.Dispose();
+        //}
 
         protected override void OnUpdate()
         {
@@ -61,7 +77,6 @@ namespace DotsLite.Character
             //var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
             //var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);
 
-            this.Reciever.Alloc(10000, Allocator.TempJob);
             this.Dependency = new JobExecution
             {
                 Cmd = cmd,

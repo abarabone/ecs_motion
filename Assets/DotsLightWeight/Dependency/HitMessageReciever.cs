@@ -173,7 +173,6 @@ namespace DotsLite.Dependency
 
                     this.keyEntities = new NativeList<Entity>(capacity, allocator);
                     this.uniqueKeys = new NativeHashSet<Entity>(capacity, allocator);
-
                     //this.writer = new ParallelWriter(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);//
                 }
 
@@ -221,14 +220,14 @@ namespace DotsLite.Dependency
                     .Schedule(dependency);
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public JobHandle ScheduleDispose(JobHandle dependency) =>
-                    new disposeJob
-                    {
-                        keyEntities = this.keyEntities,
-                        messageHolder = this.messageHolder,
-                        uniqueKeys = this.uniqueKeys,
-                    }
-                    .Schedule(dependency);
+                public JobHandle ScheduleDispose(JobHandle dependency)
+                {
+                    var dep0 = dependency;
+                    var dep1 = this.keyEntities.Dispose(dep0);
+                    var dep2 = this.messageHolder.Dispose(dep1);
+                    var dep3 = this.uniqueKeys.Dispose(dep2);
+                    return dep3;
+                }
 
 
                 public void Dispose()
@@ -260,26 +259,26 @@ namespace DotsLite.Dependency
             }
 
 
-            /// <summary>
-            /// 
-            /// </summary>
-            [BurstCompile]
-            struct disposeJob : IJob
-            {
-                //[DeallocateOnJobCompletion]
-                public NativeList<Entity> keyEntities;
-                [DeallocateOnJobCompletion]
-                public NativeMultiHashMap<Entity, THitMessage> messageHolder;
-                //[DeallocateOnJobCompletion]
-                public NativeHashSet<Entity> uniqueKeys;
+            ///// <summary>
+            ///// 
+            ///// </summary>
+            //[BurstCompile]
+            //struct disposeJob : IJob
+            //{
+            //    //[DeallocateOnJobCompletion]
+            //    public NativeList<Entity> keyEntities;
+            //    //[DeallocateOnJobCompletion]
+            //    public NativeMultiHashMap<Entity, THitMessage> messageHolder;
+            //    //[DeallocateOnJobCompletion]
+            //    public NativeHashSet<Entity> uniqueKeys;
 
-                public void Execute()
-                {
-                    //this.keyEntities.Dispose();
-                    //this.messageHolder.Dispose();
-                    //this.uniqueKeys.Dispose();
-                }
-            }
+            //    public void Execute()
+            //    {
+            //        //this.keyEntities.Dispose();
+            //        //this.messageHolder.Dispose();
+            //        //this.uniqueKeys.Dispose();
+            //    }
+            //}
 
 
             /// <summary>
