@@ -92,14 +92,24 @@ namespace DotsLite.Dependency
         //public partial struct Reciever : IDisposable
         {
 
-            public HitMessageHolder Holder { get; }
+            public HitMessageHolder Holder { get; private set; }
             public BarrierDependency.Reciever Barrier { get; }
 
 
-            public Reciever(int capacity, int maxDependsSystem = 16)
+            public Reciever(int capacity, Allocator allocator = Allocator.Persistent)//, int maxDependsSystem = 16)
             {
-                this.Holder = new HitMessageHolder(capacity);
-                this.Barrier = BarrierDependency.Reciever.Create(maxDependsSystem);
+                this.Holder = new HitMessageHolder(capacity, allocator);
+                this.Barrier = BarrierDependency.Reciever.Create(32);// maxDependsSystem);
+            }
+            public Reciever()//int maxDependsSystem = 16)
+            {
+                this.Holder = default;
+                this.Barrier = BarrierDependency.Reciever.Create(32);// maxDependsSystem);
+            }
+
+            public void Alloc(int capacity, Allocator allocator = Allocator.Persistent)
+            {
+                this.Holder = new HitMessageHolder(capacity, allocator);
             }
 
 
@@ -109,8 +119,8 @@ namespace DotsLite.Dependency
                 where TJobInnerExecution : struct, IApplyJobExecutionForEach
             {
                 var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
-                var dep1 = this.Holder.ExecuteEachAndSchedule(dep0, innerLoopBatchCount, execution);
-                var dep2 = needClear ? this.Holder.ClearAndSchedule(dep1) : dep1;
+                var dep1 = this.Holder.ScheduleExecuteEach(dep0, innerLoopBatchCount, execution);
+                var dep2 = dep1;// needClear ? this.Holder.ScheduleClear(dep1) : dep1;
 
                 return dep2;
             }
@@ -121,8 +131,8 @@ namespace DotsLite.Dependency
                 where TJobInnerExecution : struct, IApplyJobExecutionForKey
             {
                 var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
-                var dep1 = this.Holder.ExecuteKeyAndSchedule(dep0, innerLoopBatchCount, execution);
-                var dep2 = needClear ? this.Holder.ClearAndSchedule(dep1) : dep1;
+                var dep1 = this.Holder.ScheduleExecuteKey(dep0, innerLoopBatchCount, execution);
+                var dep2 = dep1;// needClear ? this.Holder.ScheduleClear(dep1) : dep1;
 
                 return dep2;
             }
@@ -157,12 +167,12 @@ namespace DotsLite.Dependency
                 public NativeList<Entity> TargetEntities => this.keyEntities;
 
 
-                public HitMessageHolder(int capacity)
+                public HitMessageHolder(int capacity, Allocator allocator)
                 {
-                    this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, Allocator.Persistent);
+                    this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, allocator);
 
-                    this.keyEntities = new NativeList<Entity>(capacity, Allocator.Persistent);
-                    this.uniqueKeys = new NativeHashSet<Entity>(capacity, Allocator.Persistent);
+                    this.keyEntities = new NativeList<Entity>(capacity, allocator);
+                    this.uniqueKeys = new NativeHashSet<Entity>(capacity, allocator);
 
                     //this.writer = new ParallelWriter(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);//
                 }
@@ -173,7 +183,7 @@ namespace DotsLite.Dependency
 
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public JobHandle ExecuteEachAndSchedule<TJobInnerExecution>
+                public JobHandle ScheduleExecuteEach<TJobInnerExecution>
                     (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
                     where TJobInnerExecution : struct, IApplyJobExecutionForEach
                 =>
@@ -187,7 +197,7 @@ namespace DotsLite.Dependency
 
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public JobHandle ExecuteKeyAndSchedule<TJobInnerExecution>
+                public JobHandle ScheduleExecuteKey<TJobInnerExecution>
                     (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
                     where TJobInnerExecution : struct, IApplyJobExecutionForKey
                 =>
@@ -201,8 +211,18 @@ namespace DotsLite.Dependency
 
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public JobHandle ClearAndSchedule(JobHandle dependency) =>
+                public JobHandle ScheduleClear(JobHandle dependency) =>
                     new clearJob
+                    {
+                        keyEntities = this.keyEntities,
+                        messageHolder = this.messageHolder,
+                        uniqueKeys = this.uniqueKeys,
+                    }
+                    .Schedule(dependency);
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public JobHandle ScheduleDispose(JobHandle dependency) =>
+                    new disposeJob
                     {
                         keyEntities = this.keyEntities,
                         messageHolder = this.messageHolder,
@@ -236,6 +256,28 @@ namespace DotsLite.Dependency
                     this.keyEntities.Clear();
                     this.messageHolder.Clear();
                     this.uniqueKeys.Clear();
+                }
+            }
+
+
+            /// <summary>
+            /// 
+            /// </summary>
+            [BurstCompile]
+            struct disposeJob : IJob
+            {
+                //[DeallocateOnJobCompletion]
+                public NativeList<Entity> keyEntities;
+                [DeallocateOnJobCompletion]
+                public NativeMultiHashMap<Entity, THitMessage> messageHolder;
+                //[DeallocateOnJobCompletion]
+                public NativeHashSet<Entity> uniqueKeys;
+
+                public void Execute()
+                {
+                    //this.keyEntities.Dispose();
+                    //this.messageHolder.Dispose();
+                    //this.uniqueKeys.Dispose();
                 }
             }
 

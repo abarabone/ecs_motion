@@ -76,6 +76,8 @@ namespace DotsLite.Structure
                 //linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
+
+            this.Dependency = this.Reciever.Holder.ScheduleClear(this.Dependency);
         }
 
 

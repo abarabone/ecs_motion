@@ -61,8 +61,10 @@ namespace DotsLite.Structure
                 binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
                 parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
                 linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
-        }
+            }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
+
+            this.Dependency = this.Reciever.Holder.ScheduleClear(this.Dependency);
         }
 
 

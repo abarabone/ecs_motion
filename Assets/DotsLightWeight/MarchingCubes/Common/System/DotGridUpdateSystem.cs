@@ -42,7 +42,7 @@ namespace DotsLite.MarchingCubes
 
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     public class DotGridUpdateSystem : DependencyAccessableSystemBase, HitMessage<DotGridUpdateMessage>.IRecievable
     {
@@ -57,7 +57,7 @@ namespace DotsLite.MarchingCubes
         {
             base.OnCreate();
 
-            this.Reciever = new HitMessage<DotGridUpdateMessage>.Reciever(10000);
+            this.Reciever = new HitMessage<DotGridUpdateMessage>.Reciever();// 10000, Allocator.TempJob);
 
             this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
         }
@@ -73,6 +73,9 @@ namespace DotsLite.MarchingCubes
         {
             using var barScope = this.bardep.WithDependencyScope();
 
+
+            //this.Reciever.Holder.Dispose();
+            this.Reciever.Alloc(10000, Allocator.TempJob);
 
             this.Dependency = new JobExecution
             {

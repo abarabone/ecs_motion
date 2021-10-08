@@ -15,7 +15,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Utilities;
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     //[UpdateAfter(typeof(DotGridUpdateSystem))]
     [UpdateBefore(typeof(Gpu.DrawMarchingCubeCsSystem))]
@@ -71,7 +71,7 @@ namespace DotsLite.MarchingCubes
                 res.ShaderResources.GridContentDataBuffer.Buffer.SetData(arr, srcstart, dststart, count);
             }
 
-            this.MessageHolderSystem.Reciever.Holder.ClearAndSchedule(this.Dependency);
+            this.Dependency = this.MessageHolderSystem.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
     }

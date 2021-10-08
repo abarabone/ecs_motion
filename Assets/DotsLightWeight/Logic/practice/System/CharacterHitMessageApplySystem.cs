@@ -39,7 +39,7 @@ namespace DotsLite.Character
         {
             base.OnCreate();
 
-            this.Reciever = new HitMessage<HitMessage>.Reciever(10000);
+            this.Reciever = new HitMessage<HitMessage>.Reciever();// 10000);
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
@@ -61,6 +61,7 @@ namespace DotsLite.Character
             //var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
             //var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);
 
+            this.Reciever.Alloc(10000, Allocator.TempJob);
             this.Dependency = new JobExecution
             {
                 Cmd = cmd,
@@ -70,6 +71,8 @@ namespace DotsLite.Character
                 //Positions = poss,
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
+
+            this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
 
