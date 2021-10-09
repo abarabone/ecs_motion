@@ -59,6 +59,7 @@ namespace DotsLite.MarchingCubes
         }
     }
 
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class DotGridAddSystem : DependencyAccessableSystemBase
     {
         HitMessage<DotGridUpdateMessage>.Sender mcSender;
@@ -132,7 +133,7 @@ namespace DotsLite.MarchingCubes
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
 
-            this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
+            //this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
 

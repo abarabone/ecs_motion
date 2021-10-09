@@ -35,6 +35,7 @@ namespace DotsLite.Arms
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.Hit))]
+    [UpdateAfter(typeof(BulletRayHitSystem))]
     [UpdateAfter(typeof(BulletSphereHitSystem))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]

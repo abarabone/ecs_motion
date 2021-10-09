@@ -100,6 +100,7 @@ namespace DotsLite.SystemGroup
         {
 
             [UpdateInGroup( typeof( PresentationSystemGroup ) )]
+            [UpdateAfter(typeof(Logic.ObjectLogic))]
             public class DrawPrev : ComponentSystemGroup
             {
                 [UpdateInGroup(typeof(DrawPrev))]
