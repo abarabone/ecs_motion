@@ -52,13 +52,12 @@ namespace DotsLite.Dependency
                 this TJobInnerExecution job,
                 HitMessage<THitMessage>.Reciever reciever,
                 int innerLoopBatchCount,
-                JobHandle dependency,
-                bool needClear = true
+                JobHandle dependency
             )
             where THitMessage : struct, IHitMessage
             where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForEach
         =>
-            reciever.ScheduleEachParallel(dependency, innerLoopBatchCount, job, needClear);
+            reciever.ScheduleEachParallel(dependency, innerLoopBatchCount, job);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -67,13 +66,12 @@ namespace DotsLite.Dependency
                 this TJobInnerExecution job,
                 HitMessage<THitMessage>.Reciever reciever,
                 int innerLoopBatchCount,
-                JobHandle dependency,
-                bool needClear = true
+                JobHandle dependency
             )
             where THitMessage : struct, IHitMessage
             where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForKey
         =>
-            reciever.ScheduleKeyParallel(dependency, innerLoopBatchCount, job, needClear);
+            reciever.ScheduleKeyParallel(dependency, innerLoopBatchCount, job);
 
     }
 
@@ -115,26 +113,22 @@ namespace DotsLite.Dependency
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public JobHandle ScheduleEachParallel<TJobInnerExecution>
-                (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution, bool needClear = true)
+                (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
                 where TJobInnerExecution : struct, IApplyJobExecutionForEach
             {
                 var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
                 var dep1 = this.Holder.ScheduleExecuteEach(dep0, innerLoopBatchCount, execution);
-                var dep2 = dep1;// needClear ? this.Holder.ScheduleClear(dep1) : dep1;
-
-                return dep2;
+                return dep1;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public JobHandle ScheduleKeyParallel<TJobInnerExecution>
-                (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution, bool needClear = true)
+                (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
                 where TJobInnerExecution : struct, IApplyJobExecutionForKey
             {
                 var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
                 var dep1 = this.Holder.ScheduleExecuteKey(dep0, innerLoopBatchCount, execution);
-                var dep2 = dep1;// needClear ? this.Holder.ScheduleClear(dep1) : dep1;
-
-                return dep2;
+                return dep1;
             }
 
 

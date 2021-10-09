@@ -20,7 +20,8 @@ namespace DotsLite.Dependency
             =>
                 new Sender
                 {
-                    barrierSystem = system.World.GetExistingSystem<TBarrierableSystem>(),
+                    //barrierSystem = system.World.GetExistingSystem<TBarrierableSystem>(),
+                    barrierSystem = system.World.GetOrCreateSystem<TBarrierableSystem>(),
                     dependentSystem = system,
                 };
 

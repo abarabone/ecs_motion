@@ -21,7 +21,8 @@ namespace DotsLite.Dependency
             =>
                 new Sender
                 {
-                    commandSystem = system.World.GetExistingSystem<TEntityCommandBufferSystem>(),
+                    //commandSystem = system.World.GetExistingSystem<TEntityCommandBufferSystem>(),
+                    commandSystem = system.World.GetOrCreateSystem<TEntityCommandBufferSystem>(),
                     dependentSystem = system,
                 };
 

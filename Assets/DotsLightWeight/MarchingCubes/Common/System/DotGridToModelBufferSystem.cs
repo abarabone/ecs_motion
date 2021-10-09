@@ -16,7 +16,7 @@ namespace DotsLite.Draw
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
-    public class DrawDotGridToModelBufferSystem : DependencyAccessableSystemBase
+    public class DotGridToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 

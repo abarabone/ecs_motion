@@ -42,7 +42,58 @@ namespace DotsLite.MarchingCubes
 
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public class DotGridUpdateAllocSystem : SystemBase
+    {
+        DotGridUpdateSystem sys;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+            this.sys = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
+        }
+        protected override void OnUpdate()
+        {
+            this.sys.Reciever.Alloc(10000, Allocator.TempJob);
+        }
+    }
+
+    public class DotGridAddSystem : DependencyAccessableSystemBase
+    {
+        HitMessage<DotGridUpdateMessage>.Sender mcSender;
+
+        protected override void OnStartRunning()
+        {
+            base.OnStartRunning();
+
+            this.mcSender = HitMessage<DotGridUpdateMessage>.Sender.Create<DotGridUpdateSystem>(this);
+            using var mcScope = this.mcSender.WithDependencyScope();
+            var w = mcScope.MessagerAsParallelWriter;
+
+            this.Entities
+                .WithAll<DotGrid.ParentAreaData>()
+                .ForEach((
+                    Entity entity,
+                    in DotGrid.UnitData grid) =>
+                {
+                    w.Add(entity, new DotGridUpdateMessage
+                    {
+                        type = DotGridUpdateType.aabb,
+                        aabb = new UpdateAabb
+                        {
+                            min = 0,
+                            max = 0,
+                        },
+                    });
+                })
+                .ScheduleParallel();
+        }
+        protected override void OnUpdate()
+        { }
+    }
+
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     public class DotGridUpdateSystem : DependencyAccessableSystemBase, HitMessage<DotGridUpdateMessage>.IRecievable
     {
@@ -62,26 +113,26 @@ namespace DotsLite.MarchingCubes
             this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
+        //protected override void OnDestroy()
+        //{
+        //    base.OnDestroy();
 
-            this.Reciever.Dispose();
-        }
+        //    this.Reciever.Dispose();
+        //}
 
         protected override void OnUpdate()
         {
             using var barScope = this.bardep.WithDependencyScope();
 
 
-            //this.Reciever.Holder.Dispose();
-            this.Reciever.Alloc(10000, Allocator.TempJob);
-
             this.Dependency = new JobExecution
             {
                 dotgrids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
+                dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(),
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
+
+            this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
 
@@ -92,6 +143,10 @@ namespace DotsLite.MarchingCubes
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.UnitData> dotgrids;
 
+            [WriteOnly][NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<DotGrid.UpdateDirtyRangeData> dirties;
+
+
             [BurstCompile]
             public unsafe void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, DotGridUpdateMessage>.Enumerator msgs)
             {
@@ -99,11 +154,31 @@ namespace DotsLite.MarchingCubes
 
                 foreach (var msg in msgs)
                 {
+                    switch (msg.type)
+                    {
+                        case DotGridUpdateType.aabb:
 
+                            p[1] = 0x00ffff00;
+                            p[2] = 0x00ffff00;
+                            p[32] = 0x00ffff00;
+                            p[33] = 0x00ffff00;
 
+                            break;
+                        case DotGridUpdateType.sphere:
 
+                            break;
+                        case DotGridUpdateType.capsule:
+
+                            break;
+                        default: break;
+                    }
                 }
 
+                this.dirties[targetEntity] = new DotGrid.UpdateDirtyRangeData
+                {
+                    begin = 0,
+                    end = 32 * 32 - 1,
+                };
             }
         }
     }
