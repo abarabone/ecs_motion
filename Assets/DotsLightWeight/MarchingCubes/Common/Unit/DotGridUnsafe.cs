@@ -159,13 +159,50 @@ namespace DotsLite.MarchingCubes
                 return new DotGrid32x32x32Unsafe(p, cubeCount);
             }
         }
-        
+
 
         static public unsafe void Dispose(UIntPtr p)
         {
             UnsafeUtility.Free((uint*)p, Allocator.Persistent);
         }
     }
+    //static class DotGridAllocater
+    //{
+
+    //    static public unsafe DotGrid32x32x32Unsafe Alloc(GridFillMode fillMode, int dotnum = 32 * 32 * 32)
+    //    {
+    //        //var align = UnsafeUtility.AlignOf<uint4>();
+    //        const int align = 32;// 16;
+
+    //        var p = (UIntPtr)UnsafeUtility.Malloc(dotnum >> 3, align, Allocator.Persistent);
+
+    //        return Fill(p, fillMode, dotnum);
+    //    }
+
+    //    static public unsafe DotGrid32x32x32Unsafe Fill(UIntPtr p, GridFillMode fillMode, int size = 32 * 32 * 32)
+    //    {
+    //        if (fillMode == GridFillMode.Solid)
+    //        {
+    //            UnsafeUtility.MemSet((void*)p, 0xff, size >> 3);
+    //            var cubeCount = 32 * 32 * 32;
+
+    //            return new DotGrid32x32x32Unsafe(p, cubeCount);
+    //        }
+    //        else
+    //        {
+    //            UnsafeUtility.MemClear((void*)p, size >> 3);
+    //            var cubeCount = 0;
+
+    //            return new DotGrid32x32x32Unsafe(p, cubeCount);
+    //        }
+    //    }
+
+
+    //    static public unsafe void Dispose(UIntPtr p)
+    //    {
+    //        UnsafeUtility.Free((uint*)p, Allocator.Persistent);
+    //    }
+    //}
 
 
     //public unsafe struct CubeOperator

@@ -59,6 +59,7 @@ namespace DotsLite.MarchingCubes
         }
     }
 
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class DotGridAddSystem : DependencyAccessableSystemBase
     {
@@ -159,10 +160,10 @@ namespace DotsLite.MarchingCubes
                     {
                         case DotGridUpdateType.aabb:
 
-                            p[1] = 0x00ffff00;
-                            p[2] = 0x00ffff00;
-                            p[32] = 0x00ffff00;
-                            p[33] = 0x00ffff00;
+                            for (var i=0; i<32*32/2; i++)
+                            {
+                                p[32 * 32 / 2 + i] = 0x00ffff00;
+                            }
 
                             break;
                         case DotGridUpdateType.sphere:
@@ -177,7 +178,7 @@ namespace DotsLite.MarchingCubes
 
                 this.dirties[targetEntity] = new DotGrid.UpdateDirtyRangeData
                 {
-                    begin = 0,
+                    begin = 32 * 32 / 2,
                     end = 32 * 32 - 1,
                 };
             }

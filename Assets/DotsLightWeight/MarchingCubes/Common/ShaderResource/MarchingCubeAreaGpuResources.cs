@@ -53,7 +53,7 @@ namespace DotsLite.MarchingCubes
                     0x_2aaa_aaa8u,
                     0x_2aaa_aaa8u,
                 };
-            //this.GridContentDataBuffer.Buffer.SetData(qGrid.SelectMany(x => x).Repeat(4).ToArray());
+            this.GridContentDataBuffer.Buffer.SetData(qGrid.SelectMany(x => x).Repeat(4).ToArray());
             var qGridInstruction =
                 from i in Enumerable.Range(0, 4)
                 select new GridInstraction

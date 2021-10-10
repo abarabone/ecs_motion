@@ -47,6 +47,7 @@ namespace DotsLite.MarchingCubes
             this.Reciever.CompleteAllDependentJobs(this.Dependency);
 
 
+            var areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true);
             var em = this.EntityManager;
 
             this.Job
@@ -65,11 +66,15 @@ namespace DotsLite.MarchingCubes
                         var p = grid.Unit.pXline;
                         var res = em.GetComponentData<DotGridArea.ResourceGpuModeData>(parent.ParentArea);
 
-                        var arr = NativeUtility.PtrToNativeArray(p, 32 * 32);
+                        var area = areas[parent.ParentArea];
+                        var igrid = grid.GridIndexInArea.serial * 32 * 32;
+                        var igarr = area.pGridIds[igrid];
+
+                        var garr = NativeUtility.PtrToNativeArray(p, 32 * 32);
                         var srcstart = (int)dirty.begin;
-                        var dststart = grid.GridIndexInArea.serial * 32 * 32 + (int)dirty.begin;
+                        var dststart = igarr + (int)dirty.begin;
                         var count = (int)dirty.end - (int)dirty.begin;
-                        res.ShaderResources.GridContentDataBuffer.Buffer.SetData(arr, srcstart, dststart, count);
+                        res.ShaderResources.GridContentDataBuffer.Buffer.SetData(garr, srcstart, dststart, count);
                         Debug.Log($"{grid.GridIndexInArea.index}:{grid.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
                     }
                 })
