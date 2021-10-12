@@ -26,6 +26,7 @@ namespace DotsLite.MarchingCubes
 
         public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();
 
+        //public HitMessage<DotGridUpdateMessage>.Reciever 
         public DotGridUpdateSystem MessageHolderSystem;
 
         protected override void OnCreate()
@@ -67,13 +68,13 @@ namespace DotsLite.MarchingCubes
                         var res = em.GetComponentData<DotGridArea.ResourceGpuModeData>(parent.ParentArea);
 
                         var area = areas[parent.ParentArea];
-                        var igrid = grid.GridIndexInArea.serial * 32 * 32;
-                        var igarr = area.pGridIds[igrid];
+                        var igrid = grid.GridIndexInArea.serial;
+                        var igarr = area.pGridIds[igrid] * 32 * 32;
 
                         var garr = NativeUtility.PtrToNativeArray(p, 32 * 32);
                         var srcstart = (int)dirty.begin;
                         var dststart = igarr + (int)dirty.begin;
-                        var count = (int)dirty.end - (int)dirty.begin;
+                        var count = (int)dirty.end - (int)dirty.begin + 1;
                         res.ShaderResources.GridContentDataBuffer.Buffer.SetData(garr, srcstart, dststart, count);
                         Debug.Log($"{grid.GridIndexInArea.index}:{grid.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
                     }

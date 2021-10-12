@@ -292,8 +292,8 @@ namespace DotsLite.Dependency
                 public NativeArray<Entity> KeyEntities;
 
 
-                [NativeDisableParallelForRestriction]
-                [NativeDisableContainerSafetyRestriction]
+                //[NativeDisableParallelForRestriction]
+                //[NativeDisableContainerSafetyRestriction]
                 public TJobInnerExecution InnerJob;
 
 
@@ -325,8 +325,8 @@ namespace DotsLite.Dependency
                 public NativeArray<Entity> KeyEntities;
 
 
-                [NativeDisableParallelForRestriction]
-                [NativeDisableContainerSafetyRestriction]
+                //[NativeDisableParallelForRestriction]
+                //[NativeDisableContainerSafetyRestriction]
                 public TJobInnerExecution InnerJob;
 
 
@@ -341,9 +341,9 @@ namespace DotsLite.Dependency
             }
         }
 
-
-
     }
 
 
 }
+
+
