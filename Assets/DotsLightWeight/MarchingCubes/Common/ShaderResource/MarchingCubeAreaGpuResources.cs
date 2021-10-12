@@ -42,7 +42,7 @@ namespace DotsLite.MarchingCubes
             var qGrid =
                 from i in Enumerable.Range(0, 32 * 32 / 8)
                 //select (i & 4) == 0 ? 0x_1555_5554u : 0x_2aaa_aaa8u;
-                select new uint[]
+                from x in new uint[]
                 {
                     0,
                     0x_1555_5554u,
@@ -52,8 +52,9 @@ namespace DotsLite.MarchingCubes
                     0x_2aaa_aaa8u,
                     0x_2aaa_aaa8u,
                     0x_2aaa_aaa8u,
-                };
-            this.GridContentDataBuffer.Buffer.SetData(qGrid.SelectMany(x => x).Repeat(4).ToArray());
+                }
+            select x;
+            this.GridContentDataBuffer.Buffer.SetData(qGrid.Repeat(4).ToArray());
             var qGridInstruction =
                 from i in Enumerable.Range(0, 4)
                 select new GridInstraction

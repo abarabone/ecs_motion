@@ -35,7 +35,12 @@ namespace DotsLite.MarchingCubes
             public DotGrid32x32x32Unsafe Unit;
             public float scale;
 
-            public void Dispose() => this.Unit.Dispose();
+            //public void Dispose() => this.Unit.Dispose();
+            public void Dispose()
+            {
+                Debug.Log("a");
+                this.Unit.Dispose();
+            }
         }
         public struct GridIndex
         {

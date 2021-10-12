@@ -127,31 +127,52 @@ namespace DotsLite.MarchingCubes
             using var barScope = this.bardep.WithDependencyScope();
 
 
-            this.Dependency = new JobExecution
+            this.Dependency = new JobExecution_
             {
+                MessageHolder = this.Reciever.Holder.messageHolder,
+                KeyEntities = this.Reciever.Holder.keyEntities.AsDeferredJobArray(),
                 dotgrids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
                 dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(),
             }
-            .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
+            .Schedule(this.Reciever.Holder.keyEntities, 32, this.Dependency);
+            //this.Dependency = new JobExecution
+            //{
+            //    dotgrids = this.GetComponentDataFromEntity<DotGrid.UnitData>(),//isReadOnly: true),
+            //    dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(),
+            //}
+            //.ScheduleParallelKey(this.Reciever, 32, this.Dependency);
 
             //this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
 
-
         [BurstCompile]
-        public struct JobExecution : HitMessage<DotGridUpdateMessage>.IApplyJobExecutionForKey
+        unsafe struct JobExecution_ : IJobParallelForDefer
         {
+            [ReadOnly]
+            public NativeMultiHashMap<Entity, DotGridUpdateMessage> MessageHolder;
+
+            [ReadOnly]
+            public NativeArray<Entity> KeyEntities;
+
+
+            //[NativeDisableParallelForRestriction]
+            //[NativeDisableContainerSafetyRestriction]
+
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.UnitData> dotgrids;
 
-            [WriteOnly][NativeDisableParallelForRestriction]
+            [WriteOnly]
+            [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<DotGrid.UpdateDirtyRangeData> dirties;
 
 
-            [BurstCompile]
-            public unsafe void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, DotGridUpdateMessage>.Enumerator msgs)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Execute(int index)
             {
+                var targetEntity = this.KeyEntities[index];
+                var msgs = this.MessageHolder.GetValuesForKey(targetEntity);
+
                 var p = this.dotgrids[targetEntity].Unit.pXline;
 
                 foreach (var msg in msgs)
@@ -160,9 +181,9 @@ namespace DotsLite.MarchingCubes
                     {
                         case DotGridUpdateType.aabb:
 
-                            for (var i=0; i<32*32/2; i++)
+                            for (var i = 0; i < 32 * 32 - 1; i++)
                             {
-                                p[32 * 32 / 2 + i] = 0x00ffff00;
+                                p[i] = 0x00ffff00;
                             }
 
                             break;
@@ -178,11 +199,58 @@ namespace DotsLite.MarchingCubes
 
                 this.dirties[targetEntity] = new DotGrid.UpdateDirtyRangeData
                 {
-                    begin = 32 * 32 / 2,
+                    begin = 0,//32 * 32 / 2,
                     end = 32 * 32 - 1,
                 };
             }
         }
+
+
+        //[BurstCompile]
+        //public struct JobExecution : HitMessage<DotGridUpdateMessage>.IApplyJobExecutionForKey
+        //{
+        //    //[ReadOnly]
+        //    public ComponentDataFromEntity<DotGrid.UnitData> dotgrids;
+
+        //    //[WriteOnly][NativeDisableParallelForRestriction]
+        //    public ComponentDataFromEntity<DotGrid.UpdateDirtyRangeData> dirties;
+
+
+        //    [BurstCompile]
+        //    public unsafe void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, DotGridUpdateMessage>.Enumerator msgs)
+        //    {
+        //        var p = this.dotgrids[targetEntity].Unit.pXline;
+
+        //        foreach (var msg in msgs)
+        //        {
+        //            switch (msg.type)
+        //            {
+        //                case DotGridUpdateType.aabb:
+
+        //                    for (var i = 0; i < 32 * 32 - 1; i++)
+        //                    {
+        //                        p[i] = 0x00ffff00;
+        //                    }
+
+        //                    break;
+        //                case DotGridUpdateType.sphere:
+
+        //                    break;
+        //                case DotGridUpdateType.capsule:
+
+        //                    break;
+        //                default: break;
+        //            }
+        //        }
+
+        //        this.dirties[targetEntity] = new DotGrid.UpdateDirtyRangeData
+        //        {
+        //            begin = 0,//32 * 32 / 2,
+        //            end = 32 * 32 - 1,
+        //        };
+        //    }
+        //}
+
     }
 
 }

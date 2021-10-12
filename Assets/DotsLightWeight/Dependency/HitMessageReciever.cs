@@ -150,9 +150,12 @@ namespace DotsLite.Dependency
             public struct HitMessageHolder : IDisposable
             {
 
+                public
                 NativeMultiHashMap<Entity, THitMessage> messageHolder;
 
+                public
                 NativeList<Entity> keyEntities;
+                public
                 NativeHashSet<Entity> uniqueKeys;
 
                 //ParallelWriter writer;//
