@@ -41,8 +41,9 @@ namespace DotsLite.MarchingCubes
 
             this.Dependency = new JobExecution
             {
-                dotgrids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
+                dotgrids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
+                poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
             }
             .Schedule(this.MessageHolderSystem.Reciever.Holder.keyEntities, 32, this.Dependency);
         }
@@ -66,15 +67,59 @@ namespace DotsLite.MarchingCubes
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Execute(int index)
             {
-                var targetEntity = this.KeyEntities[index];
-                var p = this.dotgrids[targetEntity].Unit.pXline;
+                var ent = this.KeyEntities[index];
+                var grid = this.dotgrids[ent];
+                var pos = this.poss[ent].Value;
 
-
-
+                var p = grid.Unit.pXline;
+                
 
             }
         }
 
+        static unsafe void makeMesh_(uint *p)
+        {
+
+        }
+
+        static unsafe void makeCubes_(uint *p)
+        {
+            for (var i = 0; i < 32 * 32; i++)
+            {
+                var xline = p[i];
+                for (var ix = 0; ix < 32; ix++)
+                {
+                    var iz = i & 0x1f;
+                    var iy = i >> 5 & 0x1f;
+
+
+
+                    xline >>= 1;
+                }
+            }
+            //for (var iy = 0; iy < 32; iy++)
+            //{
+            //    for (var iz = 0; iz < 32; iz++)
+            //    {
+            //        var xline = p[];
+            //        for (var ix = 0; ix < 32; ix++)
+            //        {
+            //        }
+            //    }
+            //}
+            //for (var i = 0; i < 32 * 32 * 32; i++)
+            //{
+            //    //var i3 = i.xxx() >> new int3(0, 10, 5) & 0x1f.xxx();
+            //    var ix = i & 0x1f;
+            //    var iz = i >> 5 & 0x1f;
+            //    var iy = i >> 10 & 0x1f;
+            //    p[i >> 5];
+            //}
+        }
     }
 
+    static class iex
+    {
+        public static int3 xxx(this int i) => new int3(i, i, i);
+    }
 }
