@@ -60,6 +60,41 @@ namespace DotsLite.MarchingCubes
             public int3 GridSpan;
         }
 
+
+
+        static unsafe NearGridIndex PickupNearGridIds(int* pGridIds, int3 gridSpan, DotGrid.GridIndex index)
+        {
+            var ids = new NearGridIndex();
+
+
+            var lhome = index;
+            ids.left.home = pGridIds[lhome.serial];
+
+            var lrear = new DotGrid.GridIndex().Set(index.index + new int3(0, 0, 1), gridSpan);
+            ids.left.rear = pGridIds[lrear.serial];
+
+            var ldown = new DotGrid.GridIndex().Set(index.index + new int3(0, 1, 0), gridSpan);
+            ids.left.down = pGridIds[ldown.serial];
+
+            var lslant = new DotGrid.GridIndex().Set(index.index + new int3(0, 1, 1), gridSpan);
+            ids.left.slant = pGridIds[lslant.serial];
+
+
+            var rhome = new DotGrid.GridIndex().Set(index.index + new int3(1, 0, 0), gridSpan);
+            ids.right.home = pGridIds[rhome.serial];
+
+            var rrear = new DotGrid.GridIndex().Set(index.index + new int3(1, 0, 1), gridSpan);
+            ids.right.rear = pGridIds[rrear.serial];
+
+            var rdown = new DotGrid.GridIndex().Set(index.index + new int3(1, 1, 0), gridSpan);
+            ids.right.down = pGridIds[rdown.serial];
+
+            var rslant = new DotGrid.GridIndex().Set(index.index + new int3(1, 1, 1), gridSpan);
+            ids.right.slant = pGridIds[rslant.serial];
+
+
+            return ids;
+        }
     }
 
 
