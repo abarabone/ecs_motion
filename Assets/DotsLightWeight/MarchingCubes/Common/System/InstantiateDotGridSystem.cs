@@ -53,9 +53,10 @@ namespace DotsLite.MarchingCubes
                         {
                             var index = new DotGrid.GridIndex().Set(i, grid.GridSpan);
 
-                            grid.pGridIds[index.serial] = grid.nextSeed++;
-
                             var newent = em.Instantiate(prefab);
+
+                            grid.pGridIds[index.serial] = grid.nextSeed++;
+                            grid.pGridEntities[index.serial] = newent;
 
                             em.SetComponentData(newent, new DotGrid.UnitData
                             {
