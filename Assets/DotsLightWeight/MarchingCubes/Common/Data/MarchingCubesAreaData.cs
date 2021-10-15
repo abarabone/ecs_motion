@@ -31,17 +31,19 @@ namespace DotsLite.MarchingCubes
         //}
 
 
-        public unsafe struct LinkToGridData : IComponentData//, IDisposable
+        public unsafe struct LinkToGridData : IComponentData, IDisposable
         {
             public int* pGridIds;
+            public Entity* pGridEntities;
             public int3 GridLength;
             public int3 GridSpan;
             public int nextSeed;
 
             public void Dispose()
             {
-                Debug.Log("Link to grid data disposed");
-                UnsafeUtility.Free(this.pGridIds, Allocator.Persistent);
+                Debug.Log("Link to grid data dispos");
+                if (this.pGridIds != null) UnsafeUtility.Free(this.pGridIds, Allocator.Persistent);
+                if (this.pGridEntities != null) UnsafeUtility.Free(this.pGridEntities, Allocator.Persistent);
             }
         }
 
