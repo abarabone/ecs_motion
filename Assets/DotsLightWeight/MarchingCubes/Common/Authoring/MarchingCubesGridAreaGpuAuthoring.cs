@@ -154,15 +154,15 @@ namespace DotsLite.MarchingCubes.Authoring
                 );
 
                 var totalsize = this.GridLength.x * this.GridLength.y * this.GridLength.z;
-                var pIds = (int*)UnsafeUtility.Malloc(sizeof(uint) * totalsize, 4, Allocator.Persistent);
+                var pIds = (int*)UnsafeUtility.Malloc(sizeof(int) * totalsize, 4, Allocator.Persistent);
                 for (var i = 0; i < totalsize; i++) pIds[i] = -1;
-                var pEnts = (Entity*)UnsafeUtility.Malloc(sizeof(Entity) * totalsize, 4, Allocator.Persistent);
-                for (var i = 0; i < totalsize; i++) pEnts[i] = Entity.Null;
+                var ppXLines = (uint**)UnsafeUtility.Malloc(sizeof(uint*) * totalsize, 4, Allocator.Persistent);
+                for (var i = 0; i < totalsize; i++) ppXLines[i] = null;
                 em.SetComponentData(ent,
                     new DotGridArea.LinkToGridData
                     {
                         pGridIds = pIds,
-                        pGridEntities = pEnts,
+                        ppGridXLines = ppXLines,
                         GridLength = this.GridLength,
                         GridSpan = new int3(1, this.GridLength.x * this.GridLength.z, this.GridLength.x),
                     }

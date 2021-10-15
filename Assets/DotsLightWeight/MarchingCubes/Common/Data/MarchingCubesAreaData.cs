@@ -34,7 +34,7 @@ namespace DotsLite.MarchingCubes
         public unsafe struct LinkToGridData : IComponentData, IDisposable
         {
             public int* pGridIds;
-            public Entity* pGridEntities;
+            public uint** ppGridXLines;
             public int3 GridLength;
             public int3 GridSpan;
             public int nextSeed;
@@ -43,7 +43,7 @@ namespace DotsLite.MarchingCubes
             {
                 Debug.Log("Link to grid data dispos");
                 if (this.pGridIds != null) UnsafeUtility.Free(this.pGridIds, Allocator.Persistent);
-                if (this.pGridEntities != null) UnsafeUtility.Free(this.pGridEntities, Allocator.Persistent);
+                if (this.ppGridXLines != null) UnsafeUtility.Free(this.ppGridXLines, Allocator.Persistent);
             }
         }
 
@@ -99,36 +99,36 @@ namespace DotsLite.MarchingCubes
         }
 
         static unsafe MakeCube.NearDotGrids PickupNearGridIds(
-            int* pGridIds, int3 gridSpan, DotGrid.GridIndex index)
+            uint** ppXLines, int3 gridSpan, DotGrid.GridIndex index)
         {
 
             var near = new MakeCube.NearDotGrids();
 
 
             var lhome = index;
-            near.L.x = pGridIds[lhome.serial];
+            near.L.x = ppXLines[lhome.serial]];
 
             var lrear = index.CloneNear(new int3(0, 0, 1), gridSpan);
-            near.left.rear = pGridIds[lrear.serial];
+            near.left.rear = ppXLines[lrear.serial];
 
             var ldown = index.CloneNear(new int3(0, 1, 0), gridSpan);
-            near.left.down = pGridIds[ldown.serial];
+            near.left.down = ppXLines[ldown.serial];
 
             var lslant = index.CloneNear(new int3(0, 1, 1), gridSpan);
-            near.left.slant = pGridIds[lslant.serial];
+            near.left.slant = ppXLines[lslant.serial];
 
 
             var rhome = index.CloneNear(new int3(1, 0, 0), gridSpan);
-            near.right.home = pGridIds[rhome.serial];
+            near.right.home = ppXLines[rhome.serial];
 
             var rrear = index.CloneNear(new int3(1, 0, 1), gridSpan);
-            near.right.rear = pGridIds[rrear.serial];
+            near.right.rear = ppXLines[rrear.serial];
 
             var rdown = index.CloneNear(new int3(1, 1, 0), gridSpan);
-            near.right.down = pGridIds[rdown.serial];
+            near.right.down = ppXLines[rdown.serial];
 
             var rslant = index.CloneNear(new int3(1, 1, 1), gridSpan);
-            near.right.slant = pGridIds[rslant.serial];
+            near.right.slant = ppXLines[rslant.serial];
 
 
             return near;

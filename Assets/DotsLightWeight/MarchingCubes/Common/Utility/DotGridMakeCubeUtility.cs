@@ -93,10 +93,10 @@ namespace DotsLite.MarchingCubes
             public HalfGridUnit R;
             public struct HalfGridUnit
             {
-                public DotGrid32x32x32UnsafePtr x;
-                public DotGrid32x32x32UnsafePtr y;
-                public DotGrid32x32x32UnsafePtr z;
-                public DotGrid32x32x32UnsafePtr w;
+                public uint* x;
+                public uint* y;
+                public uint* z;
+                public uint* w;
             }
         }
 
@@ -218,8 +218,8 @@ namespace DotsLite.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe CubeNearXLines getXLine_(
             int iy, int iz,
-            DotGrid32x32x32UnsafePtr gx, DotGrid32x32x32UnsafePtr gy,
-            DotGrid32x32x32UnsafePtr gz, DotGrid32x32x32UnsafePtr gw
+            uint* gx, uint* gy,
+            uint* gz, uint* gw
         )
         {
             //y0  -> ( iy + 0 & 31 ) * 32/4 + ( iz>>2 + 0 & 31>>2 );
