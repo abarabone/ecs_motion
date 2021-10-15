@@ -106,29 +106,29 @@ namespace DotsLite.MarchingCubes
 
 
             var lhome = index;
-            near.L.x = ppXLines[lhome.serial]];
+            near.L.x = ppXLines[lhome.serial];
 
             var lrear = index.CloneNear(new int3(0, 0, 1), gridSpan);
-            near.left.rear = ppXLines[lrear.serial];
+            near.L.z = ppXLines[lrear.serial];
 
             var ldown = index.CloneNear(new int3(0, 1, 0), gridSpan);
-            near.left.down = ppXLines[ldown.serial];
+            near.L.y = ppXLines[ldown.serial];
 
             var lslant = index.CloneNear(new int3(0, 1, 1), gridSpan);
-            near.left.slant = ppXLines[lslant.serial];
+            near.L.w = ppXLines[lslant.serial];
 
 
             var rhome = index.CloneNear(new int3(1, 0, 0), gridSpan);
-            near.right.home = ppXLines[rhome.serial];
+            near.R.x = ppXLines[rhome.serial];
 
             var rrear = index.CloneNear(new int3(1, 0, 1), gridSpan);
-            near.right.rear = ppXLines[rrear.serial];
+            near.R.z = ppXLines[rrear.serial];
 
             var rdown = index.CloneNear(new int3(1, 1, 0), gridSpan);
-            near.right.down = ppXLines[rdown.serial];
+            near.R.y = ppXLines[rdown.serial];
 
             var rslant = index.CloneNear(new int3(1, 1, 1), gridSpan);
-            near.right.slant = ppXLines[rslant.serial];
+            near.R.w = ppXLines[rslant.serial];
 
 
             return near;

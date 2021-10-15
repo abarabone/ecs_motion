@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using UnityEngine;
+//using UnityEngine;
 using Unity.Mathematics;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
-//using Unity.Collections.Experimental;
+using Unity.Physics;
+using Unity.Entities;
 
 namespace DotsLite.MarchingCubes
 {
@@ -22,42 +23,23 @@ namespace DotsLite.MarchingCubes
         static public implicit operator CubeInstance(uint cubeInstance) => new CubeInstance { instance = cubeInstance };
     }
 
-    public unsafe interface ICubeInstanceWriter
+    public interface ICubeInstanceWriter
     {
-        void Add(CubeInstance ci);
-        void AddRange(CubeInstance* pCi, int length);
+        void Add(int x, int y, int z, uint cubeid);
     }
-    public unsafe struct InstanceCubeByList : ICubeInstanceWriter
+    public struct MeshWriter : ICubeInstanceWriter
     {
-        [WriteOnly]
-        public NativeList<CubeInstance> list;
-        public void Add(CubeInstance ci) => list.AddNoResize(ci);
-        public void AddRange(CubeInstance* pCi, int length) => list.AddRangeNoResize(pCi, length);
-    }
-    public unsafe struct InstanceCubeByParaList : ICubeInstanceWriter
-    {
-        [WriteOnly]
-        public NativeList<CubeInstance>.ParallelWriter list;
-        public void Add(CubeInstance ci) => list.AddNoResize(ci);
-        public void AddRange(CubeInstance* pCi, int length) => list.AddRangeNoResize(pCi, length);
-    }
-    public unsafe struct InstanceCubeByParaQueue : ICubeInstanceWriter
-    {
-        [WriteOnly]
-        public NativeQueue<CubeInstance>.ParallelWriter queue;
-        public void Add(CubeInstance ci) => queue.Enqueue(ci);
-        public void AddRange(CubeInstance* pCi, int length) => queue.Enqueue(*pCi);// キューは範囲追加ムリ
-    }
-    public unsafe struct InstanceCubeByTempMem : ICubeInstanceWriter
-    {
-        [WriteOnly]
-        [NativeDisableUnsafePtrRestriction]
-        [NativeDisableParallelForRestriction]
-        public CubeInstance* p;
-        public int length;
-        public void Add(CubeInstance ci) => p[length++] = ci;
-        public void AddRange(CubeInstance* pCi, int length) =>
-            UnsafeUtility.MemCpy(p, pCi, length * sizeof(CubeInstance));
+        public float3 gridpos;
+        public NativeList<float3> vtxs;
+        public NativeList<int3> tris;
+        public CollisionFilter filter;
+
+        public void Add(int x, int y, int z, uint cubeid)
+        {
+
+        }
+        public BlobAssetReference<Collider> CreateMesh() =>
+            MeshCollider.Create(this.vtxs, this.tris, this.filter);
     }
 
 
@@ -122,8 +104,7 @@ namespace DotsLite.MarchingCubes
         /// </summary>
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void SampleAllCubes<TCubeInstanceWriter>
-            (ref NearDotGrids g, int gridId, ref TCubeInstanceWriter outputCubes)
+        static void SampleAllCubes<TCubeInstanceWriter>(ref NearDotGrids g, ref TCubeInstanceWriter outputCubes)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
             for (var iy = 0; iy < 31; iy++)
@@ -136,7 +117,7 @@ namespace DotsLite.MarchingCubes
                     var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.x, g.R.x);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
 
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
+                    addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
                 {
                     const int iz = 31 & ~0x3;
@@ -147,7 +128,7 @@ namespace DotsLite.MarchingCubes
                     var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.z, g.R.z);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
 
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
+                    addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
             }
             {
@@ -160,7 +141,7 @@ namespace DotsLite.MarchingCubes
                     var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.x, g.R.y);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
 
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
+                    addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
                 {
                     const int iz = 31 & ~0x3;
@@ -171,7 +152,7 @@ namespace DotsLite.MarchingCubes
                     var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.z, g.R.w);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
 
-                    addCubeFromXLine_(ref cubes, gridId, iy, iz, ref outputCubes);
+                    addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
             }
 
@@ -216,11 +197,7 @@ namespace DotsLite.MarchingCubes
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe CubeNearXLines getXLine_(
-            int iy, int iz,
-            uint* gx, uint* gy,
-            uint* gz, uint* gw
-        )
+        static unsafe CubeNearXLines getXLine_(int iy, int iz, uint* pgx, uint* pgy, uint* pgz, uint* pgw)
         {
             //y0  -> ( iy + 0 & 31 ) * 32/4 + ( iz>>2 + 0 & 31>>2 );
             //y1  -> ( iy + 1 & 31 ) * 32/4 + ( iz>>2 + 0 & 31>>2 );
@@ -236,13 +213,13 @@ namespace DotsLite.MarchingCubes
 
             var _i = (iy_ + yofs & ymask) * yspan + (iz_ + zofs & zmask);
             var i = _i;
-            var y0 = ((uint4*)gx.p->pXline)[i.x];
-            var y1 = ((uint4*)gy.p->pXline)[i.y];
+            var y0 = ((uint4*)pgx)[i.x];
+            var y1 = ((uint4*)pgy)[i.y];
             var y0z0 = y0;
             var y1z0 = y1;
 
-            y0.x = gz.p->pXline[i.z];
-            y1.x = gw.p->pXline[i.w];
+            y0.x = pgz[i.z];
+            y1.x = pgw[i.w];
             var y0z1 = y0.yzwx;
             var y1z1 = y1.yzwx;
 
@@ -254,7 +231,7 @@ namespace DotsLite.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void addCubeFromXLine_<TCubeInstanceWriter>(
             ref CubeXLineBitwise cubes,
-            int gridId_, int iy, int iz, ref TCubeInstanceWriter outputCubes_
+            int iy, int iz, ref TCubeInstanceWriter outputCubes_
         )
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
@@ -263,31 +240,29 @@ namespace DotsLite.MarchingCubes
             var iz_ = new int4(iz + 0, iz + 1, iz + 2, iz + 3);
             for (var ipack = 0; ipack < 32 / 8; ipack++)// 8 は 1cube の 8bit
             {// レジスタ１つずつ見ていったほうがいいのでは
-                addCubeIfVisible_(cubes._98109810 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._a921a921 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._ba32ba32 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._cb43cb43 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._dc54dc54 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._ed65ed65 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._fe76fe76 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
-                addCubeIfVisible_(cubes._0f870f87 >> i & 0xff, gridId_, ix++, iy, iz_, ref outputCubes_);
+                addCubeIfVisible_(cubes._98109810 >> i & 0xff, ix++, iy, iz_, ref outputCubes_);
+                addCubeIfVisible_(cubes._a921a921 >> i & 0xff, ix++, iy, iz_, ref outputCubes_);
+                addCubeIfVisible_(cubes._ba32ba32 >> i & 0xff, ix++, iy, iz_, ref outputCubes_);
+                addCubeIfVisible_(cubes._cb43cb43 >> i & 0xff, ix++, iy, iz_, ref outputCubes_);
+                addCubeIfVisible_(cubes._dc54dc54 >> i & 0xff, ix++, iy, iz_, ref outputCubes_);
+                addCubeIfVisible_(cubes._ed65ed65 >> i & 0xff, ix++, iy, iz_, ref outputCubes_);
+                addCubeIfVisible_(cubes._fe76fe76 >> i & 0xff, ix++, iy, iz_, ref outputCubes_);
+                addCubeIfVisible_(cubes._0f870f87 >> i & 0xff, ix++, iy, iz_, ref outputCubes_);
                 i += 8;
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void addCubeIfVisible_<TCubeInstanceWriter>
-            (uint4 cubeId, int gridId__, int4 ix_, int4 iy_, int4 iz_, ref TCubeInstanceWriter cubeInstances)
+            (uint4 cubeId, int4 ix, int4 iy, int4 iz, ref TCubeInstanceWriter outputCubes)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
             var _0or255to0 = cubeId + 1 & 0xfe;
             if (!math.any(_0or255to0)) return;// すべての cubeId が 0 か 255 なら何もしない
 
-            var cubeInstance = CubeUtility.ToCubeInstance(ix_, iy_, iz_, gridId__, cubeId);
-
-            if (_0or255to0.x != 0) cubeInstances.Add(cubeInstance.x);
-            if (_0or255to0.y != 0) cubeInstances.Add(cubeInstance.y);
-            if (_0or255to0.z != 0) cubeInstances.Add(cubeInstance.z);
-            if (_0or255to0.w != 0) cubeInstances.Add(cubeInstance.w);
+            if (_0or255to0.x != 0) outputCubes.Add(ix.x, iy.x, iz.x, cubeId.x);
+            if (_0or255to0.y != 0) outputCubes.Add(ix.y, iy.y, iz.y, cubeId.y);
+            if (_0or255to0.z != 0) outputCubes.Add(ix.z, iy.z, iz.z, cubeId.z);
+            if (_0or255to0.w != 0) outputCubes.Add(ix.w, iy.w, iz.w, cubeId.w);
         }
 
 

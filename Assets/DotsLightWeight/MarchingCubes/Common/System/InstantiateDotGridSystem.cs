@@ -35,33 +35,34 @@ namespace DotsLite.MarchingCubes
                 .ForEach(
                     (
                         Entity entity,
-                        ref DotGridArea.LinkToGridData grid,
+                        ref DotGridArea.LinkToGridData grids,
                         in DotGridArea.DotGridPrefabData prefab
                     ) =>
                     {
 
 
                         var i = new int3(0, 0, 0);
-                        create_(prefab.Prefab, new int3(0, 0, 0), ref grid);
-                        create_(prefab.Prefab, new int3(1, 0, 0), ref grid);
-                        create_(prefab.Prefab, new int3(0, 0, 1), ref grid);
-                        create_(prefab.Prefab, new int3(1, 0, 1), ref grid);
+                        create_(prefab.Prefab, new int3(0, 0, 0), ref grids);
+                        create_(prefab.Prefab, new int3(1, 0, 0), ref grids);
+                        create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
+                        create_(prefab.Prefab, new int3(1, 0, 1), ref grids);
                         return;
 
 
-                        void create_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grid)
+                        void create_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids)
                         {
-                            var index = new DotGrid.GridIndex().Set(i, grid.GridSpan);
+                            var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
 
                             var newent = em.Instantiate(prefab);
+                            var grid = new DotGrid32x32x32Unsafe(GridFillMode.Blank);
 
-                            grid.pGridIds[index.serial] = grid.nextSeed++;
-                            grid.pGridEntities[index.serial] = newent;
+                            grids.pGridIds[index.serial] = grids.nextSeed++;
+                            grids.ppGridXLines[index.serial] = grid.pXline;
 
                             em.SetComponentData(newent, new DotGrid.UnitData
                             {
                                 GridIndexInArea = index,
-                                Unit = new DotGrid32x32x32Unsafe(GridFillMode.Blank),
+                                Unit = grid,
                             });
                             em.SetComponentData(newent, new DrawInstance.WorldBbox
                             {
