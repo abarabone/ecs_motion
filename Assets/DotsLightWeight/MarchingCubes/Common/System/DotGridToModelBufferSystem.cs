@@ -66,7 +66,7 @@ namespace DotsLite.Draw
 
                         var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
 
-                        var ids = pickupNeargridIds_(parent.ParentArea, data.GridIndexInArea);
+                        var ids = pickupNeargridIds_(gridAreas[parent.ParentArea], data.GridIndexInArea);
                         pModel[i + 0] = math.asfloat(ids.lPack4);
                         pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
 
@@ -75,38 +75,38 @@ namespace DotsLite.Draw
                         return;
 
 
-                        NearGridIndex pickupNeargridIds_(Entity parent, DotGrid.GridIndex index)
+                        NearGridIndex pickupNeargridIds_(DotGridArea.LinkToGridData area, DotGrid.GridIndex index)
                         {
                             var ids = new NearGridIndex();
 
-                            var area = gridAreas[parent];
+                            var p = area.pGridIds;
                             var span = area.GridSpan;
 
 
                             var lhome = index;
-                            ids.left.home = area.pGridIds[lhome.serial];
+                            ids.left.home = p[lhome.serial];
 
-                            var lrear = new DotGrid.GridIndex().Set(index.index + new int3(0, 0, 1), span);
-                            ids.left.rear = area.pGridIds[lrear.serial];
+                            var lrear = index.CloneNear(new int3(0, 0, 1), span);
+                            ids.left.rear = p[lrear.serial];
 
-                            var ldown = new DotGrid.GridIndex().Set(index.index + new int3(0, 1, 0), span);
-                            ids.left.down = area.pGridIds[ldown.serial];
+                            var ldown = index.CloneNear(new int3(0, 1, 0), span);
+                            ids.left.down = p[ldown.serial];
 
-                            var lslant = new DotGrid.GridIndex().Set(index.index + new int3(0, 1, 1), span);
-                            ids.left.slant = area.pGridIds[lslant.serial];
+                            var lslant = index.CloneNear(new int3(0, 1, 1), span);
+                            ids.left.slant = p[lslant.serial];
 
 
-                            var rhome = new DotGrid.GridIndex().Set(index.index + new int3(1, 0, 0), span);
-                            ids.right.home = area.pGridIds[rhome.serial];
+                            var rhome = index.CloneNear(new int3(1, 0, 0), span);
+                            ids.right.home = p[rhome.serial];
 
-                            var rrear = new DotGrid.GridIndex().Set(index.index + new int3(1, 0, 1), span);
-                            ids.right.rear = area.pGridIds[rrear.serial];
+                            var rrear = index.CloneNear(new int3(1, 0, 1), span);
+                            ids.right.rear = p[rrear.serial];
 
-                            var rdown = new DotGrid.GridIndex().Set(index.index + new int3(1, 1, 0), span);
-                            ids.right.down = area.pGridIds[rdown.serial];
+                            var rdown = index.CloneNear(new int3(1, 1, 0), span);
+                            ids.right.down = p[rdown.serial];
 
-                            var rslant = new DotGrid.GridIndex().Set(index.index + new int3(1, 1, 1), span);
-                            ids.right.slant = area.pGridIds[rslant.serial];
+                            var rslant = index.CloneNear(new int3(1, 1, 1), span);
+                            ids.right.slant = p[rslant.serial];
 
 
                             return ids;

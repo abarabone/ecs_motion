@@ -55,6 +55,8 @@ namespace DotsLite.MarchingCubes
                 this.value = new int4(index.x, index.y, index.z, serial);
                 return this;
             }
+            public GridIndex CloneNear(int3 offset, int3 span) =>
+                new DotGrid.GridIndex().Set(this.index + offset, span);
         }
 
 

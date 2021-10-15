@@ -83,7 +83,7 @@ namespace DotsLite.MarchingCubes
 
 
 
-    public unsafe partial struct DotGridAreaUnsafe
+    public static unsafe partial class MakeCube
     {
 
         public struct NearDotGrids
