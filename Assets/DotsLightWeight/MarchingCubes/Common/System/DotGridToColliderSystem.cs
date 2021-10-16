@@ -26,7 +26,6 @@ namespace DotsLite.MarchingCubes
         public DotGridUpdateSystem MessageHolderSystem;
 
 
-        BlobAssetReference<MarchingCubesBlobAsset> marchingCubesData;
 
 
         protected override void OnCreate()
@@ -42,15 +41,14 @@ namespace DotsLite.MarchingCubes
         {
             using var barScope = this.bardep.WithDependencyScope();
 
-            this.marchingCubesData = this.GetSingleton<MarchingCubeGlobalData>().Assset;
             this.Dependency = new JobExecution
             {
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
+                mcdata = this.GetSingleton<MarchingCubeGlobalData>().Assset,
                 grids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
                 parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
-                mcdata = this.marchingCubesData,
             }
             .Schedule(this.MessageHolderSystem.Reciever.Holder.keyEntities, 32, this.Dependency);
         }
@@ -62,6 +60,8 @@ namespace DotsLite.MarchingCubes
         {
             [ReadOnly]
             public NativeArray<Entity> KeyEntities;
+            [ReadOnly]
+            public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.UnitData> grids;
@@ -72,9 +72,6 @@ namespace DotsLite.MarchingCubes
             public ComponentDataFromEntity<DotGridArea.LinkToGridData> areas;
             [ReadOnly]
             public ComponentDataFromEntity<Translation> poss;
-
-            [ReadOnly]
-            public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
 
             [BurstCompile]

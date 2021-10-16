@@ -38,7 +38,7 @@ namespace DotsLite.MarchingCubes.Gpu
                     Global.InitializeData init,
                     MarchingCubeGlobalData data) =>
                 {
-                    data.Alloc(init.maxFreeGrids, init.asset, init.maxGridInstances);
+                    data.Alloc(init.maxFreeGrids, init.maxGridInstances);
 
                     em.RemoveComponent<Global.InitializeData>(ent);
                 })
