@@ -42,6 +42,7 @@ namespace DotsLite.MarchingCubes
         {
             using var barScope = this.bardep.WithDependencyScope();
 
+            this.marchingCubesData = this.GetSingleton<MarchingCubeGlobalData>().Assset;
             this.Dependency = new JobExecution
             {
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
@@ -86,7 +87,7 @@ namespace DotsLite.MarchingCubes
                 var pos = this.poss[ent];
                 var area = this.areas[parent.ParentArea];
 
-                //var mesh = makeMesh_(in grid, in pos, in area, in mcdata);
+                var mesh = makeMesh_(in grid, in pos, in area, in mcdata);
 
 
             }

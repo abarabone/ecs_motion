@@ -22,6 +22,9 @@ namespace DotsLite.MarchingCubes.Gpu
     {
 
         protected override void OnUpdate()
+        //{ }
+
+        //protected override void OnCreate()
         {
 
             var em = this.EntityManager;
