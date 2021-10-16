@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 using System;
+using Unity.Physics;
 using Unity.Jobs.LowLevel.Unsafe;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -25,6 +26,8 @@ namespace DotsLite.MarchingCubes
         public DotGridUpdateSystem MessageHolderSystem;
 
 
+        BlobAssetReference<MarchingCubesBlobAsset> marchingCubesData;
+
 
         protected override void OnCreate()
         {
@@ -42,8 +45,11 @@ namespace DotsLite.MarchingCubes
             this.Dependency = new JobExecution
             {
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
-                dotgrids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
+                grids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
+                parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
+                areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
+                mcdata = this.marchingCubesData,
             }
             .Schedule(this.MessageHolderSystem.Reciever.Holder.keyEntities, 32, this.Dependency);
         }
@@ -57,10 +63,17 @@ namespace DotsLite.MarchingCubes
             public NativeArray<Entity> KeyEntities;
 
             [ReadOnly]
-            public ComponentDataFromEntity<DotGrid.UnitData> dotgrids;
+            public ComponentDataFromEntity<DotGrid.UnitData> grids;
+            [ReadOnly]
+            public ComponentDataFromEntity<DotGrid.ParentAreaData> parents;
 
             [ReadOnly]
+            public ComponentDataFromEntity<DotGridArea.LinkToGridData> areas;
+            [ReadOnly]
             public ComponentDataFromEntity<Translation> poss;
+
+            [ReadOnly]
+            public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
 
             [BurstCompile]
@@ -68,18 +81,37 @@ namespace DotsLite.MarchingCubes
             public void Execute(int index)
             {
                 var ent = this.KeyEntities[index];
-                var grid = this.dotgrids[ent];
-                var pos = this.poss[ent].Value;
+                var grid = this.grids[ent];
+                var parent = this.parents[ent];
+                var pos = this.poss[ent];
+                var area = this.areas[parent.ParentArea];
 
-                var p = grid.Unit.pXline;
-                
+                //var mesh = makeMesh_(in grid, in pos, in area, in mcdata);
+
 
             }
         }
 
-        static unsafe void makeMesh_(uint *p)
-        {
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe BlobAssetReference<Collider> makeMesh_(
+            in DotGrid.UnitData grid, in Translation pos, in DotGridArea.LinkToGridData grids, in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
+        {
+            var near = grids.PickupNearGridIds(grid);
+            var writer = new MakeCube.MeshWriter
+            {
+                gridpos = pos.Value,
+                vtxs = new NativeList<float3>(Allocator.Temp),
+                tris = new NativeList<int3>(Allocator.Temp),
+                //filter = 
+                mcdata = mcdata,
+            };
+
+            MakeCube.SampleAllCubes(in near, ref writer);
+            var mesh = writer.CreateMesh();
+
+            writer.Dispose();
+            return mesh;
         }
 
         static unsafe void makeCubes_(uint *p)

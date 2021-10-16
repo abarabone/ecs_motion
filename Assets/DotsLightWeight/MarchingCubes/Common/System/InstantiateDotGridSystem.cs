@@ -82,5 +82,23 @@ namespace DotsLite.MarchingCubes
                 .Run();
         }
 
+        protected override void OnDestroy()
+        {
+            this.Entities
+                .WithoutBurst()
+                .ForEach((in DotGrid.UnitData grid) =>
+                {
+                    grid.Dispose();
+                })
+                .Run();
+
+            this.Entities
+                .WithoutBurst()
+                .ForEach((ref DotGridArea.LinkToGridData grids) =>
+                {
+                    grids.Dispose();
+                })
+                .Run();
+        }
     }
 }

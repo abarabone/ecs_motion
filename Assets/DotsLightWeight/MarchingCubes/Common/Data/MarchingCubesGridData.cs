@@ -38,7 +38,7 @@ namespace DotsLite.MarchingCubes
             //public void Dispose() => this.Unit.Dispose();
             public void Dispose()
             {
-                Debug.Log("a");
+                Debug.Log("DotGrid.UnitData dispose");
                 this.Unit.Dispose();
             }
         }

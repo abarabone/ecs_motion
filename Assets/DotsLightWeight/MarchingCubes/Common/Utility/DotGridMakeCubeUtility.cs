@@ -23,25 +23,6 @@ namespace DotsLite.MarchingCubes
         static public implicit operator CubeInstance(uint cubeInstance) => new CubeInstance { instance = cubeInstance };
     }
 
-    public interface ICubeInstanceWriter
-    {
-        void Add(int x, int y, int z, uint cubeid);
-    }
-    public struct MeshWriter : ICubeInstanceWriter
-    {
-        public float3 gridpos;
-        public NativeList<float3> vtxs;
-        public NativeList<int3> tris;
-        public CollisionFilter filter;
-
-        public void Add(int x, int y, int z, uint cubeid)
-        {
-
-        }
-        public BlobAssetReference<Collider> CreateMesh() =>
-            MeshCollider.Create(this.vtxs, this.tris, this.filter);
-    }
-
 
     public unsafe struct DotGrid32x32x32UnsafePtr
     {
@@ -70,7 +51,6 @@ namespace DotsLite.MarchingCubes
 
         public struct NearDotGrids
         {
-            public int gridId;
             public HalfGridUnit L;
             public HalfGridUnit R;
             public struct HalfGridUnit
@@ -79,6 +59,32 @@ namespace DotsLite.MarchingCubes
                 public uint* y;
                 public uint* z;
                 public uint* w;
+            }
+        }
+
+        public interface ICubeInstanceWriter
+        {
+            void Add(int x, int y, int z, uint cubeid);
+        }
+        public struct MeshWriter : ICubeInstanceWriter, IDisposable
+        {
+            public float3 gridpos;
+            public NativeList<float3> vtxs;
+            public NativeList<int3> tris;
+            public CollisionFilter filter;
+
+            public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
+
+            public void Add(int x, int y, int z, uint cubeid)
+            {
+
+            }
+            public BlobAssetReference<Collider> CreateMesh() =>
+                MeshCollider.Create(this.vtxs, this.tris, this.filter);
+            public void Dispose()
+            {
+                this.vtxs.Dispose();
+                this.tris.Dispose();
             }
         }
 
@@ -104,7 +110,7 @@ namespace DotsLite.MarchingCubes
         /// </summary>
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void SampleAllCubes<TCubeInstanceWriter>(ref NearDotGrids g, ref TCubeInstanceWriter outputCubes)
+        public static void SampleAllCubes<TCubeInstanceWriter>(in NearDotGrids g, ref TCubeInstanceWriter outputCubes)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
             for (var iy = 0; iy < 31; iy++)
