@@ -116,12 +116,12 @@ namespace DotsLite.MarchingCubes
             this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
         }
 
-        //protected override void OnDestroy()
-        //{
-        //    base.OnDestroy();
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
 
-        //    this.Reciever.Dispose();
-        //}
+            this.Reciever.Dispose();
+        }
 
         protected override void OnUpdate()
         {

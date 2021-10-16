@@ -23,6 +23,7 @@ namespace DotsLite.MarchingCubes
 
 
 
+
     public struct GlobalShaderResources : IDisposable
     {
         public CubeGeometryConstantBuffer CubeGeometryConstants;
@@ -31,11 +32,11 @@ namespace DotsLite.MarchingCubes
         public Mesh mesh;
 
 
-        public void Alloc(ref MarchingCubesBlobAsset asset, int maxGridInstances)
+        public void Alloc(MarchingCubesAsset asset, int maxGridInstances)
         {
             this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances);
 
-            this.CubeGeometryConstants = CubeGeometryConstantBuffer.Create(ref asset);
+            this.CubeGeometryConstants = CubeGeometryConstantBuffer.Create(asset);
 
             this.mesh = createMesh_();
         }
@@ -125,13 +126,13 @@ namespace DotsLite.MarchingCubes
 
         public void Dispose() => this.Buffer?.Release();
 
-        public static CubeGeometryConstantBuffer Create(ref MarchingCubesBlobAsset asset)
+        public static CubeGeometryConstantBuffer Create(MarchingCubesAsset asset)
         {
-            var vertexNormalDict = makeVertexNormalsDict_(asset.CubeIdAndVertexIndicesList.ToArray());
+            var vertexNormalDict = makeVertexNormalsDict_(asset.CubeIdAndVertexIndicesList);
 
-            var cubeVertexBuffer = createCubeVertexBuffer_(asset.BaseVertexList.ToArray());
+            var cubeVertexBuffer = createCubeVertexBuffer_(asset.BaseVertexList);
             var normalBuffer = createNormalList_(vertexNormalDict);
-            var cubePatternBuffer = createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList.ToArray(), vertexNormalDict);
+            var cubePatternBuffer = createCubePatternBuffer_(asset.CubeIdAndVertexIndicesList, vertexNormalDict);
 
             return new CubeGeometryConstantBuffer
             {
@@ -139,7 +140,7 @@ namespace DotsLite.MarchingCubes
             };
 
 
-            static IEnumerable<uint4> createCubeVertexBuffer_(float3[] baseVertices)
+            static IEnumerable<uint4> createCubeVertexBuffer_(Vector3[] baseVertices)
             {
                 ((int x, int y, int z) ortho1, (int x, int y, int z) ortho2)[] near_cube_offsets =
                 {
@@ -184,20 +185,20 @@ namespace DotsLite.MarchingCubes
                     let y = (v.ofs.ortho1.x + 1, v.ofs.ortho1.y + 1, v.ofs.ortho1.z + 1, 0).PackToByte4Uint()
                     let z = (v.ofs.ortho2.x + 1, v.ofs.ortho2.y + 1, v.ofs.ortho2.z + 1, 0).PackToByte4Uint()
                     let w = ((int)(v.pos.x * 2) + 1, (int)(v.pos.y * 2) + 1, (int)(v.pos.z * 2) + 1, 0).PackToByte4Uint()
-                //let x = v.ivtx.x<<0 & 0xff | v.ivtx.y<<8 & 0xff00 | v.ivtx.z<<16 & 0xff0000
-                //let y = v.ofs.ortho1.x+1<<0 & 0xff | v.ofs.ortho1.y+1<<8 & 0xff00 | v.ofs.ortho1.z+1<<16 & 0xff0000
-                //let z = v.ofs.ortho2.x+1<<0 & 0xff | v.ofs.ortho2.y+1<<8 & 0xff00 | v.ofs.ortho2.z+1<<16 & 0xff0000
-                //let w = (int)(v.pos.x*2+1)<<0 & 0xff | (int)(v.pos.y*2+1)<<8 & 0xff00 | (int)(v.pos.z*2+1)<<16 & 0xff0000
-                select new uint4(x, y, z, w)
+                    //let x = v.ivtx.x<<0 & 0xff | v.ivtx.y<<8 & 0xff00 | v.ivtx.z<<16 & 0xff0000
+                    //let y = v.ofs.ortho1.x+1<<0 & 0xff | v.ofs.ortho1.y+1<<8 & 0xff00 | v.ofs.ortho1.z+1<<16 & 0xff0000
+                    //let z = v.ofs.ortho2.x+1<<0 & 0xff | v.ofs.ortho2.y+1<<8 & 0xff00 | v.ofs.ortho2.z+1<<16 & 0xff0000
+                    //let w = (int)(v.pos.x*2+1)<<0 & 0xff | (int)(v.pos.y*2+1)<<8 & 0xff00 | (int)(v.pos.z*2+1)<<16 & 0xff0000
+                    select new uint4(x, y, z, w)
                     ;
 
                 return q;
             }
 
-            static Dictionary<float3, int> makeVertexNormalsDict_(MarchingCubesBlobAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_)
+            static Dictionary<float3, int> makeVertexNormalsDict_(MarchingCubesAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_)
             {
                 return cubeIdsAndVtxIndexLists_
-                    .SelectMany(x => x.normalsForVertex.ToArray())
+                    .SelectMany(x => x.normalsForVertex)
                     .Select(x => round_normal_(x))
                     .Distinct(x => x)
                     .Select((x, i) => (x, i))
@@ -222,15 +223,15 @@ namespace DotsLite.MarchingCubes
             }
 
             static IEnumerable<uint4[]> createCubePatternBuffer_
-                (MarchingCubesBlobAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict)
+                (MarchingCubesAsset.CubeWrapper[] cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict)
             {
                 var q =
                     from cube in cubeIdsAndVtxIndexLists_
                     orderby cube.cubeId
                     select new[]
                     {
-                        toTriPositionIndex_( cube.vertexIndices.ToArray() ),
-                        toVtxNormalIndex_( cube.normalsForVertex.ToArray(), normalToIdDict )
+                        toTriPositionIndex_( cube.vertexIndices ),
+                        toVtxNormalIndex_( cube.normalsForVertex, normalToIdDict )
                     };
                 //q.SelectMany(x=>x).ForEach( x => Debug.Log(x) );
 
@@ -255,7 +256,7 @@ namespace DotsLite.MarchingCubes
                         //w = (uint)( idxs[ 9]<<0 & 0xff | idxs[10]<<8 & 0xff00 | idxs[11]<<16 & 0xff0000 ),
                     };
                 }
-                uint4 toVtxNormalIndex_(float3[] normals, Dictionary<float3, int> normalToIdDict_)
+                uint4 toVtxNormalIndex_(Vector3[] normals, Dictionary<float3, int> normalToIdDict_)
                 {
                     return new uint4
                     {

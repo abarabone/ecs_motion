@@ -105,11 +105,11 @@ namespace DotsLite.MarchingCubes
                 mcdata = mcdata,
             };
 
-            MakeCube.SampleAllCubes(in near, ref writer);
-            var mesh = writer.CreateMesh();
+            //MakeCube.SampleAllCubes(in near, ref writer);
+            //var mesh = writer.CreateMesh();
 
             writer.Dispose();
-            return mesh;
+            return default;//mesh;
         }
 
         static unsafe void makeCubes_(uint *p)
