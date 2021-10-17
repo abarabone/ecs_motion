@@ -21,7 +21,7 @@ namespace DotsLite.MarchingCubes.Gpu
     public class MarchingCubesShaderResourceInitializeSystem : SystemBase
     {
 
-        protected override void OnUpdate()
+        protected unsafe override void OnUpdate()
         //{ }
 
         //protected override void OnCreate()
@@ -46,6 +46,7 @@ namespace DotsLite.MarchingCubes.Gpu
 
 
             var gres = this.GetSingleton<MarchingCubeGlobalData>().ShaderResources;
+            var pBlank = this.GetSingleton<MarchingCubeGlobalData>().DefaultGrids[(int)GridFillMode.Blank].pXline;
 
             this.Entities
                 .WithName("GridArea")
@@ -56,7 +57,8 @@ namespace DotsLite.MarchingCubes.Gpu
                         Entity ent,
                         DotGridArea.InitializeData init,
                         DotGridArea.ResourceGpuModeData data,
-                        DrawModel.GeometryData geom
+                        DrawModel.GeometryData geom,
+                        DotGridArea.LinkToGridData links
                     ) =>
                     {
                         var mat = geom.Material;//init.CubeMaterial;
@@ -73,6 +75,15 @@ namespace DotsLite.MarchingCubes.Gpu
 
                         data.ShaderResources.SetResourcesTo(mat, cs);
                         data.ShaderResources.SetArgumentBuffer(mesh);
+
+
+                        var totalsize = links.GridLength.x * links.GridLength.y * links.GridLength.z;
+                        var pIds = (int*)UnsafeUtility.Malloc(sizeof(int) * totalsize, 4, Allocator.Persistent);
+                        for (var i = 0; i < totalsize; i++) pIds[i] = -1;
+                        links.pGridIds = pIds;
+                        var ppXLines = (uint**)UnsafeUtility.Malloc(sizeof(uint*) * totalsize, 4, Allocator.Persistent);
+                        for (var i = 0; i < totalsize; i++) ppXLines[i] = pBlank;
+                        links.ppGridXLines = ppXLines;
 
 
                         em.RemoveComponent<DotGridArea.InitializeData>(ent);

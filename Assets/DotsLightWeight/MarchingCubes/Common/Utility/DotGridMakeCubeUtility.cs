@@ -116,6 +116,7 @@ namespace DotsLite.MarchingCubes
             UnityEngine.Debug.Log($"{g.L.x != null} {g.L.y != null} {g.L.z != null} {g.L.w != null}");
             UnityEngine.Debug.Log($"{g.R.x != null} {g.R.y != null} {g.R.z != null} {g.R.w != null}");
             return;
+            var 
             for (var iy = 0; iy < 31; iy++)
             {
                 for (var iz = 0; iz < (31 & ~0x3); iz += 4)
@@ -128,7 +129,6 @@ namespace DotsLite.MarchingCubes
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
-                //if ()
                 {
                     const int iz = 31 & ~0x3;
 
@@ -141,7 +141,6 @@ namespace DotsLite.MarchingCubes
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
             }
-            //if ()
             {
                 const int iy = 31;
                 for (var iz = 0; iz < (31 & ~0x3); iz += 4)
