@@ -113,6 +113,9 @@ namespace DotsLite.MarchingCubes
         public static void SampleAllCubes<TCubeInstanceWriter>(in NearDotGrids g, ref TCubeInstanceWriter outputCubes)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
+            UnityEngine.Debug.Log($"{g.L.x != null} {g.L.y != null} {g.L.z != null} {g.L.w != null}");
+            UnityEngine.Debug.Log($"{g.R.x != null} {g.R.y != null} {g.R.z != null} {g.R.w != null}");
+            return;
             for (var iy = 0; iy < 31; iy++)
             {
                 for (var iz = 0; iz < (31 & ~0x3); iz += 4)
@@ -125,6 +128,7 @@ namespace DotsLite.MarchingCubes
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
+                //if ()
                 {
                     const int iz = 31 & ~0x3;
 
@@ -137,6 +141,7 @@ namespace DotsLite.MarchingCubes
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
             }
+            //if ()
             {
                 const int iy = 31;
                 for (var iz = 0; iz < (31 & ~0x3); iz += 4)
@@ -161,9 +166,16 @@ namespace DotsLite.MarchingCubes
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
             }
-
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool isBlankZ_(NearDotGrids g) =>
+            g.L.z == null ||
+            g.R.x == null || g.R.y == null || g.R.z == null || g.R.w == null;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool isBlankY_(NearDotGrids g) =>
+            g.L.y == null || g.L.z == null || g.L.w == null ||
+            g.R.x == null || g.R.y == null || g.R.z == null || g.R.w == null;
 
 
         public struct CubeXLineBitwise// タプルだと burst 利かないので

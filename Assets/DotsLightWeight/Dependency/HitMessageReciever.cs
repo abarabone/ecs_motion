@@ -93,21 +93,26 @@ namespace DotsLite.Dependency
             public HitMessageHolder Holder { get; private set; }
             public BarrierDependency.Reciever Barrier { get; }
 
+            Allocator holderAllocator;// ébíËÅAdispose óp
+
 
             public Reciever(int capacity, Allocator allocator = Allocator.Persistent)//, int maxDependsSystem = 16)
             {
                 this.Holder = new HitMessageHolder(capacity, allocator);
                 this.Barrier = BarrierDependency.Reciever.Create(32);// maxDependsSystem);
+                this.holderAllocator =allocator;
             }
             public Reciever()//int maxDependsSystem = 16)
             {
                 this.Holder = default;
                 this.Barrier = BarrierDependency.Reciever.Create(32);// maxDependsSystem);
+                this.holderAllocator = Allocator.None;
             }
 
             public void Alloc(int capacity, Allocator allocator = Allocator.Persistent)
             {
                 this.Holder = new HitMessageHolder(capacity, allocator);
+                this.holderAllocator = allocator;
             }
 
 
@@ -134,7 +139,7 @@ namespace DotsLite.Dependency
 
             public void Dispose()
             {
-                this.Holder.Dispose();
+                if (this.holderAllocator == Allocator.Persistent) this.Holder.Dispose();
                 this.Barrier.Dispose();
             }
         }

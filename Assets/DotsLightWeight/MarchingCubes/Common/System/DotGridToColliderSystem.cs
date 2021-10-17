@@ -84,7 +84,7 @@ namespace DotsLite.MarchingCubes
                 var pos = this.poss[ent];
                 var area = this.areas[parent.ParentArea];
 
-                var mesh = makeMesh_(in grid, in pos, in area, in mcdata);
+                makeMesh_(in grid, in pos, in area, in mcdata);
 
 
             }
@@ -92,7 +92,8 @@ namespace DotsLite.MarchingCubes
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe BlobAssetReference<Collider> makeMesh_(
+        static unsafe void makeMesh_(
+        //static unsafe BlobAssetReference<Collider> makeMesh_(
             in DotGrid.UnitData grid, in Translation pos, in DotGridArea.LinkToGridData grids, in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
         {
             var near = grids.PickupNearGridIds(grid);
@@ -105,11 +106,11 @@ namespace DotsLite.MarchingCubes
                 mcdata = mcdata,
             };
 
-            //MakeCube.SampleAllCubes(in near, ref writer);
+            MakeCube.SampleAllCubes(in near, ref writer);
             //var mesh = writer.CreateMesh();
 
             writer.Dispose();
-            return default;//mesh;
+            return;// mesh;
         }
 
         static unsafe void makeCubes_(uint *p)

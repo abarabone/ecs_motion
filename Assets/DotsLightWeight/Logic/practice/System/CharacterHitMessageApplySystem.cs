@@ -59,12 +59,12 @@ namespace DotsLite.Character
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
-        //protected override void OnDestroy()
-        //{
-        //    base.OnDestroy();
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
 
-        //    this.Reciever.Dispose();
-        //}
+            this.Reciever.Dispose();
+        }
 
         protected override void OnUpdate()
         {
