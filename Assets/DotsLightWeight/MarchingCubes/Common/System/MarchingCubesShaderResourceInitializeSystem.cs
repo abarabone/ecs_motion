@@ -12,22 +12,32 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsLite.MarchingCubes.Gpu
 {
+    using DotsLite.Dependency;
     using MarchingCubes;
     using DotsLite.Draw;
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class MarchingCubesShaderResourceInitializeSystem : SystemBase
+    public class MarchingCubesShaderResourceInitializeSystem : DependencyAccessableSystemBase
     {
+        CommandBufferDependency.Sender cmddep;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
+
 
         protected unsafe override void OnUpdate()
-        //{ }
-
-        //protected override void OnCreate()
         {
+            using var cmdScope = this.cmddep.WithDependencyScope();
 
-            var em = this.EntityManager;
+            var cmd = cmdScope.CommandBuffer;//.AsParallelWriter();
+            //var em = this.EntityManager;
+            
 
             this.Entities
                 .WithName("Global")
@@ -40,7 +50,8 @@ namespace DotsLite.MarchingCubes.Gpu
                 {
                     data.Alloc(init.asset, init.maxFreeGrids, init.maxGridInstances);
 
-                    em.RemoveComponent<Global.InitializeData>(ent);
+                    //em.RemoveComponent<Global.InitializeData>(ent);
+                    cmd.RemoveComponent<Global.InitializeData>(ent);
                 })
                 .Run();
 
@@ -58,7 +69,7 @@ namespace DotsLite.MarchingCubes.Gpu
                         DotGridArea.InitializeData init,
                         DotGridArea.ResourceGpuModeData data,
                         DrawModel.GeometryData geom,
-                        DotGridArea.LinkToGridData links
+                        ref DotGridArea.LinkToGridData links
                     ) =>
                     {
                         var mat = geom.Material;//init.CubeMaterial;
@@ -86,7 +97,8 @@ namespace DotsLite.MarchingCubes.Gpu
                         links.ppGridXLines = ppXLines;
 
 
-                        em.RemoveComponent<DotGridArea.InitializeData>(ent);
+                        //em.RemoveComponent<DotGridArea.InitializeData>(ent);
+                        cmd.RemoveComponent<DotGridArea.InitializeData>(ent);
                     }
                 )
                 .Run();

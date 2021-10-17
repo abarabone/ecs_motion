@@ -20,6 +20,7 @@ namespace DotsLite.MarchingCubes
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(DotGridLinksInitializeSystem))]
+    [UpdateAfter(typeof(Gpu.MarchingCubesShaderResourceInitializeSystem))]
     public class InstantiateDotGridSystem : SystemBase
     {
 
