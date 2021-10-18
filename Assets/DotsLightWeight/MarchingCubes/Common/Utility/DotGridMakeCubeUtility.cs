@@ -76,9 +76,30 @@ namespace DotsLite.MarchingCubes
 
             public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
-            public void Add(int x, int y, int z, uint cubeid)
-            {
+            int vtxOffset;
 
+            public void Add(int x, int y, int z, uint cubeId)
+            {
+                //var cubeId = cubeInstance & 0xff;
+                //if( cubeId == 0 || cubeId == 255 ) return vtxOffset_;
+
+                //var center = new float3( cubeInstance >> 8 & 0xff, -( cubeInstance >> 16 & 0xff ), -( cubeInstance >> 24 & 0xff ) );
+
+                var center = this.gridpos + new float3(x, y, z);
+                if (cubeId == 0 || cubeId == 255) return;
+
+                var srcIdxList = srcIdxLists[cubeId - 1];
+
+                for (var i = 0; i < srcIdxList.Length; i++)
+                {
+                    var srcIdx = srcIdxList[i];
+                    this.tris.Add(this.vtxOffset + srcIdx);
+                }
+                for (var i = 0; i < srcVtxList.Length; i++)
+                {
+                    this.vtxs.Add(srcVtxList[i] + center);
+                }
+                this.vtxOffset += srcVtxList.Length;
             }
             public BlobAssetReference<Collider> CreateMesh() =>
                 MeshCollider.Create(this.vtxs, this.tris, this.filter);
@@ -116,68 +137,64 @@ namespace DotsLite.MarchingCubes
         {
             for (var iy = 0; iy < 31; iy++)
             {
-                var rx0 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxx);
+                var xmaxk = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxx);
                 for (var iz = 0; iz < (31 & ~0x3); iz += 4)
                 {
-                    var c = getXLine_(iy, iz, g.L.x, g.L.x, g.L.x, g.L.x);
+                    var c = getXLine_(iy, iz, g.L.x, g.L.x, g.L.x, g.L.x, 1);
                     var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
 
-                    var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.x, g.R.x);
+                    var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.x, g.R.x, 1);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    cubes._0f870f87 &= rx0;// 端のキューブを消す
+                    cubes._0f870f87 &= xmaxk;// 端のキューブを消す
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
-                var lz = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.L.isContained.xxxz);
-                var rx1 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxz);
+                var xzmask = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxz);
+                var zmask = g.L.isContained.xxxz;
                 {
                     const int iz = 31 & ~0x3;
 
-                    var c = getXLine_(iy, iz, g.L.x, g.L.x, g.L.z, g.L.z);
+                    var c = getXLine_(iy, iz, g.L.x, g.L.x, g.L.z, g.L.z, zmask);
                     var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
 
-                    var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.z, g.R.z);
+                    var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.z, g.R.z, zmask);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    cubes._0f870f87 &= rx1;// 端のキューブを消す
-                    //cubes.x = 
+                    cubes._0f870f87 &= xzmask;// 端のキューブを消す
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
             }
+            if (g.L.isContained.y > 0)
             {
+                var ymask = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.yyyy);
                 const int iy = 31;
                 for (var iz = 0; iz < (31 & ~0x3); iz += 4)
                 {
-                    var c = getXLine_(iy, iz, g.L.x, g.L.y, g.L.x, g.L.y);
+                    var c = getXLine_(iy, iz, g.L.x, g.L.y, g.L.x, g.L.y, 1);
                     var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
 
-                    var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.x, g.R.y);
+                    var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.x, g.R.y, 1);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
+                    cubes._0f870f87 &= ymask;// 端のキューブを消す
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
+                var ywmask = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.yyyw);
+                var zmask = g.L.isContained.yyyw;
                 {
                     const int iz = 31 & ~0x3;
 
-                    var c = getXLine_(iy, iz, g.L.x, g.L.y, g.L.z, g.L.w);
+                    var c = getXLine_(iy, iz, g.L.x, g.L.y, g.L.z, g.L.w, zmask);
                     var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
 
-                    var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.z, g.R.w);
+                    var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.z, g.R.w, zmask);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
+                    cubes._0f870f87 &= ywmask;// 端のキューブを消す
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
             }
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool isBlankZ_(NearDotGrids g) =>
-            g.L.z == null ||
-            g.R.x == null || g.R.y == null || g.R.z == null || g.R.w == null;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool isBlankY_(NearDotGrids g) =>
-            g.L.y == null || g.L.z == null || g.L.w == null ||
-            g.R.x == null || g.R.y == null || g.R.z == null || g.R.w == null;
 
 
         public struct CubeXLineBitwise// タプルだと burst 利かないので
@@ -217,7 +234,10 @@ namespace DotsLite.MarchingCubes
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe CubeNearXLines getXLine_(int iy, int iz, uint* pz0y0, uint* pz0y1, uint* pz1y0, uint* pz1y1)
+        static unsafe CubeNearXLines getXLine_(
+            int iy, int iz,
+            uint* pz0y0, uint* pz0y1, uint* pz1y0, uint* pz1y1,
+            uint4 z0mask)
         {
             //y0  -> ( iy + 0 & 31 ) * 32/4 + ( iz>>2 + 0 & 31>>2 );
             //y1  -> ( iy + 1 & 31 ) * 32/4 + ( iz>>2 + 0 & 31>>2 );
@@ -235,8 +255,8 @@ namespace DotsLite.MarchingCubes
             var i = _i;
             var y0 = ((uint4*)pz0y0)[i.x];
             var y1 = ((uint4*)pz0y1)[i.y];
-            var y0z0 = y0;
-            var y1z0 = y1;
+            var y0z0 = y0 * z0mask;
+            var y1z0 = y1 * z0mask;
 
             y0.x = pz1y0[i.z];
             y1.x = pz1y1[i.w];

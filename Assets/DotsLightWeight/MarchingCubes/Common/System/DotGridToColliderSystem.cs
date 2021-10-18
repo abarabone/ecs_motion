@@ -100,8 +100,8 @@ namespace DotsLite.MarchingCubes
             var writer = new MakeCube.MeshWriter
             {
                 gridpos = pos.Value,
-                vtxs = new NativeList<float3>(Allocator.Temp),
-                tris = new NativeList<int3>(Allocator.Temp),
+                vtxs = new NativeList<float3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
+                tris = new NativeList<int3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
                 //filter = 
                 mcdata = mcdata,
             };
