@@ -59,6 +59,7 @@ namespace DotsLite.MarchingCubes
                 public uint* y;
                 public uint* z;
                 public uint* w;
+                public uint4 isContained;
             }
         }
 
@@ -113,12 +114,9 @@ namespace DotsLite.MarchingCubes
         public static void SampleAllCubes<TCubeInstanceWriter>(in NearDotGrids g, ref TCubeInstanceWriter outputCubes)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
-            UnityEngine.Debug.Log($"{g.L.x != null} {g.L.y != null} {g.L.z != null} {g.L.w != null}");
-            UnityEngine.Debug.Log($"{g.R.x != null} {g.R.y != null} {g.R.z != null} {g.R.w != null}");
-            //return;
-            //var 
             for (var iy = 0; iy < 31; iy++)
             {
+                var rx0 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxx);
                 for (var iz = 0; iz < (31 & ~0x3); iz += 4)
                 {
                     var c = getXLine_(iy, iz, g.L.x, g.L.x, g.L.x, g.L.x);
@@ -126,9 +124,12 @@ namespace DotsLite.MarchingCubes
 
                     var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.x, g.R.x);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
+                    cubes._0f870f87 &= rx0;// 端のキューブを消す
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
+                var lz = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.L.isContained.xxxz);
+                var rx1 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxz);
                 {
                     const int iz = 31 & ~0x3;
 
@@ -137,6 +138,8 @@ namespace DotsLite.MarchingCubes
 
                     var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.z, g.R.z);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
+                    cubes._0f870f87 &= rx1;// 端のキューブを消す
+                    //cubes.x = 
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
@@ -214,7 +217,7 @@ namespace DotsLite.MarchingCubes
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe CubeNearXLines getXLine_(int iy, int iz, uint* pgx, uint* pgy, uint* pgz, uint* pgw)
+        static unsafe CubeNearXLines getXLine_(int iy, int iz, uint* pz0y0, uint* pz0y1, uint* pz1y0, uint* pz1y1)
         {
             //y0  -> ( iy + 0 & 31 ) * 32/4 + ( iz>>2 + 0 & 31>>2 );
             //y1  -> ( iy + 1 & 31 ) * 32/4 + ( iz>>2 + 0 & 31>>2 );
@@ -230,13 +233,13 @@ namespace DotsLite.MarchingCubes
 
             var _i = (iy_ + yofs & ymask) * yspan + (iz_ + zofs & zmask);
             var i = _i;
-            var y0 = ((uint4*)pgx)[i.x];
-            var y1 = ((uint4*)pgy)[i.y];
+            var y0 = ((uint4*)pz0y0)[i.x];
+            var y1 = ((uint4*)pz0y1)[i.y];
             var y0z0 = y0;
             var y1z0 = y1;
 
-            y0.x = pgz[i.z];
-            y1.x = pgw[i.w];
+            y0.x = pz1y0[i.z];
+            y1.x = pz1y1[i.w];
             var y0z1 = y0.yzwx;
             var y1z1 = y1.yzwx;
 
