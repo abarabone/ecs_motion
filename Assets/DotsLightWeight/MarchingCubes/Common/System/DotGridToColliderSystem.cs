@@ -20,6 +20,7 @@ namespace DotsLite.MarchingCubes
     public class DotGridToCollisionSystem : DependencyAccessableSystemBase
     {
 
+        CommandBufferDependency.Sender cmddep;
 
         BarrierDependency.Sender bardep;
 
@@ -32,19 +33,23 @@ namespace DotsLite.MarchingCubes
         {
             base.OnCreate();
 
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
             this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
 
             this.MessageHolderSystem = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
         }
 
-        protected override void OnUpdate()
+        protected unsafe override void OnUpdate()
         {
+            using var cmdscope = this.cmddep.WithDependencyScope();
             using var barScope = this.bardep.WithDependencyScope();
 
             this.Dependency = new JobExecution
             {
+                cmd = cmdscope.CommandBuffer.AsParallelWriter(),
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
                 mcdata = this.GetSingleton<MarchingCubeGlobalData>().Assset,
+                pDefualtBlankGrid = this.GetSingleton<MarchingCubeGlobalData>().DefaultGrids[(int)GridFillMode.Blank].pXline,
                 grids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
                 parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
@@ -58,6 +63,8 @@ namespace DotsLite.MarchingCubes
         [BurstCompile]
         unsafe struct JobExecution : IJobParallelForDefer
         {
+            public EntityCommandBuffer.ParallelWriter cmd;
+
             [ReadOnly]
             public NativeArray<Entity> KeyEntities;
             [ReadOnly]
@@ -73,6 +80,8 @@ namespace DotsLite.MarchingCubes
             [ReadOnly]
             public ComponentDataFromEntity<Translation> poss;
 
+            [ReadOnly][NativeDisableUnsafePtrRestriction]
+            public uint *pDefualtBlankGrid;
 
             [BurstCompile]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -84,33 +93,39 @@ namespace DotsLite.MarchingCubes
                 var pos = this.poss[ent];
                 var area = this.areas[parent.ParentArea];
 
-                makeMesh_(in grid, in pos, in area, in mcdata);
+                var mesh = makeMesh_(in grid, in pos, in area, this.pDefualtBlankGrid, in this.mcdata);
 
-
+                cmd.AddComponent(index, ent, new PhysicsCollider
+                {
+                    Value = mesh,
+                });
             }
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void makeMesh_(
-        //static unsafe BlobAssetReference<Collider> makeMesh_(
-            in DotGrid.UnitData grid, in Translation pos, in DotGridArea.LinkToGridData grids, in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
+        //static unsafe void makeMesh_(
+        static unsafe BlobAssetReference<Collider> makeMesh_(
+            in DotGrid.UnitData grid, in Translation pos,
+            in DotGridArea.LinkToGridData grids,
+            uint *pDefaultBlankGrid,
+            in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
         {
-            var near = grids.PickupNearGridIds(grid);
             var writer = new MakeCube.MeshWriter
             {
                 gridpos = pos.Value,
                 vtxs = new NativeList<float3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
                 tris = new NativeList<int3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
-                //filter = 
+                filter = CollisionFilter.Default,
                 mcdata = mcdata,
             };
+            var near = grids.PickupNearGridIds(grid, pDefaultBlankGrid);
 
             MakeCube.SampleAllCubes(in near, ref writer);
-            //var mesh = writer.CreateMesh();
+            var mesh = writer.CreateMesh();
 
             writer.Dispose();
-            return;// mesh;
+            return mesh;
         }
 
         static unsafe void makeCubes_(uint *p)

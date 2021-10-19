@@ -99,7 +99,8 @@ namespace DotsLite.MarchingCubes
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe MakeCube.NearDotGrids PickupNearGridIds(in this LinkToGridData grids, DotGrid.UnitData grid)
+        public static unsafe MakeCube.NearDotGrids PickupNearGridIds(
+            in this LinkToGridData grids, DotGrid.UnitData grid, uint* pBlankGrid)
         {
             
             var ppXLines = grids.ppGridXLines;
@@ -120,6 +121,9 @@ namespace DotsLite.MarchingCubes
             var lslant = index.CloneNear(new int3(0, 1, 1), gridSpan);
             near.L.w = ppXLines[lslant.serial];
 
+            var boolsL = new bool4(near.L.x != pBlankGrid, near.L.y != pBlankGrid, near.L.z != pBlankGrid, near.L.w != pBlankGrid);
+            near.L.isContained = (uint4)boolsL;
+
 
             var rhome = index.CloneNear(new int3(1, 0, 0), gridSpan);
             near.R.x = ppXLines[rhome.serial];
@@ -133,6 +137,8 @@ namespace DotsLite.MarchingCubes
             var rslant = index.CloneNear(new int3(1, 1, 1), gridSpan);
             near.R.w = ppXLines[rslant.serial];
 
+            var boolsR = new bool4(near.R.x != pBlankGrid, near.R.y != pBlankGrid, near.R.z != pBlankGrid, near.R.w != pBlankGrid);
+            near.R.isContained = (uint4)boolsR;
 
             return near;
         }

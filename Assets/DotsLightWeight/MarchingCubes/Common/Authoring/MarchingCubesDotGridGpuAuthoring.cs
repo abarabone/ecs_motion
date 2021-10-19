@@ -47,8 +47,14 @@ namespace DotsLite.MarchingCubes.Authoring
                     typeof(DotGrid.ParentAreaData),
                     //typeof(PhysicsCollider),
                     typeof(DotGrid.UpdateDirtyRangeData),
+                    //typeof(Unity.Physics.PhysicsCollider),
                 });
                 em.AddComponents(ent, types);
+
+                //em.SetComponentData(ent, new PhysicsCollider
+                //{
+                //    Value = BlobAssetReference<Unity.Physics.Collider>.Null,
+                //});
             }
 
 

@@ -80,15 +80,13 @@ namespace DotsLite.MarchingCubes
 
             public void Add(int x, int y, int z, uint cubeId)
             {
-                //var cubeId = cubeInstance & 0xff;
-                //if( cubeId == 0 || cubeId == 255 ) return vtxOffset_;
-
-                //var center = new float3( cubeInstance >> 8 & 0xff, -( cubeInstance >> 16 & 0xff ), -( cubeInstance >> 24 & 0xff ) );
+                ref var srcIdxLists = ref this.mcdata.Value.CubeIdAndVertexIndicesList;
+                ref var srcVtxList = ref this.mcdata.Value.BaseVertexList;
 
                 var center = this.gridpos + new float3(x, y, z);
                 if (cubeId == 0 || cubeId == 255) return;
 
-                var srcIdxList = srcIdxLists[cubeId - 1];
+                ref var srcIdxList = ref srcIdxLists[(int)cubeId - 1].vertexIndices;
 
                 for (var i = 0; i < srcIdxList.Length; i++)
                 {
@@ -101,8 +99,10 @@ namespace DotsLite.MarchingCubes
                 }
                 this.vtxOffset += srcVtxList.Length;
             }
+
             public BlobAssetReference<Collider> CreateMesh() =>
                 MeshCollider.Create(this.vtxs, this.tris, this.filter);
+
             public void Dispose()
             {
                 this.vtxs.Dispose();
