@@ -230,11 +230,17 @@ namespace DotsLite.MarchingCubes
                     {
                         case DotGridUpdateType.aabb:
 
-                            //var v = 0x00ffff00u;
-                            //for (var i = 0; i < 32 * 32 - 1; i++)
-                            //{
-                            //    p[i] = v;
-                            //}
+                            var v0 = 0u;
+                            for (var i = 0; i < 32; i++)
+                            {
+                                p[i] = v0;
+                            }
+
+                            var v = 0x0fff_fff0u;
+                            for (var i = 32; i < 32 * 32; i++)
+                            {
+                                p[i] = v;
+                            }
 
                             break;
                         case DotGridUpdateType.sphere:
@@ -250,7 +256,7 @@ namespace DotsLite.MarchingCubes
                 this.dirties[targetEntity] = new DotGrid.UpdateDirtyRangeData
                 {
                     begin = 0,//32 * 32 / 2,
-                    end = 0,//32 * 32 - 1,
+                    end = 32 * 32 - 1,
                 };
             }
         }

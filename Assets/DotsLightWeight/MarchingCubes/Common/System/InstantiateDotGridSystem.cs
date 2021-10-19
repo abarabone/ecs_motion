@@ -44,9 +44,9 @@ namespace DotsLite.MarchingCubes
 
                         var i = new int3(0, 0, 0);
                         create_(prefab.Prefab, new int3(0, 0, 0), ref grids);
-                        //create_(prefab.Prefab, new int3(1, 0, 0), ref grids);
-                        //create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
-                        //create_(prefab.Prefab, new int3(1, 0, 1), ref grids);
+                        create_(prefab.Prefab, new int3(1, 0, 0), ref grids);
+                        create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
+                        create_(prefab.Prefab, new int3(1, 0, 1), ref grids);
                         return;
 
 

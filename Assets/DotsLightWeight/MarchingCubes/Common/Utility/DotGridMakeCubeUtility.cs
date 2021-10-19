@@ -73,6 +73,8 @@ namespace DotsLite.MarchingCubes
             public NativeList<float3> vtxs;
             public NativeList<int3> tris;
             public CollisionFilter filter;
+            public int count;
+            public int all;
 
             public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
@@ -80,11 +82,13 @@ namespace DotsLite.MarchingCubes
 
             public void Add(int x, int y, int z, uint cubeId)
             {
+                this.all++;
                 ref var srcIdxLists = ref this.mcdata.Value.CubeIdAndVertexIndicesList;
                 ref var srcVtxList = ref this.mcdata.Value.BaseVertexList;
 
                 var center = this.gridpos + new float3(x, y, z);
                 if (cubeId == 0 || cubeId == 255) return;
+                this.count++;
 
                 ref var srcIdxList = ref srcIdxLists[(int)cubeId - 1].vertexIndices;
 
@@ -135,61 +139,61 @@ namespace DotsLite.MarchingCubes
         public static void SampleAllCubes<TCubeInstanceWriter>(in NearDotGrids g, ref TCubeInstanceWriter outputCubes)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
-            for (var iy = 0; iy < 31; iy++)
+            for (var iy = 0; iy < 32-1; iy++)
             {
                 var xmaxk = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxx);
-                for (var iz = 0; iz < (31 & ~0x3); iz += 4)
+                for (var iz = 0; iz < (31 & ~0b11); iz += 4)
                 {
                     var c = getXLine_(iy, iz, g.L.x, g.L.x, g.L.x, g.L.x, 1);
                     var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
 
                     var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.x, g.R.x, 1);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    cubes._0f870f87 &= xmaxk;// 端のキューブを消す
+                    //cubes._0f870f87 &= xmaxk;// 端のキューブを消す
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
                 var xzmask = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxz);
-                var zmask = g.L.isContained.xxxz;
+                var zmask = 1u;// g.L.isContained.xxxz;
                 {
-                    const int iz = 31 & ~0x3;
+                    const int iz = 31 & ~0b11;
 
                     var c = getXLine_(iy, iz, g.L.x, g.L.x, g.L.z, g.L.z, zmask);
                     var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
 
                     var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.z, g.R.z, zmask);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    cubes._0f870f87 &= xzmask;// 端のキューブを消す
+                    //cubes._0f870f87 &= xzmask;// 端のキューブを消す
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
             }
-            if (g.L.isContained.y > 0)
+            //if (g.L.isContained.y > 0)
             {
                 var ymask = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.yyyy);
                 const int iy = 31;
-                for (var iz = 0; iz < (31 & ~0x3); iz += 4)
+                for (var iz = 0; iz < (31 & ~0b11); iz += 4)
                 {
                     var c = getXLine_(iy, iz, g.L.x, g.L.y, g.L.x, g.L.y, 1);
                     var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
 
                     var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.x, g.R.y, 1);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    cubes._0f870f87 &= ymask;// 端のキューブを消す
+                    //cubes._0f870f87 &= ymask;// 端のキューブを消す
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
                 var ywmask = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.yyyw);
-                var zmask = g.L.isContained.yyyw;
+                var zmask = 1u;// g.L.isContained.yyyw;
                 {
-                    const int iz = 31 & ~0x3;
+                    const int iz = 31 & ~0b11;
 
                     var c = getXLine_(iy, iz, g.L.x, g.L.y, g.L.z, g.L.w, zmask);
                     var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
 
                     var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.z, g.R.w, zmask);
                     cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    cubes._0f870f87 &= ywmask;// 端のキューブを消す
+                    //cubes._0f870f87 &= ywmask;// 端のキューブを消す
 
                     addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
                 }
@@ -296,13 +300,17 @@ namespace DotsLite.MarchingCubes
             (uint4 cubeId, int4 ix, int4 iy, int4 iz, ref TCubeInstanceWriter outputCubes)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
-            var _0or255to0 = cubeId + 1 & 0xfe;
-            if (!math.any(_0or255to0)) return;// すべての cubeId が 0 か 255 なら何もしない
+            //var _0or255to0 = cubeId + 1 & 0xfe;
+            //if (!math.any(_0or255to0)) return;// すべての cubeId が 0 か 255 なら何もしない
 
-            if (_0or255to0.x != 0) outputCubes.Add(ix.x, iy.x, iz.x, cubeId.x);
-            if (_0or255to0.y != 0) outputCubes.Add(ix.y, iy.y, iz.y, cubeId.y);
-            if (_0or255to0.z != 0) outputCubes.Add(ix.z, iy.z, iz.z, cubeId.z);
-            if (_0or255to0.w != 0) outputCubes.Add(ix.w, iy.w, iz.w, cubeId.w);
+            //if (_0or255to0.x != 0) outputCubes.Add(ix.x, iy.x, iz.x, cubeId.x);
+            //if (_0or255to0.y != 0) outputCubes.Add(ix.y, iy.y, iz.y, cubeId.y);
+            //if (_0or255to0.z != 0) outputCubes.Add(ix.z, iy.z, iz.z, cubeId.z);
+            //if (_0or255to0.w != 0) outputCubes.Add(ix.w, iy.w, iz.w, cubeId.w);
+            outputCubes.Add(ix.x, iy.x, iz.x, cubeId.x);
+            outputCubes.Add(ix.y, iy.y, iz.y, cubeId.y);
+            outputCubes.Add(ix.z, iy.z, iz.z, cubeId.z);
+            outputCubes.Add(ix.w, iy.w, iz.w, cubeId.w);
         }
 
 
