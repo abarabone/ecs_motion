@@ -70,7 +70,7 @@ namespace DotsLite.Draw
                         pModel[i + 0] = math.asfloat(ids.lPack4);
                         pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
 
-                        pModel[i + 2] = new float4(pos.Value, 1.0f);
+                        pModel[i + 2] = new float4(pos.Value - new float3(16, -16, -16), 1.0f);
 
                         return;
 

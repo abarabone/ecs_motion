@@ -97,11 +97,22 @@ namespace DotsLite.MarchingCubes
 
                 cmd.AddComponent(index, ent, new PhysicsCollider
                 {
-                    Value = mesh,
+                    Value = makeTestCube_(pos),//mesh,
                 });
             }
         }
 
+        static unsafe BlobAssetReference<Collider> makeTestCube_(Translation pos)
+        {
+            var geom = new BoxGeometry
+            {
+                Center = 0.0f,//pos.Value,
+                Size = 32.0f,
+                Orientation = quaternion.identity,
+                BevelRadius = 0.2f,
+            };
+            return BoxCollider.Create(geom);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         //static unsafe void makeMesh_(

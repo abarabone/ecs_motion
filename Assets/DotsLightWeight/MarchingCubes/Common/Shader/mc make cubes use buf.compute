@@ -141,8 +141,8 @@ int toIndex(int igrid, int overx, int iy, int iz)
     if (_gid == -1) return -1;
 
     const int g = _gid * 32 * 32;
-    const int z = _iz;
     const int y = _iy * 32;
+    const int z = _iz;
     return g + z + y;
 }
 

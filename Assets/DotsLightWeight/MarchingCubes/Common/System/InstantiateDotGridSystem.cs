@@ -60,6 +60,8 @@ namespace DotsLite.MarchingCubes
                             grids.pGridIds[index.serial] = grids.nextSeed++;
                             grids.ppGridXLines[index.serial] = grid.pXline;
 
+                            var pos = i * 32 + new int3(16, -16, -16);
+
                             em.SetComponentData(newent, new DotGrid.UnitData
                             {
                                 GridIndexInArea = index,
@@ -69,13 +71,13 @@ namespace DotsLite.MarchingCubes
                             {
                                 Bbox = new AABB
                                 {
-                                    Center = i * 32 + new float3(16, -16, -16),
+                                    Center = pos,
                                     Extents = new float3(32 / 2, 32 / 2, 32 / 2),
                                 }
                             });
                             em.SetComponentData(newent, new Translation
                             {
-                                Value = i * 32,
+                                Value = pos,
                             });
                         }
                     }
