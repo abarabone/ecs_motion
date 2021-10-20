@@ -236,10 +236,15 @@ namespace DotsLite.MarchingCubes
                                 p[i] = v0;
                             }
 
-                            var v = 0x0fff_fff0u;
-                            for (var i = 32; i < 32 * 32; i++)
+                            var v = 0x7fff_fffeu;
+                            for (var i = 32; i < 32 * 31; i++)
                             {
                                 p[i] = v;
+                            }
+
+                            for (var i = 32 * 31; i < 32 * 32; i++)
+                            {
+                                p[i] = v0;
                             }
 
                             break;
