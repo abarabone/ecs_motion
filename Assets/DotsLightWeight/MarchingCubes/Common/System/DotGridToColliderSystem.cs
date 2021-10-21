@@ -16,7 +16,9 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Dependency;
 
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]// çƒçlÇÃïKóvÇ†ÇË
+    [UpdateAfter(typeof(DotGridUpdateSystem))]
     public class DotGridToCollisionSystem : DependencyAccessableSystemBase
     {
 
@@ -97,7 +99,8 @@ namespace DotsLite.MarchingCubes
 
                 cmd.AddComponent(index, ent, new PhysicsCollider
                 {
-                    Value = makeTestCube_(pos),//mesh,
+                    //Value = makeTestCube_(pos),
+                    Value = mesh,
                 });
             }
         }
@@ -124,7 +127,7 @@ namespace DotsLite.MarchingCubes
         {
             var writer = new MakeCube.MeshWriter
             {
-                gridpos = pos.Value,
+                gridpos = float3.zero,// pos.Value,
                 vtxs = new NativeList<float3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
                 tris = new NativeList<int3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
                 filter = new CollisionFilter
@@ -138,6 +141,8 @@ namespace DotsLite.MarchingCubes
 
             MakeCube.SampleAllCubes(in near, ref writer);
             UnityEngine.Debug.Log($"{writer.vtxs.Length} {writer.tris.Length} {writer.count}/{writer.all}");
+            UnityEngine.Debug.Log($"{writer.vtxs[0]} {writer.vtxs[1]} {writer.vtxs[2]}");
+            UnityEngine.Debug.Log($"{writer.tris[0]} {writer.tris[1]} {writer.tris[2]}");
             var mesh = writer.CreateMesh();
             //UnityEngine.Debug.Log($"{writer.vtxs.Length} {writer.tris.Length} {mesh.Value.MemorySize} {writer.count}/{writer.all}");
             writer.Dispose();
