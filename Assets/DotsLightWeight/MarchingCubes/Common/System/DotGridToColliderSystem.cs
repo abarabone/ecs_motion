@@ -127,7 +127,7 @@ namespace DotsLite.MarchingCubes
         {
             var writer = new MakeCube.MeshWriter
             {
-                gridpos = float3.zero,// pos.Value,
+                center = new float3(-16, 16, 16),
                 vtxs = new NativeList<float3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
                 tris = new NativeList<int3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
                 filter = new CollisionFilter
@@ -140,11 +140,7 @@ namespace DotsLite.MarchingCubes
             var near = grids.PickupNearGridIds(grid, pDefaultBlankGrid);
 
             MakeCube.SampleAllCubes(in near, ref writer);
-            UnityEngine.Debug.Log($"{writer.vtxs.Length} {writer.tris.Length} {writer.count}/{writer.all}");
-            UnityEngine.Debug.Log($"{writer.vtxs[0]} {writer.vtxs[1]} {writer.vtxs[2]}");
-            UnityEngine.Debug.Log($"{writer.tris[0]} {writer.tris[1]} {writer.tris[2]}");
             var mesh = writer.CreateMesh();
-            //UnityEngine.Debug.Log($"{writer.vtxs.Length} {writer.tris.Length} {mesh.Value.MemorySize} {writer.count}/{writer.all}");
             writer.Dispose();
             return mesh;
         }

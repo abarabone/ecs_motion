@@ -23,7 +23,7 @@ namespace DotsLite.MarchingCubes
         public struct CubeWrapper
         {
             public byte cubeId;
-            public BlobArray<int> vertexIndices;
+            public BlobArray<int3> vertexIndices;
             public BlobArray<float3> normalsForTriangle;
             public BlobArray<float3> normalsForVertex;
         }
@@ -66,10 +66,11 @@ namespace DotsLite.MarchingCubes
                     void copyIndicesToblob_(ref MarchingCubesBlobAsset.CubeWrapper dstcube)
                     {
                         var srcvis = srccubes[i].vertexIndices;
-                        var dstvis = builder.Allocate(ref dstcube.vertexIndices, srcvis.Length);
-                        for (var i = 0; i < dstvis.Length; i++)
+                        var dstvis = builder.Allocate(ref dstcube.vertexIndices, srcvis.Length / 3);
+                        var idst = 0;
+                        for (var i = 0; i < srcvis.Length; i+=3)
                         {
-                            dstvis[i] = srcvis[i];
+                            dstvis[idst++] = new int3(srcvis[i + 2], srcvis[i + 1], srcvis[i + 0]);
                         }
                     }
                     void copyNormalsForVtxIndicesToblob_(ref MarchingCubesBlobAsset.CubeWrapper dstcube)

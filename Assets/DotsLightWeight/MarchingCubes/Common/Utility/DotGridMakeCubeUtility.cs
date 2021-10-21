@@ -69,7 +69,7 @@ namespace DotsLite.MarchingCubes
         }
         public struct MeshWriter : ICubeInstanceWriter, IDisposable
         {
-            public float3 gridpos;
+            public float3 center;
             public NativeList<float3> vtxs;
             public NativeList<int3> tris;
             public CollisionFilter filter;
@@ -86,7 +86,7 @@ namespace DotsLite.MarchingCubes
                 ref var srcIdxLists = ref this.mcdata.Value.CubeIdAndVertexIndicesList;
                 ref var srcVtxList = ref this.mcdata.Value.BaseVertexList;
 
-                var center = this.gridpos + new float3(x, y, z);
+                var center = this.center + new float3(x, -y, -z);
                 if (cubeId == 0 || cubeId == 255) return;
                 this.count++;
 
@@ -94,8 +94,7 @@ namespace DotsLite.MarchingCubes
 
                 for (var i = 0; i < srcIdxList.Length; i++)
                 {
-                    var srcIdx = srcIdxList[i];
-                    this.tris.Add(this.vtxOffset + srcIdx);
+                    this.tris.Add(this.vtxOffset + srcIdxList[i]);
                 }
                 for (var i = 0; i < srcVtxList.Length; i++)
                 {
