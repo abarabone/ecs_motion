@@ -29,45 +29,46 @@ namespace DotsLite.MarchingCubes
             public int maxGridInstances;
             public MarchingCubesAsset asset;
         }
+
+
+        public class MainData : IComponentData, IDisposable
+        {
+            public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
+            //public FreeStockList FreeStocks;
+
+            public GlobalShaderResources ShaderResources;
+
+            public BlobAssetReference<MarchingCubesBlobAsset> Assset;
+
+
+            public void Alloc(MarchingCubesAsset asset, int maxFreeGrids, int maxGridInstances)
+            {
+                var defaultGrids = new NativeArray<DotGrid32x32x32Unsafe>(2, Allocator.Persistent);
+                defaultGrids[(int)GridFillMode.Blank] = DotGridAllocater.Alloc(GridFillMode.Blank);
+                defaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
+
+                this.DefaultGrids = defaultGrids;
+                //this.FreeStocks = new FreeStockList(maxFreeGrids);
+                this.ShaderResources.Alloc(asset, maxGridInstances);
+            }
+
+            public void Dispose()
+            {
+                this.ShaderResources.Dispose();
+
+                this.DefaultGrids[(int)GridFillMode.Blank].Dispose();
+                this.DefaultGrids[(int)GridFillMode.Solid].Dispose();
+
+                //this.FreeStocks.Dispose();
+                this.DefaultGrids.Dispose();
+
+                this.Assset.Dispose();
+
+                Debug.Log("mc global disposed");
+            }
+        }
     }
 
-
-    public class MarchingCubeGlobalData : IComponentData, IDisposable
-    {
-        public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
-        //public FreeStockList FreeStocks;
-
-        public GlobalShaderResources ShaderResources;
-
-        public BlobAssetReference<MarchingCubesBlobAsset> Assset;
-
-
-        public void Alloc(MarchingCubesAsset asset, int maxFreeGrids, int maxGridInstances)
-        {
-            var defaultGrids = new NativeArray<DotGrid32x32x32Unsafe>(2, Allocator.Persistent);
-            defaultGrids[(int)GridFillMode.Blank] = DotGridAllocater.Alloc(GridFillMode.Blank);
-            defaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
-
-            this.DefaultGrids = defaultGrids;
-            //this.FreeStocks = new FreeStockList(maxFreeGrids);
-            this.ShaderResources.Alloc(asset, maxGridInstances);
-        }
-
-        public void Dispose()
-        {
-            this.ShaderResources.Dispose();
-
-            this.DefaultGrids[(int)GridFillMode.Blank].Dispose();
-            this.DefaultGrids[(int)GridFillMode.Solid].Dispose();
-
-            //this.FreeStocks.Dispose();
-            this.DefaultGrids.Dispose();
-
-            this.Assset.Dispose();
-
-            Debug.Log("mc global disposed");
-        }
-    }
 
     //static public partial class Resource
     //{

@@ -216,7 +216,7 @@ namespace DotsLite.MarchingCubes.Authoring
                 //    buffer.length = totalSize_;
 
                 //    //var gent = gcs_.GetPrimaryEntity(global_);
-                //    //var defaultGrids = em.GetComponentData<MarchingCubeGlobalData>(gent).DefaultGrids;//em.GetBuffer<DotGridGlobal.DefualtGridData>(gent);
+                //    //var defaultGrids = em.GetComponentData<Global.MainData>(gent).DefaultGrids;//em.GetBuffer<DotGridGlobal.DefualtGridData>(gent);
                 //    //var defaultGrid = defaultGrids[(int)FillMode];//.GetDefaultGrid(fillMode);
 
                 //    //for (var i = 0; i < totalSize; i++)
