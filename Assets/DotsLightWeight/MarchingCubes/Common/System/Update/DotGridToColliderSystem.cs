@@ -137,7 +137,7 @@ namespace DotsLite.MarchingCubes
                 },
                 mcdata = mcdata,
             };
-            var near = grids.PickupNearGridIds(grid, pDefaultBlankGrid);
+            var near = grids.PickupNearGridIds(grid);
 
             MakeCube.SampleAllCubes(in near, ref writer);
             var mesh = writer.CreateMesh();

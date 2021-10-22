@@ -33,7 +33,7 @@ namespace DotsLite.MarchingCubes
 
         public unsafe struct LinkToGridData : IComponentData, IDisposable
         {
-            public int* pGridIds;
+            public int* pGridPoolIds;
             public uint** ppGridXLines;
             public int3 GridLength;
             public int3 GridSpan;
@@ -42,7 +42,7 @@ namespace DotsLite.MarchingCubes
             public void Dispose()
             {
                 Debug.Log("Link to grid data dispos");
-                if (this.pGridIds != null) UnsafeUtility.Free(this.pGridIds, Allocator.Persistent);
+                if (this.pGridPoolIds != null) UnsafeUtility.Free(this.pGridPoolIds, Allocator.Persistent);
                 if (this.ppGridXLines != null) UnsafeUtility.Free(this.ppGridXLines, Allocator.Persistent);
             }
         }
@@ -100,57 +100,60 @@ namespace DotsLite.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe MakeCube.NearDotGrids PickupNearGridIds(
-            in this LinkToGridData grids, DotGrid.UnitData grid, uint* pBlankGrid)
+            in this LinkToGridData grids, DotGrid.UnitData grid)
         {
             
             var ppXLines = grids.ppGridXLines;
+            var pPoolIds = grids.pGridPoolIds;
             var gridSpan = grids.GridSpan;
             var index = grid.GridIndexInArea;
 
 
             var lhome = index;
             var plx = ppXLines[lhome.serial];
+            var ilx = pPoolIds[lhome.serial];
 
             var lrear = index.CloneNear(new int3(0, 0, 1), gridSpan);
             var plz = ppXLines[lrear.serial];
+            var ilz = pPoolIds[lrear.serial];
 
             var ldown = index.CloneNear(new int3(0, 1, 0), gridSpan);
             var ply = ppXLines[ldown.serial];
+            var ily = pPoolIds[ldown.serial];
 
             var lslant = index.CloneNear(new int3(0, 1, 1), gridSpan);
             var plw = ppXLines[lslant.serial];
+            var ilw = pPoolIds[lslant.serial];
 
 
             var rhome = index.CloneNear(new int3(1, 0, 0), gridSpan);
             var prx = ppXLines[rhome.serial];
+            var irx = pPoolIds[rhome.serial];
 
             var rrear = index.CloneNear(new int3(1, 0, 1), gridSpan);
             var prz = ppXLines[rrear.serial];
+            var irz = pPoolIds[rrear.serial];
 
             var rdown = index.CloneNear(new int3(1, 1, 0), gridSpan);
             var pry = ppXLines[rdown.serial];
+            var iry = pPoolIds[rdown.serial];
 
             var rslant = index.CloneNear(new int3(1, 1, 1), gridSpan);
             var prw = ppXLines[rslant.serial];
+            var irw = pPoolIds[rslant.serial];
 
 
             return new MakeCube.NearDotGrids
             {
                 L = new MakeCube.NearDotGrids.HalfGridUnit
                 {
-                    isContained = (uint4)new bool4(plx != null, ply != null, plz != null, plw != null),
-                    x = or_(plx, pBlankGrid),
-                    y = or_(ply, pBlankGrid),
-                    z = or_(plz, pBlankGrid),
-                    w = or_(plw, pBlankGrid),
+                    isContained = (uint4)math.sign(new int4(ilx, ily, ilz, ilw) + 1),
+                    x = plx, y = ply, z = plz, w = plw,
                 },
                 R = new MakeCube.NearDotGrids.HalfGridUnit
                 {
-                    isContained = (uint4)new bool4(prx != null, pry != null, prz != null, prw != null),
-                    x = or_(prx, pBlankGrid),
-                    y = or_(pry, pBlankGrid),
-                    z = or_(prz, pBlankGrid),
-                    w = or_(prw, pBlankGrid),
+                    isContained = (uint4)math.sign(new int4(irx, iry, irz, irw) + 1),
+                    x = prx, y = pry, z = prz, w = prw,
                 },
             };
         }

@@ -57,7 +57,7 @@ namespace DotsLite.MarchingCubes
                             var newent = em.Instantiate(prefab);
                             var grid = new DotGrid32x32x32Unsafe(GridFillMode.Blank);
 
-                            grids.pGridIds[index.serial] = grids.nextSeed++;
+                            grids.pGridPoolIds[index.serial] = grids.nextSeed++;
                             grids.ppGridXLines[index.serial] = grid.pXline;
 
                             var pos = i * 32 + new int3(16, -16, -16);

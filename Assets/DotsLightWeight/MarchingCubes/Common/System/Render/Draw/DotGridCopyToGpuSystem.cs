@@ -69,7 +69,7 @@ namespace DotsLite.MarchingCubes
 
                         var area = areas[parent.ParentArea];
                         var igrid = grid.GridIndexInArea.serial;
-                        var igarr = area.pGridIds[igrid] * 32 * 32;
+                        var igarr = area.pGridPoolIds[igrid] * 32 * 32;
 
                         var garr = NativeUtility.PtrToNativeArray(p, 32 * 32);
                         var srcstart = (int)dirty.begin;

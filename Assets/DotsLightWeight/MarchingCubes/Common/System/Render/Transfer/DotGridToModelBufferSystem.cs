@@ -79,7 +79,7 @@ namespace DotsLite.Draw
                         {
                             var ids = new NearGridIndex();
 
-                            var p = area.pGridIds;
+                            var p = area.pGridPoolIds;
                             var span = area.GridSpan;
 
 
