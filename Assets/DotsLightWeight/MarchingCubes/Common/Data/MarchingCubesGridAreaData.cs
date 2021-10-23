@@ -100,7 +100,7 @@ namespace DotsLite.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe MakeCube.NearDotGrids PickupNearGridIds(
-            in this LinkToGridData grids, DotGrid.UnitData grid)
+            in this LinkToGridData grids, in DotGrid.UnitData grid)
         {
             
             var ppXLines = grids.ppGridXLines;
@@ -157,8 +157,6 @@ namespace DotsLite.MarchingCubes
                 },
             };
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        unsafe static uint* or_(uint* p, uint* pBlank) => p != null ? p : pBlank;
     }
 
 

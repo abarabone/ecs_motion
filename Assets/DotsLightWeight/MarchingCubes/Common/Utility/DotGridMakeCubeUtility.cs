@@ -73,8 +73,8 @@ namespace DotsLite.MarchingCubes
             public NativeList<float3> vtxs;
             public NativeList<int3> tris;
             public CollisionFilter filter;
-            public int count;
-            public int all;
+            public int count;//
+            public int all;//
 
             public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
