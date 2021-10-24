@@ -47,6 +47,13 @@ namespace DotsLite.MarchingCubes
             }
         }
 
+        public struct UnitDimensionData : IComponentData
+        {
+            public float4 LeftFrontTop;
+            public float4 GridScaleR;
+            public float4 UnitScaleR;
+        }
+
         public struct DotGridPrefabData : IComponentData
         {
             public Entity Prefab;
