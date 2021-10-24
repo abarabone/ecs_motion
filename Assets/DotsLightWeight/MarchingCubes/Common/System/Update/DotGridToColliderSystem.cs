@@ -57,8 +57,9 @@ namespace DotsLite.MarchingCubes
                 parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
+                colliders = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
             }
-            .Schedule(this.MessageHolderSystem.Reciever.Holder.keyEntities, 32, this.Dependency);
+            .Schedule(this.MessageHolderSystem.Reciever.Holder.keyEntities, 1, this.Dependency);
         }
 
 
@@ -77,6 +78,8 @@ namespace DotsLite.MarchingCubes
             public ComponentDataFromEntity<DotGrid.UnitData> grids;
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.ParentAreaData> parents;
+            [ReadOnly]
+            public ComponentDataFromEntity<PhysicsCollider> colliders;
 
             [ReadOnly]
             public ComponentDataFromEntity<DotGridArea.LinkToGridData> areas;
@@ -97,6 +100,11 @@ namespace DotsLite.MarchingCubes
                 var area = this.areas[parent.ParentArea];
 
                 var mesh = makeMesh_(in grid, in pos, in area, this.pDefualtBlankGrid, in this.mcdata);
+
+                if (this.colliders.HasComponent(ent))
+                {
+                    this.colliders[ent].Value.Dispose();
+                }
 
                 cmd.AddComponent(index, ent, new PhysicsCollider
                 {
@@ -140,7 +148,7 @@ namespace DotsLite.MarchingCubes
             var near = grids.PickupNearGridIds(grid);
 
             MakeCube.SampleAllCubes(in near, ref writer);
-            var mesh = writer.CreateMesh();
+            var mesh = makeTestCube_(pos);//writer.CreateMesh();
             writer.Dispose();
             return mesh;
         }
@@ -179,10 +187,25 @@ namespace DotsLite.MarchingCubes
             //    p[i >> 5];
             //}
         }
+
+
+        public struct CubeColliderUnits
+        {
+            public BlobArray<BlobAssetReference<MeshCollider>> Units;
+        }
+        static unsafe BlobAssetReference<Collider> makeUnitCubeColliders_(Translation pos)
+        {
+
+
+
+
+            return BoxCollider.Create(geom);
+        }
     }
 
     static class iex
     {
         public static int3 xxx(this int i) => new int3(i, i, i);
     }
+
 }

@@ -176,7 +176,7 @@ namespace DotsLite.MarchingCubes
                             }
 
                             var v = 0xf444_4b44u;
-                            for (var i = 32; i < 32 * 31; i++)
+                            for (var i = 32; i < 32 * 3; i++)
                             {
                                 p[i] = v;
                                 v = (v << 3) | (v >> 28);
@@ -190,7 +190,8 @@ namespace DotsLite.MarchingCubes
                             break;
                         case DotGridUpdateType.aabb_add:
 
-                            msg.aabb.Add(in area, in dim);
+                            //msg.aabb.Add(in area, in dim);
+                            p[0] = 0xffff_ffff;
 
                             break;
                         case DotGridUpdateType.sphere_add:
