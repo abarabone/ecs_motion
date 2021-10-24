@@ -17,6 +17,7 @@ namespace DotsLite.MarchingCubes.Authoring
     using DotsLite.MarchingCubes;
     using DotsLite.MarchingCubes.Authoring;
     using DotsLite.Draw.Authoring;
+    using DotsLite.Utilities;
 
     public class MarchingCubesGridAreaGpuAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
@@ -37,8 +38,11 @@ namespace DotsLite.MarchingCubes.Authoring
         public Shader DrawCubeShader;
         public ComputeShader GridToCubesShader;
 
+        public float3 UnitScale;
+
         //public bool IsMode2;
         //public bool IsParallel;
+
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
@@ -55,21 +59,6 @@ namespace DotsLite.MarchingCubes.Authoring
             setModelToPrefab_(conversionSystem, entity, conversionSystem.GetPrimaryEntity(this.GridPrefab));
 
             return;
-
-
-            void setModelToPrefab_(GameObjectConversionSystem gcs, Entity ent, Entity prefab)
-            {
-                var em = gcs.DstEntityManager;
-
-                em.AddComponentData(prefab, new DrawInstance.ModelLinkData
-                {
-                    DrawModelEntityCurrent = ent,
-                });
-                em.AddComponentData(prefab, new DotGrid.ParentAreaData
-                {
-                    ParentArea = ent,
-                });
-            }
 
 
             void initModel_(GameObjectConversionSystem gcs, Entity ent, ComputeShader cs)
@@ -121,6 +110,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     new ComponentType[]
                     {
                         typeof(DrawModel.ExcludeDrawMeshCsTag),
+                        typeof(DotGridArea.UnitDimensionData),
                         typeof(DotGridArea.InitializeData),
                         typeof(DotGridArea.LinkToGridData),
                         typeof(DotGridArea.InfoData),
@@ -150,6 +140,18 @@ namespace DotsLite.MarchingCubes.Authoring
                         GridToCubesShader = this.GridToCubesShader,
                         MaxCubeInstances = this.MaxCubeInstances,
                         MaxGrids = this.MaxGrids,
+                    }
+                );
+
+                var unitScale = (float3)(1.0 / ((double3)this.UnitScale));
+                var gridScale = (float3)(1.0 / ((double3)this.UnitScale * 32));
+                var extents = (float3)this.transform.position - (this.GridLength * gridScale) / 2;
+                em.SetComponentData(ent,
+                    new DotGridArea.UnitDimensionData
+                    {
+                        LeftFrontTop = extents.As_float4(),// extents にして、tf する必要があるかも
+                        GridScaleR = gridScale.As_float4(),
+                        UnitScaleR = UnitScale.As_float4(),
                     }
                 );
 
@@ -227,6 +229,22 @@ namespace DotsLite.MarchingCubes.Authoring
                 //    return buffer;
                 //}
             }
+
+
+            void setModelToPrefab_(GameObjectConversionSystem gcs, Entity ent, Entity prefab)
+            {
+                var em = gcs.DstEntityManager;
+
+                em.AddComponentData(prefab, new DrawInstance.ModelLinkData
+                {
+                    DrawModelEntityCurrent = ent,
+                });
+                em.AddComponentData(prefab, new DotGrid.ParentAreaData
+                {
+                    ParentArea = ent,
+                });
+            }
+
 
 
         }

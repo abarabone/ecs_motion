@@ -138,7 +138,7 @@ namespace DotsLite.Arms
                         if (damages.HasComponent(entity))
                         {
                             var damage = damages[entity].Damage;
-                            hit.Hit(chhit, pthit, parts, corpss, v, damage, corps);
+                            hit.Hit(chhit, pthit, default, parts, corpss, v, damage, corps);
                         }
 
                         if (emits.HasComponent(entity))

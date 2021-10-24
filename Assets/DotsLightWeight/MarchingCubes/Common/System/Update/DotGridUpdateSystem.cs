@@ -15,7 +15,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Dependency;
 
     [StructLayout(LayoutKind.Explicit)]
-    public struct DotGridUpdateMessage : IHitMessage
+    public struct UpdateMessage : IHitMessage
     {
         [FieldOffset(0)] public AABB aabb;
         [FieldOffset(0)] public UpdateSphere sphere;
@@ -26,6 +26,7 @@ namespace DotsLite.MarchingCubes
     public enum DotGridUpdateType
     {
         none,
+        cube_force,
         aabb_add,
         aabb_remove,
         sphere_add,
@@ -58,50 +59,46 @@ namespace DotsLite.MarchingCubes
         }
     }
 
-    //// テストのためとりあえずグリッドを追加する
-    ////[DisableAutoCreation]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    //public class DotGridAddSystem : DependencyAccessableSystemBase
-    //{
-    //    HitMessage<DotGridUpdateMessage>.Sender mcSender;
+    // テストのためとりあえずグリッドを追加する
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    public class DotGridAddSystem : DependencyAccessableSystemBase
+    {
+        HitMessage<UpdateMessage>.Sender mcSender;
 
-    //    protected override void OnStartRunning()
-    //    {
-    //        base.OnStartRunning();
+        protected override void OnStartRunning()
+        {
+            base.OnStartRunning();
 
-    //        this.mcSender = HitMessage<DotGridUpdateMessage>.Sender.Create<DotGridUpdateSystem>(this);
-    //        using var mcScope = this.mcSender.WithDependencyScope();
-    //        var w = mcScope.MessagerAsParallelWriter;
+            this.mcSender = HitMessage<UpdateMessage>.Sender.Create<DotGridUpdateSystem>(this);
+            using var mcScope = this.mcSender.WithDependencyScope();
+            var w = mcScope.MessagerAsParallelWriter;
 
-    //        this.Entities
-    //            .WithAll<DotGrid.ParentAreaData>()
-    //            .ForEach((
-    //                Entity entity,
-    //                in DotGrid.UnitData grid) =>
-    //            {
-    //                w.Add(entity, new DotGridUpdateMessage
-    //                {
-    //                    type = DotGridUpdateType.aabb_add,
-    //                    aabb = new AABB
-    //                    {
-    //                        Center = 
-    //                    },
-    //                });
-    //            })
-    //            .ScheduleParallel();
-    //    }
-    //    protected override void OnUpdate()
-    //    { }
-    //}
+            this.Entities
+                .WithAll<DotGrid.ParentAreaData>()
+                .ForEach((
+                    Entity entity,
+                    in DotGrid.UnitData grid) =>
+                {
+                    w.Add(entity, new UpdateMessage
+                    {
+                        type = DotGridUpdateType.cube_force,
+                    });
+                })
+                .ScheduleParallel();
+        }
+        protected override void OnUpdate()
+        { }
+    }
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     public class DotGridUpdateSystem
-        : DependencyAccessableSystemBase, HitMessage<DotGridUpdateMessage>.IRecievable
+        : DependencyAccessableSystemBase, HitMessage<UpdateMessage>.IRecievable
     {
 
 
-        public HitMessage<DotGridUpdateMessage>.Reciever Reciever { get; private set; }
+        public HitMessage<UpdateMessage>.Reciever Reciever { get; private set; }
 
         BarrierDependency.Sender bardep;
 
@@ -110,7 +107,7 @@ namespace DotsLite.MarchingCubes
         {
             base.OnCreate();
 
-            this.Reciever = new HitMessage<DotGridUpdateMessage>.Reciever();// 10000, Allocator.TempJob);
+            this.Reciever = new HitMessage<UpdateMessage>.Reciever();// 10000, Allocator.TempJob);
 
             this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
         }
@@ -132,13 +129,14 @@ namespace DotsLite.MarchingCubes
                 dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(),
                 parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
+                dims = this.GetComponentDataFromEntity<DotGridArea.UnitDimensionData>(isReadOnly: true),
             }
-            .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
+            .ScheduleParallelKey(this.Reciever, 1, this.Dependency);
         }
 
 
         [BurstCompile]
-        public struct JobExecution : HitMessage<DotGridUpdateMessage>.IApplyJobExecutionForKey
+        public struct JobExecution : HitMessage<UpdateMessage>.IApplyJobExecutionForKey
         {
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.UnitData> dotgrids;
@@ -158,7 +156,7 @@ namespace DotsLite.MarchingCubes
             [BurstCompile]
             public unsafe void Execute(
                 int index, Entity targetEntity,
-                NativeMultiHashMap<Entity, DotGridUpdateMessage>.Enumerator msgs)
+                NativeMultiHashMap<Entity, UpdateMessage>.Enumerator msgs)
             {
                 var p = this.dotgrids[targetEntity].Unit.pXline;
                 var parent = this.parents[targetEntity].ParentArea;
@@ -169,27 +167,30 @@ namespace DotsLite.MarchingCubes
                 {
                     switch (msg.type)
                     {
+                        case DotGridUpdateType.cube_force:
+
+                            var v0 = 0u;
+                            for (var i = 0; i < 32; i++)
+                            {
+                                p[i] = v0;
+                            }
+
+                            var v = 0xf444_4b44u;
+                            for (var i = 32; i < 32 * 31; i++)
+                            {
+                                p[i] = v;
+                                v = (v << 3) | (v >> 28);
+                            }
+
+                            for (var i = 32 * 31; i < 32 * 32; i++)
+                            {
+                                p[i] = v0;
+                            }
+
+                            break;
                         case DotGridUpdateType.aabb_add:
 
                             msg.aabb.Add(in area, in dim);
-
-                            //var v0 = 0u;
-                            //for (var i = 0; i < 32; i++)
-                            //{
-                            //    p[i] = v0;
-                            //}
-
-                            //var v = 0xf444_4b44u;
-                            //for (var i = 32; i < 32 * 31; i++)
-                            //{
-                            //    p[i] = v;
-                            //    v = (v << 3) | (v >> 28);
-                            //}
-
-                            //for (var i = 32 * 31; i < 32 * 32; i++)
-                            //{
-                            //    p[i] = v0;
-                            //}
 
                             break;
                         case DotGridUpdateType.sphere_add:

@@ -48,6 +48,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     //typeof(PhysicsCollider),
                     typeof(DotGrid.UpdateDirtyRangeData),
                     //typeof(Unity.Physics.PhysicsCollider),
+                    typeof(Collision.Hit.TargetData),
                 });
                 em.AddComponents(ent, types);
 
@@ -55,6 +56,11 @@ namespace DotsLite.MarchingCubes.Authoring
                 //{
                 //    Value = BlobAssetReference<Unity.Physics.Collider>.Null,
                 //});
+                em.SetComponentData(ent, new Collision.Hit.TargetData
+                {
+                    HitType = Collision.HitType.marchingCubes,
+                    MainEntity = ent,
+                });
             }
 
 

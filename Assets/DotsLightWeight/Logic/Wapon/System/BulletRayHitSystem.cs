@@ -45,6 +45,7 @@ namespace DotsLite.Arms
 
         HitMessage<Structure.PartHitMessage>.Sender stSender;
         HitMessage<Character.HitMessage>.Sender chSender;
+        HitMessage<MarchingCubes.UpdateMessage>.Sender mcSender;
 
 
         //BarrierDependency.Sender bardep;
@@ -60,6 +61,7 @@ namespace DotsLite.Arms
 
             this.stSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
+            this.mcSender = HitMessage<MarchingCubes.UpdateMessage>.Sender.Create<MarchingCubes.DotGridUpdateSystem>(this);
 
             //this.bardep = BarrierDependency.Sender.Create<ExplosionSphereHitSystem>(this);
             //this.bardep2 = BarrierDependency.Sender.Create<BulletSphereHitSystem>(this);
@@ -75,12 +77,14 @@ namespace DotsLite.Arms
             using var phyScope = this.phydep.WithDependencyScope();
             using var pthitScope = this.stSender.WithDependencyScope();
             using var chhitScope = this.chSender.WithDependencyScope();
+            using var mchitScope = this.mcSender.WithDependencyScope();
 
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
             var cw = phyScope.PhysicsWorld.CollisionWorld;
             var pthit = pthitScope.MessagerAsParallelWriter;
-            var chhit =chhitScope.MessagerAsParallelWriter;
+            var chhit = chhitScope.MessagerAsParallelWriter;
+            var mchit = mchitScope.MessagerAsParallelWriter;
 
 
             var damages = this.GetComponentDataFromEntity<Bullet.PointDamageSpecData>(isReadOnly: true);
@@ -139,7 +143,7 @@ namespace DotsLite.Arms
                         if ((hres.Types & Bullet.HitResponseTypes.damage) != 0)
                         {
                             var damage = damages[entity].Damage;
-                            hit.Hit(chhit, pthit, parts, corpss, v, damage, corps);
+                            hit.Hit(chhit, pthit, mchit, parts, corpss, v, damage, corps);
                         }
 
                         //if (emits.HasComponent(entity))

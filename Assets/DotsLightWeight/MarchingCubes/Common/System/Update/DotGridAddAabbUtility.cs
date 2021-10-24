@@ -15,6 +15,11 @@ namespace DotsLite.MarchingCubes
 {
     public static partial class DotgridUpdateUtility
     {
+
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static void 
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static void Add(this AABB range,
             in DotGridArea.LinkToGridData grids, in DotGridArea.UnitDimensionData dim)

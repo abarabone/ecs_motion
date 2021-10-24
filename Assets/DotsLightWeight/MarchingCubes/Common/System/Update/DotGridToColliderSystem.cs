@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 namespace DotsLite.MarchingCubes
 {
     using DotsLite.Dependency;
+    using DotsLite.Collision;
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
@@ -99,7 +100,6 @@ namespace DotsLite.MarchingCubes
 
                 cmd.AddComponent(index, ent, new PhysicsCollider
                 {
-                    //Value = makeTestCube_(pos),
                     Value = mesh,
                 });
             }

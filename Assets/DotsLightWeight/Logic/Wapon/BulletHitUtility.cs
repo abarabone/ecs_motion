@@ -245,6 +245,7 @@ namespace DotsLite.Arms
         static public void Hit(this HitResultCore hit,
             HitMessage<Character.HitMessage>.ParallelWriter chhit,
             HitMessage<Structure.PartHitMessage>.ParallelWriter pthit,
+            HitMessage<MarchingCubes.UpdateMessage>.ParallelWriter mchit,
             ComponentDataFromEntity<Part.PartData> parts,
             ComponentDataFromEntity<CorpsGroup.Data> corpss,
             float3 v, float damage,
@@ -264,6 +265,20 @@ namespace DotsLite.Arms
                     if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
 
                     hit.PostCharacterHitMessage(chhit, damage, v);
+                    break;
+
+
+                case HitType.marchingCubes:
+
+                    mchit.Add(hit.stateEntity, new MarchingCubes.UpdateMessage
+                    {
+                        type = MarchingCubes.DotGridUpdateType.aabb_add,
+                        aabb = new AABB
+                        {
+                            Center = hit.posision,
+                            Extents = 0.0f,//
+                        },
+                    });
                     break;
 
 
