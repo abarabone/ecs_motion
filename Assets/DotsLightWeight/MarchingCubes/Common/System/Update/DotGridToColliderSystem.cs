@@ -20,7 +20,8 @@ namespace DotsLite.MarchingCubes
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]// çƒçlÇÃïKóvÇ†ÇË
     [UpdateAfter(typeof(DotGridUpdateSystem))]
-    public class DotGridToCollisionSystem : DependencyAccessableSystemBase
+    public class DotGridToCollisionSystem<TGrid> : DependencyAccessableSystemBase
+        where TGrid : struct, IDotGrid<TGrid>
     {
 
         CommandBufferDependency.Sender cmddep;
@@ -37,7 +38,7 @@ namespace DotsLite.MarchingCubes
             base.OnCreate();
 
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-            this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
+            this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem<TGrid>>(this);
 
             this.MessageHolderSystem = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
         }
@@ -51,9 +52,9 @@ namespace DotsLite.MarchingCubes
             {
                 cmd = cmdscope.CommandBuffer.AsParallelWriter(),
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
-                mcdata = this.GetSingleton<Global.MainData>().Assset,
-                pDefualtBlankGrid = this.GetSingleton<Global.MainData>().DefaultGrids[(int)GridFillMode.Blank].pXline,
-                grids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
+                mcdata = this.GetSingleton<Global.MainData<TGrid>>().Assset,
+                //pDefualtBlankGrid = this.GetSingleton<Global.MainData<TGrid>>().DefaultGrids[(int)GridFillMode.Blank].pXline,
+                grids = this.GetComponentDataFromEntity<DotGrid.UnitData<TGrid>>(isReadOnly: true),
                 parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
@@ -75,7 +76,7 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
             [ReadOnly]
-            public ComponentDataFromEntity<DotGrid.UnitData> grids;
+            public ComponentDataFromEntity<DotGrid.UnitData<TGrid>> grids;
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.ParentAreaData> parents;
             [ReadOnly]
@@ -86,8 +87,8 @@ namespace DotsLite.MarchingCubes
             [ReadOnly]
             public ComponentDataFromEntity<Translation> poss;
 
-            [ReadOnly][NativeDisableUnsafePtrRestriction]
-            public uint *pDefualtBlankGrid;
+            //[ReadOnly][NativeDisableUnsafePtrRestriction]
+            //public uint *pDefualtBlankGrid;
 
             [BurstCompile]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -99,7 +100,7 @@ namespace DotsLite.MarchingCubes
                 var pos = this.poss[ent];
                 var area = this.areas[parent.ParentArea];
 
-                var mesh = makeMesh_(in grid, in pos, in area, this.pDefualtBlankGrid, in this.mcdata);
+                var mesh = makeMesh_(in grid, in pos, in area, in this.mcdata);
 
                 if (this.colliders.HasComponent(ent))
                 {
@@ -126,11 +127,9 @@ namespace DotsLite.MarchingCubes
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static unsafe void makeMesh_(
         static unsafe BlobAssetReference<Collider> makeMesh_(
-            in DotGrid.UnitData grid, in Translation pos,
+            in DotGrid.UnitData<TGrid> grid, in Translation pos,
             in DotGridArea.LinkToGridData grids,
-            uint *pDefaultBlankGrid,
             in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
         {
             var writer = new MakeCube.MeshWriter
@@ -148,7 +147,8 @@ namespace DotsLite.MarchingCubes
             var near = grids.PickupNearGridIds(grid);
 
             MakeCube.SampleAllCubes(in near, ref writer);
-            var mesh = makeTestCube_(pos);//writer.CreateMesh();
+            var mesh = writer.CreateMesh();
+            //var mesh = makeTestCube_(pos);
             writer.Dispose();
             return mesh;
         }

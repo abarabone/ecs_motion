@@ -14,13 +14,19 @@ using System;
 namespace DotsLite.MarchingCubes
 {
 
-    public unsafe interface IDotGrid : IDisposable
+    public unsafe interface IDotGrid<T> : IDisposable where T : struct, IDotGrid<T>
     {
-        //void* pXline { get; }
-        //public int CubeCount { get; }
+        uint* pXline { get; }
+        //int CubeCount { get; }
+        T Alloc(GridFillMode fillmode);
+        T CreateDefault(GridFillMode fillmode);
+        void Fill();
+        void Copy(in DotGrid.UnitData<T> grid, in DotGrid.UpdateDirtyRangeData dirty,
+            in DotGridArea.LinkToGridData area, in DotGridArea.ResourceGpuModeData res);
     }
 
-    public unsafe struct DotGrid16x16x16Unsafe : IDotGrid
+
+    public unsafe partial struct DotGrid16x16x16 : IDotGrid<DotGrid16x16x16>, IDisposable
     {
         public const int dotNum = 16 * 16 * 16;
         public const int xlineInGrid = 1 * 16 * 16;
@@ -28,7 +34,7 @@ namespace DotsLite.MarchingCubes
         //public const int maxbitNum = 16;
 
 
-        public uint* pXline;
+        public uint* pXline { get; private set; }
         public int CubeCount;// DotCount に変更　あとで
 
 
@@ -48,7 +54,7 @@ namespace DotsLite.MarchingCubes
         //}
 
 
-        public DotGrid16x16x16Unsafe(GridFillMode fillmode) : this()
+        public DotGrid16x16x16(GridFillMode fillmode) : this()
         {
             //const int size = sizeof( uint ) * xlineInGrid;
 
@@ -56,11 +62,13 @@ namespace DotsLite.MarchingCubes
             this.pXline = x.pXline;
             this.CubeCount = x.CubeCount;
         }
-        public DotGrid16x16x16Unsafe(UIntPtr p, int cubeCount) : this()
+        public DotGrid16x16x16(UIntPtr p, int cubeCount) : this()
         {
             this.pXline = (uint*)p;
             this.CubeCount = cubeCount;
         }
+
+        public DotGrid16x16x16 Alloc(GridFillMode fillmode) => new DotGrid16x16x16(fillmode);
 
         public void Dispose()
         {
@@ -102,7 +110,7 @@ namespace DotsLite.MarchingCubes
         //}
 
 
-        static public DotGrid16x16x16Unsafe CreateDefaultCube(GridFillMode fillmode)
+        static public DotGrid16x16x16 CreateDefaultCube(GridFillMode fillmode)
         {
             return Allocater.Alloc(fillmode);//, size);
         }
@@ -111,7 +119,7 @@ namespace DotsLite.MarchingCubes
         static class Allocater
         {
 
-            static public unsafe DotGrid16x16x16Unsafe Alloc(GridFillMode fillMode)
+            static public unsafe DotGrid16x16x16 Alloc(GridFillMode fillMode)
             {
                 //var align = UnsafeUtility.AlignOf<uint4>();
                 const int align = 32;// 16;
@@ -121,7 +129,7 @@ namespace DotsLite.MarchingCubes
                 return Fill(p, fillMode);
             }
 
-            static public unsafe DotGrid16x16x16Unsafe Fill(UIntPtr p, GridFillMode fillMode)
+            static public unsafe DotGrid16x16x16 Fill(UIntPtr p, GridFillMode fillMode)
             {
                 switch (fillMode)
                 {
@@ -130,14 +138,14 @@ namespace DotsLite.MarchingCubes
                             UnsafeUtility.MemSet((void*)p, 0xff, 16 * 16 * sizeof(uint)/2);
 
                             var cubeCount = 16 * 16 * 16;
-                            return new DotGrid16x16x16Unsafe(p, cubeCount);
+                            return new DotGrid16x16x16(p, cubeCount);
                         }
                     case GridFillMode.Blank:
                         {
                             UnsafeUtility.MemClear((void*)p, 16 * 16 * sizeof(uint)/2);
 
                             var cubeCount = 0;
-                            return new DotGrid16x16x16Unsafe(p, cubeCount);
+                            return new DotGrid16x16x16(p, cubeCount);
                         }
                     default:
                         return default;

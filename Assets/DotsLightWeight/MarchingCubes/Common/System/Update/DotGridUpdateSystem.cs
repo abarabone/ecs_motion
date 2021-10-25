@@ -26,13 +26,22 @@ namespace DotsLite.MarchingCubes
     public enum DotGridUpdateType
     {
         none,
-        cube_force,
-        aabb_add,
-        aabb_remove,
-        sphere_add,
-        sphere_remove,
-        capsule_add,
-        capsule_remove,
+        
+        cube_force32,
+        aabb_add32,
+        aabb_remove32,
+        sphere_add32,
+        sphere_remove32,
+        capsule_add32,
+        capsule_remove32,
+
+        cube_force16,
+        aabb_add16,
+        aabb_remove16,
+        sphere_add16,
+        sphere_remove16,
+        capsule_add16,
+        capsule_remove16,
     }
     public struct UpdateSphere
     {
@@ -78,11 +87,24 @@ namespace DotsLite.MarchingCubes
                 .WithAll<DotGrid.ParentAreaData>()
                 .ForEach((
                     Entity entity,
-                    in DotGrid.UnitData grid) =>
+                    in DotGrid.UnitData<DotGrid32x32x32> grid) =>
                 {
                     w.Add(entity, new UpdateMessage
                     {
-                        type = DotGridUpdateType.cube_force,
+                        type = DotGridUpdateType.cube_force32,
+                    });
+                })
+                .ScheduleParallel();
+
+            this.Entities
+                .WithAll<DotGrid.ParentAreaData>()
+                .ForEach((
+                    Entity entity,
+                    in DotGrid.UnitData<DotGrid16x16x16> grid) =>
+                {
+                    w.Add(entity, new UpdateMessage
+                    {
+                        type = DotGridUpdateType.cube_force16,
                     });
                 })
                 .ScheduleParallel();
@@ -93,14 +115,16 @@ namespace DotsLite.MarchingCubes
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
-    public class DotGridUpdateSystem
+    public class DotGridUpdateSystem//<TGrid>
         : DependencyAccessableSystemBase, HitMessage<UpdateMessage>.IRecievable
+        //where TGrid : struct, IDotGrid<TGrid>
     {
 
 
         public HitMessage<UpdateMessage>.Reciever Reciever { get; private set; }
 
-        BarrierDependency.Sender bardep;
+        BarrierDependency.Sender bardep32;
+        BarrierDependency.Sender bardep16;
 
 
         protected override void OnCreate()
@@ -109,7 +133,8 @@ namespace DotsLite.MarchingCubes
 
             this.Reciever = new HitMessage<UpdateMessage>.Reciever();// 10000, Allocator.TempJob);
 
-            this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
+            this.bardep32 = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem<DotGrid32x32x32>>(this);
+            this.bardep16 = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem<DotGrid16x16x16>>(this);
         }
 
         protected override void OnDestroy()
@@ -121,11 +146,13 @@ namespace DotsLite.MarchingCubes
 
         protected override void OnUpdate()
         {
-            using var barScope = this.bardep.WithDependencyScope();
+            using var barScope32 = this.bardep32.WithDependencyScope();
+            using var barScope16 = this.bardep16.WithDependencyScope();
 
             this.Dependency = new JobExecution
             {
-                dotgrids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true),
+                dotgrids32 = this.GetComponentDataFromEntity<DotGrid.UnitData<DotGrid32x32x32>>(isReadOnly: true),
+                dotgrids16 = this.GetComponentDataFromEntity<DotGrid.UnitData<DotGrid16x16x16>>(isReadOnly: true),
                 dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(),
                 parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
@@ -139,7 +166,9 @@ namespace DotsLite.MarchingCubes
         public struct JobExecution : HitMessage<UpdateMessage>.IApplyJobExecutionForKey
         {
             [ReadOnly]
-            public ComponentDataFromEntity<DotGrid.UnitData> dotgrids;
+            public ComponentDataFromEntity<DotGrid.UnitData<DotGrid32x32x32>> dotgrids32;
+            [ReadOnly]
+            public ComponentDataFromEntity<DotGrid.UnitData<DotGrid16x16x16>> dotgrids16;
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.ParentAreaData> parents;
 
@@ -158,7 +187,6 @@ namespace DotsLite.MarchingCubes
                 int index, Entity targetEntity,
                 NativeMultiHashMap<Entity, UpdateMessage>.Enumerator msgs)
             {
-                var p = this.dotgrids[targetEntity].Unit.pXline;
                 var parent = this.parents[targetEntity].ParentArea;
                 var area = this.areas[parent];
                 var dim = this.dims[parent];
@@ -167,37 +195,43 @@ namespace DotsLite.MarchingCubes
                 {
                     switch (msg.type)
                     {
-                        case DotGridUpdateType.cube_force:
-
-                            var v0 = 0u;
-                            for (var i = 0; i < 32; i++)
+                        case DotGridUpdateType.cube_force32:
                             {
-                                p[i] = v0;
-                            }
+                                //this.dotgrids[targetEntity].Unit.Fill();
+                                var p = this.dotgrids32[targetEntity].Unit.pXline;
 
-                            var v = 0xf444_4b44u;
-                            for (var i = 32; i < 32 * 31; i++)
-                            {
-                                p[i] = v;
-                                v = (v << 3) | (v >> 28);
-                            }
+                                var v0 = 0u;
+                                for (var i = 0; i < 32; i++)
+                                {
+                                    p[i] = v0;
+                                }
 
-                            for (var i = 32 * 31; i < 32 * 32; i++)
-                            {
-                                p[i] = v0;
+                                var v = 0xf444_4b44u;
+                                for (var i = 32; i < 32 * 31; i++)
+                                {
+                                    p[i] = v;
+                                    v = (v << 3) | (v >> 28);
+                                }
+
+                                for (var i = 32 * 31; i < 32 * 32; i++)
+                                {
+                                    p[i] = v0;
+                                }
+
                             }
+                            break;
+                        case DotGridUpdateType.aabb_add32:
+                            {
+                                //msg.aabb.Add(in area, in dim);
+                                var p = this.dotgrids32[targetEntity].Unit.pXline;
+                                p[0] = 0xffff_ffff;
+
+                            }
+                            break;
+                        case DotGridUpdateType.sphere_add32:
 
                             break;
-                        case DotGridUpdateType.aabb_add:
-
-                            //msg.aabb.Add(in area, in dim);
-                            p[0] = 0xffff_ffff;
-
-                            break;
-                        case DotGridUpdateType.sphere_add:
-
-                            break;
-                        case DotGridUpdateType.capsule_add:
+                        case DotGridUpdateType.capsule_add32:
 
                             break;
                         default: break;
@@ -214,4 +248,19 @@ namespace DotsLite.MarchingCubes
 
     }
 
+    public unsafe partial struct DotGrid32x32x32
+    {
+        public void Fill()
+        {
+
+        }
+    }
+
+    public unsafe partial struct DotGrid16x16x16
+    {
+        public void Fill()
+        {
+
+        }
+    }
 }

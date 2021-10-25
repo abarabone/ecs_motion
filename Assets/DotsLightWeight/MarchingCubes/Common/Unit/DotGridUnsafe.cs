@@ -24,7 +24,7 @@ namespace DotsLite.MarchingCubes
 
     
 
-    public unsafe struct DotGrid32x32x32Unsafe : IDotGrid
+    public unsafe partial struct DotGrid32x32x32 : IDotGrid<DotGrid32x32x32>, IDisposable
     {
         public const int dotNum = 32 * 32 * 32;
         public const int xlineInGrid = 1 * 32 * 32;
@@ -32,7 +32,7 @@ namespace DotsLite.MarchingCubes
         //public const int maxbitNum = 16;
 
 
-        public uint* pXline;
+        public uint* pXline { get; private set; }
         public int CubeCount;// DotCount に変更　あとで
 
 
@@ -52,7 +52,7 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        public DotGrid32x32x32Unsafe(GridFillMode fillmode) : this()
+        public DotGrid32x32x32(GridFillMode fillmode) : this()
         {
             //const int size = sizeof( uint ) * xlineInGrid;
 
@@ -60,11 +60,13 @@ namespace DotsLite.MarchingCubes
             this.pXline = x.pXline;
             this.CubeCount = x.CubeCount;
         }
-        public DotGrid32x32x32Unsafe(UIntPtr p, int cubeCount) : this()
+        public DotGrid32x32x32(UIntPtr p, int cubeCount) : this()
         {
             this.pXline = (uint*)p;
             this.CubeCount = cubeCount;
         }
+
+        public DotGrid32x32x32 Alloc(GridFillMode fillmode) => new DotGrid32x32x32(fillmode);
 
         public void Dispose()
         {
@@ -117,7 +119,7 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        static public DotGrid32x32x32Unsafe CreateDefaultCube(GridFillMode fillmode)
+        static public DotGrid32x32x32 CreateDefaultCube(GridFillMode fillmode)
         {
             //const int size = sizeof(uint) * 4;// 工夫すると 16 bytes ですむ、でもなんか遅い？？不思議だけど
             //const int size = sizeof(uint) * xlineInGrid;
@@ -128,7 +130,7 @@ namespace DotsLite.MarchingCubes
         static class Allocater
         {
 
-            static public unsafe DotGrid32x32x32Unsafe Alloc(GridFillMode fillMode)
+            static public unsafe DotGrid32x32x32 Alloc(GridFillMode fillMode)
             {
                 //var align = UnsafeUtility.AlignOf<uint4>();
                 const int align = 16;
@@ -138,7 +140,7 @@ namespace DotsLite.MarchingCubes
                 return Fill(p, fillMode);
             }
 
-            static public unsafe DotGrid32x32x32Unsafe Fill(UIntPtr p, GridFillMode fillMode)
+            static public unsafe DotGrid32x32x32 Fill(UIntPtr p, GridFillMode fillMode)
             {
                 switch (fillMode)
                 {
@@ -147,14 +149,14 @@ namespace DotsLite.MarchingCubes
                             UnsafeUtility.MemSet((void*)p, 0xff, 32 * 32 * sizeof(uint));
 
                             var cubeCount = 32 * 32 * 32;
-                            return new DotGrid32x32x32Unsafe(p, cubeCount);
+                            return new DotGrid32x32x32(p, cubeCount);
                         }
                     case GridFillMode.Blank:
                         {
                             UnsafeUtility.MemClear((void*)p, 32 * 32 * sizeof(uint));
 
                             var cubeCount = 0;
-                            return new DotGrid32x32x32Unsafe(p, cubeCount);
+                            return new DotGrid32x32x32(p, cubeCount);
                         }
                     default:
                         return default;

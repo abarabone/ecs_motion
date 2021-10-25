@@ -31,9 +31,11 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        public class MainData : IComponentData, IDisposable
+        // 32/16 別と強要に分ける必要あり
+        public class MainData<TGrid> : IComponentData, IDisposable
+            where TGrid : struct, IDotGrid<TGrid>
         {
-            public NativeArray<DotGrid32x32x32Unsafe> DefaultGrids;
+            public NativeArray<TGrid> DefaultGrids;
             //public FreeStockList FreeStocks;
 
             public GlobalShaderResources ShaderResources;
@@ -43,9 +45,11 @@ namespace DotsLite.MarchingCubes
 
             public void Alloc(MarchingCubesAsset asset, int maxFreeGrids, int maxGridInstances)
             {
-                var defaultGrids = new NativeArray<DotGrid32x32x32Unsafe>(2, Allocator.Persistent);
-                defaultGrids[(int)GridFillMode.Blank] = DotGridAllocater.Alloc(GridFillMode.Blank);
-                defaultGrids[(int)GridFillMode.Solid] = DotGridAllocater.Alloc(GridFillMode.Solid);
+                var defaultGrids = new NativeArray<TGrid>(2, Allocator.Persistent);
+                //defaultGrids[(int)GridFillMode.Blank] = TGrid.Allocater.Alloc(GridFillMode.Blank);
+                //defaultGrids[(int)GridFillMode.Solid] = TGrid.Allocater.Alloc(GridFillMode.Solid);
+                defaultGrids[(int)GridFillMode.Blank] = new TGrid().CreateDefault(GridFillMode.Blank);
+                defaultGrids[(int)GridFillMode.Solid] = new TGrid().CreateDefault(GridFillMode.Solid);
 
                 this.DefaultGrids = defaultGrids;
                 //this.FreeStocks = new FreeStockList(maxFreeGrids);
@@ -69,6 +73,15 @@ namespace DotsLite.MarchingCubes
         }
     }
 
+    public unsafe partial struct DotGrid32x32x32
+    {
+        public DotGrid32x32x32 CreateDefault(GridFillMode fillmode) => CreateDefaultCube(fillmode);
+    }
+
+    public unsafe partial struct DotGrid16x16x16
+    {
+        public DotGrid16x16x16 CreateDefault(GridFillMode fillmode) => CreateDefaultCube(fillmode);
+    }
 
     //static public partial class Resource
     //{

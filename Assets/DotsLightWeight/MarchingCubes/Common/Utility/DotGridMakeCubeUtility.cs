@@ -27,7 +27,7 @@ namespace DotsLite.MarchingCubes
     public unsafe struct DotGrid32x32x32UnsafePtr
     {
         [NativeDisableUnsafePtrRestriction]
-        public DotGrid32x32x32Unsafe* p;
+        public DotGrid32x32x32* p;
 
         public uint this[int ix, int iy, int iz]
         {

@@ -268,11 +268,11 @@ namespace DotsLite.Arms
                     break;
 
 
-                case HitType.marchingCubes:
+                case HitType.marchingCubes32:
 
                     mchit.Add(hit.stateEntity, new MarchingCubes.UpdateMessage
                     {
-                        type = MarchingCubes.DotGridUpdateType.aabb_add,
+                        type = MarchingCubes.DotGridUpdateType.aabb_add32,
                         aabb = new AABB
                         {
                             Center = hit.posision,

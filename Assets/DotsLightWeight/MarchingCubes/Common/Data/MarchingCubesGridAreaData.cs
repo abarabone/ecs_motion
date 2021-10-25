@@ -106,8 +106,9 @@ namespace DotsLite.MarchingCubes
         //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe MakeCube.NearDotGrids PickupNearGridIds(
-            in this LinkToGridData grids, in DotGrid.UnitData grid)
+        public static unsafe MakeCube.NearDotGrids PickupNearGridIds<TGrid>(
+            in this LinkToGridData grids, in DotGrid.UnitData<TGrid> grid)
+            where TGrid : struct, IDotGrid<TGrid>
         {
             
             var ppXLines = grids.ppGridXLines;

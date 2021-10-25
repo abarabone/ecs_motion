@@ -43,7 +43,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
-                    typeof(DotGrid.UnitData),
+                    typeof(DotGrid.UnitData<DotGrid32x32x32>),
                     typeof(DotGrid.ParentAreaData),
                     //typeof(PhysicsCollider),
                     typeof(DotGrid.UpdateDirtyRangeData),
@@ -58,7 +58,7 @@ namespace DotsLite.MarchingCubes.Authoring
                 //});
                 em.SetComponentData(ent, new Collision.Hit.TargetData
                 {
-                    HitType = Collision.HitType.marchingCubes,
+                    HitType = Collision.HitType.marchingCubes32,
                     MainEntity = ent,
                 });
             }

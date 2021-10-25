@@ -20,8 +20,9 @@ namespace DotsLite.MarchingCubes
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(DotGridLinksInitializeSystem))]
-    [UpdateAfter(typeof(Gpu.MarchingCubesShaderResourceInitializeSystem))]
-    public class InstantiateDotGridSystem : SystemBase
+    [UpdateAfter(typeof(Gpu.MarchingCubesShaderResourceInitializeSystem<>))]
+    public class InstantiateDotGridSystem<TGrid> : SystemBase
+        where TGrid : struct, IDotGrid<TGrid>
     {
 
         protected override unsafe void OnUpdate()
@@ -55,14 +56,14 @@ namespace DotsLite.MarchingCubes
                             var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
 
                             var newent = em.Instantiate(prefab);
-                            var grid = new DotGrid32x32x32Unsafe(GridFillMode.Blank);
+                            var grid = new TGrid().Alloc(GridFillMode.Blank);
 
                             grids.pGridPoolIds[index.serial] = grids.nextSeed++;
                             grids.ppGridXLines[index.serial] = grid.pXline;
 
                             var pos = i * 32 + new int3(16, -16, -16);
 
-                            em.SetComponentData(newent, new DotGrid.UnitData
+                            em.SetComponentData(newent, new DotGrid.UnitData<TGrid>
                             {
                                 GridIndexInArea = index,
                                 Unit = grid,
@@ -90,7 +91,7 @@ namespace DotsLite.MarchingCubes
         {
             this.Entities
                 .WithoutBurst()
-                .ForEach((in DotGrid.UnitData grid) =>
+                .ForEach((in DotGrid.UnitData<TGrid> grid) =>
                 {
                     grid.Dispose();
                 })

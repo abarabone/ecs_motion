@@ -14,9 +14,22 @@ namespace DotsLite.Draw
     using DotsLite.Dependency;
     using MarchingCubes;
 
+
+    ////[DisableAutoCreation]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
+    //public class DotGridToModelBufferSystem32 : DotGridToModelBufferSystem<DotGrid32x32x32>
+    //{ }
+
+    ////[DisableAutoCreation]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
+    //public class DotGridToModelBufferSystem16 : DotGridToModelBufferSystem<DotGrid16x16x16>
+    //{ }
+
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
-    public class DotGridToModelBufferSystem : DependencyAccessableSystemBase
+    //public class DotGridToModelBufferSystem<TGrid> : DependencyAccessableSystemBase
+    //    where TGrid : struct, IDotGrid<TGrid>
+    public class DotGridToModelBufferSystem32 : DependencyAccessableSystemBase
     {
 
 
@@ -52,7 +65,7 @@ namespace DotsLite.Draw
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
                         in Translation pos,
-                        in DotGrid.UnitData data,
+                        in DotGrid.UnitData32 data,
                         in DotGrid.ParentAreaData parent
                     ) =>
                     {

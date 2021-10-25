@@ -23,7 +23,8 @@ namespace DotsLite.Collision
         charactor,
         part,
         envelope,
-        marchingCubes,
+        marchingCubes32,
+        marchingCubes16,
     }
 
 
