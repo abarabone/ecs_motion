@@ -189,18 +189,18 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        public struct CubeColliderUnits
-        {
-            public BlobArray<BlobAssetReference<MeshCollider>> Units;
-        }
-        static unsafe BlobAssetReference<Collider> makeUnitCubeColliders_(Translation pos)
-        {
+        //public struct CubeColliderUnits
+        //{
+        //    public BlobArray<BlobAssetReference<MeshCollider>> Units;
+        //}
+        //static unsafe BlobAssetReference<Collider> makeUnitCubeColliders_(Translation pos)
+        //{
 
 
 
 
-            return BoxCollider.Create(geom);
-        }
+        //    return BoxCollider.Create(geom);
+        //}
     }
 
     static class iex
