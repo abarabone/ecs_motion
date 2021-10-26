@@ -43,10 +43,10 @@ namespace DotsLite.MarchingCubes.Authoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
-                    typeof(DotGrid.UnitData<DotGrid32x32x32>),
-                    typeof(DotGrid.ParentAreaData),
+                    typeof(DotGrid<TGrid>.UnitData),
+                    typeof(DotGrid<TGrid>.ParentAreaData),
                     //typeof(PhysicsCollider),
-                    typeof(DotGrid.UpdateDirtyRangeData),
+                    typeof(DotGrid<TGrid>.UpdateDirtyRangeData),
                     //typeof(Unity.Physics.PhysicsCollider),
                     typeof(Collision.Hit.TargetData),
                 });

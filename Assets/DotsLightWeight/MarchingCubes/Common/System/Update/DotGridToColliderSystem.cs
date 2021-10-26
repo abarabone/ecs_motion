@@ -54,8 +54,8 @@ namespace DotsLite.MarchingCubes
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
                 mcdata = this.GetSingleton<Global.MainData<TGrid>>().Assset,
                 //pDefualtBlankGrid = this.GetSingleton<Global.MainData<TGrid>>().DefaultGrids[(int)GridFillMode.Blank].pXline,
-                grids = this.GetComponentDataFromEntity<DotGrid.UnitData<TGrid>>(isReadOnly: true),
-                parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
+                grids = this.GetComponentDataFromEntity<DotGrid<TGrid>.UnitData>(isReadOnly: true),
+                parents = this.GetComponentDataFromEntity<DotGrid<TGrid>.ParentAreaData>(isReadOnly: true),
                 poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
                 colliders = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
@@ -76,9 +76,9 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
             [ReadOnly]
-            public ComponentDataFromEntity<DotGrid.UnitData<TGrid>> grids;
+            public ComponentDataFromEntity<DotGrid<TGrid>.UnitData> grids;
             [ReadOnly]
-            public ComponentDataFromEntity<DotGrid.ParentAreaData> parents;
+            public ComponentDataFromEntity<DotGrid<TGrid>.ParentAreaData> parents;
             [ReadOnly]
             public ComponentDataFromEntity<PhysicsCollider> colliders;
 
@@ -128,7 +128,7 @@ namespace DotsLite.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe BlobAssetReference<Collider> makeMesh_(
-            in DotGrid.UnitData<TGrid> grid, in Translation pos,
+            in DotGrid<TGrid>.UnitData grid, in Translation pos,
             in DotGridArea.LinkToGridData grids,
             in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
         {

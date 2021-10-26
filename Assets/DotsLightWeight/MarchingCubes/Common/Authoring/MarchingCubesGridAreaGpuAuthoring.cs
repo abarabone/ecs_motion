@@ -239,7 +239,7 @@ namespace DotsLite.MarchingCubes.Authoring
                 {
                     DrawModelEntityCurrent = ent,
                 });
-                em.AddComponentData(prefab, new DotGrid.ParentAreaData
+                em.AddComponentData(prefab, new DotGrid<TGrid>.ParentAreaData
                 {
                     ParentArea = ent,
                 });

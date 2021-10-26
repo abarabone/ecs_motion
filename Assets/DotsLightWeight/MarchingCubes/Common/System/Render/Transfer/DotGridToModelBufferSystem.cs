@@ -65,8 +65,8 @@ namespace DotsLite.Draw
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
                         in Translation pos,
-                        in DotGrid.UnitData32 data,
-                        in DotGrid.ParentAreaData parent
+                        in DotGrid<TGrid>.UnitData32 data,
+                        in DotGrid<TGrid>.ParentAreaData parent
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
@@ -88,7 +88,7 @@ namespace DotsLite.Draw
                         return;
 
 
-                        NearGridIndex pickupNeargridIds_(DotGridArea.LinkToGridData area, DotGrid.GridIndex index)
+                        NearGridIndex pickupNeargridIds_(DotGridArea.LinkToGridData area, DotGrid<TGrid>.GridIndex index)
                         {
                             var ids = new NearGridIndex();
 

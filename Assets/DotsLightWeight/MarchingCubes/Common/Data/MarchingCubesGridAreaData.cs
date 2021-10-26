@@ -71,7 +71,7 @@ namespace DotsLite.MarchingCubes
 
 
 
-        //public static unsafe NearGridIndex PickupNearGridIds(int* pGridIds, int3 gridSpan, DotGrid.GridIndex index)
+        //public static unsafe NearGridIndex PickupNearGridIds(int* pGridIds, int3 gridSpan, DotGrid<TGrid>.GridIndex index)
         //{
         //    var ids = new NearGridIndex();
 
@@ -107,7 +107,7 @@ namespace DotsLite.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe MakeCube.NearDotGrids PickupNearGridIds<TGrid>(
-            in this LinkToGridData grids, in DotGrid.UnitData<TGrid> grid)
+            in this LinkToGridData grids, in DotGrid<TGrid>.UnitData grid)
             where TGrid : struct, IDotGrid<TGrid>
         {
             

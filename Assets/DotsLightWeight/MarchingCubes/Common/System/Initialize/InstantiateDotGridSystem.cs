@@ -53,7 +53,7 @@ namespace DotsLite.MarchingCubes
 
                         void create_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids)
                         {
-                            var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
+                            var index = new DotGrid<TGrid>.GridIndex().Set(i, grids.GridSpan);
 
                             var newent = em.Instantiate(prefab);
                             var grid = new TGrid().Alloc(GridFillMode.Blank);
@@ -63,7 +63,7 @@ namespace DotsLite.MarchingCubes
 
                             var pos = i * 32 + new int3(16, -16, -16);
 
-                            em.SetComponentData(newent, new DotGrid.UnitData<TGrid>
+                            em.SetComponentData(newent, new DotGrid<TGrid>.UnitData
                             {
                                 GridIndexInArea = index,
                                 Unit = grid,
@@ -91,7 +91,7 @@ namespace DotsLite.MarchingCubes
         {
             this.Entities
                 .WithoutBurst()
-                .ForEach((in DotGrid.UnitData<TGrid> grid) =>
+                .ForEach((in DotGrid<TGrid>.UnitData grid) =>
                 {
                     grid.Dispose();
                 })

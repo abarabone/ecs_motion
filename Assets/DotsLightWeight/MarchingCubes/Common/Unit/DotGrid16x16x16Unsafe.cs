@@ -21,7 +21,7 @@ namespace DotsLite.MarchingCubes
         T Alloc(GridFillMode fillmode);
         T CreateDefault(GridFillMode fillmode);
         void Fill();
-        void Copy(in DotGrid.UnitData<T> grid, in DotGrid.UpdateDirtyRangeData dirty,
+        void Copy(in DotGrid<T>.UnitData grid, in DotGrid<T>.UpdateDirtyRangeData dirty,
             in DotGridArea.LinkToGridData area, in DotGridArea.ResourceGpuModeData res);
     }
 

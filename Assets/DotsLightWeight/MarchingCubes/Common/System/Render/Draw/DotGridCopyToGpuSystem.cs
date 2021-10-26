@@ -61,9 +61,9 @@ namespace DotsLite.MarchingCubes
                         //var grid = grids[ent];
                         //var dirty = dirties[ent];
                         //var parent = parents[ent];
-                        var grid = em.GetComponentData<DotGrid.UnitData<TGrid>>(ent);
-                        var dirty = em.GetComponentData<DotGrid.UpdateDirtyRangeData>(ent);
-                        var parent = em.GetComponentData<DotGrid.ParentAreaData>(ent);
+                        var grid = em.GetComponentData<DotGrid<TGrid>.UnitData>(ent);
+                        var dirty = em.GetComponentData<DotGrid<TGrid>.UpdateDirtyRangeData>(ent);
+                        var parent = em.GetComponentData<DotGrid<TGrid>.ParentAreaData>(ent);
 
                         //var p = grid.Unit.pXline;
                         var res = em.GetComponentData<DotGridArea.ResourceGpuModeData>(parent.ParentArea);
@@ -85,9 +85,9 @@ namespace DotsLite.MarchingCubes
                 })
                 .Run();
 
-            //var grids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true);
-            //var dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(isReadOnly: true);
-            //var parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true);
+            //var grids = this.GetComponentDataFromEntity<DotGrid<TGrid>.UnitData>(isReadOnly: true);
+            //var dirties = this.GetComponentDataFromEntity<DotGrid<TGrid>.UpdateDirtyRangeData>(isReadOnly: true);
+            //var parents = this.GetComponentDataFromEntity<DotGrid<TGrid>.ParentAreaData>(isReadOnly: true);
             //new JobExecution
             //{
 
@@ -104,13 +104,13 @@ namespace DotsLite.MarchingCubes
     public unsafe partial struct DotGrid32x32x32
     {
         //public void Copy<TGrid>(
-        //    in DotGrid.UnitData<TGrid> grid,
-        //    in DotGrid.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
+        //    in DotGrid<TGrid>.UnitData grid,
+        //    in DotGrid<TGrid>.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
         //    in DotGridArea.ResourceGpuModeData res)
         //    where TGrid : IDotGrid
         public void Copy(
-            in DotGrid.UnitData<DotGrid32x32x32> grid,
-            in DotGrid.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
+            in DotGrid<DotGrid32x32x32>.UnitData grid,
+            in DotGrid<DotGrid32x32x32>.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
             in DotGridArea.ResourceGpuModeData res)
         {
             var p = this.pXline;
@@ -130,13 +130,13 @@ namespace DotsLite.MarchingCubes
     public unsafe partial struct DotGrid16x16x16
     {
         //public void Copy<TGrid>(
-        //    in DotGrid.UnitData<TGrid> grid,
-        //    in DotGrid.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
+        //    in DotGrid<TGrid>.UnitData grid,
+        //    in DotGrid<TGrid>.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
         //    in DotGridArea.ResourceGpuModeData res)
         //    where TGrid : IDotGrid
         public void Copy(
-            in DotGrid.UnitData<DotGrid16x16x16> grid,
-            in DotGrid.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
+            in DotGrid<DotGrid16x16x16>.UnitData grid,
+            in DotGrid<DotGrid16x16x16>.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
             in DotGridArea.ResourceGpuModeData res)
         {
 

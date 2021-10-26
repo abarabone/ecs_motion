@@ -21,8 +21,9 @@ namespace DotsLite.MarchingCubes
         //public static void 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static void Add(this AABB range,
+        public unsafe static void Add<TGrid>(this AABB range,
             in DotGridArea.LinkToGridData grids, in DotGridArea.UnitDimensionData dim)
+            where TGrid : struct, IDotGrid<TGrid>
         {
             var ppXLines = grids.ppGridXLines;
             var pPoolIds = grids.pGridPoolIds;
@@ -46,14 +47,15 @@ namespace DotsLite.MarchingCubes
                     for (var ix = igfst.x; ix <= iglst.x; ix++)
                     {
                         var i = new int3(ix, iy, iz);
-                        var gidx = new DotGrid.GridIndex().Set(i, span);
+                        var gidx = new DotGrid<TGrid>.GridIndex().Set(i, span);
                         var pXlines = ppXLines[gidx.serial];
                         add_grid_inner_(range, _ifst, _ilst, pXlines, in dim, gidx);
                     }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        unsafe static void add_grid_inner_(this AABB range, int3 _ifst, int3 _ilst,
-            uint* pXlines, in DotGridArea.UnitDimensionData dim, DotGrid.GridIndex gidx)
+        unsafe static void add_grid_inner_<TGrid>(this AABB range, int3 _ifst, int3 _ilst,
+            uint* pXlines, in DotGridArea.UnitDimensionData dim, DotGrid<TGrid>.GridIndex gidx)
+            where TGrid : struct, IDotGrid<TGrid>
         {
             var begin = int3.zero;
             var end = new int3(32 - 1, 32 -1, 32 -1);
