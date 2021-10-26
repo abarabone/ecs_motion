@@ -29,13 +29,12 @@ namespace DotsLite.MarchingCubes
 
 
 
-        public struct UnitData32
+        public struct UnitData32 : IComponentData, IDisposable
         //public struct UnitData<TGrid> : IComponentData, IDisposable
         //    where TGrid : struct, IDotGrid<TGrid>
         {
             public GridIndex GridIndexInArea;
-            public DotGrid32x32x32Unsafe Unit;
-            //public TGrid Unit;
+            public DotGrid32x32x32 Unit;
             public float scale;
 
             //public void Dispose() => this.Unit.Dispose();
