@@ -104,7 +104,6 @@ namespace DotsLite.MarchingCubes.Gpu
                 .Run();
         }
 
-        // IDisposable な component data は、自動的に .Dispose() されるようだ
 
     }
 }

@@ -161,8 +161,8 @@ namespace DotsLite.MarchingCubes
         {
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.Unit32Data> dotgrids32;
-            [ReadOnly]
-            public ComponentDataFromEntity<DotGrid.Unit16Data> dotgrids16;
+            //[ReadOnly]
+            //public ComponentDataFromEntity<DotGrid.Unit16Data> dotgrids16;
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.ParentAreaData> parents;
 

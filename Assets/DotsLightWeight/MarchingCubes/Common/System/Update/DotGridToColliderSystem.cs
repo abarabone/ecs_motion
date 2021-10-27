@@ -54,6 +54,7 @@ namespace DotsLite.MarchingCubes
                 mcdata = this.GetSingleton<Global.MainData>().Assset,
                 //pDefualtBlankGrid = this.GetSingleton<Global.MainData<TGrid>>().DefaultGrids[(int)GridFillMode.Blank].pXline,
                 grids = this.GetComponentDataFromEntity<DotGrid.Unit32Data>(isReadOnly: true),
+                indexs = this.GetComponentDataFromEntity<DotGrid.IndexData>(isReadOnly: true),
                 parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),

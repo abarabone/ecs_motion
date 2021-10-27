@@ -24,7 +24,7 @@ namespace DotsLite.MarchingCubes
     public struct DotGridAreaGpuResources : IDisposable
     {
         public GridContentDataBuffer GridContentDataBuffer;
-        public GridInstructionsBuffer GridInstructions;
+        //public GridInstructionsBuffer GridInstructions;
 
         public CubeInstancingShaderBuffer CubeInstances;
         public CubeInstancingIndirectArgumentsBuffer CubeInstancingArgs;
@@ -33,7 +33,7 @@ namespace DotsLite.MarchingCubes
         public void Alloc(int maxCubeInstances, int maxGrids, int maxGridInstructions = 63)// cs の dispatch は 65535 までなので、65535/1024
         {
             this.GridContentDataBuffer = GridContentDataBuffer.Create(maxGrids);
-            this.GridInstructions = GridInstructionsBuffer.Create(maxGridInstructions);
+            //this.GridInstructions = GridInstructionsBuffer.Create(maxGridInstructions);
 
             this.CubeInstances = CubeInstancingShaderBuffer.Create(maxCubeInstances);
             this.CubeInstancingArgs = CubeInstancingIndirectArgumentsBuffer.Create();
@@ -86,7 +86,7 @@ namespace DotsLite.MarchingCubes
         public void Dispose()
         {
             this.GridContentDataBuffer.Dispose();
-            this.GridInstructions.Dispose();
+            //this.GridInstructions.Dispose();
 
             this.CubeInstances.Dispose();
             this.CubeInstancingArgs.Dispose();
@@ -96,10 +96,10 @@ namespace DotsLite.MarchingCubes
         {
             cs?.SetBuffer(0, "dotgrids", this.GridContentDataBuffer.Buffer);
             cs?.SetBuffer(0, "cube_instances", this.CubeInstances.Buffer);
-            cs?.SetBuffer(0, "grid_instructions", this.GridInstructions.Buffer);
+            //cs?.SetBuffer(0, "grid_instructions", this.GridInstructions.Buffer);
 
             mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
-            mat.SetBuffer("grid_instructions", this.GridInstructions.Buffer);
+            //mat.SetBuffer("grid_instructions", this.GridInstructions.Buffer);
             //mat.SetConstantBuffer_("grid_constant", this.GridInstructions.Buffer);
         }
 
