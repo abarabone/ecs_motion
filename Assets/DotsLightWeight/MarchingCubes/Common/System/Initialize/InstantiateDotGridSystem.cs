@@ -20,9 +20,8 @@ namespace DotsLite.MarchingCubes
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(DotGridLinksInitializeSystem))]
-    [UpdateAfter(typeof(Gpu.MarchingCubesShaderResourceInitializeSystem<>))]
-    public class InstantiateDotGridSystem<TGrid> : SystemBase
-        where TGrid : struct, IDotGrid<TGrid>
+    [UpdateAfter(typeof(Gpu.MarchingCubesShaderResourceInitializeSystem))]
+    public class InstantiateDotGridSystem : SystemBase
     {
 
         protected override unsafe void OnUpdate()
@@ -53,20 +52,23 @@ namespace DotsLite.MarchingCubes
 
                         void create_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids)
                         {
-                            var index = new DotGrid<TGrid>.GridIndex().Set(i, grids.GridSpan);
+                            var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
 
                             var newent = em.Instantiate(prefab);
-                            var grid = new TGrid().Alloc(GridFillMode.Blank);
+                            var grid = new DotGrid32x32x32().Alloc(GridFillMode.Blank);
 
                             grids.pGridPoolIds[index.serial] = grids.nextSeed++;
                             grids.ppGridXLines[index.serial] = grid.pXline;
 
                             var pos = i * 32 + new int3(16, -16, -16);
 
-                            em.SetComponentData(newent, new DotGrid<TGrid>.UnitData
+                            em.SetComponentData(newent, new DotGrid.Unit32Data
+                            {
+                                Unit = grid,
+                            });
+                            em.SetComponentData(newent, new DotGrid.IndexData
                             {
                                 GridIndexInArea = index,
-                                Unit = grid,
                                 scale = 1.0f,
                             });
                             em.SetComponentData(newent, new DrawInstance.WorldBbox
@@ -91,7 +93,15 @@ namespace DotsLite.MarchingCubes
         {
             this.Entities
                 .WithoutBurst()
-                .ForEach((in DotGrid<TGrid>.UnitData grid) =>
+                .ForEach((in DotGrid.Unit32Data grid) =>
+                {
+                    grid.Dispose();
+                })
+                .Run();
+
+            this.Entities
+                .WithoutBurst()
+                .ForEach((in DotGrid.Unit16Data grid) =>
                 {
                     grid.Dispose();
                 })

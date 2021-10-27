@@ -20,8 +20,7 @@ namespace DotsLite.MarchingCubes
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]// çƒçlÇÃïKóvÇ†ÇË
     [UpdateAfter(typeof(DotGridUpdateSystem))]
-    public class DotGridToCollisionSystem<TGrid> : DependencyAccessableSystemBase
-        where TGrid : struct, IDotGrid<TGrid>
+    public class DotGridToCollisionSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;
@@ -38,7 +37,7 @@ namespace DotsLite.MarchingCubes
             base.OnCreate();
 
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-            this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem<TGrid>>(this);
+            this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
 
             this.MessageHolderSystem = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
         }
@@ -52,10 +51,10 @@ namespace DotsLite.MarchingCubes
             {
                 cmd = cmdscope.CommandBuffer.AsParallelWriter(),
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
-                mcdata = this.GetSingleton<Global.MainData<TGrid>>().Assset,
+                mcdata = this.GetSingleton<Global.MainData>().Assset,
                 //pDefualtBlankGrid = this.GetSingleton<Global.MainData<TGrid>>().DefaultGrids[(int)GridFillMode.Blank].pXline,
-                grids = this.GetComponentDataFromEntity<DotGrid<TGrid>.UnitData>(isReadOnly: true),
-                parents = this.GetComponentDataFromEntity<DotGrid<TGrid>.ParentAreaData>(isReadOnly: true),
+                grids = this.GetComponentDataFromEntity<DotGrid.Unit32Data>(isReadOnly: true),
+                parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
                 colliders = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
@@ -76,9 +75,11 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
             [ReadOnly]
-            public ComponentDataFromEntity<DotGrid<TGrid>.UnitData> grids;
+            public ComponentDataFromEntity<DotGrid.Unit32Data> grids;
             [ReadOnly]
-            public ComponentDataFromEntity<DotGrid<TGrid>.ParentAreaData> parents;
+            public ComponentDataFromEntity<DotGrid.IndexData> indexs;
+            [ReadOnly]
+            public ComponentDataFromEntity<DotGrid.ParentAreaData> parents;
             [ReadOnly]
             public ComponentDataFromEntity<PhysicsCollider> colliders;
 
@@ -92,22 +93,23 @@ namespace DotsLite.MarchingCubes
 
             [BurstCompile]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void Execute(int index)
+            public void Execute(int i)
             {
-                var ent = this.KeyEntities[index];
+                var ent = this.KeyEntities[i];
                 var grid = this.grids[ent];
+                var index = this.indexs[ent];
                 var parent = this.parents[ent];
                 var pos = this.poss[ent];
                 var area = this.areas[parent.ParentArea];
 
-                var mesh = makeMesh_(in grid, in pos, in area, in this.mcdata);
+                var mesh = makeMesh_(in grid.Unit, in index, in pos, in area, in this.mcdata);
 
                 if (this.colliders.HasComponent(ent))
                 {
                     this.colliders[ent].Value.Dispose();
                 }
 
-                cmd.AddComponent(index, ent, new PhysicsCollider
+                cmd.AddComponent(i, ent, new PhysicsCollider
                 {
                     Value = mesh,
                 });
@@ -127,10 +129,13 @@ namespace DotsLite.MarchingCubes
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe BlobAssetReference<Collider> makeMesh_(
-            in DotGrid<TGrid>.UnitData grid, in Translation pos,
+        static unsafe BlobAssetReference<Collider> makeMesh_<TGrid>(
+            in TGrid grid,
+            in DotGrid.IndexData index,
+            in Translation pos,
             in DotGridArea.LinkToGridData grids,
             in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
+            where TGrid : struct, IDotGrid<TGrid>
         {
             var writer = new MakeCube.MeshWriter
             {
@@ -144,7 +149,7 @@ namespace DotsLite.MarchingCubes
                 },
                 mcdata = mcdata,
             };
-            var near = grids.PickupNearGridIds(grid);
+            var near = grids.PickupNearGridIds(in grid, in index);
 
             MakeCube.SampleAllCubes(in near, ref writer);
             var mesh = writer.CreateMesh();

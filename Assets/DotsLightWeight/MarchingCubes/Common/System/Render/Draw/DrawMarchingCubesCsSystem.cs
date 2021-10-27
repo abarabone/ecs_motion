@@ -18,19 +18,18 @@ namespace DotsLite.MarchingCubes.Gpu
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     [UpdateAfter(typeof(DrawBufferToShaderDataSystem))]
-    public class DrawMarchingCubeCsSystem<TGrid> : SystemBase
-        where TGrid : struct, IDotGrid<TGrid>
+    public class DrawMarchingCubeCsSystem : SystemBase
     {
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.RequireSingletonForUpdate<Global.MainData<TGrid>>();
+            this.RequireSingletonForUpdate<Global.MainData>();
         }
 
         protected unsafe override void OnUpdate()
         {
-            var globaldata = this.GetSingleton<Global.MainData<TGrid>>();
+            var globaldata = this.GetSingleton<Global.MainData>();
 
             var gbuf = globaldata.ShaderResources;
 

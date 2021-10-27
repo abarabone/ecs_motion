@@ -71,7 +71,7 @@ namespace DotsLite.MarchingCubes
 
 
 
-        //public static unsafe NearGridIndex PickupNearGridIds(int* pGridIds, int3 gridSpan, DotGrid<TGrid>.GridIndex index)
+        //public static unsafe NearGridIndex PickupNearGridIds(int* pGridIds, int3 gridSpan, DotGrid.GridIndex index)
         //{
         //    var ids = new NearGridIndex();
 
@@ -106,47 +106,47 @@ namespace DotsLite.MarchingCubes
         //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe MakeCube.NearDotGrids PickupNearGridIds<TGrid>(
-            in this LinkToGridData grids, in DotGrid<TGrid>.UnitData grid)
+        public static unsafe MakeCube.NearDotGrids PickupNearGridIds<TGrid>
+            (in this LinkToGridData gridlinks, in TGrid grid, in DotGrid.IndexData gridindex)
             where TGrid : struct, IDotGrid<TGrid>
         {
             
-            var ppXLines = grids.ppGridXLines;
-            var pPoolIds = grids.pGridPoolIds;
-            var gridSpan = grids.GridSpan;
-            var index = grid.GridIndexInArea;
+            var ppXLines = gridlinks.ppGridXLines;
+            var pPoolIds = gridlinks.pGridPoolIds;
+            var span = gridlinks.GridSpan;
+            var index = gridindex.GridIndexInArea;
 
 
             var lhome = index;
             var plx = ppXLines[lhome.serial];
             var ilx = pPoolIds[lhome.serial];
 
-            var lrear = index.CloneNear(new int3(0, 0, 1), gridSpan);
+            var lrear = index.CloneNear(new int3(0, 0, 1), span);
             var plz = ppXLines[lrear.serial];
             var ilz = pPoolIds[lrear.serial];
 
-            var ldown = index.CloneNear(new int3(0, 1, 0), gridSpan);
+            var ldown = index.CloneNear(new int3(0, 1, 0), span);
             var ply = ppXLines[ldown.serial];
             var ily = pPoolIds[ldown.serial];
 
-            var lslant = index.CloneNear(new int3(0, 1, 1), gridSpan);
+            var lslant = index.CloneNear(new int3(0, 1, 1), span);
             var plw = ppXLines[lslant.serial];
             var ilw = pPoolIds[lslant.serial];
 
 
-            var rhome = index.CloneNear(new int3(1, 0, 0), gridSpan);
+            var rhome = index.CloneNear(new int3(1, 0, 0), span);
             var prx = ppXLines[rhome.serial];
             var irx = pPoolIds[rhome.serial];
 
-            var rrear = index.CloneNear(new int3(1, 0, 1), gridSpan);
+            var rrear = index.CloneNear(new int3(1, 0, 1), span);
             var prz = ppXLines[rrear.serial];
             var irz = pPoolIds[rrear.serial];
 
-            var rdown = index.CloneNear(new int3(1, 1, 0), gridSpan);
+            var rdown = index.CloneNear(new int3(1, 1, 0), span);
             var pry = ppXLines[rdown.serial];
             var iry = pPoolIds[rdown.serial];
 
-            var rslant = index.CloneNear(new int3(1, 1, 1), gridSpan);
+            var rslant = index.CloneNear(new int3(1, 1, 1), span);
             var prw = ppXLines[rslant.serial];
             var irw = pPoolIds[rslant.serial];
 

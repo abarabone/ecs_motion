@@ -19,8 +19,7 @@ namespace DotsLite.MarchingCubes.Gpu
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class MarchingCubesShaderResourceInitializeSystem<TGrid> : DependencyAccessableSystemBase
-        where TGrid : struct, IDotGrid<TGrid>
+    public class MarchingCubesShaderResourceInitializeSystem : DependencyAccessableSystemBase
     {
         CommandBufferDependency.Sender cmddep;
 
@@ -47,7 +46,7 @@ namespace DotsLite.MarchingCubes.Gpu
                 .ForEach((
                     Entity ent,
                     Global.InitializeData init,
-                    Global.MainData<TGrid> data) =>
+                    Global.MainData data) =>
                 {
                     data.Alloc(init.asset, init.maxFreeGrids, init.maxGridInstances);
 
@@ -57,8 +56,8 @@ namespace DotsLite.MarchingCubes.Gpu
                 .Run();
 
 
-            var gres = this.GetSingleton<Global.MainData<TGrid>>().ShaderResources;
-            var pBlank = this.GetSingleton<Global.MainData<TGrid>>().DefaultGrids[(int)GridFillMode.Blank].pXline;
+            var gres = this.GetSingleton<Global.MainData>().ShaderResources;
+            var pBlank = this.GetSingleton<Global.MainData>().DefaultGrids[(int)GridFillMode.Blank].pXline;
 
             this.Entities
                 .WithName("GridArea")

@@ -14,14 +14,19 @@ using System;
 namespace DotsLite.MarchingCubes
 {
 
-    public unsafe interface IDotGrid<T> : IDisposable where T : struct, IDotGrid<T>
+    public unsafe interface IDotGrid<TGrid> : IDisposable
+        where TGrid : struct, IDotGrid<TGrid>
     {
         uint* pXline { get; }
         //int CubeCount { get; }
-        T Alloc(GridFillMode fillmode);
-        T CreateDefault(GridFillMode fillmode);
+
+        TGrid Alloc(GridFillMode fillmode);
+
+        TGrid CreateDefault(GridFillMode fillmode);
+
         void Fill();
-        void Copy(in DotGrid<T>.UnitData grid, in DotGrid<T>.UpdateDirtyRangeData dirty,
+
+        void Copy(in TGrid grid, in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty,
             in DotGridArea.LinkToGridData area, in DotGridArea.ResourceGpuModeData res);
     }
 

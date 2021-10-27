@@ -32,10 +32,11 @@ namespace DotsLite.MarchingCubes
 
 
         // 32/16 別と強要に分ける必要あり
-        public class MainData<TGrid> : IComponentData, IDisposable
-            where TGrid : struct, IDotGrid<TGrid>
+        //public class MainData<TGrid> : IComponentData, IDisposable
+        //    where TGrid : struct, IDotGrid<TGrid>
+        public class MainData : IComponentData, IDisposable
         {
-            public NativeArray<TGrid> DefaultGrids;
+            public NativeArray<DotGrid32x32x32> DefaultGrids;
             //public FreeStockList FreeStocks;
 
             public GlobalShaderResources ShaderResources;
@@ -45,11 +46,11 @@ namespace DotsLite.MarchingCubes
 
             public void Alloc(MarchingCubesAsset asset, int maxFreeGrids, int maxGridInstances)
             {
-                var defaultGrids = new NativeArray<TGrid>(2, Allocator.Persistent);
+                var defaultGrids = new NativeArray<DotGrid32x32x32>(2, Allocator.Persistent);
                 //defaultGrids[(int)GridFillMode.Blank] = TGrid.Allocater.Alloc(GridFillMode.Blank);
                 //defaultGrids[(int)GridFillMode.Solid] = TGrid.Allocater.Alloc(GridFillMode.Solid);
-                defaultGrids[(int)GridFillMode.Blank] = new TGrid().CreateDefault(GridFillMode.Blank);
-                defaultGrids[(int)GridFillMode.Solid] = new TGrid().CreateDefault(GridFillMode.Solid);
+                defaultGrids[(int)GridFillMode.Blank] = new DotGrid32x32x32().CreateDefault(GridFillMode.Blank);
+                defaultGrids[(int)GridFillMode.Solid] = new DotGrid32x32x32().CreateDefault(GridFillMode.Solid);
 
                 this.DefaultGrids = defaultGrids;
                 //this.FreeStocks = new FreeStockList(maxFreeGrids);

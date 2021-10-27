@@ -19,9 +19,8 @@ namespace DotsLite.MarchingCubes
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     //[UpdateAfter(typeof(DotGridUpdateSystem))]
-    [UpdateBefore(typeof(Gpu.DrawMarchingCubeCsSystem<>))]
-    public class DotGridCopyToGpuSystem<TGrid> : DependencyAccessableSystemBase, BarrierDependency.IRecievable
-        where TGrid : struct, IDotGrid<TGrid>
+    [UpdateBefore(typeof(Gpu.DrawMarchingCubeCsSystem))]
+    public class DotGridCopyToGpuSystem : DependencyAccessableSystemBase, BarrierDependency.IRecievable
     {
 
 
@@ -61,15 +60,16 @@ namespace DotsLite.MarchingCubes
                         //var grid = grids[ent];
                         //var dirty = dirties[ent];
                         //var parent = parents[ent];
-                        var grid = em.GetComponentData<DotGrid<TGrid>.UnitData>(ent);
-                        var dirty = em.GetComponentData<DotGrid<TGrid>.UpdateDirtyRangeData>(ent);
-                        var parent = em.GetComponentData<DotGrid<TGrid>.ParentAreaData>(ent);
+                        var grid = em.GetComponentData<DotGrid.Unit32Data>(ent);
+                        var index = em.GetComponentData<DotGrid.IndexData>(ent);
+                        var dirty = em.GetComponentData<DotGrid.UpdateDirtyRangeData>(ent);
+                        var parent = em.GetComponentData<DotGrid.ParentAreaData>(ent);
 
                         //var p = grid.Unit.pXline;
                         var res = em.GetComponentData<DotGridArea.ResourceGpuModeData>(parent.ParentArea);
 
                         var area = areas[parent.ParentArea];
-                        grid.Unit.Copy(in grid, in dirty, in area, in res);
+                        grid.Unit.Copy(in grid.Unit, in index, in dirty, in area, in res);
 
                         //var area = areas[parent.ParentArea];
                         //var igrid = grid.GridIndexInArea.serial;
@@ -85,9 +85,9 @@ namespace DotsLite.MarchingCubes
                 })
                 .Run();
 
-            //var grids = this.GetComponentDataFromEntity<DotGrid<TGrid>.UnitData>(isReadOnly: true);
-            //var dirties = this.GetComponentDataFromEntity<DotGrid<TGrid>.UpdateDirtyRangeData>(isReadOnly: true);
-            //var parents = this.GetComponentDataFromEntity<DotGrid<TGrid>.ParentAreaData>(isReadOnly: true);
+            //var grids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true);
+            //var dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(isReadOnly: true);
+            //var parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true);
             //new JobExecution
             //{
 
@@ -103,19 +103,14 @@ namespace DotsLite.MarchingCubes
 
     public unsafe partial struct DotGrid32x32x32
     {
-        //public void Copy<TGrid>(
-        //    in DotGrid<TGrid>.UnitData grid,
-        //    in DotGrid<TGrid>.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
-        //    in DotGridArea.ResourceGpuModeData res)
-        //    where TGrid : IDotGrid
         public void Copy(
-            in DotGrid<DotGrid32x32x32>.UnitData grid,
-            in DotGrid<DotGrid32x32x32>.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
+            in DotGrid32x32x32 grid,
+            in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
             in DotGridArea.ResourceGpuModeData res)
         {
             var p = this.pXline;
 
-            var igrid = grid.GridIndexInArea.serial;
+            var igrid = index.GridIndexInArea.serial;
             var igarr = area.pGridPoolIds[igrid] * 32 * 32;
 
             var garr = NativeUtility.PtrToNativeArray(p, 32 * 32);
@@ -129,14 +124,9 @@ namespace DotsLite.MarchingCubes
 
     public unsafe partial struct DotGrid16x16x16
     {
-        //public void Copy<TGrid>(
-        //    in DotGrid<TGrid>.UnitData grid,
-        //    in DotGrid<TGrid>.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
-        //    in DotGridArea.ResourceGpuModeData res)
-        //    where TGrid : IDotGrid
         public void Copy(
-            in DotGrid<DotGrid16x16x16>.UnitData grid,
-            in DotGrid<DotGrid16x16x16>.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
+            in DotGrid16x16x16 grid,
+            in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
             in DotGridArea.ResourceGpuModeData res)
         {
 

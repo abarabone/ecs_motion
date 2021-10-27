@@ -17,9 +17,7 @@ namespace DotsLite.MarchingCubes
     using Utility;
     using Utilities;
 
-
-    public static class DotGrid<TGrid>
-            where TGrid : struct, IDotGrid<TGrid>
+    public static class DotGrid
     {
 
 
@@ -29,21 +27,37 @@ namespace DotsLite.MarchingCubes
         }
 
 
-
-        public struct UnitData : IComponentData, IDisposable
-        //public struct UnitData<TGrid> : IComponentData, IDisposable
+        public struct Unit32Data : IComponentData, IDisposable
         {
-            public GridIndex GridIndexInArea;
-            public TGrid Unit;
-            //public TGrid Unit;
-            public float scale;
+            public DotGrid32x32x32 Unit;
 
             //public void Dispose() => this.Unit.Dispose();
             public void Dispose()
             {
-                Debug.Log("DotGrid<TGrid>.UnitData dispose");
+                Debug.Log("DotGrid.Unit32Data dispose");
                 this.Unit.Dispose();
             }
+        }
+        public struct Unit16Data : IComponentData, IDisposable
+        {
+            public DotGrid32x32x32 Unit;
+
+            //public void Dispose() => this.Unit.Dispose();
+            public void Dispose()
+            {
+                Debug.Log("DotGrid.Unit16Data dispose");
+                this.Unit.Dispose();
+            }
+        }
+
+        public struct ScaleData : IComponentData
+        {
+            public float scale;
+        }
+        public struct IndexData : IComponentData
+        {
+            public GridIndex GridIndexInArea;
+            public float scale;//
         }
         public struct GridIndex
         {
@@ -59,7 +73,7 @@ namespace DotsLite.MarchingCubes
                 return this;
             }
             public GridIndex CloneNear(int3 offset, int3 span) =>
-                new DotGrid<TGrid>.GridIndex().Set(this.index + offset, span);
+                new GridIndex().Set(this.index + offset, span);
         }
 
 

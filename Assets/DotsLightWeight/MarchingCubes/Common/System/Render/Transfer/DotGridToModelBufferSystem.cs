@@ -29,7 +29,7 @@ namespace DotsLite.Draw
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
     //public class DotGridToModelBufferSystem<TGrid> : DependencyAccessableSystemBase
     //    where TGrid : struct, IDotGrid<TGrid>
-    public class DotGridToModelBufferSystem32 : DependencyAccessableSystemBase
+    public class DotGridToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 
@@ -65,8 +65,9 @@ namespace DotsLite.Draw
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
                         in Translation pos,
-                        in DotGrid<TGrid>.UnitData32 data,
-                        in DotGrid<TGrid>.ParentAreaData parent
+                        //in DotGrid.Unit32Data grid,
+                        in DotGrid.IndexData index,
+                        in DotGrid.ParentAreaData parent
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
@@ -79,7 +80,7 @@ namespace DotsLite.Draw
 
                         var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
 
-                        var ids = pickupNeargridIds_(gridAreas[parent.ParentArea], data.GridIndexInArea);
+                        var ids = pickupNeargridIds_(gridAreas[parent.ParentArea], index.GridIndexInArea);
                         pModel[i + 0] = math.asfloat(ids.lPack4);
                         pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
 
@@ -88,7 +89,7 @@ namespace DotsLite.Draw
                         return;
 
 
-                        NearGridIndex pickupNeargridIds_(DotGridArea.LinkToGridData area, DotGrid<TGrid>.GridIndex index)
+                        NearGridIndex pickupNeargridIds_(DotGridArea.LinkToGridData area, DotGrid.GridIndex index)
                         {
                             var ids = new NearGridIndex();
 
