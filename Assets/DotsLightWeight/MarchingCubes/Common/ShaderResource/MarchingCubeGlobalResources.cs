@@ -31,7 +31,7 @@ namespace DotsLite.MarchingCubes
             public Mesh mesh;
 
 
-            public void Alloc(MarchingCubesAsset asset, int maxGridInstances)
+            public void Alloc(MarchingCubesAsset asset)
             {
                 this.CubeGeometryConstants = CubeGeometryConstantBuffer.Create(asset);
 
@@ -91,9 +91,10 @@ namespace DotsLite.MarchingCubes
             public GridCubeIdShaderBufferTexture GridCubeIds;
 
 
-            public void Alloc(MarchingCubesAsset asset, int maxGridInstances)
+            public void Alloc<TGrid>(int maxGridInstances)
+                where TGrid : struct, IDotGrid<TGrid>
             {
-                this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances);
+                this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances, new TGrid().UnitOnEdge);
             }
 
             public void Dispose()
@@ -120,10 +121,11 @@ namespace DotsLite.MarchingCubes
 
         public void Dispose() => this.Texture?.Release();
 
-        public static GridCubeIdShaderBufferTexture Create(int maxGridInstances)
+        public static GridCubeIdShaderBufferTexture Create(int maxGridInstances, int unitOnEdge)
         {
-            var buffer = new RenderTexture(32 * 32, 32, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R8_UInt, 0);
-            //var buffer = new RenderTexture(32 * 32, 32, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R32_UInt, 0);
+            var n = unitOnEdge;
+            var buffer = new RenderTexture(n * n, n, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R8_UInt, 0);
+            //var buffer = new RenderTexture(n * n, n, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R32_UInt, 0);
             buffer.enableRandomWrite = true;
             buffer.dimension = TextureDimension.Tex2DArray;
             buffer.volumeDepth = maxGridInstances;

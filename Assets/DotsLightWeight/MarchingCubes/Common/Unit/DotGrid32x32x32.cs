@@ -14,15 +14,6 @@ using System;
 namespace DotsLite.MarchingCubes
 {
 
-    public enum GridFillMode
-    {
-        NotFilled = -1,
-        Blank = 0,
-        Solid = 1,
-        Null = 2,
-    };
-
-    
 
     public unsafe partial struct DotGrid32x32x32 : IDotGrid<DotGrid32x32x32>, IDisposable
     {
@@ -30,6 +21,8 @@ namespace DotsLite.MarchingCubes
         public const int xlineInGrid = 1 * 32 * 32;
         public const int shiftNum = 5;
         //public const int maxbitNum = 16;
+
+        public int UnitOnEdge => 32;
 
 
         public uint* pXline { get; private set; }
@@ -119,7 +112,7 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        static public DotGrid32x32x32 CreateDefaultCube(GridFillMode fillmode)
+        static public DotGrid32x32x32 CreateDefaultGrid(GridFillMode fillmode)
         {
             //const int size = sizeof(uint) * 4;// 工夫すると 16 bytes ですむ、でもなんか遅い？？不思議だけど
             //const int size = sizeof(uint) * xlineInGrid;

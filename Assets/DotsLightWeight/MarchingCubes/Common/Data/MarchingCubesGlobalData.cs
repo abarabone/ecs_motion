@@ -35,13 +35,25 @@ namespace DotsLite.MarchingCubes
         {
             public CommonShaderResources ShaderResources;
 
+
+            public void Alloc(MarchingCubesAsset asset)
+            {
+                this.ShaderResources.Alloc(asset);
+            }
+
+            public void Dispose()
+            {
+                this.ShaderResources.Dispose();
+
+                Debug.Log("mc global common disposed");
+            }
         }
 
 
         // 32/16 別と強要に分ける必要あり
         //public class MainData<TGrid> : IComponentData, IDisposable
         //    where TGrid : struct, IDotGrid<TGrid>
-        public class Working32Data : IComponentData, IDisposable
+        public class Work32Data : IComponentData, IDisposable
         {
             public NativeArray<DotGrid32x32x32> DefaultGrids;
             //public FreeStockList FreeStocks;
@@ -51,17 +63,17 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<MarchingCubesBlobAsset> Assset;
 
 
-            public void Alloc(MarchingCubesAsset asset, int maxFreeGrids, int maxGridInstances)
+            public void Alloc(int maxGridInstances)
             {
                 var defaultGrids = new NativeArray<DotGrid32x32x32>(2, Allocator.Persistent);
                 //defaultGrids[(int)GridFillMode.Blank] = TGrid.Allocater.Alloc(GridFillMode.Blank);
                 //defaultGrids[(int)GridFillMode.Solid] = TGrid.Allocater.Alloc(GridFillMode.Solid);
-                defaultGrids[(int)GridFillMode.Blank] = new DotGrid32x32x32().CreateDefault(GridFillMode.Blank);
-                defaultGrids[(int)GridFillMode.Solid] = new DotGrid32x32x32().CreateDefault(GridFillMode.Solid);
-
+                defaultGrids[(int)GridFillMode.Blank] = DotGrid32x32x32.CreateDefaultGrid(GridFillMode.Blank);
+                defaultGrids[(int)GridFillMode.Solid] = DotGrid32x32x32.CreateDefaultGrid(GridFillMode.Solid);
+                
                 this.DefaultGrids = defaultGrids;
                 //this.FreeStocks = new FreeStockList(maxFreeGrids);
-                this.ShaderResources.Alloc(asset, maxGridInstances);
+                this.ShaderResources.Alloc<DotGrid32x32x32>(maxGridInstances);
             }
 
             public void Dispose()
@@ -76,20 +88,20 @@ namespace DotsLite.MarchingCubes
 
                 this.Assset.Dispose();
 
-                Debug.Log("mc global disposed");
+                Debug.Log("mc global work32 disposed");
             }
         }
     }
 
-    public unsafe partial struct DotGrid32x32x32
-    {
-        public DotGrid32x32x32 CreateDefault(GridFillMode fillmode) => CreateDefaultCube(fillmode);
-    }
+    //public unsafe partial struct DotGrid32x32x32
+    //{
+    //    public DotGrid32x32x32 CreateDefault(GridFillMode fillmode) => CreateDefaultGrid(fillmode);
+    //}
 
-    public unsafe partial struct DotGrid16x16x16
-    {
-        public DotGrid16x16x16 CreateDefault(GridFillMode fillmode) => CreateDefaultCube(fillmode);
-    }
+    //public unsafe partial struct DotGrid16x16x16
+    //{
+    //    public DotGrid16x16x16 CreateDefault(GridFillMode fillmode) => CreateDefaultGrid(fillmode);
+    //}
 
     //static public partial class Resource
     //{

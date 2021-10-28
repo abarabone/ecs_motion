@@ -14,29 +14,14 @@ using System;
 namespace DotsLite.MarchingCubes
 {
 
-    public unsafe interface IDotGrid<TGrid> : IDisposable
-        where TGrid : struct, IDotGrid<TGrid>
-    {
-        uint* pXline { get; }
-        //int CubeCount { get; }
-
-        TGrid Alloc(GridFillMode fillmode);
-
-        TGrid CreateDefault(GridFillMode fillmode);
-
-        void Fill();
-
-        void Copy(in TGrid grid, in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty,
-            in DotGridArea.LinkToGridData area, in DotGridArea.ResourceGpuModeData res);
-    }
-
-
     public unsafe partial struct DotGrid16x16x16 : IDotGrid<DotGrid16x16x16>, IDisposable
     {
         public const int dotNum = 16 * 16 * 16;
         public const int xlineInGrid = 1 * 16 * 16;
         public const int shiftNum = 4;
         //public const int maxbitNum = 16;
+
+        public int UnitOnEdge => 16;
 
 
         public uint* pXline { get; private set; }
@@ -115,7 +100,7 @@ namespace DotsLite.MarchingCubes
         //}
 
 
-        static public DotGrid16x16x16 CreateDefaultCube(GridFillMode fillmode)
+        static public DotGrid16x16x16 CreateDefaultGrid(GridFillMode fillmode)
         {
             return Allocater.Alloc(fillmode);//, size);
         }
