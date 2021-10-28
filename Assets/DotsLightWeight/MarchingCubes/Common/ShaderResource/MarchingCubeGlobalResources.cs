@@ -21,76 +21,92 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Utilities;
 
 
-
-
-
-    public struct GlobalShaderResources : IDisposable
+    public static partial class Global
     {
-        public CubeGeometryConstantBuffer CubeGeometryConstants;
-        public GridCubeIdShaderBufferTexture GridCubeIds;
 
-        public Mesh mesh;
-
-
-        public void Alloc(MarchingCubesAsset asset, int maxGridInstances)
+        public struct CommonShaderResources : IDisposable
         {
-            this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances);
+            public CubeGeometryConstantBuffer CubeGeometryConstants;
 
-            this.CubeGeometryConstants = CubeGeometryConstantBuffer.Create(asset);
+            public Mesh mesh;
 
-            this.mesh = createMesh_();
+
+            public void Alloc(MarchingCubesAsset asset, int maxGridInstances)
+            {
+                this.CubeGeometryConstants = CubeGeometryConstantBuffer.Create(asset);
+
+                this.mesh = createMesh_();
+
+                return;
+
+
+                static Mesh createMesh_()
+                {
+                    var mesh_ = new Mesh();
+                    mesh_.name = "marching cube unit";
+
+                    var qVtx =
+                        from i in Enumerable.Range(0, 12)
+                        select new Vector3(i % 3, i / 3, 0)
+                        ;
+                    var qIdx =
+                        from i in Enumerable.Range(0, 3 * 4)
+                        select i
+                        ;
+                    mesh_.vertices = qVtx.ToArray();
+                    mesh_.triangles = qIdx.ToArray();
+
+                    return mesh_;
+                }
+            }
+
+            public void Dispose()
+            {
+                this.CubeGeometryConstants.Dispose();
+            }
+
+            public void SetResourcesTo(Material mat, ComputeShader cs)
+            {
+                // せつめい - - - - - - - - - - - - - - - - -
+
+                //uint4 cube_patterns[ 254 ][2];
+                // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
+                // [1] : vertex normal index { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
+
+                //uint4 cube_vtxs[ 12 ];
+                // x: near vertex index (x>>0 | y>>8 | z>>16)
+                // y: near vertex index offset prev (left >>0 | up  >>8 | front>>16)
+                // z: near vertex index offset next (right>>0 | down>>8 | back >>16)
+                // w: pos(x>>0 | y>>8 | z>>16)
+
+                // - - - - - - - - - - - - - - - - - - - - -
+
+                mat.SetConstantBuffer_("static_data", this.CubeGeometryConstants.Buffer);
+            }
         }
-        static Mesh createMesh_()
+
+
+        public struct WorkingShaderResources : IDisposable
         {
-            var mesh_ = new Mesh();
-            mesh_.name = "marching cube unit";
+            public GridCubeIdShaderBufferTexture GridCubeIds;
 
-            var qVtx =
-                from i in Enumerable.Range(0, 12)
-                select new Vector3(i % 3, i / 3, 0)
-                ;
-            var qIdx =
-                from i in Enumerable.Range(0, 3 * 4)
-                select i
-                ;
-            mesh_.vertices = qVtx.ToArray();
-            mesh_.triangles = qIdx.ToArray();
 
-            return mesh_;
-        }
+            public void Alloc(MarchingCubesAsset asset, int maxGridInstances)
+            {
+                this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances);
+            }
 
-        public void Dispose()
-        {
-            this.GridCubeIds.Dispose();
-            this.CubeGeometryConstants.Dispose();
-        }
+            public void Dispose()
+            {
+                this.GridCubeIds.Dispose();
+            }
 
-        public void SetResourcesTo(Material mat, ComputeShader cs)
-        {
-            // せつめい - - - - - - - - - - - - - - - - -
+            public void SetResourcesTo(Material mat, ComputeShader cs)
+            {
+                mat.SetTexture("grid_cubeids", this.GridCubeIds.Texture);
 
-            //uint4 cube_patterns[ 254 ][2];
-            // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
-            // [1] : vertex normal index { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
-
-            //uint4 cube_vtxs[ 12 ];
-            // x: near vertex index (x>>0 | y>>8 | z>>16)
-            // y: near vertex index offset prev (left >>0 | up  >>8 | front>>16)
-            // z: near vertex index offset next (right>>0 | down>>8 | back >>16)
-            // w: pos(x>>0 | y>>8 | z>>16)
-
-            //uint3 grids[ 512 ][2];
-            // [0] : position as float3
-            // [1] : near grid id
-            // { x: prev(left>>0 | up>>9 | front>>18)  y: next(right>>0 | down>>9 | back>>18)  z: current }
-
-            // - - - - - - - - - - - - - - - - - - - - -
-
-            mat.SetConstantBuffer_("static_data", this.CubeGeometryConstants.Buffer);
-
-            mat.SetTexture("grid_cubeids", this.GridCubeIds.Texture);
-
-            cs?.SetTexture(0, "dst_grid_cubeids", this.GridCubeIds.Texture);
+                cs?.SetTexture(0, "dst_grid_cubeids", this.GridCubeIds.Texture);
+            }
         }
     }
 

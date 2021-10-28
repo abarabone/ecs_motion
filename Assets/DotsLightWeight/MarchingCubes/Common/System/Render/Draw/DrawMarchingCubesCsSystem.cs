@@ -24,12 +24,12 @@ namespace DotsLite.MarchingCubes.Gpu
         {
             base.OnCreate();
 
-            this.RequireSingletonForUpdate<Global.MainData>();
+            this.RequireSingletonForUpdate<Global.Working32Data>();
         }
 
         protected unsafe override void OnUpdate()
         {
-            var globaldata = this.GetSingleton<Global.MainData>();
+            var globaldata = this.GetSingleton<Global.Working32Data>();
 
             var gbuf = globaldata.ShaderResources;
 
@@ -38,8 +38,8 @@ namespace DotsLite.MarchingCubes.Gpu
                 .ForEach((
                     in DrawModel.InstanceCounterData counter,
                     in DrawModel.VectorIndexData offset,
-                        in DrawModel.ComputeArgumentsBufferData shaderArg,
-                        in DrawModel.GeometryData geom,
+                    //in DrawModel.ComputeArgumentsBufferData shaderArg,
+                    //in DrawModel.GeometryData geom,
                     in DotGridArea.ResourceGpuModeData res) =>
                 {
                     //var cubeInstances = output.CubeInstances;//globaldata.CubeInstances;

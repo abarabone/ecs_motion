@@ -46,9 +46,11 @@ namespace DotsLite.MarchingCubes.Gpu
                 .ForEach((
                     Entity ent,
                     Global.InitializeData init,
-                    Global.MainData data) =>
+                    Global.CommonData common,
+                    Global.Working32Data work32) =>
                 {
-                    data.Alloc(init.asset, init.maxFreeGrids, init.maxGridInstances);
+                    common
+                    work32.Alloc(init.asset, init.maxFreeGrids, init.maxGridInstances);
 
                     //em.RemoveComponent<Global.InitializeData>(ent);
                     cmd.RemoveComponent<Global.InitializeData>(ent);
@@ -56,8 +58,8 @@ namespace DotsLite.MarchingCubes.Gpu
                 .Run();
 
 
-            var gres = this.GetSingleton<Global.MainData>().ShaderResources;
-            var pBlank = this.GetSingleton<Global.MainData>().DefaultGrids[(int)GridFillMode.Blank].pXline;
+            var gres = this.GetSingleton<Global.Working32Data>().ShaderResources;
+            var pBlank = this.GetSingleton<Global.Working32Data>().DefaultGrids[(int)GridFillMode.Blank].pXline;
 
             this.Entities
                 .WithName("GridArea")

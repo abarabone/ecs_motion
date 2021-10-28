@@ -51,7 +51,7 @@ namespace DotsLite.MarchingCubes
             {
                 cmd = cmdscope.CommandBuffer.AsParallelWriter(),
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
-                mcdata = this.GetSingleton<Global.MainData>().Assset,
+                mcdata = this.GetSingleton<Global.Working32Data>().Assset,
                 //pDefualtBlankGrid = this.GetSingleton<Global.MainData<TGrid>>().DefaultGrids[(int)GridFillMode.Blank].pXline,
                 grids = this.GetComponentDataFromEntity<DotGrid.Unit32Data>(isReadOnly: true),
                 indexs = this.GetComponentDataFromEntity<DotGrid.IndexData>(isReadOnly: true),

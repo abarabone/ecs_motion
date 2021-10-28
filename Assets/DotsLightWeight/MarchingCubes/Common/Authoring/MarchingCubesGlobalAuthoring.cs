@@ -42,7 +42,8 @@ namespace DotsLite.MarchingCubes.Authoring
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
-                    typeof(Global.MainData),
+                    typeof(Global.CommonData),
+                    typeof(Global.Working32Data),
                     typeof(Global.InitializeData),
                 });
                 em.AddComponents(ent, types);
@@ -53,7 +54,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     maxGridInstances = this.MaxGridInstances,
                     asset = this.MarchingCubesAsset,
                 });
-                em.SetComponentData(ent, new Global.MainData
+                em.SetComponentData(ent, new Global.Working32Data
                 {
                     Assset = this.MarchingCubesAsset.ConvertToBlobData(),
                 });

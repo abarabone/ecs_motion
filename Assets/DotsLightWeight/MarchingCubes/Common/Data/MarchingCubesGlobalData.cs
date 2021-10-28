@@ -21,7 +21,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Utilities;
 
 
-    namespace Global
+    public static partial class Global
     {
         public class InitializeData : IComponentData
         {
@@ -31,15 +31,22 @@ namespace DotsLite.MarchingCubes
         }
 
 
+        public class CommonData : IComponentData
+        {
+            public CommonShaderResources ShaderResources;
+
+        }
+
+
         // 32/16 別と強要に分ける必要あり
         //public class MainData<TGrid> : IComponentData, IDisposable
         //    where TGrid : struct, IDotGrid<TGrid>
-        public class MainData : IComponentData, IDisposable
+        public class Working32Data : IComponentData, IDisposable
         {
             public NativeArray<DotGrid32x32x32> DefaultGrids;
             //public FreeStockList FreeStocks;
 
-            public GlobalShaderResources ShaderResources;
+            public WorkingShaderResources ShaderResources;
 
             public BlobAssetReference<MarchingCubesBlobAsset> Assset;
 

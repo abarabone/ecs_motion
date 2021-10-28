@@ -63,13 +63,13 @@ namespace DotsLite.MarchingCubes
         {
             public int4 value;
 
-            public int3 index => new int3(value.x, value.y, value.z);
+            public int3 index => value.xyz;
             public int serial => value.w;
 
             public GridIndex Set(int3 index, int3 span)
             {
                 var serial = math.dot(index, span);
-                this.value = new int4(index.x, index.y, index.z, serial);
+                this.value = new int4(index, serial);
                 return this;
             }
             public GridIndex CloneNear(int3 offset, int3 span) =>
