@@ -15,6 +15,7 @@ namespace DotsLite.MarchingCubes.Gpu
     using DotsLite.Dependency;
     using MarchingCubes;
     using DotsLite.Draw;
+    using DotsLite.Utilities;
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
@@ -71,7 +72,8 @@ namespace DotsLite.MarchingCubes.Gpu
                         DotGridArea.InitializeData init,
                         DotGridArea.ResourceGpuModeData data,
                         DrawModel.GeometryData geom,
-                        ref DotGridArea.LinkToGridData links
+                        ref DotGridArea.LinkToGridData links,
+                        in DrawModel.ComputeArgumentsBufferData shaderArg
                     ) =>
                     {
                         var mat = geom.Material;//init.CubeMaterial;
@@ -87,7 +89,9 @@ namespace DotsLite.MarchingCubes.Gpu
                         gres.SetResourcesTo(mat, cs);
 
                         data.ShaderResources.SetResourcesTo(mat, cs);
-                        data.ShaderResources.SetArgumentBuffer(mesh);
+                        //data.ShaderResources.SetArgumentBuffer(mesh);
+                        var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
+                        shaderArg.InstanceArgumentsBuffer.SetData(ref iargparams);
 
 
                         var totalsize = links.GridLength.x * links.GridLength.y * links.GridLength.z;

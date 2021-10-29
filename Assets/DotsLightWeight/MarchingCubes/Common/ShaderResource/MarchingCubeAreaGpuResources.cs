@@ -103,11 +103,11 @@ namespace DotsLite.MarchingCubes
             //mat.SetConstantBuffer_("grid_constant", this.GridInstructions.Buffer);
         }
 
-        public void SetArgumentBuffer(Mesh mesh)
-        {
-            var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
-            this.CubeInstancingArgs.Buffer.SetData(ref iargparams);
-        }
+        //public void SetArgumentBuffer(Mesh mesh)
+        //{
+        //    var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
+        //    this.CubeInstancingArgs.Buffer.SetData(ref iargparams);
+        //}
     }
 
 

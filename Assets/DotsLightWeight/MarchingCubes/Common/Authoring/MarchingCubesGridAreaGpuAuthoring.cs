@@ -71,7 +71,8 @@ namespace DotsLite.MarchingCubes.Authoring
                 var sort = DrawModel.SortOrder.acs;
                 var boneType = BoneType.T;
                 var dataLength = sizeof(NearGridIndex);
-                gcs.InitDrawModelEntityComponents(this.gameObject, ent, mesh, mat, boneType, boneLength, sort, dataLength);
+                gcs.InitDrawModelEntityComponents(
+                    this.gameObject, ent, mesh, mat, boneType, boneLength, sort, dataLength);
 
                 var em = gcs.DstEntityManager;
                 var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
