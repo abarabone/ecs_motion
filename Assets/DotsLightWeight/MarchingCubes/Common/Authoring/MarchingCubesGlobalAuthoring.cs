@@ -54,6 +54,10 @@ namespace DotsLite.MarchingCubes.Authoring
                     maxGridInstances = this.MaxGridInstances,
                     asset = this.MarchingCubesAsset,
                 });
+                em.SetComponentData(ent, new Global.CommonData
+                {
+                    
+                });
                 em.SetComponentData(ent, new Global.Work32Data
                 {
                     Assset = this.MarchingCubesAsset.ConvertToBlobData(),

@@ -31,7 +31,7 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        public class CommonData : IComponentData
+        public class CommonData : IComponentData, IDisposable
         {
             public CommonShaderResources ShaderResources;
 

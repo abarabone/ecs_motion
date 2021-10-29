@@ -29,7 +29,7 @@ namespace DotsLite.MarchingCubes
         {
             public ResourceGpuModeData ShaderResources;
             public ComputeShader GridToCubesShader;
-            public Material CubeMaterial;
+            //public Material CubeMaterial;
             public int MaxGrids;
             public int MaxCubeInstances;
         }
@@ -40,7 +40,7 @@ namespace DotsLite.MarchingCubes
             public DotGridAreaGpuResources ShaderResources;
 
             public ComputeShader GridToCubeShader;
-            public Material CubeMaterial;
+            //public Material CubeMaterial;
 
             public void Dispose()
             {

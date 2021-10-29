@@ -129,14 +129,14 @@ namespace DotsLite.MarchingCubes.Authoring
                 //var wholeLength = this.GridLength + 2;
                 //var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
 
-                var mat = new Material(this.DrawCubeShader);
-                mat.mainTexture = this.Texture;
+                //var mat = new Material(this.DrawCubeShader);
+                //mat.mainTexture = this.Texture;
 
                 em.SetComponentData(ent,
                     new DotGridArea.InitializeData
                     {
                         //FillMode = fillMode_,
-                        CubeMaterial = mat,
+                        //CubeMaterial = mat,
                         GridToCubesShader = this.GridToCubesShader,
                         MaxCubeInstances = this.MaxCubeInstances,
                         MaxGrids = this.MaxGrids,

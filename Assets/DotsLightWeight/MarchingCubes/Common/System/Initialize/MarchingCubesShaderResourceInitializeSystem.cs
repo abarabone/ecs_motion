@@ -79,7 +79,7 @@ namespace DotsLite.MarchingCubes.Gpu
                         var mesh = geom.Mesh;// gres.mesh;
 
 
-                        data.CubeMaterial = mat;
+                        //data.CubeMaterial = mat;
                         data.GridToCubeShader = cs;
                         data.ShaderResources.Alloc(init.MaxCubeInstances, init.MaxGrids);
 
@@ -91,9 +91,11 @@ namespace DotsLite.MarchingCubes.Gpu
 
 
                         var totalsize = links.GridLength.x * links.GridLength.y * links.GridLength.z;
+
                         var pIds = (int*)UnsafeUtility.Malloc(sizeof(int) * totalsize, 4, Allocator.Persistent);
                         for (var i = 0; i < totalsize; i++) pIds[i] = -1;
                         links.pGridPoolIds = pIds;
+
                         var ppXLines = (uint**)UnsafeUtility.Malloc(sizeof(uint*) * totalsize, 4, Allocator.Persistent);
                         for (var i = 0; i < totalsize; i++) ppXLines[i] = pBlank;
                         links.ppGridXLines = ppXLines;
