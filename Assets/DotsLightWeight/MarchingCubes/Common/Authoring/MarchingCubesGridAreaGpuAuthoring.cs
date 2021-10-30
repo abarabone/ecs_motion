@@ -86,7 +86,7 @@ namespace DotsLite.MarchingCubes.Authoring
                 static Mesh createMesh_()
                 {
                     var mesh_ = new Mesh();
-                    mesh_.name = "marching cube unit";
+                    mesh_.name = "marching cube template";
 
                     var qVtx =
                         from i in Enumerable.Range(0, 12)

@@ -70,7 +70,7 @@ namespace DotsLite.Draw
                     var args = eq.ToComponentDataArray<DrawModel.ComputeArgumentsBufferData>();
                     foreach( var arg in args )
                     {
-                        arg.InstanceArgumentsBuffer.Dispose();
+                        arg.InstancingArgumentsBuffer.Dispose();
                     }
                 }
             }

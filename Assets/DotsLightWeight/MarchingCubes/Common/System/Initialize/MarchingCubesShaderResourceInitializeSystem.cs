@@ -59,59 +59,67 @@ namespace DotsLite.MarchingCubes.Gpu
                 .Run();
 
 
-            var gres = this.GetSingleton<Global.Work32Data>().ShaderResources;
-            var pBlank = this.GetSingleton<Global.Work32Data>().DefaultGrids[(int)GridFillMode.Blank].pXline;
+            var globalwork32 = this.GetSingleton<Global.Work32Data>();
+            //var gres = globalwork32.ShaderResources;
+            var pBlank = globalwork32.DefaultGrids[(int)GridFillMode.Blank].pXline;
 
             this.Entities
                 .WithName("GridArea")
                 .WithoutBurst()
                 .WithStructuralChanges()
-                .ForEach(
-                    (
-                        Entity ent,
-                        DotGridArea.InitializeData init,
-                        DotGridArea.ResourceGpuModeData data,
-                        DrawModel.GeometryData geom,
-                        ref DotGridArea.LinkToGridData links,
-                        in DrawModel.ComputeArgumentsBufferData shaderArg
-                    ) =>
-                    {
-                        var mat = geom.Material;//init.CubeMaterial;
-                        var cs = init.GridToCubesShader;
-                        var mesh = geom.Mesh;// gres.mesh;
+                .ForEach((
+                    Entity ent,
+                    DotGridArea.InitializeData init,
+                    DotGridArea.ResourceGpuModeData data,
+                    DrawModel.GeometryData geom,
+                    ref DotGridArea.LinkToGridData links,
+                    in DrawModel.ComputeArgumentsBufferData shaderArg) =>
+                {
+                    var mat = geom.Material;//init.CubeMaterial;
+                    var mesh = geom.Mesh;// gres.mesh;
+                    var cs = init.GridToCubesShader;
 
 
-                        //data.CubeMaterial = mat;
-                        data.GridToCubeShader = cs;
-                        data.ShaderResources.Alloc(init.MaxCubeInstances, init.MaxGrids);
+                    links.AllocGridAreaBuffers(pBlank);
+                    data.ShaderResources.Alloc(init.MaxCubeInstances, init.MaxGrids);
 
 
-                        gres.SetResourcesTo(mat, cs);
+                    globalwork32.ShaderResources.SetResourcesTo(mat, cs);
 
-                        data.ShaderResources.SetResourcesTo(mat, cs);
-                        //data.ShaderResources.SetArgumentBuffer(mesh);
-                        var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
-                        shaderArg.InstanceArgumentsBuffer.SetData(ref iargparams);
-
-
-                        var totalsize = links.GridLength.x * links.GridLength.y * links.GridLength.z;
-
-                        var pIds = (int*)UnsafeUtility.Malloc(sizeof(int) * totalsize, 4, Allocator.Persistent);
-                        for (var i = 0; i < totalsize; i++) pIds[i] = -1;
-                        links.pGridPoolIds = pIds;
-
-                        var ppXLines = (uint**)UnsafeUtility.Malloc(sizeof(uint*) * totalsize, 4, Allocator.Persistent);
-                        for (var i = 0; i < totalsize; i++) ppXLines[i] = pBlank;
-                        links.ppGridXLines = ppXLines;
+                    //data.CubeMaterial = mat;
+                    data.GridToCubeShader = cs;
+                    data.ShaderResources.SetResourcesTo(mat, cs);
+                    shaderArg.SetInstancingArgumentBuffer(mesh);
 
 
-                        //em.RemoveComponent<DotGridArea.InitializeData>(ent);
-                        cmd.RemoveComponent<DotGridArea.InitializeData>(ent);
-                    }
-                )
+                    //em.RemoveComponent<DotGridArea.InitializeData>(ent);
+                    cmd.RemoveComponent<DotGridArea.InitializeData>(ent);
+                })
                 .Run();
         }
 
 
+    }
+
+    static class InitUtility
+    {
+        public static void SetInstancingArgumentBuffer(this DrawModel.ComputeArgumentsBufferData shaderArg, Mesh mesh)
+        {
+            var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
+            shaderArg.InstancingArgumentsBuffer.SetData(ref iargparams);
+        }
+
+        public unsafe static void AllocGridAreaBuffers(ref this DotGridArea.LinkToGridData links, uint *pBlank)
+        {
+            var totalsize = links.GridLength.x * links.GridLength.y * links.GridLength.z;
+
+            var pIds = (int*)UnsafeUtility.Malloc(sizeof(int) * totalsize, 4, Allocator.Persistent);
+            for (var i = 0; i < totalsize; i++) pIds[i] = -1;
+            links.pGridPoolIds = pIds;
+
+            var ppXLines = (uint**)UnsafeUtility.Malloc(sizeof(uint*) * totalsize, 4, Allocator.Persistent);
+            for (var i = 0; i < totalsize; i++) ppXLines[i] = pBlank;
+            links.ppGridXLines = ppXLines;
+        }
     }
 }

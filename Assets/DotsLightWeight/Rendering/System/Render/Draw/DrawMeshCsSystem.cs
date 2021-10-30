@@ -49,7 +49,7 @@ namespace DotsLite.Draw
 
                         var mesh = geom.Mesh;
                         var mat = geom.Material;
-                        var args = shaderArg.InstanceArgumentsBuffer;
+                        var args = shaderArg.InstancingArgumentsBuffer;
 
                         var vectorOffset = offset.ModelStartIndex;
                         mat.SetInt( "BoneVectorOffset", (int)vectorOffset );

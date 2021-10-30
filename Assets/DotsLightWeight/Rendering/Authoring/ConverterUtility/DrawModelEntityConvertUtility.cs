@@ -150,7 +150,7 @@ namespace DotsLite.Draw.Authoring
                 em_.SetComponentData( ent_,
                     new DrawModel.ComputeArgumentsBufferData
                     {
-                        InstanceArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
+                        InstancingArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
                     }
                 );
 

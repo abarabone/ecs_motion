@@ -117,7 +117,7 @@ namespace DotsLite.MarchingCubes
             var srcstart = (int)dirty.begin;
             var dststart = igarr + (int)dirty.begin;
             var count = (int)dirty.end - (int)dirty.begin + 1;
-            res.ShaderResources.GridContentDataBuffer.Buffer.SetData(garr, srcstart, dststart, count);
+            res.ShaderResources.GridDotContentDataBuffer.Buffer.SetData(garr, srcstart, dststart, count);
             //Debug.Log($"{grid.GridIndexInArea.index}:{grid.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
         }
     }

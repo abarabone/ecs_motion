@@ -41,17 +41,17 @@ namespace DotsLite.MarchingCubes.Gpu
                     in DrawModel.VectorIndexData offset,
                     in DrawModel.ComputeArgumentsBufferData shaderArg,
                     in DrawModel.GeometryData geom,
-                    in DotGridArea.ResourceGpuModeData res) =>
+                    in DotGridArea.ResourceGpuModeData data) =>
                 {
                     //var cubeInstances = output.CubeInstances;//globaldata.CubeInstances;
                     ////Debug.Log(instances.CubeInstances.length);
                     //if (cubeInstances.Length == 0) return;
                     if (counter.InstanceCounter.Count == 0) return;
 
-                    var cs = res.GridToCubeShader;
+                    var cs = data.GridToCubeShader;
                     var mat = geom.Material;
                     //var mat = res.CubeMaterial;
-                    var buf = res.ShaderResources;
+                    var res = data.ShaderResources;
 
                     if (cs == null) return;
 
@@ -65,7 +65,7 @@ namespace DotsLite.MarchingCubes.Gpu
                         //for (var i = 0; i < remain; i++) cubeInstances.AddNoResize(new CubeInstance { instance = 1 });
                         //abuf.CubeInstancesBuffer.SetData(cubeInstances.AsNativeArray());
 
-                        buf.CubeInstances.Buffer.SetCounterValue(0);
+                        res.CubeInstances.Buffer.SetCounterValue(0);
 
                         var vectorOffset = offset.ModelStartIndex;
                         cs.SetInt("BoneVectorOffset", (int)vectorOffset);
@@ -81,8 +81,8 @@ namespace DotsLite.MarchingCubes.Gpu
                         //var mesh = globalcommon.ShaderResources.mesh;
                         //var iargs = buf.CubeInstancingArgs;
                         var mesh = geom.Mesh;
-                        var iargs = shaderArg.InstanceArgumentsBuffer;
-                        var src = buf.CubeInstances;
+                        var iargs = shaderArg.InstancingArgumentsBuffer;
+                        var src = res.CubeInstances;
 
                         //var xs = (
                         //    from x in Enumerable.Range(0, 32)
@@ -96,7 +96,7 @@ namespace DotsLite.MarchingCubes.Gpu
                         //iargs.Buffer.SetData(ref iargparams);
                         ComputeBuffer.CopyCount(src.Buffer, iargs, dstOffsetBytes: sizeof(int) * 1);
                         //var arr = new int[5];
-                        //iargs.Buffer.GetData(arr);
+                        //iargs.GetData(arr);
                         //Debug.Log(arr[1]);
 
                         var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };//
