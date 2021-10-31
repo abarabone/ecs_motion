@@ -59,6 +59,7 @@ namespace DotsLite.MarchingCubes.Gpu
                 .Run();
 
 
+            var globalcommon = this.GetSingleton<Global.CommonData>();
             var globalwork32 = this.GetSingleton<Global.Work32Data>();
             //var gres = globalwork32.ShaderResources;
             var pBlank = globalwork32.DefaultGrids[(int)GridFillMode.Blank].pXline;
@@ -84,6 +85,7 @@ namespace DotsLite.MarchingCubes.Gpu
                     data.ShaderResources.Alloc(init.MaxCubeInstances, init.MaxGrids);
 
 
+                    globalcommon.ShaderResources.SetResourcesTo(mat);
                     globalwork32.ShaderResources.SetResourcesTo(mat, cs);
 
                     //data.CubeMaterial = mat;
