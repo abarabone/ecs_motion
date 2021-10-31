@@ -19,6 +19,9 @@ namespace DotsLite.MarchingCubes.Authoring
     public class MarchingCubesGlobalAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
+        public DotGridType GridType = DotGridType.DotGrid32x32x32;
+
+
         //public int MaxCubeInstances;
         [Range(0, 512)]
         public int MaxGridInstances;
@@ -44,6 +47,7 @@ namespace DotsLite.MarchingCubes.Authoring
                 {
                     typeof(Global.CommonData),
                     typeof(Global.Work32Data),
+                    typeof(Global.Work16Data),
                     typeof(Global.InitializeData),
                 });
                 em.AddComponents(ent, types);
@@ -56,11 +60,15 @@ namespace DotsLite.MarchingCubes.Authoring
                 });
                 em.SetComponentData(ent, new Global.CommonData
                 {
-                    
+                    Assset = this.MarchingCubesAsset.ConvertToBlobData(),
                 });
                 em.SetComponentData(ent, new Global.Work32Data
                 {
-                    Assset = this.MarchingCubesAsset.ConvertToBlobData(),
+
+                });
+                em.SetComponentData(ent, new Global.Work32Data
+                {
+
                 });
             }
 

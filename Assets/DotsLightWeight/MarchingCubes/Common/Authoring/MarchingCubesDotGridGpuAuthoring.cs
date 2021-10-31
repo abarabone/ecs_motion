@@ -21,36 +21,48 @@ namespace DotsLite.MarchingCubes.Authoring
     public class MarchingCubesDotGridGpuAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
-
+        public DotGridType GridType = DotGridType.DotGrid32x32x32;
 
 
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
+            switch (this.GridType)
+            {
+                case DotGridType.DotGrid32x32x32:
+                    createDotGrid_<DotGrid32x32x32>(conversionSystem, entity);
+                    break;
 
-            createDotGrid_(conversionSystem, entity);
+                case DotGridType.DotGrid16x16x16:
+                    createDotGrid_<DotGrid16x16x16>(conversionSystem, entity);
+                    break;
+
+                default:
+                    break;
+            }
 
             return;
 
 
-            static void createDotGrid_(GameObjectConversionSystem gcs, Entity ent)
+            static void createDotGrid_<TGrid>(GameObjectConversionSystem gcs, Entity ent)
+                where TGrid : struct, IDotGrid<TGrid>
             {
                 var em = gcs.DstEntityManager;
 
-                var types = new ComponentTypes(new ComponentType[]
+                var types = new List<ComponentType>()
                 {
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
-                    typeof(DotGrid.Unit32Data),
+                    DotGrid.TypeOf_UnitData<TGrid>(),//typeof(DotGrid.UnitData),
                     typeof(DotGrid.IndexData),
                     typeof(DotGrid.ParentAreaData),
                     typeof(DotGrid.UpdateDirtyRangeData),
                     //typeof(Unity.Physics.PhysicsCollider),
                     typeof(Collision.Hit.TargetData),
-                });
-                em.AddComponents(ent, types);
+                };
+                em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
                 //em.SetComponentData(ent, new PhysicsCollider
                 //{

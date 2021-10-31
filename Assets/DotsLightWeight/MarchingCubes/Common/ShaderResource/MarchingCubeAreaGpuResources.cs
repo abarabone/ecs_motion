@@ -37,50 +37,6 @@ namespace DotsLite.MarchingCubes
 
             this.CubeInstances = CubeInstancingShaderBuffer.Create(maxCubeInstances);
             //this.CubeInstancingArgs = CubeInstancingIndirectArgumentsBuffer.Create();
-
-            // ----------------
-            //var qGrid =
-            //    from i in Enumerable.Range(0, 32 * 32 / 8)
-            //    //select (i & 4) == 0 ? 0x_1555_5554u : 0x_2aaa_aaa8u;
-            //    from x in new uint[]
-            //    {
-            //        0,
-            //        0x_1555_5554u,
-            //        0x_1555_5554u,
-            //        0x_1555_5554u,
-            //        0x_2aaa_aaa8u,
-            //        0x_2aaa_aaa8u,
-            //        0x_2aaa_aaa8u,
-            //        0x_2aaa_aaa8u,
-            //    }
-            //select x;
-            //this.GridContentDataBuffer.Buffer.SetData(qGrid.Repeat(4).ToArray());
-            //var qGridInstruction =
-            //    from i in Enumerable.Range(0, 4)
-            //    select new GridInstraction
-            //    {
-            //        position = new int3(i / 2, 0, i % 2) * 32,
-            //        GridDynamicIndex = i,
-            //        GridStaticIndex = new NearGridIndex
-            //        {
-            //            left = new GridindexUnit
-            //            {
-            //                home = i,
-            //                rear = 1 - 1,
-            //                down = 1 - 1,
-            //                slant = 1 - 1,
-            //            },
-            //            right = new GridindexUnit
-            //            {
-            //                home = 1 - 1,
-            //                rear = 1 - 1,
-            //                down = 1 - 1,
-            //                slant = 1 - 1,
-            //            },
-            //        },
-            //    };
-            //this.GridInstructions.Buffer.SetData(qGridInstruction.ToArray());
-            //this.CubeInstances.Buffer.SetData(CubeUtility.ToCubeInstance(0,0,0,0,3).WrapEnumerable().ToArray());
         }
 
         public void Dispose()

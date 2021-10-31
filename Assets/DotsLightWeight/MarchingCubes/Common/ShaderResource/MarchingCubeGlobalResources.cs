@@ -28,36 +28,10 @@ namespace DotsLite.MarchingCubes
         {
             public CubeGeometryConstantBuffer CubeGeometryConstants;
 
-            //public Mesh mesh;
-
 
             public void Alloc(MarchingCubesAsset asset)
             {
                 this.CubeGeometryConstants = CubeGeometryConstantBuffer.Create(asset);
-
-                //this.mesh = createMesh_();
-
-                //return;
-
-
-                //static Mesh createMesh_()
-                //{
-                //    var mesh_ = new Mesh();
-                //    mesh_.name = "marching cube unit";
-
-                //    var qVtx =
-                //        from i in Enumerable.Range(0, 12)
-                //        select new Vector3(i % 3, i / 3, 0)
-                //        ;
-                //    var qIdx =
-                //        from i in Enumerable.Range(0, 3 * 4)
-                //        select i
-                //        ;
-                //    mesh_.vertices = qVtx.ToArray();
-                //    mesh_.triangles = qIdx.ToArray();
-
-                //    return mesh_;
-                //}
             }
 
             public void Dispose()

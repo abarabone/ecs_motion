@@ -14,6 +14,12 @@ using System;
 namespace DotsLite.MarchingCubes
 {
 
+    public enum DotGridType
+    {
+        DotGrid32x32x32 = 32,
+        DotGrid16x16x16 = 16,
+    }
+
     public unsafe interface IDotGrid<TGrid> : IDisposable
         where TGrid : struct, IDotGrid<TGrid>
     {
@@ -31,6 +37,7 @@ namespace DotsLite.MarchingCubes
         void Copy(in TGrid grid, in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty,
             in DotGridArea.LinkToGridData area, in DotGridArea.ResourceGpuModeData res);
     }
+
 
 
     public enum GridFillMode

@@ -27,6 +27,15 @@ namespace DotsLite.MarchingCubes
         }
 
 
+
+        public static Type TypeOf_UnitData<TGrid>() where TGrid : struct, IDotGrid<TGrid> =>
+            new TGrid() switch
+            {
+                DotGrid32x32x32 _ => typeof(Unit32Data),
+                DotGrid16x16x16 _ => typeof(Unit16Data),
+                _ => default,
+            };
+
         public struct Unit32Data : IComponentData, IDisposable
         {
             public DotGrid32x32x32 Unit;
@@ -40,7 +49,7 @@ namespace DotsLite.MarchingCubes
         }
         public struct Unit16Data : IComponentData, IDisposable
         {
-            public DotGrid32x32x32 Unit;
+            public DotGrid16x16x16 Unit;
 
             //public void Dispose() => this.Unit.Dispose();
             public void Dispose()
