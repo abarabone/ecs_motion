@@ -57,9 +57,10 @@ namespace DotsLite.MarchingCubes
             uint* pXlines, in DotGridArea.UnitDimensionData dim, DotGrid.GridIndex gidx)
             where TGrid : struct, IDotGrid<TGrid>
         {
+            var unit = new TGrid().UnitOnEdge;// もっとスマートに…
             var begin = int3.zero;
-            var end = new int3(32 - 1, 32 -1, 32 -1);
-            var igrid = gidx.index * 32;
+            var end = new int3(1,1,1) * unit - 1;
+            var igrid = gidx.index * unit;
 
             var ifst = math.min(math.max(_ifst - igrid, begin), end);
             var ilst = math.min(math.max(_ilst - igrid, begin), end);

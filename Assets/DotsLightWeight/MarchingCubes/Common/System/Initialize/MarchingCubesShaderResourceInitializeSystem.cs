@@ -63,6 +63,7 @@ namespace DotsLite.MarchingCubes.Gpu
 
             var globalcommon = this.GetSingleton<Global.CommonData>();
             var globalwork32 = this.GetSingleton<Global.Work32Data>();
+            var globalwork16 = this.GetSingleton<Global.Work16Data>();
             //var gres = globalwork32.ShaderResources;
             var pBlank = globalwork32.DefaultGrids[(int)GridFillMode.Blank].pXline;
 
@@ -76,6 +77,7 @@ namespace DotsLite.MarchingCubes.Gpu
                     DotGridArea.ResourceGpuModeData data,
                     DrawModel.GeometryData geom,
                     ref DotGridArea.LinkToGridData links,
+                    in DotGridArea.GridTypeData type,
                     in DrawModel.ComputeArgumentsBufferData shaderArg) =>
                 {
                     var mat = geom.Material;//init.CubeMaterial;
@@ -88,7 +90,17 @@ namespace DotsLite.MarchingCubes.Gpu
 
 
                     globalcommon.ShaderResources.SetResourcesTo(mat);
-                    globalwork32.ShaderResources.SetResourcesTo(mat, cs);
+                    switch (type.UnitOnEdge)
+                    {
+                        case 32:
+                            globalwork32.ShaderResources.SetResourcesTo(mat, cs);
+                            break;
+                        case 16:
+                            globalwork16.ShaderResources.SetResourcesTo(mat, cs);
+                            break;
+                        default:
+                            break;
+                    }
 
                     //data.CubeMaterial = mat;
                     data.GridToCubeShader = cs;

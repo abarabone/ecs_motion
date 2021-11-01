@@ -30,6 +30,10 @@ namespace DotsLite.MarchingCubes
         //    public GridFillMode FillMode;
         //}
 
+        public struct GridTypeData : IComponentData
+        {
+            public int UnitOnEdge;
+        }
 
         public unsafe struct LinkToGridData : IComponentData, IDisposable
         {

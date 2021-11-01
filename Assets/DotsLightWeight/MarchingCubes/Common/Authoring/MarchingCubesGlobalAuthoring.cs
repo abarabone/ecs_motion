@@ -19,7 +19,7 @@ namespace DotsLite.MarchingCubes.Authoring
     public class MarchingCubesGlobalAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
-        public DotGridType GridType = DotGridType.DotGrid32x32x32;
+        //public DotGridType GridType = DotGridType.DotGrid32x32x32;
 
 
         //public int MaxCubeInstances;

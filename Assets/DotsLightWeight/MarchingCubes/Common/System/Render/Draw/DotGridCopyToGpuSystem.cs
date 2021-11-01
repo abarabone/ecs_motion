@@ -60,7 +60,6 @@ namespace DotsLite.MarchingCubes
                         //var grid = grids[ent];
                         //var dirty = dirties[ent];
                         //var parent = parents[ent];
-                        var grid = em.GetComponentData<DotGrid.Unit32Data>(ent);
                         var index = em.GetComponentData<DotGrid.IndexData>(ent);
                         var dirty = em.GetComponentData<DotGrid.UpdateDirtyRangeData>(ent);
                         var parent = em.GetComponentData<DotGrid.ParentAreaData>(ent);
@@ -69,18 +68,20 @@ namespace DotsLite.MarchingCubes
                         var res = em.GetComponentData<DotGridArea.ResourceGpuModeData>(parent.ParentArea);
 
                         var area = areas[parent.ParentArea];
-                        grid.Unit.Copy(in grid.Unit, in index, in dirty, in area, in res);
+                        
+                        if (em.HasComponent<DotGrid.Unit32Data>(ent))
+                        {
+                            var grid = em.GetComponentData<DotGrid.Unit32Data>(ent);
+                            grid.Unit.Copy(in grid.Unit, in index, in dirty, in area, in res);
+                            continue;
+                        }
 
-                        //var area = areas[parent.ParentArea];
-                        //var igrid = grid.GridIndexInArea.serial;
-                        //var igarr = area.pGridPoolIds[igrid] * 32 * 32;
-
-                        //var garr = NativeUtility.PtrToNativeArray(p, 32 * 32);
-                        //var srcstart = (int)dirty.begin;
-                        //var dststart = igarr + (int)dirty.begin;
-                        //var count = (int)dirty.end - (int)dirty.begin + 1;
-                        //res.ShaderResources.GridContentDataBuffer.Buffer.SetData(garr, srcstart, dststart, count);
-                        ////Debug.Log($"{grid.GridIndexInArea.index}:{grid.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
+                        if (em.HasComponent<DotGrid.Unit16Data>(ent))
+                        {
+                            var grid = em.GetComponentData<DotGrid.Unit16Data>(ent);
+                            grid.Unit.Copy(in grid.Unit, in index, in dirty, in area, in res);
+                            continue;
+                        }
                     }
                 })
                 .Run();
@@ -129,7 +130,17 @@ namespace DotsLite.MarchingCubes
             in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
             in DotGridArea.ResourceGpuModeData res)
         {
+            var p = this.pXline;
 
+            var igrid = index.GridIndexInArea.serial;
+            var igarr = area.pGridPoolIds[igrid] * 16 * 16 / 2;
+
+            var garr = NativeUtility.PtrToNativeArray(p, 16 * 16 / 2);
+            var srcstart = (int)dirty.begin;
+            var dststart = igarr + (int)dirty.begin;
+            var count = (int)dirty.end - (int)dirty.begin + 1;
+            res.ShaderResources.GridDotContentDataBuffer.Buffer.SetData(garr, srcstart, dststart, count);
+            //Debug.Log($"{grid.GridIndexInArea.index}:{grid.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
         }
     }
 }

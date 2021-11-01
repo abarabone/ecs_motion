@@ -147,6 +147,7 @@ namespace DotsLite.MarchingCubes
             this.Dependency = new JobExecution
             {
                 dotgrids32 = this.GetComponentDataFromEntity<DotGrid.Unit32Data>(isReadOnly: true),
+                dotgrids16 = this.GetComponentDataFromEntity<DotGrid.Unit16Data>(isReadOnly: true),
                 dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(),
                 parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
@@ -161,8 +162,8 @@ namespace DotsLite.MarchingCubes
         {
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.Unit32Data> dotgrids32;
-            //[ReadOnly]
-            //public ComponentDataFromEntity<DotGrid.Unit16Data> dotgrids16;
+            [ReadOnly]
+            public ComponentDataFromEntity<DotGrid.Unit16Data> dotgrids16;
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.ParentAreaData> parents;
 
@@ -212,6 +213,11 @@ namespace DotsLite.MarchingCubes
                                     p[i] = v0;
                                 }
 
+                                this.dirties[targetEntity] = new DotGrid.UpdateDirtyRangeData
+                                {
+                                    begin = 0,//32 * 32 / 2,
+                                    end = 32 * 32 - 1,
+                                };
                             }
                             break;
                         case DotGridUpdateType.aabb_add32:
@@ -232,11 +238,6 @@ namespace DotsLite.MarchingCubes
                     }
                 }
 
-                this.dirties[targetEntity] = new DotGrid.UpdateDirtyRangeData
-                {
-                    begin = 0,//32 * 32 / 2,
-                    end = 32 * 32 - 1,
-                };
             }
         }
 

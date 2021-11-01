@@ -53,7 +53,8 @@ namespace DotsLite.MarchingCubes
                 KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
                 mcdata = this.GetSingleton<Global.CommonData>().Assset,
                 //pDefualtBlankGrid = this.GetSingleton<Global.MainData<TGrid>>().DefaultGrids[(int)GridFillMode.Blank].pXline,
-                grids = this.GetComponentDataFromEntity<DotGrid.Unit32Data>(isReadOnly: true),
+                grids32 = this.GetComponentDataFromEntity<DotGrid.Unit32Data>(isReadOnly: true),
+                grids16 = this.GetComponentDataFromEntity<DotGrid.Unit16Data>(isReadOnly: true),
                 indexs = this.GetComponentDataFromEntity<DotGrid.IndexData>(isReadOnly: true),
                 parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
                 poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
@@ -76,7 +77,9 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
             [ReadOnly]
-            public ComponentDataFromEntity<DotGrid.Unit32Data> grids;
+            public ComponentDataFromEntity<DotGrid.Unit32Data> grids32;
+            [ReadOnly]
+            public ComponentDataFromEntity<DotGrid.Unit16Data> grids16;
             [ReadOnly]
             public ComponentDataFromEntity<DotGrid.IndexData> indexs;
             [ReadOnly]
@@ -97,23 +100,48 @@ namespace DotsLite.MarchingCubes
             public void Execute(int i)
             {
                 var ent = this.KeyEntities[i];
-                var grid = this.grids[ent];
                 var index = this.indexs[ent];
                 var parent = this.parents[ent];
                 var pos = this.poss[ent];
                 var area = this.areas[parent.ParentArea];
 
-                var mesh = makeMesh_(in grid.Unit, in index, in pos, in area, in this.mcdata);
-
-                if (this.colliders.HasComponent(ent))
+                if (this.grids32.HasComponent(ent))
                 {
-                    this.colliders[ent].Value.Dispose();
+                    var grid = this.grids32[ent];
+
+                    var mesh = makeMesh_(in grid.Unit, in index, in pos, in area, in this.mcdata);
+
+                    if (this.colliders.HasComponent(ent))
+                    {
+                        this.colliders[ent].Value.Dispose();
+                    }
+
+                    cmd.AddComponent(i, ent, new PhysicsCollider
+                    {
+                        Value = mesh,
+                    });
+
+                    return;
                 }
 
-                cmd.AddComponent(i, ent, new PhysicsCollider
+                if (this.grids16.HasComponent(ent))
                 {
-                    Value = mesh,
-                });
+                    var grid = this.grids16[ent];
+
+                    //var mesh = makeMesh_(in grid.Unit, in index, in pos, in area, in this.mcdata);
+
+                    //if (this.colliders.HasComponent(ent))
+                    //{
+                    //    this.colliders[ent].Value.Dispose();
+                    //}
+
+                    //cmd.AddComponent(i, ent, new PhysicsCollider
+                    //{
+                    //    Value = mesh,
+                    //});
+
+                    return;
+                }
             }
         }
 

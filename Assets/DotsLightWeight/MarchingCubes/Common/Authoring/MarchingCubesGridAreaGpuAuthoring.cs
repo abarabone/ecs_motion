@@ -111,6 +111,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     new ComponentType[]
                     {
                         typeof(DrawModel.ExcludeDrawMeshCsTag),
+                        typeof(DotGridArea.GridTypeData),
                         typeof(DotGridArea.UnitDimensionData),
                         typeof(DotGridArea.InitializeData),
                         typeof(DotGridArea.LinkToGridData),
@@ -141,6 +142,13 @@ namespace DotsLite.MarchingCubes.Authoring
                         GridToCubesShader = this.GridToCubesShader,
                         MaxCubeInstances = this.MaxCubeInstances,
                         MaxGrids = this.MaxGrids,
+                    }
+                );
+
+                em.SetComponentData(ent,
+                    new DotGridArea.GridTypeData
+                    {
+                        UnitOnEdge = (int)this.GridPrefab.GridType,
                     }
                 );
 
