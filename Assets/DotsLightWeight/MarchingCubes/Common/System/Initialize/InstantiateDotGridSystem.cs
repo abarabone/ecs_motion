@@ -43,50 +43,85 @@ namespace DotsLite.MarchingCubes
 
 
                         var i = new int3(0, 0, 0);
-                        create_(prefab.Prefab, new int3(0, 0, 0), ref grids);
-                        create_(prefab.Prefab, new int3(1, 0, 0), ref grids);
+                        create16_(prefab.Prefab, new int3(0, 0, 0), ref grids, em);
+                        //create_(prefab.Prefab, new int3(1, 0, 0), ref grids);
                         //create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
                         //create_(prefab.Prefab, new int3(1, 0, 1), ref grids);
                         return;
 
 
-                        void create_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids)
-                        {
-                            var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
-
-                            var newent = em.Instantiate(prefab);
-                            var grid = new DotGrid32x32x32().Alloc(GridFillMode.Blank);
-
-                            grids.pGridPoolIds[index.serial] = grids.nextSeed++;
-                            grids.ppGridXLines[index.serial] = grid.pXline;
-
-                            var pos = i * 32 + new int3(16, -16, -16);
-
-                            em.SetComponentData(newent, new DotGrid.Unit32Data
-                            {
-                                Unit = grid,
-                            });
-                            em.SetComponentData(newent, new DotGrid.IndexData
-                            {
-                                GridIndexInArea = index,
-                                scale = 1.0f,
-                            });
-                            em.SetComponentData(newent, new DrawInstance.WorldBbox
-                            {
-                                Bbox = new AABB
-                                {
-                                    Center = pos,
-                                    Extents = new float3(32 / 2, 32 / 2, 32 / 2),
-                                }
-                            });
-                            em.SetComponentData(newent, new Translation
-                            {
-                                Value = pos,
-                            });
-                        }
                     }
                 )
                 .Run();
+        }
+
+        unsafe void create32_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, EntityManager em)
+        {
+            var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
+
+            var newent = em.Instantiate(prefab);
+            var grid = new DotGrid32x32x32().Alloc(GridFillMode.Blank);
+
+            grids.pGridPoolIds[index.serial] = grids.nextSeed++;
+            grids.ppGridXLines[index.serial] = grid.pXline;
+
+            var pos = i * 32 + new int3(16, -16, -16);
+
+            em.SetComponentData(newent, new DotGrid.Unit32Data
+            {
+                Unit = grid,
+            });
+            em.SetComponentData(newent, new DotGrid.IndexData
+            {
+                GridIndexInArea = index,
+                scale = 1.0f,
+            });
+            em.SetComponentData(newent, new DrawInstance.WorldBbox
+            {
+                Bbox = new AABB
+                {
+                    Center = pos,
+                    Extents = new float3(32 / 2, 32 / 2, 32 / 2),
+                }
+            });
+            em.SetComponentData(newent, new Translation
+            {
+                Value = pos,
+            });
+        }
+        unsafe void create16_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, EntityManager em)
+        {
+            var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
+
+            var newent = em.Instantiate(prefab);
+            var grid = new DotGrid16x16x16().Alloc(GridFillMode.Blank);
+
+            grids.pGridPoolIds[index.serial] = grids.nextSeed++;
+            grids.ppGridXLines[index.serial] = grid.pXline;
+
+            var pos = i * 16 + new int3(8, -8, -8);
+
+            em.SetComponentData(newent, new DotGrid.Unit16Data
+            {
+                Unit = grid,
+            });
+            em.SetComponentData(newent, new DotGrid.IndexData
+            {
+                GridIndexInArea = index,
+                scale = 1.0f,
+            });
+            em.SetComponentData(newent, new DrawInstance.WorldBbox
+            {
+                Bbox = new AABB
+                {
+                    Center = pos,
+                    Extents = new float3(16 / 2, 16 / 2, 16 / 2),
+                }
+            });
+            em.SetComponentData(newent, new Translation
+            {
+                Value = pos,
+            });
         }
 
         protected override void OnDestroy()

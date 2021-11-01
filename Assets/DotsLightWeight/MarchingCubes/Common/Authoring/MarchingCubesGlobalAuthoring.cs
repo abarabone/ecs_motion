@@ -66,7 +66,7 @@ namespace DotsLite.MarchingCubes.Authoring
                 {
 
                 });
-                em.SetComponentData(ent, new Global.Work32Data
+                em.SetComponentData(ent, new Global.Work16Data
                 {
 
                 });

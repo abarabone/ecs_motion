@@ -48,10 +48,12 @@ namespace DotsLite.MarchingCubes.Gpu
                     Entity ent,
                     Global.InitializeData init,
                     Global.CommonData common,
-                    Global.Work32Data work32) =>
+                    Global.Work32Data work32,
+                    Global.Work16Data work16) =>
                 {
                     common.Alloc(init.asset);
                     work32.Alloc(init.maxGridInstances);
+                    work16.Alloc(init.maxGridInstances);
 
                     //em.RemoveComponent<Global.InitializeData>(ent);
                     cmd.RemoveComponent<Global.InitializeData>(ent);
