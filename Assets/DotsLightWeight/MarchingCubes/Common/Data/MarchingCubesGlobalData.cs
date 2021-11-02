@@ -31,7 +31,7 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        public class CommonData : IComponentData, IDisposable
+        public class CommonData : IComponentData//, IDisposable
         {
             public CommonShaderResources ShaderResources;
 
@@ -40,6 +40,8 @@ namespace DotsLite.MarchingCubes
 
             public void Alloc(MarchingCubesAsset asset)
             {
+                Debug.Log("mc global common alloc");
+
                 this.ShaderResources.Alloc(asset);
             }
 
@@ -57,9 +59,9 @@ namespace DotsLite.MarchingCubes
         // 32/16 別と強要に分ける必要あり
         //public class MainData<TGrid> : IComponentData, IDisposable
         //    where TGrid : struct, IDotGrid<TGrid>
-        public class Work32Data : WorkData<DotGrid32x32x32>, IComponentData, IDisposable
+        public class Work32Data : WorkData<DotGrid32x32x32>, IComponentData//, IDisposable
         { }
-        public class Work16Data : WorkData<DotGrid16x16x16>, IComponentData, IDisposable
+        public class Work16Data : WorkData<DotGrid16x16x16>, IComponentData//, IDisposable
         { }
         //{
         //    public NativeArray<DotGrid32x32x32> DefaultGrids;
@@ -98,7 +100,7 @@ namespace DotsLite.MarchingCubes
         //        Debug.Log("mc global work32 disposed");
         //    }
         //}
-        public class WorkData<TGrid> : IComponentData, IDisposable
+        public class WorkData<TGrid> : IComponentData//, IDisposable
             where TGrid : struct, IDotGrid<TGrid>
         {
             public NativeArray<TGrid> DefaultGrids;
@@ -109,6 +111,7 @@ namespace DotsLite.MarchingCubes
 
             public void Alloc(int maxGridInstances)
             {
+                Debug.Log($"mc global work{new TGrid().UnitOnEdge} alloc");
                 var defaultGrids = new NativeArray<TGrid>(2, Allocator.Persistent);
                 //defaultGrids[(int)GridFillMode.Blank] = TGrid.Allocater.Alloc(GridFillMode.Blank);
                 //defaultGrids[(int)GridFillMode.Solid] = TGrid.Allocater.Alloc(GridFillMode.Solid);
@@ -122,6 +125,8 @@ namespace DotsLite.MarchingCubes
 
             public void Dispose()
             {
+                if (!this.DefaultGrids.IsCreated) return;
+
                 this.ShaderResources.Dispose();
 
                 this.DefaultGrids[(int)GridFillMode.Blank].Dispose();

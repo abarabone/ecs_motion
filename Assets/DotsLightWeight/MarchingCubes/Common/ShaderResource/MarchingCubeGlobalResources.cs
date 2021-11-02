@@ -31,11 +31,13 @@ namespace DotsLite.MarchingCubes
 
             public void Alloc(MarchingCubesAsset asset)
             {
+                Debug.Log($"CommonShaderResources alloc");
                 this.CubeGeometryConstants = CubeGeometryConstantBuffer.Create(asset);
             }
 
             public void Dispose()
             {
+                Debug.Log($"CommonShaderResources disposed");
                 this.CubeGeometryConstants.Dispose();
             }
 
@@ -68,11 +70,13 @@ namespace DotsLite.MarchingCubes
             public void Alloc<TGrid>(int maxGridInstances)
                 where TGrid : struct, IDotGrid<TGrid>
             {
+                Debug.Log($"WorkingShaderResources alloc");
                 this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances, new TGrid().UnitOnEdge);
             }
 
             public void Dispose()
             {
+                Debug.Log($"WorkingShaderResources disposed");
                 this.GridCubeIds.Dispose();
             }
 

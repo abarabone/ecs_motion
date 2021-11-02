@@ -16,7 +16,7 @@ namespace DotsLite.MarchingCubes
     using MarchingCubes;
     using DotsLite.Draw;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(DotGridLinksInitializeSystem))]
@@ -43,7 +43,7 @@ namespace DotsLite.MarchingCubes
 
 
                         var i = new int3(0, 0, 0);
-                        create16_(prefab.Prefab, new int3(0, 0, 0), ref grids, em);
+                        //create32_(prefab.Prefab, new int3(0, 0, 0), ref grids, em);
                         //create_(prefab.Prefab, new int3(1, 0, 0), ref grids);
                         //create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
                         //create_(prefab.Prefab, new int3(1, 0, 1), ref grids);

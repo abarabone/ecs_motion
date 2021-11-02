@@ -16,7 +16,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Dependency;
     using DotsLite.Collision;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]// çƒçlÇÃïKóvÇ†ÇË
     [UpdateAfter(typeof(DotGridUpdateSystem))]
@@ -35,6 +35,8 @@ namespace DotsLite.MarchingCubes
         protected override void OnCreate()
         {
             base.OnCreate();
+
+            this.RequireSingletonForUpdate<Global.CommonData>();
 
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
             this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);

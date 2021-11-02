@@ -35,7 +35,7 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        public class ResourceGpuModeData : IComponentData, IDisposable
+        public class ResourceGpuModeData : IComponentData//, IDisposable
         {
             public DotGridAreaGpuResources ShaderResources;
 

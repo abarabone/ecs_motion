@@ -30,9 +30,11 @@ namespace DotsLite.MarchingCubes
         //public CubeInstancingIndirectArgumentsBuffer CubeInstancingArgs;
 
 
-        public void Alloc(int maxCubeInstances, int maxGrids, int maxGridInstructions = 63)// cs の dispatch は 65535 までなので、65535/1024
+        public void Alloc(int maxCubeInstances, int unitOnEdge, int maxGrids, int maxGridInstructions = 63)// cs の dispatch は 65535 までなので、65535/1024
         {
-            this.GridDotContentDataBuffer = GridContentDataBuffer.Create(maxGrids);
+            Debug.Log($"DotGridAreaGpuResources alloc");
+
+            this.GridDotContentDataBuffer = GridContentDataBuffer.Create(maxGrids, unitOnEdge);
             //this.GridInstructions = GridInstructionsBuffer.Create(maxGridInstructions);
 
             this.CubeInstances = CubeInstancingShaderBuffer.Create(maxCubeInstances);
@@ -41,6 +43,10 @@ namespace DotsLite.MarchingCubes
 
         public void Dispose()
         {
+            if (this.GridDotContentDataBuffer.Buffer == null) return;
+
+            Debug.Log($"DotGridAreaGpuResources disposed");
+
             this.GridDotContentDataBuffer.Dispose();
             //this.GridInstructions.Dispose();
 
@@ -117,9 +123,9 @@ namespace DotsLite.MarchingCubes
     {
         public ComputeBuffer Buffer { get; private set; }
 
-        public static GridContentDataBuffer Create(int maxGrids) => new GridContentDataBuffer
+        public static GridContentDataBuffer Create(int maxGrids, int unitOnEdge) => new GridContentDataBuffer
         {
-            Buffer = new ComputeBuffer(32 * 32 * maxGrids, Marshal.SizeOf<uint>()),
+            Buffer = new ComputeBuffer(unitOnEdge * unitOnEdge / (32/ unitOnEdge) * maxGrids, Marshal.SizeOf<uint>()),
         };
 
         public void Dispose() => this.Buffer?.Release();

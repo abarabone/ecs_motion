@@ -36,7 +36,7 @@ namespace DotsLite.MarchingCubes
                 _ => default,
             };
 
-        public struct Unit32Data : IComponentData, IDisposable
+        public struct Unit32Data : IComponentData//, IDisposable
         {
             public DotGrid32x32x32 Unit;
 
@@ -47,7 +47,7 @@ namespace DotsLite.MarchingCubes
                 this.Unit.Dispose();
             }
         }
-        public struct Unit16Data : IComponentData, IDisposable
+        public struct Unit16Data : IComponentData//, IDisposable
         {
             public DotGrid16x16x16 Unit;
 

@@ -35,7 +35,7 @@ namespace DotsLite.MarchingCubes
             public int UnitOnEdge;
         }
 
-        public unsafe struct LinkToGridData : IComponentData, IDisposable
+        public unsafe struct LinkToGridData : IComponentData//, IDisposable
         {
             public int* pGridPoolIds;
             public uint** ppGridXLines;

@@ -51,7 +51,7 @@ namespace DotsLite.MarchingCubes
 
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class DotGridUpdateAllocSystem : SystemBase
     {
@@ -69,7 +69,7 @@ namespace DotsLite.MarchingCubes
     }
 
     // テストのためとりあえずグリッドを追加する
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class DotGridAddSystem : DependencyAccessableSystemBase
     {
@@ -111,7 +111,7 @@ namespace DotsLite.MarchingCubes
         { }
     }
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     public class DotGridUpdateSystem//<TGrid>
         : DependencyAccessableSystemBase, HitMessage<UpdateMessage>.IRecievable

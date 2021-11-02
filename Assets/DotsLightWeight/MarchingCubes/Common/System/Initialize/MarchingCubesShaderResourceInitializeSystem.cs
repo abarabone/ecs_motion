@@ -17,7 +17,7 @@ namespace DotsLite.MarchingCubes.Gpu
     using DotsLite.Draw;
     using DotsLite.Utilities;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class MarchingCubesShaderResourceInitializeSystem : DependencyAccessableSystemBase
@@ -84,20 +84,24 @@ namespace DotsLite.MarchingCubes.Gpu
                     var mesh = geom.Mesh;// gres.mesh;
                     var cs = init.GridToCubesShader;
 
-
-                    links.AllocGridAreaBuffers(pBlank);
-                    data.ShaderResources.Alloc(init.MaxCubeInstances, init.MaxGrids);
-
-
-                    globalcommon.ShaderResources.SetResourcesTo(mat);
                     switch (type.UnitOnEdge)
                     {
                         case 32:
+                            links.AllocGridAreaBuffers(pBlank);
+                            data.ShaderResources.Alloc(init.MaxCubeInstances, 32, init.MaxGrids);
+
+                            globalcommon.ShaderResources.SetResourcesTo(mat);
                             globalwork32.ShaderResources.SetResourcesTo(mat, cs);
                             break;
+
                         case 16:
+                            links.AllocGridAreaBuffers(pBlank);
+                            data.ShaderResources.Alloc(init.MaxCubeInstances, 16, init.MaxGrids);
+
+                            globalcommon.ShaderResources.SetResourcesTo(mat);
                             globalwork16.ShaderResources.SetResourcesTo(mat, cs);
                             break;
+
                         default:
                             break;
                     }

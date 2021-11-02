@@ -25,7 +25,7 @@ namespace DotsLite.Draw
     //public class DotGridToModelBufferSystem16 : DotGridToModelBufferSystem<DotGrid16x16x16>
     //{ }
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
     //public class DotGridToModelBufferSystem<TGrid> : DependencyAccessableSystemBase
     //    where TGrid : struct, IDotGrid<TGrid>
