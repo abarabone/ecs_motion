@@ -59,7 +59,7 @@ namespace DotsLite.Draw
             void disposeTransformComputeBuffer_()
             {
                 var cb = this.GetSingleton<DrawSystem.ComputeTransformBufferData>();
-                cb.Transforms.Dispose();
+                cb.Transforms?.Dispose();
             }
 
             void disposeComputeArgumentsBuffersAllModels_()
@@ -70,7 +70,20 @@ namespace DotsLite.Draw
                     var args = eq.ToComponentDataArray<DrawModel.ComputeArgumentsBufferData>();
                     foreach( var arg in args )
                     {
-                        arg.InstancingArgumentsBuffer.Dispose();
+                        arg.InstancingArgumentsBuffer?.Dispose();
+                    }
+                }
+                // disabled も解放しとくべき…と思うんだけど、どうなんだろう
+                // あとプレハブとかはどういう扱いなんだっけ…
+                var eq_d = this.EntityManager.CreateEntityQuery(
+                    typeof(DrawModel.ComputeArgumentsBufferData),
+                    typeof(Disabled));
+                using (eq_d)
+                {
+                    var args = eq_d.ToComponentDataArray<DrawModel.ComputeArgumentsBufferData>();
+                    foreach (var arg in args)
+                    {
+                        arg.InstancingArgumentsBuffer?.Dispose();
                     }
                 }
             }

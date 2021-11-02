@@ -118,6 +118,37 @@ namespace DotsLite.MarchingCubes.Gpu
                 .Run();
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            this.Entities
+                .WithName("Global_Destroy")
+                .WithoutBurst()
+                .ForEach((
+                    Entity ent,
+                    Global.CommonData common,
+                    Global.Work32Data work32,
+                    Global.Work16Data work16) =>
+                {
+                    common.Dispose();
+                    work32.Dispose();
+                    work16.Dispose();
+                })
+                .Run();
+
+            this.Entities
+                .WithName("GridArea_Destroy")
+                .WithoutBurst()
+                .ForEach((
+                    DotGridArea.ResourceGpuModeData data,
+                    in DotGridArea.LinkToGridData links) =>
+                {
+                    data.Dispose();
+                    links.Dispose();
+                })
+                .Run();
+        }
 
     }
 
