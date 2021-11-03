@@ -126,6 +126,18 @@ namespace DotsLite.MarchingCubes.Gpu
             base.OnDestroy();
 
             this.Entities
+                .WithName("GridArea_Destroy")
+                .WithoutBurst()
+                .ForEach((
+                    DotGridArea.ResourceGpuModeData data,
+                    in DotGridArea.LinkToGridData links) =>
+                {
+                    data.Dispose();
+                    links.Dispose();
+                })
+                .Run();
+
+            this.Entities
                 .WithName("Global_Destroy")
                 .WithoutBurst()
                 .ForEach((
@@ -136,18 +148,6 @@ namespace DotsLite.MarchingCubes.Gpu
                     common.Dispose();
                     work32.Dispose();
                     work16.Dispose();
-                })
-                .Run();
-
-            this.Entities
-                .WithName("GridArea_Destroy")
-                .WithoutBurst()
-                .ForEach((
-                    DotGridArea.ResourceGpuModeData data,
-                    in DotGridArea.LinkToGridData links) =>
-                {
-                    data.Dispose();
-                    links.Dispose();
                 })
                 .Run();
         }

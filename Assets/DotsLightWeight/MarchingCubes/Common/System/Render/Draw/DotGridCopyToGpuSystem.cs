@@ -86,16 +86,6 @@ namespace DotsLite.MarchingCubes
                 })
                 .Run();
 
-            //var grids = this.GetComponentDataFromEntity<DotGrid.UnitData>(isReadOnly: true);
-            //var dirties = this.GetComponentDataFromEntity<DotGrid.UpdateDirtyRangeData>(isReadOnly: true);
-            //var parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true);
-            //new JobExecution
-            //{
-
-            //}
-
-
-
             this.Dependency = this.MessageHolderSystem.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
