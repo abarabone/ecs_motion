@@ -25,16 +25,20 @@ namespace DotsLite.MarchingCubes
         {
             public Entity ParentArea;
         }
+        public struct UnitOnEdgeData : IComponentData
+        {
+            public int Unit;
+        }
 
 
 
-        public static Type TypeOf_UnitData<TGrid>() where TGrid : struct, IDotGrid<TGrid> =>
-            new TGrid() switch
-            {
-                DotGrid32x32x32 _ => typeof(Unit32Data),
-                DotGrid16x16x16 _ => typeof(Unit16Data),
-                _ => default,
-            };
+        //public static Type TypeOf_UnitData<TGrid>() where TGrid : struct, IDotGrid<TGrid> =>
+        //    new TGrid() switch
+        //    {
+        //        DotGrid32x32x32 _ => typeof(Unit32Data),
+        //        DotGrid16x16x16 _ => typeof(Unit16Data),
+        //        _ => default,
+        //    };
 
         public struct Unit32Data : IComponentData//, IDisposable
         {

@@ -29,20 +29,20 @@ namespace DotsLite.MarchingCubes
         public int CubeCount;// DotCount に変更　あとで
 
 
-        public bool IsFullOrEmpty => (this.CubeCount & (dotNum - 1) ) == 0;
-        public bool IsFull => this.CubeCount == dotNum;
-        public bool IsEmpty => this.CubeCount == 0;
+        //public bool IsFullOrEmpty => (this.CubeCount & (dotNum - 1) ) == 0;
+        //public bool IsFull => this.CubeCount == dotNum;
+        //public bool IsEmpty => this.CubeCount == 0;
 
-        public GridFillMode FillModeBlankOrSolid => (GridFillMode)(this.CubeCount >> (16 - 1));
-        public GridFillMode FillMode
-        {
-            get
-            {
-                var notfilled = math.select(-1, 0, (this.CubeCount & (dotNum - 1)) != 0);
-                var solid = this.CubeCount >> (16 - 1);
-                return (GridFillMode)( notfilled | solid );
-            }
-        }
+        //public GridFillMode FillModeBlankOrSolid => (GridFillMode)(this.CubeCount >> (16 - 1));
+        //public GridFillMode FillMode
+        //{
+        //    get
+        //    {
+        //        var notfilled = math.select(-1, 0, (this.CubeCount & (dotNum - 1)) != 0);
+        //        var solid = this.CubeCount >> (16 - 1);
+        //        return (GridFillMode)( notfilled | solid );
+        //    }
+        //}
 
 
         public DotGrid32x32x32(GridFillMode fillmode) : this()

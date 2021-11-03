@@ -15,7 +15,7 @@ namespace DotsLite.MarchingCubes.Gpu
     using DotsLite.Utilities;
     using DotsLite.MarchingCubes;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     [UpdateAfter(typeof(DrawBufferToShaderDataSystem))]
     public class DrawMarchingCubeCsSystem : SystemBase
@@ -29,10 +29,10 @@ namespace DotsLite.MarchingCubes.Gpu
 
         protected unsafe override void OnUpdate()
         {
-            var globalcommon = this.GetSingleton<Global.CommonData>();
-            var globaldata = this.GetSingleton<Global.Work32Data>();
+            //var globalcommon = this.GetSingleton<Global.CommonData>();
+            //var globaldata = this.GetSingleton<Global.Work32Data>();
 
-            var gbuf = globaldata.ShaderResources;
+            //var gbuf = globaldata.ShaderResources;
 
             this.Entities
                 .WithoutBurst()

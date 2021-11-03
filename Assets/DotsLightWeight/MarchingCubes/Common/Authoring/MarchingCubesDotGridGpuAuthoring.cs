@@ -28,25 +28,12 @@ namespace DotsLite.MarchingCubes.Authoring
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
 
-            switch (this.GridType)
-            {
-                case DotGridType.DotGrid32x32x32:
-                    createDotGrid_<DotGrid32x32x32>(conversionSystem, entity);
-                    break;
-
-                case DotGridType.DotGrid16x16x16:
-                    createDotGrid_<DotGrid16x16x16>(conversionSystem, entity);
-                    break;
-
-                default:
-                    break;
-            }
+            createDotGrid_(conversionSystem, entity, this.GridType);
 
             return;
 
 
-            static void createDotGrid_<TGrid>(GameObjectConversionSystem gcs, Entity ent)
-                where TGrid : struct, IDotGrid<TGrid>
+            static void createDotGrid_(GameObjectConversionSystem gcs, Entity ent, DotGridType gridtype)
             {
                 var em = gcs.DstEntityManager;
 
@@ -55,15 +42,26 @@ namespace DotsLite.MarchingCubes.Authoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
-                    DotGrid.TypeOf_UnitData<TGrid>(),//typeof(DotGrid.UnitData),
+                    typeof(DotGrid.UnitOnEdgeData),
+                    //typeof(DotGrid.UnitData),
                     typeof(DotGrid.IndexData),
                     typeof(DotGrid.ParentAreaData),
                     typeof(DotGrid.UpdateDirtyRangeData),
                     //typeof(Unity.Physics.PhysicsCollider),
                     typeof(Collision.Hit.TargetData),
                 };
+                types.Add(gridtype switch
+                {
+                    DotGridType.DotGrid32x32x32 => typeof(DotGrid.Unit32Data),
+                    DotGridType.DotGrid16x16x16 => typeof(DotGrid.Unit16Data),
+                    _ => default,
+                });
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
+                em.SetComponentData(ent, new DotGrid.UnitOnEdgeData
+                {
+                    Unit = (int)gridtype,
+                });
                 //em.SetComponentData(ent, new PhysicsCollider
                 //{
                 //    Value = BlobAssetReference<Unity.Physics.Collider>.Null,

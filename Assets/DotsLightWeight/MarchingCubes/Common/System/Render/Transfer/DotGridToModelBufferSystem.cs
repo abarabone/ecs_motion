@@ -15,20 +15,8 @@ namespace DotsLite.Draw
     using MarchingCubes;
 
 
-    ////[DisableAutoCreation]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
-    //public class DotGridToModelBufferSystem32 : DotGridToModelBufferSystem<DotGrid32x32x32>
-    //{ }
-
-    ////[DisableAutoCreation]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
-    //public class DotGridToModelBufferSystem16 : DotGridToModelBufferSystem<DotGrid16x16x16>
-    //{ }
-
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
-    //public class DotGridToModelBufferSystem<TGrid> : DependencyAccessableSystemBase
-    //    where TGrid : struct, IDotGrid<TGrid>
     public class DotGridToModelBufferSystem : DependencyAccessableSystemBase
     {
 
@@ -53,80 +41,78 @@ namespace DotsLite.Draw
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>( isReadOnly: true );
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithReadOnly(nativeBuffers)
                 .WithReadOnly(gridAreas)
-                .ForEach(
-                    (
-                        in DrawInstance.TargetWorkData target,
-                        in DrawInstance.ModelLinkData linker,
-                        in Translation pos,
-                        //in DotGrid.Unit32Data grid,
-                        in DotGrid.IndexData index,
-                        in DotGrid.ParentAreaData parent
-                    ) =>
+                .ForEach((
+                    in DrawInstance.TargetWorkData target,
+                    in DrawInstance.ModelLinkData linker,
+                    in Translation pos,
+                    in DotGrid.UnitOnEdgeData unit,
+                    in DotGrid.IndexData index,
+                    in DotGrid.ParentAreaData parent) =>
+                {
+                    if (target.DrawInstanceId == -1) return;
+
+
+                    var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
+
+                    var lengthOfInstance = 1 + offsetInfo.OptionalVectorLengthPerInstance;
+                    var i = target.DrawInstanceId * lengthOfInstance;// + offsetInfo.OptionalVectorLengthPerInstance;
+
+                    var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
+
+                    var ids = pickupNeargridIds_(gridAreas[parent.ParentArea], index.GridIndexInArea);
+                    pModel[i + 0] = math.asfloat(ids.lPack4);
+                    pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
+
+                    var u = unit.Unit >> 1;
+                    pModel[i + 2] = new float4(pos.Value - new float3(u, -u, -u), 1.0f);
+
+                    return;
+
+
+                    NearGridIndex pickupNeargridIds_(DotGridArea.LinkToGridData area, DotGrid.GridIndex index)
                     {
-                        if (target.DrawInstanceId == -1) return;
+                        var ids = new NearGridIndex();
+
+                        var p = area.pGridPoolIds;
+                        var span = area.GridSpan;
 
 
-                        var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
+                        var lhome = index;
+                        ids.left.home = p[lhome.serial];
 
-                        var lengthOfInstance = 1 + offsetInfo.OptionalVectorLengthPerInstance;
-                        var i = target.DrawInstanceId * lengthOfInstance;// + offsetInfo.OptionalVectorLengthPerInstance;
+                        var lrear = index.CloneNear(new int3(0, 0, 1), span);
+                        ids.left.rear = p[lrear.serial];
 
-                        var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
+                        var ldown = index.CloneNear(new int3(0, 1, 0), span);
+                        ids.left.down = p[ldown.serial];
 
-                        var ids = pickupNeargridIds_(gridAreas[parent.ParentArea], index.GridIndexInArea);
-                        pModel[i + 0] = math.asfloat(ids.lPack4);
-                        pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
-
-                        pModel[i + 2] = new float4(pos.Value - new float3(16, -16, -16), 1.0f);
-
-                        return;
+                        var lslant = index.CloneNear(new int3(0, 1, 1), span);
+                        ids.left.slant = p[lslant.serial];
 
 
-                        NearGridIndex pickupNeargridIds_(DotGridArea.LinkToGridData area, DotGrid.GridIndex index)
-                        {
-                            var ids = new NearGridIndex();
+                        var rhome = index.CloneNear(new int3(1, 0, 0), span);
+                        ids.right.home = p[rhome.serial];
 
-                            var p = area.pGridPoolIds;
-                            var span = area.GridSpan;
+                        var rrear = index.CloneNear(new int3(1, 0, 1), span);
+                        ids.right.rear = p[rrear.serial];
 
+                        var rdown = index.CloneNear(new int3(1, 1, 0), span);
+                        ids.right.down = p[rdown.serial];
 
-                            var lhome = index;
-                            ids.left.home = p[lhome.serial];
-
-                            var lrear = index.CloneNear(new int3(0, 0, 1), span);
-                            ids.left.rear = p[lrear.serial];
-
-                            var ldown = index.CloneNear(new int3(0, 1, 0), span);
-                            ids.left.down = p[ldown.serial];
-
-                            var lslant = index.CloneNear(new int3(0, 1, 1), span);
-                            ids.left.slant = p[lslant.serial];
+                        var rslant = index.CloneNear(new int3(1, 1, 1), span);
+                        ids.right.slant = p[rslant.serial];
 
 
-                            var rhome = index.CloneNear(new int3(1, 0, 0), span);
-                            ids.right.home = p[rhome.serial];
-
-                            var rrear = index.CloneNear(new int3(1, 0, 1), span);
-                            ids.right.rear = p[rrear.serial];
-
-                            var rdown = index.CloneNear(new int3(1, 1, 0), span);
-                            ids.right.down = p[rdown.serial];
-
-                            var rslant = index.CloneNear(new int3(1, 1, 1), span);
-                            ids.right.slant = p[rslant.serial];
-
-
-                            return ids;
-                        }
+                        return ids;
                     }
-                )
+                })
                 .ScheduleParallel();
         }
 

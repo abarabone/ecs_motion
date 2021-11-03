@@ -17,7 +17,7 @@ namespace DotsLite.MarchingCubes.Gpu
     using DotsLite.Draw;
     using DotsLite.Utilities;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class MarchingCubesShaderResourceInitializeSystem : DependencyAccessableSystemBase
@@ -65,7 +65,8 @@ namespace DotsLite.MarchingCubes.Gpu
             var globalwork32 = this.GetSingleton<Global.Work32Data>();
             var globalwork16 = this.GetSingleton<Global.Work16Data>();
             //var gres = globalwork32.ShaderResources;
-            var pBlank = globalwork32.DefaultGrids[(int)GridFillMode.Blank].pXline;
+            var pBlank32 = globalwork32.DefaultGrids[(int)GridFillMode.Blank].pXline;
+            var pBlank16 = globalwork16.DefaultGrids[(int)GridFillMode.Blank].pXline;
 
             this.Entities
                 .WithName("GridArea")
@@ -87,7 +88,8 @@ namespace DotsLite.MarchingCubes.Gpu
                     switch (type.UnitOnEdge)
                     {
                         case 32:
-                            links.AllocGridAreaBuffers(pBlank);
+                            Debug.Log("mc sh res ini 32");
+                            links.AllocGridAreaBuffers(pBlank32);
                             data.ShaderResources.Alloc(init.MaxCubeInstances, 32, init.MaxGrids);
 
                             globalcommon.ShaderResources.SetResourcesTo(mat);
@@ -95,7 +97,8 @@ namespace DotsLite.MarchingCubes.Gpu
                             break;
 
                         case 16:
-                            links.AllocGridAreaBuffers(pBlank);
+                            Debug.Log("mc sh res ini 16");
+                            links.AllocGridAreaBuffers(pBlank16);
                             data.ShaderResources.Alloc(init.MaxCubeInstances, 16, init.MaxGrids);
 
                             globalcommon.ShaderResources.SetResourcesTo(mat);
@@ -126,7 +129,6 @@ namespace DotsLite.MarchingCubes.Gpu
                 .WithName("Global_Destroy")
                 .WithoutBurst()
                 .ForEach((
-                    Entity ent,
                     Global.CommonData common,
                     Global.Work32Data work32,
                     Global.Work16Data work16) =>

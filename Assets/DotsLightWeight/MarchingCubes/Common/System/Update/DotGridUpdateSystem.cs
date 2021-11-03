@@ -50,26 +50,8 @@ namespace DotsLite.MarchingCubes
     }
 
 
-
-    [DisableAutoCreation]
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class DotGridUpdateAllocSystem : SystemBase
-    {
-        DotGridUpdateSystem sys;
-
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-            this.sys = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
-        }
-        protected override void OnUpdate()
-        {
-            this.sys.Reciever.Alloc(10000, Allocator.TempJob);
-        }
-    }
-
     // テストのためとりあえずグリッドを追加する
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class DotGridAddSystem : DependencyAccessableSystemBase
     {
@@ -111,11 +93,29 @@ namespace DotsLite.MarchingCubes
         { }
     }
 
-    [DisableAutoCreation]
+
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public class DotGridUpdateAllocSystem : SystemBase
+    {
+        DotGridUpdateSystem sys;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+            this.sys = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
+        }
+        protected override void OnUpdate()
+        {
+            this.sys.Reciever.Alloc(10000, Allocator.TempJob);
+        }
+    }
+
+
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
-    public class DotGridUpdateSystem//<TGrid>
+    public class DotGridUpdateSystem
         : DependencyAccessableSystemBase, HitMessage<UpdateMessage>.IRecievable
-    //where TGrid : struct, IDotGrid<TGrid>
     {
 
 

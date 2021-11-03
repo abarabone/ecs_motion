@@ -16,7 +16,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Utilities;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     //[UpdateAfter(typeof(DotGridUpdateSystem))]
     [UpdateBefore(typeof(Gpu.DrawMarchingCubeCsSystem))]
@@ -26,13 +26,13 @@ namespace DotsLite.MarchingCubes
 
         public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();
 
-        //public HitMessage<DotGridUpdateMessage>.Reciever 
         public DotGridUpdateSystem MessageHolderSystem;
+
 
         protected override void OnCreate()
         {
             base.OnCreate();
-
+            
             this.MessageHolderSystem = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
         }
 
