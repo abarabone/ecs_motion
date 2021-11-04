@@ -65,6 +65,7 @@ namespace DotsLite.MarchingCubes
         {
             if( this.pXline == null ) return;// struct なので、複製された場合はこのチェックも意味がない
 
+            Debug.Log("dgrid 32 dispose");
             Allocater.Dispose((UIntPtr)this.pXline);
             this.pXline = null;
         }

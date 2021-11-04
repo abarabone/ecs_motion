@@ -27,7 +27,7 @@ namespace DotsLite.MarchingCubes
 
         BarrierDependency.Sender bardep;
 
-        public DotGridUpdateSystem MessageHolderSystem;
+        DotGridMessageAllocSystem messageSystem;
 
 
 
@@ -39,9 +39,9 @@ namespace DotsLite.MarchingCubes
             this.RequireSingletonForUpdate<Global.CommonData>();
 
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-            this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
+            this.bardep = BarrierDependency.Sender.Create<DotGridMessageFreeSystem>(this);
 
-            this.MessageHolderSystem = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
+            this.messageSystem = this.World.GetOrCreateSystem<DotGridMessageAllocSystem>();
         }
 
         protected unsafe override void OnUpdate()
@@ -52,7 +52,7 @@ namespace DotsLite.MarchingCubes
             this.Dependency = new JobExecution
             {
                 cmd = cmdscope.CommandBuffer.AsParallelWriter(),
-                KeyEntities = this.MessageHolderSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
+                KeyEntities = this.messageSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
                 mcdata = this.GetSingleton<Global.CommonData>().Assset,
                 //pDefualtBlankGrid = this.GetSingleton<Global.MainData<TGrid>>().DefaultGrids[(int)GridFillMode.Blank].pXline,
                 grids32 = this.GetComponentDataFromEntity<DotGrid.Unit32Data>(isReadOnly: true),
@@ -63,7 +63,7 @@ namespace DotsLite.MarchingCubes
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
                 colliders = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
             }
-            .Schedule(this.MessageHolderSystem.Reciever.Holder.keyEntities, 1, this.Dependency);
+            .Schedule(this.messageSystem.Reciever.Holder.keyEntities, 1, this.Dependency);
         }
 
 

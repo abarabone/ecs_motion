@@ -14,130 +14,24 @@ namespace DotsLite.MarchingCubes
 {
     using DotsLite.Dependency;
 
-    [StructLayout(LayoutKind.Explicit)]
-    public struct UpdateMessage : IHitMessage
-    {
-        [FieldOffset(0)] public AABB aabb;
-        [FieldOffset(0)] public UpdateSphere sphere;
 
-        [FieldOffset(32)]
-        public DotGridUpdateType type;
-    }
-    public enum DotGridUpdateType
-    {
-        none,
-
-        cube_force32,
-        aabb_add32,
-        aabb_remove32,
-        sphere_add32,
-        sphere_remove32,
-        capsule_add32,
-        capsule_remove32,
-
-        cube_force16,
-        aabb_add16,
-        aabb_remove16,
-        sphere_add16,
-        sphere_remove16,
-        capsule_add16,
-        capsule_remove16,
-    }
-    public struct UpdateSphere
-    {
-        public float3 center;
-        public float radius;
-    }
-
-
-    // テストのためとりあえずグリッドを追加する
-    //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class DotGridAddSystem : DependencyAccessableSystemBase
-    {
-        HitMessage<UpdateMessage>.Sender mcSender;
-
-        protected override void OnStartRunning()
-        {
-            base.OnStartRunning();
-
-            this.mcSender = HitMessage<UpdateMessage>.Sender.Create<DotGridUpdateSystem>(this);
-            using var mcScope = this.mcSender.WithDependencyScope();
-            var w = mcScope.MessagerAsParallelWriter;
-
-            this.Entities
-                .WithAll<DotGrid.Unit32Data>()
-                .ForEach((
-                    Entity entity) =>
-                {
-                    w.Add(entity, new UpdateMessage
-                    {
-                        type = DotGridUpdateType.cube_force32,
-                    });
-                })
-                .ScheduleParallel();
-
-            this.Entities
-                .WithAll<DotGrid.Unit16Data>()
-                .ForEach((
-                    Entity entity) =>
-                {
-                    w.Add(entity, new UpdateMessage
-                    {
-                        type = DotGridUpdateType.cube_force16,
-                    });
-                })
-                .ScheduleParallel();
-        }
-        protected override void OnUpdate()
-        { }
-    }
-
-
-    //[DisableAutoCreation]
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class DotGridUpdateAllocSystem : SystemBase
-    {
-        DotGridUpdateSystem sys;
-
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-            this.sys = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
-        }
-        protected override void OnUpdate()
-        {
-            this.sys.Reciever.Alloc(10000, Allocator.TempJob);
-        }
-    }
-
-
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
-    public class DotGridUpdateSystem
-        : DependencyAccessableSystemBase, HitMessage<UpdateMessage>.IRecievable
+    public class DotGridUpdateSystem : DependencyAccessableSystemBase
     {
-
-
-        public HitMessage<UpdateMessage>.Reciever Reciever { get; private set; }
 
         BarrierDependency.Sender bardep;
 
+        DotGridMessageAllocSystem messageSystem;
+
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.Reciever = new HitMessage<UpdateMessage>.Reciever();// 10000, Allocator.TempJob);
-
             this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
-        }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            this.Reciever.Dispose();
+            this.messageSystem = this.World.GetOrCreateSystem<DotGridMessageAllocSystem>();
         }
 
         protected override void OnUpdate()
@@ -153,7 +47,7 @@ namespace DotsLite.MarchingCubes
                 areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
                 dims = this.GetComponentDataFromEntity<DotGridArea.UnitDimensionData>(isReadOnly: true),
             }
-            .ScheduleParallelKey(this.Reciever, 1, this.Dependency);
+            .ScheduleParallelKey(this.messageSystem.Reciever, 1, this.Dependency);
         }
 
 

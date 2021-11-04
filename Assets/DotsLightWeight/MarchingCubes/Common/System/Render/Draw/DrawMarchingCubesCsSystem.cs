@@ -24,7 +24,7 @@ namespace DotsLite.MarchingCubes.Gpu
         {
             base.OnCreate();
 
-            this.RequireSingletonForUpdate<Global.Work32Data>();
+            this.RequireSingletonForUpdate<Global.CommonData>();
         }
 
         protected unsafe override void OnUpdate()

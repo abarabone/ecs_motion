@@ -16,7 +16,7 @@ namespace DotsLite.MarchingCubes
     using MarchingCubes;
     using DotsLite.Draw;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(DotGridLinksInitializeSystem))]

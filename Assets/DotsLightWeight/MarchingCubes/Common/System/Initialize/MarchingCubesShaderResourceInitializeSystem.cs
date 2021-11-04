@@ -17,7 +17,7 @@ namespace DotsLite.MarchingCubes.Gpu
     using DotsLite.Draw;
     using DotsLite.Utilities;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class MarchingCubesShaderResourceInitializeSystem : DependencyAccessableSystemBase

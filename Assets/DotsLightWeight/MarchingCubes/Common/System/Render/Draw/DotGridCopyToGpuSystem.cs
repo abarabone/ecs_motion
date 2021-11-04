@@ -16,7 +16,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Utilities;
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     //[UpdateAfter(typeof(DotGridUpdateSystem))]
     [UpdateBefore(typeof(Gpu.DrawMarchingCubeCsSystem))]
@@ -26,14 +26,18 @@ namespace DotsLite.MarchingCubes
 
         public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();
 
-        public DotGridUpdateSystem MessageHolderSystem;
+        BarrierDependency.Sender bardep;
+
+        public DotGridMessageAllocSystem MessageSystem;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
             
-            this.MessageHolderSystem = this.World.GetOrCreateSystem<DotGridUpdateSystem>();
+            this.MessageSystem = this.World.GetOrCreateSystem<DotGridMessageAllocSystem>();
+
+            this.bardep = BarrierDependency.Sender.Create<DotGridMessageFreeSystem>(this);
         }
 
         protected override void OnDestroy()
@@ -45,6 +49,8 @@ namespace DotsLite.MarchingCubes
 
         protected override unsafe void OnUpdate()
         {
+            using var barscope = this.bardep.WithDependencyScope();
+
             this.Reciever.CompleteAllDependentJobs(this.Dependency);
 
 
@@ -55,7 +61,7 @@ namespace DotsLite.MarchingCubes
                 .WithoutBurst()
                 .WithCode(() =>
                 {
-                    foreach (var ent in this.MessageHolderSystem.Reciever.Holder.TargetEntities)
+                    foreach (var ent in this.MessageSystem.Reciever.Holder.TargetEntities)
                     {
                         //var grid = grids[ent];
                         //var dirty = dirties[ent];
@@ -85,8 +91,6 @@ namespace DotsLite.MarchingCubes
                     }
                 })
                 .Run();
-
-            this.Dependency = this.MessageHolderSystem.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
     }

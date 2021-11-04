@@ -61,7 +61,7 @@ namespace DotsLite.Arms
 
             this.stSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
-            this.mcSender = HitMessage<MarchingCubes.UpdateMessage>.Sender.Create<MarchingCubes.DotGridUpdateSystem>(this);
+            this.mcSender = HitMessage<MarchingCubes.UpdateMessage>.Sender.Create<MarchingCubes.DotGridMessageAllocSystem>(this);
 
             //this.bardep = BarrierDependency.Sender.Create<ExplosionSphereHitSystem>(this);
             //this.bardep2 = BarrierDependency.Sender.Create<BulletSphereHitSystem>(this);
