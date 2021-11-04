@@ -53,7 +53,7 @@ namespace DotsLite.MarchingCubes
 
 
     // テストのためとりあえずグリッドを追加する
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     public class DotGridAddSystem : DependencyAccessableSystemBase
     {

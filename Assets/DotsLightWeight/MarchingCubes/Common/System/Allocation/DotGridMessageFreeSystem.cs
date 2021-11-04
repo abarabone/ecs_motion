@@ -26,14 +26,14 @@ namespace DotsLite.MarchingCubes
 
         public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();
 
-        public DotGridMessageAllocSystem MessageSystem;
+        DotGridMessageAllocSystem messageSystem;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.MessageSystem = this.World.GetOrCreateSystem<DotGridMessageAllocSystem>();
+            this.messageSystem = this.World.GetOrCreateSystem<DotGridMessageAllocSystem>();
         }
 
         protected override void OnDestroy()
@@ -48,7 +48,7 @@ namespace DotsLite.MarchingCubes
         {
             var dep = this.Reciever.CombineAllDependentJobs(this.Dependency);
 
-            this.Dependency = this.MessageSystem.Reciever.Holder.ScheduleDispose(dep);
+            this.Dependency = this.messageSystem.Reciever.Holder.ScheduleDispose(dep);
         }
 
     }

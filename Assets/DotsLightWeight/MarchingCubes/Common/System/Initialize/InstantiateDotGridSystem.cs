@@ -16,7 +16,7 @@ namespace DotsLite.MarchingCubes
     using MarchingCubes;
     using DotsLite.Draw;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(DotGridLinksInitializeSystem))]
@@ -26,7 +26,7 @@ namespace DotsLite.MarchingCubes
 
         protected override unsafe void OnUpdate()
         {
-            var em = this.EntityManager;
+            //var em = this.EntityManager;
 
             this.Entities
                 .WithName("GridArea")
@@ -35,9 +35,9 @@ namespace DotsLite.MarchingCubes
                 .WithAll<DotGridArea.InitializeData>()
                 .ForEach(
                     (
-                        Entity entity,
-                        ref DotGridArea.LinkToGridData grids,
-                        in DotGridArea.DotGridPrefabData prefab
+                        Entity entity
+                        //ref DotGridArea.LinkToGridData grids,
+                        //in DotGridArea.DotGridPrefabData prefab
                     ) =>
                     {
 
