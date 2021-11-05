@@ -26,7 +26,7 @@ namespace DotsLite.MarchingCubes
 
         protected override unsafe void OnUpdate()
         {
-            //var em = this.EntityManager;
+            var em = this.EntityManager;
 
             this.Entities
                 .WithName("GridArea")
@@ -35,15 +35,16 @@ namespace DotsLite.MarchingCubes
                 .WithAll<DotGridArea.InitializeData>()
                 .ForEach(
                     (
-                        Entity entity
-                        //ref DotGridArea.LinkToGridData grids,
-                        //in DotGridArea.DotGridPrefabData prefab
+                        Entity entity,
+                        ref DotGridArea.LinkToGridData grids,
+                        in DotGridArea.GridTypeData type,
+                        in DotGridArea.DotGridPrefabData prefab
                     ) =>
                     {
-
+                        if (type.UnitOnEdge != 32) return;
 
                         var i = new int3(0, 0, 0);
-                        //create32_(prefab.Prefab, new int3(0, 0, 0), ref grids, em);
+                        create32_(prefab.Prefab, new int3(0, 0, 0), ref grids, em);
                         //create_(prefab.Prefab, new int3(1, 0, 0), ref grids);
                         //create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
                         //create_(prefab.Prefab, new int3(1, 0, 1), ref grids);

@@ -61,9 +61,11 @@ namespace DotsLite.MarchingCubes
         HitMessage<UpdateMessage>.Sender mcSender;
 
 
-        protected override void OnStartRunning()
+        protected override void OnUpdate()
+        //{ }
+        //protected override void OnStartRunning()
         {
-            base.OnStartRunning();
+            //base.OnStartRunning();
 
             this.mcSender = HitMessage<UpdateMessage>.Sender.Create<DotGridMessageAllocSystem>(this);
             using var mcScope = this.mcSender.WithDependencyScope();
@@ -92,9 +94,9 @@ namespace DotsLite.MarchingCubes
                     });
                 })
                 .ScheduleParallel();
+
+            this.Enabled = false;
         }
-        protected override void OnUpdate()
-        { }
     }
 
 

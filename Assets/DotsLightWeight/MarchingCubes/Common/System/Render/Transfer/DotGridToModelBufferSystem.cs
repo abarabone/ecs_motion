@@ -52,7 +52,7 @@ namespace DotsLite.Draw
                     in DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData linker,
                     in Translation pos,
-                    in DotGrid.UnitOnEdgeData unit,
+                    in DotGrid.GridTypeData unit,
                     in DotGrid.IndexData index,
                     in DotGrid.ParentAreaData parent) =>
                 {
@@ -70,7 +70,7 @@ namespace DotsLite.Draw
                     pModel[i + 0] = math.asfloat(ids.lPack4);
                     pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
 
-                    var u = unit.Unit >> 1;
+                    var u = unit.UnitOnEdge >> 1;
                     pModel[i + 2] = new float4(pos.Value - new float3(u, -u, -u), 1.0f);
 
                     return;

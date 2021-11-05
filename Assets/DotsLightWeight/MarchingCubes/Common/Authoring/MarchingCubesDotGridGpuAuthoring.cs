@@ -42,7 +42,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
-                    typeof(DotGrid.UnitOnEdgeData),
+                    typeof(DotGrid.GridTypeData),
                     //typeof(DotGrid.UnitData),
                     typeof(DotGrid.IndexData),
                     typeof(DotGrid.ParentAreaData),
@@ -58,9 +58,9 @@ namespace DotsLite.MarchingCubes.Authoring
                 });
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
-                em.SetComponentData(ent, new DotGrid.UnitOnEdgeData
+                em.SetComponentData(ent, new DotGrid.GridTypeData
                 {
-                    Unit = (int)gridtype,
+                    UnitOnEdge = (int)gridtype,
                 });
                 //em.SetComponentData(ent, new PhysicsCollider
                 //{
@@ -68,7 +68,12 @@ namespace DotsLite.MarchingCubes.Authoring
                 //});
                 em.SetComponentData(ent, new Collision.Hit.TargetData
                 {
-                    HitType = Collision.HitType.marchingCubes32,
+                    HitType = gridtype switch
+                    {
+                        DotGridType.DotGrid32x32x32 => Collision.HitType.marchingCubes32,
+                        DotGridType.DotGrid16x16x16 => Collision.HitType.marchingCubes16,
+                        _ => default,
+                    },
                     MainEntity = ent,
                 });
             }

@@ -18,7 +18,7 @@ namespace DotsLite.MarchingCubes
 
 
     //[DisableAutoCreation]
-    //[UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     //[UpdateAfter(typeof(DotGridUpdateSystem))]
     //[UpdateBefore(typeof(Gpu.DrawMarchingCubeCsSystem))]
     public class DotGridMessageFreeSystem : SystemBase, BarrierDependency.IRecievable

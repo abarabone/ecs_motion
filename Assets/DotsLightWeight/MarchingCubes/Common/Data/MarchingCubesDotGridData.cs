@@ -25,9 +25,9 @@ namespace DotsLite.MarchingCubes
         {
             public Entity ParentArea;
         }
-        public struct UnitOnEdgeData : IComponentData
+        public struct GridTypeData : IComponentData
         {
-            public int Unit;
+            public int UnitOnEdge;
         }
 
 

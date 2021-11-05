@@ -104,7 +104,7 @@ namespace DotsLite.Dependency
             }
             public Reciever()//int maxDependsSystem = 16)
             {
-                this.Holder = default;
+                //this.Holder = default;
                 this.Barrier = BarrierDependency.Reciever.Create(32);// maxDependsSystem);
                 this.holderAllocator = Allocator.None;
             }
@@ -224,11 +224,15 @@ namespace DotsLite.Dependency
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public JobHandle ScheduleDispose(JobHandle dependency)
                 {
-                    var dep0 = dependency;
-                    var dep1 = this.keyEntities.Dispose(dep0);
-                    var dep2 = this.messageHolder.Dispose(dep1);
-                    var dep3 = this.uniqueKeys.Dispose(dep2);
-                    return dep3;
+                    var dep1 = this.keyEntities.Dispose(dependency);
+                    var dep2 = this.messageHolder.Dispose(dependency);
+                    var dep3 = this.uniqueKeys.Dispose(dependency);
+                    return JobHandle.CombineDependencies(dep1, dep2, dep3);
+                    //var dep0 = dependency;
+                    //var dep1 = this.keyEntities.Dispose(dep0);
+                    //var dep2 = this.messageHolder.Dispose(dep1);
+                    //var dep3 = this.uniqueKeys.Dispose(dep2);
+                    //return dep3;
                 }
 
 
