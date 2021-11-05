@@ -60,12 +60,22 @@ namespace DotsLite.MarchingCubes
 
         HitMessage<UpdateMessage>.Sender mcSender;
 
+        BarrierDependency.Sender bardep;
+
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            this.bardep = BarrierDependency.Sender.Create<DotGridMessageFreeSystem>(this);
+        }
 
         protected override void OnUpdate()
         //{ }
         //protected override void OnStartRunning()
         {
             //base.OnStartRunning();
+            using var barscope = this.bardep.WithDependencyScope();
 
             this.mcSender = HitMessage<UpdateMessage>.Sender.Create<DotGridMessageAllocSystem>(this);
             using var mcScope = this.mcSender.WithDependencyScope();
@@ -83,17 +93,17 @@ namespace DotsLite.MarchingCubes
                 })
                 .ScheduleParallel();
 
-            this.Entities
-                .WithAll<DotGrid.Unit16Data>()
-                .ForEach((
-                    Entity entity) =>
-                {
-                    w.Add(entity, new UpdateMessage
-                    {
-                        type = DotGridUpdateType.cube_force16,
-                    });
-                })
-                .ScheduleParallel();
+            //this.Entities
+            //    .WithAll<DotGrid.Unit16Data>()
+            //    .ForEach((
+            //        Entity entity) =>
+            //    {
+            //        w.Add(entity, new UpdateMessage
+            //        {
+            //            type = DotGridUpdateType.cube_force16,
+            //        });
+            //    })
+            //    .ScheduleParallel();
 
             this.Enabled = false;
         }
@@ -114,7 +124,7 @@ namespace DotsLite.MarchingCubes
         {
             base.OnCreate();
 
-            this.Reciever = new HitMessage<UpdateMessage>.Reciever();// 10000, Allocator.Persistent);
+            this.Reciever = new HitMessage<UpdateMessage>.Reciever();//10000, Allocator.Persistent);
         }
 
         protected override void OnDestroy()

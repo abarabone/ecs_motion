@@ -102,8 +102,9 @@ namespace DotsLite.MarchingCubes
         public static GridCubeIdShaderBufferTexture Create(int maxGridInstances, int unitOnEdge)
         {
             var n = unitOnEdge;
-            var buffer = new RenderTexture(n * n, n, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R8_UInt, 0);
-            //var buffer = new RenderTexture(n * n, n, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R32_UInt, 0);
+            var format = UnityEngine.Experimental.Rendering.GraphicsFormat.R8_UInt;
+            //var format = UnityEngine.Experimental.Rendering.GraphicsFormat.R32_UInt;
+            var buffer = new RenderTexture(n * n, n, 0, format, 0);
             buffer.enableRandomWrite = true;
             buffer.dimension = TextureDimension.Tex2DArray;
             buffer.volumeDepth = maxGridInstances;

@@ -85,31 +85,30 @@ namespace DotsLite.MarchingCubes.Gpu
                     var mesh = geom.Mesh;// gres.mesh;
                     var cs = init.GridToCubesShader;
 
-                    switch (type.UnitOnEdge)
-                    {
-                        case 32:
-                            Debug.Log("mc sh res ini 32");
-                            links.AllocGridAreaBuffers(pBlank32);
-                            data.ShaderResources.Alloc(init.MaxCubeInstances, 32, init.MaxGrids);
+                    //switch (type.UnitOnEdge)
+                    //{
+                    //    case 32:
+                    //        Debug.Log("mc sh res ini 32");
+                    links.AllocGridAreaBuffers(pBlank32);
+                    data.ShaderResources.Alloc(init.MaxCubeInstances, 32, init.MaxGrids);
 
-                            globalcommon.ShaderResources.SetResourcesTo(mat);
-                            globalwork32.ShaderResources.SetResourcesTo(mat, cs);
-                            break;
+                    globalcommon.ShaderResources.SetResourcesTo(mat);
+                    globalwork32.ShaderResources.SetResourcesTo(mat, cs);
+                    //        break;
 
-                        case 16:
-                            Debug.Log("mc sh res ini 16");
-                            links.AllocGridAreaBuffers(pBlank16);
-                            data.ShaderResources.Alloc(init.MaxCubeInstances, 16, init.MaxGrids);
+                    //    case 16:
+                    //        Debug.Log("mc sh res ini 16");
+                    //        links.AllocGridAreaBuffers(pBlank16);
+                    //        data.ShaderResources.Alloc(init.MaxCubeInstances, 16, init.MaxGrids);
 
-                            globalcommon.ShaderResources.SetResourcesTo(mat);
-                            globalwork16.ShaderResources.SetResourcesTo(mat, cs);
-                            break;
+                    //        globalcommon.ShaderResources.SetResourcesTo(mat);
+                    //        globalwork16.ShaderResources.SetResourcesTo(mat, cs);
+                    //        break;
 
-                        default:
-                            break;
-                    }
+                    //    default:
+                    //        break;
+                    //}
 
-                    //data.CubeMaterial = mat;
                     data.GridToCubeShader = cs;
                     data.ShaderResources.SetResourcesTo(mat, cs);
                     shaderArg.SetInstancingArgumentBuffer(mesh);
