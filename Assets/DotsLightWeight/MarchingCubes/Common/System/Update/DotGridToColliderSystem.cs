@@ -25,7 +25,7 @@ namespace DotsLite.MarchingCubes
 
         CommandBufferDependency.Sender cmddep;
 
-        BarrierDependency.Sender bardep;
+        BarrierDependency.Sender barfreedep;
 
         DotGridMessageAllocSystem messageSystem;
 
@@ -39,7 +39,7 @@ namespace DotsLite.MarchingCubes
             this.RequireSingletonForUpdate<Global.CommonData>();
 
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-            this.bardep = BarrierDependency.Sender.Create<DotGridMessageFreeSystem>(this);
+            this.barfreedep = BarrierDependency.Sender.Create<DotGridMessageFreeSystem>(this);
 
             this.messageSystem = this.World.GetOrCreateSystem<DotGridMessageAllocSystem>();
         }
@@ -47,7 +47,7 @@ namespace DotsLite.MarchingCubes
         protected unsafe override void OnUpdate()
         {
             using var cmdscope = this.cmddep.WithDependencyScope();
-            using var barScope = this.bardep.WithDependencyScope();
+            using var barScope = this.barfreedep.WithDependencyScope();
 
             this.Dependency = new JobExecution
             {
