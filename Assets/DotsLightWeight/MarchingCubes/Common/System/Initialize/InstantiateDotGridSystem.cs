@@ -44,7 +44,7 @@ namespace DotsLite.MarchingCubes
                         if (type.UnitOnEdge != 32) return;
 
                         var i = new int3(0, 0, 0);
-                        //create32_(prefab.Prefab, new int3(0, 0, 0), ref grids, em);
+                        //create_<DotGrid32x32x32, DotGrid.Unit32Data>(prefab.Prefab, new int3(0, 0, 0), ref grids, em);
                         //create_(prefab.Prefab, new int3(1, 0, 0), ref grids);
                         //create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
                         //create_(prefab.Prefab, new int3(1, 0, 1), ref grids);
@@ -56,22 +56,25 @@ namespace DotsLite.MarchingCubes
                 .Run();
         }
 
-        unsafe void create32_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, EntityManager em)
+        unsafe void create_<TGrid, TUnitData>(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, EntityManager em)
+            where TGrid : struct, IDotGrid<TGrid>
+            where TUnitData : struct, DotGrid.IUnitData<TGrid>, IComponentData
         {
             var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
 
             var newent = em.Instantiate(prefab);
-            var grid = new DotGrid32x32x32().Alloc(GridFillMode.Blank);
+            var grid = DotGrid.Create<TGrid>(GridFillMode.Blank);
 
             grids.pGridPoolIds[index.serial] = grids.nextSeed++;
             grids.ppGridXLines[index.serial] = grid.pXline;
 
-            var pos = i * 32 + new int3(16, -16, -16);
+            var u = grid.UnitOnEdge;
+            var hf = u >> 1;
+            var pos = i * u + new int3(hf, -hf, -hf);
 
-            em.SetComponentData(newent, new DotGrid.Unit32Data
-            {
-                Unit = grid,
-            });
+            var unitdata = new TUnitData();
+            unitdata.Unit = grid;
+            em.SetComponentData(newent, unitdata);
             em.SetComponentData(newent, new DotGrid.IndexData
             {
                 GridIndexInArea = index,
@@ -82,7 +85,7 @@ namespace DotsLite.MarchingCubes
                 Bbox = new AABB
                 {
                     Center = pos,
-                    Extents = new float3(32 / 2, 32 / 2, 32 / 2),
+                    Extents = hf,
                 }
             });
             em.SetComponentData(newent, new Translation
@@ -90,46 +93,80 @@ namespace DotsLite.MarchingCubes
                 Value = pos,
             });
         }
-        unsafe void create16_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, EntityManager em)
-        {
-            var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
+        //unsafe void create32_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, EntityManager em)
+        //{
+        //    var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
 
-            var newent = em.Instantiate(prefab);
-            var grid = new DotGrid16x16x16().Alloc(GridFillMode.Blank);
+        //    var newent = em.Instantiate(prefab);
+        //    var grid = new DotGrid32x32x32().Create(GridFillMode.Blank);
 
-            grids.pGridPoolIds[index.serial] = grids.nextSeed++;
-            grids.ppGridXLines[index.serial] = grid.pXline;
+        //    grids.pGridPoolIds[index.serial] = grids.nextSeed++;
+        //    grids.ppGridXLines[index.serial] = grid.pXline;
 
-            var pos = i * 16 + new int3(8, -8, -8);
+        //    var pos = i * 32 + new int3(16, -16, -16);
 
-            em.SetComponentData(newent, new DotGrid.Unit16Data
-            {
-                Unit = grid,
-            });
-            em.SetComponentData(newent, new DotGrid.IndexData
-            {
-                GridIndexInArea = index,
-                scale = 1.0f,
-            });
-            em.SetComponentData(newent, new DrawInstance.WorldBbox
-            {
-                Bbox = new AABB
-                {
-                    Center = pos,
-                    Extents = new float3(16 / 2, 16 / 2, 16 / 2),
-                }
-            });
-            em.SetComponentData(newent, new Translation
-            {
-                Value = pos,
-            });
-        }
+        //    em.SetComponentData(newent, new DotGrid.Unit32Data
+        //    {
+        //        Unit = grid,
+        //    });
+        //    em.SetComponentData(newent, new DotGrid.IndexData
+        //    {
+        //        GridIndexInArea = index,
+        //        scale = 1.0f,
+        //    });
+        //    em.SetComponentData(newent, new DrawInstance.WorldBbox
+        //    {
+        //        Bbox = new AABB
+        //        {
+        //            Center = pos,
+        //            Extents = new float3(32 / 2, 32 / 2, 32 / 2),
+        //        }
+        //    });
+        //    em.SetComponentData(newent, new Translation
+        //    {
+        //        Value = pos,
+        //    });
+        //}
+        //unsafe void create16_(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, EntityManager em)
+        //{
+        //    var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
+
+        //    var newent = em.Instantiate(prefab);
+        //    var grid = new DotGrid16x16x16().Create(GridFillMode.Blank);
+
+        //    grids.pGridPoolIds[index.serial] = grids.nextSeed++;
+        //    grids.ppGridXLines[index.serial] = grid.pXline;
+
+        //    var pos = i * 16 + new int3(8, -8, -8);
+
+        //    em.SetComponentData(newent, new DotGrid.Unit16Data
+        //    {
+        //        Unit = grid,
+        //    });
+        //    em.SetComponentData(newent, new DotGrid.IndexData
+        //    {
+        //        GridIndexInArea = index,
+        //        scale = 1.0f,
+        //    });
+        //    em.SetComponentData(newent, new DrawInstance.WorldBbox
+        //    {
+        //        Bbox = new AABB
+        //        {
+        //            Center = pos,
+        //            Extents = new float3(16 / 2, 16 / 2, 16 / 2),
+        //        }
+        //    });
+        //    em.SetComponentData(newent, new Translation
+        //    {
+        //        Value = pos,
+        //    });
+        //}
 
         protected override void OnDestroy()
         {
             this.Entities
                 .WithoutBurst()
-                .ForEach((in DotGrid.Unit32Data grid) =>
+                .ForEach((ref DotGrid.Unit32Data grid) =>
                 {
                     grid.Dispose();
                 })
@@ -137,19 +174,19 @@ namespace DotsLite.MarchingCubes
 
             this.Entities
                 .WithoutBurst()
-                .ForEach((in DotGrid.Unit16Data grid) =>
+                .ForEach((ref DotGrid.Unit16Data grid) =>
                 {
                     grid.Dispose();
                 })
                 .Run();
 
-            this.Entities
-                .WithoutBurst()
-                .ForEach((ref DotGridArea.LinkToGridData grids) =>
-                {
-                    grids.Dispose();
-                })
-                .Run();
+            //this.Entities
+            //    .WithoutBurst()
+            //    .ForEach((ref DotGridArea.LinkToGridData grids) =>
+            //    {
+            //        grids.Dispose();
+            //    })
+            //    .Run();
         }
     }
 }

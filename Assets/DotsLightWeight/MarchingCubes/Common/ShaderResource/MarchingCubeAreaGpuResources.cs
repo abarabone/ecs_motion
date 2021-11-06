@@ -43,7 +43,7 @@ namespace DotsLite.MarchingCubes
 
         public void Dispose()
         {
-            if (this.GridDotContentDataBuffer.Buffer == null) return;
+            //if (this.GridDotContentDataBuffer.Buffer == null) return;
 
             Debug.Log($"DotGridAreaGpuResources disposed");
 
@@ -128,7 +128,11 @@ namespace DotsLite.MarchingCubes
             Buffer = new ComputeBuffer(unitOnEdge * unitOnEdge / (32/ unitOnEdge) * maxGrids, Marshal.SizeOf<uint>()),
         };
 
-        public void Dispose() => this.Buffer?.Release();
+        public void Dispose()
+        {
+            this.Buffer?.Release();
+            this.Buffer = null;
+        }
     }
 
     //public struct GridInstructionsBuffer : IDisposable
@@ -153,7 +157,11 @@ namespace DotsLite.MarchingCubes
             Buffer = new ComputeBuffer(maxCubeInstances, Marshal.SizeOf<uint>(), ComputeBufferType.Append),
         };
 
-        public void Dispose() => this.Buffer?.Release();
+        public void Dispose()
+        {
+            this.Buffer?.Release();
+            this.Buffer = null;
+        }
     }
 
 

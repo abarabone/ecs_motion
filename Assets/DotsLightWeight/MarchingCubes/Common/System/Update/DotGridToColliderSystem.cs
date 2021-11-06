@@ -111,7 +111,7 @@ namespace DotsLite.MarchingCubes
                 {
                     var grid = this.grids32[ent];
 
-                    var mesh = makeMesh_(in grid.Unit, in index, in pos, in area, in this.mcdata);
+                    var mesh = makeMesh_(grid.Unit, in index, in pos, in area, in this.mcdata);
 
                     if (this.colliders.HasComponent(ent))
                     {
@@ -161,7 +161,7 @@ namespace DotsLite.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe BlobAssetReference<Collider> makeMesh_<TGrid>(
-            in TGrid grid,
+            TGrid grid,
             in DotGrid.IndexData index,
             in Translation pos,
             in DotGridArea.LinkToGridData grids,

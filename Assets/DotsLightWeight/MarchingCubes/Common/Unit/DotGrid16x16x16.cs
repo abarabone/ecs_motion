@@ -16,9 +16,9 @@ namespace DotsLite.MarchingCubes
 
     public unsafe partial struct DotGrid16x16x16 : IDotGrid<DotGrid16x16x16>, IDisposable
     {
-        public const int dotNum = 16 * 16 * 16;
-        public const int xlineInGrid = 1 * 16 * 16;
-        public const int shiftNum = 4;
+        //public const int dotNum = 16 * 16 * 16;
+        //public const int xlineInGrid = 1 * 16 * 16;
+        //public const int shiftNum = 4;
         //public const int maxbitNum = 16;
 
         public int UnitOnEdge => 16;
@@ -44,28 +44,27 @@ namespace DotsLite.MarchingCubes
         //}
 
 
-        public DotGrid16x16x16(GridFillMode fillmode) : this()
-        {
-            //const int size = sizeof( uint ) * xlineInGrid;
+        public DotGrid16x16x16(GridFillMode fillmode) : this() => this.Alloc(fillmode);
 
-            var x = Allocater.Alloc(fillmode);//, size);
-            this.pXline = x.pXline;
-            this.CubeCount = x.CubeCount;
-        }
-        public DotGrid16x16x16(UIntPtr p, int cubeCount) : this()
+        public DotGrid16x16x16 Alloc(GridFillMode fillmode)
         {
+            var p = Allocater.Alloc(fillmode);//, size);
             this.pXline = (uint*)p;
-            this.CubeCount = cubeCount;
+            this.CubeCount = 16 * 16 * 16;
+            return this;
         }
-
-        public DotGrid16x16x16 Alloc(GridFillMode fillmode) => new DotGrid16x16x16(fillmode);
+        //public DotGrid16x16x16(UIntPtr p, int cubeCount) : this()
+        //{
+        //    this.pXline = (uint*)p;
+        //    this.CubeCount = cubeCount;
+        //}
 
         public void Dispose()
         {
             if( this.pXline == null ) return;// struct なので、複製された場合はこのチェックも意味がない
 
             Debug.Log("dgrid 16 dispose");
-            Allocater.Dispose((UIntPtr)this.pXline);
+            Allocater.Dispose(this.pXline);
             this.pXline = null;
         }
 
@@ -101,52 +100,48 @@ namespace DotsLite.MarchingCubes
         //}
 
 
-        static public DotGrid16x16x16 CreateDefaultGrid(GridFillMode fillmode)
-        {
-            return Allocater.Alloc(fillmode);//, size);
-        }
+        //static public DotGrid16x16x16 CreateDefaultGrid(GridFillMode fillmode)
+        //{
+        //    return Allocater.Alloc(fillmode);//, size);
+        //}
 
 
         static class Allocater
         {
 
-            static public unsafe DotGrid16x16x16 Alloc(GridFillMode fillMode)
+            static public unsafe void *Alloc(GridFillMode fillMode)
             {
                 //var align = UnsafeUtility.AlignOf<uint4>();
                 const int align = 32;// 16;
 
-                var p = (UIntPtr)UnsafeUtility.Malloc(16 * 16 * sizeof(uint)/2, align, Allocator.Persistent);
+                var p = UnsafeUtility.Malloc(16 * 16 * sizeof(uint)/2, align, Allocator.Persistent);
 
                 return Fill(p, fillMode);
             }
 
-            static public unsafe DotGrid16x16x16 Fill(UIntPtr p, GridFillMode fillMode)
+            static public unsafe void *Fill(void *p, GridFillMode fillMode)
             {
                 switch (fillMode)
                 {
                     case GridFillMode.Solid:
                         {
-                            UnsafeUtility.MemSet((void*)p, 0xff, 16 * 16 * sizeof(uint)/2);
-
-                            var cubeCount = 16 * 16 * 16;
-                            return new DotGrid16x16x16(p, cubeCount);
+                            UnsafeUtility.MemSet(p, 0xff, 16 * 16 * sizeof(uint)/2);
+                            return p;
                         }
                     case GridFillMode.Blank:
                         {
                             UnsafeUtility.MemClear((void*)p, 16 * 16 * sizeof(uint)/2);
-
-                            var cubeCount = 0;
-                            return new DotGrid16x16x16(p, cubeCount);
+                            return p;
                         }
                     default:
-                        return default;
+                        return p;
                 }
             }
 
 
-            static public unsafe void Dispose(UIntPtr p)
+            static public unsafe void Dispose(void *p)
             {
-                UnsafeUtility.Free((uint*)p, Allocator.Persistent);
+                UnsafeUtility.Free(p, Allocator.Persistent);
             }
         }
     }

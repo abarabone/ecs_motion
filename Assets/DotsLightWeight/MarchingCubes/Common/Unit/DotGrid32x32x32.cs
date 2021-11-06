@@ -17,9 +17,9 @@ namespace DotsLite.MarchingCubes
 
     public unsafe partial struct DotGrid32x32x32 : IDotGrid<DotGrid32x32x32>, IDisposable
     {
-        public const int dotNum = 32 * 32 * 32;
-        public const int xlineInGrid = 1 * 32 * 32;
-        public const int shiftNum = 5;
+        //public const int dotNum = 32 * 32 * 32;
+        //public const int xlineInGrid = 1 * 32 * 32;
+        //public const int shiftNum = 5;
         //public const int maxbitNum = 16;
 
         public int UnitOnEdge => 32;
@@ -45,41 +45,35 @@ namespace DotsLite.MarchingCubes
         //}
 
 
-        public DotGrid32x32x32(GridFillMode fillmode) : this()
-        {
-            //const int size = sizeof( uint ) * xlineInGrid;
+        public DotGrid32x32x32(GridFillMode fillmode) : this() => this.Alloc(fillmode);
 
-            var x = Allocater.Alloc(fillmode);//, size);
-            this.pXline = x.pXline;
-            this.CubeCount = x.CubeCount;
-        }
-        public DotGrid32x32x32(UIntPtr p, int cubeCount) : this()
+        public DotGrid32x32x32 Alloc(GridFillMode fillmode)
         {
+            var p = Allocater.Alloc(fillmode);//, size);
             this.pXline = (uint*)p;
-            this.CubeCount = cubeCount;
+            this.CubeCount = 32 * 32 * 32;
+            return this;
         }
-
-        public DotGrid32x32x32 Alloc(GridFillMode fillmode) => new DotGrid32x32x32(fillmode);
 
         public void Dispose()
         {
             if( this.pXline == null ) return;// struct なので、複製された場合はこのチェックも意味がない
 
             Debug.Log("dgrid 32 dispose");
-            Allocater.Dispose((UIntPtr)this.pXline);
+            Allocater.Dispose(this.pXline);
             this.pXline = null;
         }
 
 
         public uint this[ int ix, int iy, int iz ]
         {
-            get => (uint)( this.pXline[ (iy << shiftNum) + iz ] >> ix & 1 );
+            get => (uint)( this.pXline[ (iy << 5) + iz ] >> ix & 1 );
             
             set
             {
                 //if (value != 0 && value != 1) new ArgumentException();
 
-                var i = (iy << shiftNum) + iz;
+                var i = (iy << 5) + iz;
                 var prev = this.pXline[i];
                 if (value == 1)
                 {
@@ -113,54 +107,50 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        static public DotGrid32x32x32 CreateDefaultGrid(GridFillMode fillmode)
-        {
-            //const int size = sizeof(uint) * 4;// 工夫すると 16 bytes ですむ、でもなんか遅い？？不思議だけど
-            //const int size = sizeof(uint) * xlineInGrid;
-            return Allocater.Alloc(fillmode);//, size);
-        }
+        //static public DotGrid32x32x32 CreateDefaultGrid(GridFillMode fillmode)
+        //{
+        //    //const int size = sizeof(uint) * 4;// 工夫すると 16 bytes ですむ、でもなんか遅い？？不思議だけど
+        //    //const int size = sizeof(uint) * xlineInGrid;
+        //    return Allocater.Alloc(fillmode);//, size);
+        //}
 
 
         static class Allocater
         {
 
-            static public unsafe DotGrid32x32x32 Alloc(GridFillMode fillMode)
+            static public unsafe void *Alloc(GridFillMode fillMode)
             {
                 //var align = UnsafeUtility.AlignOf<uint4>();
-                const int align = 16;
+                const int align = 32;
 
-                var p = (UIntPtr)UnsafeUtility.Malloc(32 * 32 * sizeof(uint), align, Allocator.Persistent);
+                var p = UnsafeUtility.Malloc(32 * 32 * sizeof(uint), align, Allocator.Persistent);
 
                 return Fill(p, fillMode);
             }
 
-            static public unsafe DotGrid32x32x32 Fill(UIntPtr p, GridFillMode fillMode)
+            static public unsafe void *Fill(void *p, GridFillMode fillMode)
             {
                 switch (fillMode)
                 {
                     case GridFillMode.Solid:
                         {
-                            UnsafeUtility.MemSet((void*)p, 0xff, 32 * 32 * sizeof(uint));
-
-                            var cubeCount = 32 * 32 * 32;
-                            return new DotGrid32x32x32(p, cubeCount);
+                            UnsafeUtility.MemSet(p, 0xff, 32 * 32 * sizeof(uint));
+                            return p;
                         }
                     case GridFillMode.Blank:
                         {
-                            UnsafeUtility.MemClear((void*)p, 32 * 32 * sizeof(uint));
-
-                            var cubeCount = 0;
-                            return new DotGrid32x32x32(p, cubeCount);
+                            UnsafeUtility.MemClear(p, 32 * 32 * sizeof(uint));
+                            return p;
                         }
                     default:
-                        return default;
+                        return p;
                 }
             }
 
 
-            static public unsafe void Dispose(UIntPtr p)
+            static public unsafe void Dispose(void *p)
             {
-                UnsafeUtility.Free((uint*)p, Allocator.Persistent);
+                UnsafeUtility.Free(p, Allocator.Persistent);
             }
         }
     }

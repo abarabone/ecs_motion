@@ -17,7 +17,7 @@ namespace DotsLite.MarchingCubes
     using Utility;
     using Utilities;
 
-    public static class DotGrid
+    public static partial class DotGrid
     {
 
 
@@ -40,9 +40,15 @@ namespace DotsLite.MarchingCubes
         //        _ => default,
         //    };
 
-        public struct Unit32Data : IComponentData//, IDisposable
+        public interface IUnitData<TGrid>
+            where TGrid : struct, IDotGrid<TGrid>
         {
-            public DotGrid32x32x32 Unit;
+            public TGrid Unit { get; set; }
+        }
+
+        public struct Unit32Data : IComponentData, IUnitData<DotGrid32x32x32>//, IDisposable
+        {
+            public DotGrid32x32x32 Unit { get; set; }
 
             //public void Dispose() => this.Unit.Dispose();
             public void Dispose()
@@ -51,9 +57,9 @@ namespace DotsLite.MarchingCubes
                 this.Unit.Dispose();
             }
         }
-        public struct Unit16Data : IComponentData//, IDisposable
+        public struct Unit16Data : IComponentData, IUnitData<DotGrid16x16x16>//, IDisposable
         {
-            public DotGrid16x16x16 Unit;
+            public DotGrid16x16x16 Unit { get; set; }
 
             //public void Dispose() => this.Unit.Dispose();
             public void Dispose()

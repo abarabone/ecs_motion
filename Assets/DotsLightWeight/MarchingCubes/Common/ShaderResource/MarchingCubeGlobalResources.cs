@@ -67,11 +67,10 @@ namespace DotsLite.MarchingCubes
             public GridCubeIdShaderBufferTexture GridCubeIds;
 
 
-            public void Alloc<TGrid>(int maxGridInstances)
-                where TGrid : struct, IDotGrid<TGrid>
+            public void Alloc(int maxGridInstances, int unitOnEdge)
             {
                 Debug.Log($"WorkingShaderResources alloc");
-                this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances, new TGrid().UnitOnEdge);
+                this.GridCubeIds = GridCubeIdShaderBufferTexture.Create(maxGridInstances, unitOnEdge);
             }
 
             public void Dispose()
@@ -97,7 +96,11 @@ namespace DotsLite.MarchingCubes
     {
         public RenderTexture Texture { get; private set; }
 
-        public void Dispose() => this.Texture?.Release();
+        public void Dispose()
+        {
+            this.Texture?.Release();
+            this.Texture = null;
+        }
 
         public static GridCubeIdShaderBufferTexture Create(int maxGridInstances, int unitOnEdge)
         {
@@ -121,7 +124,11 @@ namespace DotsLite.MarchingCubes
     {
         public ComputeBuffer Buffer { get; private set; }
 
-        public void Dispose() => this.Buffer?.Release();
+        public void Dispose()
+        {
+            this.Buffer?.Release();
+            this.Buffer = null;
+        }
 
         public static CubeGeometryConstantBuffer Create(MarchingCubesAsset asset)
         {

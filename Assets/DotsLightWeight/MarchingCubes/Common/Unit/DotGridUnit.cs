@@ -34,8 +34,14 @@ namespace DotsLite.MarchingCubes
 
         void Fill();
 
-        void Copy(in TGrid grid, in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty,
+        void Copy(TGrid grid, in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty,
             in DotGridArea.LinkToGridData area, in DotGridArea.ResourceGpuModeData res);
+    }
+
+    public static partial class DotGrid
+    {
+        public static TGrid Create<TGrid>(GridFillMode fillmode) where TGrid : struct, IDotGrid<TGrid> =>
+            new TGrid().Alloc(fillmode);
     }
 
 

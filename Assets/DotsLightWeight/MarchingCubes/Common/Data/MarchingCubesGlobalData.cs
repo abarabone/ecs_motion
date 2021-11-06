@@ -112,15 +112,14 @@ namespace DotsLite.MarchingCubes
             public void Alloc(int maxGridInstances)
             {
                 Debug.Log($"mc global work{new TGrid().UnitOnEdge} alloc");
+
                 var defaultGrids = new NativeArray<TGrid>(2, Allocator.Persistent);
-                //defaultGrids[(int)GridFillMode.Blank] = TGrid.Allocater.Alloc(GridFillMode.Blank);
-                //defaultGrids[(int)GridFillMode.Solid] = TGrid.Allocater.Alloc(GridFillMode.Solid);
-                defaultGrids[(int)GridFillMode.Blank] = new TGrid().Alloc(GridFillMode.Blank);
-                defaultGrids[(int)GridFillMode.Solid] = new TGrid().Alloc(GridFillMode.Solid);
+                defaultGrids[(int)GridFillMode.Blank] = DotGrid.Create<TGrid>(GridFillMode.Blank);
+                defaultGrids[(int)GridFillMode.Solid] = DotGrid.Create<TGrid>(GridFillMode.Solid);
 
                 this.DefaultGrids = defaultGrids;
                 //this.FreeStocks = new FreeStockList(maxFreeGrids);
-                this.ShaderResources.Alloc<TGrid>(maxGridInstances);
+                this.ShaderResources.Alloc(maxGridInstances, new TGrid().UnitOnEdge);
             }
 
             public void Dispose()

@@ -44,15 +44,15 @@ namespace DotsLite.MarchingCubes
 
             public void Dispose()
             {
-                this.ShaderResources.Dispose();
                 Debug.Log("mc grid area disposed");
+                this.ShaderResources.Dispose();
             }
         }
 
-        public struct ShaderInputData : IComponentData
-        {
-            public UnsafeList<GridInstraction> GridInstractions;
-        }
+        //public struct ShaderInputData : IComponentData
+        //{
+        //    public UnsafeList<GridInstraction> GridInstractions;
+        //}
 
     }
 

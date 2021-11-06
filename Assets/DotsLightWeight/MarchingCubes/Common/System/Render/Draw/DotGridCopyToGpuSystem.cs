@@ -78,14 +78,14 @@ namespace DotsLite.MarchingCubes
                         if (em.HasComponent<DotGrid.Unit32Data>(ent))
                         {
                             var grid = em.GetComponentData<DotGrid.Unit32Data>(ent);
-                            grid.Unit.Copy(in grid.Unit, in index, in dirty, in area, in res);
+                            grid.Unit.Copy(grid.Unit, in index, in dirty, in area, in res);
                             continue;
                         }
 
                         if (em.HasComponent<DotGrid.Unit16Data>(ent))
                         {
                             var grid = em.GetComponentData<DotGrid.Unit16Data>(ent);
-                            grid.Unit.Copy(in grid.Unit, in index, in dirty, in area, in res);
+                            grid.Unit.Copy(grid.Unit, in index, in dirty, in area, in res);
                             continue;
                         }
                     }
@@ -98,8 +98,9 @@ namespace DotsLite.MarchingCubes
 
     public unsafe partial struct DotGrid32x32x32
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Copy(
-            in DotGrid32x32x32 grid,
+            DotGrid32x32x32 grid,
             in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
             in DotGridArea.ResourceGpuModeData res)
         {
@@ -119,8 +120,9 @@ namespace DotsLite.MarchingCubes
 
     public unsafe partial struct DotGrid16x16x16
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Copy(
-            in DotGrid16x16x16 grid,
+            DotGrid16x16x16 grid,
             in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty, in DotGridArea.LinkToGridData area,
             in DotGridArea.ResourceGpuModeData res)
         {

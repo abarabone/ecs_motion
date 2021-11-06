@@ -48,6 +48,8 @@ namespace DotsLite.MarchingCubes
                 Debug.Log("Link to grid data dispos");
                 if (this.pGridPoolIds != null) UnsafeUtility.Free(this.pGridPoolIds, Allocator.Persistent);
                 if (this.ppGridXLines != null) UnsafeUtility.Free(this.ppGridXLines, Allocator.Persistent);
+                this.pGridPoolIds = null;
+                this.ppGridXLines = null;
             }
         }
 
