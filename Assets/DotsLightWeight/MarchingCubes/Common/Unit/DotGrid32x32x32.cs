@@ -22,7 +22,9 @@ namespace DotsLite.MarchingCubes
         //public const int shiftNum = 5;
         //public const int maxbitNum = 16;
 
+
         public int UnitOnEdge => 32;
+        public int XLineBufferLength => 32 * 32;
 
 
         public uint* pXline { get; private set; }
@@ -49,7 +51,7 @@ namespace DotsLite.MarchingCubes
 
         public DotGrid32x32x32 Alloc(GridFillMode fillmode)
         {
-            var p = Allocater.Alloc(fillmode);//, size);
+            var p = DotGrid.Allocater<DotGrid32x32x32>.Alloc(fillmode);//, size);
             this.pXline = (uint*)p;
             this.CubeCount = 32 * 32 * 32;
             return this;
@@ -60,7 +62,7 @@ namespace DotsLite.MarchingCubes
             if( this.pXline == null ) return;// struct なので、複製された場合はこのチェックも意味がない
 
             Debug.Log("dgrid 32 dispose");
-            Allocater.Dispose(this.pXline);
+            DotGrid.Allocater<DotGrid32x32x32>.Dispose(this.pXline);
             this.pXline = null;
         }
 
@@ -113,87 +115,6 @@ namespace DotsLite.MarchingCubes
         //    //const int size = sizeof(uint) * xlineInGrid;
         //    return Allocater.Alloc(fillmode);//, size);
         //}
-
-
-        static class Allocater
-        {
-
-            static public unsafe void *Alloc(GridFillMode fillMode)
-            {
-                //var align = UnsafeUtility.AlignOf<uint4>();
-                const int align = 32;
-
-                var p = UnsafeUtility.Malloc(32 * 32 * sizeof(uint), align, Allocator.Persistent);
-
-                return Fill(p, fillMode);
-            }
-
-            static public unsafe void *Fill(void *p, GridFillMode fillMode)
-            {
-                switch (fillMode)
-                {
-                    case GridFillMode.Solid:
-                        {
-                            UnsafeUtility.MemSet(p, 0xff, 32 * 32 * sizeof(uint));
-                            return p;
-                        }
-                    case GridFillMode.Blank:
-                        {
-                            UnsafeUtility.MemClear(p, 32 * 32 * sizeof(uint));
-                            return p;
-                        }
-                    default:
-                        return p;
-                }
-            }
-
-
-            static public unsafe void Dispose(void *p)
-            {
-                UnsafeUtility.Free(p, Allocator.Persistent);
-            }
-        }
-    }
-
-
-
-    //static class DotGridAllocater
-    //{
-
-    //    static public unsafe DotGrid32x32x32Unsafe Alloc(GridFillMode fillMode, int dotnum = 32 * 32 * 32)
-    //    {
-    //        //var align = UnsafeUtility.AlignOf<uint4>();
-    //        const int align = 32;// 16;
-
-    //        var p = (UIntPtr)UnsafeUtility.Malloc(dotnum >> 3, align, Allocator.Persistent);
-
-    //        return Fill(p, fillMode, dotnum);
-    //    }
-
-    //    static public unsafe DotGrid32x32x32Unsafe Fill(UIntPtr p, GridFillMode fillMode, int size = 32 * 32 * 32)
-    //    {
-    //        if (fillMode == GridFillMode.Solid)
-    //        {
-    //            UnsafeUtility.MemSet((void*)p, 0xff, size >> 3);
-    //            var cubeCount = 32 * 32 * 32;
-
-    //            return new DotGrid32x32x32Unsafe(p, cubeCount);
-    //        }
-    //        else
-    //        {
-    //            UnsafeUtility.MemClear((void*)p, size >> 3);
-    //            var cubeCount = 0;
-
-    //            return new DotGrid32x32x32Unsafe(p, cubeCount);
-    //        }
-    //    }
-
-
-    //    static public unsafe void Dispose(UIntPtr p)
-    //    {
-    //        UnsafeUtility.Free((uint*)p, Allocator.Persistent);
-    //    }
-    //}
 
 
     //public unsafe struct CubeOperator
@@ -266,6 +187,6 @@ namespace DotsLite.MarchingCubes
     //        this.pGridSwapOld = default;
     //    }
 
-    //}
+    }
 
 }

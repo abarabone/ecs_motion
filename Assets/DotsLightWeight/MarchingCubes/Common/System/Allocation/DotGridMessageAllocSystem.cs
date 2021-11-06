@@ -54,30 +54,31 @@ namespace DotsLite.MarchingCubes
 
     // テストのためとりあえずグリッドを追加する
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateAfter(typeof(DotGridInstantiateSystem))]
     public class DotGridAddSystem : DependencyAccessableSystemBase
     {
 
         HitMessage<UpdateMessage>.Sender mcSender;
 
-        BarrierDependency.Sender bardep;
+        //BarrierDependency.Sender bardep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.bardep = BarrierDependency.Sender.Create<DotGridMessageFreeSystem>(this);
+            //this.bardep = BarrierDependency.Sender.Create<DotGridUpdateSystem>(this);
+            //this.bardep = BarrierDependency.Sender.Create<DotGridMessageFreeSystem>(this);
+
+            this.mcSender = HitMessage<UpdateMessage>.Sender.Create<DotGridMessageAllocSystem>(this);
         }
 
         protected override void OnUpdate()
-        //{ }
-        //protected override void OnStartRunning()
         {
-            //base.OnStartRunning();
-            using var barscope = this.bardep.WithDependencyScope();
+            //using var barscope = this.bardep.WithDependencyScope();
 
-            this.mcSender = HitMessage<UpdateMessage>.Sender.Create<DotGridMessageAllocSystem>(this);
             using var mcScope = this.mcSender.WithDependencyScope();
             var w = mcScope.MessagerAsParallelWriter;
 

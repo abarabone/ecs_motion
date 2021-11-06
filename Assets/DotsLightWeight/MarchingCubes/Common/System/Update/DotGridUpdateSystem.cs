@@ -15,12 +15,13 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Dependency;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     public class DotGridUpdateSystem : DependencyAccessableSystemBase
     {
 
-        BarrierDependency.Sender bardep;
+        BarrierDependency.Sender barcopydep;
+        //BarrierDependency.Sender barfreedep;
 
         DotGridMessageAllocSystem messageSystem;
 
@@ -29,14 +30,16 @@ namespace DotsLite.MarchingCubes
         {
             base.OnCreate();
 
-            this.bardep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
+            this.barcopydep = BarrierDependency.Sender.Create<DotGridCopyToGpuSystem>(this);
+            //this.barfreedep = BarrierDependency.Sender.Create<DotGridMessageFreeSystem>(this);
 
             this.messageSystem = this.World.GetOrCreateSystem<DotGridMessageAllocSystem>();
         }
 
         protected override void OnUpdate()
         {
-            using var barScope = this.bardep.WithDependencyScope();
+            using var barcopyScope = this.barcopydep.WithDependencyScope();
+            //using var barfreeScope = this.barfreedep.WithDependencyScope();
 
             this.Dependency = new JobExecution
             {

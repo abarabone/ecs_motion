@@ -81,8 +81,8 @@ namespace DotsLite.MarchingCubes.Gpu
                     in DotGridArea.GridTypeData type,
                     in DrawModel.ComputeArgumentsBufferData shaderArg) =>
                 {
-                    var mat = geom.Material;//init.CubeMaterial;
-                    var mesh = geom.Mesh;// gres.mesh;
+                    var mat = geom.Material;
+                    var mesh = geom.Mesh;
                     var cs = init.GridToCubesShader;
 
                     switch (type.UnitOnEdge)

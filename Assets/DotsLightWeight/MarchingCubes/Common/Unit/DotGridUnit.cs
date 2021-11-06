@@ -20,31 +20,6 @@ namespace DotsLite.MarchingCubes
         DotGrid16x16x16 = 16,
     }
 
-    public unsafe interface IDotGrid<TGrid> : IDisposable
-        where TGrid : struct, IDotGrid<TGrid>
-    {
-        uint* pXline { get; }
-        //int CubeCount { get; }
-
-        int UnitOnEdge { get; }
-
-        TGrid Alloc(GridFillMode fillmode);
-
-        //TGrid CreateDefault(GridFillMode fillmode);
-
-        void Fill();
-
-        void Copy(TGrid grid, in DotGrid.IndexData index, in DotGrid.UpdateDirtyRangeData dirty,
-            in DotGridArea.LinkToGridData area, in DotGridArea.ResourceGpuModeData res);
-    }
-
-    public static partial class DotGrid
-    {
-        public static TGrid Create<TGrid>(GridFillMode fillmode) where TGrid : struct, IDotGrid<TGrid> =>
-            new TGrid().Alloc(fillmode);
-    }
-
-
 
     public enum GridFillMode
     {
@@ -54,5 +29,66 @@ namespace DotsLite.MarchingCubes
         Null = 2,
     };
 
+    public unsafe interface IDotGrid<TGrid> : IDisposable
+        where TGrid : struct, IDotGrid<TGrid>
+    {
+        uint* pXline { get; }
+        //int CubeCount { get; }
+
+        int UnitOnEdge { get; }
+        int XLineBufferLength { get; }
+
+        TGrid Alloc(GridFillMode fillmode);
+
+        void Fill();
+    }
+
+
+    public static partial class DotGrid
+    {
+        public static TGrid Create<TGrid>(GridFillMode fillmode) where TGrid : struct, IDotGrid<TGrid> =>
+            new TGrid().Alloc(fillmode);
+
+
+        public static class Allocater<TGrid>
+            where TGrid : struct, IDotGrid<TGrid>
+        {
+
+            static public unsafe void* Alloc(GridFillMode fillMode)
+            {
+                //var align = UnsafeUtility.AlignOf<uint4>();
+                const int align = 32;
+
+                var p = UnsafeUtility.Malloc(new TGrid().XLineBufferLength * sizeof(uint), align, Allocator.Persistent);
+
+                return Fill(p, fillMode);
+            }
+
+            static public unsafe void* Fill(void* p, GridFillMode fillMode)
+            {
+                switch (fillMode)
+                {
+                    case GridFillMode.Solid:
+                        {
+                            UnsafeUtility.MemSet(p, 0xff, new TGrid().XLineBufferLength * sizeof(uint));
+                            return p;
+                        }
+                    case GridFillMode.Blank:
+                        {
+                            UnsafeUtility.MemClear(p, new TGrid().XLineBufferLength * sizeof(uint));
+                            return p;
+                        }
+                    default:
+                        return p;
+                }
+            }
+
+
+            static public unsafe void Dispose(void* p)
+            {
+                UnsafeUtility.Free(p, Allocator.Persistent);
+            }
+        }
+    }
 
 }

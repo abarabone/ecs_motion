@@ -16,7 +16,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.Dependency;
     using DotsLite.Collision;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]// Äl‚Ì•K—v‚ ‚è
     [UpdateAfter(typeof(DotGridUpdateSystem))]

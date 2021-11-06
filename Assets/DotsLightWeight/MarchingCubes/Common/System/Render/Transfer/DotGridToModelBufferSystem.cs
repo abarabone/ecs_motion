@@ -15,7 +15,7 @@ namespace DotsLite.Draw
     using MarchingCubes;
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
     public class DotGridToModelBufferSystem : DependencyAccessableSystemBase
     {
