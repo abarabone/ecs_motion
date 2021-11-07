@@ -67,21 +67,29 @@ namespace DotsLite.MarchingCubes.Authoring
                 var mat = new Material(this.DrawCubeShader);
                 mat.mainTexture = this.Texture;
 
-                var boneLength = 1;
-                var sort = DrawModel.SortOrder.acs;
-                var boneType = BoneType.T;
-                var dataLength = sizeof(NearGridIndex);
-                gcs.InitDrawModelEntityComponents(
-                    this.gameObject, ent, mesh, mat, boneType, boneLength, sort, dataLength);
+                void crete_(Material mat, Mesh mesh)
+                {
+                    var boneLength = 1;
+                    var sort = DrawModel.SortOrder.acs;
+                    var boneType = BoneType.T;
+                    var dataLength = sizeof(NearGridIndex);
+                    gcs.InitDrawModelEntityComponents(
+                        this.gameObject, ent, mesh, mat, boneType, boneLength, sort, dataLength);
+                }
 
-                var em = gcs.DstEntityManager;
-                var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
-                var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
-                cs.SetFloat("VectorLengthPerInstance", 3);
-                cs.SetBuffer(0, "BoneVectorBuffer", boneVectorBuffer);
+                setComputeShaderParametor_(cs);
 
                 return;
 
+
+                void setComputeShaderParametor_(ComputeShader cs)
+                {
+                    var em = gcs.DstEntityManager;
+                    var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
+                    var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
+                    cs.SetFloat("VectorLengthPerInstance", 3);
+                    cs.SetBuffer(0, "BoneVectorBuffer", boneVectorBuffer);
+                }
 
                 static Mesh createMesh_()
                 {
