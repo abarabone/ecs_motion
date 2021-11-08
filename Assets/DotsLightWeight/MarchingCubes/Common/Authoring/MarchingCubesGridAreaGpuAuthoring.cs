@@ -67,7 +67,12 @@ namespace DotsLite.MarchingCubes.Authoring
                 var mat = new Material(this.DrawCubeShader);
                 mat.mainTexture = this.Texture;
 
-                void crete_(Material mat, Mesh mesh)
+                initDrawModel_(ent, mat, mesh);
+                setComputeShaderParametor_(cs);
+                return;
+
+
+                void initDrawModel_(Entity ent, Material mat, Mesh mesh)
                 {
                     var boneLength = 1;
                     var sort = DrawModel.SortOrder.acs;
@@ -76,11 +81,6 @@ namespace DotsLite.MarchingCubes.Authoring
                     gcs.InitDrawModelEntityComponents(
                         this.gameObject, ent, mesh, mat, boneType, boneLength, sort, dataLength);
                 }
-
-                setComputeShaderParametor_(cs);
-
-                return;
-
 
                 void setComputeShaderParametor_(ComputeShader cs)
                 {

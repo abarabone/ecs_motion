@@ -174,4 +174,49 @@ namespace DotsLite.MarchingCubes.Gpu
             links.ppGridXLines = ppXLines;
         }
     }
+
+
+    public partial struct CommonShaderResources
+    {
+        public void SetResourcesTo(Material mat)
+        {
+            // せつめい - - - - - - - - - - - - - - - - -
+
+            //uint4 cube_patterns[ 254 ][2];
+            // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
+            // [1] : vertex normal index { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
+
+            //uint4 cube_vtxs[ 12 ];
+            // x: near vertex index (x>>0 | y>>8 | z>>16)
+            // y: near vertex index offset prev (left >>0 | up  >>8 | front>>16)
+            // z: near vertex index offset next (right>>0 | down>>8 | back >>16)
+            // w: pos(x>>0 | y>>8 | z>>16)
+
+            // - - - - - - - - - - - - - - - - - - - - -
+
+            mat.SetConstantBuffer_("static_data", this.CubeGeometryConstants.Buffer);
+        }
+    }
+    public partial struct WorkingShaderResources
+    {
+        public void SetResourcesTo(Material mat, ComputeShader cs)
+        {
+            mat.SetTexture("grid_cubeids", this.GridCubeIds.Texture);
+
+            cs?.SetTexture(0, "dst_grid_cubeids", this.GridCubeIds.Texture);
+        }
+    }
+    public partial struct DotGridAreaGpuResources
+    {
+        public void SetResourcesTo(Material mat, ComputeShader cs)
+        {
+            cs?.SetBuffer(0, "dotgrids", this.GridDotContentDataBuffer.Buffer);
+            cs?.SetBuffer(0, "cube_instances", this.CubeInstances.Buffer);
+            //cs?.SetBuffer(0, "grid_instructions", this.GridInstructions.Buffer);
+
+            mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
+            //mat.SetBuffer("grid_instructions", this.GridInstructions.Buffer);
+            //mat.SetConstantBuffer_("grid_constant", this.GridInstructions.Buffer);
+        }
+    }
 }

@@ -48,7 +48,7 @@ namespace DotsLite.MarchingCubes.Gpu
 
 
                     {
-                        res.CubeInstances.Buffer.SetCounterValue(0);
+                        res.CubeInstances.Buffer.SetCounterValue(0);// これ最後のほうがよかったりするかな
 
                         var vectorOffset = offset.ModelStartIndex;
                         cs.SetInt("BoneVectorOffset", (int)vectorOffset);
