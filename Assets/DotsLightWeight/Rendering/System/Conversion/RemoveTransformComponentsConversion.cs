@@ -8,6 +8,7 @@ using System.Linq;
 
 namespace DotsLite.Model.Authoring
 {
+    using Utilities;
 
     /// <summary>
     /// TransformConversion によって付与される、トランスフォーム系のコンポーネントデータを削除する。
@@ -27,7 +28,10 @@ namespace DotsLite.Model.Authoring
             (
                 (Entity e, RemoveTransformComponentsAuthoring c) =>
                 {
-                    foreach (var tf in c.GetComponentsInChildren<Transform>())
+                    var src = c.isApplyChildren
+                        ? c.GetComponentsInChildren<Transform>()
+                        : c.transform.WrapEnumerable();
+                    foreach (var tf in src)
                     {
                         //Debug.Log(tf.name);
                         var ent = this.GetPrimaryEntity(tf);

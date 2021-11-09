@@ -87,7 +87,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     var em = gcs.DstEntityManager;
                     var sys = em.World.GetExistingSystem<DrawBufferManagementSystem>();
                     var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
-                    cs.SetFloat("VectorLengthPerInstance", 3);
+                    cs.SetInt("VectorLengthPerInstance", 3);
                     cs.SetBuffer(0, "BoneVectorBuffer", boneVectorBuffer);
                 }
 

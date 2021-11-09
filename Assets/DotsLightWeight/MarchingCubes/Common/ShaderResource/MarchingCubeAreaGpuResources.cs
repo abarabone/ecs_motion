@@ -54,16 +54,16 @@ namespace DotsLite.MarchingCubes
             //this.CubeInstancingArgs.Dispose();
         }
 
-        //public void SetResourcesTo(Material mat, ComputeShader cs)
-        //{
-        //    cs?.SetBuffer(0, "dotgrids", this.GridDotContentDataBuffer.Buffer);
-        //    cs?.SetBuffer(0, "cube_instances", this.CubeInstances.Buffer);
-        //    //cs?.SetBuffer(0, "grid_instructions", this.GridInstructions.Buffer);
+        public void SetResourcesTo(Material mat, ComputeShader cs)
+        {
+            cs?.SetBuffer(0, "dotgrids", this.GridDotContentDataBuffer.Buffer);
+            cs?.SetBuffer(0, "cube_instances", this.CubeInstances.Buffer);
+            //cs?.SetBuffer(0, "grid_instructions", this.GridInstructions.Buffer);
 
-        //    mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
-        //    //mat.SetBuffer("grid_instructions", this.GridInstructions.Buffer);
-        //    //mat.SetConstantBuffer_("grid_constant", this.GridInstructions.Buffer);
-        //}
+            mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
+            //mat.SetBuffer("grid_instructions", this.GridInstructions.Buffer);
+            //mat.SetConstantBuffer_("grid_constant", this.GridInstructions.Buffer);
+        }
 
         //public void SetArgumentBuffer(Mesh mesh)
         //{

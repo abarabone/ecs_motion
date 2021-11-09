@@ -62,16 +62,16 @@ namespace DotsLite.MarchingCubes.Gpu
                         mat.SetInt("BoneVectorOffset", (int)vectorOffset);
 
                         var mesh = geom.Mesh;
-                        var iargs = shaderArg.InstancingArgumentsBuffer;
-                        var src = res.CubeInstances;
+                        var src = res.CubeInstances.Buffer;
+                        var dst = shaderArg.InstancingArgumentsBuffer;
 
-                        ComputeBuffer.CopyCount(src.Buffer, iargs, dstOffsetBytes: sizeof(int) * 1);
+                        ComputeBuffer.CopyCount(src, dst, dstOffsetBytes: sizeof(int) * 1);
                         var arr = new int[5];
-                        iargs.GetData(arr);
+                        dst.GetData(arr);
                         Debug.Log(arr[1]);
 
                         var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };//
-                        Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, iargs);//
+                        Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, dst);//
                     }
                 })
                 .Run();

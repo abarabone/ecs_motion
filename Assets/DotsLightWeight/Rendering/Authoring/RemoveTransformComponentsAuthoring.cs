@@ -17,7 +17,7 @@ namespace DotsLite.Model.Authoring
     /// </summary>
     public class RemoveTransformComponentsAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
-
+        public bool isApplyChildren = true;
 
         public bool isRemoveTranslation;
         public bool isRemoveRotation;

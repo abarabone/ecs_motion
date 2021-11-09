@@ -234,7 +234,8 @@
 
 				const uint4 cubeindex = data.xxxx >> uint4(17, 22, 27, 8) & uint4(0x1f, 0x1f, 0x1f, 0x1ff);
 				
-				//const float3 gridpos = grid_instructions[cubeindex.w].position;//grids[cubeindex.w][grid_pos].xyz;
+				//const float3 gridpos = grid_instructions[cubeindex.w].position;
+				//const float3 gridpos = grids[cubeindex.w][grid_pos].xyz;
 				const int igrid = BoneVectorOffset + VectorLengthPerInstance * cubeindex.w;
 				const float3 gridpos = BoneVectorBuffer[igrid + 2].xyz;
 				const float3 cubepos = cubeindex.xyz * float3(1, -1, -1);

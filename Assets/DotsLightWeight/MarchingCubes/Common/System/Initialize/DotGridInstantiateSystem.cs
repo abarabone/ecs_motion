@@ -38,13 +38,14 @@ namespace DotsLite.MarchingCubes
                     Entity entity,
                     ref DotGridArea.LinkToGridData grids,
                     in DotGridArea.GridTypeData type,
+                    in Translation pos,
                     in DotGridArea.DotGridPrefabData prefab) =>
                 {
                     if (type.UnitOnEdge != 32) return;
 
                     var i = new int3(0, 0, 0);
-                    create_<DotGrid32x32x32, DotGrid.Unit32Data>(prefab.Prefab, new int3(0, 0, 0), ref grids, em);
-                    create_<DotGrid32x32x32, DotGrid.Unit32Data>(prefab.Prefab, new int3(1, 0, 0), ref grids, em);
+                    create_<DotGrid32x32x32, DotGrid.Unit32Data>(prefab.Prefab, new int3(0, 0, 0), ref grids, pos, em);
+                    create_<DotGrid32x32x32, DotGrid.Unit32Data>(prefab.Prefab, new int3(1, 0, 0), ref grids, pos, em);
                     //create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
                     //create_(prefab.Prefab, new int3(1, 0, 1), ref grids);
 
@@ -53,7 +54,7 @@ namespace DotsLite.MarchingCubes
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        unsafe void create_<TGrid, TUnitData>(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, EntityManager em)
+        unsafe void create_<TGrid, TUnitData>(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, Translation basepos, EntityManager em)
             where TGrid : struct, IDotGrid<TGrid>
             where TUnitData : struct, DotGrid.IUnitData<TGrid>, IComponentData
         {
@@ -67,7 +68,7 @@ namespace DotsLite.MarchingCubes
 
             var u = grid.UnitOnEdge;
             var hf = u >> 1;
-            var pos = i * u + new int3(hf, -hf, -hf);
+            var pos = basepos.Value + i * u + new int3(hf, -hf, -hf);
 
             em.SetComponentData(newent, new TUnitData()
             {
