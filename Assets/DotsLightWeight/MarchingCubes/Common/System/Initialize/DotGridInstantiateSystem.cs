@@ -68,7 +68,7 @@ namespace DotsLite.MarchingCubes
 
             var u = grid.UnitOnEdge;
             var hf = u >> 1;
-            var pos = basepos.Value + i * u + new int3(hf, -hf, -hf);
+            var pos = basepos.Value + (i * u + new int3(hf, -hf, -hf));
 
             em.SetComponentData(newent, new TUnitData()
             {
