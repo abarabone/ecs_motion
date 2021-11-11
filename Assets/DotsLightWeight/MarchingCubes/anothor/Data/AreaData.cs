@@ -21,11 +21,23 @@ namespace DotsLite.MarchingCubes.another
     using DotsLite.Utilities;
 
 
-    public static class Common
+    public static partial class DotGridArea
     {
-        public class DrawShaderResourceData : IComponentData
+        public struct GridTypeData : IComponentData
         {
-            public ComputeBuffer GeometryElementData;
+            public int UnitOnEdge;
+        }
+        public unsafe struct GridLinkData : IComponentData
+        {
+            public Entity* pGrid3DArray;
+        }
+        public struct ModelLinkData : IComponentData
+        {
+            public Entity ModelEntity;
+        }
+        public struct PoolLinkData : IComponentData
+        {
+            public Entity PoolEntity;
         }
     }
 
