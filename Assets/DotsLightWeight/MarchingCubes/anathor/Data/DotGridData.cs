@@ -21,23 +21,6 @@ namespace DotsLite.MarchingCubes.another
     using DotsLite.Utilities;
 
 
-
-    //common
-    //work
-    //init
-
-
-    //type
-    //dimension
-    //link to grid
-    //info
-    //infowork
-    //resource
-    //prefab
-    //rot
-    //pos
-    //init
-
     public static partial class DotGrid
     {
 
@@ -100,65 +83,6 @@ namespace DotsLite.MarchingCubes.another
         {
             public uint begin;
             public uint end;
-        }
-    }
-
-    public static class DotGridArea
-    {
-        public struct GridTypeData : IComponentData
-        {
-            public int UnitOnEdge;
-        }
-        public unsafe struct GridLinkData : IComponentData
-        {
-            public Entity* pGrid3DArray;
-        }
-        public struct ModelLinkData : IComponentData
-        {
-            public Entity ModelEntity;
-        }
-        public struct PoolLinkData : IComponentData
-        {
-            public Entity PoolEntity;
-        }
-    }
-
-    public static class DrawModel
-    {
-        public struct GridTypeData : IComponentData
-        {
-            public int UnitOnEdge;
-        }
-        public class MakeCubesShaderResourceData : IComponentData
-        {
-            public ComputeShader MakeCubesShader;
-            public ComputeBuffer DotContents;
-            public Texture CubeIds;
-            public ComputeBuffer CubeInstances;
-        }
-    }
-
-    public static class Common
-    {
-        public class DrawShaderResourceData : IComponentData
-        {
-            public ComputeBuffer GeometryElementData;
-        }
-    }
-    public static class GridStocker
-    {
-        public struct GridTypeData : IComponentData
-        {
-            public int UnitOnEdge;
-        }
-        public struct DefaultGridData : IComponentData
-        {
-            public Entity BlankGridEntity;
-            public Entity SolidGridEntity;
-        }
-        public struct GridPoolData : IComponentData
-        {
-            public UnsafeList<Entity> UnusingEntities;
         }
     }
 
