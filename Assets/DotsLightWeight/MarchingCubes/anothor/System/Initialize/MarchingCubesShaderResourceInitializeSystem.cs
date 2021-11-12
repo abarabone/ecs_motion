@@ -40,36 +40,36 @@ namespace DotsLite.MarchingCubes.another
             //var em = this.EntityManager;
             
 
-            this.Entities
-                .WithName("common")
-                .WithoutBurst()
-                .WithStructuralChanges()
-                .ForEach((
-                    Entity ent,
-                    Common.InitializeData init,
-                    Common.DrawShaderResourceData res) =>
-                {
-                    Data.Resource.CubeGeometryConstantBuffer.Create(init.asset);
+            //this.Entities
+            //    .WithName("common")
+            //    .WithoutBurst()
+            //    .WithStructuralChanges()
+            //    .ForEach((
+            //        Entity ent,
+            //        Common.InitializeData init,
+            //        Common.DrawShaderResourceData res) =>
+            //    {
+            //        Data.Resource.CubeGeometryConstantBuffer.Create(init.asset);
 
-                    //em.RemoveComponent<Global.InitializeData>(ent);
-                    cmd.RemoveComponent<Global.InitializeData>(ent);
-                })
-                .Run();
+            //        //em.RemoveComponent<Global.InitializeData>(ent);
+            //        cmd.RemoveComponent<Global.InitializeData>(ent);
+            //    })
+            //    .Run();
 
-            this.Entities
-                .WithName("drawModel")
-                .WithoutBurst()
-                .WithStructuralChanges()
-                .ForEach((
-                    Entity ent,
-                    DrawModel.MakeCubesShaderResourceData res) =>
-                {
-                    Data.Resource.CubeGeometryConstantBuffer.Create(init.asset);
+            //this.Entities
+            //    .WithName("drawModel")
+            //    .WithoutBurst()
+            //    .WithStructuralChanges()
+            //    .ForEach((
+            //        Entity ent,
+            //        DrawModel.MakeCubesShaderResourceData res) =>
+            //    {
+            //        Data.Resource.CubeGeometryConstantBuffer.Create(init.asset);
 
-                    //em.RemoveComponent<Global.InitializeData>(ent);
-                    cmd.RemoveComponent<Global.InitializeData>(ent);
-                })
-                .Run();
+            //        //em.RemoveComponent<Global.InitializeData>(ent);
+            //        cmd.RemoveComponent<Global.InitializeData>(ent);
+            //    })
+            //    .Run();
 
             //var globalcommon = this.GetSingleton<Global.CommonData>();
             //var globalwork32 = this.GetSingleton<Global.Work32Data>();
@@ -147,8 +147,7 @@ namespace DotsLite.MarchingCubes.another
             this.Entities
                 .WithName("Global_Destroy")
                 .WithoutBurst()
-                .ForEach((
-                    Common.DrawShaderResourceData res) =>
+                .ForEach((Common.DrawShaderResourceData res) =>
                 {
                     res.GeometryElementData.Dispose();
                 })

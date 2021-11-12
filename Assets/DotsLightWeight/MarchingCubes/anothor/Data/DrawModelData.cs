@@ -31,10 +31,10 @@ namespace DotsLite.MarchingCubes.another.Data
         {
             public ComputeShader MakeCubesShader;
 
-            public GridContentDataBuffer DotContents;
-            public CubeInstancingShaderBuffer CubeInstances;
+            public Resource.GridContentDataBuffer DotContents;
+            public Resource.CubeInstancingShaderBuffer CubeInstances;
             
-            public GridCubeIdShaderBufferTexture CubeIds;
+            public Resource.GridCubeIdShaderBufferTexture CubeIds;
         }
 
         public class InitializeData : IComponentData

@@ -24,6 +24,9 @@ namespace DotsLite.MarchingCubes.another.Authoring
 
         public MarchingCubesAsset MarchingCubesAsset;
 
+        public int MaxGrids;
+        public int MaxCubeInstances;
+
         public Texture2D Texture;
         public Shader DrawCubeShader;
         public ComputeShader GridToCubesShader;
@@ -91,7 +94,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
             }
         }
 
-        void initGridArea_(GameObjectConversionSystem gcs_, Entity ent)
+        void init_(GameObjectConversionSystem gcs_, Entity ent)
         {
             var em = gcs_.DstEntityManager;
 
@@ -99,107 +102,20 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 new ComponentType[]
                 {
                     typeof(DrawModel.ExcludeDrawMeshCsTag),
-                    typeof(DotGridArea.GridTypeData),
-                    typeof(DrawModel.InitializeData),
+                    typeof(CubeDrawModel.GridTypeData),
                     //typeof(DotGridArea.OutputCubesData),
-                    typeof(DotGridArea.ResourceGpuModeData),
-                    typeof(DotGridArea.DotGridPrefabData),
+                    typeof(CubeDrawModel.MakeCubesShaderResourceData),
                 }
             );
             em.AddComponents(ent, types);
-            //if (this.IsMode2) em.AddComponent<DotGridArea.Mode2>(ent);
 
 
-            //var wholeLength = this.GridLength + 2;
-            //var totalSize = wholeLength.x * wholeLength.y * wholeLength.z;
-
-            //var mat = new Material(this.DrawCubeShader);
-            //mat.mainTexture = this.Texture;
-
-            em.SetComponentData(ent,
-                new DotGridArea.InitializeData
-                {
-                    //FillMode = fillMode_,
-                    //CubeMaterial = mat,
-                    GridToCubesShader = this.GridToCubesShader,
-                    MaxCubeInstances = this.MaxCubeInstances,
-                    MaxGrids = this.MaxGrids,
-                }
-            );
-
-            em.SetComponentData(ent,
-                new DotGridArea.GridTypeData
-                {
-                    UnitOnEdge = (int)this.GridPrefab.GridType,
-                }
-            );
-
-            var unitScale = (float3)(1.0 / ((double3)this.UnitScale));
-            var gridScale = (float3)(1.0 / ((double3)this.UnitScale * 32));
-            var extents = (float3)this.transform.position - (this.GridLength * gridScale) / 2;
-            em.SetComponentData(ent,
-                new DotGridArea.UnitDimensionData
-                {
-                    LeftFrontTop = extents.As_float4(),// extents Ç…ÇµÇƒÅAtf Ç∑ÇÈïKóvÇ™Ç†ÇÈÇ©Ç‡
-                    GridScaleR = gridScale.As_float4(),
-                    UnitScaleR = UnitScale.As_float4(),
-                }
-            );
-
-            //var totalsize = this.GridLength.x * this.GridLength.y * this.GridLength.z;
-            //var pIds = (int*)UnsafeUtility.Malloc(sizeof(int) * totalsize, 4, Allocator.Persistent);
-            //for (var i = 0; i < totalsize; i++) pIds[i] = -1;
-            //var ppXLines = (uint**)UnsafeUtility.Malloc(sizeof(uint*) * totalsize, 4, Allocator.Persistent);
-            //for (var i = 0; i < totalsize; i++) ppXLines[i] = null;
-            em.SetComponentData(ent,
-                new DotGridArea.LinkToGridData
-                {
-                    //pGridIds = pIds,
-                    //ppGridXLines = ppXLines,
-                    GridLength = this.GridLength,
-                    GridSpan = new int3(1, this.GridLength.x * this.GridLength.z, this.GridLength.x),
-                }
-            );
-            em.SetComponentData(ent,
-                new DotGridArea.InfoData
-                {
-                    GridLength = this.GridLength,
-                    //GridWholeLength = wholeLength,
-                }
-            );
-            em.SetComponentData(ent,
-                new DotGridArea.InfoWorkData
-                {
-                    //GridSpan = new int3(1, wholeLength.x * wholeLength.z, wholeLength.x),
-                    GridSpan = new int3(1, this.GridLength.x * this.GridLength.z, this.GridLength.x),
-                }
-            );
-            //em.SetComponentData(ent,
-            //    new DotGridArea.OutputCubesData
-            //    {
-            //        GridInstances = new UnsafeList<GridInstanceData>(this.MaxGridInstances, Allocator.Persistent),
-            //        CubeInstances = new UnsafeList<CubeInstance>(this.MaxCubeInstances, Allocator.Persistent),
-            //    }
-            //);
-            em.SetComponentData(ent,
-                new DotGridArea.ResourceGpuModeData()
-            );
-            em.SetComponentData(ent,
-                new Rotation
-                {
-                    Value = this.transform.rotation,
-                }
-            );
-            em.SetComponentData(ent,
-                new Translation
-                {
-                    Value = this.transform.position,
-                }
-            );
-
-            em.SetComponentData(ent, new DotGridArea.DotGridPrefabData
+            em.SetComponentData(ent, new CubeDrawModel.MakeCubesShaderResourceData
             {
-                Prefab = gcs_.GetPrimaryEntity(this.GridPrefab),
+                CubeIds = GridCubeIdShaderBufferTexture.Create(this.MaxCubeInstances, ),
+                CubeInstances = CubeInstancingShaderBuffer.Create(this.MaxCubeInstances),
+                DotContents = Data.Resource.GridContentDataBuffer.Create(this.MaxGrids, ),
+                MakeCubesShader = this.GridToCubesShader,
             });
         }
 
