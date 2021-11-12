@@ -15,6 +15,8 @@ namespace DotsLite.MarchingCubes.Authoring.another
 {
     using DotsLite.Draw;
     using DotsLite.Model;
+    using DotsLite.MarchingCubes.another.Data;
+    using DotsLite.MarchingCubes.another.Data.Resource;
 
     public class MarchingCubesCommonAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -23,9 +25,9 @@ namespace DotsLite.MarchingCubes.Authoring.another
 
 
         //public int MaxCubeInstances;
-        [Range(0, 512)]
-        public int MaxGridInstances;
-        public int MaxFreeGrids;
+        //[Range(0, 512)]
+        //public int MaxGridInstances;
+        //public int MaxFreeGrids;
 
         public MarchingCubesAsset MarchingCubesAsset;
         //public Material SrcMaterial;
@@ -45,30 +47,13 @@ namespace DotsLite.MarchingCubes.Authoring.another
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
-                    typeof(Global.CommonData),
-                    typeof(Global.Work32Data),
-                    typeof(Global.Work16Data),
-                    typeof(Global.InitializeData),
+                    typeof(Common.DrawShaderResourceData),
                 });
                 em.AddComponents(ent, types);
 
-                em.SetComponentData(ent, new Global.InitializeData
+                em.SetComponentData(ent, new Common.DrawShaderResourceData
                 {
-                    maxFreeGrids = this.MaxFreeGrids,
-                    maxGridInstances = this.MaxGridInstances,
-                    asset = this.MarchingCubesAsset,
-                });
-                em.SetComponentData(ent, new Global.CommonData
-                {
-                    Assset = this.MarchingCubesAsset.ConvertToBlobData(),
-                });
-                em.SetComponentData(ent, new Global.Work32Data
-                {
-                    
-                });
-                em.SetComponentData(ent, new Global.Work16Data
-                {
-
+                    GeometryElementData = CubeGeometryConstantBuffer.Create(this.MarchingCubesAsset),
                 });
             }
 

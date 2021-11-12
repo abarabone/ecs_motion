@@ -14,14 +14,14 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.MarchingCubes.another
+namespace DotsLite.MarchingCubes.another.Data
 {
 
     using DotsLite.Draw;
     using DotsLite.Utilities;
 
 
-    public static partial class DrawModel
+    public static partial class CubeDrawModel
     {
         public struct GridTypeData : IComponentData
         {
@@ -36,12 +36,20 @@ namespace DotsLite.MarchingCubes.another
             
             public GridCubeIdShaderBufferTexture CubeIds;
         }
+
+        public class InitializeData : IComponentData
+        {
+            public ComputeShader GridToCubesShader;
+            //public Material CubeMaterial;
+            public int MaxGrids;
+            public int MaxCubeInstances;
+        }
     }
 
 
 
 
-    public static partial class DrawModel
+    namespace Resource
     {
 
         public struct GridContentDataBuffer : IDisposable
