@@ -19,7 +19,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
     using DotsLite.MarchingCubes.another.Data;
     using DotsLite.MarchingCubes.another.Data.Resource;
 
-    public class MarchingCubesDrawModelAuthoring : MonoBehaviour
+    public class MarchingCubesDrawModelAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         public MarchingCubesAsset MarchingCubesAsset;
@@ -112,9 +112,9 @@ namespace DotsLite.MarchingCubes.another.Authoring
 
             em.SetComponentData(ent, new CubeDrawModel.MakeCubesShaderResourceData
             {
-                CubeIds = GridCubeIdShaderBufferTexture.Create(this.MaxCubeInstances, ),
+                CubeIds = GridCubeIdShaderBufferTexture.Create(this.MaxCubeInstances, 32),
                 CubeInstances = CubeInstancingShaderBuffer.Create(this.MaxCubeInstances),
-                DotContents = Data.Resource.GridContentDataBuffer.Create(this.MaxGrids, ),
+                DotContents = GridContentDataBuffer.Create(this.MaxGrids, 32),
                 MakeCubesShader = this.GridToCubesShader,
             });
         }
