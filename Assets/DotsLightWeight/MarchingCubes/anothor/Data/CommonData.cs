@@ -26,6 +26,13 @@ namespace DotsLite.MarchingCubes.another.Data
         public class DrawShaderResourceData : IComponentData
         {
             public CubeGeometryConstantBuffer GeometryElementData;
+
+            //public void Dispose() => this.GeometryElementData.Dispose();
+            public void Dispose()
+            {
+                Debug.Log("common grid dispose");
+                this.GeometryElementData.Dispose();
+            }
         }
 
     }

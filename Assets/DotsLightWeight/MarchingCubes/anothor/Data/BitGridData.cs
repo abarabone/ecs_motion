@@ -21,7 +21,7 @@ namespace DotsLite.MarchingCubes.another
     using DotsLite.Utilities;
 
 
-    public static partial class DotGrid
+    public static partial class BitGrid
     {
 
         public struct DefaultTag : IComponentData
@@ -35,21 +35,21 @@ namespace DotsLite.MarchingCubes.another
         }
         public static class _32x32x32
         {
-            public unsafe struct ContentsData : IComponentData
+            public unsafe struct BitLinesData : IComponentData
             {
                 public uint* p;
             }
         }
         public static class _16x16x16
         {
-            public unsafe struct ContentsData : IComponentData
+            public unsafe struct BitLinesData : IComponentData
             {
                 public uint* p;
             }
         }
         public struct AmountData : IComponentData
         {
-            public uint DotCount;
+            public uint BitCount;
         }
 
         public struct ParentAreaData : IComponentData

@@ -31,19 +31,21 @@ namespace DotsLite.MarchingCubes.another.Data
         {
             public ComputeShader MakeCubesShader;
 
-            public Resource.GridContentDataBuffer DotContents;
+            public Resource.GridBitLinesDataBuffer BitLinesPerGrid;
             public Resource.CubeInstancingShaderBuffer CubeInstances;
             
             public Resource.GridCubeIdShaderBufferTexture CubeIds;
+
+
+            public void Dispose()
+            {
+                Debug.Log("cube draw model dispose");
+                this.BitLinesPerGrid.Dispose();
+                this.CubeInstances.Dispose();
+                this.CubeIds.Dispose();
+            }
         }
 
-        public class InitializeData : IComponentData
-        {
-            public ComputeShader GridToCubesShader;
-            //public Material CubeMaterial;
-            public int MaxGrids;
-            public int MaxCubeInstances;
-        }
     }
 
 
@@ -52,11 +54,11 @@ namespace DotsLite.MarchingCubes.another.Data
     namespace Resource
     {
 
-        public struct GridContentDataBuffer : IDisposable
+        public struct GridBitLinesDataBuffer : IDisposable
         {
             public ComputeBuffer Buffer { get; private set; }
 
-            public static GridContentDataBuffer Create(int maxGrids, int unitOnEdge) => new GridContentDataBuffer
+            public static GridBitLinesDataBuffer Create(int maxGrids, int unitOnEdge) => new GridBitLinesDataBuffer
             {
                 Buffer = new ComputeBuffer(unitOnEdge * unitOnEdge / (32 / unitOnEdge) * maxGrids, Marshal.SizeOf<uint>()),
             };

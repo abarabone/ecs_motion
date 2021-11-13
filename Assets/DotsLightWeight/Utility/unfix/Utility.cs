@@ -253,4 +253,13 @@ namespace DotsLite.Utilities
         static public IEnumerable<T> Range<T>(this NativeArray<T> src, int start, int length) where T : struct =>
             from i in Enumerable.Range(start, length) select src[i];
     }
+
+    public static unsafe class UnsafeUtilityEx
+    {
+        public static void* Free(void* p, Allocator allocator)
+        {
+            UnsafeUtility.Free(p, allocator);
+            return null;
+        }
+    }
 }

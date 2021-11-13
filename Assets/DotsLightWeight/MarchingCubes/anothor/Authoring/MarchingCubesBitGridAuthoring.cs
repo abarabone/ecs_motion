@@ -17,7 +17,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
     using DotsLite.Model;
     using DotsLite.MarchingCubes.another;
 
-    public class MarchingCubesDotGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class MarchingCubesBitGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         public DotGridType GridType = DotGridType.DotGrid32x32x32;
@@ -41,24 +41,24 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
-                    typeof(DotGrid.GridTypeData),
+                    typeof(BitGrid.GridTypeData),
                     //typeof(DotGrid.UnitData),
-                    typeof(DotGrid.LocationInAreaData),
-                    typeof(DotGrid.ParentAreaData),
-                    typeof(DotGrid.UpdateDirtyRangeData),
-                    typeof(DotGrid.AmountData),
+                    typeof(BitGrid.LocationInAreaData),
+                    typeof(BitGrid.ParentAreaData),
+                    typeof(BitGrid.UpdateDirtyRangeData),
+                    typeof(BitGrid.AmountData),
                     //typeof(Unity.Physics.PhysicsCollider),
                     typeof(Collision.Hit.TargetData),
                 };
                 types.Add(gridtype switch
                 {
-                    DotGridType.DotGrid32x32x32 => typeof(DotGrid._32x32x32.ContentsData),
-                    DotGridType.DotGrid16x16x16 => typeof(DotGrid._16x16x16.ContentsData),
+                    DotGridType.DotGrid32x32x32 => typeof(BitGrid._32x32x32.BitLinesData),
+                    DotGridType.DotGrid16x16x16 => typeof(BitGrid._16x16x16.BitLinesData),
                     _ => default,
                 });
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
-                em.SetComponentData(ent, new DotGrid.GridTypeData
+                em.SetComponentData(ent, new BitGrid.GridTypeData
                 {
                     UnitOnEdge = (int)gridtype,
                 });
@@ -77,9 +77,8 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     MainEntity = ent,
                 });
             }
-
-
         }
+
     }
 
 }

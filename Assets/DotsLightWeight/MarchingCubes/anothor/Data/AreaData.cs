@@ -21,7 +21,7 @@ namespace DotsLite.MarchingCubes.another
     using DotsLite.Utilities;
 
 
-    public static partial class DotGridArea
+    public static partial class BitGridArea
     {
         public struct GridTypeData : IComponentData
         {
@@ -30,15 +30,55 @@ namespace DotsLite.MarchingCubes.another
         public unsafe struct GridLinkData : IComponentData
         {
             public Entity* pGrid3DArray;
+
+            public static GridLinkData Create(int3 length) => new GridLinkData
+            {
+                pGrid3DArray = (Entity*)UnsafeUtility.Malloc(length.x * length.y * length.z * sizeof(Entity), 8, Allocator.Persistent)
+            };
+            //public void Dispose() => this.pGrid3DArray = (Entity*)UnsafeUtilityEx.Free(this.pGrid3DArray, Allocator.Persistent);
+            public void Dispose()
+            {
+                Debug.Log("area grid link dispose");
+                this.pGrid3DArray = (Entity*)UnsafeUtilityEx.Free(this.pGrid3DArray, Allocator.Persistent);
+            }
         }
-        public struct ModelLinkData : IComponentData
+        public struct a : IComponentData
         {
-            public Entity ModelEntity;
+
+        }
+
+        public struct DrawModelLinkData : IComponentData
+        {
+            public Entity DrawModelEntity;
         }
         public struct PoolLinkData : IComponentData
         {
             public Entity PoolEntity;
         }
+
+        public struct UnitDimensionData : IComponentData
+        {
+            public float4 LeftTopFrontPosition;
+            public float4 GridScaleR;
+            public float4 UnitScaleR;
+        }
+
+        public struct DotGridPrefabData : IComponentData
+        {
+            public Entity Prefab;
+        }
+
+        public struct InfoData : IComponentData
+        {
+            public int3 GridLength;
+        }
+        public struct InfoWorkData : IComponentData
+        {
+            public int3 GridSpan;
+        }
+
+
+
     }
 
 }

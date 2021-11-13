@@ -132,17 +132,23 @@ namespace DotsLite.MarchingCubes.another
 
         protected override void OnDestroy()
         {
-            //this.Entities
-            //    .WithName("GridArea_Destroy")
-            //    .WithoutBurst()
-            //    .ForEach((
-            //        DotGridArea.ResourceGpuModeData data,
-            //        ref DotGridArea.LinkToGridData links) =>
-            //    {
-            //        data.Dispose();
-            //        links.Dispose();
-            //    })
-            //    .Run();
+            this.Entities
+                .WithName("CubeDrawModel_Destroy")
+                .WithoutBurst()
+                .ForEach((CubeDrawModel.MakeCubesShaderResourceData res) =>
+                {
+                    res.BitLinesPerGrid.Dispose();
+                })
+                .Run();
+
+            this.Entities
+                .WithName("GridArea_Destroy")
+                .WithoutBurst()
+                .ForEach((ref BitGridArea.GridLinkData gridarr) =>
+                {
+                    gridarr.Dispose();
+                })
+                .Run();
 
             this.Entities
                 .WithName("Global_Destroy")

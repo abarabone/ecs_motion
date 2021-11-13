@@ -110,11 +110,17 @@ namespace DotsLite.MarchingCubes.another.Authoring
             em.AddComponents(ent, types);
 
 
+            var totalGridLength = this.GetComponentsInChildren<MarchingCubesGridAreaAuthoring>()
+                .Select(x => x.GridLength)
+                .Select(x => x.x * x.y * x.z)
+                .Sum();
             em.SetComponentData(ent, new CubeDrawModel.MakeCubesShaderResourceData
             {
-                CubeIds = GridCubeIdShaderBufferTexture.Create(this.MaxCubeInstances, 32),
+                CubeIds = GridCubeIdShaderBufferTexture.Create(this.MaxGrids, 32),
+
                 CubeInstances = CubeInstancingShaderBuffer.Create(this.MaxCubeInstances),
-                DotContents = GridContentDataBuffer.Create(this.MaxGrids, 32),
+                BitLinesPerGrid = GridBitLinesDataBuffer.Create(totalGridLength, 32),
+
                 MakeCubesShader = this.GridToCubesShader,
             });
         }
