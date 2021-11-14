@@ -38,6 +38,17 @@ namespace DotsLite.MarchingCubes.another
             public unsafe struct BitLinesData : IComponentData
             {
                 public uint* p;
+
+                public void Alloc(GridFillMode fillMode)
+                {
+                    this.Dispose();
+                    p = (uint*)DotGrid.Allocater<DotGrid32x32x32>.Alloc(fillMode);
+                }
+                public void Dispose()
+                {
+                    if (p == null) return;
+                    p = (uint*)DotGrid.Allocater<DotGrid32x32x32>.Dispose(p);
+                }
             }
         }
         public static class _16x16x16
@@ -45,11 +56,23 @@ namespace DotsLite.MarchingCubes.another
             public unsafe struct BitLinesData : IComponentData
             {
                 public uint* p;
+
+                public void Alloc(GridFillMode fillMode)
+                {
+                    this.Dispose();
+                    p = (uint*)DotGrid.Allocater<DotGrid16x16x16>.Alloc(fillMode);
+                }
+                public void Dispose()
+                {
+                    if (p == null) return;
+                    p = (uint*)DotGrid.Allocater<DotGrid16x16x16>.Dispose(p);
+                }
             }
         }
         public struct AmountData : IComponentData
         {
             public uint BitCount;
+            public uint BitLineBufferSize;
         }
 
         public struct ParentAreaData : IComponentData

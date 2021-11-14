@@ -27,14 +27,24 @@ namespace DotsLite.MarchingCubes.another.Data
         {
             public CubeGeometryConstantBuffer GeometryElementData;
 
-            //public void Dispose() => this.GeometryElementData.Dispose();
+
+            public void Alloc(InitializeData init)
+            {
+                this.Dispose();
+                this.GeometryElementData = CubeGeometryConstantBuffer.Create(init.asset);
+            }
             public void Dispose()
             {
+                if (this.GeometryElementData.Buffer == null) return;
                 Debug.Log("common grid dispose");
                 this.GeometryElementData.Dispose();
             }
         }
 
+        public class InitializeData : IComponentData
+        {
+            public MarchingCubesAsset asset;
+        }
     }
 
 }

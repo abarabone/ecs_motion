@@ -17,10 +17,14 @@ namespace DotsLite.MarchingCubes.another
     using DotsLite.Draw;
     using DotsLite.Utilities;
 
+    // game object が none active でも disable でコンバートされてしまうようなので、
+    // メモリ確保等は system でやらないといけないのかも
+    // render の shader まわりもかなぁ
+
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class MarchingCubesShaderResourceInitializeSystem : DependencyAccessableSystemBase
+    public class MarchingCubesResourceInitializeSystem : DependencyAccessableSystemBase
     {
         CommandBufferDependency.Sender cmddep;
 
@@ -37,110 +41,45 @@ namespace DotsLite.MarchingCubes.another
             using var cmdScope = this.cmddep.WithDependencyScope();
 
             var cmd = cmdScope.CommandBuffer;//.AsParallelWriter();
-            //var em = this.EntityManager;
-            
+                                             //var em = this.EntityManager;
 
-            //this.Entities
-            //    .WithName("common")
-            //    .WithoutBurst()
-            //    .WithStructuralChanges()
-            //    .ForEach((
-            //        Entity ent,
-            //        Common.InitializeData init,
-            //        Common.DrawShaderResourceData res) =>
-            //    {
-            //        Data.Resource.CubeGeometryConstantBuffer.Create(init.asset);
+            this.Entities
+                .WithName("Common")
+                .WithoutBurst()
+                .ForEach((Entity ent, Common.InitializeData init, Common.DrawShaderResourceData res) =>
+                {
+                    res.Alloc(init);
 
-            //        //em.RemoveComponent<Global.InitializeData>(ent);
-            //        cmd.RemoveComponent<Global.InitializeData>(ent);
-            //    })
-            //    .Run();
+                    cmd.RemoveComponent<Common.InitializeData>(ent);
+                })
+                .Run();
 
-            //this.Entities
-            //    .WithName("drawModel")
-            //    .WithoutBurst()
-            //    .WithStructuralChanges()
-            //    .ForEach((
-            //        Entity ent,
-            //        DrawModel.MakeCubesShaderResourceData res) =>
-            //    {
-            //        Data.Resource.CubeGeometryConstantBuffer.Create(init.asset);
+            this.Entities
+                .WithName("CubeDrawModel")
+                .WithoutBurst()
+                .ForEach((Entity ent, CubeDrawModel.InitializeData init, CubeDrawModel.MakeCubesShaderResourceData res) =>
+                {
+                    res.MakeCubesShader = init.cubeMakeShader;
+                    res.Alloc(init);
 
-            //        //em.RemoveComponent<Global.InitializeData>(ent);
-            //        cmd.RemoveComponent<Global.InitializeData>(ent);
-            //    })
-            //    .Run();
+                    cmd.RemoveComponent<CubeDrawModel.InitializeData>(ent);
+                })
+                .Run();
 
-            //var globalcommon = this.GetSingleton<Global.CommonData>();
-            //var globalwork32 = this.GetSingleton<Global.Work32Data>();
-            //var globalwork16 = this.GetSingleton<Global.Work16Data>();
-            ////var gres = globalwork32.ShaderResources;
-            //var pBlank32 = globalwork32.DefaultGrids[(int)GridFillMode.Blank].pXline;
-            //var pBlank16 = globalwork16.DefaultGrids[(int)GridFillMode.Blank].pXline;
+            this.Entities
+                .WithName("GridArea")
+                .WithoutBurst()
+                .ForEach((Entity ent, ref BitGridArea.GridLinkData gridarr, in BitGridArea.InitializeData init) =>
+                {
+                    gridarr.Alloc(init.gridLength);
 
-            //this.Entities
-            //    .WithName("GridArea")
-            //    .WithoutBurst()
-            //    .WithStructuralChanges()
-            //    .ForEach((
-            //        Entity ent,
-            //        DotGridArea.InitializeData init,
-            //        DotGridArea.ResourceGpuModeData data,
-            //        DrawModel.GeometryData geom,
-            //        ref DotGridArea.LinkToGridData links,
-            //        in DotGridArea.GridTypeData type,
-            //        in DrawModel.ComputeArgumentsBufferData shaderArg) =>
-            //    {
-            //        var mat = geom.Material;
-            //        var mesh = geom.Mesh;
-            //        var cs = init.GridToCubesShader;
-
-            //        switch (type.UnitOnEdge)
-            //        {
-            //            case 32:
-            //                Debug.Log("mc sh res ini 32");
-            //                links.AllocGridAreaBuffers(pBlank32);
-            //                data.ShaderResources.Alloc(init.MaxCubeInstances, 32, init.MaxGrids);
-
-            //                globalcommon.ShaderResources.SetResourcesTo(mat);
-            //                globalwork32.ShaderResources.SetResourcesTo(mat, cs);
-            //                break;
-
-            //            case 16:
-            //                Debug.Log("mc sh res ini 16");
-            //                links.AllocGridAreaBuffers(pBlank16);
-            //                data.ShaderResources.Alloc(init.MaxCubeInstances, 16, init.MaxGrids);
-
-            //                globalcommon.ShaderResources.SetResourcesTo(mat);
-            //                globalwork16.ShaderResources.SetResourcesTo(mat, cs);
-            //                break;
-
-            //            default:
-            //                break;
-            //        }
-
-            //        data.GridToCubeShader = cs;
-            //        data.ShaderResources.SetResourcesTo(mat, cs);
-            //        shaderArg.SetInstancingArgumentBuffer(mesh);
-
-
-            //        //em.RemoveComponent<DotGridArea.InitializeData>(ent);
-            //        cmd.RemoveComponent<DotGridArea.InitializeData>(ent);
-            //    })
-            //    .Run();
+                    cmd.RemoveComponent<BitGridArea.InitializeData>(ent);
+                })
+                .Run();
         }
 
         protected override void OnDestroy()
         {
-            this.Entities
-                .WithName("CubeDrawModel_Destroy")
-                .WithoutBurst()
-                .ForEach((CubeDrawModel.MakeCubesShaderResourceData res) =>
-                {
-                    res.BitLinesPerGrid.Dispose();
-                })
-                .Run();
-
             this.Entities
                 .WithName("GridArea_Destroy")
                 .WithoutBurst()
@@ -151,11 +90,20 @@ namespace DotsLite.MarchingCubes.another
                 .Run();
 
             this.Entities
-                .WithName("Global_Destroy")
+                .WithName("CubeDrawModel_Destroy")
+                .WithoutBurst()
+                .ForEach((CubeDrawModel.MakeCubesShaderResourceData res) =>
+                {
+                    res.Dispose();
+                })
+                .Run();
+
+            this.Entities
+                .WithName("Common_Destroy")
                 .WithoutBurst()
                 .ForEach((Common.DrawShaderResourceData res) =>
                 {
-                    res.GeometryElementData.Dispose();
+                    res.Dispose();
                 })
                 .Run();
 

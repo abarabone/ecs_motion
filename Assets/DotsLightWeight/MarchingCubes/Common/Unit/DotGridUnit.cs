@@ -84,9 +84,10 @@ namespace DotsLite.MarchingCubes
             }
 
 
-            static public unsafe void Dispose(void* p)
+            static public unsafe void *Dispose(void* p)
             {
                 UnsafeUtility.Free(p, Allocator.Persistent);
+                return null;
             }
         }
     }

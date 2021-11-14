@@ -24,7 +24,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
 
         public MarchingCubesAsset MarchingCubesAsset;
 
-        public int MaxGrids;
+        public int MaxGridInstructions;
         public int MaxCubeInstances;
 
         public Texture2D Texture;
@@ -98,15 +98,14 @@ namespace DotsLite.MarchingCubes.another.Authoring
         {
             var em = gcs_.DstEntityManager;
 
-            var types = new ComponentTypes(
-                new ComponentType[]
-                {
-                    typeof(DrawModel.ExcludeDrawMeshCsTag),
-                    typeof(CubeDrawModel.GridTypeData),
-                    //typeof(DotGridArea.OutputCubesData),
-                    typeof(CubeDrawModel.MakeCubesShaderResourceData),
-                }
-            );
+            var types = new ComponentTypes(new ComponentType[]
+            {
+                typeof(DrawModel.ExcludeDrawMeshCsTag),
+                typeof(CubeDrawModel.GridTypeData),
+                //typeof(DotGridArea.OutputCubesData),
+                typeof(CubeDrawModel.MakeCubesShaderResourceData),
+                typeof(CubeDrawModel.InitializeData),
+            });
             em.AddComponents(ent, types);
 
 
@@ -114,14 +113,15 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 .Select(x => x.GridLength)
                 .Select(x => x.x * x.y * x.z)
                 .Sum();
-            em.SetComponentData(ent, new CubeDrawModel.MakeCubesShaderResourceData
+            em.SetComponentData(ent, new CubeDrawModel.MakeCubesShaderResourceData());
+            em.SetComponentData(ent, new CubeDrawModel.InitializeData
             {
-                CubeIds = GridCubeIdShaderBufferTexture.Create(this.MaxGrids, 32),
-
-                CubeInstances = CubeInstancingShaderBuffer.Create(this.MaxCubeInstances),
-                BitLinesPerGrid = GridBitLinesDataBuffer.Create(totalGridLength, 32),
-
-                MakeCubesShader = this.GridToCubesShader,
+                asset = this.MarchingCubesAsset,
+                cubeMakeShader = this.GridToCubesShader,
+                maxCubeInstance = this.MaxCubeInstances,
+                maxGridInstructions = this.MaxGridInstructions,
+                maxGrids = totalGridLength,
+                unitOnEdge = 32,
             });
         }
 

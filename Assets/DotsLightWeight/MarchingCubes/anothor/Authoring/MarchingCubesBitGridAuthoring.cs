@@ -38,17 +38,16 @@ namespace DotsLite.MarchingCubes.another.Authoring
 
                 var types = new List<ComponentType>()
                 {
+                    typeof(BitGrid.GridTypeData),
+                    typeof(BitGrid.AmountData),
+                    typeof(BitGrid.LocationInAreaData),
+                    typeof(BitGrid.UpdateDirtyRangeData),
+                    typeof(BitGrid.ParentAreaData),
+                    //typeof(Unity.Physics.PhysicsCollider),
+                    typeof(Collision.Hit.TargetData),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
-                    typeof(BitGrid.GridTypeData),
-                    //typeof(DotGrid.UnitData),
-                    typeof(BitGrid.LocationInAreaData),
-                    typeof(BitGrid.ParentAreaData),
-                    typeof(BitGrid.UpdateDirtyRangeData),
-                    typeof(BitGrid.AmountData),
-                    //typeof(Unity.Physics.PhysicsCollider),
-                    typeof(Collision.Hit.TargetData),
                 };
                 types.Add(gridtype switch
                 {
@@ -58,9 +57,20 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 });
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
+
                 em.SetComponentData(ent, new BitGrid.GridTypeData
                 {
                     UnitOnEdge = (int)gridtype,
+                });
+                em.SetComponentData(ent, new BitGrid.AmountData
+                {
+                    BitCount = 0,
+                    BitLineBufferSize = gridtype switch
+                    {
+                        DotGridType.DotGrid16x16x16 => 16 * 16 / (32 / 16),
+                        DotGridType.DotGrid32x32x32 => 32 * 32 / (32 / 32),
+                        _ => default,
+                    }
                 });
                 //em.SetComponentData(ent, new PhysicsCollider
                 //{

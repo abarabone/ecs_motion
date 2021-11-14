@@ -31,13 +31,16 @@ namespace DotsLite.MarchingCubes.another
         {
             public Entity* pGrid3DArray;
 
-            public static GridLinkData Create(int3 length) => new GridLinkData
+
+            public void Alloc(int3 length)
             {
-                pGrid3DArray = (Entity*)UnsafeUtility.Malloc(length.x * length.y * length.z * sizeof(Entity), 8, Allocator.Persistent)
-            };
-            //public void Dispose() => this.pGrid3DArray = (Entity*)UnsafeUtilityEx.Free(this.pGrid3DArray, Allocator.Persistent);
+                this.Dispose();
+                var size = length.x * length.y * length.z * sizeof(Entity);
+                pGrid3DArray = (Entity*)UnsafeUtility.Malloc(size, 8, Allocator.Persistent);
+            }
             public void Dispose()
             {
+                if (pGrid3DArray == null) return;
                 Debug.Log("area grid link dispose");
                 this.pGrid3DArray = (Entity*)UnsafeUtilityEx.Free(this.pGrid3DArray, Allocator.Persistent);
             }
@@ -78,7 +81,10 @@ namespace DotsLite.MarchingCubes.another
         }
 
 
-
+        public struct InitializeData : IComponentData
+        {
+            public int3 gridLength;
+        }
     }
 
 }

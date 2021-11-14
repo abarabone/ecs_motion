@@ -22,7 +22,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
     {
 
         public MarchingCubesBitGridAuthoring GridPrefab;
-        //public MarchingCubesGridStockerAuthoring GridStocker;
+        public MarchingCubesGridStockerAuthoring GridStocker;
 
         public MarchingCubesAsset MarchingCubesAsset;
 
@@ -37,8 +37,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
             referencedPrefabs.Add(this.GridPrefab.gameObject);
-            //referencedPrefabs.Add(this.DrawModel.gameObject);
-            //referencedPrefabs.Add(this.GridStocker.gameObject);
+            referencedPrefabs.Add(this.GridStocker.gameObject);
         }
 
         public unsafe void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -46,35 +45,39 @@ namespace DotsLite.MarchingCubes.another.Authoring
 
             initGridArea_(conversionSystem, entity);
 
-            //setModelToPrefab_(conversionSystem, entity, conversionSystem.GetPrimaryEntity(this.GridPrefab));
-
             return;
 
 
-            void initGridArea_(GameObjectConversionSystem gcs_, Entity ent)
+            void initGridArea_(GameObjectConversionSystem gcs, Entity ent)
             {
-                var em = gcs_.DstEntityManager;
+                var em = gcs.DstEntityManager;
 
                 var types = new ComponentTypes(new ComponentType[]
                 {
                     typeof(BitGridArea.GridTypeData),
                     typeof(BitGridArea.GridLinkData),
-                    typeof(BitGridArea.DrawModelLinkData),
-                    typeof(BitGridArea.PoolLinkData),
                     typeof(BitGridArea.UnitDimensionData),
-                    typeof(BitGridArea.DotGridPrefabData),
                     typeof(BitGridArea.InfoData),
                     typeof(BitGridArea.InfoWorkData),
                     typeof(Rotation),
-                    typeof(Translation)
+                    typeof(Translation),
+                    typeof(BitGridArea.DrawModelLinkData),
+                    typeof(BitGridArea.PoolLinkData),
+                    typeof(BitGridArea.DotGridPrefabData),
+                    typeof(BitGridArea.InitializeData)
                 });
                 em.AddComponents(ent, types);
 
+
+                var glen = this.GridLength;
+                var gtotal = glen.x * glen.y * glen.z;
 
                 em.SetComponentData(ent, new BitGridArea.GridTypeData
                 {
                     UnitOnEdge = (int)this.GridPrefab.GridType,
                 });
+
+                em.SetComponentData(ent, new BitGridArea.GridLinkData { });
 
                 var unitScale = (float3)(1.0 / ((double3)this.UnitScale));
                 var gridScale = (float3)(1.0 / ((double3)this.UnitScale * 32));
@@ -86,15 +89,12 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     UnitScaleR = UnitScale.As_float4(),
                 });
 
-                em.SetComponentData(ent, BitGridArea.GridLinkData.Create(this.GridLength));
                 em.SetComponentData(ent, new BitGridArea.InfoData
                 {
                     GridLength = this.GridLength,
-                    //GridWholeLength = wholeLength,
                 });
                 em.SetComponentData(ent, new BitGridArea.InfoWorkData
                 {
-                    //GridSpan = new int3(1, wholeLength.x * wholeLength.z, wholeLength.x),
                     GridSpan = new int3(1, this.GridLength.x * this.GridLength.z, this.GridLength.x),
                 });
 
@@ -107,9 +107,22 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     Value = this.transform.position,
                 });
 
+                em.SetComponentData(ent, new BitGridArea.DrawModelLinkData
+                {
+                    DrawModelEntity = gcs.GetPrimaryEntity(this.transform.parent)
+                });
+                em.SetComponentData(ent, new BitGridArea.PoolLinkData
+                {
+                    PoolEntity = gcs.GetPrimaryEntity(this.GridStocker)
+                });
                 em.SetComponentData(ent, new BitGridArea.DotGridPrefabData
                 {
-                    Prefab = gcs_.GetPrimaryEntity(this.GridPrefab),
+                    Prefab = gcs.GetPrimaryEntity(this.GridPrefab)
+                });
+
+                em.SetComponentData(ent, new BitGridArea.InitializeData
+                {
+                    gridLength = this.GridLength
                 });
             }
 

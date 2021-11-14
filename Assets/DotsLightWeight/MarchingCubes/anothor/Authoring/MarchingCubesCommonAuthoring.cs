@@ -48,12 +48,15 @@ namespace DotsLite.MarchingCubes.Authoring.another
                 var types = new ComponentTypes(new ComponentType[]
                 {
                     typeof(Common.DrawShaderResourceData),
+                    typeof(Common.InitializeData),
                 });
                 em.AddComponents(ent, types);
 
-                em.SetComponentData(ent, new Common.DrawShaderResourceData
+
+                em.SetComponentData(ent, new Common.DrawShaderResourceData { });
+                em.SetComponentData(ent, new Common.InitializeData
                 {
-                    GeometryElementData = CubeGeometryConstantBuffer.Create(this.MarchingCubesAsset),
+                    asset = this.MarchingCubesAsset
                 });
             }
 

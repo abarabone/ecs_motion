@@ -37,15 +37,33 @@ namespace DotsLite.MarchingCubes.another.Data
             public Resource.GridCubeIdShaderBufferTexture CubeIds;
 
 
+            public void Alloc(InitializeData init)
+            {
+                this.Dispose();
+                this.BitLinesPerGrid = Resource.GridBitLinesDataBuffer.Create(init.maxGrids, init.unitOnEdge);
+                this.CubeInstances = Resource.CubeInstancingShaderBuffer.Create(init.maxCubeInstance);
+                this.CubeIds = Resource.GridCubeIdShaderBufferTexture.Create(init.maxGridInstructions, init.unitOnEdge);
+            }
             public void Dispose()
             {
+                if (BitLinesPerGrid.Buffer == null) return;
                 Debug.Log("cube draw model dispose");
+
                 this.BitLinesPerGrid.Dispose();
                 this.CubeInstances.Dispose();
                 this.CubeIds.Dispose();
             }
         }
 
+        public class InitializeData : IComponentData
+        {
+            public MarchingCubesAsset asset;
+            public ComputeShader cubeMakeShader;
+            public int maxGrids;
+            public int maxCubeInstance;
+            public int maxGridInstructions;
+            public int unitOnEdge;
+        }
     }
 
 
@@ -98,7 +116,7 @@ namespace DotsLite.MarchingCubes.another.Data
                 this.Texture = null;
             }
 
-            public static GridCubeIdShaderBufferTexture Create(int maxGridInstances, int unitOnEdge)
+            public static GridCubeIdShaderBufferTexture Create(int maxGridInstructions, int unitOnEdge)
             {
                 var n = unitOnEdge;
                 var format = UnityEngine.Experimental.Rendering.GraphicsFormat.R8_UInt;
@@ -106,7 +124,7 @@ namespace DotsLite.MarchingCubes.another.Data
                 var buffer = new RenderTexture(n * n, n, 0, format, 0);
                 buffer.enableRandomWrite = true;
                 buffer.dimension = TextureDimension.Tex2DArray;
-                buffer.volumeDepth = maxGridInstances;
+                buffer.volumeDepth = maxGridInstructions;
                 buffer.Create();
 
                 return new GridCubeIdShaderBufferTexture
