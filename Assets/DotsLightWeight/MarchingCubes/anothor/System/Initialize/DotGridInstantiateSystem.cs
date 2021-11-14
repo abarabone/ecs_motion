@@ -36,33 +36,34 @@ namespace DotsLite.MarchingCubes.another
                 .WithAll<DotGridArea.InitializeData>()
                 .ForEach((
                     Entity entity,
-                    ref BitGridArea.GridLinkData grids,
+                    ref BitGridArea.GridInstructionIdData gids,
+                    ref BitGridArea.GridLinkData glinks,
+                    ref BitGridArea.GridInstructionIdSeedData seed,
                     in BitGridArea.GridTypeData type,
                     in Translation pos,
                     in BitGridArea.DotGridPrefabData prefab,
                     in BitGridArea.InitializeData init) =>
                 {
-                    if (type.UnitOnEdge != 32) return;
-
                     var i = new int3(0, 0, 0);
-                    create_<DotGrid32x32x32, DotGrid.Unit32Data>(prefab.Prefab, new int3(0, 0, 0), ref grids, pos, em);
-                    create_<DotGrid32x32x32, DotGrid.Unit32Data>(prefab.Prefab, new int3(1, 0, 0), ref grids, pos, em);
+                    create_(prefab.Prefab, new int3(0, 0, 0), ref grids, pos, em);
+                    create_(prefab.Prefab, new int3(1, 0, 0), ref grids, pos, em);
                     //create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
                     //create_(prefab.Prefab, new int3(1, 0, 1), ref grids);
-
                 })
                 .Run();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        unsafe void create_<TGrid, TUnitData>(Entity prefab, int3 i, ref DotGridArea.LinkToGridData grids, Translation basepos, EntityManager em)
-            where TGrid : struct, IDotGrid<TGrid>
-            where TUnitData : struct, DotGrid.IUnitData<TGrid>, IComponentData
+        unsafe void create_(EntityManager em, Entity prefab, int3 i, uint bufferLength,
+            ref BitGridArea.GridLinkData glinks,
+            ref BitGridArea.GridInstructionIdData gids,
+            ref BitGridArea.GridInstructionIdSeedData seed,
+            Translation basepos)
         {
             var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
 
             var newent = em.Instantiate(prefab);
-            var grid = DotGrid.Create<TGrid>(GridFillMode.Blank);
+            var grid = (GridFillMode.Blank);
 
             grids.pGridPoolIds[index.serial] = grids.nextSeed++;
             grids.ppGridXLines[index.serial] = grid.pXline;
@@ -71,7 +72,7 @@ namespace DotsLite.MarchingCubes.another
             var hf = u >> 1;
             var pos = basepos.Value + (i * u + new int3(hf, -hf, -hf));
 
-            em.SetComponentData(newent, new TUnitData()
+            em.SetComponentData(newent, new BitGrid.BitLinesData().Alloc()
             {
                 Unit = grid,
             });

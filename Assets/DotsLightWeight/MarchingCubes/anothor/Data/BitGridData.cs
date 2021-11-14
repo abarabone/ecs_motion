@@ -33,46 +33,28 @@ namespace DotsLite.MarchingCubes.another
         {
             public int UnitOnEdge;
         }
-        public static class _32x32x32
+        public unsafe struct BitLinesData : IComponentData
         {
-            public unsafe struct BitLinesData : IComponentData
-            {
-                public uint* p;
+            public uint* p;
 
-                public void Alloc(GridFillMode fillMode)
-                {
-                    this.Dispose();
-                    p = (uint*)DotGrid.Allocater<DotGrid32x32x32>.Alloc(fillMode);
-                }
-                public void Dispose()
-                {
-                    if (p == null) return;
-                    p = (uint*)DotGrid.Allocater<DotGrid32x32x32>.Dispose(p);
-                }
+            public void Alloc(uint bufferLength, GridFillMode fillMode)
+            {
+                this.Dispose();
+                p = BitGrid.Alloc(bufferLength, fillMode);
+            }
+            public void Dispose()
+            {
+                if (p == null) return;
+                p = BitGrid.Dispose(p);
             }
         }
-        public static class _16x16x16
+        public struct BufferLengthData : IComponentData
         {
-            public unsafe struct BitLinesData : IComponentData
-            {
-                public uint* p;
-
-                public void Alloc(GridFillMode fillMode)
-                {
-                    this.Dispose();
-                    p = (uint*)DotGrid.Allocater<DotGrid16x16x16>.Alloc(fillMode);
-                }
-                public void Dispose()
-                {
-                    if (p == null) return;
-                    p = (uint*)DotGrid.Allocater<DotGrid16x16x16>.Dispose(p);
-                }
-            }
+            public uint BitLineBufferLength;
         }
         public struct AmountData : IComponentData
         {
             public uint BitCount;
-            public uint BitLineBufferSize;
         }
 
         public struct ParentAreaData : IComponentData

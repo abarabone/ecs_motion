@@ -20,7 +20,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
     public class MarchingCubesBitGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
-        public DotGridType GridType = DotGridType.DotGrid32x32x32;
+        public BitGridType GridType = BitGridType.Grid32x32x32;
 
 
 
@@ -32,13 +32,15 @@ namespace DotsLite.MarchingCubes.another.Authoring
             return;
 
 
-            static void createDotGrid_(GameObjectConversionSystem gcs, Entity ent, DotGridType gridtype)
+            static void createDotGrid_(GameObjectConversionSystem gcs, Entity ent, BitGridType gridtype)
             {
                 var em = gcs.DstEntityManager;
 
                 var types = new List<ComponentType>()
                 {
                     typeof(BitGrid.GridTypeData),
+                    typeof(BitGrid.BitLinesData),
+                    typeof(BitGrid.BufferLengthData),
                     typeof(BitGrid.AmountData),
                     typeof(BitGrid.LocationInAreaData),
                     typeof(BitGrid.UpdateDirtyRangeData),
@@ -49,12 +51,6 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
                 };
-                types.Add(gridtype switch
-                {
-                    DotGridType.DotGrid32x32x32 => typeof(BitGrid._32x32x32.BitLinesData),
-                    DotGridType.DotGrid16x16x16 => typeof(BitGrid._16x16x16.BitLinesData),
-                    _ => default,
-                });
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
 
@@ -62,15 +58,18 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 {
                     UnitOnEdge = (int)gridtype,
                 });
+                em.SetComponentData(ent, new BitGrid.BufferLengthData
+                {
+                    BitLineBufferLength = gridtype switch
+                    {
+                        BitGridType.Grid16x16x16 => 16 * 16 / (32 / 16),
+                        BitGridType.Grid32x32x32 => 32 * 32 / (32 / 32),
+                        _ => default,
+                    }
+                });
                 em.SetComponentData(ent, new BitGrid.AmountData
                 {
                     BitCount = 0,
-                    BitLineBufferSize = gridtype switch
-                    {
-                        DotGridType.DotGrid16x16x16 => 16 * 16 / (32 / 16),
-                        DotGridType.DotGrid32x32x32 => 32 * 32 / (32 / 32),
-                        _ => default,
-                    }
                 });
                 //em.SetComponentData(ent, new PhysicsCollider
                 //{
@@ -80,8 +79,8 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 {
                     HitType = gridtype switch
                     {
-                        DotGridType.DotGrid32x32x32 => Collision.HitType.marchingCubes32,
-                        DotGridType.DotGrid16x16x16 => Collision.HitType.marchingCubes16,
+                        BitGridType.Grid32x32x32 => Collision.HitType.marchingCubes32,
+                        BitGridType.Grid16x16x16 => Collision.HitType.marchingCubes16,
                         _ => default,
                     },
                     MainEntity = ent,

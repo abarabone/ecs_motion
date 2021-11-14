@@ -29,25 +29,45 @@ namespace DotsLite.MarchingCubes.another
         }
         public unsafe struct GridLinkData : IComponentData
         {
-            public Entity* pGrid3DArray;
+            public Entity* pGrid3dArray;
 
 
             public void Alloc(int3 length)
             {
                 this.Dispose();
                 var size = length.x * length.y * length.z * sizeof(Entity);
-                pGrid3DArray = (Entity*)UnsafeUtility.Malloc(size, 8, Allocator.Persistent);
+                pGrid3dArray = (Entity*)UnsafeUtility.Malloc(size, 8, Allocator.Persistent);
+                UnsafeUtility.MemClear(this.pGrid3dArray, size);
             }
             public void Dispose()
             {
-                if (pGrid3DArray == null) return;
+                if (pGrid3dArray == null) return;
                 Debug.Log("area grid link dispose");
-                this.pGrid3DArray = (Entity*)UnsafeUtilityEx.Free(this.pGrid3DArray, Allocator.Persistent);
+                this.pGrid3dArray = (Entity*)UnsafeUtilityEx.Free(this.pGrid3dArray, Allocator.Persistent);
             }
         }
-        public struct a : IComponentData
+        public unsafe struct GridInstructionIdData : IComponentData
         {
+            public int* pId3dArray;
 
+
+            public void Alloc(int3 length)
+            {
+                this.Dispose();
+                var size = length.x * length.y * length.z * sizeof(int);
+                pId3dArray = (int*)UnsafeUtility.Malloc(size, 4, Allocator.Persistent);
+                UnsafeUtility.MemSet(this.pId3dArray, 0xff, size);
+            }
+            public void Dispose()
+            {
+                if (pId3dArray == null) return;
+                Debug.Log("area grid link dispose");
+                this.pId3dArray = (int*)UnsafeUtilityEx.Free(this.pId3dArray, Allocator.Persistent);
+            }
+        }
+        public struct GridInstructionIdSeedData : IComponentData
+        {
+            public int Seed;
         }
 
         public struct DrawModelLinkData : IComponentData

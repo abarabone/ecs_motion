@@ -59,6 +59,8 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     typeof(BitGridArea.UnitDimensionData),
                     typeof(BitGridArea.InfoData),
                     typeof(BitGridArea.InfoWorkData),
+                    typeof(BitGridArea.GridInstructionIdData),
+                    typeof(BitGridArea.GridInstructionIdSeedData),
                     typeof(Rotation),
                     typeof(Translation),
                     typeof(BitGridArea.DrawModelLinkData),
@@ -76,8 +78,6 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 {
                     UnitOnEdge = (int)this.GridPrefab.GridType,
                 });
-
-                em.SetComponentData(ent, new BitGridArea.GridLinkData { });
 
                 var unitScale = (float3)(1.0 / ((double3)this.UnitScale));
                 var gridScale = (float3)(1.0 / ((double3)this.UnitScale * 32));
