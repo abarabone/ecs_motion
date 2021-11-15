@@ -63,7 +63,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     typeof(BitGridArea.GridInstructionIdSeedData),
                     typeof(Rotation),
                     typeof(Translation),
-                    typeof(BitGridArea.DrawModelLinkData),
+                    //typeof(BitGridArea.DrawModelLinkData),
                     //typeof(BitGridArea.PoolLinkData),
                     typeof(BitGridArea.BitGridPrefabData),
                     typeof(BitGridArea.InitializeData)
@@ -109,10 +109,10 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     Value = this.transform.position,
                 });
 
-                em.SetComponentData(ent, new BitGridArea.DrawModelLinkData
-                {
-                    DrawModelEntity = gcs.GetPrimaryEntity(this.transform.parent)
-                });
+                //em.SetComponentData(ent, new BitGridArea.DrawModelLinkData
+                //{
+                //    DrawModelEntity = gcs.GetPrimaryEntity(this.transform.parent)
+                //});
                 //em.SetComponentData(ent, new BitGridArea.PoolLinkData
                 //{
                 //    PoolEntity = gcs.GetPrimaryEntity(this.GridStocker)
@@ -121,6 +121,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 {
                     Prefab = gcs.GetPrimaryEntity(this.GridPrefab),
                     PoolEntity = gcs.GetPrimaryEntity(this.GridStocker),
+                    DrawModelEntity = gcs.GetPrimaryEntity(this.transform.parent),
                     BitLineBufferLength = this.GridPrefab.GridType switch
                     {
                         BitGridType.Grid16x16x16 => 16 * 16 / (32 / 16),

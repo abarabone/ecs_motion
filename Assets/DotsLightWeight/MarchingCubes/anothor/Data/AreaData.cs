@@ -70,10 +70,10 @@ namespace DotsLite.MarchingCubes.another
             public int NextId;
         }
 
-        public struct DrawModelLinkData : IComponentData
-        {
-            public Entity DrawModelEntity;
-        }
+        //public struct DrawModelLinkData : IComponentData
+        //{
+        //    public Entity DrawModelEntity;
+        //}
         //public struct PoolLinkData : IComponentData
         //{
         //    public Entity PoolEntity;
@@ -93,6 +93,7 @@ namespace DotsLite.MarchingCubes.another
             public Entity Prefab;
             public uint BitLineBufferLength;
             public Entity PoolEntity;
+            public Entity DrawModelEntity;
         }
 
         //public struct InfoData : IComponentData

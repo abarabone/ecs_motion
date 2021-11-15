@@ -35,7 +35,7 @@ namespace DotsLite.MarchingCubes.another
                 .WithStructuralChanges()
                 .WithAll<BitGridArea.InitializeData>()
                 .ForEach((
-                    //Entity entity,
+                    Entity entity,
                     ref BitGridArea.GridInstructionIdData gids,
                     ref BitGridArea.GridLinkData glinks,
                     ref BitGridArea.GridInstructionIdSeedData seed,
@@ -49,7 +49,8 @@ namespace DotsLite.MarchingCubes.another
                     var blen = prefab.BitLineBufferLength;
                     var span = dim.GridSpan.xyz;
                     var basepos = pos.Value;
-                    create_(em, pfab, new int3(0, 0, 0), t, blen, span, ref glinks, ref gids, ref seed, basepos);
+                    var drawmdl = prefab.DrawModelEntity;
+                    create_(em, pfab, new int3(0, 0, 0), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
                     //create_(em, pfab, new int3(1, 0, 0), t, blen, span, ref glinks, ref gids, ref seed, basepos);
                     //create_(em, pfab, new int3(0, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos);
                     //create_(em, pfab, new int3(1, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos);
@@ -63,7 +64,7 @@ namespace DotsLite.MarchingCubes.another
             ref BitGridArea.GridLinkData glinks,
             ref BitGridArea.GridInstructionIdData gids,
             ref BitGridArea.GridInstructionIdSeedData seed,
-            float3 basepos)
+            float3 basepos, Entity parent, Entity drawModel)
         {
             var index = new BitGrid.Tools.IndexInArea(i, span);
 
@@ -93,23 +94,23 @@ namespace DotsLite.MarchingCubes.another
             {
                 Value = pos,
             });
+            em.SetComponentData(newent, new BitGrid.ParentAreaData
+            {
+                ParentAreaEntity = parent,
+            });
+            em.SetComponentData(newent, new DrawInstance.ModelLinkData
+            {
+                DrawModelEntityCurrent = drawModel,
+            });
         }
 
         protected override void OnDestroy()
         {
             this.Entities
                 .WithoutBurst()
-                .ForEach((ref DotGrid.Unit32Data grid) =>
+                .ForEach((ref BitGrid.BitLinesData lines) =>
                 {
-                    grid.Dispose();
-                })
-                .Run();
-
-            this.Entities
-                .WithoutBurst()
-                .ForEach((ref DotGrid.Unit16Data grid) =>
-                {
-                    grid.Dispose();
+                    lines.Dispose();
                 })
                 .Run();
         }

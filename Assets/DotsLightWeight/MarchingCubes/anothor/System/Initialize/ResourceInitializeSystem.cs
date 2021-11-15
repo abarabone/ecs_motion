@@ -69,9 +69,13 @@ namespace DotsLite.MarchingCubes.another
             this.Entities
                 .WithName("GridArea")
                 .WithoutBurst()
-                .ForEach((Entity ent, ref BitGridArea.GridLinkData gridarr, in BitGridArea.InitializeData init) =>
+                .ForEach((Entity ent,
+                    ref BitGridArea.GridLinkData glinks,
+                    ref BitGridArea.GridInstructionIdData gids,
+                    in BitGridArea.InitializeData init) =>
                 {
-                    gridarr.Alloc(init.gridLength);
+                    glinks.Alloc(init.gridLength);
+                    gids.Alloc(init.gridLength);
 
                     cmd.RemoveComponent<BitGridArea.InitializeData>(ent);
                 })

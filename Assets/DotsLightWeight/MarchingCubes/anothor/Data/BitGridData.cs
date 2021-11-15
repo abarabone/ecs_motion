@@ -46,6 +46,7 @@ namespace DotsLite.MarchingCubes.another
             public void Dispose()
             {
                 if (p == null) return;
+                Debug.Log("bit grid dispose");
                 p = Tools.Dispose(p);
             }
         }
