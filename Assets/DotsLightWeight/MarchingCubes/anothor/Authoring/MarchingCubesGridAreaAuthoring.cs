@@ -57,15 +57,15 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     typeof(BitGridArea.GridTypeData),
                     typeof(BitGridArea.GridLinkData),
                     typeof(BitGridArea.UnitDimensionData),
-                    typeof(BitGridArea.InfoData),
-                    typeof(BitGridArea.InfoWorkData),
+                    //typeof(BitGridArea.InfoData),
+                    //typeof(BitGridArea.InfoWorkData),
                     typeof(BitGridArea.GridInstructionIdData),
                     typeof(BitGridArea.GridInstructionIdSeedData),
                     typeof(Rotation),
                     typeof(Translation),
                     typeof(BitGridArea.DrawModelLinkData),
-                    typeof(BitGridArea.PoolLinkData),
-                    typeof(BitGridArea.DotGridPrefabData),
+                    //typeof(BitGridArea.PoolLinkData),
+                    typeof(BitGridArea.BitGridPrefabData),
                     typeof(BitGridArea.InitializeData)
                 });
                 em.AddComponents(ent, types);
@@ -87,16 +87,18 @@ namespace DotsLite.MarchingCubes.another.Authoring
                     LeftTopFrontPosition = extents.As_float4(),// extents にして、tf する必要があるかも
                     GridScaleR = gridScale.As_float4(),
                     UnitScaleR = UnitScale.As_float4(),
+                    GridLength = new int4(this.GridLength, 0),
+                    GridSpan = new int4(1, this.GridLength.x * this.GridLength.z, this.GridLength.x, 0),
                 });
 
-                em.SetComponentData(ent, new BitGridArea.InfoData
-                {
-                    GridLength = this.GridLength,
-                });
-                em.SetComponentData(ent, new BitGridArea.InfoWorkData
-                {
-                    GridSpan = new int3(1, this.GridLength.x * this.GridLength.z, this.GridLength.x),
-                });
+                //em.SetComponentData(ent, new BitGridArea.InfoData
+                //{
+                //    GridLength = this.GridLength,
+                //});
+                //em.SetComponentData(ent, new BitGridArea.InfoWorkData
+                //{
+                //    GridSpan = new int3(1, this.GridLength.x * this.GridLength.z, this.GridLength.x),
+                //});
 
                 em.SetComponentData(ent, new Rotation
                 {
@@ -111,13 +113,20 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 {
                     DrawModelEntity = gcs.GetPrimaryEntity(this.transform.parent)
                 });
-                em.SetComponentData(ent, new BitGridArea.PoolLinkData
+                //em.SetComponentData(ent, new BitGridArea.PoolLinkData
+                //{
+                //    PoolEntity = gcs.GetPrimaryEntity(this.GridStocker)
+                //});
+                em.SetComponentData(ent, new BitGridArea.BitGridPrefabData
                 {
-                    PoolEntity = gcs.GetPrimaryEntity(this.GridStocker)
-                });
-                em.SetComponentData(ent, new BitGridArea.DotGridPrefabData
-                {
-                    Prefab = gcs.GetPrimaryEntity(this.GridPrefab)
+                    Prefab = gcs.GetPrimaryEntity(this.GridPrefab),
+                    PoolEntity = gcs.GetPrimaryEntity(this.GridStocker),
+                    BitLineBufferLength = this.GridPrefab.GridType switch
+                    {
+                        BitGridType.Grid16x16x16 => 16 * 16 / (32 / 16),
+                        BitGridType.Grid32x32x32 => 32 * 32 / (32 / 32),
+                        _ => default,
+                    }
                 });
 
                 em.SetComponentData(ent, new BitGridArea.InitializeData

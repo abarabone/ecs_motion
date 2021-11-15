@@ -67,38 +67,42 @@ namespace DotsLite.MarchingCubes.another
         }
         public struct GridInstructionIdSeedData : IComponentData
         {
-            public int Seed;
+            public int NextId;
         }
 
         public struct DrawModelLinkData : IComponentData
         {
             public Entity DrawModelEntity;
         }
-        public struct PoolLinkData : IComponentData
-        {
-            public Entity PoolEntity;
-        }
+        //public struct PoolLinkData : IComponentData
+        //{
+        //    public Entity PoolEntity;
+        //}
 
         public struct UnitDimensionData : IComponentData
         {
             public float4 LeftTopFrontPosition;
             public float4 GridScaleR;
             public float4 UnitScaleR;
+            public int4 GridSpan;
+            public int4 GridLength;
         }
 
-        public struct DotGridPrefabData : IComponentData
+        public struct BitGridPrefabData : IComponentData
         {
             public Entity Prefab;
+            public uint BitLineBufferLength;
+            public Entity PoolEntity;
         }
 
-        public struct InfoData : IComponentData
-        {
-            public int3 GridLength;
-        }
-        public struct InfoWorkData : IComponentData
-        {
-            public int3 GridSpan;
-        }
+        //public struct InfoData : IComponentData
+        //{
+        //    public int3 GridLength;
+        //}
+        //public struct InfoWorkData : IComponentData
+        //{
+        //    public int3 GridSpan;
+        //}
 
 
         public struct InitializeData : IComponentData

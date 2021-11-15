@@ -31,40 +31,60 @@ namespace DotsLite.MarchingCubes.another
 
     public static partial class BitGrid
     {
-        static public unsafe uint* Alloc(uint bufferLength, GridFillMode fillMode)
+        public static partial class Tools
         {
-            ;
-            const int align = 32;
-
-            var p = UnsafeUtility.Malloc(bufferLength * sizeof(uint), align, Allocator.Persistent);
-
-            return Fill((uint*)p, bufferLength, fillMode);
-        }
-
-        static public unsafe uint* Fill(uint* p, uint bufferLength, GridFillMode fillMode)
-        {
-            switch (fillMode)
+            static public unsafe uint* Alloc(uint bufferLength, GridFillMode fillMode)
             {
-                case GridFillMode.Solid:
-                    {
-                        UnsafeUtility.MemSet(p, 0xff, bufferLength * sizeof(uint));
-                        return p;
-                    }
-                case GridFillMode.Blank:
-                    {
-                        UnsafeUtility.MemClear(p, bufferLength * sizeof(uint));
-                        return p;
-                    }
-                default:
-                    return p;
+                ;
+                const int align = 32;
+
+                var p = UnsafeUtility.Malloc(bufferLength * sizeof(uint), align, Allocator.Persistent);
+
+                return Fill((uint*)p, bufferLength, fillMode);
             }
-        }
+
+            static public unsafe uint* Fill(uint* p, uint bufferLength, GridFillMode fillMode)
+            {
+                switch (fillMode)
+                {
+                    case GridFillMode.Solid:
+                        {
+                            UnsafeUtility.MemSet(p, 0xff, bufferLength * sizeof(uint));
+                            return p;
+                        }
+                    case GridFillMode.Blank:
+                        {
+                            UnsafeUtility.MemClear(p, bufferLength * sizeof(uint));
+                            return p;
+                        }
+                    default:
+                        return p;
+                }
+            }
 
 
-        static public unsafe uint* Dispose(uint* p)
-        {
-            UnsafeUtility.Free(p, Allocator.Persistent);
-            return null;
+            static public unsafe uint* Dispose(uint* p)
+            {
+                UnsafeUtility.Free(p, Allocator.Persistent);
+                return null;
+            }
+
+
+            public struct IndexInArea
+            {
+                public int4 value;
+
+                public int3 index => value.xyz;
+                public int serial => value.w;
+
+                public IndexInArea(int3 index, int3 span)
+                {
+                    var serial = math.dot(index, span);
+                    this.value = new int4(index, serial);
+                }
+                public IndexInArea Create(int3 offset, int3 span) =>
+                    new IndexInArea(this.index + offset, span);
+            }
         }
     }
 

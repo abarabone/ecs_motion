@@ -22,7 +22,7 @@ namespace DotsLite.MarchingCubes.another
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(DotGridLinksInitializeSystem))]
     [UpdateAfter(typeof(Gpu.MarchingCubesShaderResourceInitializeSystem))]
-    public class DotGridInstantiateSystem : SystemBase
+    public class BitGridInstantiateSystem : SystemBase
     {
 
         protected override unsafe void OnUpdate()
@@ -33,53 +33,53 @@ namespace DotsLite.MarchingCubes.another
                 .WithName("GridArea")
                 .WithoutBurst()
                 .WithStructuralChanges()
-                .WithAll<DotGridArea.InitializeData>()
+                .WithAll<BitGridArea.InitializeData>()
                 .ForEach((
-                    Entity entity,
+                    //Entity entity,
                     ref BitGridArea.GridInstructionIdData gids,
                     ref BitGridArea.GridLinkData glinks,
                     ref BitGridArea.GridInstructionIdSeedData seed,
                     in BitGridArea.GridTypeData type,
+                    in BitGridArea.UnitDimensionData dim,
                     in Translation pos,
-                    in BitGridArea.DotGridPrefabData prefab,
-                    in BitGridArea.InitializeData init) =>
+                    in BitGridArea.BitGridPrefabData prefab) =>
                 {
-                    var i = new int3(0, 0, 0);
-                    create_(prefab.Prefab, new int3(0, 0, 0), ref grids, pos, em);
-                    create_(prefab.Prefab, new int3(1, 0, 0), ref grids, pos, em);
-                    //create_(prefab.Prefab, new int3(0, 0, 1), ref grids);
-                    //create_(prefab.Prefab, new int3(1, 0, 1), ref grids);
+                    var pfab = prefab.Prefab;
+                    var t = type.UnitOnEdge;
+                    var blen = prefab.BitLineBufferLength;
+                    var span = dim.GridSpan.xyz;
+                    var basepos = pos.Value;
+                    create_(em, pfab, new int3(0, 0, 0), t, blen, span, ref glinks, ref gids, ref seed, basepos);
+                    //create_(em, pfab, new int3(1, 0, 0), t, blen, span, ref glinks, ref gids, ref seed, basepos);
+                    //create_(em, pfab, new int3(0, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos);
+                    //create_(em, pfab, new int3(1, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos);
                 })
                 .Run();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        unsafe void create_(EntityManager em, Entity prefab, int3 i, uint bufferLength,
+        static unsafe void create_(EntityManager em, Entity prefab, int3 i,
+            int unitOnEdge, uint bufferLength, int3 span,
             ref BitGridArea.GridLinkData glinks,
             ref BitGridArea.GridInstructionIdData gids,
             ref BitGridArea.GridInstructionIdSeedData seed,
-            Translation basepos)
+            float3 basepos)
         {
-            var index = new DotGrid.GridIndex().Set(i, grids.GridSpan);
+            var index = new BitGrid.Tools.IndexInArea(i, span);
 
             var newent = em.Instantiate(prefab);
-            var grid = (GridFillMode.Blank);
 
-            grids.pGridPoolIds[index.serial] = grids.nextSeed++;
-            grids.ppGridXLines[index.serial] = grid.pXline;
+            gids.pId3dArray[index.serial] = seed.NextId++;
+            glinks.pGrid3dArray[index.serial] = newent;
 
-            var u = grid.UnitOnEdge;
+            var u = unitOnEdge;
             var hf = u >> 1;
-            var pos = basepos.Value + (i * u + new int3(hf, -hf, -hf));
+            var pos = basepos + (i * u + new int3(hf, -hf, -hf));
 
-            em.SetComponentData(newent, new BitGrid.BitLinesData().Alloc()
+            em.SetComponentData(newent, new BitGrid.BitLinesData().Alloc(bufferLength, GridFillMode.Blank));
+            em.SetComponentData(newent, new BitGrid.LocationInAreaData
             {
-                Unit = grid,
-            });
-            em.SetComponentData(newent, new DotGrid.IndexData
-            {
-                GridIndexInArea = index,
-                scale = 1.0f,
+                IndexInArea = index,
             });
             em.SetComponentData(newent, new DrawInstance.WorldBbox
             {

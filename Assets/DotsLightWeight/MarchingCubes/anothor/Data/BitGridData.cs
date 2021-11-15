@@ -37,21 +37,22 @@ namespace DotsLite.MarchingCubes.another
         {
             public uint* p;
 
-            public void Alloc(uint bufferLength, GridFillMode fillMode)
+            public BitLinesData Alloc(uint bufferLength, GridFillMode fillMode)
             {
                 this.Dispose();
-                p = BitGrid.Alloc(bufferLength, fillMode);
+                p = Tools.Alloc(bufferLength, fillMode);
+                return this;
             }
             public void Dispose()
             {
                 if (p == null) return;
-                p = BitGrid.Dispose(p);
+                p = Tools.Dispose(p);
             }
         }
-        public struct BufferLengthData : IComponentData
-        {
-            public uint BitLineBufferLength;
-        }
+        //public struct BufferLengthData : IComponentData
+        //{
+        //    public uint BitLineBufferLength;
+        //}
         public struct AmountData : IComponentData
         {
             public uint BitCount;
@@ -63,24 +64,7 @@ namespace DotsLite.MarchingCubes.another
         }
         public struct LocationInAreaData : IComponentData
         {
-            public Index IndexInArea;
-            
-            public struct Index
-            {
-                public int4 value;
-
-                public int3 index => value.xyz;
-                public int serial => value.w;
-
-                public Index Set(int3 index, int3 span)
-                {
-                    var serial = math.dot(index, span);
-                    this.value = new int4(index, serial);
-                    return this;
-                }
-                public Index CloneNear(int3 offset, int3 span) =>
-                    new Index().Set(this.index + offset, span);
-            }
+            public Tools.IndexInArea IndexInArea;
         }
 
 
@@ -89,6 +73,7 @@ namespace DotsLite.MarchingCubes.another
             public uint begin;
             public uint end;
         }
+
     }
 
 }

@@ -40,7 +40,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 {
                     typeof(BitGrid.GridTypeData),
                     typeof(BitGrid.BitLinesData),
-                    typeof(BitGrid.BufferLengthData),
+                    //typeof(BitGrid.BufferLengthData),
                     typeof(BitGrid.AmountData),
                     typeof(BitGrid.LocationInAreaData),
                     typeof(BitGrid.UpdateDirtyRangeData),
@@ -58,15 +58,15 @@ namespace DotsLite.MarchingCubes.another.Authoring
                 {
                     UnitOnEdge = (int)gridtype,
                 });
-                em.SetComponentData(ent, new BitGrid.BufferLengthData
-                {
-                    BitLineBufferLength = gridtype switch
-                    {
-                        BitGridType.Grid16x16x16 => 16 * 16 / (32 / 16),
-                        BitGridType.Grid32x32x32 => 32 * 32 / (32 / 32),
-                        _ => default,
-                    }
-                });
+                //em.SetComponentData(ent, new BitGrid.BufferLengthData
+                //{
+                //    BitLineBufferLength = gridtype switch
+                //    {
+                //        BitGridType.Grid16x16x16 => 16 * 16 / (32 / 16),
+                //        BitGridType.Grid32x32x32 => 32 * 32 / (32 / 32),
+                //        _ => default,
+                //    }
+                //});
                 em.SetComponentData(ent, new BitGrid.AmountData
                 {
                     BitCount = 0,
