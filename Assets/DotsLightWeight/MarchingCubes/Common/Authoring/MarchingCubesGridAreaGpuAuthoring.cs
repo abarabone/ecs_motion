@@ -14,8 +14,7 @@ namespace DotsLite.MarchingCubes.Authoring
 {
     using DotsLite.Draw;
     using DotsLite.Model;
-    using DotsLite.MarchingCubes;
-    using DotsLite.MarchingCubes.Authoring;
+    using DotsLite.MarchingCubes.another.Data;
     using DotsLite.Draw.Authoring;
     using DotsLite.Utilities;
 

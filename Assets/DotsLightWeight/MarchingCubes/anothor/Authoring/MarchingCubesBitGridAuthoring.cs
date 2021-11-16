@@ -15,7 +15,7 @@ namespace DotsLite.MarchingCubes.another.Authoring
 {
     using DotsLite.Draw;
     using DotsLite.Model;
-    using DotsLite.MarchingCubes.another;
+    using DotsLite.MarchingCubes.another.Data;
 
     public class MarchingCubesBitGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {

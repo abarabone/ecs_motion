@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 namespace DotsLite.MarchingCubes.another
 {
     using DotsLite.Dependency;
+    using DotsLite.MarchingCubes.another.Data;
 
 
     //[DisableAutoCreation]

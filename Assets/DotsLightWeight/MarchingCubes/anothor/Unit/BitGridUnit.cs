@@ -11,7 +11,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using System;
 
-namespace DotsLite.MarchingCubes.another
+namespace DotsLite.MarchingCubes.another.Data
 {
 
     public enum BitGridType
