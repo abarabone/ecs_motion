@@ -75,7 +75,7 @@ namespace DotsLite.Draw
                     var pent = parent.ParentAreaEntity;
                     var ids = pickupNeargridIds_(gridAreas[pent], gridDims[pent].GridSpan.xyz, index.IndexInArea);
                     pModel[i + 0] = math.asfloat(ids.lPack4);
-                    pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
+                    pModel[i + 1] = math.asfloat(ids.rPack4); Debug.Log($"{ids.lPack4} {ids.rPack4}");
 
                     var u = unit.UnitOnEdge >> 1;
                     pModel[i + 2] = new float4(pos.Value - new float3(u, -u, -u), 1.0f);

@@ -51,9 +51,9 @@ namespace DotsLite.MarchingCubes.another
                     var basepos = pos.Value;
                     var drawmdl = prefab.DrawModelEntity;
                     create_(em, pfab, new int3(0, 0, 0), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
-                    //create_(em, pfab, new int3(1, 0, 0), t, blen, span, ref glinks, ref gids, ref seed, basepos);
-                    //create_(em, pfab, new int3(0, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos);
-                    //create_(em, pfab, new int3(1, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos);
+                    create_(em, pfab, new int3(1, 0, 0), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
+                    create_(em, pfab, new int3(0, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
+                    create_(em, pfab, new int3(1, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
                 })
                 .Run();
         }
