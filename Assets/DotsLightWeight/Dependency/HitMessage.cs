@@ -39,12 +39,10 @@ namespace DotsLite.Dependency
             [NativeDisableContainerSafetyRestriction]
             NativeHashSet<Entity>.ParallelWriter uk;
 
-            public ParallelWriter
-                (
-                    ref NativeList<Entity> nl,
-                    ref NativeMultiHashMap<Entity, THitMessage> hm,
-                    ref NativeHashSet<Entity> uk
-                )
+            public ParallelWriter(
+                ref NativeList<Entity> nl,
+                ref NativeMultiHashMap<Entity, THitMessage> hm,
+                ref NativeHashSet<Entity> uk)
             {
                 this.nl = nl.AsParallelWriter();
                 this.hm = hm.AsParallelWriter();
