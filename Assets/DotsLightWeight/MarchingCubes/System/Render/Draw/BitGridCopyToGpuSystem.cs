@@ -14,6 +14,7 @@ namespace DotsLite.MarchingCubes
 {
     using DotsLite.Dependency;
     using DotsLite.Utilities;
+    using DotsLite.MarchingCubes.Data;
 
 
     //[DisableAutoCreation]
@@ -54,7 +55,8 @@ namespace DotsLite.MarchingCubes
             this.Reciever.CompleteAllDependentJobs(this.Dependency);
 
 
-            //var areas = this.GetComponentDataFromEntity<BitGridArea.LinkToGridData>(isReadOnly: true);
+            var areas = this.GetComponentDataFromEntity<BitGridArea.GridLinkData>(isReadOnly: true);
+            //var drawmodels = this.GetComponentDataFromEntity<CubeDrawModel.MakeCubesShaderResourceData>(isReadOnly: true);
             var em = this.EntityManager;
 
             this.Job
@@ -63,40 +65,60 @@ namespace DotsLite.MarchingCubes
                 {
                     foreach (var ent in this.MessageSystem.Reciever.Holder.TargetEntities)
                     {
-                        ////var grid = grids[ent];
-                        ////var dirty = dirties[ent];
-                        ////var parent = parents[ent];
-                        //var index = em.GetComponentData<BitGrid.IndexData>(ent);
-                        //var dirty = em.GetComponentData<BitGrid.UpdateDirtyRangeData>(ent);
-                        //var parent = em.GetComponentData<BitGrid.ParentAreaData>(ent);
-                        //var gridtype = em.GetComponentData<BitGrid.GridTypeData>(ent);
+                        //var grid = grids[ent];
+                        //var dirty = dirties[ent];
+                        //var parent = parents[ent];
+                        var locate = em.GetComponentData<BitGrid.LocationInAreaData>(ent);
+                        var dirty = em.GetComponentData<BitGrid.UpdateDirtyRangeData>(ent);
+                        var parent = em.GetComponentData<BitGrid.ParentAreaData>(ent);
+                        var gridtype = em.GetComponentData<BitGrid.GridTypeData>(ent);
 
-                        ////var p = grid.Unit.pXline;
-                        //var res = em.GetComponentData<BitGridArea.ResourceGpuModeData>(parent.ParentArea);
+                        //var p = grid.Unit.pXline;
+                        var res = em.GetComponentData<CubeDrawModel.MakeCubesShaderResourceData>(parent.);
 
-                        //var area = areas[parent.ParentArea];
-                        
-                        //switch (gridtype.UnitOnEdge)
-                        //{
-                        //    case 32:
-                        //    {
-                        //        var grid = em.GetComponentData<BitGrid.Unit32Data>(ent);
-                        //        grid.Unit.Copy(in index, in dirty, in area, in res);
-                        //    }
-                        //    break;
+                        var area = areas[parent.ParentArea];
 
-                        //    case 16:
-                        //    {
-                        //        var grid = em.GetComponentData<BitGrid.Unit16Data>(ent);
-                        //        grid.Unit.Copy(in index, in dirty, in area, in res);
-                        //    }
-                        //    break;
-                        //}
+                        switch (gridtype.UnitOnEdge)
+                        {
+                            case 32:
+                                {
+                                    var grid = em.GetComponentData<BitGrid.Unit32Data>(ent);
+                                    grid.Unit.Copy(in locate, in dirty, in area, in res);
+                                }
+                                break;
+
+                            case 16:
+                                {
+                                    var grid = em.GetComponentData<BitGrid.Unit16Data>(ent);
+                                    grid.Unit.Copy(in locate, in dirty, in area, in res);
+                                }
+                                break;
+                        }
                     }
                 })
                 .Run();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static void Copy(
+            in BitGrid.BitLinesData grid,
+            in BitGrid.LocationInAreaData locate,
+            in BitGrid.UpdateDirtyRangeData dirty,
+            in BitGridArea.GridInstructionIdData gids,
+            in CubeDrawModel.MakeCubesShaderResourceData res)
+        {
+            var p = grid.p;
+
+            var igrid = locate.IndexInArea.serial;
+            var igarr = gids.p[igrid] * grid.XLineBufferLength;
+
+            var garr = NativeUtility.PtrToNativeArray(p, grid.XLineBufferLength);
+            var srcstart = (int)dirty.begin;
+            var dststart = igarr + (int)dirty.begin;
+            var count = (int)dirty.end - (int)dirty.begin + 1;
+            res.BitLinesPerGrid.Buffer.SetData(garr, srcstart, dststart, count);
+            //Debug.Log($"{index.GridIndexInArea.index}:{index.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
+        }
     }
 
     //static class Extension
