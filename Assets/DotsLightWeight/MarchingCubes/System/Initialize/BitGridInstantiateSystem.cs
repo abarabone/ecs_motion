@@ -16,6 +16,7 @@ namespace DotsLite.MarchingCubes
 {
     using DotsLite.MarchingCubes.Data;
     using DotsLite.Draw;
+    using DotsLite.Dependency;
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
@@ -112,4 +113,51 @@ namespace DotsLite.MarchingCubes
                 .Run();
         }
     }
+
+    // テストのためとりあえずグリッドを追加する
+    //[DisableAutoCreation]
+    //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateAfter(typeof(BitGridInstantiateSystem))]
+    public class BitGridAddSystem : DependencyAccessableSystemBase
+    {
+
+        HitMessage<UpdateMessage>.Sender mcSender;
+
+        //BarrierDependency.Sender bardep;
+
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            //this.bardep = BarrierDependency.Sender.Create<DotGridUpdateSystem>(this);
+            //this.bardep = BarrierDependency.Sender.Create<DotGridMessageFreeSystem>(this);
+
+            this.mcSender = HitMessage<UpdateMessage>.Sender.Create<BitGridMessageAllocSystem>(this);
+        }
+
+        protected override void OnUpdate()
+        {
+            //using var barscope = this.bardep.WithDependencyScope();
+
+            using var mcScope = this.mcSender.WithDependencyScope();
+            var w = mcScope.MessagerAsParallelWriter;
+
+            this.Entities
+                .WithAll<BitGrid.BitLinesData>()
+                .ForEach((
+                    Entity entity) =>
+                {
+                    w.Add(entity, new UpdateMessage
+                    {
+                        type = BitGridUpdateType.cube_force32,
+                    });
+                })
+                .ScheduleParallel();
+
+            this.Enabled = false;
+        }
+    }
+
 }
