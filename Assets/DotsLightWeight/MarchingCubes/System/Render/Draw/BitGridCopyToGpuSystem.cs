@@ -65,60 +65,42 @@ namespace DotsLite.MarchingCubes
                 {
                     foreach (var ent in this.MessageSystem.Reciever.Holder.TargetEntities)
                     {
-                        //var grid = grids[ent];
-                        //var dirty = dirties[ent];
-                        //var parent = parents[ent];
                         var locate = em.GetComponentData<BitGrid.LocationInAreaData>(ent);
                         var dirty = em.GetComponentData<BitGrid.UpdateDirtyRangeData>(ent);
                         var parent = em.GetComponentData<BitGrid.ParentAreaData>(ent);
                         var gridtype = em.GetComponentData<BitGrid.GridTypeData>(ent);
 
-                        //var p = grid.Unit.pXline;
-                        //var res = em.GetComponentData<CubeDrawModel.MakeCubesShaderResourceData>(parent.);
-
-                        //var area = areas[parent.ParentArea];
-
-                        //switch (gridtype.UnitOnEdge)
-                        //{
-                        //    case 32:
-                        //        {
-                        //            var grid = em.GetComponentData<BitGrid.Unit32Data>(ent);
-                        //            grid.Unit.Copy(in locate, in dirty, in area, in res);
-                        //        }
-                        //        break;
-
-                        //    case 16:
-                        //        {
-                        //            var grid = em.GetComponentData<BitGrid.Unit16Data>(ent);
-                        //            grid.Unit.Copy(in locate, in dirty, in area, in res);
-                        //        }
-                        //        break;
-                        //}
+                        var drawres = em.GetComponentData<CubeDrawModel.MakeCubesShaderResourceData>(ent);//
+                        var gids = em.GetComponentData<BitGridArea.GridInstructionIdData>(parent.ParentAreaEntity);
+                        
+                        var grid = em.GetComponentData<BitGrid.BitLinesData>(ent);
+                        Copy(in grid, in locate, in dirty, in gids, in drawres);
                     }
                 })
                 .Run();
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public unsafe static void Copy(
-        //    in BitGrid.BitLinesData grid,
-        //    in BitGrid.LocationInAreaData locate,
-        //    in BitGrid.UpdateDirtyRangeData dirty,
-        //    in BitGridArea.GridInstructionIdData gids,
-        //    in CubeDrawModel.MakeCubesShaderResourceData res)
-        //{
-        //    var p = grid.p;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static void Copy(
+            in BitGrid.BitLinesData grid,
+            in BitGrid.LocationInAreaData locate,
+            in BitGrid.UpdateDirtyRangeData dirty,
+            in BitGridArea.GridInstructionIdData gids,
+            in CubeDrawModel.MakeCubesShaderResourceData res)
 
-        //    var igrid = locate.IndexInArea.serial;
-        //    var igarr = gids.p[igrid] * grid.XLineBufferLength;
+        {
+            var p = grid.p;
 
-        //    var garr = NativeUtility.PtrToNativeArray(p, grid.XLineBufferLength);
-        //    var srcstart = (int)dirty.begin;
-        //    var dststart = igarr + (int)dirty.begin;
-        //    var count = (int)dirty.end - (int)dirty.begin + 1;
-        //    res.BitLinesPerGrid.Buffer.SetData(garr, srcstart, dststart, count);
-        //    //Debug.Log($"{index.GridIndexInArea.index}:{index.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
-        //}
+            var igrid = locate.IndexInArea.serial;
+            var igarr = gids.p[igrid] * grid.XLineBufferLength;
+
+            var garr = NativeUtility.PtrToNativeArray(p, grid.XLineBufferLength);
+            var srcstart = (int)dirty.begin;
+            var dststart = igarr + (int)dirty.begin;
+            var count = (int)dirty.end - (int)dirty.begin + 1;
+            res.BitLinesPerGrid.Buffer.SetData(garr, srcstart, dststart, count);
+            //Debug.Log($"{index.GridIndexInArea.index}:{index.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
+        }
     }
 
     //static class Extension

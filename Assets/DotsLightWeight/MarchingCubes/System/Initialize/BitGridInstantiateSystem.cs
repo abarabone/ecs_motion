@@ -119,6 +119,7 @@ namespace DotsLite.MarchingCubes
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     [UpdateAfter(typeof(BitGridInstantiateSystem))]
+    [UpdateAfter(typeof(BitGridMessageAllocSystem))]
     public class BitGridAddSystem : DependencyAccessableSystemBase
     {
 
