@@ -55,7 +55,7 @@ namespace DotsLite.MarchingCubes
             this.Reciever.CompleteAllDependentJobs(this.Dependency);
 
 
-            var areas = this.GetComponentDataFromEntity<BitGridArea.GridLinkData>(isReadOnly: true);
+            //var areas = this.GetComponentDataFromEntity<BitGridArea.GridLinkData>(isReadOnly: true);
             //var drawmodels = this.GetComponentDataFromEntity<CubeDrawModel.MakeCubesShaderResourceData>(isReadOnly: true);
             var em = this.EntityManager;
 
@@ -65,16 +65,17 @@ namespace DotsLite.MarchingCubes
                 {
                     foreach (var ent in this.MessageSystem.Reciever.Holder.TargetEntities)
                     {
-                        //var locate = em.GetComponentData<BitGrid.LocationInAreaData>(ent);
-                        //var dirty = em.GetComponentData<BitGrid.UpdateDirtyRangeData>(ent);
-                        //var parent = em.GetComponentData<BitGrid.ParentAreaData>(ent);
-                        //var gridtype = em.GetComponentData<BitGrid.GridTypeData>(ent);
+                        var locate = em.GetComponentData<BitGrid.LocationInAreaData>(ent);
+                        var dirty = em.GetComponentData<BitGrid.UpdateDirtyRangeData>(ent);
+                        var parent = em.GetComponentData<BitGrid.ParentAreaData>(ent);
+                        var gridtype = em.GetComponentData<BitGrid.GridTypeData>(ent);
+                        var drawlink = em.GetComponentData<Draw.DrawInstance.ModelLinkData>(ent);
 
-                        //var drawres = em.GetComponentData<CubeDrawModel.MakeCubesShaderResourceData>(ent);//
-                        //var gids = em.GetComponentData<BitGridArea.GridInstructionIdData>(parent.ParentAreaEntity);
-                        
-                        //var grid = em.GetComponentData<BitGrid.BitLinesData>(ent);
-                        //Copy(in grid, in locate, in dirty, in gids, in drawres);
+                        var drawres = em.GetComponentData<CubeDrawModel.MakeCubesShaderResourceData>(drawlink.DrawModelEntityCurrent);//
+                        var gids = em.GetComponentData<BitGridArea.GridInstructionIdData>(parent.ParentAreaEntity);
+
+                        var grid = em.GetComponentData<BitGrid.BitLinesData>(ent);
+                        Copy(in grid, in locate, in dirty, in gids, in drawres);
                     }
                 })
                 .Run();
@@ -89,15 +90,15 @@ namespace DotsLite.MarchingCubes
             in CubeDrawModel.MakeCubesShaderResourceData res)
 
         {
-            //var igrid = locate.IndexInArea.serial;
-            //var igarr = gids.p[igrid] * grid.XLineBufferLength;
+            var igrid = locate.IndexInArea.serial;
+            var igarr = gids.pId3dArray[igrid];
 
-            //var garr = NativeUtility.PtrToNativeArray(p, grid.XLineBufferLength);
-            //var srcstart = (int)dirty.begin;
-            //var dststart = igarr + (int)dirty.begin;
-            //var count = (int)dirty.end - (int)dirty.begin + 1;
-            //res.BitLinesPerGrid.Buffer.SetData(garr, srcstart, dststart, count);
-            ////Debug.Log($"{index.GridIndexInArea.index}:{index.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
+            var garr = NativeUtility.PtrToNativeArray(p, grid.XLineBufferLength);
+            var srcstart = (int)dirty.begin;
+            var dststart = igarr + (int)dirty.begin;
+            var count = (int)dirty.end - (int)dirty.begin + 1;
+            res.BitLinesPerGrid.Buffer.SetData(garr, srcstart, dststart, count);
+            //Debug.Log($"{index.GridIndexInArea.index}:{index.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
         }
     }
 
