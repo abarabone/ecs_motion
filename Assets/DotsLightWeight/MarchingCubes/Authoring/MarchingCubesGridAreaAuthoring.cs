@@ -117,17 +117,26 @@ namespace DotsLite.MarchingCubes.Authoring
                 //{
                 //    PoolEntity = gcs.GetPrimaryEntity(this.GridStocker)
                 //});
+                var bitLengthBufferLength = this.GridPrefab.GridType switch
+                {
+                    BitGridType.Grid16x16x16 => 16 * 16 / (32 / 16),
+                    BitGridType.Grid32x32x32 => 32 * 32 / (32 / 32),
+                    _ => default,
+                };
+                var bitBufferOffset = this
+                        .GetComponentInParent<MarchingCubesDrawModelAuthoring>()
+                        .GetComponentsInChildren<MarchingCubesGridAreaAuthoring>()
+                        .TakeWhile(x => x != this)
+                        .Select(x => x.GridLength.x * x.GridLength.y * x.GridLength.z * bitLengthBufferLength)
+                        .Sum();
+                Debug.Log($"{this.name} {bitBufferOffset}");
                 em.SetComponentData(ent, new BitGridArea.BitGridPrefabData
                 {
                     Prefab = gcs.GetPrimaryEntity(this.GridPrefab),
                     PoolEntity = gcs.GetPrimaryEntity(this.GridStocker),
                     DrawModelEntity = gcs.GetPrimaryEntity(this.transform.parent),
-                    BitLineBufferLength = this.GridPrefab.GridType switch
-                    {
-                        BitGridType.Grid16x16x16 => 16 * 16 / (32 / 16),
-                        BitGridType.Grid32x32x32 => 32 * 32 / (32 / 32),
-                        _ => default,
-                    }
+                    BitLineBufferLength = bitLengthBufferLength,
+                    BitLineBufferOffset = bitBufferOffset,
                 });
 
                 em.SetComponentData(ent, new BitGridArea.InitializeData

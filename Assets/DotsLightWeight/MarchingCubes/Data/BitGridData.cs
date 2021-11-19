@@ -37,7 +37,7 @@ namespace DotsLite.MarchingCubes.Data
         {
             public uint* p;
 
-            public BitLinesData Alloc(uint bufferLength, GridFillMode fillMode)
+            public BitLinesData Alloc(int bufferLength, GridFillMode fillMode)
             {
                 this.Dispose();
                 p = Tools.Alloc(bufferLength, fillMode);
@@ -66,7 +66,8 @@ namespace DotsLite.MarchingCubes.Data
         public struct LocationInAreaData : IComponentData
         {
             public Tools.IndexInArea IndexInArea;
-            public int4 span;
+            public int3 span;
+            public int BitBfufferOffset;
         }
 
 

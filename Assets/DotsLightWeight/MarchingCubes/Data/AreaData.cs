@@ -91,7 +91,8 @@ namespace DotsLite.MarchingCubes.Data
         public struct BitGridPrefabData : IComponentData
         {
             public Entity Prefab;
-            public uint BitLineBufferLength;
+            public int BitLineBufferLength;
+            public int BitLineBufferOffset;
             public Entity PoolEntity;
             public Entity DrawModelEntity;
         }

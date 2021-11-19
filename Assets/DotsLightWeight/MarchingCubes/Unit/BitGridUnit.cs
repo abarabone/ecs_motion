@@ -33,7 +33,7 @@ namespace DotsLite.MarchingCubes.Data
     {
         public static partial class Tools
         {
-            static public unsafe uint* Alloc(uint bufferLength, GridFillMode fillMode)
+            static public unsafe uint* Alloc(int bufferLength, GridFillMode fillMode)
             {
                 ;
                 const int align = 32;
@@ -43,7 +43,7 @@ namespace DotsLite.MarchingCubes.Data
                 return Fill((uint*)p, bufferLength, fillMode);
             }
 
-            static public unsafe uint* Fill(uint* p, uint bufferLength, GridFillMode fillMode)
+            static public unsafe uint* Fill(uint* p, int bufferLength, GridFillMode fillMode)
             {
                 switch (fillMode)
                 {
