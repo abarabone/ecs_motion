@@ -39,14 +39,15 @@ namespace DotsLite.MarchingCubes
                     Entity entity,
                     ref BitGridArea.GridInstructionIdData gids,
                     ref BitGridArea.GridLinkData glinks,
-                    ref BitGridArea.GridInstructionIdSeedData seed,
                     in BitGridArea.GridTypeData type,
                     in BitGridArea.UnitDimensionData dim,
                     in Translation pos,
                     in BitGridArea.BitGridPrefabData prefab) =>
                 {
+                    var seed = em.GetComponentData<CubeDrawModel.GridIdSeedData>(prefab.DrawModelEntity);
+
                     create_(em, entity, new int3(0, 0, 0), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
-                    //create_(em, pfab, new int3(1, 0, 0), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
+                    //create_(em, entity, new int3(1, 0, 0), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
                     //create_(em, pfab, new int3(0, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
                     //create_(em, pfab, new int3(1, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
                 })
@@ -57,7 +58,7 @@ namespace DotsLite.MarchingCubes
         static unsafe void create_(EntityManager em, Entity parent, int3 i,
             ref BitGridArea.GridLinkData glinks,
             ref BitGridArea.GridInstructionIdData gids,
-            ref BitGridArea.GridInstructionIdSeedData seed,
+            ref CubeDrawModel.GridIdSeedData seed,
             in BitGridArea.GridTypeData type,
             in BitGridArea.UnitDimensionData dim,
             in BitGridArea.BitGridPrefabData prefab,
@@ -69,6 +70,7 @@ namespace DotsLite.MarchingCubes
 
             gids.pId3dArray[index.serial] = seed.NextId++;
             glinks.pGrid3dArray[index.serial] = newent;
+            Debug.Log($"seed {seed.NextId}");
 
             var u = type.UnitOnEdge;
             var hf = u >> 1;
@@ -78,8 +80,8 @@ namespace DotsLite.MarchingCubes
             em.SetComponentData(newent, new BitGrid.LocationInAreaData
             {
                 IndexInArea = index,
-                span = dim.GridSpan.xyz,
-                BitBfufferOffset = prefab.BitLineBufferOffset + index.serial * prefab.BitLineBufferLength,
+                span = dim.GridSpan,
+                //BitBfufferOffset = prefab.BitLineBufferOffset + index.serial * prefab.BitLineBufferLength,
             });
             em.SetComponentData(newent, new DrawInstance.WorldBbox
             {

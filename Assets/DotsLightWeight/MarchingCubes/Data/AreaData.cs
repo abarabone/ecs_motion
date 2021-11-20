@@ -65,10 +65,6 @@ namespace DotsLite.MarchingCubes.Data
                 this.pId3dArray = (int*)UnsafeUtilityEx.Free(this.pId3dArray, Allocator.Persistent);
             }
         }
-        public struct GridInstructionIdSeedData : IComponentData
-        {
-            public int NextId;
-        }
 
         //public struct DrawModelLinkData : IComponentData
         //{
@@ -92,7 +88,7 @@ namespace DotsLite.MarchingCubes.Data
         {
             public Entity Prefab;
             public int BitLineBufferLength;
-            public int BitLineBufferOffset;
+            //public int BitLineBufferOffset;
             public Entity PoolEntity;
             public Entity DrawModelEntity;
         }

@@ -66,8 +66,8 @@ namespace DotsLite.MarchingCubes.Data
         public struct LocationInAreaData : IComponentData
         {
             public Tools.IndexInArea IndexInArea;
-            public int3 span;
-            public int BitBfufferOffset;
+            public int4 span;
+            //public int BitBfufferOffset;
         }
 
 

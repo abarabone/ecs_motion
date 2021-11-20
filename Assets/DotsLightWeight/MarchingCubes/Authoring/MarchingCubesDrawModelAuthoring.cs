@@ -26,11 +26,12 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public int MaxGridInstructions;
         public int MaxCubeInstances;
+        public int MaxGridBufferLength;// -1 ならフルグリッド
 
         public Texture2D Texture;
         public Shader DrawCubeShader;
         public ComputeShader GridToCubesShader;
-
+        public Material DrawMaterial;
 
 
         public unsafe void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -104,23 +105,29 @@ namespace DotsLite.MarchingCubes.Authoring
                 typeof(CubeDrawModel.GridTypeData),
                 //typeof(DotGridArea.OutputCubesData),
                 typeof(CubeDrawModel.MakeCubesShaderResourceData),
+                typeof(CubeDrawModel.GridIdSeedData),
                 typeof(CubeDrawModel.InitializeData),
             });
             em.AddComponents(ent, types);
 
 
-            var totalGridLength = this.GetComponentsInChildren<MarchingCubesGridAreaAuthoring>()
-                .Select(x => x.GridLength)
-                .Select(x => x.x * x.y * x.z)
-                .Sum();
             em.SetComponentData(ent, new CubeDrawModel.MakeCubesShaderResourceData());
+            em.SetComponentData(ent, new CubeDrawModel.GridIdSeedData());
+
+            var gridLength = this.MaxGridBufferLength > 0
+                ? this.MaxGridBufferLength
+                : this.GetComponentsInChildren<MarchingCubesGridAreaAuthoring>()
+                    .Select(x => x.GridLength)
+                    .Select(x => x.x * x.y * x.z)
+                    .Sum();
             em.SetComponentData(ent, new CubeDrawModel.InitializeData
             {
                 asset = this.MarchingCubesAsset,
                 cubeMakeShader = this.GridToCubesShader,
+                material = this.DrawMaterial,
                 maxCubeInstance = this.MaxCubeInstances,
                 maxGridInstructions = this.MaxGridInstructions,
-                maxGrids = totalGridLength,
+                maxGridBufferLength =  gridLength,
                 unitOnEdge = 32,
             });
         }

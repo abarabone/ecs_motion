@@ -60,7 +60,6 @@ namespace DotsLite.MarchingCubes.Authoring
                     //typeof(BitGridArea.InfoData),
                     //typeof(BitGridArea.InfoWorkData),
                     typeof(BitGridArea.GridInstructionIdData),
-                    typeof(BitGridArea.GridInstructionIdSeedData),
                     typeof(Rotation),
                     typeof(Translation),
                     //typeof(BitGridArea.DrawModelLinkData),
@@ -123,25 +122,26 @@ namespace DotsLite.MarchingCubes.Authoring
                     BitGridType.Grid32x32x32 => 32 * 32 / (32 / 32),
                     _ => default,
                 };
-                var bitBufferOffset = this
-                        .GetComponentInParent<MarchingCubesDrawModelAuthoring>()
-                        .GetComponentsInChildren<MarchingCubesGridAreaAuthoring>()
-                        .TakeWhile(x => x != this)
-                        .Select(x => x.GridLength.x * x.GridLength.y * x.GridLength.z * bitLengthBufferLength)
-                        .Sum();
-                Debug.Log($"{this.name} {bitBufferOffset}");
+                //var bitBufferOffset = this
+                //    .GetComponentInParent<MarchingCubesDrawModelAuthoring>()
+                //    .GetComponentsInChildren<MarchingCubesGridAreaAuthoring>()
+                //    .TakeWhile(x => x != this)
+                //    .Select(x => x.GridLength.x * x.GridLength.y * x.GridLength.z * bitLengthBufferLength)
+                //    .Sum();
+                //Debug.Log($"{this.name} {bitBufferOffset}");
                 em.SetComponentData(ent, new BitGridArea.BitGridPrefabData
                 {
                     Prefab = gcs.GetPrimaryEntity(this.GridPrefab),
                     PoolEntity = gcs.GetPrimaryEntity(this.GridStocker),
                     DrawModelEntity = gcs.GetPrimaryEntity(this.transform.parent),
                     BitLineBufferLength = bitLengthBufferLength,
-                    BitLineBufferOffset = bitBufferOffset,
+                    //BitLineBufferOffset = bitBufferOffset,
                 });
 
                 em.SetComponentData(ent, new BitGridArea.InitializeData
                 {
-                    gridLength = this.GridLength
+                    gridLength = this.GridLength,
+
                 });
             }
 

@@ -31,38 +31,50 @@ namespace DotsLite.MarchingCubes.Data
         {
             public ComputeShader MakeCubesShader;
 
-            public Resource.GridBitLinesDataBuffer BitLinesPerGrid;
+            public Resource.GridBitLinesDataBuffer GridBitLines;
             public Resource.CubeInstancingShaderBuffer CubeInstances;
             
             public Resource.GridCubeIdShaderBufferTexture CubeIds;
+
+            public int XLineLengthPerGrid;
 
 
             public void Alloc(InitializeData init)
             {
                 this.Dispose();
-                this.BitLinesPerGrid = Resource.GridBitLinesDataBuffer.Create(init.maxGrids, init.unitOnEdge);
+                this.GridBitLines = Resource.GridBitLinesDataBuffer.Create(init.maxGridBufferLength, init.unitOnEdge);
                 this.CubeInstances = Resource.CubeInstancingShaderBuffer.Create(init.maxCubeInstance);
+
+                if (!init.useNormal) return;
                 this.CubeIds = Resource.GridCubeIdShaderBufferTexture.Create(init.maxGridInstructions, init.unitOnEdge);
             }
             public void Dispose()
             {
-                if (BitLinesPerGrid.Buffer == null) return;
+                if (GridBitLines.Buffer == null) return;
                 Debug.Log("cube draw model dispose");
 
-                this.BitLinesPerGrid.Dispose();
+                this.GridBitLines.Dispose();
                 this.CubeInstances.Dispose();
                 this.CubeIds.Dispose();
             }
+        }
+        public class GridIdSeedData : IComponentData
+        {
+            public int NextId;
         }
 
         public class InitializeData : IComponentData
         {
             public MarchingCubesAsset asset;
             public ComputeShader cubeMakeShader;
-            public int maxGrids;
+            public Material material;
+
+            public int maxGridBufferLength;
             public int maxCubeInstance;
             public int maxGridInstructions;
             public int unitOnEdge;
+
+            public bool useNormal;
         }
     }
 

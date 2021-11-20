@@ -9,6 +9,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
+using System.Runtime.CompilerServices;
 
 namespace DotsLite.MarchingCubes
 {
@@ -26,58 +27,71 @@ namespace DotsLite.MarchingCubes
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class ResourceInitializeSystem : DependencyAccessableSystemBase
     {
-        CommandBufferDependency.Sender cmddep;
+        //CommandBufferDependency.Sender cmddep;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+            //this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
         }
 
 
         protected unsafe override void OnUpdate()
         {
-            using var cmdScope = this.cmddep.WithDependencyScope();
+            //using var cmdScope = this.cmddep.WithDependencyScope();
 
-            var cmd = cmdScope.CommandBuffer;//.AsParallelWriter();
-                                             //var em = this.EntityManager;
+            //var cmd = cmdScope.CommandBuffer;//.AsParallelWriter();
+            var em = this.EntityManager;
 
             this.Entities
                 .WithName("Common")
                 .WithoutBurst()
+                .WithStructuralChanges()
                 .ForEach((Entity ent, Common.InitializeData init, Common.DrawShaderResourceData res) =>
                 {
                     res.Alloc(init);
 
-                    cmd.RemoveComponent<Common.InitializeData>(ent);
+                    em.RemoveComponent<Common.InitializeData>(ent);
                 })
                 .Run();
 
+            var commonres = this.GetSingleton<Common.DrawShaderResourceData>();
             this.Entities
                 .WithName("CubeDrawModel")
                 .WithoutBurst()
+                .WithStructuralChanges()
                 .ForEach((Entity ent, CubeDrawModel.InitializeData init, CubeDrawModel.MakeCubesShaderResourceData res) =>
                 {
                     res.MakeCubesShader = init.cubeMakeShader;
+                    res.XLineLengthPerGrid = init.unitOnEdge * init.unitOnEdge / (32/init.unitOnEdge);
                     res.Alloc(init);
 
-                    cmd.RemoveComponent<CubeDrawModel.InitializeData>(ent);
+                    var mat = init.material;
+                    var cs = init.cubeMakeShader;
+                    res.SetResourcesTo(mat, cs);
+                    commonres.SetResourcesTo(mat);
+
+                    em.RemoveComponent<CubeDrawModel.InitializeData>(ent);
                 })
                 .Run();
 
             this.Entities
                 .WithName("GridArea")
                 .WithoutBurst()
+                .WithStructuralChanges()
                 .ForEach((Entity ent,
                     ref BitGridArea.GridLinkData glinks,
                     ref BitGridArea.GridInstructionIdData gids,
+                    in BitGridArea.UnitDimensionData dim,
                     in BitGridArea.InitializeData init) =>
                 {
                     glinks.Alloc(init.gridLength);
                     gids.Alloc(init.gridLength);
+                    glinks.initGridLinks(dim, Entity.Null);
+                    gids.initGridInstructionIds(dim);
 
-                    cmd.RemoveComponent<BitGridArea.InitializeData>(ent);
+                    em.RemoveComponent<BitGridArea.InitializeData>(ent);
                 })
                 .Run();
         }
@@ -116,70 +130,66 @@ namespace DotsLite.MarchingCubes
 
     }
 
-    //static class InitUtility
-    //{
-    //    public static void SetInstancingArgumentBuffer(this DrawModel.ComputeArgumentsBufferData shaderArg, Mesh mesh)
-    //    {
-    //        var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
-    //        shaderArg.InstancingArgumentsBuffer.SetData(ref iargparams);
-    //    }
+    static class InitUtility
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetInstancingArgumentBuffer(this DrawModel.ComputeArgumentsBufferData shaderArg, Mesh mesh)
+        {
+            var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
+            shaderArg.InstancingArgumentsBuffer.SetData(ref iargparams);
+        }
 
-    //    public unsafe static void AllocGridAreaBuffers(ref this DotGridArea.LinkToGridData links, uint *pBlank)
-    //    {
-    //        var totalsize = links.GridLength.x * links.GridLength.y * links.GridLength.z;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static void initGridInstructionIds(
+            ref this BitGridArea.GridInstructionIdData ids, in BitGridArea.UnitDimensionData dim)
+        {
+            var totalsize = dim.GridLength.x * dim.GridLength.y * dim.GridLength.z;
 
-    //        var pIds = (int*)UnsafeUtility.Malloc(sizeof(int) * totalsize, 4, Allocator.Persistent);
-    //        for (var i = 0; i < totalsize; i++) pIds[i] = -1;
-    //        links.pGridPoolIds = pIds;
+            for (var i = 0; i < totalsize; i++) ids.pId3dArray[i] = -1;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static void initGridLinks(
+            ref this BitGridArea.GridLinkData links, in BitGridArea.UnitDimensionData dim, Entity blank)
+        {
+            var totalsize = dim.GridLength.x * dim.GridLength.y * dim.GridLength.z;
 
-    //        var ppXLines = (uint**)UnsafeUtility.Malloc(sizeof(uint*) * totalsize, 4, Allocator.Persistent);
-    //        for (var i = 0; i < totalsize; i++) ppXLines[i] = pBlank;
-    //        links.ppGridXLines = ppXLines;
-    //    }
-    //}
+            for (var i = 0; i < totalsize; i++) links.pGrid3dArray[i] = blank;
+        }
 
 
-    //public partial struct CommonShaderResources
-    //{
-    //    public void SetResourcesTo(Material mat)
-    //    {
-    //        // せつめい - - - - - - - - - - - - - - - - -
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetResourcesTo(this Common.DrawShaderResourceData res, Material mat)
+        {
+            // せつめい - - - - - - - - - - - - - - - - -
 
-    //        //uint4 cube_patterns[ 254 ][2];
-    //        // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
-    //        // [1] : vertex normal index { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
+            //uint4 cube_patterns[ 254 ][2];
+            // [0] : vertex posision index { x: tri0(i0>>0 | i1>>8 | i2>>16)  y: tri1  z: tri2  w: tri3 }
+            // [1] : vertex normal index { x: (i0>>0 | i1>>8 | i2>>16 | i3>>24)  y: i4|5|6|7  z:i8|9|10|11 }
 
-    //        //uint4 cube_vtxs[ 12 ];
-    //        // x: near vertex index (x>>0 | y>>8 | z>>16)
-    //        // y: near vertex index offset prev (left >>0 | up  >>8 | front>>16)
-    //        // z: near vertex index offset next (right>>0 | down>>8 | back >>16)
-    //        // w: pos(x>>0 | y>>8 | z>>16)
+            //uint4 cube_vtxs[ 12 ];
+            // x: near vertex index (x>>0 | y>>8 | z>>16)
+            // y: near vertex index offset prev (left >>0 | up  >>8 | front>>16)
+            // z: near vertex index offset next (right>>0 | down>>8 | back >>16)
+            // w: pos(x>>0 | y>>8 | z>>16)
 
-    //        // - - - - - - - - - - - - - - - - - - - - -
+            // - - - - - - - - - - - - - - - - - - - - -
 
-    //        mat.SetConstantBuffer_("static_data", this.CubeGeometryConstants.Buffer);
-    //    }
-    //}
-    //public partial struct WorkingShaderResources
-    //{
-    //    public void SetResourcesTo(Material mat, ComputeShader cs)
-    //    {
-    //        mat.SetTexture("grid_cubeids", this.GridCubeIds.Texture);
+            mat.SetConstantBuffer_("static_data", res.GeometryElementData.Buffer);
+        }
 
-    //        cs?.SetTexture(0, "dst_grid_cubeids", this.GridCubeIds.Texture);
-    //    }
-    //}
-    //public partial struct DotGridAreaGpuResources
-    //{
-    //    public void SetResourcesTo(Material mat, ComputeShader cs)
-    //    {
-    //        cs?.SetBuffer(0, "dotgrids", this.GridDotContentDataBuffer.Buffer);
-    //        cs?.SetBuffer(0, "cube_instances", this.CubeInstances.Buffer);
-    //        //cs?.SetBuffer(0, "grid_instructions", this.GridInstructions.Buffer);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetResourcesTo(this CubeDrawModel.MakeCubesShaderResourceData res, Material mat, ComputeShader cs)
+        {
+            mat.SetTexture("grid_cubeids", res.CubeIds.Texture);
 
-    //        mat.SetBuffer("cube_instances", this.CubeInstances.Buffer);
-    //        //mat.SetBuffer("grid_instructions", this.GridInstructions.Buffer);
-    //        //mat.SetConstantBuffer_("grid_constant", this.GridInstructions.Buffer);
-    //    }
-    //}
+            cs?.SetBuffer(0, "dotgrids", res.GridBitLines.Buffer);
+            cs?.SetBuffer(0, "cube_instances", res.CubeInstances.Buffer);
+
+            mat.SetBuffer("cube_instances", res.CubeInstances.Buffer);
+
+            if (res.CubeIds.Texture == null) return;
+            cs?.SetTexture(0, "dst_grid_cubeids", res.CubeIds.Texture);
+        }
+    }
+
 }

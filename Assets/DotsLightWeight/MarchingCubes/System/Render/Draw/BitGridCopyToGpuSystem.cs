@@ -91,14 +91,15 @@ namespace DotsLite.MarchingCubes
 
         {
             var igrid = locate.IndexInArea.serial;
-            var igarr = gids.pId3dArray[igrid];
+            var dstoffset = gids.pId3dArray[igrid] * res.XLineLengthPerGrid;
+            var p = grid.p;
 
-            var garr = NativeUtility.PtrToNativeArray(p, grid.XLineBufferLength);
+            var garr = NativeUtility.PtrToNativeArray(p, res.XLineLengthPerGrid);
             var srcstart = (int)dirty.begin;
-            var dststart = igarr + (int)dirty.begin;
+            var dststart = dstoffset + (int)dirty.begin;
             var count = (int)dirty.end - (int)dirty.begin + 1;
-            res.BitLinesPerGrid.Buffer.SetData(garr, srcstart, dststart, count);
-            //Debug.Log($"{index.GridIndexInArea.index}:{index.GridIndexInArea.serial} {srcstart}:{dststart}:{count}");
+            res.GridBitLines.Buffer.SetData(garr, srcstart, dststart, count);
+            Debug.Log($"{locate.IndexInArea.index}:{locate.IndexInArea.serial} {srcstart}:{dststart}:{count}");
         }
     }
 
