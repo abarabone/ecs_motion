@@ -61,16 +61,23 @@ namespace DotsLite.MarchingCubes
                 .WithName("CubeDrawModel")
                 .WithoutBurst()
                 .WithStructuralChanges()
-                .ForEach((Entity ent, CubeDrawModel.InitializeData init, CubeDrawModel.MakeCubesShaderResourceData res) =>
+                .ForEach((
+                    Entity ent,
+                    DrawModel.GeometryData geom,
+                    DrawModel.ComputeArgumentsBufferData args,
+                    CubeDrawModel.InitializeData init,
+                    CubeDrawModel.MakeCubesShaderResourceData res) =>
                 {
                     res.MakeCubesShader = init.cubeMakeShader;
                     res.XLineLengthPerGrid = init.unitOnEdge * init.unitOnEdge / (32/init.unitOnEdge);
                     res.Alloc(init);
 
-                    var mat = init.material;
+                    var mesh = geom.Mesh;
+                    var mat = geom.Material;
                     var cs = init.cubeMakeShader;
                     res.SetResourcesTo(mat, cs);
                     commonres.SetResourcesTo(mat);
+                    args.SetInstancingArgumentBuffer(mesh);
 
                     em.RemoveComponent<CubeDrawModel.InitializeData>(ent);
                 })
@@ -133,13 +140,6 @@ namespace DotsLite.MarchingCubes
     static class InitUtility
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetInstancingArgumentBuffer(this DrawModel.ComputeArgumentsBufferData shaderArg, Mesh mesh)
-        {
-            var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
-            shaderArg.InstancingArgumentsBuffer.SetData(ref iargparams);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static void initGridInstructionIds(
             ref this BitGridArea.GridInstructionIdData ids, in BitGridArea.UnitDimensionData dim)
         {
@@ -149,13 +149,20 @@ namespace DotsLite.MarchingCubes
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static void initGridLinks(
-            ref this BitGridArea.GridLinkData links, in BitGridArea.UnitDimensionData dim, Entity blank)
+            ref this BitGridArea.GridLinkData links, in BitGridArea.UnitDimensionData dim, Entity defaultGrid)
         {
             var totalsize = dim.GridLength.x * dim.GridLength.y * dim.GridLength.z;
 
-            for (var i = 0; i < totalsize; i++) links.pGrid3dArray[i] = blank;
+            for (var i = 0; i < totalsize; i++) links.pGrid3dArray[i] = defaultGrid;
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetInstancingArgumentBuffer(this DrawModel.ComputeArgumentsBufferData shaderArg, Mesh mesh)
+        {
+            var iargparams = new IndirectArgumentsForInstancing(mesh, 1);// 1 はダミー、0 だと怒られる
+            shaderArg.InstancingArgumentsBuffer.SetData(ref iargparams);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetResourcesTo(this Common.DrawShaderResourceData res, Material mat)
@@ -180,8 +187,6 @@ namespace DotsLite.MarchingCubes
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetResourcesTo(this CubeDrawModel.MakeCubesShaderResourceData res, Material mat, ComputeShader cs)
         {
-            mat.SetTexture("grid_cubeids", res.CubeIds.Texture);
-
             cs?.SetBuffer(0, "dotgrids", res.GridBitLines.Buffer);
             cs?.SetBuffer(0, "cube_instances", res.CubeInstances.Buffer);
 
@@ -189,6 +194,7 @@ namespace DotsLite.MarchingCubes
 
             if (res.CubeIds.Texture == null) return;
             cs?.SetTexture(0, "dst_grid_cubeids", res.CubeIds.Texture);
+            mat.SetTexture("grid_cubeids", res.CubeIds.Texture);
         }
     }
 

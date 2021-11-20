@@ -57,6 +57,7 @@ namespace DotsLite.Draw
                 //.WithNone<Particle.TranslationPtoPData>()
                 .WithNone<Psyllium.TranslationTailData>()
                 .WithNone<DrawInstance.PostureLinkData>()
+                .WithNone<DrawInstance.WorldBbox>()
                 .ForEach(
                         (
                             ref DrawInstance.TargetWorkData target,

@@ -48,6 +48,7 @@ namespace DotsLite.MarchingCubes.Authoring.another
                 var types = new ComponentTypes(new ComponentType[]
                 {
                     typeof(Common.DrawShaderResourceData),
+                    typeof(Common.AssetData),
                     typeof(Common.InitializeData),
                 });
                 em.AddComponents(ent, types);
@@ -57,6 +58,11 @@ namespace DotsLite.MarchingCubes.Authoring.another
                 em.SetComponentData(ent, new Common.InitializeData
                 {
                     asset = this.MarchingCubesAsset
+                });
+
+                em.SetComponentData(ent, new Common.AssetData
+                {
+                    Asset = this.MarchingCubesAsset.ConvertToBlobData()
                 });
             }
 

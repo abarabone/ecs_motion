@@ -57,6 +57,7 @@ namespace DotsLite.Draw
                 .WithReadOnly(rots)
                 .WithReadOnly(poss)
                 //.WithNone<Rotation, Translation, NonUniformScale>()
+                .WithNone<DrawInstance.WorldBbox>()
                 .ForEach(
                         (
                             ref DrawInstance.TargetWorkData target,

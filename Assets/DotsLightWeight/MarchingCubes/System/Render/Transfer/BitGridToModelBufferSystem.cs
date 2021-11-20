@@ -75,7 +75,7 @@ namespace DotsLite.Draw
                     var pent = parent.ParentAreaEntity;
                     var ids = pickupNeargridIds_(gridAreas[pent], locate);
                     pModel[i + 0] = math.asfloat(ids.lPack4);
-                    pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
+                    pModel[i + 1] = math.asfloat(ids.rPack4); Debug.Log($"{ids.lPack4} {ids.rPack4}");
 
                     var u = unit.UnitOnEdge >> 1;
                     pModel[i + 2] = new float4(pos.Value - new float3(u, -u, -u), 1.0f);
@@ -111,34 +111,6 @@ namespace DotsLite.Draw
                     slant= p[index.Create(new int3(1, 0, 1), span).serial],
                 }
             };
-
-            //var lhome = index;
-            //ids.left.home = p[lhome.serial];
-
-            //var lrear = index.Create(new int3(0, 0, 1), span);
-            //ids.left.rear = p[lrear.serial];
-
-            //var ldown = index.Create(new int3(0, 1, 0), span);
-            //ids.left.down = p[ldown.serial];
-
-            //var lslant = index.Create(new int3(0, 1, 1), span);
-            //ids.left.slant = p[lslant.serial];
-
-
-            //var rhome = index.Create(new int3(1, 0, 0), span);
-            //ids.right.home = p[rhome.serial];
-
-            //var rrear = index.Create(new int3(1, 0, 1), span);
-            //ids.right.rear = p[rrear.serial];
-
-            //var rdown = index.Create(new int3(1, 1, 0), span);
-            //ids.right.down = p[rdown.serial];
-
-            //var rslant = index.Create(new int3(1, 1, 1), span);
-            //ids.right.slant = p[rslant.serial];
-
-
-            //return ids;
         }
 
     }

@@ -60,6 +60,10 @@ namespace DotsLite.Dependency
             {
                 this.dependencyJobHandles.Add(prevDependency);
 
+                return CombineAllDependentJobs();
+            }
+            public JobHandle CombineAllDependentJobs()
+            {
                 var resultJob = JobHandle.CombineDependencies(this.dependencyJobHandles);
 
                 this.dependencyJobHandles.Clear();
@@ -77,6 +81,10 @@ namespace DotsLite.Dependency
                 this.CombineAllDependentJobs(prevDependency).Complete();
             }
 
+            public void CompleteAllDependentJobs()
+            {
+                this.CombineAllDependentJobs().Complete();
+            }
 
         }
 

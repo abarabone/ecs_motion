@@ -31,7 +31,6 @@ namespace DotsLite.MarchingCubes.Authoring
         public Texture2D Texture;
         public Shader DrawCubeShader;
         public ComputeShader GridToCubesShader;
-        public Material DrawMaterial;
 
 
         public unsafe void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -124,7 +123,6 @@ namespace DotsLite.MarchingCubes.Authoring
             {
                 asset = this.MarchingCubesAsset,
                 cubeMakeShader = this.GridToCubesShader,
-                material = this.DrawMaterial,
                 maxCubeInstance = this.MaxCubeInstances,
                 maxGridInstructions = this.MaxGridInstructions,
                 maxGridBufferLength =  gridLength,

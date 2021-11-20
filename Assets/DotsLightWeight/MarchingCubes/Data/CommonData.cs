@@ -41,6 +41,11 @@ namespace DotsLite.MarchingCubes.Data
             }
         }
 
+        public struct AssetData : IComponentData
+        {
+            public BlobAssetReference<MarchingCubesBlobAsset> Asset;
+        }
+
         public class InitializeData : IComponentData
         {
             public MarchingCubesAsset asset;

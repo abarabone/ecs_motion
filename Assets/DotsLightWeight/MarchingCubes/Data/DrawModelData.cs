@@ -62,12 +62,14 @@ namespace DotsLite.MarchingCubes.Data
         {
             public int NextId;
         }
+        // stocker のほうに移動すべき
+        // BitGrid の実体は、必要な分だけ確保している。
+        // シェーダーのバッファは最大数を決めて、使用する分から順に id を割り振っている。
 
         public class InitializeData : IComponentData
         {
             public MarchingCubesAsset asset;
             public ComputeShader cubeMakeShader;
-            public Material material;
 
             public int maxGridBufferLength;
             public int maxCubeInstance;

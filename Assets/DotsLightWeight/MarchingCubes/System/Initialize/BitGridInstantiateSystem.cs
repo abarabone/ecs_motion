@@ -34,7 +34,6 @@ namespace DotsLite.MarchingCubes
                 .WithName("GridArea")
                 .WithoutBurst()
                 .WithStructuralChanges()
-                .WithAll<BitGridArea.InitializeData>()
                 .ForEach((
                     Entity entity,
                     ref BitGridArea.GridInstructionIdData gids,
@@ -52,6 +51,7 @@ namespace DotsLite.MarchingCubes
                     //create_(em, pfab, new int3(1, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
                 })
                 .Run();
+            this.Enabled = false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
