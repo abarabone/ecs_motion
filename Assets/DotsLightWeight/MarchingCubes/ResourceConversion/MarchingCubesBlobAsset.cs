@@ -30,8 +30,16 @@ namespace DotsLite.MarchingCubes
 
     }
 
+    
+
     public static partial class MarchingCubesUtility
     {
+
+        static public IEnumerable<T> ToEnumerable<T>(ref this BlobArray<T> src)
+            where T : unmanaged
+        {
+            return new BlobArrayEnumrable<T>(ref src);
+        }
 
 
         static public BlobAssetReference<MarchingCubesBlobAsset> ConvertToBlobData(this MarchingCubesAsset src)
@@ -95,7 +103,47 @@ namespace DotsLite.MarchingCubes
             }
         }
 
-
-
     }
+
+
+    public unsafe class BlobArrayEnumrable<T> : IEnumerable<T>
+        where T : unmanaged//, struct
+    {
+        T* p;
+        int length;
+        public BlobArrayEnumrable(ref BlobArray<T> src)
+        {
+            this.p = (T*)src.GetUnsafePtr();
+            this.length = src.Length;
+        }
+
+        public IEnumerator<T> GetEnumerator() => new BlobArrayEnumerator(p, length);
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public struct BlobArrayEnumerator : IEnumerator<T>
+        {
+            T* p;
+            int index;
+            int length;
+
+            public BlobArrayEnumerator(T* p, int length)
+            {
+                this.p = p;
+                this.index = -1;
+                this.length = length;
+            }
+
+            public T Current => p[index];
+
+            object IEnumerator.Current => Current;
+
+            public void Dispose() { }
+
+            public bool MoveNext() => ++this.index < this.length;
+
+            public void Reset() => this.index = -1;
+        }
+    }
+
+
 }
