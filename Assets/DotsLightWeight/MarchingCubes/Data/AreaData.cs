@@ -91,6 +91,8 @@ namespace DotsLite.MarchingCubes.Data
             //public int BitLineBufferOffset;
             public Entity PoolEntity;
             public Entity DrawModelEntity;
+
+            //public Entity DefaultGridEntity;// Žb’è
         }
 
         //public struct InfoData : IComponentData

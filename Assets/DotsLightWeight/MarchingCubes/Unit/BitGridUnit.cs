@@ -73,6 +73,7 @@ namespace DotsLite.MarchingCubes.Data
             public struct IndexInArea
             {
                 public int4 value;
+                public int4 span;
 
                 public int3 index => value.xyz;
                 public int serial => value.w;
@@ -81,9 +82,14 @@ namespace DotsLite.MarchingCubes.Data
                 {
                     var serial = math.dot(index, span);
                     this.value = new int4(index, serial);
+                    this.span = new int4(span, 0);
                 }
-                public IndexInArea Create(int3 offset, int3 span) =>
-                    new IndexInArea(this.index + offset, span);
+
+                public IndexInArea Create(int3 offset) =>
+                    new IndexInArea(this.index + offset, this.span.xyz);
+
+                public IndexInArea Create(int ofsx, int ofsy, int ofsz) =>
+                    new IndexInArea(this.index + new int3(ofsx, ofsy, ofsz), this.span.xyz);
             }
         }
     }

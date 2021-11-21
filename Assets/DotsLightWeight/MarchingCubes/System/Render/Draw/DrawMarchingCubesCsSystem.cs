@@ -53,7 +53,7 @@ namespace DotsLite.MarchingCubes.Gpu
                         cs.SetInt("BoneVectorOffset", (int)vectorOffset);
 
                         cs.Dispatch(kernelIndex: 0, counter.InstanceCounter.Count, 1, 1);
-                        Debug.Log(counter.InstanceCounter.Count);
+                        //Debug.Log(counter.InstanceCounter.Count);
                     }
 
                     {
@@ -65,9 +65,9 @@ namespace DotsLite.MarchingCubes.Gpu
                         var dst = shaderArg.InstancingArgumentsBuffer;
 
                         ComputeBuffer.CopyCount(src, dst, dstOffsetBytes: sizeof(int) * 1);
-                        var arr = new int[5];
-                        dst.GetData(arr);
-                        Debug.Log(arr[1]);
+                        //var arr = new int[5];
+                        //dst.GetData(arr);
+                        //Debug.Log(arr[1]);
 
                         var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };//
                         Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, dst);//

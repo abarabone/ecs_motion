@@ -136,6 +136,8 @@ namespace DotsLite.MarchingCubes.Authoring
                     DrawModelEntity = gcs.GetPrimaryEntity(this.transform.parent),
                     BitLineBufferLength = bitLengthBufferLength,
                     //BitLineBufferOffset = bitBufferOffset,
+
+                    //DefaultGridEntity = gcs.GetPrimaryEntity(this.GridPrefab),// 暫定でプレハブを
                 });
 
                 em.SetComponentData(ent, new BitGridArea.InitializeData

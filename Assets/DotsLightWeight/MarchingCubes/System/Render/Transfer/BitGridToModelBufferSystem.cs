@@ -75,7 +75,7 @@ namespace DotsLite.Draw
                     var pent = parent.ParentAreaEntity;
                     var ids = pickupNeargridIds_(gridAreas[pent], locate);
                     pModel[i + 0] = math.asfloat(ids.lPack4);
-                    pModel[i + 1] = math.asfloat(ids.rPack4); Debug.Log($"{ids.lPack4} {ids.rPack4}");
+                    pModel[i + 1] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
 
                     var u = unit.UnitOnEdge >> 1;
                     pModel[i + 2] = new float4(pos.Value - new float3(u, -u, -u), 1.0f);
@@ -88,7 +88,6 @@ namespace DotsLite.Draw
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe NearGridIndex pickupNeargridIds_(in BitGridArea.GridInstructionIdData gids, in BitGrid.LocationInAreaData locate)
         {
-            var span = locate.span.xyz;
             var index = locate.IndexInArea;
 
             var p = gids.pId3dArray;
@@ -99,16 +98,16 @@ namespace DotsLite.Draw
                 left = new GridindexUnit
                 {
                     home = p[index.serial],
-                    rear = p[index.Create(new int3(0, 0, 1), span).serial],
-                    down = p[index.Create(new int3(0, 1, 0), span).serial],
-                    slant= p[index.Create(new int3(0, 0, 1), span).serial],
+                    rear = p[index.Create(0, 0, 1).serial],
+                    down = p[index.Create(0, 1, 0).serial],
+                    slant= p[index.Create(0, 0, 1).serial],
                 },
                 right = new GridindexUnit
                 {
-                    home = p[index.Create(new int3(1, 0, 0), span).serial],
-                    rear = p[index.Create(new int3(1, 0, 1), span).serial],
-                    down = p[index.Create(new int3(1, 1, 0), span).serial],
-                    slant= p[index.Create(new int3(1, 0, 1), span).serial],
+                    home = p[index.Create(1, 0, 0).serial],
+                    rear = p[index.Create(1, 0, 1).serial],
+                    down = p[index.Create(1, 1, 0).serial],
+                    slant= p[index.Create(1, 0, 1).serial],
                 }
             };
         }

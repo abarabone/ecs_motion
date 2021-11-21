@@ -14,6 +14,8 @@ using Unity.Entities;
 
 namespace DotsLite.MarchingCubes
 {
+    using DotsLite.MarchingCubes.Data;
+
 
 
     [StructLayout(LayoutKind.Sequential)]
@@ -135,8 +137,7 @@ namespace DotsLite.MarchingCubes
         /// </summary>
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SampleAllCubes<TCubeInstanceWriter>(
-            in NearBitGrids g, ref TCubeInstanceWriter outputCubes)
+        public static void SampleAllCubes<TCubeInstanceWriter>(in NearBitGrids g, ref TCubeInstanceWriter outputCubes)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
             for (var iy = 0; iy < 32 - 1; iy++)
@@ -257,13 +258,17 @@ namespace DotsLite.MarchingCubes
 
             var _i = (iy_ + yofs & ymask) * yspan + (iz_ + zofs & zmask);
             var i = _i;
-            var y0 = ((uint4*)pz0y0)[i.x];
-            var y1 = ((uint4*)pz0y1)[i.y];
+            //var y0 = ((uint4*)pz0y0)[i.x];
+            //var y1 = ((uint4*)pz0y1)[i.y];
+            var y0 = pz0y0 == null ? uint4.zero : ((uint4*)pz0y0)[i.x];
+            var y1 = pz0y1 == null ? uint4.zero : ((uint4*)pz0y1)[i.y];
             var y0z0 = y0 * z0mask;
             var y1z0 = y1 * z0mask;
 
-            y0.x = pz1y0[i.z];
-            y1.x = pz1y1[i.w];
+            //y0.x = pz1y0[i.z];
+            //y1.x = pz1y1[i.w];
+            y0.x = pz1y0 == null ? 0 : pz1y0[i.z];
+            y1.x = pz1y1 == null ? 0 : pz1y1[i.w];
             var y0z1 = y0.yzwx;
             var y1z1 = y1.yzwx;
 
@@ -374,11 +379,9 @@ namespace DotsLite.MarchingCubes
             return (y0z0r & 1) << 25 | (y0z1r & 1) << 27 | (y1z0r & 1) << 29 | (y1z1r & 1) << 31;
         }
 
-
-        // ------------------------------------------------------------------
-
-
-
-
     }
+
+
+
+
 }

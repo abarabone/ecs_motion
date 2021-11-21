@@ -55,14 +55,16 @@ namespace DotsLite.MarchingCubes
                 cmd = cmdscope.CommandBuffer.AsParallelWriter(),
                 KeyEntities = this.messageSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
                 mcdata = this.GetSingleton<Common.AssetData>().Asset,
-                //pDefualtBlankGrid = this.GetSingleton<Global.MainData<TGrid>>().DefaultGrids[(int)GridFillMode.Blank].pXline,
-                grids32 = this.GetComponentDataFromEntity<DotGrid.Unit32Data>(isReadOnly: true),
-                grids16 = this.GetComponentDataFromEntity<DotGrid.Unit16Data>(isReadOnly: true),
-                locates = this.GetComponentDataFromEntity<DotGrid.IndexData>(isReadOnly: true),
-                parents = this.GetComponentDataFromEntity<DotGrid.ParentAreaData>(isReadOnly: true),
-                poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
-                areas = this.GetComponentDataFromEntity<DotGridArea.LinkToGridData>(isReadOnly: true),
-                colliders = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
+
+                gridtypes = GetComponentDataFromEntity<BitGrid.GridTypeData>(isReadOnly: true),
+                grids = GetComponentDataFromEntity<BitGrid.BitLinesData>(isReadOnly: true),
+                locates = GetComponentDataFromEntity<BitGrid.LocationInAreaData>(isReadOnly: true),
+                parents = GetComponentDataFromEntity<BitGrid.ParentAreaData>(isReadOnly: true),
+                colliders = GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
+
+                linkss = GetComponentDataFromEntity<BitGridArea.GridLinkData>(isReadOnly: true),
+                gidss = GetComponentDataFromEntity<BitGridArea.GridInstructionIdData>(isReadOnly: true),
+                poss = GetComponentDataFromEntity<Translation>(isReadOnly: true),
             }
             .Schedule(this.messageSystem.Reciever.Holder.keyEntities, 1, this.Dependency);
         }
@@ -91,7 +93,9 @@ namespace DotsLite.MarchingCubes
             public ComponentDataFromEntity<PhysicsCollider> colliders;
 
             [ReadOnly]
-            public ComponentDataFromEntity<DotGridArea.LinkToGridData> areas;
+            public ComponentDataFromEntity<BitGridArea.GridLinkData> linkss;
+            [ReadOnly]
+            public ComponentDataFromEntity<BitGridArea.GridInstructionIdData> gidss;
             [ReadOnly]
             public ComponentDataFromEntity<Translation> poss;
 
@@ -108,11 +112,12 @@ namespace DotsLite.MarchingCubes
                 var locate = this.locates[ent];
                 var parent = this.parents[ent];
                 var pos = this.poss[ent];
-                var area = this.areas[parent.ParentAreaEntity];
+                var links = this.linkss[parent.ParentAreaEntity];
+                var gids = this.gidss[parent.ParentAreaEntity];
 
                 if (gtype.UnitOnEdge == 32)
                 {
-                    var mesh = makeMesh_(grid.Unit, in locate, in pos, in area, in this.mcdata);
+                    var mesh = makeMesh_(in grids, in links, in gids, in grid, in locate, in pos, in mcdata);
 
                     if (this.colliders.HasComponent(ent))
                     {
@@ -142,11 +147,13 @@ namespace DotsLite.MarchingCubes
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe BlobAssetReference<Collider> makeMesh_<TGrid>(
-            TGrid grid,
+        static unsafe BlobAssetReference<Collider> makeMesh_(
+            in ComponentDataFromEntity<BitGrid.BitLinesData> grids,
+            in BitGridArea.GridLinkData links,
+            in BitGridArea.GridInstructionIdData ids,
+            in BitGrid.BitLinesData grid,
             in BitGrid.LocationInAreaData locate,
             in Translation pos,
-            in BitGridArea.GridLinkData grids,
             in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
         {
             var writer = new MakeCube.MeshWriter
@@ -161,7 +168,7 @@ namespace DotsLite.MarchingCubes
                 },
                 mcdata = mcdata,
             };
-            var near = grids.PickupNearGridIds(in grid, in locate);
+            var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
 
             MakeCube.SampleAllCubes(in near, ref writer);
             var mesh = writer.CreateMesh();
@@ -206,35 +213,6 @@ namespace DotsLite.MarchingCubes
         }
 
 
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe NearGridIndex pickupNeargridIds_(in BitGridArea.GridInstructionIdData gids, in BitGrid.LocationInAreaData locate)
-        {
-            var span = locate.span.xyz;
-            var index = locate.IndexInArea;
-
-            var p = gids.pId3dArray;
-
-
-            return new NearGridIndex
-            {
-                left = new GridindexUnit
-                {
-                    home = p[index.serial],
-                    rear = p[index.Create(new int3(0, 0, 1), span).serial],
-                    down = p[index.Create(new int3(0, 1, 0), span).serial],
-                    slant = p[index.Create(new int3(0, 0, 1), span).serial],
-                },
-                right = new GridindexUnit
-                {
-                    home = p[index.Create(new int3(1, 0, 0), span).serial],
-                    rear = p[index.Create(new int3(1, 0, 1), span).serial],
-                    down = p[index.Create(new int3(1, 1, 0), span).serial],
-                    slant = p[index.Create(new int3(1, 0, 1), span).serial],
-                }
-            };
-        }
-
         //public struct CubeColliderUnits
         //{
         //    public BlobArray<BlobAssetReference<MeshCollider>> Units;
@@ -254,4 +232,92 @@ namespace DotsLite.MarchingCubes
         public static int3 xxx(this int i) => new int3(i, i, i);
     }
 
+    static class NearGridExtension
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe MakeCube.NearBitGrids PickupNearGridIds(
+            in this ComponentDataFromEntity<BitGrid.BitLinesData> grids,
+            in BitGridArea.GridLinkData links, in BitGridArea.GridInstructionIdData ids,
+            in BitGrid.BitLinesData grid, in BitGrid.LocationInAreaData locate)
+        {
+
+            var pGrid = links.pGrid3dArray;
+            var pId = ids.pId3dArray;
+            var index = locate.IndexInArea;
+
+
+            var lhome = index;
+            var elx = pGrid[lhome.serial];
+            var ilx = pId[lhome.serial];
+
+            var lrear = index.Create(0, 0, 1);
+            var elz = pGrid[lrear.serial];
+            var ilz = pId[lrear.serial];
+
+            var ldown = index.Create(0, 1, 0);
+            var ely = pGrid[ldown.serial];
+            var ily = pId[ldown.serial];
+
+            var lslant = index.Create(0, 1, 1);
+            var elw = pGrid[lslant.serial];
+            var ilw = pId[lslant.serial];
+
+
+            var rhome = index.Create(1, 0, 0);
+            var erx = pGrid[rhome.serial];
+            var irx = pId[rhome.serial];
+
+            var rrear = index.Create(1, 0, 1);
+            var erz = pGrid[rrear.serial];
+            var irz = pId[rrear.serial];
+
+            var rdown = index.Create(1, 1, 0);
+            var ery = pGrid[rdown.serial];
+            var iry = pId[rdown.serial];
+
+            var rslant = index.Create(1, 1, 1);
+            var erw = pGrid[rslant.serial];
+            var irw = pId[rslant.serial];
+
+
+            //return new MakeCube.NearBitGrids
+            //{
+            //    L = new MakeCube.NearBitGrids.HalfGridUnit
+            //    {
+            //        isContained = (uint4)math.sign(new int4(ilx, ily, ilz, ilw) + 1),
+            //        x = grids[elx].p,
+            //        y = grids[ely].p,
+            //        z = grids[elz].p,
+            //        w = grids[elw].p,
+            //    },
+            //    R = new MakeCube.NearBitGrids.HalfGridUnit
+            //    {
+            //        isContained = (uint4)math.sign(new int4(irx, iry, irz, irw) + 1),
+            //        x = grids[erx].p,
+            //        y = grids[ery].p,
+            //        z = grids[erz].p,
+            //        w = grids[erw].p,
+            //    },
+            //};
+            return new MakeCube.NearBitGrids
+            {
+                L = new MakeCube.NearBitGrids.HalfGridUnit
+                {
+                    isContained = (uint4)math.sign(new int4(ilx, ily, ilz, ilw) + 1),
+                    x = elx != Entity.Null ? grids[elx].p : null,
+                    y = ely != Entity.Null ? grids[ely].p : null,
+                    z = elz != Entity.Null ? grids[elz].p : null,
+                    w = elw != Entity.Null ? grids[elw].p : null,
+                },
+                R = new MakeCube.NearBitGrids.HalfGridUnit
+                {
+                    isContained = (uint4)math.sign(new int4(irx, iry, irz, irw) + 1),
+                    x = erx != Entity.Null ? grids[erx].p : null,
+                    y = ery != Entity.Null ? grids[ery].p : null,
+                    z = erz != Entity.Null ? grids[erz].p : null,
+                    w = erw != Entity.Null ? grids[erw].p : null,
+                },
+            };
+        }
+    }
 }
