@@ -57,9 +57,9 @@ namespace DotsLite.MarchingCubes.Authoring
                 void initDrawModel_(Entity ent, Material mat, Mesh mesh)
                 {
                     var boneLength = 1;
-                    var sort = DrawModel.SortOrder.acs;
+                    var sort = DrawModel.SortOrder.desc;
                     var boneType = BoneType.T;
-                    var dataLength = sizeof(NearGridIndex);
+                    var dataLength = sizeof(NearGridIndex) / 16;
                     gcs.InitDrawModelEntityComponents(
                         this.gameObject, ent, mesh, mat, boneType, boneLength, sort, dataLength);
                 }

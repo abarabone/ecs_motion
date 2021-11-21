@@ -56,6 +56,7 @@ namespace DotsLite.Draw
                 .WithAll<DrawInstance.PsylliumTag>()
                 .WithNone<DrawInstance.BoneModelTag>()
                 .WithNone<DrawInstance.PostureLinkData>()
+                .WithNone<DrawInstance.WorldBbox>()
                 .ForEach(
                         (
                             ref DrawInstance.TargetWorkData target,

@@ -99,7 +99,7 @@ namespace DotsLite.MarchingCubes
             var dststart = dstoffset + (int)dirty.begin;
             var count = (int)dirty.end - (int)dirty.begin + 1;
             res.GridBitLines.Buffer.SetData(garr, srcstart, dststart, count);
-            Debug.Log($"{locate.IndexInArea.index}:{locate.IndexInArea.serial} {srcstart}:{dststart}:{count}");
+            //Debug.Log($"{locate.IndexInArea.index}:{locate.IndexInArea.serial} {srcstart}:{dststart}:{count}");
         }
     }
 

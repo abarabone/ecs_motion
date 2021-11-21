@@ -156,7 +156,7 @@ int toIndex(int igrid, int overx, int iy, int iz)
 void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
     //const int igrid = gid.x;// instrucction grid id
-    const int igrid = BoneVectorOffset + VectorLengthPerInstance * gid.x;
+    const int igrid = BoneVectorOffset + VectorLengthPerInstance * gid.x + 1;
 
     const int i00 = toIndex(igrid, 0, id.y + 0, id.z + 0); if (i00 == -1) return;
     const int i01 = toIndex(igrid, 0, id.y + 0, id.z + 1); if (i01 == -1) return;
