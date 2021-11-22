@@ -35,7 +35,7 @@ namespace DotsLite.MarchingCubes
     public static partial class MarchingCubesUtility
     {
 
-        static public IEnumerable<T> ToEnumerable<T>(ref this BlobArray<T> src)
+        static public IEnumerable<BlobItem<T>> ToEnumerable<T>(ref this BlobArray<T> src)
             where T : unmanaged
         {
             return new BlobArrayEnumrable<T>(ref src);
@@ -106,7 +106,14 @@ namespace DotsLite.MarchingCubes
     }
 
 
-    public unsafe class BlobArrayEnumrable<T> : IEnumerable<T>
+    public unsafe struct BlobItem<T>
+        where T : unmanaged
+    {
+        public T* p;
+        public ref T Value => ref *p;
+    }
+
+    public unsafe class BlobArrayEnumrable<T> : IEnumerable<BlobItem<T>>
         where T : unmanaged//, struct
     {
         T* p;
@@ -117,10 +124,10 @@ namespace DotsLite.MarchingCubes
             this.length = src.Length;
         }
 
-        public IEnumerator<T> GetEnumerator() => new BlobArrayEnumerator(p, length);
+        public IEnumerator<BlobItem<T>> GetEnumerator() => new BlobArrayEnumerator(p, length);
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public struct BlobArrayEnumerator : IEnumerator<T>
+        public struct BlobArrayEnumerator : IEnumerator<BlobItem<T>>
         {
             T* p;
             int index;
@@ -133,7 +140,7 @@ namespace DotsLite.MarchingCubes
                 this.length = length;
             }
 
-            public T Current => p[index];
+            public BlobItem<T> Current => new BlobItem<T> { p = &p[index] };
 
             object IEnumerator.Current => Current;
 

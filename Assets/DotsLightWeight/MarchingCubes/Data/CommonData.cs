@@ -274,8 +274,9 @@ namespace DotsLite.MarchingCubes.Data.Resource
             }
             asset.Value.CubeIdAndVertexIndicesList.ToEnumerable()
                 .Take(1)
-                .SelectMany(x => x.normalsForVertex.ToEnumerable())
-                .ForEach(x => Debug.Log(x));
+                .SelectMany(x => x.Value.normalsForVertex.ToEnumerable())
+                .ForEach(x => Debug.Log(x.Value));
+            
 
             var vertexNormalDict = makeVertexNormalsDict_(asset.Value.CubeIdAndVertexIndicesList.ToEnumerable());
 
@@ -289,7 +290,7 @@ namespace DotsLite.MarchingCubes.Data.Resource
             };
 
 
-            static IEnumerable<uint4> createCubeVertexBuffer_(IEnumerable<float3> baseVertices)
+            static IEnumerable<uint4> createCubeVertexBuffer_(IEnumerable<BlobItem<float3>> baseVertices)
             {
                 ((int x, int y, int z) ortho1, (int x, int y, int z) ortho2)[] near_cube_offsets =
                 {
@@ -329,7 +330,7 @@ namespace DotsLite.MarchingCubes.Data.Resource
                 var q =
                     from v in Enumerable
                         .Zip(near_cube_offsets, near_cube_ivtxs, (x, y) => (ofs: x, ivtx: y))
-                        .Zip(baseVertices, (x, y) => (x.ofs, x.ivtx, pos: y))
+                        .Zip(baseVertices, (x, y) => (x.ofs, x.ivtx, pos: y.Value))
                     let x = (v.ivtx.ortho1, v.ivtx.ortho2, v.ivtx.slant, 0).PackToByte4Uint()
                     let y = (v.ofs.ortho1.x + 1, v.ofs.ortho1.y + 1, v.ofs.ortho1.z + 1, 0).PackToByte4Uint()
                     let z = (v.ofs.ortho2.x + 1, v.ofs.ortho2.y + 1, v.ofs.ortho2.z + 1, 0).PackToByte4Uint()
@@ -344,12 +345,13 @@ namespace DotsLite.MarchingCubes.Data.Resource
                 return q;
             }
 
-            static Dictionary<float3, int> makeVertexNormalsDict_(IEnumerable<MarchingCubesBlobAsset.CubeWrapper> cubeIdsAndVtxIndexLists_)
+            static Dictionary<float3, int> makeVertexNormalsDict_(
+                IEnumerable<BlobItem<MarchingCubesBlobAsset.CubeWrapper>> cubeIdsAndVtxIndexLists_)
             {
                 return cubeIdsAndVtxIndexLists_
-                    .SelectMany(x => x.normalsForVertex.ToEnumerable())
-                    .Do(x => Debug.Log($"dict nm {x}"))
-                    .Select(x => round_normal_(x))
+                    .SelectMany(x => x.Value.normalsForVertex.ToEnumerable())
+                    .Do(x => Debug.Log($"dict nm {x.Value}"))
+                    .Select(x => round_normal_(x.Value))
                     .Do(x => Debug.Log($"dict nm {x}"))
                     .Distinct(x => x)
                     .Select((x, i) => (x, i))
@@ -374,25 +376,26 @@ namespace DotsLite.MarchingCubes.Data.Resource
             }
 
             static IEnumerable<uint4[]> createCubePatternBuffer_
-                (IEnumerable<MarchingCubesBlobAsset.CubeWrapper> cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict)
+                (IEnumerable<BlobItem<MarchingCubesBlobAsset.CubeWrapper>> cubeIdsAndVtxIndexLists_, Dictionary<float3, int> normalToIdDict)
             {
                 var q_ =
                     from cube in cubeIdsAndVtxIndexLists_
-                    orderby cube.cubeId
+                    orderby cube.Value.cubeId
                     select cube;
                 var q = q_.Select(cube => new[]
                     {
-                        toTriPositionIndex_( cube.vertexIndices.ToEnumerable()),
-                        toVtxNormalIndex_( cube.normalsForVertex.ToEnumerable(), normalToIdDict )
+                        toTriPositionIndex_( cube.Value.vertexIndices.ToEnumerable()),
+                        toVtxNormalIndex_( cube.Value.normalsForVertex.ToEnumerable(), normalToIdDict )
                     });
                 //q.SelectMany(x=>x).ForEach( x => Debug.Log(x) );
 
                 return q;
 
 
-                uint4 toTriPositionIndex_(IEnumerable<int3> indices)
+                uint4 toTriPositionIndex_(IEnumerable<BlobItem<int3>> indices)
                 {
                     var idxs = indices
+                        .Select(x => x.Value)
                         .Concat(Enumerable.Repeat(int3.zero, 4 - indices.Count()))
                         .ToArray();
 
@@ -404,7 +407,7 @@ namespace DotsLite.MarchingCubes.Data.Resource
                         w = (idxs[3].x, idxs[3].y, idxs[3].z, 0).PackToByte4Uint(),
                     };
                 }
-                uint4 toVtxNormalIndex_(IEnumerable<float3> normals, Dictionary<float3, int> normalToIdDict_)
+                uint4 toVtxNormalIndex_(IEnumerable<BlobItem<float3>> normals, Dictionary<float3, int> normalToIdDict_)
                 {
                     var normals_ = normals.ToArray();
                     return new uint4
@@ -420,8 +423,8 @@ namespace DotsLite.MarchingCubes.Data.Resource
                     //int ntoi( int i, int shift ) => (normalToIdDict_[ round_normal_(normals[ i ]) ] & 0xff) << shift;
                     int ntoi(int i)
                     {
-                        Debug.Log($"{i} {normals_[i]} @ {round_normal_(normals_[i])}");// => {normalToIdDict_[round_normal_(normals_[i])]}");
-                        return normalToIdDict_[round_normal_(normals_[i])];
+                        Debug.Log($"{i} {normals_[i]} @ {round_normal_(normals_[i].Value)}");// => {normalToIdDict_[round_normal_(normals_[i])]}");
+                        return normalToIdDict_[round_normal_(normals_[i].Value)];
                     }
                 }
             }
@@ -434,7 +437,7 @@ namespace DotsLite.MarchingCubes.Data.Resource
                     {
                         from x in cubeVertices select math.asfloat(x),
                         from x in cubePatterns from y in x select math.asfloat(y),
-                        normalList,
+                        normalList.Select(x => x),
                     }
                     .SelectMany(x => x)
                     .ToArray();
