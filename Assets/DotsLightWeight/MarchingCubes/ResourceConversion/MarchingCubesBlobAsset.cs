@@ -35,13 +35,6 @@ namespace DotsLite.MarchingCubes
     public static partial class MarchingCubesUtility
     {
 
-        static public IEnumerable<BlobItem<T>> ToEnumerable<T>(ref this BlobArray<T> src)
-            where T : unmanaged
-        {
-            return new BlobArrayEnumrable<T>(ref src);
-        }
-
-
         static public BlobAssetReference<MarchingCubesBlobAsset> ConvertToBlobData(this MarchingCubesAsset src)
         {
 
@@ -78,7 +71,8 @@ namespace DotsLite.MarchingCubes
                         var idst = 0;
                         for (var i = 0; i < srcvis.Length; i+=3)
                         {
-                            dstvis[idst++] = new int3(srcvis[i + 2], srcvis[i + 1], srcvis[i + 0]);
+                            //dstvis[idst++] = new int3(srcvis[i + 2], srcvis[i + 1], srcvis[i + 0]);
+                            dstvis[idst++] = new int3(srcvis[i + 0], srcvis[i + 1], srcvis[i + 2]);
                         }
                     }
                     void copyNormalsForVtxIndicesToblob_(ref MarchingCubesBlobAsset.CubeWrapper dstcube)
@@ -106,6 +100,16 @@ namespace DotsLite.MarchingCubes
     }
 
 
+
+    public static partial class MarchingCubesUtility
+    {
+        static public BlobArrayEnumrable<T> ToEnumerable<T>(ref this BlobArray<T> src)
+            where T : unmanaged
+        {
+            return new BlobArrayEnumrable<T>(ref src);
+        }
+    }
+    
     public unsafe struct BlobItem<T>
         where T : unmanaged
     {
@@ -113,7 +117,7 @@ namespace DotsLite.MarchingCubes
         public ref T Value => ref *p;
     }
 
-    public unsafe class BlobArrayEnumrable<T> : IEnumerable<BlobItem<T>>
+    public unsafe struct BlobArrayEnumrable<T> : IEnumerable<BlobItem<T>>
         where T : unmanaged//, struct
     {
         T* p;

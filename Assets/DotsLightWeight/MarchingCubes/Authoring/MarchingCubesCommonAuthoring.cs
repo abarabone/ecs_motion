@@ -57,7 +57,7 @@ namespace DotsLite.MarchingCubes.Authoring.another
                 em.SetComponentData(ent, new Common.DrawShaderResourceData { });
                 em.SetComponentData(ent, new Common.InitializeData
                 {
-                    asset = this.MarchingCubesAsset
+                    //asset = this.MarchingCubesAsset
                 });
 
                 em.SetComponentData(ent, new Common.AssetData

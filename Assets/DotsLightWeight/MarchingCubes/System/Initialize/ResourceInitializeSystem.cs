@@ -48,9 +48,14 @@ namespace DotsLite.MarchingCubes
                 .WithName("Common")
                 .WithoutBurst()
                 .WithStructuralChanges()
-                .ForEach((Entity ent, Common.InitializeData init, Common.DrawShaderResourceData res) =>
+                .ForEach((
+                    Entity ent,
+                    Common.InitializeData init,
+                    Common.DrawShaderResourceData res,
+                    in Common.AssetData asset) =>
                 {
-                    res.Alloc(init);
+                    //res.Alloc(init);
+                    res.Alloc(asset);
 
                     em.RemoveComponent<Common.InitializeData>(ent);
                 })

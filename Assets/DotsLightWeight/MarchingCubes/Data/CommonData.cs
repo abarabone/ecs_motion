@@ -31,9 +31,12 @@ namespace DotsLite.MarchingCubes.Data
             public void Alloc(InitializeData init)
             {
                 this.Dispose();
-                //this.GeometryElementData = CubeGeometryConstantBuffer.Create(init.asset);
-                var asset = init.asset.ConvertToBlobData();
-                this.GeometryElementData = CubeGeometryConstantBuffer.Create(ref asset);
+                this.GeometryElementData = CubeGeometryConstantBuffer.Create(init.asset);
+            }
+            public void Alloc(AssetData asset)
+            {
+                this.Dispose();
+                this.GeometryElementData = CubeGeometryConstantBuffer.Create(ref asset.Asset);
             }
             public void Dispose()
             {
@@ -266,18 +269,6 @@ namespace DotsLite.MarchingCubes.Data.Resource
 
         public static CubeGeometryConstantBuffer Create(ref BlobAssetReference<MarchingCubesBlobAsset> asset)
         {
-            ref var a = ref asset.Value.CubeIdAndVertexIndicesList;
-            ref var b = ref a[0].normalsForVertex;
-            for (var i = 0; i < b.Length; i++)
-            {
-                Debug.Log(b[i]);
-            }
-            asset.Value.CubeIdAndVertexIndicesList.ToEnumerable()
-                .Take(1)
-                .SelectMany(x => x.Value.normalsForVertex.ToEnumerable())
-                .ForEach(x => Debug.Log(x.Value));
-            
-
             var vertexNormalDict = makeVertexNormalsDict_(asset.Value.CubeIdAndVertexIndicesList.ToEnumerable());
 
             var cubeVertexBuffer = createCubeVertexBuffer_(asset.Value.BaseVertexList.ToEnumerable());
@@ -294,38 +285,38 @@ namespace DotsLite.MarchingCubes.Data.Resource
             {
                 ((int x, int y, int z) ortho1, (int x, int y, int z) ortho2)[] near_cube_offsets =
                 {
-                (( 0, 0, -1), ( 0, -1, 0)),
-                (( -1, 0, 0), ( 0, -1, 0)),
-                (( +1, 0, 0), ( 0, -1, 0)),
-                (( 0, 0, +1), ( 0, -1, 0)),
+                    (( 0, 0, -1), ( 0, -1, 0)),
+                    (( -1, 0, 0), ( 0, -1, 0)),
+                    (( +1, 0, 0), ( 0, -1, 0)),
+                    (( 0, 0, +1), ( 0, -1, 0)),
 
-                (( -1, 0, 0), ( 0, 0, -1)),
-                (( +1, 0, 0), ( 0, 0, -1)),
-                (( -1, 0, 0), ( 0, 0, +1)),
-                (( +1, 0, 0), ( 0, 0, +1)),
+                    (( -1, 0, 0), ( 0, 0, -1)),
+                    (( +1, 0, 0), ( 0, 0, -1)),
+                    (( -1, 0, 0), ( 0, 0, +1)),
+                    (( +1, 0, 0), ( 0, 0, +1)),
 
-                (( 0, 0, -1), ( 0, +1, 0)),
-                (( -1, 0, 0), ( 0, +1, 0)),
-                (( +1, 0, 0), ( 0, +1, 0)),
-                (( 0, 0, +1), ( 0, +1, 0)),
-            };
+                    (( 0, 0, -1), ( 0, +1, 0)),
+                    (( -1, 0, 0), ( 0, +1, 0)),
+                    (( +1, 0, 0), ( 0, +1, 0)),
+                    (( 0, 0, +1), ( 0, +1, 0)),
+                };
                 (int ortho1, int ortho2, int slant)[] near_cube_ivtxs =
                 {
-                (3,8,11),
-                (2,9,10),
-                (1,10,9),
-                (0,11,8),
+                    (3,8,11),
+                    (2,9,10),
+                    (1,10,9),
+                    (0,11,8),
 
-                (5,6,7),
-                (4,7,6),
-                (7,4,5),
-                (6,5,4),
+                    (5,6,7),
+                    (4,7,6),
+                    (7,4,5),
+                    (6,5,4),
 
-                (11,0,3),
-                (10,1,2),
-                (9,2,1),
-                (8,3,0),
-            };
+                    (11,0,3),
+                    (10,1,2),
+                    (9,2,1),
+                    (8,3,0),
+                };
 
                 var q =
                     from v in Enumerable
@@ -335,10 +326,6 @@ namespace DotsLite.MarchingCubes.Data.Resource
                     let y = (v.ofs.ortho1.x + 1, v.ofs.ortho1.y + 1, v.ofs.ortho1.z + 1, 0).PackToByte4Uint()
                     let z = (v.ofs.ortho2.x + 1, v.ofs.ortho2.y + 1, v.ofs.ortho2.z + 1, 0).PackToByte4Uint()
                     let w = ((int)(v.pos.x * 2) + 1, (int)(v.pos.y * 2) + 1, (int)(v.pos.z * 2) + 1, 0).PackToByte4Uint()
-                    //let x = v.ivtx.x<<0 & 0xff | v.ivtx.y<<8 & 0xff00 | v.ivtx.z<<16 & 0xff0000
-                    //let y = v.ofs.ortho1.x+1<<0 & 0xff | v.ofs.ortho1.y+1<<8 & 0xff00 | v.ofs.ortho1.z+1<<16 & 0xff0000
-                    //let z = v.ofs.ortho2.x+1<<0 & 0xff | v.ofs.ortho2.y+1<<8 & 0xff00 | v.ofs.ortho2.z+1<<16 & 0xff0000
-                    //let w = (int)(v.pos.x*2+1)<<0 & 0xff | (int)(v.pos.y*2+1)<<8 & 0xff00 | (int)(v.pos.z*2+1)<<16 & 0xff0000
                     select new uint4(x, y, z, w)
                     ;
 
@@ -350,9 +337,9 @@ namespace DotsLite.MarchingCubes.Data.Resource
             {
                 return cubeIdsAndVtxIndexLists_
                     .SelectMany(x => x.Value.normalsForVertex.ToEnumerable())
-                    .Do(x => Debug.Log($"dict nm {x.Value}"))
+                    //.Do(x => Debug.Log($"dict nm {x.Value}"))
                     .Select(x => round_normal_(x.Value))
-                    .Do(x => Debug.Log($"dict nm {x}"))
+                    //.Do(x => Debug.Log($"dict nm {x}"))
                     .Distinct(x => x)
                     .Select((x, i) => (x, i))
                     .ToDictionary(x => x.x, x => x.i);
@@ -394,18 +381,13 @@ namespace DotsLite.MarchingCubes.Data.Resource
 
                 uint4 toTriPositionIndex_(IEnumerable<BlobItem<int3>> indices)
                 {
+                    var length = indices.Count();
                     var idxs = indices
                         .Select(x => x.Value)
-                        .Concat(Enumerable.Repeat(int3.zero, 4 - indices.Count()))
+                        .Concat(Enumerable.Repeat(int3.zero, 4 - length))
+                        .Select(x => (x.x, x.y, x.z, 0).PackToByte4Uint())
                         .ToArray();
-
-                    return new uint4
-                    {
-                        x = (idxs[0].x, idxs[0].y, idxs[0].z, 0).PackToByte4Uint(),
-                        y = (idxs[1].x, idxs[1].y, idxs[1].z, 0).PackToByte4Uint(),
-                        z = (idxs[2].x, idxs[2].y, idxs[2].z, 0).PackToByte4Uint(),
-                        w = (idxs[3].x, idxs[3].y, idxs[3].z, 0).PackToByte4Uint(),
-                    };
+                    return new uint4(idxs[0], idxs[1], idxs[2], idxs[3]);
                 }
                 uint4 toVtxNormalIndex_(IEnumerable<BlobItem<float3>> normals, Dictionary<float3, int> normalToIdDict_)
                 {
@@ -423,7 +405,7 @@ namespace DotsLite.MarchingCubes.Data.Resource
                     //int ntoi( int i, int shift ) => (normalToIdDict_[ round_normal_(normals[ i ]) ] & 0xff) << shift;
                     int ntoi(int i)
                     {
-                        Debug.Log($"{i} {normals_[i]} @ {round_normal_(normals_[i].Value)}");// => {normalToIdDict_[round_normal_(normals_[i])]}");
+                        //Debug.Log($"{i} {normals_[i]} @ {round_normal_(normals_[i].Value)}");// => {normalToIdDict_[round_normal_(normals_[i])]}");
                         return normalToIdDict_[round_normal_(normals_[i].Value)];
                     }
                 }
@@ -437,7 +419,7 @@ namespace DotsLite.MarchingCubes.Data.Resource
                     {
                         from x in cubeVertices select math.asfloat(x),
                         from x in cubePatterns from y in x select math.asfloat(y),
-                        normalList.Select(x => x),
+                        normalList
                     }
                     .SelectMany(x => x)
                     .ToArray();
