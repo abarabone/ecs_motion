@@ -1,4 +1,4 @@
-﻿Shader "Custom/mc_unsmooth_3"
+﻿Shader "Custom/mc_unsmooth"
 {
 	Properties
 	{

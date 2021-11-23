@@ -115,7 +115,7 @@ namespace DotsLite.MarchingCubes
                 var links = this.linkss[parent.ParentAreaEntity];
                 var gids = this.gidss[parent.ParentAreaEntity];
 
-                if (gtype.UnitOnEdge == 32)
+                if (gtype.GridType == BitGridType.Grid32x32x32)
                 {
                     var mesh = makeMesh_(in grids, in links, in gids, in grid, in locate, in pos, in mcdata);
 

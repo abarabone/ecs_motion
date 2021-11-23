@@ -2,13 +2,11 @@
 
 AppendStructuredBuffer<uint> cube_instances;
 
-
-//struct grid
-//{
-//	uint dotxlines[32][32];
-//};
-//StructuredBuffer<grid> dotgrids;
 StructuredBuffer<uint> dotgrids;
+
+StructuredBuffer<int4> BoneVectorBuffer;
+int	VectorLengthPerInstance;
+int BoneVectorOffset;
 
 
 struct CubeXLineBitwise
@@ -110,18 +108,6 @@ uint toCubeInstance(uint ix, uint iy, uint iz, uint gridId, uint cubeId)
 }
 
 
-//struct GridInstruction
-//{
-//    float3 position;
-//    int dynamic_grid_id;
-//    int static_grid_ids[2][2][2];
-//};
-//StructuredBuffer<GridInstruction> grid_instructions;
-
-StructuredBuffer<int4> BoneVectorBuffer;
-int	VectorLengthPerInstance;
-int BoneVectorOffset;
-
 static const uint4 element_mask_table[] =
 {
 	{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}// 00, 01, 10, 11
@@ -152,7 +138,7 @@ int toIndex(int igrid, int overx, int iy, int iz)
 
 
 
-[numthreads(1, 32, 32)]
+[numthreads(1, 4, 32)]
 void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
     //const int igrid = gid.x;// instrucction grid id

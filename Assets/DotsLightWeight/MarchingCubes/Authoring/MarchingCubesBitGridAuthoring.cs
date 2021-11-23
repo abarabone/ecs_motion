@@ -56,7 +56,8 @@ namespace DotsLite.MarchingCubes.Authoring
 
                 em.SetComponentData(ent, new BitGrid.GridTypeData
                 {
-                    UnitOnEdge = (int)gridtype,
+                    GridType = gridtype,
+                    UnitOnEdge = gridtype.ToInt4(),
                 });
                 //em.SetComponentData(ent, new BitGrid.BufferLengthData
                 //{

@@ -19,13 +19,15 @@ namespace DotsLite.MarchingCubes
 
     using DotsLite.Draw;
     using DotsLite.Utilities;
+    using DotsLite.MarchingCubes.Data;
 
 
     public static class GridStocker
     {
         public struct GridTypeData : IComponentData
         {
-            public int UnitOnEdge;
+            public BitGridType GridType;
+            //public int4 UnitOnEdge;
         }
         public struct DefaultGridData : IComponentData
         {

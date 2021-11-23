@@ -25,7 +25,8 @@ namespace DotsLite.MarchingCubes.Data
     {
         public struct GridTypeData : IComponentData
         {
-            public int UnitOnEdge;
+            public BitGridType GridType;
+            //public int4 UnitOnEdge;
         }
         public class MakeCubesShaderResourceData : IComponentData
         {
@@ -74,7 +75,7 @@ namespace DotsLite.MarchingCubes.Data
             public int maxGridBufferLength;
             public int maxCubeInstance;
             public int maxGridInstructions;
-            public int unitOnEdge;
+            public int4 unitOnEdge;
 
             public bool useNormal;
         }
@@ -90,9 +91,9 @@ namespace DotsLite.MarchingCubes.Data
         {
             public ComputeBuffer Buffer { get; private set; }
 
-            public static GridBitLinesDataBuffer Create(int maxGrids, int unitOnEdge) => new GridBitLinesDataBuffer
+            public static GridBitLinesDataBuffer Create(int maxGrids, int4 unitOnEdge) => new GridBitLinesDataBuffer
             {
-                Buffer = new ComputeBuffer(unitOnEdge * unitOnEdge / (32 / unitOnEdge) * maxGrids, Marshal.SizeOf<uint>()),
+                Buffer = new ComputeBuffer(unitOnEdge.x * unitOnEdge / (32 / unitOnEdge) * maxGrids, Marshal.SizeOf<uint>()),
             };
 
             public void Dispose()

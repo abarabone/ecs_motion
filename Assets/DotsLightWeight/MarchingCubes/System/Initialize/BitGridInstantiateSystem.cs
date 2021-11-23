@@ -75,9 +75,9 @@ namespace DotsLite.MarchingCubes
             glinks.pGrid3dArray[index.serial] = newent;
             Debug.Log($"seed {seed.NextId}");
 
-            var u = type.UnitOnEdge;
+            var u = dim.UnitOnEdge.xyz;
             var hf = u >> 1;
-            var pos = basepos.Value + (i * u + new int3(hf, -hf, -hf));
+            var pos = basepos.Value + (i * u + new int3(hf.x, -hf.y, -hf.z));
 
             em.SetComponentData(newent, new BitGrid.BitLinesData().Alloc(prefab.BitLineBufferLength, GridFillMode.Blank));
             em.SetComponentData(newent, new BitGrid.LocationInAreaData

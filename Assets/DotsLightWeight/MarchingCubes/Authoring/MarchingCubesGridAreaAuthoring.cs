@@ -75,7 +75,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
                 em.SetComponentData(ent, new BitGridArea.GridTypeData
                 {
-                    UnitOnEdge = (int)this.GridPrefab.GridType,
+                    GridType = this.GridPrefab.GridType,
                 });
 
                 var unitScale = (float3)(1.0 / ((double3)this.UnitScale));
@@ -88,6 +88,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     UnitScaleR = UnitScale.As_float4(),
                     GridLength = new int4(this.GridLength, 0),
                     GridSpan = new int4(1, this.GridLength.x * this.GridLength.z, this.GridLength.x, 0),
+                    UnitOnEdge = this.GridPrefab.GridType.ToInt4(),
                 });
 
                 //em.SetComponentData(ent, new BitGridArea.InfoData
@@ -116,12 +117,14 @@ namespace DotsLite.MarchingCubes.Authoring
                 //{
                 //    PoolEntity = gcs.GetPrimaryEntity(this.GridStocker)
                 //});
-                var bitLengthBufferLength = this.GridPrefab.GridType switch
-                {
-                    BitGridType.Grid16x16x16 => 16 * 16 / (32 / 16),
-                    BitGridType.Grid32x32x32 => 32 * 32 / (32 / 32),
-                    _ => default,
-                };
+                var unitOnEdge = this.GridPrefab.GridType.ToInt4();Debug.Log(unitOnEdge);
+                var bitLengthBufferLength = unitOnEdge.y * unitOnEdge.z / (32/unitOnEdge.x);
+                //    this.GridPrefab.GridType switch
+                //{
+                //    BitGridType.Grid16x16x16 => 16 * 16 / (32 / 16),
+                //    BitGridType.Grid32x32x32 => 32 * 32 / (32 / 32),
+                //    _ => default,
+                //};
                 //var bitBufferOffset = this
                 //    .GetComponentInParent<MarchingCubesDrawModelAuthoring>()
                 //    .GetComponentsInChildren<MarchingCubesGridAreaAuthoring>()

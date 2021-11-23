@@ -142,63 +142,60 @@ namespace DotsLite.MarchingCubes
         {
             for (var iy = 0; iy < 32 - 1; iy++)
             {
-                var xmaxk = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxx);
+                var xmask0 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxx);
+                const uint zmask0 = 1u;
                 for (var iz = 0; iz < (31 & ~0b11); iz += 4)
                 {
-                    var c = getXLine_(iy, iz, g.L.x, g.L.x, g.L.x, g.L.x, 1);
-                    var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
-
-                    var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.x, g.R.x, 1);
-                    cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    //cubes._0f870f87 &= xmaxk;// 端のキューブを消す
-
-                    addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
+                    make_cube_from_xline_(
+                        ref outputCubes, iy, iz, xmask0, zmask0,
+                        g.L.x, g.L.x, g.L.x, g.L.x, g.R.x, g.R.x, g.R.x, g.R.x);
                 }
-                var xzmask = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxz);
-                var zmask = 1u;// g.L.isContained.xxxz;
+                var xmask1 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxz);
+                var zmask1 = 1u;// g.L.isContained.xxxz;
                 {
                     const int iz = 31 & ~0b11;
-
-                    var c = getXLine_(iy, iz, g.L.x, g.L.x, g.L.z, g.L.z, zmask);
-                    var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
-
-                    var cr = getXLine_(iy, iz, g.R.x, g.R.x, g.R.z, g.R.z, zmask);
-                    cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    //cubes._0f870f87 &= xzmask;// 端のキューブを消す
-
-                    addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
+                    make_cube_from_xline_(
+                        ref outputCubes, iy, iz, xmask1, zmask1,
+                        g.L.x, g.L.x, g.L.z, g.L.z, g.R.x, g.R.x, g.R.z, g.R.z);
                 }
             }
             //if (g.L.isContained.y > 0)
             {
-                var ymask = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.yyyy);
+                var xmask2 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.yyyy);
+                const uint zmask2 = 1u;
                 const int iy = 31;
                 for (var iz = 0; iz < (31 & ~0b11); iz += 4)
                 {
-                    var c = getXLine_(iy, iz, g.L.x, g.L.y, g.L.x, g.L.y, 1);
-                    var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
-
-                    var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.x, g.R.y, 1);
-                    cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    //cubes._0f870f87 &= ymask;// 端のキューブを消す
-
-                    addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
+                    make_cube_from_xline_(
+                        ref outputCubes, iy, iz, xmask2, zmask2,
+                        g.L.x, g.L.y, g.L.x, g.L.y, g.R.x, g.R.y, g.R.x, g.R.y);
                 }
-                var ywmask = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.yyyw);
-                var zmask = 1u;// g.L.isContained.yyyw;
+                var xmask3 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.yyyw);
+                var zmask3 = 1u;// g.L.isContained.yyyw;
                 {
                     const int iz = 31 & ~0b11;
-
-                    var c = getXLine_(iy, iz, g.L.x, g.L.y, g.L.z, g.L.w, zmask);
-                    var cubes = bitwiseCubesXLine_(c.y0z0, c.y0z1, c.y1z0, c.y1z1);
-
-                    var cr = getXLine_(iy, iz, g.R.x, g.R.y, g.R.z, g.R.w, zmask);
-                    cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
-                    //cubes._0f870f87 &= ywmask;// 端のキューブを消す
-
-                    addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
+                    make_cube_from_xline_(
+                        ref outputCubes, iy, iz, xmask3, zmask3,
+                        g.L.x, g.L.y, g.L.z, g.L.w, g.R.x, g.R.y, g.R.z, g.R.w);
                 }
             }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void make_cube_from_xline_<TCubeInstanceWriter>(
+            ref TCubeInstanceWriter outputCubes,
+            int iy, int iz, uint4 xmask, uint zmask,
+            uint* pLy0z0, uint* pLy0z1, uint* pLy1z0, uint* pLy1z1,
+            uint* pRy0z0, uint* pRy0z1, uint* pRy1z0, uint* pRy1z1)
+            where TCubeInstanceWriter : ICubeInstanceWriter
+        {
+            var cl = getXLine_(iy, iz, pLy0z0, pLy0z1, pLy1z0, pLy1z1, zmask);
+            var cubes = bitwiseCubesXLine_(cl.y0z0, cl.y0z1, cl.y1z0, cl.y1z1);
+
+            var cr = getXLine_(iy, iz, pRy0z0, pRy0z1, pRy1z0, pRy1z1, zmask);
+            cubes._0f870f87 |= bitwiseLastHalfCubeXLine_(cr.y0z0, cr.y0z1, cr.y1z0, cr.y1z1);
+            cubes._0f870f87 &= xmask;// 端のキューブを消す
+
+            addCubeFromXLine_(ref cubes, iy, iz, ref outputCubes);
         }
 
 

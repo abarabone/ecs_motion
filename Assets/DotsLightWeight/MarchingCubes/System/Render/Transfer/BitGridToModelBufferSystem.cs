@@ -78,7 +78,9 @@ namespace DotsLite.Draw
                     pModel[i + 2] = math.asfloat(ids.rPack4);// Debug.Log($"{ids.lPack4} {ids.rPack4}");
 
                     var u = unit.UnitOnEdge >> 1;
-                    pModel[i + 0] = new float4(pos.Value - new float3(u, -u, -u), 1.0f);// Debug.Log($"pos {target.DrawInstanceId} {lengthOfInstance} {pModel[i + 0]}");
+                    //pModel[i + 0] = new float4(pos.Value - new float3(u, -u, -u), 1.0f);// Debug.Log($"pos {target.DrawInstanceId} {lengthOfInstance} {pModel[i + 0]}");
+                    pModel[i + 0] = new float4(pos.Value - new float3(u.x, -u.y, -u.z), 1.0f);// Debug.Log($"pos {target.DrawInstanceId} {lengthOfInstance} {pModel[i + 0]}");
+
 
 
                 })

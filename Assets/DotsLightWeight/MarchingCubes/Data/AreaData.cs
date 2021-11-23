@@ -25,7 +25,8 @@ namespace DotsLite.MarchingCubes.Data
     {
         public struct GridTypeData : IComponentData
         {
-            public int UnitOnEdge;
+            public BitGridType GridType;
+            //public int4 UnitOnEdge;
         }
         public unsafe struct GridLinkData : IComponentData
         {
@@ -82,6 +83,7 @@ namespace DotsLite.MarchingCubes.Data
             public float4 UnitScaleR;
             public int4 GridSpan;
             public int4 GridLength;
+            public int4 UnitOnEdge;
         }
 
         public struct BitGridPrefabData : IComponentData

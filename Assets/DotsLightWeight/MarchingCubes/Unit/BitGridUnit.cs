@@ -16,8 +16,30 @@ namespace DotsLite.MarchingCubes.Data
 
     public enum BitGridType
     {
-        Grid32x32x32 = 32,
-        Grid16x16x16 = 16,
+        none,
+        //Grid32x32x32 = 0b_100000_100000_100000,//32x32x32,
+        //Grid16x16x16 = 0b_010000_010000_010000,//16x16x16,
+        //Grid32x4x32 = 0b_100000_000100_100000,//32x4x32,
+        Grid32x32x32,
+        Grid16x16x16,
+        Grid32x4x32,
+    }
+
+    public static class Ext
+    {
+        //public static int4 ToInt4(this BitGridType x)
+        //{
+        //    var i = (uint)x;
+        //    return (int4)new uint4(i >> 12 & 0b111111, i >> 6 & 0b111111, i >> 0 & 0b111111, 0);
+        //}
+        public static int4 ToInt4(this BitGridType x) => x switch
+        {
+            BitGridType.Grid32x32x32 => new int4(32, 32, 32, 0),
+            BitGridType.Grid16x16x16 => new int4(16, 16, 16, 0),
+            BitGridType.Grid32x4x32 => new int4(32, 4, 32, 0),
+            _ => default,
+        };
+        //public static int CalcXLineBufferSize()
     }
 
 

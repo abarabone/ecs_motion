@@ -2,13 +2,11 @@
 
 AppendStructuredBuffer<uint> cube_instances;
 
-
-//struct grid
-//{
-//	uint dotxlines[32][32];
-//};
-//StructuredBuffer<grid> dotgrids;
 StructuredBuffer<uint> dotgrids;
+
+StructuredBuffer<int4> BoneVectorBuffer;
+int	VectorLengthPerInstance;
+int BoneVectorOffset;
 
 
 struct CubeXLineBitwise
@@ -110,21 +108,8 @@ uint toCubeInstance(uint ix, uint iy, uint iz, uint gridId, uint cubeId)
 }
 
 
-struct GridInstruction
-{
-    float3 position;
-    int dynamic_grid_id;
-    int static_grid_ids[2][2][2];
-};
-StructuredBuffer<GridInstruction> grid_instructions;
-
-StructuredBuffer<int4> BoneVectorBuffer;
-int	VectorLengthPerInstance;
-int BoneVectorOffset;
-
 static const uint4 element_mask_table[] =
 {
-	//{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}
 	{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}// 00, 01, 10, 11
 };
 
@@ -135,13 +120,15 @@ int toIndex(int igrid, int overx, int iy, int iz)
     const int _iy = iy & 0x1f;
     const int _iz = iz & 0x1f;
 
-    const int _gid = grid_instructions[igrid].static_grid_ids[overx][overy][overz];
+    //const int _gid = grid_instructions[igrid].static_grid_ids[overx][overy][overz];
+    const float4 pack4 = BoneVectorBuffer[igrid + overx];
+    const int _gid = dot(pack4, element_mask_table[(overy << 1) + overz]);
 
     if (_gid == -1) return -1;
 
     const int g = _gid * 32 * 32;
-    const int z = _iz * 32;
-    const int y = _iy;
+    const int y = _iy * 32;
+    const int z = _iz;
     return g + z + y;
 }
 
@@ -154,7 +141,8 @@ int toIndex(int igrid, int overx, int iy, int iz)
 [numthreads(1, 32, 32)]
 void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 {
-    const int igrid = gid.x;// instrucction grid id
+    //const int igrid = gid.x;// instrucction grid id
+    const int igrid = BoneVectorOffset + VectorLengthPerInstance * gid.x + 1;
 
     const int i00 = toIndex(igrid, 0, id.y + 0, id.z + 0); if (i00 == -1) return;
     const int i01 = toIndex(igrid, 0, id.y + 0, id.z + 1); if (i01 == -1) return;
@@ -181,7 +169,7 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
             if (cube == 0) continue;
 
-            const uint instance = toCubeInstance(shift + i, id.y, id.z, igrid, cube);
+            const uint instance = toCubeInstance(shift + i, id.y, id.z, gid.x, cube);
             cube_instances.Append(instance);
         }
     }
@@ -196,7 +184,7 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
         if (cube == 0) continue;
 
-        const uint instance = toCubeInstance(shift + 7, id.y, id.z, igrid, cube);
+        const uint instance = toCubeInstance(shift + 7, id.y, id.z, gid.x, cube);
         cube_instances.Append(instance);
     }
 
@@ -218,6 +206,6 @@ void CSMain (uint3 id : SV_GroupThreadID, uint3 gid : SV_GroupID)
 
     if (cube == 0) return;
 
-    const uint instance = toCubeInstance(shift + 7, id.y, id.z, igrid, cube);
+    const uint instance = toCubeInstance(shift + 7, id.y, id.z, gid.x, cube);
     cube_instances.Append(instance);
 }
