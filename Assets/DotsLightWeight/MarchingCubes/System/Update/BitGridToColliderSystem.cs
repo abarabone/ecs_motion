@@ -118,7 +118,8 @@ namespace DotsLite.MarchingCubes
                 if (gtype.GridType == BitGridType.Grid32x32x32)
                 {
                     //UnityEngine.Debug.Log(gtype.GridType);
-                    var mesh = makeMesh_(in grids, in links, in gids, in grid, in locate, in gtype, in pos, in mcdata);
+                    var collider = makeMeshCollider_(
+                        in grids, in links, in gids, in grid, in locate, in gtype, in mcdata);
 
                     if (this.colliders.HasComponent(ent))
                     {
@@ -127,7 +128,7 @@ namespace DotsLite.MarchingCubes
 
                     cmd.AddComponent(i, ent, new PhysicsCollider
                     {
-                        Value = mesh,
+                        Value = collider,
                     });
 
                     return;
@@ -135,7 +136,7 @@ namespace DotsLite.MarchingCubes
             }
         }
 
-        [BurstCompile]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe BlobAssetReference<Collider> makeTestCube_(Translation pos)
         {
             var geom = new BoxGeometry
@@ -148,16 +149,14 @@ namespace DotsLite.MarchingCubes
             return BoxCollider.Create(geom);
         }
 
-        [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe BlobAssetReference<Collider> makeMesh_(
+        static unsafe BlobAssetReference<Collider> makeMeshCollider_(
             in ComponentDataFromEntity<BitGrid.BitLinesData> grids,
             in BitGridArea.GridLinkData links,
             in BitGridArea.GridInstructionIdData ids,
             in BitGrid.BitLinesData grid,
             in BitGrid.LocationInAreaData locate,
             in BitGrid.GridTypeData type,
-            in Translation pos,
             in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
         {
             var u = type.UnitOnEdge.xyz;
@@ -176,13 +175,13 @@ namespace DotsLite.MarchingCubes
             var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
 
             MakeCube.SampleAllCubes(in near, ref writer, u);
-            var mesh = writer.CreateMesh();
+            var collider = writer.CreateMesh();
             //var mesh = makeTestCube_(pos);
             writer.Dispose();
-            return mesh;
+            return collider;
         }
 
-        [BurstCompile]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void makeCubes_(uint* p)
         {
             for (var i = 0; i < 32 * 32; i++)

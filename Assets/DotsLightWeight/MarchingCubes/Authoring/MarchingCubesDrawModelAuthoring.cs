@@ -126,8 +126,17 @@ namespace DotsLite.MarchingCubes.Authoring
                 maxCubeInstance = this.MaxCubeInstances,
                 maxGridInstructions = this.MaxGridInstructions,
                 maxGridBufferLength =  gridLength,
-                unitOnEdge = 32,
+                unitOnEdge = getUnitOnEdge_(),
             });
+        }
+
+        int4 getUnitOnEdge_()
+        {
+            var gtype = this.GetComponentsInChildren<MarchingCubesGridAreaAuthoring>()
+                .Select(x => x.GridPrefab.GridType)
+                .Distinct(x => x)
+                .Single();// ëSïîìØÇ∂Ç∂Ç·Ç»Ç©Ç¡ÇΩÇÁÉGÉâÅ[Ç≈ÇÊÇ¢
+            return gtype.ToInt4();
         }
 
     }
