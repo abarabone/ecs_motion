@@ -111,7 +111,7 @@ namespace DotsLite.MarchingCubes
                                 this.dirties[targetEntity] = new BitGrid.UpdateDirtyRangeData
                                 {
                                     begin = 0,//32 * 32 / 2,
-                                    end = 32 * 32 - 1,
+                                    end = dim.UnitOnEdge.z * dim.UnitOnEdge.y / 8 - 1,
                                 };
                             }
                             break;
@@ -121,6 +121,11 @@ namespace DotsLite.MarchingCubes
                                 var p = this.bitgrids[targetEntity].p;
                                 p[0] = 0xffff_ffff;
 
+                                this.dirties[targetEntity] = new BitGrid.UpdateDirtyRangeData
+                                {
+                                    begin = 0,//32 * 32 / 2,
+                                    end = dim.UnitOnEdge.z * dim.UnitOnEdge.y / 8 - 1,
+                                };
                             }
                             break;
                         case BitGridUpdateType.sphere_add32:

@@ -83,7 +83,6 @@ namespace DotsLite.MarchingCubes
             em.SetComponentData(newent, new BitGrid.LocationInAreaData
             {
                 IndexInArea = index,
-                //BitBfufferOffset = prefab.BitLineBufferOffset + index.serial * prefab.BitLineBufferLength,
             });
             em.SetComponentData(newent, new DrawInstance.WorldBbox
             {

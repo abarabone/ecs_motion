@@ -105,7 +105,7 @@ namespace DotsLite.MarchingCubes
                 this.vtxOffset += srcVtxList.Length;
             }
 
-            public BlobAssetReference<Collider> CreateMesh() =>
+            public BlobAssetReference<Collider> CreateMesh() => //new BlobAssetReference<Collider>();
                 MeshCollider.Create(this.vtxs, this.tris, this.filter);
 
             public void Dispose()
@@ -137,10 +137,11 @@ namespace DotsLite.MarchingCubes
         /// </summary>
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SampleAllCubes<TCubeInstanceWriter>(in NearBitGrids g, ref TCubeInstanceWriter outputCubes)
+        public static void SampleAllCubes<TCubeInstanceWriter>(in NearBitGrids g, ref TCubeInstanceWriter outputCubes, int3 unitOnEdge)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
-            for (var iy = 0; iy < 32 - 1; iy++)
+            var u = unitOnEdge;
+            for (var iy = 0; iy < u.y/8 - 1; iy++)
             {
                 var xmask0 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxx);
                 const uint zmask0 = 1u;
@@ -163,7 +164,7 @@ namespace DotsLite.MarchingCubes
             {
                 var xmask2 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.yyyy);
                 const uint zmask2 = 1u;
-                const int iy = 31;
+                int iy = u.y - 1;
                 for (var iz = 0; iz < (31 & ~0b11); iz += 4)
                 {
                     make_cube_from_xline_(

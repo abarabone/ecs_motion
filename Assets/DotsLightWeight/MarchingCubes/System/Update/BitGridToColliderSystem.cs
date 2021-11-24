@@ -117,7 +117,8 @@ namespace DotsLite.MarchingCubes
 
                 if (gtype.GridType == BitGridType.Grid32x32x32)
                 {
-                    var mesh = makeMesh_(in grids, in links, in gids, in grid, in locate, in pos, in mcdata);
+                    //UnityEngine.Debug.Log(gtype.GridType);
+                    var mesh = makeMesh_(in grids, in links, in gids, in grid, in locate, in gtype, in pos, in mcdata);
 
                     if (this.colliders.HasComponent(ent))
                     {
@@ -134,6 +135,7 @@ namespace DotsLite.MarchingCubes
             }
         }
 
+        [BurstCompile]
         static unsafe BlobAssetReference<Collider> makeTestCube_(Translation pos)
         {
             var geom = new BoxGeometry
@@ -146,6 +148,7 @@ namespace DotsLite.MarchingCubes
             return BoxCollider.Create(geom);
         }
 
+        [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe BlobAssetReference<Collider> makeMesh_(
             in ComponentDataFromEntity<BitGrid.BitLinesData> grids,
@@ -153,14 +156,16 @@ namespace DotsLite.MarchingCubes
             in BitGridArea.GridInstructionIdData ids,
             in BitGrid.BitLinesData grid,
             in BitGrid.LocationInAreaData locate,
+            in BitGrid.GridTypeData type,
             in Translation pos,
             in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
         {
+            var u = type.UnitOnEdge.xyz;
             var writer = new MakeCube.MeshWriter
             {
-                center = new float3(-16, 16, 16),
-                vtxs = new NativeList<float3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
-                tris = new NativeList<int3>(32 * 32 * 32 * 12 / 2, Allocator.Temp),
+                center = u * new float3(-0.5f, 0.5f, 0.5f),
+                vtxs = new NativeList<float3>(u.x * u.y * u.z * 12 / 2, Allocator.Temp),
+                tris = new NativeList<int3>(u.x * u.y * u.z * 12 / 2, Allocator.Temp),
                 filter = new CollisionFilter
                 {
                     BelongsTo = 1 << 22,
@@ -170,13 +175,14 @@ namespace DotsLite.MarchingCubes
             };
             var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
 
-            MakeCube.SampleAllCubes(in near, ref writer);
+            MakeCube.SampleAllCubes(in near, ref writer, u);
             var mesh = writer.CreateMesh();
             //var mesh = makeTestCube_(pos);
             writer.Dispose();
             return mesh;
         }
 
+        [BurstCompile]
         static unsafe void makeCubes_(uint* p)
         {
             for (var i = 0; i < 32 * 32; i++)

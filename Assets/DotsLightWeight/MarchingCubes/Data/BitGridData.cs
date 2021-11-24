@@ -73,8 +73,8 @@ namespace DotsLite.MarchingCubes.Data
 
         public struct UpdateDirtyRangeData : IComponentData
         {
-            public uint begin;
-            public uint end;
+            public int begin;
+            public int end;
         }
 
     }

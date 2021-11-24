@@ -74,7 +74,7 @@ namespace DotsLite.MarchingCubes
                     CubeDrawModel.MakeCubesShaderResourceData res) =>
                 {
                     res.MakeCubesShader = init.cubeMakeShader;
-                    res.XLineLengthPerGrid = init.unitOnEdge * init.unitOnEdge / (32/init.unitOnEdge);
+                    res.XLineLengthPerGrid = init.unitOnEdge.z * init.unitOnEdge.y / (32/init.unitOnEdge.x);
                     res.Alloc(init);
 
                     var mesh = geom.Mesh;

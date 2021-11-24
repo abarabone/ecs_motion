@@ -93,7 +93,7 @@ namespace DotsLite.MarchingCubes.Data
 
             public static GridBitLinesDataBuffer Create(int maxGrids, int4 unitOnEdge) => new GridBitLinesDataBuffer
             {
-                Buffer = new ComputeBuffer(unitOnEdge.x * unitOnEdge / (32 / unitOnEdge) * maxGrids, Marshal.SizeOf<uint>()),
+                Buffer = new ComputeBuffer(unitOnEdge.z * unitOnEdge.y / (32 / unitOnEdge.x) * maxGrids, Marshal.SizeOf<uint>()),
             };
 
             public void Dispose()
@@ -131,12 +131,12 @@ namespace DotsLite.MarchingCubes.Data
                 this.Texture = null;
             }
 
-            public static GridCubeIdShaderBufferTexture Create(int maxGridInstructions, int unitOnEdge)
+            public static GridCubeIdShaderBufferTexture Create(int maxGridInstructions, int4 unitOnEdge)
             {
                 var n = unitOnEdge;
                 var format = UnityEngine.Experimental.Rendering.GraphicsFormat.R8_UInt;
                 //var format = UnityEngine.Experimental.Rendering.GraphicsFormat.R32_UInt;
-                var buffer = new RenderTexture(n * n, n, 0, format, 0);
+                var buffer = new RenderTexture(n.x * n.z, n.y, 0, format, 0);
                 buffer.enableRandomWrite = true;
                 buffer.dimension = TextureDimension.Tex2DArray;
                 buffer.volumeDepth = maxGridInstructions;
