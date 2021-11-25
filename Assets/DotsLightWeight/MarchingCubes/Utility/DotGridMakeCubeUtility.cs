@@ -105,7 +105,7 @@ namespace DotsLite.MarchingCubes
                 this.vtxOffset += srcVtxList.Length;
             }
 
-            public BlobAssetReference<Collider> CreateMesh() => //new BlobAssetReference<Collider>();
+            public BlobAssetReference<Collider> CreateMesh() =>
                 MeshCollider.Create(this.vtxs, this.tris, this.filter);
 
             public void Dispose()

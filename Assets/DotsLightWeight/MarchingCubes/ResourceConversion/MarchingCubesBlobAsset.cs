@@ -19,7 +19,6 @@ namespace DotsLite.MarchingCubes
         public BlobArray<float3> BaseVertexList;
         public BlobArray<CubeWrapper> CubeIdAndVertexIndicesList;
 
-
         public struct CubeWrapper
         {
             public byte cubeId;
@@ -27,6 +26,9 @@ namespace DotsLite.MarchingCubes
             public BlobArray<float3> normalsForTriangle;
             public BlobArray<float3> normalsForVertex;
         }
+
+        public BlobArray<byte> cubeIdPrimaryList;
+        public BlobArray<quaternion> CubeRotationList;
 
     }
 
@@ -93,6 +95,18 @@ namespace DotsLite.MarchingCubes
                             dstnts[i] = srcnts[i];
                         }
                     }
+                }
+
+                var dstcids = builder.Allocate(ref dst.cubeIdPrimaryList, srccubes.Length);
+                for (var i = 0; i < srccubes.Length; i++)
+                {
+                    dstcids[i] = srccubes[i].primaryCubeId;
+                }
+
+                var dstrots = builder.Allocate(ref dst.CubeRotationList, srccubes.Length);
+                for (var i = 0; i < srccubes.Length; i++)
+                {
+                    dstrots[i] = srccubes[i].rotation;
                 }
             }
         }

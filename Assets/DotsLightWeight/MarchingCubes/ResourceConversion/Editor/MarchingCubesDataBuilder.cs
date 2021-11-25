@@ -36,7 +36,7 @@ namespace DotsLite.MarchingCubes
 
 
 
-        static public (byte cubeId, int[] indices)[]
+        static public (byte cubeId, byte cubeIdPrimary, quaternion rot, int[] indices)[]
         ConvertObjectDataToMachingCubesData(
             (string name, Vector3[] vtxs, int[][] tris)[] objectsData,
             Vector3[] baseVtxList
@@ -50,8 +50,9 @@ namespace DotsLite.MarchingCubes
             var triVtxLists = transformSbyteVtxs_( cube254Pattarns, prototypeCubes );
 
             var triIdxLists = makeVtxIndexListsPerCube_( triVtxLists, baseVtxIndexBySbvtxDict );
+            var cubeRotLists = makeRotListPerCube_(cube254Pattarns);
             
-            return triIdxLists;
+            return triIdxLists.Zip(cubeRotLists, (x, y) => (x.cubeId, y.primaryId, y.rot, x.indices)).ToArray();
 
 
             (byte id, IEnumerable<(Vector3 v0, Vector3 v1, Vector3 v2)> trivtxs)[] makePrototypeCubes_
@@ -85,11 +86,11 @@ namespace DotsLite.MarchingCubes
                 var vtxsAndIds = qVtxAndId.ToArray();
 
 
-                //// 確認
-                //foreach( var x in qExtractedData )
-                //{
-                //    Debug.Log( $"{Convert.ToString( x.cubeId, 2 ).PadLeft( 8, '0' )}" );
-                //}
+                // 確認
+                foreach (var x in qExtractedData)
+                {
+                    Debug.Log($"{Convert.ToString(x.cubeId, 2).PadLeft(8, '0')}");
+                }
 
                 return vtxsAndIds;
             }
@@ -229,6 +230,31 @@ namespace DotsLite.MarchingCubes
                 return Enumerable.Zip( cubeIdsAndVtxLists_, q, ( l, r ) => (l.cubeId, indices: r.ToArray()) )
                     .ToArray()
                     ;
+            }
+
+
+            (byte primaryId, quaternion rot)[] makeRotListPerCube_(CubePattarn[] cube254Pattarns)
+            {
+                var q =
+                    from cube in cube254Pattarns
+                    select (
+                        cube.primaryId,
+                        makeRot_(cube)
+                    );
+                return q.ToArray();
+
+                quaternion makeRot_(CubePattarn cube)
+                {
+                    var fwd = cube.dir;
+                    var up = cube.up;
+                    var side = cube.side;
+                    var mt = new float3x3(
+                        side.x, up.x, fwd.x,
+                        side.y, up.y, fwd.y,
+                        side.z, up.z, fwd.z
+                    );
+                    return math.quaternion(mt);
+                }
             }
         }
 

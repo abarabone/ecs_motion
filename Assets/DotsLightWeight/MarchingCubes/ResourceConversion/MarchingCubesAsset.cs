@@ -15,11 +15,13 @@ namespace DotsLite.MarchingCubes
         public struct CubeWrapper// タプルがシリアライズできないので
         {
             public byte cubeId;
+            public byte primaryCubeId;
+            public Quaternion rotation;
             public int[] vertexIndices;
             public Vector3[] normalsForTriangle;
             public Vector3[] normalsForVertex;
         }
-        
+
         //public (byte cubeId, int[] vtxIdxs)[] CubeIdsAndIndexLists =>
         //    this.CubeIndexLists.Select( x => (x.cubeId, x.indices) ).ToArray();
 

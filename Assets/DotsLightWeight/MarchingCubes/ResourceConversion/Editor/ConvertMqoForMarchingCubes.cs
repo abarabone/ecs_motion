@@ -113,7 +113,7 @@ namespace DotsLite.MarchingCubes
 
             void save_(
                 UnityEngine.Object[] selectedObjects,
-                (byte cubeId, int[] indices)[] cubeIdsAndIndexLists,
+                (byte cubeId, byte primary, quaternion rot, int[] indices)[] cubeIdsAndIndexLists,
                 (byte cubeId, Vector3[] normals)[] cubeIdsAnd4TrianglesNormals,
                 (byte cubeId, Vector3[] normals)[] cubeIdAnd12VerticesNormalsList,
                 Vector3[] baseVertexList
@@ -144,6 +144,8 @@ namespace DotsLite.MarchingCubes
                     select new MarchingCubesAsset.CubeWrapper
                     {
                         cubeId = i.cubeId,
+                        primaryCubeId = i.primary,
+                        rotation = i.rot,
                         vertexIndices = i.indices,
                         normalsForTriangle = tn.normals,
                         normalsForVertex = vn.normals,
@@ -185,7 +187,7 @@ namespace DotsLite.MarchingCubes
 
         // とりあえずここに
         static (byte cubeId, Vector3[] normals)[] calculateNormals
-            ( (byte cubeId, int[] indices)[] cubeIdsAndIndexLists, Vector3[] baseVertexList )
+            ( (byte cubeId, byte, quaternion, int[] indices)[] cubeIdsAndIndexLists, Vector3[] baseVertexList )
         {
 
             var qNormalPerTriangleInCube =
@@ -204,7 +206,7 @@ namespace DotsLite.MarchingCubes
 
 
         static (byte cubeId, Vector3[] normals)[] calculate12VerticesNormalsPerCubePattern
-            ( (byte cubeId, int[] indices)[] cubeIdsAndIndexLists, (byte cubeId, Vector3[] normals)[] normals )
+            ( (byte cubeId, byte, quaternion, int[] indices)[] cubeIdsAndIndexLists, (byte cubeId, Vector3[] normals)[] normals )
         {
 
             var q =
