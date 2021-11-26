@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Physics.Authoring;
 using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsLite.MarchingCubes.Authoring
@@ -32,9 +33,9 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public GridFillMode FillMode;
 
-        //[SerializeField]
-        public Unity.Physics. CollisionFilter;
-
+        [Header("DefaultCollisionFilter")]
+        public PhysicsCategoryTags BelongsTo;
+        public PhysicsCategoryTags CollidesWith;
 
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
@@ -148,9 +149,9 @@ namespace DotsLite.MarchingCubes.Authoring
 
                 var common = this.GetComponentInParent<MarchingCubesCommonAuthoring>();
                 var isSameDefault =
-                    this.CollisionFilter.BelongsTo == common.DefaultCollisionFilter.BelongsTo
+                    this.BelongsTo.Value == common.BelongsTo.Value
                     &&
-                    this.CollisionFilter.CollidesWith == common.DefaultCollisionFilter.CollidesWith;
+                    this.CollidesWith.Value == common.CollidesWith.Value;
                 //em.SetComponentData(ent, new BitGridArea.UnitCubeColliderAssetData
                 //{
                 //    IsReferenceDefault = isSameDefault,
@@ -160,7 +161,11 @@ namespace DotsLite.MarchingCubes.Authoring
                 //});
                 if (!isSameDefault)
                 {
-                    using var cubes = common.MarchingCubesAsset.CreateCubeColliders(this.CollisionFilter);
+                    using var cubes = common.MarchingCubesAsset.CreateCubeColliders(new Unity.Physics.CollisionFilter
+                    {
+                        BelongsTo = this.BelongsTo.Value,
+                        CollidesWith = this.CollidesWith.Value,
+                    });
 
                     var buffer = em.AddBuffer<UnitCubeColliderAssetData>(ent);
                     //var buffer = em.GetBuffer<UnitCubeColliderAssetData>(ent);

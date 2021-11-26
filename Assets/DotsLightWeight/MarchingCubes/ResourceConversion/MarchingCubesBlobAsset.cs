@@ -36,7 +36,6 @@ namespace DotsLite.MarchingCubes
     [InternalBufferCapacity(0)]
     public struct UnitCubeColliderAssetData : IBufferElementData
     {
-        public struct ColliderAndRotation 
         public BlobAssetReference<Unity.Physics.Collider> Collider;
         public quaternion Rotation;
     }
@@ -123,7 +122,7 @@ namespace DotsLite.MarchingCubes
         public static NativeArray<UnitCubeColliderAssetData> CreateCubeColliders(this MarchingCubesAsset src, CollisionFilter filter)
         {
 
-            using var primaryColliders = createPrimaryColliders_();
+            var primaryColliders = createPrimaryColliders_();
             var qSrccubes =
                 from cube in src.CubeIdAndVertexIndicesList
                 select new UnitCubeColliderAssetData
@@ -135,7 +134,7 @@ namespace DotsLite.MarchingCubes
             return qSrccubes.ToNativeArray(src.CubeIdAndVertexIndicesList.Length, Allocator.Temp);
 
 
-            NativeArray<BlobAssetReference<Collider>> createPrimaryColliders_()
+            Dictionary<byte, BlobAssetReference<Collider>> createPrimaryColliders_()
             {
                 var primaryIds = src.CubeIdAndVertexIndicesList
                     .Select(x => x.primaryCubeId)
@@ -143,23 +142,27 @@ namespace DotsLite.MarchingCubes
                     .ToArray();
                 var q =
                     from cube in src.CubeIdAndVertexIndicesList
-                    join id in primaryIds on cube.cubeId equals id
+                    join primaryId in primaryIds on cube.cubeId equals primaryId
                     let tris = cube.vertexIndices.AsTriangle()
-                        .Select(x => new int3(x.ElementAt(0), x.ElementAt(1), x.ElementAt(2)))
+                        .Select(x =>
+                        {
+                            var idxs = x.ToArray();
+                            return new int3(idxs[0], idxs[1], idxs[2]);
+                        })
                         .ToNativeArray(Allocator.Temp)
                     let vtxs = src.BaseVertexList
                         .Select(x => (float3)x)
                         .ToNativeArray(Allocator.Temp)
-                    select (tris, vtxs)
+                    select (primaryId, tris, vtxs)
                     ;
                 return q
                     .Select(x =>
                     {
                         using (x.vtxs)
                         using (x.tris)
-                            return MeshCollider.Create(x.vtxs, x.tris, filter);
+                            return (x.primaryId, collider: MeshCollider.Create(x.vtxs, x.tris, filter));
                     })
-                    .ToNativeArray(primaryIds.Length, Allocator.Temp);
+                    .ToDictionary(x => x.primaryId, x => x.collider);
             }
         }
         //public static BlobAssetReference<UnitCubeColliderAsset> CreateUnitCubeAsset(
