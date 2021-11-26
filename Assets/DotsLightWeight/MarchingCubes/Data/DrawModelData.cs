@@ -69,7 +69,7 @@ namespace DotsLite.MarchingCubes.Data
 
         public class InitializeData : IComponentData
         {
-            public MarchingCubesAsset asset;
+            //public MarchingCubesAsset asset;
             public ComputeShader cubeMakeShader;
 
             public int maxGridBufferLength;

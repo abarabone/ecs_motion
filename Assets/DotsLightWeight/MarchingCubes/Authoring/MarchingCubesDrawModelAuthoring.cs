@@ -22,7 +22,7 @@ namespace DotsLite.MarchingCubes.Authoring
     public class MarchingCubesDrawModelAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
-        public MarchingCubesAsset MarchingCubesAsset;
+        //public MarchingCubesAsset MarchingCubesAsset;
 
         public int MaxGridInstructions;
         public int MaxCubeInstances;
@@ -121,7 +121,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     .Sum();
             em.SetComponentData(ent, new CubeDrawModel.InitializeData
             {
-                asset = this.MarchingCubesAsset,
+                //asset = this.MarchingCubesAsset,
                 cubeMakeShader = this.GridToCubesShader,
                 maxCubeInstance = this.MaxCubeInstances,
                 maxGridInstructions = this.MaxGridInstructions,

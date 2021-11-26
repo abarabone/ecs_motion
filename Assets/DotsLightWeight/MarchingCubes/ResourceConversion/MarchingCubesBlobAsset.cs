@@ -9,9 +9,14 @@ using Unity.Burst;
 using Unity.Jobs;
 using Unity.Mathematics;
 using System;
+using Unity.Physics;
+using Collider = Unity.Physics.Collider;
+using MeshCollider = Unity.Physics.MeshCollider;
 
 namespace DotsLite.MarchingCubes
 {
+    using DotsLite.Geometry;
+    using DotsLite.Misc;
 
     public struct MarchingCubesBlobAsset
     {
@@ -26,13 +31,27 @@ namespace DotsLite.MarchingCubes
             public BlobArray<float3> normalsForTriangle;
             public BlobArray<float3> normalsForVertex;
         }
-
-        public BlobArray<byte> cubeIdPrimaryList;
-        public BlobArray<quaternion> CubeRotationList;
-
     }
 
-    
+    [InternalBufferCapacity(0)]
+    public struct UnitCubeColliderAssetData : IBufferElementData
+    {
+        public struct ColliderAndRotation 
+        public BlobAssetReference<Unity.Physics.Collider> Collider;
+        public quaternion Rotation;
+    }
+    //public struct UnitCubeColliderAsset
+    //{
+    //    public BlobArray<ColliderAndRotation> cubeColliders;
+
+    //    public struct ColliderAndRotation
+    //    {
+    //        public BlobAssetReference<Unity.Physics.Collider> Collider;
+    //        public quaternion Rotation;
+    //    }
+    //}
+
+
 
     public static partial class MarchingCubesUtility
     {
@@ -71,7 +90,7 @@ namespace DotsLite.MarchingCubes
                         var srcvis = srccubes[i].vertexIndices;
                         var dstvis = builder.Allocate(ref dstcube.vertexIndices, srcvis.Length / 3);
                         var idst = 0;
-                        for (var i = 0; i < srcvis.Length; i+=3)
+                        for (var i = 0; i < srcvis.Length; i += 3)
                         {
                             //dstvis[idst++] = new int3(srcvis[i + 2], srcvis[i + 1], srcvis[i + 0]);
                             dstvis[idst++] = new int3(srcvis[i + 0], srcvis[i + 1], srcvis[i + 2]);
@@ -97,22 +116,111 @@ namespace DotsLite.MarchingCubes
                     }
                 }
 
-                var dstcids = builder.Allocate(ref dst.cubeIdPrimaryList, srccubes.Length);
-                for (var i = 0; i < srccubes.Length; i++)
-                {
-                    dstcids[i] = srccubes[i].primaryCubeId;
-                }
-
-                var dstrots = builder.Allocate(ref dst.CubeRotationList, srccubes.Length);
-                for (var i = 0; i < srccubes.Length; i++)
-                {
-                    dstrots[i] = srccubes[i].rotation;
-                }
             }
         }
 
-    }
 
+        public static NativeArray<UnitCubeColliderAssetData> CreateCubeColliders(this MarchingCubesAsset src, CollisionFilter filter)
+        {
+
+            using var primaryColliders = createPrimaryColliders_();
+            var qSrccubes =
+                from cube in src.CubeIdAndVertexIndicesList
+                select new UnitCubeColliderAssetData
+                {
+                    Collider = primaryColliders[cube.primaryCubeId],
+                    Rotation = cube.rotation,
+                };
+
+            return qSrccubes.ToNativeArray(src.CubeIdAndVertexIndicesList.Length, Allocator.Temp);
+
+
+            NativeArray<BlobAssetReference<Collider>> createPrimaryColliders_()
+            {
+                var primaryIds = src.CubeIdAndVertexIndicesList
+                    .Select(x => x.primaryCubeId)
+                    .Distinct()
+                    .ToArray();
+                var q =
+                    from cube in src.CubeIdAndVertexIndicesList
+                    join id in primaryIds on cube.cubeId equals id
+                    let tris = cube.vertexIndices.AsTriangle()
+                        .Select(x => new int3(x.ElementAt(0), x.ElementAt(1), x.ElementAt(2)))
+                        .ToNativeArray(Allocator.Temp)
+                    let vtxs = src.BaseVertexList
+                        .Select(x => (float3)x)
+                        .ToNativeArray(Allocator.Temp)
+                    select (tris, vtxs)
+                    ;
+                return q
+                    .Select(x =>
+                    {
+                        using (x.vtxs)
+                        using (x.tris)
+                            return MeshCollider.Create(x.vtxs, x.tris, filter);
+                    })
+                    .ToNativeArray(primaryIds.Length, Allocator.Temp);
+            }
+        }
+        //public static BlobAssetReference<UnitCubeColliderAsset> CreateUnitCubeAsset(
+        //    this MarchingCubesAsset src, CollisionFilter filter)
+        //{
+
+        //    using var builder = new BlobBuilder(Allocator.Temp);
+
+        //    build_(ref builder.ConstructRoot<UnitCubeColliderAsset>());
+
+        //    return builder.CreateBlobAssetReference<UnitCubeColliderAsset>(Allocator.Persistent);
+
+
+
+        //    void build_(ref UnitCubeColliderAsset dst)
+        //    {
+        //        var primaryColliders = createPrimaryColliders_();
+        //        var qSrccubes =
+        //            from cube in src.CubeIdAndVertexIndicesList
+        //            select (cube.primaryCubeId, cube.rotation)
+        //            ;
+        //        var dstcubes = builder.Allocate(ref dst.cubeColliders, src.CubeIdAndVertexIndicesList.Length);
+        //        var q = qSrccubes.Select((x, i) => (cube: x, i));
+        //        foreach (var x in q)
+        //        {
+        //            dstcubes[x.i] = new UnitCubeColliderAsset.ColliderAndRotation
+        //            {
+        //                Collider = primaryColliders[x.i],
+        //                Rotation = x.cube.rotation,
+        //            };
+        //        }
+        //    }
+
+        //    BlobAssetReference<Collider>[] createPrimaryColliders_()
+        //    {
+        //        var primaryIds = src.CubeIdAndVertexIndicesList
+        //            .Select(x => x.primaryCubeId)
+        //            .Distinct()
+        //            .ToArray();
+        //        var q =
+        //            from cube in src.CubeIdAndVertexIndicesList
+        //            join id in primaryIds on cube.cubeId equals id
+        //            let tris = cube.vertexIndices.AsTriangle()
+        //                .Select(x => new int3(x.ElementAt(0), x.ElementAt(1), x.ElementAt(2)))
+        //                .ToNativeArray(Allocator.Temp)
+        //            let vtxs = src.BaseVertexList
+        //                .Select(x => (float3)x)
+        //                .ToNativeArray(Allocator.Temp)
+        //            select (tris, vtxs)
+        //            ;
+        //        return q
+        //            .Select(x =>
+        //            {
+        //                using (x.vtxs)
+        //                using (x.tris)
+        //                    return MeshCollider.Create(x.vtxs, x.tris, filter);
+        //            })
+        //            .ToArray();
+        //    }
+        //}
+    }
 
 
     public static partial class MarchingCubesUtility

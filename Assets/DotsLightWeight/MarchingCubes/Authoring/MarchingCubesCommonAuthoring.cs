@@ -11,7 +11,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.MarchingCubes.Authoring.another
+namespace DotsLite.MarchingCubes.Authoring
 {
     using DotsLite.Draw;
     using DotsLite.Model;
@@ -32,6 +32,9 @@ namespace DotsLite.MarchingCubes.Authoring.another
         public MarchingCubesAsset MarchingCubesAsset;
         //public Material SrcMaterial;
         //public ComputeShader GridCubeIdSetShader;
+
+        public Unity.Physics.CollisionFilter DefaultCollisionFilter;
+
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -64,6 +67,20 @@ namespace DotsLite.MarchingCubes.Authoring.another
                 {
                     Asset = this.MarchingCubesAsset.ConvertToBlobData()
                 });
+                //em.SetComponentData(ent, new Common.UnitCubeColliderAssetData
+                //{
+                //    CubeColliders = this.MarchingCubesAsset.CreateCubeColliders(this.DefaultCollisionFilter)
+                //});
+
+                if (this.MarchingCubesAsset != null)
+                {
+                    using var cubes = this.MarchingCubesAsset.CreateCubeColliders(this.DefaultCollisionFilter);
+
+                    var buffer = em.AddBuffer<UnitCubeColliderAssetData>(ent);
+                    //var buffer = em.GetBuffer<UnitCubeColliderAssetData>(ent);
+                    buffer.Capacity = cubes.Length;
+                    buffer.CopyFrom(cubes);
+                }
             }
 
         }

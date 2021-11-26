@@ -24,13 +24,16 @@ namespace DotsLite.MarchingCubes.Authoring
         public MarchingCubesBitGridAuthoring GridPrefab;
         public MarchingCubesGridStockerAuthoring GridStocker;
 
-        public MarchingCubesAsset MarchingCubesAsset;
+        //public MarchingCubesAsset MarchingCubesAsset;
 
 
         public int3 GridLength;
         public float3 UnitScale;
 
         public GridFillMode FillMode;
+
+        //[SerializeField]
+        public Unity.Physics. CollisionFilter;
 
 
 
@@ -142,6 +145,28 @@ namespace DotsLite.MarchingCubes.Authoring
 
                     //DefaultGridEntity = gcs.GetPrimaryEntity(this.GridPrefab),// 暫定でプレハブを
                 });
+
+                var common = this.GetComponentInParent<MarchingCubesCommonAuthoring>();
+                var isSameDefault =
+                    this.CollisionFilter.BelongsTo == common.DefaultCollisionFilter.BelongsTo
+                    &&
+                    this.CollisionFilter.CollidesWith == common.DefaultCollisionFilter.CollidesWith;
+                //em.SetComponentData(ent, new BitGridArea.UnitCubeColliderAssetData
+                //{
+                //    IsReferenceDefault = isSameDefault,
+                //    CubeColliders = isSameDefault
+                //        ? em.GetComponentData<Common.UnitCubeColliderAssetData>(gcs.GetPrimaryEntity(common)).CubeColliders
+                //        : common.MarchingCubesAsset.CreateCubeColliders(this.CollisionFilter)
+                //});
+                if (!isSameDefault)
+                {
+                    using var cubes = common.MarchingCubesAsset.CreateCubeColliders(this.CollisionFilter);
+
+                    var buffer = em.AddBuffer<UnitCubeColliderAssetData>(ent);
+                    //var buffer = em.GetBuffer<UnitCubeColliderAssetData>(ent);
+                    buffer.Capacity = cubes.Length;
+                    buffer.CopyFrom(cubes);
+                }
 
                 em.SetComponentData(ent, new BitGridArea.InitializeData
                 {

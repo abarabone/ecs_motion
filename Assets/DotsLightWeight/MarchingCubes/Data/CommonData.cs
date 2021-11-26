@@ -50,6 +50,12 @@ namespace DotsLite.MarchingCubes.Data
         {
             public BlobAssetReference<MarchingCubesBlobAsset> Asset;
         }
+        //[InternalBufferCapacity(0)]
+        //public struct UnitCubeColliderAssetData : IBufferElementData
+        //{
+        //    public BlobAssetReference<Unity.Physics.Collider> Collider;
+        //    public quaternion Rotation;
+        //}
 
         public class InitializeData : IComponentData
         {

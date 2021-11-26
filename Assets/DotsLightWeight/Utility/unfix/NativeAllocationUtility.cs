@@ -48,8 +48,15 @@ namespace DotsLite.Misc
 		{
 			return new NativeArray<T>( e.ToArray(), allocator );
 		}
+		static public NativeArray<T> ToNativeArray<T>(this IEnumerable<T> e, int length, Allocator allocator) where T : struct
+		{
+			var arr = new NativeArray<T>(length, allocator, NativeArrayOptions.UninitializedMemory);
+			var i = 0;
+			foreach (var item in e) arr[i++] = item;
+			return arr;
+		}
 
-        static public NativeArray<T> Concat<T>( this (NativeArray<T>, NativeArray<T>) src, Allocator allocator )
+		static public NativeArray<T> Concat<T>( this (NativeArray<T>, NativeArray<T>) src, Allocator allocator )
             where T:struct
         {
             var dst = new NativeArray<T>( src.Item1.Length + src.Item2.Length, allocator );

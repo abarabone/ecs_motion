@@ -70,7 +70,6 @@ namespace DotsLite.MarchingCubes.Data
             //public int BitBfufferOffset;
         }
 
-
         public struct UpdateDirtyRangeData : IComponentData
         {
             public int begin;

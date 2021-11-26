@@ -106,6 +106,13 @@ namespace DotsLite.MarchingCubes.Data
         //    public int3 GridSpan;
         //}
 
+        //[InternalBufferCapacity(0)]
+        //public struct UnitCubeColliderAssetData : IBufferElementData
+        //{
+        //    public BlobAssetReference<Unity.Physics.Collider> Collider;
+        //    public quaternion Rotation;
+        //}
+
 
         public struct InitializeData : IComponentData
         {
