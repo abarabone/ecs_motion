@@ -65,55 +65,6 @@ namespace DotsLite.MarchingCubes
             }
         }
 
-        public interface ICubeInstanceWriter
-        {
-            void Add(int x, int y, int z, uint cubeid);
-        }
-        public struct MeshWriter : ICubeInstanceWriter, IDisposable
-        {
-            public float3 center;
-            public NativeList<float3> vtxs;
-            public NativeList<int3> tris;
-            public CollisionFilter filter;
-            public int count;//
-            public int all;//
-
-            public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
-
-            int vtxOffset;
-
-            public void Add(int x, int y, int z, uint cubeId)
-            {
-                this.all++;
-                ref var srcIdxLists = ref this.mcdata.Value.CubeIdAndVertexIndicesList;
-                ref var srcVtxList = ref this.mcdata.Value.BaseVertexList;
-
-                var center = this.center + new float3(x, -y, -z);
-                if (cubeId == 0 || cubeId == 255) return;
-                this.count++;
-
-                ref var srcIdxList = ref srcIdxLists[(int)cubeId - 1].vertexIndices;
-
-                for (var i = 0; i < srcIdxList.Length; i++)
-                {
-                    this.tris.Add(this.vtxOffset + srcIdxList[i]);
-                }
-                for (var i = 0; i < srcVtxList.Length; i++)
-                {
-                    this.vtxs.Add(srcVtxList[i] + center);
-                }
-                this.vtxOffset += srcVtxList.Length;
-            }
-
-            public BlobAssetReference<Collider> CreateMesh() =>
-                MeshCollider.Create(this.vtxs, this.tris, this.filter);
-
-            public void Dispose()
-            {
-                this.vtxs.Dispose();
-                this.tris.Dispose();
-            }
-        }
 
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]

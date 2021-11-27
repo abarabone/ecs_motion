@@ -111,6 +111,24 @@ namespace DotsLite.MarchingCubes
         protected override void OnDestroy()
         {
             this.Entities
+                .WithName("UnitCubeColliders_Destroy")
+                .WithoutBurst()
+                .ForEach((Entity ent, ref DynamicBuffer<UnitCubeColliderAssetData> unitcubes) =>
+                {
+                    for (var i = 0; i < unitcubes.Length; i++)
+                    {
+                        var unit = unitcubes[i];
+                        if (unit.IsPrimaryCube)
+                        {
+                            Debug.Log($"{ent} {i} unit collider disposed");
+                            unit.Collider.Dispose();
+                            unitcubes[i] = unit;
+                        }
+                    }
+                })
+                .Run();
+
+            this.Entities
                 .WithName("GridArea_Destroy")
                 .WithoutBurst()
                 .ForEach((ref BitGridArea.GridLinkData gridarr) =>
@@ -131,8 +149,9 @@ namespace DotsLite.MarchingCubes
             this.Entities
                 .WithName("Common_Destroy")
                 .WithoutBurst()
-                .ForEach((Common.DrawShaderResourceData res) =>
+                .ForEach((Common.DrawShaderResourceData res, ref Common.AssetData asset) =>
                 {
+                    asset.Asset.Dispose();
                     res.Dispose();
                 })
                 .Run();

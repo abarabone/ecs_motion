@@ -56,6 +56,9 @@ namespace DotsLite.MarchingCubes
                 KeyEntities = this.messageSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
                 mcdata = this.GetSingleton<Common.AssetData>().Asset,
 
+                unitcolliders = this.GetBufferFromEntity<UnitCubeColliderAssetData>(isReadOnly: true),
+                commonEntity = this.GetSingletonEntity<Common.AssetData>(),
+
                 gridtypes = GetComponentDataFromEntity<BitGrid.GridTypeData>(isReadOnly: true),
                 grids = GetComponentDataFromEntity<BitGrid.BitLinesData>(isReadOnly: true),
                 locates = GetComponentDataFromEntity<BitGrid.LocationInAreaData>(isReadOnly: true),
@@ -64,7 +67,7 @@ namespace DotsLite.MarchingCubes
 
                 linkss = GetComponentDataFromEntity<BitGridArea.GridLinkData>(isReadOnly: true),
                 gidss = GetComponentDataFromEntity<BitGridArea.GridInstructionIdData>(isReadOnly: true),
-                poss = GetComponentDataFromEntity<Translation>(isReadOnly: true),
+                //poss = GetComponentDataFromEntity<Translation>(isReadOnly: true),
             }
             .Schedule(this.messageSystem.Reciever.Holder.keyEntities, 1, this.Dependency);
         }
@@ -82,6 +85,11 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
             [ReadOnly]
+            public BufferFromEntity<UnitCubeColliderAssetData> unitcolliders;
+            [ReadOnly]
+            public Entity commonEntity;
+
+            [ReadOnly]
             public ComponentDataFromEntity<BitGrid.GridTypeData> gridtypes;
             [ReadOnly]
             public ComponentDataFromEntity<BitGrid.BitLinesData> grids;
@@ -96,8 +104,8 @@ namespace DotsLite.MarchingCubes
             public ComponentDataFromEntity<BitGridArea.GridLinkData> linkss;
             [ReadOnly]
             public ComponentDataFromEntity<BitGridArea.GridInstructionIdData> gidss;
-            [ReadOnly]
-            public ComponentDataFromEntity<Translation> poss;
+            //[ReadOnly]
+            //public ComponentDataFromEntity<Translation> poss;
 
             //[ReadOnly][NativeDisableUnsafePtrRestriction]
             //public uint *pDefualtBlankGrid;
@@ -111,9 +119,13 @@ namespace DotsLite.MarchingCubes
                 var grid = this.grids[ent];
                 var locate = this.locates[ent];
                 var parent = this.parents[ent];
-                var pos = this.poss[ent];
+                //var pos = this.poss[ent];
                 var links = this.linkss[parent.ParentAreaEntity];
                 var gids = this.gidss[parent.ParentAreaEntity];
+
+                var unitcollider = this.unitcolliders.HasComponent(parent.ParentAreaEntity)
+                    ? this.unitcolliders[parent.ParentAreaEntity]
+                    : this.unitcolliders[commonEntity];
 
                 if (gtype.GridType == BitGridType.Grid32x32x32)
                 {
@@ -160,22 +172,17 @@ namespace DotsLite.MarchingCubes
             in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
         {
             var u = type.UnitOnEdge.xyz;
-            var writer = new MakeCube.MeshWriter
-            {
-                center = u * new float3(-0.5f, 0.5f, 0.5f),
-                vtxs = new NativeList<float3>(u.x * u.y * u.z * 12 / 2, Allocator.Temp),
-                tris = new NativeList<int3>(u.x * u.y * u.z * 12 / 2, Allocator.Temp),
-                filter = new CollisionFilter
-                {
-                    BelongsTo = 1 << 22,
-                    CollidesWith = 0xffff_ffff,
-                },
-                mcdata = mcdata,
-            };
-            var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
+            var writer = new MakeCube.FullMeshWriter(type.UnitOnEdge.xyz, mcdata);
 
+            var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
             MakeCube.SampleAllCubes(in near, ref writer, u);
-            var collider = writer.CreateMesh();
+
+            var filter = new CollisionFilter
+            {
+                BelongsTo = 1 << 22,
+                CollidesWith = 0xffff_ffff,
+            };
+            var collider = writer.CreateMesh(filter);
             //var mesh = makeTestCube_(pos);
             writer.Dispose();
             return collider;

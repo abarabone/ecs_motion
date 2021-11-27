@@ -38,6 +38,7 @@ namespace DotsLite.MarchingCubes
     {
         public BlobAssetReference<Unity.Physics.Collider> Collider;
         public quaternion Rotation;
+        public bool IsPrimaryCube;
     }
     //public struct UnitCubeColliderAsset
     //{
@@ -129,6 +130,7 @@ namespace DotsLite.MarchingCubes
                 {
                     Collider = primaryColliders[cube.primaryCubeId],
                     Rotation = cube.rotation,
+                    IsPrimaryCube = primaryColliders.ContainsKey(cube.cubeId),
                 };
 
             return qSrccubes.ToNativeArray(src.CubeIdAndVertexIndicesList.Length, Allocator.Temp);
