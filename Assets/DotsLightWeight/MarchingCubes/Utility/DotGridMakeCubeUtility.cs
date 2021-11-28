@@ -88,11 +88,11 @@ namespace DotsLite.MarchingCubes
         /// </summary>
         // xyz各32個目のキューブは1bitのために隣のグリッドを見なくてはならず、効率悪いしコードも汚くなる、なんとかならんか？
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SampleAllCubes<TCubeInstanceWriter>(in NearBitGrids g, ref TCubeInstanceWriter outputCubes, int3 unitOnEdge)
+        public static void SampleAllCubes<TCubeInstanceWriter>(NearBitGrids g, ref TCubeInstanceWriter outputCubes, int3 unitOnEdge)
             where TCubeInstanceWriter : ICubeInstanceWriter
         {
             var u = unitOnEdge;
-            for (var iy = 0; iy < u.y/8 - 1; iy++)
+            for (var iy = 0; iy < u.y - 1; iy++)
             {
                 var xmask0 = math.max(0x_00ff_ffff, 0x_ffff_ffff * g.R.isContained.xxxx);
                 const uint zmask0 = 1u;

@@ -87,10 +87,15 @@ namespace DotsLite.MarchingCubes
         }
 
 
-
+        [StructLayout(LayoutKind.Explicit)]
         public struct CubeInstanceByte4
         {
-            public byte x, y, z, id;
+            //public byte x, y, z, id;
+            [FieldOffset(0)] public byte x;
+            [FieldOffset(1)] public byte y;
+            [FieldOffset(2)] public byte z;
+            [FieldOffset(3)] public byte id;
+
             public CubeInstanceByte4(int3 pos, uint cubeId)
             {
                 this.x = (byte)pos.x;
@@ -136,10 +141,10 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<Collider> CreateMesh(CollisionFilter filter)
             {
                 var origin = this.unitOnEdge * new float3(-0.5f, 0.5f, 0.5f);
-                //using var vtxs = new NativeList<float3>(this.cubes.Length * 12, Allocator.Temp);
-                //using var tris = new NativeList<int3>(this.cubes.Length * 12, Allocator.Temp);
-                var vtxs = new NativeArray<float3>(this.cubes.Length * 12, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-                var tris = new NativeArray<int3>(this.cubes.Length * 12, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+                var vtxs = new NativeList<float3>(this.cubes.Length * 12, Allocator.Temp);
+                var tris = new NativeList<int3>(this.cubes.Length * 12, Allocator.Temp);
+                //var vtxs = new NativeArray<float3>(this.cubes.Length * 12, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+                //var tris = new NativeArray<int3>(this.cubes.Length * 12, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
                 ref var srcIdxLists = ref this.mcdata.Value.CubeIdAndVertexIndicesList;
                 ref var srcVtxList = ref this.mcdata.Value.BaseVertexList;
@@ -147,8 +152,8 @@ namespace DotsLite.MarchingCubes
 
                 var vtxOffset = 0;
 
-                var iv = 0;
-                var ii = 0;
+                //var iv = 0;
+                //var ii = 0;
                 for (var ic = 0; ic < this.cubes.Length; ic++)// cube in this.cubes)
                 {
                     var cube = this.cubes[ic];
@@ -157,20 +162,21 @@ namespace DotsLite.MarchingCubes
 
                     for (var i = 0; i < srcidxs.Length; i++)
                     {
-                        //tris.AddNoResize(vtxOffset + srcIdxList[i]);
-                        tris[ii++] = vtxOffset + srcidxs[i];
+                        tris.AddNoResize(vtxOffset + srcidxs[i]);
+                        //tris[ii++] = vtxOffset + srcidxs[i];
                     }
                     for (var i = 0; i < srcVtxList.Length; i++)
                     {
-                        //vtxs.AddNoResize(pos + srcVtxList[i]);
-                        vtxs[iv++] = pos + srcVtxList[i];
+                        vtxs.AddNoResize(pos + srcVtxList[i]);
+                        //vtxs[iv++] = pos + srcVtxList[i];
                     }
                     vtxOffset += srcVtxList.Length;
                 }
 
-                using (vtxs)
-                using (tris)
-                return MeshCollider.Create(vtxs, tris, filter);
+                var res = MeshCollider.Create(vtxs, tris, filter);
+                vtxs.Dispose();
+                tris.Dispose();
+                return res;
             }
 
             public void Dispose() => this.cubes.Dispose();
@@ -209,11 +215,12 @@ namespace DotsLite.MarchingCubes
                 var u = this.unitOnEdge;
                 var offset = u * new float3(-0.5f, 0.5f, 0.5f);
 
-                using var dst = new NativeList<CompoundCollider.ColliderBlobInstance>(
-                    this.cubes.Length, Allocator.Temp);
+                var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
+                    this.cubes.Length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
-                foreach (var cube in this.cubes)
+                for (var ic = 0; ic < this.cubes.Length; ic++)// cube in this.cubes)
                 {
+                    var cube = this.cubes[ic];
                     var srccube = this.unitColliders[cube.id - 1];
                     var child = new CompoundCollider.ColliderBlobInstance
                     {
@@ -224,10 +231,13 @@ namespace DotsLite.MarchingCubes
                             rot = srccube.Rotation,
                         }
                     };
-                    dst.AddNoResize(child);
+                    //dst.AddNoResize(child);
+                    dst[ic] = child;
                 }
 
-                return CompoundCollider.Create(dst);
+                var res = CompoundCollider.Create(dst);
+                dst.Dispose();
+                return res;
             }
 
             public void Dispose() => this.cubes.Dispose();

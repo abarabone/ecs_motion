@@ -56,7 +56,7 @@ namespace DotsLite.MarchingCubes
                 KeyEntities = this.messageSystem.Reciever.Holder.keyEntities.AsDeferredJobArray(),
                 mcdata = this.GetSingleton<Common.AssetData>().Asset,
 
-                unitcolliders = this.GetBufferFromEntity<UnitCubeColliderAssetData>(isReadOnly: true),
+                unitcolliderss = this.GetBufferFromEntity<UnitCubeColliderAssetData>(isReadOnly: true),
                 commonEntity = this.GetSingletonEntity<Common.AssetData>(),
 
                 gridtypes = GetComponentDataFromEntity<BitGrid.GridTypeData>(isReadOnly: true),
@@ -77,6 +77,7 @@ namespace DotsLite.MarchingCubes
         [BurstCompile]
         unsafe struct JobExecution : IJobParallelForDefer
         {
+            //[ReadOnly]
             public EntityCommandBuffer.ParallelWriter cmd;
 
             [ReadOnly]
@@ -85,8 +86,8 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<MarchingCubesBlobAsset> mcdata;
 
             [ReadOnly]
-            public BufferFromEntity<UnitCubeColliderAssetData> unitcolliders;
-            [ReadOnly]
+            public BufferFromEntity<UnitCubeColliderAssetData> unitcolliderss;
+            //[ReadOnly]
             public Entity commonEntity;
 
             [ReadOnly]
@@ -123,15 +124,16 @@ namespace DotsLite.MarchingCubes
                 var links = this.linkss[parent.ParentAreaEntity];
                 var gids = this.gidss[parent.ParentAreaEntity];
 
-                var unitcollider = this.unitcolliders.HasComponent(parent.ParentAreaEntity)
-                    ? this.unitcolliders[parent.ParentAreaEntity]
-                    : this.unitcolliders[commonEntity];
+                var unitcolliders = this.unitcolliderss.HasComponent(parent.ParentAreaEntity)
+                    ? this.unitcolliderss[parent.ParentAreaEntity]
+                    : this.unitcolliderss[commonEntity];
 
                 if (gtype.GridType == BitGridType.Grid32x32x32)
                 {
                     //UnityEngine.Debug.Log(gtype.GridType);
                     var collider = makeMeshCollider_(
-                        in grids, in links, in gids, in grid, in locate, in gtype, in mcdata);
+                        //grids, links, gids, grid, locate, gtype, mcdata);
+                        grids, links, gids, grid, locate, gtype, unitcolliders);
 
                     if (this.colliders.HasComponent(ent))
                     {
@@ -163,19 +165,45 @@ namespace DotsLite.MarchingCubes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe BlobAssetReference<Collider> makeMeshCollider_(
-            in ComponentDataFromEntity<BitGrid.BitLinesData> grids,
-            in BitGridArea.GridLinkData links,
-            in BitGridArea.GridInstructionIdData ids,
-            in BitGrid.BitLinesData grid,
-            in BitGrid.LocationInAreaData locate,
-            in BitGrid.GridTypeData type,
-            in BlobAssetReference<MarchingCubesBlobAsset> mcdata)
+            ComponentDataFromEntity<BitGrid.BitLinesData> grids,
+            BitGridArea.GridLinkData links,
+            BitGridArea.GridInstructionIdData ids,
+            BitGrid.BitLinesData grid,
+            BitGrid.LocationInAreaData locate,
+            BitGrid.GridTypeData type,
+            BlobAssetReference<MarchingCubesBlobAsset> mcdata)
         {
             var u = type.UnitOnEdge.xyz;
             var writer = new MakeCube.FullMeshWriter(type.UnitOnEdge.xyz, mcdata);
 
             var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
-            MakeCube.SampleAllCubes(in near, ref writer, u);
+            MakeCube.SampleAllCubes(near, ref writer, u);
+
+            var filter = new CollisionFilter
+            {
+                BelongsTo = 1 << 22,
+                CollidesWith = 0xffff_ffff,
+            };
+            var collider = writer.CreateMesh(filter);
+            //var mesh = makeTestCube_(pos);
+            writer.Dispose();
+            return collider;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe BlobAssetReference<Collider> makeMeshCollider_(
+            ComponentDataFromEntity<BitGrid.BitLinesData> grids,
+            BitGridArea.GridLinkData links,
+            BitGridArea.GridInstructionIdData ids,
+            BitGrid.BitLinesData grid,
+            BitGrid.LocationInAreaData locate,
+            BitGrid.GridTypeData type,
+            DynamicBuffer<UnitCubeColliderAssetData> unitcolliders)
+        {
+            var u = type.UnitOnEdge.xyz;
+            var writer = new MakeCube.CompoundMeshWriter(type.UnitOnEdge.xyz, unitcolliders);
+
+            var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
+            MakeCube.SampleAllCubes(near, ref writer, u);
 
             var filter = new CollisionFilter
             {
