@@ -120,7 +120,7 @@ namespace DotsLite.MarchingCubes
                         var unit = unitcubes[i];
                         if (unit.IsPrimaryCube)
                         {
-                            Debug.Log($"{ent} {i} unit collider disposed");
+                            Debug.Log($"{ent} unit collider {i} disposed");
                             unit.Collider.Dispose();
                             unitcubes[i] = unit;
                         }

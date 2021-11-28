@@ -48,7 +48,7 @@ namespace DotsLite.MarchingCubes
         protected unsafe override void OnUpdate()
         {
             using var cmdscope = this.cmddep.WithDependencyScope();
-            using var barScope = this.barfreedep.WithDependencyScope();
+            using var barfreeScope = this.barfreedep.WithDependencyScope();
 
             this.Dependency = new JobExecution
             {

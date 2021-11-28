@@ -136,31 +136,40 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<Collider> CreateMesh(CollisionFilter filter)
             {
                 var origin = this.unitOnEdge * new float3(-0.5f, 0.5f, 0.5f);
-                using var vtxs = new NativeList<float3>(this.cubes.Length * 12, Allocator.Temp);
-                using var tris = new NativeList<int3>(this.cubes.Length * 12, Allocator.Temp);
+                //using var vtxs = new NativeList<float3>(this.cubes.Length * 12, Allocator.Temp);
+                //using var tris = new NativeList<int3>(this.cubes.Length * 12, Allocator.Temp);
+                var vtxs = new NativeArray<float3>(this.cubes.Length * 12, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+                var tris = new NativeArray<int3>(this.cubes.Length * 12, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
                 ref var srcIdxLists = ref this.mcdata.Value.CubeIdAndVertexIndicesList;
                 ref var srcVtxList = ref this.mcdata.Value.BaseVertexList;
+                //UnityEngine.Debug.Log(this.cubes.Length);
 
                 var vtxOffset = 0;
 
+                var iv = 0;
+                var ii = 0;
                 for (var ic = 0; ic < this.cubes.Length; ic++)// cube in this.cubes)
                 {
                     var cube = this.cubes[ic];
-                    ref var srcIdxList = ref srcIdxLists[(int)cube.id - 1].vertexIndices;
+                    ref var srcidxs = ref srcIdxLists[(int)cube.id - 1].vertexIndices;
                     var pos = origin + new float3(cube.x, -cube.y, -cube.z);
 
-                    for (var i = 0; i < srcIdxList.Length; i++)
+                    for (var i = 0; i < srcidxs.Length; i++)
                     {
-                        tris.Add(vtxOffset + srcIdxList[i]);
+                        //tris.AddNoResize(vtxOffset + srcIdxList[i]);
+                        tris[ii++] = vtxOffset + srcidxs[i];
                     }
                     for (var i = 0; i < srcVtxList.Length; i++)
                     {
-                        vtxs.Add(pos + srcVtxList[i]);
+                        //vtxs.AddNoResize(pos + srcVtxList[i]);
+                        vtxs[iv++] = pos + srcVtxList[i];
                     }
                     vtxOffset += srcVtxList.Length;
                 }
 
+                using (vtxs)
+                using (tris)
                 return MeshCollider.Create(vtxs, tris, filter);
             }
 
@@ -174,13 +183,11 @@ namespace DotsLite.MarchingCubes
             int3 unitOnEdge;
             NativeList<CubeInstanceByte4> cubes;
 
-            BlobAssetReference<MarchingCubesBlobAsset> mcdata;
             DynamicBuffer<UnitCubeColliderAssetData> unitColliders;
 
 
             public CompoundMeshWriter(
                 int3 unitOnEdge,
-                BlobAssetReference<MarchingCubesBlobAsset> mcdata,
                 DynamicBuffer<UnitCubeColliderAssetData> unitColliders)
             {
                 this.unitOnEdge = unitOnEdge;
@@ -188,7 +195,6 @@ namespace DotsLite.MarchingCubes
                 var u = unitOnEdge;
                 this.cubes = new NativeList<CubeInstanceByte4>(u.x * u.y * u.z, Allocator.Temp);
 
-                this.mcdata = mcdata;
                 this.unitColliders = unitColliders;
             }
             public void Add(int x, int y, int z, uint cubeId)
