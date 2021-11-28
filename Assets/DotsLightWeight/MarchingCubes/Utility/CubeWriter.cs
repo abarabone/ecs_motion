@@ -59,7 +59,7 @@ namespace DotsLite.MarchingCubes
                 ref var srcIdxLists = ref this.mcdata.Value.CubeIdAndVertexIndicesList;
                 ref var srcVtxList = ref this.mcdata.Value.BaseVertexList;
 
-                var center = this.unitOnEdge * new float3(-0.5f, 0.5f, 0.5f) + new float3(x, -y, -z);
+                var pos = this.unitOnEdge * new float3(-0.5f, 0.5f, 0.5f) + new float3(x, -y, -z);
                 if (cubeId == 0 || cubeId == 255) return;
                 //this.count++;
 
@@ -71,7 +71,7 @@ namespace DotsLite.MarchingCubes
                 }
                 for (var i = 0; i < srcVtxList.Length; i++)
                 {
-                    this.vtxs.AddNoResize(srcVtxList[i] + center);
+                    this.vtxs.AddNoResize(pos + srcVtxList[i]);
                 }
                 this.vtxOffset += srcVtxList.Length;
             }
@@ -135,8 +135,7 @@ namespace DotsLite.MarchingCubes
 
             public BlobAssetReference<Collider> CreateMesh(CollisionFilter filter)
             {
-                var u = this.unitOnEdge;
-                var center = u * new float3(-0.5f, 0.5f, 0.5f);
+                var origin = this.unitOnEdge * new float3(-0.5f, 0.5f, 0.5f);
                 using var vtxs = new NativeList<float3>(this.cubes.Length * 12, Allocator.Temp);
                 using var tris = new NativeList<int3>(this.cubes.Length * 12, Allocator.Temp);
 
@@ -149,15 +148,15 @@ namespace DotsLite.MarchingCubes
                 {
                     var cube = this.cubes[ic];
                     ref var srcIdxList = ref srcIdxLists[(int)cube.id - 1].vertexIndices;
-                    var pos = center + new float3(cube.x, -cube.y, -cube.z);
+                    var pos = origin + new float3(cube.x, -cube.y, -cube.z);
 
                     for (var i = 0; i < srcIdxList.Length; i++)
                     {
-                        tris.AddNoResize(vtxOffset + srcIdxList[i]);
+                        tris.Add(vtxOffset + srcIdxList[i]);
                     }
                     for (var i = 0; i < srcVtxList.Length; i++)
                     {
-                        vtxs.AddNoResize(srcVtxList[i] + pos);
+                        vtxs.Add(pos + srcVtxList[i]);
                     }
                     vtxOffset += srcVtxList.Length;
                 }
@@ -204,8 +203,8 @@ namespace DotsLite.MarchingCubes
                 var u = this.unitOnEdge;
                 var offset = u * new float3(-0.5f, 0.5f, 0.5f);
 
-                using var dst = new UnsafeList<CompoundCollider.ColliderBlobInstance>(
-                    this.cubes.Length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+                using var dst = new NativeList<CompoundCollider.ColliderBlobInstance>(
+                    this.cubes.Length, Allocator.Temp);
 
                 foreach (var cube in this.cubes)
                 {
@@ -222,7 +221,7 @@ namespace DotsLite.MarchingCubes
                     dst.AddNoResize(child);
                 }
 
-                return CompoundCollider.Create(dst.AsNativeArray());
+                return CompoundCollider.Create(dst);
             }
 
             public void Dispose() => this.cubes.Dispose();
