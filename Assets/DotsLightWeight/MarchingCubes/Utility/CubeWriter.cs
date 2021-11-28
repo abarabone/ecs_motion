@@ -213,7 +213,7 @@ namespace DotsLite.MarchingCubes
             public BlobAssetReference<Collider> CreateMesh(CollisionFilter filter)
             {
                 var u = this.unitOnEdge;
-                var offset = u * new float3(-0.5f, 0.5f, 0.5f);
+                var origin = u * new float3(-0.5f, 0.5f, 0.5f);
 
                 var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
                     this.cubes.Length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
@@ -227,7 +227,7 @@ namespace DotsLite.MarchingCubes
                         Collider = srccube.Collider,
                         CompoundFromChild = new RigidTransform
                         {
-                            pos = new float3(cube.x, cube.y, cube.z) - offset + new float3(-0.5f, 0.5f, 0.5f),
+                            pos = origin + new float3(cube.x, -cube.y, -cube.z) - new float3(0.5f, -0.5f, -0.5f),
                             rot = srccube.Rotation,
                         }
                     };
