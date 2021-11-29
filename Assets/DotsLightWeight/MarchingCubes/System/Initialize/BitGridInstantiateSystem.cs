@@ -49,9 +49,11 @@ namespace DotsLite.MarchingCubes
                     create_(em, entity, new int3(1, 0, 0), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
                     create_(em, entity, new int3(0, 0, 1), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
                     create_(em, entity, new int3(1, 0, 1), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
-                    //create_(em, entity, new int3(1, 0, 0), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
-                    //create_(em, pfab, new int3(0, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
-                    //create_(em, pfab, new int3(1, 0, 1), t, blen, span, ref glinks, ref gids, ref seed, basepos, entity, drawmdl);
+
+                    create_(em, entity, new int3(2, 0, 0), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
+                    create_(em, entity, new int3(3, 0, 0), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
+                    create_(em, entity, new int3(2, 0, 1), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
+                    create_(em, entity, new int3(3, 0, 1), ref glinks, ref gids, ref seed, in type, in dim, in prefab, in pos);
                 })
                 .Run();
             this.Enabled = false;

@@ -187,21 +187,25 @@ namespace DotsLite.MarchingCubes
         {
 
             float3 origin;
-            NativeList<CompoundCollider.ColliderBlobInstance> blobs;
+            //NativeList<CompoundCollider.ColliderBlobInstance> blobs;
+            NativeArray<CompoundCollider.ColliderBlobInstance> blobs;
+            int length;
 
-            DynamicBuffer<UnitCubeColliderAssetData> unitColliders;
+            NativeArray<UnitCubeColliderAssetData> unitColliders;
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public CompoundMeshWriter(
                 int3 unitOnEdge,
-                ref DynamicBuffer<UnitCubeColliderAssetData> unitColliders)
+                NativeArray<UnitCubeColliderAssetData> unitColliders)
             {
                 var u = unitOnEdge;
-                this.blobs = new NativeList<CompoundCollider.ColliderBlobInstance>(u.x * u.y * u.z, Allocator.Temp);
+                //this.blobs = new NativeList<CompoundCollider.ColliderBlobInstance>(u.x * u.y * u.z, Allocator.Temp);
+                this.blobs = new NativeArray<CompoundCollider.ColliderBlobInstance>(u.x * u.y * u.z, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
                 this.unitColliders = unitColliders;
                 this.origin = u * new float3(-0.5f, 0.5f, 0.5f);
+                this.length = 0;
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Add(int x, int y, int z, uint cubeId)
@@ -214,16 +218,17 @@ namespace DotsLite.MarchingCubes
                     Collider = srccube.Collider,
                     CompoundFromChild = new RigidTransform
                     {
-                        pos = this.origin + new float3(x, -y, -z) - new float3(0.5f, -0.5f, -0.5f),
+                        pos = this.origin + new float3(x, -y, -z),// + new float3(0.5f, -0.5f, -0.5f),
                         rot = srccube.Rotation,
                     }
                 };
-                this.blobs.AddNoResize(child);
+                //this.blobs.AddNoResize(child);
+                this.blobs[length++] = child;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public BlobAssetReference<Collider> CreateMesh(CollisionFilter filter) =>
-                CompoundCollider.Create(this.blobs.AsArray());
+                CompoundCollider.Create(this.blobs.GetSubArray(0, length));
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose() => this.blobs.Dispose();

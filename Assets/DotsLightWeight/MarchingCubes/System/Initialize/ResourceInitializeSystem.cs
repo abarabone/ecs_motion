@@ -118,12 +118,11 @@ namespace DotsLite.MarchingCubes
                     for (var i = 0; i < unitcubes.Length; i++)
                     {
                         var unit = unitcubes[i];
-                        if (unit.IsPrimaryCube)
-                        {
-                            Debug.Log($"{ent} unit collider {i} disposed");
-                            unit.Collider.Dispose();
-                            unitcubes[i] = unit;
-                        }
+                        if (!unit.IsPrimaryCube) continue;
+                        
+                        Debug.Log($"{ent} unit collider {i} disposed");
+                        unit.Collider.Dispose();
+                        unitcubes[i] = unit;
                     }
                 })
                 .Run();

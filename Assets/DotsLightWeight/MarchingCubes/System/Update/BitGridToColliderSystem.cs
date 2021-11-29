@@ -132,7 +132,7 @@ namespace DotsLite.MarchingCubes
                         : unitcolliderss[commonEntity];
 
                     var u = gtype.UnitOnEdge.xyz;
-                    var writer = new MakeCube.CompoundMeshWriter(u, ref unitcolliders);
+                    var writer = new MakeCube.CompoundMeshWriter(u, unitcolliders.AsNativeArray());
                     var near = grids.PickupNearGridIds(in links, in gids, in grid, in locate);
                     MakeCube.SampleAllCubes(near, ref writer, u);
 
@@ -142,7 +142,6 @@ namespace DotsLite.MarchingCubes
                         CollidesWith = 0xffff_ffff,
                     };
                     var collider = writer.CreateMesh(filter);
-                    writer.Dispose();
 
 
                     if (this.colliders.HasComponent(ent))
@@ -154,6 +153,7 @@ namespace DotsLite.MarchingCubes
                     {
                         Value = collider,
                     });
+                    writer.Dispose();
 
                     return;
                 }

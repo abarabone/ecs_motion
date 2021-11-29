@@ -90,28 +90,33 @@ namespace DotsLite.MarchingCubes
                                 //this.dotgrids[targetEntity].Unit.Fill();
                                 var p = this.bitgrids[targetEntity].p;
 
-                                var v0 = 0u;
-                                for (var i = 0; i < 32; i++)
-                                {
-                                    p[i] = v0;
-                                }
+                                //var v0 = 0u;
+                                //for (var i = 0; i < 32; i++)
+                                //{
+                                //    p[i] = v0;
+                                //}
 
-                                var v = 0xf444_4b44u;
-                                for (var i = 32; i < 32 * 31; i++)
-                                {
-                                    p[i] = v;
-                                    v = (v << 3) | (v >> 28);
-                                }
+                                //var v = 0xf444_4b44u;
+                                //for (var i = 32; i < 32 * 31; i++)
+                                //{
+                                //    p[i] = v;
+                                //    v = (v << 3) | (v >> 28);
+                                //}
 
-                                for (var i = 32 * 31; i < 32 * 32; i++)
+                                //for (var i = 32 * 31; i < 32 * 32; i++)
+                                //{
+                                //    p[i] = v0;
+                                //}
+
+                                for (var i = 32 * 3; i < 32 * 4; i++)
                                 {
-                                    p[i] = v0;
+                                    p[i] = 0xffffffff;
                                 }
 
                                 this.dirties[targetEntity] = new BitGrid.UpdateDirtyRangeData
                                 {
-                                    begin = 0,//32 * 32 / 2,
-                                    end = dim.UnitOnEdge.z * dim.UnitOnEdge.y - 1,
+                                    begin = 32 * 3,//32 * 32 / 2,
+                                    end = 32 * 4 - 1,//dim.UnitOnEdge.z * dim.UnitOnEdge.y - 1,
                                 };
                             }
                             break;

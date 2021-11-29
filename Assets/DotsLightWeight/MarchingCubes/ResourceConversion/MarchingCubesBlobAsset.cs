@@ -34,23 +34,23 @@ namespace DotsLite.MarchingCubes
         }
     }
 
-    //[InternalBufferCapacity(0)]
-    //public struct UnitCubeColliderAssetData : IBufferElementData
-    //{
-    //    public bool IsPrimaryCube;
-    //    public BlobAssetReference<Unity.Physics.Collider> Collider;
-    //    public quaternion Rotation;
-    //}
-    public struct UnitCubeColliderAssetData : IComponentData
+    [InternalBufferCapacity(0)]
+    public struct UnitCubeColliderAssetData : IBufferElementData
     {
-        public UnsafeList<Asset> ColliderInstances;
-        public struct Asset
-        {
-            public bool IsPrimaryCube;
-            public BlobAssetReference<Unity.Physics.Collider> Collider;
-            public quaternion Rotation;
-        }
+        public bool IsPrimaryCube;
+        public BlobAssetReference<Unity.Physics.Collider> Collider;
+        public quaternion Rotation;
     }
+    //public struct UnitCubeColliderAssetData : IComponentData
+    //{
+    //    public UnsafeList<Asset> ColliderInstances;
+    //    public struct Asset
+    //    {
+    //        public bool IsPrimaryCube;
+    //        public BlobAssetReference<Unity.Physics.Collider> Collider;
+    //        public quaternion Rotation;
+    //    }
+    //}
     //public struct UnitCubeColliderAsset
     //{
     //    public BlobArray<ColliderAndRotation> cubeColliders;
@@ -131,30 +131,30 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        //public static NativeArray<UnitCubeColliderAssetData> CreateCubeColliders(this MarchingCubesAsset src, CollisionFilter filter)
-        public static UnsafeList<UnitCubeColliderAssetData.Asset> CreateCubeColliders(this MarchingCubesAsset src, CollisionFilter filter)
+        public static NativeArray<UnitCubeColliderAssetData> CreateCubeColliders(this MarchingCubesAsset src, CollisionFilter filter)
+        //public static UnsafeList<UnitCubeColliderAssetData.Asset> CreateCubeColliders(this MarchingCubesAsset src, CollisionFilter filter)
         {
 
             var primaryColliders = createPrimaryColliders_();
             var qSrccubes =
                 from cube in src.CubeIdAndVertexIndicesList
-                //select new UnitCubeColliderAssetData
-                //{
-                //    Collider = primaryColliders[cube.primaryCubeId],
-                //    Rotation = cube.rotation,
-                //    IsPrimaryCube = primaryColliders.ContainsKey(cube.cubeId),
-                //};
-                select new UnitCubeColliderAssetData.Asset
+                select new UnitCubeColliderAssetData
                 {
                     Collider = primaryColliders[cube.primaryCubeId],
                     Rotation = cube.rotation,
                     IsPrimaryCube = primaryColliders.ContainsKey(cube.cubeId),
                 };
+                //select new UnitCubeColliderAssetData.Asset
+                //{
+                //    Collider = primaryColliders[cube.primaryCubeId],
+                //    Rotation = cube.rotation,
+                //    IsPrimaryCube = primaryColliders.ContainsKey(cube.cubeId),
+                //};
 
-            //return qSrccubes.ToNativeArray(src.CubeIdAndVertexIndicesList.Length, Allocator.Temp);
-            var list = new UnsafeList<UnitCubeColliderAssetData.Asset>(src.CubeIdAndVertexIndicesList.Length, Allocator.Temp);
-            qSrccubes.ForEach(x => list.AddNoResize(x));
-            return list;
+            return qSrccubes.ToNativeArray(src.CubeIdAndVertexIndicesList.Length, Allocator.Temp);
+            //var list = new UnsafeList<UnitCubeColliderAssetData.Asset>(src.CubeIdAndVertexIndicesList.Length, Allocator.Temp);
+            //qSrccubes.ForEach(x => list.AddNoResize(x));
+            //return list;
 
 
             Dictionary<byte, BlobAssetReference<Collider>> createPrimaryColliders_()
