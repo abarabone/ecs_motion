@@ -124,16 +124,26 @@ namespace DotsLite.MarchingCubes
                 var links = this.linkss[parent.ParentAreaEntity];
                 var gids = this.gidss[parent.ParentAreaEntity];
 
-                var unitcolliders = this.unitcolliderss.HasComponent(parent.ParentAreaEntity)
-                    ? this.unitcolliderss[parent.ParentAreaEntity]
-                    : this.unitcolliderss[commonEntity];
-
                 if (gtype.GridType == BitGridType.Grid32x32x32)
                 {
                     //UnityEngine.Debug.Log(gtype.GridType);
-                    var collider = makeMeshCollider_(
-                        //grids, links, gids, grid, locate, gtype, mcdata);
-                        grids, links, gids, grid, locate, gtype, unitcolliders);
+                    var unitcolliders = unitcolliderss.HasComponent(parent.ParentAreaEntity)
+                        ? unitcolliderss[parent.ParentAreaEntity]
+                        : unitcolliderss[commonEntity];
+
+                    var u = gtype.UnitOnEdge.xyz;
+                    var writer = new MakeCube.CompoundMeshWriter(u, ref unitcolliders);
+                    var near = grids.PickupNearGridIds(in links, in gids, in grid, in locate);
+                    MakeCube.SampleAllCubes(near, ref writer, u);
+
+                    var filter = new CollisionFilter
+                    {
+                        BelongsTo = 1 << 22,
+                        CollidesWith = 0xffff_ffff,
+                    };
+                    var collider = writer.CreateMesh(filter);
+                    writer.Dispose();
+
 
                     if (this.colliders.HasComponent(ent))
                     {
@@ -163,58 +173,62 @@ namespace DotsLite.MarchingCubes
             return BoxCollider.Create(geom);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe BlobAssetReference<Collider> makeMeshCollider_(
-            ComponentDataFromEntity<BitGrid.BitLinesData> grids,
-            BitGridArea.GridLinkData links,
-            BitGridArea.GridInstructionIdData ids,
-            BitGrid.BitLinesData grid,
-            BitGrid.LocationInAreaData locate,
-            BitGrid.GridTypeData type,
-            BlobAssetReference<MarchingCubesBlobAsset> mcdata)
-        {
-            var u = type.UnitOnEdge.xyz;
-            var writer = new MakeCube.FullMeshWriter(type.UnitOnEdge.xyz, mcdata);
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static unsafe BlobAssetReference<Collider> makeMeshCollider_(
+        //    ComponentDataFromEntity<BitGrid.BitLinesData> grids,
+        //    BitGridArea.GridLinkData links,
+        //    BitGridArea.GridInstructionIdData ids,
+        //    BitGrid.BitLinesData grid,
+        //    BitGrid.LocationInAreaData locate,
+        //    BitGrid.GridTypeData type,
+        //    BlobAssetReference<MarchingCubesBlobAsset> mcdata)
+        //{
+        //    var u = type.UnitOnEdge.xyz;
+        //    var writer = new MakeCube.FullMeshWriter(type.UnitOnEdge.xyz, mcdata);
 
-            var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
-            MakeCube.SampleAllCubes(near, ref writer, u);
+        //    var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
+        //    MakeCube.SampleAllCubes(near, ref writer, u);
 
-            var filter = new CollisionFilter
-            {
-                BelongsTo = 1 << 22,
-                CollidesWith = 0xffff_ffff,
-            };
-            var collider = writer.CreateMesh(filter);
-            //var mesh = makeTestCube_(pos);
-            writer.Dispose();
-            return collider;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe BlobAssetReference<Collider> makeMeshCollider_(
-            ComponentDataFromEntity<BitGrid.BitLinesData> grids,
-            BitGridArea.GridLinkData links,
-            BitGridArea.GridInstructionIdData ids,
-            BitGrid.BitLinesData grid,
-            BitGrid.LocationInAreaData locate,
-            BitGrid.GridTypeData type,
-            DynamicBuffer<UnitCubeColliderAssetData> unitcolliders)
-        {
-            var u = type.UnitOnEdge.xyz;
-            var writer = new MakeCube.CompoundMeshWriter(type.UnitOnEdge.xyz, unitcolliders);
+        //    var filter = new CollisionFilter
+        //    {
+        //        BelongsTo = 1 << 22,
+        //        CollidesWith = 0xffff_ffff,
+        //    };
+        //    var collider = writer.CreateMesh(filter);
+        //    //var mesh = makeTestCube_(pos);
+        //    writer.Dispose();
+        //    return collider;
+        //}
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static unsafe BlobAssetReference<Collider> makeMeshCollider_(
+        //    ComponentDataFromEntity<BitGrid.BitLinesData> grids,
+        //    BitGridArea.GridLinkData links,
+        //    BitGridArea.GridInstructionIdData ids,
+        //    BitGrid.BitLinesData grid,
+        //    BitGrid.LocationInAreaData locate,
+        //    BitGrid.GridTypeData type,
+        //    BufferFromEntity<UnitCubeColliderAssetData> unitcolliderss)
+        //{
+        //    var unitcolliders = unitcolliderss.HasComponent(parent.ParentAreaEntity)
+        //        ? unitcolliderss[parent.ParentAreaEntity]
+        //        : unitcolliderss[commonEntity];
 
-            var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
-            MakeCube.SampleAllCubes(near, ref writer, u);
+        //    var u = type.UnitOnEdge.xyz;
+        //    var writer = new MakeCube.CompoundMeshWriter(type.UnitOnEdge.xyz, unitcolliders);
 
-            var filter = new CollisionFilter
-            {
-                BelongsTo = 1 << 22,
-                CollidesWith = 0xffff_ffff,
-            };
-            var collider = writer.CreateMesh(filter);
-            //var mesh = makeTestCube_(pos);
-            writer.Dispose();
-            return collider;
-        }
+        //    var near = grids.PickupNearGridIds(in links, in ids, in grid, in locate);
+        //    MakeCube.SampleAllCubes(near, ref writer, u);
+
+        //    var filter = new CollisionFilter
+        //    {
+        //        BelongsTo = 1 << 22,
+        //        CollidesWith = 0xffff_ffff,
+        //    };
+        //    var collider = writer.CreateMesh(filter);
+        //    //var mesh = makeTestCube_(pos);
+        //    writer.Dispose();
+        //    return collider;
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void makeCubes_(uint* p)

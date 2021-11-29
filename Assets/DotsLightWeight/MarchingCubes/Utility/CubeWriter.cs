@@ -27,7 +27,7 @@ namespace DotsLite.MarchingCubes
         }
 
 
-        public struct FullMeshWriter_ : ICubeInstanceWriter, IDisposable
+        public struct FullMeshWriter : ICubeInstanceWriter, IDisposable
         {
             int3 unitOnEdge;
             NativeList<float3> vtxs;
@@ -40,7 +40,7 @@ namespace DotsLite.MarchingCubes
             int vtxOffset;
 
 
-            public FullMeshWriter_(int3 unitOnEdge, BlobAssetReference<MarchingCubesBlobAsset> mcdata)
+            public FullMeshWriter(int3 unitOnEdge, BlobAssetReference<MarchingCubesBlobAsset> mcdata)
             {
                 this.unitOnEdge = unitOnEdge;
 
@@ -112,7 +112,7 @@ namespace DotsLite.MarchingCubes
             }
         }
 
-        public struct FullMeshWriter : ICubeInstanceWriter, IDisposable
+        public struct FullMeshWriter_ : ICubeInstanceWriter, IDisposable
         {
             int3 unitOnEdge;
             NativeList<CubeInstanceByte4> cubes;
@@ -121,7 +121,7 @@ namespace DotsLite.MarchingCubes
             
 
 
-            public FullMeshWriter(int3 unitOnEdge, BlobAssetReference<MarchingCubesBlobAsset> mcdata)
+            public FullMeshWriter_(int3 unitOnEdge, BlobAssetReference<MarchingCubesBlobAsset> mcdata)
             {
                 this.unitOnEdge = unitOnEdge;
 
@@ -186,13 +186,58 @@ namespace DotsLite.MarchingCubes
         public struct CompoundMeshWriter : ICubeInstanceWriter, IDisposable
         {
 
+            float3 origin;
+            NativeList<CompoundCollider.ColliderBlobInstance> blobs;
+
+            DynamicBuffer<UnitCubeColliderAssetData> unitColliders;
+
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public CompoundMeshWriter(
+                int3 unitOnEdge,
+                ref DynamicBuffer<UnitCubeColliderAssetData> unitColliders)
+            {
+                var u = unitOnEdge;
+                this.blobs = new NativeList<CompoundCollider.ColliderBlobInstance>(u.x * u.y * u.z, Allocator.Temp);
+
+                this.unitColliders = unitColliders;
+                this.origin = u * new float3(-0.5f, 0.5f, 0.5f);
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Add(int x, int y, int z, uint cubeId)
+            {
+                if (cubeId == 0 || cubeId == 255) return;
+
+                var srccube = this.unitColliders[(int)cubeId - 1];
+                var child = new CompoundCollider.ColliderBlobInstance
+                {
+                    Collider = srccube.Collider,
+                    CompoundFromChild = new RigidTransform
+                    {
+                        pos = this.origin + new float3(x, -y, -z) - new float3(0.5f, -0.5f, -0.5f),
+                        rot = srccube.Rotation,
+                    }
+                };
+                this.blobs.AddNoResize(child);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public BlobAssetReference<Collider> CreateMesh(CollisionFilter filter) =>
+                CompoundCollider.Create(this.blobs.AsArray());
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Dispose() => this.blobs.Dispose();
+        }
+        public struct CompoundMeshWriter_ : ICubeInstanceWriter, IDisposable
+        {
+
             int3 unitOnEdge;
             NativeList<CubeInstanceByte4> cubes;
 
             DynamicBuffer<UnitCubeColliderAssetData> unitColliders;
 
 
-            public CompoundMeshWriter(
+            public CompoundMeshWriter_(
                 int3 unitOnEdge,
                 DynamicBuffer<UnitCubeColliderAssetData> unitColliders)
             {
