@@ -32,7 +32,7 @@ namespace DotsLite.Arms
     using DotsLite.HeightGrid;
     using DotsLite.Utilities;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.Hit))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]

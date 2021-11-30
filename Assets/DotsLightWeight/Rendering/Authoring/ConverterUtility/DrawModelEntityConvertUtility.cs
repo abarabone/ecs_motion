@@ -54,10 +54,10 @@ namespace DotsLite.Draw.Authoring
 
             var em = gcs.DstEntityManager;
 
-            setShaderProps_( em, mat, mesh, boneLength * (int)BoneType + instanceDataVectorLength );
+            setShaderProps_(em, mat, mesh, boneLength * (int)BoneType + instanceDataVectorLength);
 
-            addComponents_( gcs, topGameObject, drawModelEntity, order != DrawModel.SortOrder.none);
-            initInfomationData_( em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength, order );
+            addComponents_(gcs, topGameObject, drawModelEntity, order != DrawModel.SortOrder.none);
+            initInfomationData_(em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength, order);
             initResourceData_(em, drawModelEntity, mat, mesh);
 
             return drawModelEntity;

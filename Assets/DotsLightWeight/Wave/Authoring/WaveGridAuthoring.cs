@@ -82,10 +82,16 @@ namespace DotsLite.HeightGrid.Aurthoring
                 var mat = new Material(this.DrawShader);
                 mat.mainTexture = this.Texture;
                 var boneLength = 1;
-                var optionalVectorLength = (((lw + 1) * (lh + 1)) >> 2) + 1;Debug.Log(optionalVectorLength);
+                var optionalVectorLength = (((lw + 1) * (lh + 1)) >> 2) + 1;
+                Debug.Log(optionalVectorLength);
+                Debug.Log(mat);
+                Debug.Log(this.Texture);
                 return gcs.CreateDrawModelEntityComponents(
                     this.gameObject, mesh, mat, BoneType.T, boneLength,
                     DrawModel.SortOrder.desc, optionalVectorLength);
+                //return gcs.InitDrawModelEntityComponents(
+                //    this.gameObject, entity, mesh, mat, BoneType.T, boneLength,
+                //    DrawModel.SortOrder.desc, optionalVectorLength);
             }
 
 
