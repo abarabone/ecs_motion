@@ -17,6 +17,7 @@ namespace DotsLite.MarchingCubes
     using DotsLite.MarchingCubes.Data;
     using DotsLite.Draw;
     using DotsLite.Dependency;
+    using DotsLite.Utilities;
 
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
@@ -79,7 +80,8 @@ namespace DotsLite.MarchingCubes
 
             var u = dim.UnitOnEdge.xyz;
             var hf = u >> 1;
-            var pos = basepos.Value + (i * u + new int3(hf.x, -hf.y, -hf.z));
+            var origin = basepos.Value + i * u * new float3(1, -1, -1);
+            var pos = origin + new int3(hf.x, -hf.y, -hf.z);
 
             em.SetComponentData(newent, new BitGrid.BitLinesData().Alloc(prefab.BitLineBufferLength, GridFillMode.Blank));
             em.SetComponentData(newent, new BitGrid.LocationInAreaData
@@ -105,6 +107,10 @@ namespace DotsLite.MarchingCubes
             em.SetComponentData(newent, new DrawInstance.ModelLinkData
             {
                 DrawModelEntityCurrent = prefab.DrawModelEntity,
+            });
+            em.SetComponentData(newent, new BitGrid.WorldOriginData
+            {
+                Origin = origin.As_float4(),
             });
         }
 

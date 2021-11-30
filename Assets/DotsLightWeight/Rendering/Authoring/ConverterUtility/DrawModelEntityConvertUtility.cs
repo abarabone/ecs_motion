@@ -66,7 +66,7 @@ namespace DotsLite.Draw.Authoring
 
             static void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int vectorLengthPerInstance )
             {
-                var sys = em_.World.GetExistingSystem<DrawBufferManagementSystem>();
+                var sys = em_.World.GetOrCreateSystem<DrawBufferManagementSystem>();
                 var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
 
                 mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer );

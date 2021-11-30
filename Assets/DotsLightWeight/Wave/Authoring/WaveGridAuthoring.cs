@@ -148,6 +148,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(Height.GridData),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
+
                     typeof(Translation),
                 };
                 if (lodlevel == 0) types.Add(typeof(Height.GridLevel0Tag));

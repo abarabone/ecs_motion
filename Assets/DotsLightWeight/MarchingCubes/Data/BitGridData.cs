@@ -70,6 +70,11 @@ namespace DotsLite.MarchingCubes.Data
             //public int BitBfufferOffset;
         }
 
+        public struct WorldOriginData : IComponentData
+        {
+            public float4 Origin;
+        }
+
         public struct UpdateDirtyRangeData : IComponentData
         {
             public int begin;

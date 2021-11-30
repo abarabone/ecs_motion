@@ -50,6 +50,7 @@ namespace DotsLite.MarchingCubes.Authoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
+                    typeof(BitGrid.WorldOriginData),
                 };
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 

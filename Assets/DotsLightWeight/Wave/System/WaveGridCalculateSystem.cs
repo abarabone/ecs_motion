@@ -37,16 +37,16 @@ namespace DotsLite.HeightGrid
             this.gridMaster = this.GetSingleton<GridMaster.Data>();
             Debug.Log(this.gridMaster);
 
-            this.gridMaster.Currs[10] = -3f;
-            this.gridMaster.Currs[11] = -3f;
+            this.gridMaster.Currs[10] = -1f;
+            this.gridMaster.Currs[11] = -1f;
             this.gridMaster.Currs[12] = -3f;
-            this.gridMaster.Currs[13] = -3f;
-            this.gridMaster.Currs[14] = -3f;
-            this.gridMaster.Currs[15] = -3f;
-            this.gridMaster.Currs[16] = -3f;
-            this.gridMaster.Currs[17] = 3f;
-            this.gridMaster.Currs[18] = 3f;
-            this.gridMaster.Currs[19] = 3f;
+            this.gridMaster.Currs[13] = -2f;
+            this.gridMaster.Currs[14] = -1f;
+            this.gridMaster.Currs[15] = -1f;
+            this.gridMaster.Currs[16] = -5f;
+            this.gridMaster.Currs[17] = 1f;
+            this.gridMaster.Currs[18] = 1f;
+            this.gridMaster.Currs[19] = 1f;
         }
 
 

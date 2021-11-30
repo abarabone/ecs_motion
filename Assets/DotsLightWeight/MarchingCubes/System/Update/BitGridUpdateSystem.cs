@@ -47,6 +47,7 @@ namespace DotsLite.MarchingCubes
                 bitgrids = this.GetComponentDataFromEntity<BitGrid.BitLinesData>(isReadOnly: true),
                 dirties = this.GetComponentDataFromEntity<BitGrid.UpdateDirtyRangeData>(),
                 parents = this.GetComponentDataFromEntity<BitGrid.ParentAreaData>(isReadOnly: true),
+                origins = this.GetComponentDataFromEntity<BitGrid.WorldOriginData>(isReadOnly: true),
                 areas = this.GetComponentDataFromEntity<BitGridArea.GridLinkData>(isReadOnly: true),
                 dims = this.GetComponentDataFromEntity<BitGridArea.UnitDimensionData>(isReadOnly: true),
             }
@@ -61,6 +62,8 @@ namespace DotsLite.MarchingCubes
             public ComponentDataFromEntity<BitGrid.BitLinesData> bitgrids;
             [ReadOnly]
             public ComponentDataFromEntity<BitGrid.ParentAreaData> parents;
+            [ReadOnly]
+            public ComponentDataFromEntity<BitGrid.WorldOriginData> origins;
 
             [ReadOnly]
             public ComponentDataFromEntity<BitGridArea.GridLinkData> areas;
@@ -78,6 +81,7 @@ namespace DotsLite.MarchingCubes
                 NativeMultiHashMap<Entity, UpdateMessage>.Enumerator msgs)
             {
                 var parent = this.parents[targetEntity].ParentAreaEntity;
+                var origin = this.origins[targetEntity].Origin.xyz;
                 var area = this.areas[parent];
                 var dim = this.dims[parent];
 
@@ -108,28 +112,34 @@ namespace DotsLite.MarchingCubes
                                 //    p[i] = v0;
                                 //}
 
-                                for (var i = 32 * 3; i < 32 * 4; i++)
+                                for (var i = 32 * 1; i < 32 * 2; i++)
                                 {
                                     p[i] = 0xffffffff;
                                 }
 
                                 this.dirties[targetEntity] = new BitGrid.UpdateDirtyRangeData
                                 {
-                                    begin = 32 * 3,//32 * 32 / 2,
-                                    end = 32 * 4 - 1,//dim.UnitOnEdge.z * dim.UnitOnEdge.y - 1,
+                                    begin = 32 * 1,//32 * 32 / 2,
+                                    end = 32 * 2 -1,//dim.UnitOnEdge.z * dim.UnitOnEdge.y - 1,
                                 };
                             }
                             break;
                         case BitGridUpdateType.aabb_add32:
                             {
-                                //msg.aabb.Add(in area, in dim);
+                                var localpos = (msg.aabb.Center - origin) * new float3(1, -1, -1);// + new float3(-0.5f, -0.5f, 0.5f);
+                                var hitIndex =  (int3)math.floor(localpos);
+
+                                var iline = hitIndex.y * 32 + hitIndex.z;
+                                var targetbit = 1u << hitIndex.x;
+                                UnityEngine.Debug.Log($"{msg.aabb.Center} {origin} {localpos} {hitIndex} {iline} {targetbit}");
+
                                 var p = this.bitgrids[targetEntity].p;
-                                p[0] = 0xffff_ffff;
+                                p[iline] &= ~targetbit;
 
                                 this.dirties[targetEntity] = new BitGrid.UpdateDirtyRangeData
                                 {
-                                    begin = 0,//32 * 32 / 2,
-                                    end = dim.UnitOnEdge.z * dim.UnitOnEdge.y - 1,
+                                    begin = iline,
+                                    end = iline,
                                 };
                             }
                             break;
