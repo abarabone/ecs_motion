@@ -126,8 +126,8 @@ namespace DotsLite.MarchingCubes
                             break;
                         case BitGridUpdateType.aabb_add32:
                             {
-                                var localpos = (msg.aabb.Center - origin) * new float3(1, -1, -1) - new float3(0.5f, -0.5f, -0.5f);
-                                var hitIndex = (int3)(math.floor(math.abs(localpos)) * math.sign(localpos));
+                                var localpos = (msg.aabb.Center - origin) * new float3(1, -1, -1);
+                                var hitIndex = (int3)math.floor(localpos + new float3(0.5f, 0.5f, 0.5f));
 
                                 var iline = hitIndex.y * 32 + hitIndex.z;
                                 var targetbit = 1u << hitIndex.x;
