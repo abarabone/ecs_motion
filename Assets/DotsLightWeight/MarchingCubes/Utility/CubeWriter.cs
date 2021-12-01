@@ -59,7 +59,7 @@ namespace DotsLite.MarchingCubes
                 ref var srcIdxLists = ref this.mcdata.Value.CubeIdAndVertexIndicesList;
                 ref var srcVtxList = ref this.mcdata.Value.BaseVertexList;
 
-                var pos = this.unitOnEdge * new float3(-0.5f, 0.5f, 0.5f) + new float3(x, -y, -z);
+                var pos = this.unitOnEdge * new float3(-0.5f, 0.5f, 0.5f) + new float3(x, -y, -z) + new float3(0.5f, -0.5f, -0.5f);
                 if (cubeId == 0 || cubeId == 255) return;
                 //this.count++;
 
@@ -218,7 +218,7 @@ namespace DotsLite.MarchingCubes
                     Collider = srccube.Collider,
                     CompoundFromChild = new RigidTransform
                     {
-                        pos = this.origin + new float3(x, -y, -z),// + new float3(0.5f, -0.5f, -0.5f),
+                        pos = this.origin + new float3(x, -y, -z) + new float3(0.5f, -0.5f, -0.5f),
                         rot = srccube.Rotation,
                     }
                 };
@@ -277,7 +277,7 @@ namespace DotsLite.MarchingCubes
                         Collider = srccube.Collider,
                         CompoundFromChild = new RigidTransform
                         {
-                            pos = origin + new float3(cube.x, -cube.y, -cube.z) - new float3(0.5f, -0.5f, -0.5f),
+                            pos = origin + new float3(cube.x, -cube.y, -cube.z) + new float3(0.5f, -0.5f, -0.5f),
                             rot = srccube.Rotation,
                         }
                     };

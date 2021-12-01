@@ -133,6 +133,7 @@ namespace DotsLite.MarchingCubes
 
                     var u = gtype.UnitOnEdge.xyz;
                     var writer = new MakeCube.CompoundMeshWriter(u, unitcolliders.AsNativeArray());
+                    //var writer = new MakeCube.FullMeshWriter(u, this.mcdata);
                     var near = grids.PickupNearGridIds(in links, in gids, in grid, in locate);
                     MakeCube.SampleAllCubes(near, ref writer, u);
 

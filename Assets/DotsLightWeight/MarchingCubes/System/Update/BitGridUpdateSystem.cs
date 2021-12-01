@@ -112,7 +112,7 @@ namespace DotsLite.MarchingCubes
                                 //    p[i] = v0;
                                 //}
 
-                                for (var i = 32 * 1; i < 32 * 2; i++)
+                                for (var i = 32 * 1; i < 32 * 32; i++)
                                 {
                                     p[i] = 0xffffffff;
                                 }
@@ -120,18 +120,18 @@ namespace DotsLite.MarchingCubes
                                 this.dirties[targetEntity] = new BitGrid.UpdateDirtyRangeData
                                 {
                                     begin = 32 * 1,//32 * 32 / 2,
-                                    end = 32 * 2 -1,//dim.UnitOnEdge.z * dim.UnitOnEdge.y - 1,
+                                    end = 32 * 32 -1,//dim.UnitOnEdge.z * dim.UnitOnEdge.y - 1,
                                 };
                             }
                             break;
                         case BitGridUpdateType.aabb_add32:
                             {
-                                var localpos = (msg.aabb.Center - origin) * new float3(1, -1, -1);// + new float3(-0.5f, -0.5f, 0.5f);
-                                var hitIndex =  (int3)math.floor(localpos);
+                                var localpos = (msg.aabb.Center - origin) * new float3(1, -1, -1) - new float3(0.5f, -0.5f, -0.5f);
+                                var hitIndex = (int3)(math.floor(math.abs(localpos)) * math.sign(localpos));
 
                                 var iline = hitIndex.y * 32 + hitIndex.z;
                                 var targetbit = 1u << hitIndex.x;
-                                UnityEngine.Debug.Log($"{msg.aabb.Center} {origin} {localpos} {hitIndex} {iline} {targetbit}");
+                                //UnityEngine.Debug.Log($"{msg.aabb.Center} {origin} {localpos} {hitIndex} {iline} {targetbit}");
 
                                 var p = this.bitgrids[targetEntity].p;
                                 p[iline] &= ~targetbit;
