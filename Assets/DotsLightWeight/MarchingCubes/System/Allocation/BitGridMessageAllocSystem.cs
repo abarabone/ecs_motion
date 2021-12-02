@@ -18,6 +18,7 @@ namespace DotsLite.MarchingCubes
     [StructLayout(LayoutKind.Explicit)]
     public struct UpdateMessage : IHitMessage
     {
+        [FieldOffset(0)] public float3 point;
         [FieldOffset(0)] public AABB aabb;
         [FieldOffset(0)] public UpdateSphere sphere;
 
@@ -30,6 +31,8 @@ namespace DotsLite.MarchingCubes
         none,
 
         cube_force32,
+        point_add32,
+        point_remove32,
         aabb_add32,
         aabb_remove32,
         sphere_add32,

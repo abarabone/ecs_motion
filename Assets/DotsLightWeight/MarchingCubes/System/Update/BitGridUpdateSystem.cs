@@ -112,7 +112,7 @@ namespace DotsLite.MarchingCubes
                                 //    p[i] = v0;
                                 //}
 
-                                for (var i = 32 * 1; i < 32 * 32; i++)
+                                for (var i = 32 * 2; i < 32 * 32; i++)
                                 {
                                     p[i] = 0xffffffff;
                                 }
@@ -124,10 +124,11 @@ namespace DotsLite.MarchingCubes
                                 };
                             }
                             break;
-                        case BitGridUpdateType.aabb_add32:
+                        case BitGridUpdateType.point_remove32:
                             {
-                                var localpos = (msg.aabb.Center - origin) * new float3(1, -1, -1);
-                                var hitIndex = (int3)math.floor(localpos + new float3(0.5f, 0.5f, 0.5f));
+                                var localpos = (msg.point - origin) * new float3(1, -1, -1);
+                                var localpos_clamped = math.clamp(localpos, float3.zero, dim.UnitOnEdge.xyz);
+                                var hitIndex = (int3)math.floor(localpos_clamped + new float3(0.5f, 0.5f, 0.5f));
 
                                 var iline = hitIndex.y * 32 + hitIndex.z;
                                 var targetbit = 1u << hitIndex.x;
@@ -143,10 +144,63 @@ namespace DotsLite.MarchingCubes
                                 };
                             }
                             break;
-                        case BitGridUpdateType.sphere_add32:
+                        case BitGridUpdateType.point_add32:
+                            {
+                                var localpos = (msg.point - origin) * new float3(1, -1, -1);
+                                var localpos_clamped = math.clamp(localpos, float3.zero, dim.UnitOnEdge.xyz);
+                                var hitIndex = (int3)math.floor(localpos_clamped + new float3(0.5f, 0.5f, 0.5f));
 
+                                var iline = hitIndex.y * dim.UnitOnEdge.z + hitIndex.z;
+                                var targetbit = 1u << hitIndex.x;
+                                //UnityEngine.Debug.Log($"{msg.aabb.Center} {origin} {localpos} {hitIndex} {iline} {targetbit}");
+
+                                var p = this.bitgrids[targetEntity].p;
+                                p[iline] |= targetbit;//&= ~targetbit;
+
+                                this.dirties[targetEntity] = new BitGrid.UpdateDirtyRangeData
+                                {
+                                    begin = iline,
+                                    end = iline,
+                                };
+                            }
                             break;
-                        case BitGridUpdateType.capsule_add32:
+                        case BitGridUpdateType.aabb_remove32:
+                            {
+                                var local0 = (msg.aabb.Center - msg.aabb.Extents - origin) * new float3(1, -1, -1);// - new float3(0.5f, 0.5f, 0.5f);
+                                var local1 = (msg.aabb.Center + msg.aabb.Extents - origin) * new float3(1, -1, -1);// - new float3(0.5f, 0.5f, 0.5f);
+                                var local0_clamped = math.clamp(local0, float3.zero, dim.UnitOnEdge.xyz);
+                                var local1_clamped = math.clamp(local1, float3.zero, dim.UnitOnEdge.xyz);
+
+                                var stlocal_clamped = math.min(local0_clamped, local1_clamped);
+                                var edlocal_clamped = math.max(local0_clamped, local1_clamped);
+
+                                var sthitIndex = (int3)math.floor(stlocal_clamped);
+                                var edhitIndex = (int3)math.ceil(edlocal_clamped);
+
+                                //UnityEngine.Debug.Log($"{stlocal_clamped} {edlocal_clamped} {sthitIndex} {edhitIndex}");
+                                var p = this.bitgrids[targetEntity].p;
+                                for (var iy = sthitIndex.y; iy <= edhitIndex.y; iy++)
+                                    for (var iz = sthitIndex.z; iz <= edhitIndex.z; iz++)
+                                    {
+                                        var len = (edhitIndex.x - sthitIndex.x) + 1;
+                                        var mask = ((1u << len) - 1) << sthitIndex.x;
+                                        p[iy * dim.UnitOnEdge.z + iz] &= ~mask;
+                                        //UnityEngine.Debug.Log($"{mask}");
+                                    }
+
+                                this.dirties[targetEntity] = new BitGrid.UpdateDirtyRangeData
+                                {
+                                    begin = sthitIndex.y * dim.UnitOnEdge.z + sthitIndex.z,
+                                    end = edhitIndex.y * dim.UnitOnEdge.z + edhitIndex.z,
+                                };
+                            }
+                            break;
+                        case BitGridUpdateType.sphere_remove32:
+                            {
+
+                            }
+                            break;
+                        case BitGridUpdateType.capsule_remove32:
 
                             break;
                         default: break;

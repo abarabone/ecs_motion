@@ -272,12 +272,16 @@ namespace DotsLite.Arms
 
                     mchit.Add(hit.stateEntity, new MarchingCubes.UpdateMessage
                     {
-                        type = MarchingCubes.BitGridUpdateType.aabb_add32,
+                        //type = MarchingCubes.BitGridUpdateType.point_remove32,
+                        //point = hit.posision,
+                        type = MarchingCubes.BitGridUpdateType.aabb_remove32,
                         aabb = new AABB
                         {
                             Center = hit.posision,
-                            Extents = 0.0f,//
+                            Extents = 0.5f,
                         },
+                        //type = MarchingCubes.BitGridUpdateType.point_add32,
+                        //point = hit.posision - hit.normal * 0.5f,
                     });
                     break;
 
