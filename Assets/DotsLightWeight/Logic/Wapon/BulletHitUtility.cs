@@ -278,7 +278,7 @@ namespace DotsLite.Arms
                         aabb = new AABB
                         {
                             Center = hit.posision,
-                            Extents = 0.5f,
+                            Extents = .1f,
                         },
                         //type = MarchingCubes.BitGridUpdateType.point_add32,
                         //point = hit.posision - hit.normal * 0.5f,
