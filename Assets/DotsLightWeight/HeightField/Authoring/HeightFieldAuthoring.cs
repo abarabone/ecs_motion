@@ -55,8 +55,8 @@ namespace DotsLite.HeightField
                     colliderHeights[j + i * size.x] = h;
                 }
 
-            physicsCollider.Value = Unity.Physics.TerrainCollider.Create(colliderHeights, size, scale,
-                Unity.Physics.TerrainCollider.CollisionMethod.Triangles, filter);
+            var meshtype = Unity.Physics.TerrainCollider.CollisionMethod.VertexSamples;
+            physicsCollider.Value = Unity.Physics.TerrainCollider.Create(colliderHeights, size, scale, meshtype, filter);
 
             colliderHeights.Dispose();
 

@@ -9,7 +9,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using System.Runtime.CompilerServices;
 
-namespace DotsLite.HeightField
+namespace DotsLite.HeightGrid
 {
     using DotsLite.Common.Extension;
     using DotsLite.Misc;
@@ -76,5 +76,7 @@ namespace DotsLite.HeightField
             public Entity SplashPrefab;
         }
     }
+
+
 
 }
