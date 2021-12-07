@@ -55,9 +55,14 @@ namespace DotsLite.HeightGrid
                 this.pNexts = this.pPrevs;
             }
 
-            public void Alloc(int ww, int wh, int lw, int lh)
+            public void Alloc(int2 numGrids, int2 unitLengthInGrid)
             {
+                var ww = numGrids.x;
+                var wh = numGrids.y;
+                var lw = unitLengthInGrid.x;
+                var lh = unitLengthInGrid.y;
                 var totalLength = ww * lw * wh * lh + wh * lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
+
                 this.pNexts = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 4, Allocator.Persistent);
                 this.pCurrs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 4, Allocator.Persistent);
                 this.pPrevs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 4, Allocator.Persistent);
@@ -70,6 +75,7 @@ namespace DotsLite.HeightGrid
                 Debug.Log("disposed");
             }
         }
+
         public class Data : IComponentData, IDisposable
         {
             public NativeArray<float> Nexts;
@@ -104,6 +110,9 @@ namespace DotsLite.HeightGrid
         {
             public Entity SplashPrefab;
         }
+
+        public struct InitializeTag : IComponentData
+        { }
     }
 
 

@@ -98,10 +98,15 @@ namespace DotsLite.HeightGrid.Aurthoring
             void initMasterEntityComponent_(Entity ent)
             {
 
-                var totalLength = ww*lw * wh*lh + wh*lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
-                var pos = this.transform.position - new Vector3(ww * lw, 0.0f, wh * lh) * this.UnitDistance * 0.5f;
+                var types = new ComponentType[]
+                {
+                    typeof(GridMaster.HeightFieldData),
+                    typeof(GridMaster.DimensionData),
+                    typeof(GridMaster.InitializeTag),
+                };
 
-                em.AddComponentData(ent, new GridMaster.DimensionData
+                var pos = this.transform.position - new Vector3(ww * lw, 0.0f, wh * lh) * this.UnitDistance * 0.5f;
+                em.SetComponentData(ent, new GridMaster.DimensionData
                 {
                     NumGrids = this.NumGrids,
                     UnitLengthInGrid = this.UnitLengthInGrid,
