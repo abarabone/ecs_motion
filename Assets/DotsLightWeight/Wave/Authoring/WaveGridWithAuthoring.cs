@@ -21,7 +21,7 @@ namespace DotsLite.HeightGrid.Aurthoring
     using DotsLite.Misc;
     using DotsLite.Particle.Aurthoring;
 
-    public class WaveGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class WaveGridWithAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
         public float UnitDistance;
@@ -101,23 +101,17 @@ namespace DotsLite.HeightGrid.Aurthoring
                 var totalLength = ww*lw * wh*lh + wh*lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
                 var pos = this.transform.position - new Vector3(ww * lw, 0.0f, wh * lh) * this.UnitDistance * 0.5f;
 
-                em.AddComponentData(ent, new GridMaster.Data
+                em.AddComponentData(ent, new GridMaster.DimensionData
                 {
-                    Prevs = new NativeArray<float>(totalLength, Allocator.Persistent),
-                    Currs = new NativeArray<float>(totalLength, Allocator.Persistent),
-                    Nexts = new NativeArray<float>(totalLength, Allocator.Persistent),
-                    Info = new GridMaster.DimensionData
-                    {
-                        NumGrids = this.NumGrids,
-                        UnitLengthInGrid = this.UnitLengthInGrid,
-                        UnitScale = this.UnitDistance,
-                        Dumping = this.Dumping,
-                        Constraint2 = this.Constraint2,
-                        LeftTopLocation = pos.As_float3().xz.x_y(),
+                    NumGrids = this.NumGrids,
+                    UnitLengthInGrid = this.UnitLengthInGrid,
+                    UnitScale = this.UnitDistance,
+                    Dumping = this.Dumping,
+                    Constraint2 = this.Constraint2,
+                    LeftTopLocation = pos.As_float3().xz.x_y(),
 
-                        TotalLength = this.NumGrids * (int2)this.UnitLengthInGrid,
-                        UnitScaleRcp = 1 / this.UnitDistance,
-                    }
+                    TotalLength = this.NumGrids * (int2)this.UnitLengthInGrid,
+                    UnitScaleRcp = 1 / this.UnitDistance,
                 });
             }
 

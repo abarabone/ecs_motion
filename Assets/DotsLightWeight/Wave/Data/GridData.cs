@@ -64,7 +64,7 @@ namespace DotsLite.HeightGrid
         //}
 
 
-        static unsafe int2 calcLocation(ref this GridMaster.Info info, float* pHeight, float2 point)
+        static unsafe int2 calcLocation(ref this GridMaster.DimensionData info, float* pHeight, float2 point)
         {
             var wxz = point - info.LeftTopLocation.xz;
             var i = wxz * info.UnitScaleRcp;
@@ -72,7 +72,7 @@ namespace DotsLite.HeightGrid
             var index2 = (int2)i;
             return index2;
         }
-        static int calcSerialIndex(ref this GridMaster.Info info, int2 index2)
+        static int calcSerialIndex(ref this GridMaster.DimensionData info, int2 index2)
         {
             var serialIndex = index2.x + index2.y * info.TotalLength.x;
 
@@ -83,7 +83,7 @@ namespace DotsLite.HeightGrid
         /// <summary>
         /// 
         /// </summary>
-        public static unsafe float CalcVerticalHeight(ref this GridMaster.Info info, float* pHeight, float2 point)
+        public static unsafe float CalcVerticalHeight(ref this GridMaster.DimensionData info, float* pHeight, float2 point)
         {
             var wxz = point - info.LeftTopLocation.xz;
             var i = wxz * info.UnitScaleRcp;
@@ -143,13 +143,13 @@ namespace DotsLite.HeightGrid
         //   = -h0 / l
 
 
-        public static unsafe float RaycastHit(this GridMaster.Info info, float* pHeight, float3 start, float3 dir, float length)
+        public static unsafe float RaycastHit(this GridMaster.DimensionData info, float* pHeight, float3 start, float3 dir, float length)
         {
             
 
             return 0;
         }
-        public static unsafe (bool isHit, float3 p) RaycastHit(this GridMaster.Info info, float* pHeight, float3 start, float3 end)
+        public static unsafe (bool isHit, float3 p) RaycastHit(this GridMaster.DimensionData info, float* pHeight, float3 start, float3 end)
         {
             var wxz_st = start.xz - info.LeftTopLocation.xz;
             var ist = wxz_st * info.UnitScaleRcp;
@@ -301,7 +301,7 @@ namespace DotsLite.HeightGrid
 
 
         public static unsafe (bool isHit, float3 p) RaycastHit2(
-            this GridMaster.Info info, float* pHeight, float3 start, float3 end)
+            this GridMaster.DimensionData info, float* pHeight, float3 start, float3 end)
         {
             var wxz_st = start.xz - info.LeftTopLocation.xz;
             var ist = wxz_st * info.UnitScaleRcp;
@@ -360,7 +360,7 @@ namespace DotsLite.HeightGrid
             return (false, default);
         }
         public static unsafe (bool isHit, float3 p) RaycastHit2(
-            GridMaster.Info info, float3 wvh, float2 i0, float2 i1, float2 i2, float3 st, float3 ed)
+            GridMaster.DimensionData info, float3 wvh, float2 i0, float2 i1, float2 i2, float3 st, float3 ed)
         {
             var p0 = info.LeftTopLocation + (i0 * info.UnitScale).x_y(wvh.y);
             var p1 = info.LeftTopLocation + (i1 * info.UnitScale).x_y(wvh.x);

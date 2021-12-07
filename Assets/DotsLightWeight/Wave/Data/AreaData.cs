@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 using System.Runtime.CompilerServices;
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsLite.HeightGrid
 {
@@ -15,7 +16,6 @@ namespace DotsLite.HeightGrid
     using DotsLite.Misc;
     using DotsLite.Common;
     using DotsLite.Utilities;
-    using DotsLite.Mathematics;
 
 
     [Serializable]
@@ -42,13 +42,41 @@ namespace DotsLite.HeightGrid
 
     public static class GridMaster
     {
+        public unsafe struct HeightFieldData : IComponentData//, IDisposable
+        {
+            public float *pNexts;
+            public float *pCurrs;
+            public float *pPrevs;
+
+            public void SwapShift()
+            {
+                this.pPrevs = this.pCurrs;
+                this.pCurrs = this.pNexts;
+                this.pNexts = this.pPrevs;
+            }
+
+            public void Alloc(int ww, int wh, int lw, int lh)
+            {
+                var totalLength = ww * lw * wh * lh + wh * lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
+                this.pNexts = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 4, Allocator.Persistent);
+                this.pCurrs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 4, Allocator.Persistent);
+                this.pPrevs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 4, Allocator.Persistent);
+            }
+            public void Dispose()
+            {
+                UnsafeUtility.Free(this.pNexts, Allocator.Persistent);
+                UnsafeUtility.Free(this.pCurrs, Allocator.Persistent);
+                UnsafeUtility.Free(this.pPrevs, Allocator.Persistent);
+                Debug.Log("disposed");
+            }
+        }
         public class Data : IComponentData, IDisposable
         {
             public NativeArray<float> Nexts;
             public NativeArray<float> Currs;
             public NativeArray<float> Prevs;
 
-            public Info Info;
+            public DimensionData Info;
 
             public void Dispose()
             {
@@ -58,7 +86,8 @@ namespace DotsLite.HeightGrid
                 Debug.Log("disposed");
             }
         }
-        public struct Info
+
+        public struct DimensionData : IComponentData
         {
             public float3 LeftTopLocation;
             public int2 UnitLengthInGrid;
