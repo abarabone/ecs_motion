@@ -64,12 +64,12 @@ namespace DotsLite.Draw.Authoring
 
 
 
-            static void setShaderProps_( EntityManager em_, Material mat_, Mesh mesh_, int vectorLengthPerInstance )
+            static void setShaderProps_(EntityManager em_, Material mat_, Mesh mesh_, int vectorLengthPerInstance)
             {
                 var sys = em_.World.GetOrCreateSystem<DrawBufferManagementSystem>();
                 var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
 
-                mat_.SetBuffer( "BoneVectorBuffer", boneVectorBuffer );
+                mat_.SetBuffer("BoneVectorBuffer", boneVectorBuffer);
 
                 mat_.SetInt("VectorLengthPerInstance", vectorLengthPerInstance);
 
@@ -84,12 +84,13 @@ namespace DotsLite.Draw.Authoring
 
                 var types = new List<ComponentType>
                 {
-                    typeof( DrawModel.BoneVectorSettingData ),
-                    typeof( DrawModel.InstanceCounterData ),
-                    typeof( DrawModel.VectorIndexData ),
-                    typeof( DrawModel.BoundingBoxData ),
-                    typeof( DrawModel.GeometryData ),
-                    typeof( DrawModel.ComputeArgumentsBufferData )
+                    typeof(DrawModel.BoneVectorSettingData),
+                    typeof(DrawModel.InstanceCounterData),
+                    typeof(DrawModel.VectorIndexData),
+                    typeof(DrawModel.BoundingBoxData),
+                    typeof(DrawModel.GeometryData),
+                    typeof(DrawModel.ComputeArgumentsBufferData),
+                    //typeof(DrawModel.InitializeTag),
                 };
                 if (useSort) types.Add(typeof(DrawModel.SortSettingData));
                 em.AddComponents(drawModelEntity, new ComponentTypes(types.ToArray()));
@@ -155,9 +156,26 @@ namespace DotsLite.Draw.Authoring
                 );
 
             }
-
         }
 
+        // いずれは InitializeTag 依存で初期化するようにした方がいいかも…
+        // でも結局、mesh は authoring からもってこないとだめだろうから、authoring 依存にはなるよなぁ…
+        // メッシュデータを blob に詰めるって手もあるかもだけど
+        //public static void SetShaderProps(EntityManager em, Entity ent, Material mat, Mesh mesh, int vectorLengthPerInstance)
+        //{
+        //    var sys = em.World.GetOrCreateSystem<DrawBufferManagementSystem>();
+        //    var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
+
+        //    mat.SetBuffer("BoneVectorBuffer", boneVectorBuffer);
+        //    mat.SetInt("VectorLengthPerInstance", vectorLengthPerInstance);
+        //    //mat_.SetInt( "BoneVectorOffset", 0 );// 毎フレームのセットが必要なので、ここではやらない
+
+
+        //    em.SetComponentData(ent, new DrawModel.ComputeArgumentsBufferData
+        //    {
+        //        InstancingArgumentsBuffer = ComputeShaderUtility.CreateIndirectArgumentsBuffer(),
+        //    });
+        //}
 
 
         //// メッシュを結合する

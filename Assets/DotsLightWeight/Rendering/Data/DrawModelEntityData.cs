@@ -82,6 +82,9 @@ namespace DotsLite.Draw
             public Mesh Mesh;
             public Material Material;
         }
+
+        public struct InitializeTag : IComponentData
+        { }
     }
 
 }

@@ -16,7 +16,7 @@ namespace DotsLite.HeightGrid
     using DotsLite.Misc;
     using DotsLite.Utilities;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     public class WaveCalculateSystem : SystemBase
     {
@@ -37,16 +37,16 @@ namespace DotsLite.HeightGrid
             this.gridMaster = this.GetSingleton<GridMaster.Data>();
             Debug.Log(this.gridMaster);
 
-            this.gridMaster.Currs[10] = -1f;
-            this.gridMaster.Currs[11] = -1f;
-            this.gridMaster.Currs[12] = -3f;
-            this.gridMaster.Currs[13] = -2f;
-            this.gridMaster.Currs[14] = -1f;
-            this.gridMaster.Currs[15] = -1f;
-            this.gridMaster.Currs[16] = -5f;
-            this.gridMaster.Currs[17] = 1f;
-            this.gridMaster.Currs[18] = 1f;
-            this.gridMaster.Currs[19] = 1f;
+            //this.gridMaster.Currs[10] = -1f;
+            //this.gridMaster.Currs[11] = -1f;
+            //this.gridMaster.Currs[12] = -3f;
+            //this.gridMaster.Currs[13] = -2f;
+            //this.gridMaster.Currs[14] = -1f;
+            //this.gridMaster.Currs[15] = -1f;
+            //this.gridMaster.Currs[16] = -5f;
+            //this.gridMaster.Currs[17] = 1f;
+            //this.gridMaster.Currs[18] = 1f;
+            //this.gridMaster.Currs[19] = 1f;
         }
 
 
