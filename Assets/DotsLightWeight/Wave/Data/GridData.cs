@@ -35,6 +35,11 @@ namespace DotsLite.HeightGrid
         {
             public AABB WorldBbox;
         }
+
+        public struct AreaLinkData : IComponentData
+        {
+            public Entity ParentAreaEntity;
+        }
     }
 
 

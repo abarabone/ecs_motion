@@ -63,9 +63,13 @@ namespace DotsLite.HeightGrid
                 var lh = unitLengthInGrid.y;
                 var totalLength = ww * lw * wh * lh + wh * lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
 
-                this.pNexts = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 4, Allocator.Persistent);
-                this.pCurrs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 4, Allocator.Persistent);
-                this.pPrevs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 4, Allocator.Persistent);
+                this.pNexts = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 16, Allocator.Persistent);
+                this.pCurrs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 16, Allocator.Persistent);
+                this.pPrevs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 16, Allocator.Persistent);
+
+                UnsafeUtility.MemClear(this.pNexts, totalLength * sizeof(float));
+                UnsafeUtility.MemClear(this.pCurrs, totalLength * sizeof(float));
+                UnsafeUtility.MemClear(this.pPrevs, totalLength * sizeof(float));
             }
             public void Dispose()
             {

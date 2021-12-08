@@ -20,12 +20,10 @@ namespace DotsLite.HeightGrid
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class HeightGridsAllocationSystem : DependencyAccessableSystemBase
+    public class HeightBufferAllocationAndFreeSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;
-
-        BarrierDependency.Sender barfreedep;
 
 
         protected override void OnCreate()
@@ -33,22 +31,40 @@ namespace DotsLite.HeightGrid
             base.OnCreate();
 
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-            this.barfreedep = BarrierDependency.Sender.Create<HeightGridsFreeSystem>(this);
         }
 
         protected unsafe override void OnUpdate()
         {
             using var cmdscope = this.cmddep.WithDependencyScope();
-            using var barfreeScope = this.barfreedep.WithDependencyScope();
+
+            var cmd = cmdscope.CommandBuffer;
 
             this.Entities
                 .WithoutBurst()
                 .WithAll<GridMaster.InitializeTag>()
-                .ForEach((ref GridMaster.HeightFieldData heights, in GridMaster.DimensionData dim) =>
+                .ForEach((
+                    Entity ent,
+                    ref GridMaster.HeightFieldData heights,
+                    in GridMaster.DimensionData dim) =>
                 {
                     heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);
+
+                    cmd.RemoveComponent<GridMaster.InitializeTag>(ent);
                 })
                 .Schedule();
+        }
+
+        protected override void OnDestroy()
+        {
+
+            this.Entities
+                .WithoutBurst()
+                .ForEach((ref GridMaster.HeightFieldData heights) =>
+                {
+                    heights.Dispose();
+                })
+                .Schedule();
+
         }
     }
 }

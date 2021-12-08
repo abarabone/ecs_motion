@@ -16,37 +16,29 @@ namespace DotsLite.HeightGrid
     using DotsLite.Misc;
     using DotsLite.Utilities;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     public class WaveCalculateSystem : SystemBase
     {
 
-        GridMaster.Data gridMaster;
 
-
-        protected override void OnCreate()
+        protected unsafe override void OnStartRunning()
         {
-            base.OnCreate();
-
-            this.RequireSingletonForUpdate<GridMaster.Data>();
-        }
-        protected override void OnStartRunning()
-        {
-            //if (!this.HasSingleton<GridMaster.Data>()) return;
-
-            this.gridMaster = this.GetSingleton<GridMaster.Data>();
-            Debug.Log(this.gridMaster);
-
-            //this.gridMaster.Currs[10] = -1f;
-            //this.gridMaster.Currs[11] = -1f;
-            //this.gridMaster.Currs[12] = -3f;
-            //this.gridMaster.Currs[13] = -2f;
-            //this.gridMaster.Currs[14] = -1f;
-            //this.gridMaster.Currs[15] = -1f;
-            //this.gridMaster.Currs[16] = -5f;
-            //this.gridMaster.Currs[17] = 1f;
-            //this.gridMaster.Currs[18] = 1f;
-            //this.gridMaster.Currs[19] = 1f;
+            this.Entities
+                .ForEach((in GridMaster.HeightFieldData heights) =>
+                {
+                    heights.pCurrs[10] = -1f;
+                    heights.pCurrs[11] = -1f;
+                    heights.pCurrs[12] = -3f;
+                    heights.pCurrs[13] = -2f;
+                    heights.pCurrs[14] = -1f;
+                    heights.pCurrs[15] = -1f;
+                    heights.pCurrs[16] = -5f;
+                    heights.pCurrs[17] = 1f;
+                    heights.pCurrs[18] = 1f;
+                    heights.pCurrs[19] = 1f;
+                })
+                .Run();
         }
 
 
@@ -59,7 +51,9 @@ namespace DotsLite.HeightGrid
 
             this.Entities
                 .WithoutBurst()
-                .ForEach((ref GridMaster.HeightFieldData heights, in GridMaster.DimensionData dim) =>
+                .ForEach((
+                    ref GridMaster.HeightFieldData heights,
+                    in GridMaster.DimensionData dim) =>
                 {
                     var span = dim.NumGrids * dim.UnitLengthInGrid;
                     var total = span.x * span.y;
@@ -69,9 +63,9 @@ namespace DotsLite.HeightGrid
 
                     this.Dependency = new WaveGridCaluclationJob
                     {
-                        pNext = (float4*)gridMaster.Nexts.GetUnsafePtr(),
-                        pCurr = (float4*)gridMaster.Currs.GetUnsafeReadOnlyPtr(),
-                        pPrev = (float4*)gridMaster.Prevs.GetUnsafeReadOnlyPtr(),
+                        pNext = (float4*)heights.pNexts,
+                        pCurr = (float4*)heights.pCurrs,
+                        pPrev = (float4*)heights.pPrevs,
                         span = span4,
                         harfsqdt = harfsqdt,
                         c2 = dim.Constraint2,
