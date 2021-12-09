@@ -219,52 +219,52 @@ namespace DotsLite.HeightGrid
             }
         }
 
-        [BurstCompile]
-        unsafe struct WaveGridCopyJob2 : IJobParallelFor
-        {
-            [NoAlias]
-            [NativeDisableUnsafePtrRestriction] public void* pPrev;
-            [NoAlias]
-            [NativeDisableUnsafePtrRestriction] public void* pCurr;
-            [NoAlias]
-            [ReadOnly]
-            [NativeDisableUnsafePtrRestriction] public void* pNext;
+        //[BurstCompile]
+        //unsafe struct WaveGridCopyJob2 : IJobParallelFor
+        //{
+        //    [NoAlias]
+        //    [NativeDisableUnsafePtrRestriction] public void* pPrev;
+        //    [NoAlias]
+        //    [NativeDisableUnsafePtrRestriction] public void* pCurr;
+        //    [NoAlias]
+        //    [ReadOnly]
+        //    [NativeDisableUnsafePtrRestriction] public void* pNext;
 
-            [BurstCompile]
-            public void Execute(int index)
-            {
-                if (X86.Avx2.IsAvx2Supported)
-                {
-                    var pcurr = (v256*)this.pCurr;
-                    var pprev = (v256*)this.pPrev;
-                    var pnext = (v256*)this.pNext;
-                    var hc = X86.Avx2.mm256_stream_load_si256(pcurr + index);
-                    var hn = X86.Avx2.mm256_stream_load_si256(pnext + index);
-                    X86.Avx.mm256_stream_si256(pprev + index, hc);
-                    X86.Avx.mm256_stream_si256(pcurr + index, hn);
-                }
-                else if (X86.Avx.IsAvxSupported)
-                {
-                    var pcurr = (v256*)this.pCurr;
-                    var pprev = (v256*)this.pPrev;
-                    var pnext = (v256*)this.pNext;
-                    var hc = X86.Avx.mm256_load_si256(pcurr + index);
-                    var hn = X86.Avx.mm256_load_si256(pnext + index);
-                    X86.Avx.mm256_stream_si256(pprev + index, hc);
-                    X86.Avx.mm256_stream_si256(pcurr + index, hn);
-                }
-                else
-                {
-                    var i = index << 1;
-                    var pcurr = (float4*)this.pCurr;
-                    var pprev = (float4*)this.pPrev;
-                    var pnext = (float4*)this.pNext;
-                    pprev[i + 0] = pcurr[i + 0];
-                    pcurr[i + 0] = pnext[i + 0];
-                    pprev[i + 1] = pcurr[i + 1];
-                    pcurr[i + 1] = pnext[i + 1];
-                }
-            }
-        }
+        //    [BurstCompile]
+        //    public void Execute(int index)
+        //    {
+        //        if (X86.Avx2.IsAvx2Supported)
+        //        {
+        //            var pcurr = (v256*)this.pCurr;
+        //            var pprev = (v256*)this.pPrev;
+        //            var pnext = (v256*)this.pNext;
+        //            var hc = X86.Avx2.mm256_stream_load_si256(pcurr + index);
+        //            var hn = X86.Avx2.mm256_stream_load_si256(pnext + index);
+        //            X86.Avx.mm256_stream_si256(pprev + index, hc);
+        //            X86.Avx.mm256_stream_si256(pcurr + index, hn);
+        //        }
+        //        else if (X86.Avx.IsAvxSupported)
+        //        {
+        //            var pcurr = (v256*)this.pCurr;
+        //            var pprev = (v256*)this.pPrev;
+        //            var pnext = (v256*)this.pNext;
+        //            var hc = X86.Avx.mm256_load_si256(pcurr + index);
+        //            var hn = X86.Avx.mm256_load_si256(pnext + index);
+        //            X86.Avx.mm256_stream_si256(pprev + index, hc);
+        //            X86.Avx.mm256_stream_si256(pcurr + index, hn);
+        //        }
+        //        else
+        //        {
+        //            var i = index << 1;
+        //            var pcurr = (float4*)this.pCurr;
+        //            var pprev = (float4*)this.pPrev;
+        //            var pnext = (float4*)this.pNext;
+        //            pprev[i + 0] = pcurr[i + 0];
+        //            pcurr[i + 0] = pnext[i + 0];
+        //            pprev[i + 1] = pcurr[i + 1];
+        //            pcurr[i + 1] = pnext[i + 1];
+        //        }
+        //    }
+        //}
     }
 }
