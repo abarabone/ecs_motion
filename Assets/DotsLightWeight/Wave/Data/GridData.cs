@@ -21,7 +21,7 @@ namespace DotsLite.HeightGrid
 
     public static class Height
     {
-        public struct GridLevel0Tag : IComponentData
+        public struct GridLv0Tag : IComponentData
         { }
 
         public struct GridData : IComponentData

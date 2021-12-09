@@ -82,7 +82,7 @@ namespace DotsLite.HeightGrid
                 .WithNativeDisableContainerSafetyRestriction(currs)
                 .WithNativeDisableContainerSafetyRestriction(prevs)
                 .WithReadOnly(nexts)
-                .WithAll<Height.GridLevel0Tag>()
+                .WithAll<Height.GridLv0Tag>()
                 .ForEach((in Height.GridData grid) =>
                 {
 
@@ -155,7 +155,7 @@ namespace DotsLite.HeightGrid
                 .WithNativeDisableContainerSafetyRestriction(nexts)
                 .WithNativeDisableContainerSafetyRestriction(currs)
                 .WithNativeDisableContainerSafetyRestriction(prevs)
-                .WithAll<Height.GridLevel0Tag>()
+                .WithAll<Height.GridLv0Tag>()
                 .ForEach((in Height.GridData grid) =>
                 {
 

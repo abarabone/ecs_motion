@@ -38,69 +38,34 @@ namespace DotsLite.Draw
             base.OnCreate();
 
             this.bardep = BarrierDependency.Sender.Create<DrawBufferToShaderDataSystem>(this);
-
-            this.RequireSingletonForUpdate<GridMaster.Data>();
         }
 
-
-        GridMaster.Data gridMaster;
-
-        protected override void OnStartRunning()
-        {
-            this.RequireSingletonForUpdate<GridMaster.Data>();
-
-            if (!this.HasSingleton<GridMaster.Data>()) return;
-            this.gridMaster = this.GetSingleton<GridMaster.Data>();
-
-            //this.Entities
-            //    .WithoutBurst()
-            //    .ForEach((
-            //        in BillboadModel.IndexToUvData touv,
-            //        in DrawModel.GeometryData geom) =>
-            //    {
-            //        var span = touv.CellSpan;
-            //        var p = new float4(span, 0, 0);
-
-            //        geom.Material.SetVector("UvParam", p);
-            //    })
-            //    .Run();
-        }
 
         protected unsafe override void OnUpdate()
         {
             using var barScope = bardep.WithDependencyScope();
 
-            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
+            var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
             
-
-            // length はセグメント数、頂点は + 1 個送る
-
-            var gridinfo = this.gridMaster.Info;
-            var srcw = gridinfo.UnitLengthInGrid.x;
-            var srcww = gridinfo.NumGrids.x * gridinfo.UnitLengthInGrid.x;
-            var srch = gridinfo.UnitLengthInGrid.y;
-            var srcwwh = srcww * srch;
-
-            //var lengthInGrid = this.gridMaster.UnitLengthInGrid * sizeof(float);
-            var srcspan = srcww * sizeof(float);
-            var dstspan = (srcw + 1) * sizeof(float);
-            var count = srch + 1;
-            var unitScale = gridinfo.UnitScale;
-            var units = this.gridMaster.Nexts;
+            var heightss = this.GetComponentDataFromEntity<GridMaster.HeightFieldData>(isReadOnly: true);
+            var dims = this.GetComponentDataFromEntity<GridMaster.DimensionData>(isReadOnly: true);
 
             //var unitSizesOfDrawModel = this.GetComponentDataFromEntity<DrawModel.BoneUnitSizeData>( isReadOnly: true );
             var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
-                .WithAll<Height.GridLevel0Tag>()
+                .WithAll<Height.GridLv0Tag>()
                 .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
+                .WithReadOnly(heightss)
+                .WithReadOnly(dims)
                 .ForEach((
                     in DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData linker,
                     in Height.GridData grid,
+                    in Height.AreaLinkData arealink,
                     in Translation pos) =>
                 {
                     if (target.DrawInstanceId == -1) return;
@@ -113,8 +78,24 @@ namespace DotsLite.Draw
                     var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
 
+                    var heights = heightss[arealink.ParentAreaEntity];
 
-                    var pUnit = (float*)units.GetUnsafeReadOnlyPtr();
+                    // length はセグメント数、頂点は + 1 個送る
+
+                    var dim = dims[arealink.ParentAreaEntity];
+                    var srcw = dim.UnitLengthInGrid.x;
+                    var srcww = dim.NumGrids.x * dim.UnitLengthInGrid.x;
+                    var srch = dim.UnitLengthInGrid.y;
+                    var srcwwh = srcww * srch;
+
+                    //var lengthInGrid = this.gridMaster.UnitLengthInGrid * sizeof(float);
+                    var srcspan = srcww * sizeof(float);
+                    var dstspan = (srcw + 1) * sizeof(float);
+                    var count = srch + 1;
+                    var unitScale = dim.UnitScale;
+
+
+                    var pUnit = heights.pNexts;
                     var pSrc = pUnit + (grid.GridId.x * srcw + grid.GridId.y * srcwwh);
 
                     //var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;

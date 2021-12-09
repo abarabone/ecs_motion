@@ -38,6 +38,8 @@ namespace DotsLite.Draw
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
 
+                .WithAll<Height.GridLv0Tag>()
+
                 .WithNone<DrawInstance.BoneModelTag>()
                 .WithNone<DrawInstance.PostureLinkData>()
                 .WithNone<DrawInstance.WorldBbox>()

@@ -27,16 +27,16 @@ namespace DotsLite.HeightGrid
             this.Entities
                 .ForEach((in GridMaster.HeightFieldData heights) =>
                 {
-                    heights.pCurrs[10] = -1f;
-                    heights.pCurrs[11] = -1f;
-                    heights.pCurrs[12] = -3f;
-                    heights.pCurrs[13] = -2f;
-                    heights.pCurrs[14] = -1f;
-                    heights.pCurrs[15] = -1f;
-                    heights.pCurrs[16] = -5f;
-                    heights.pCurrs[17] = 1f;
-                    heights.pCurrs[18] = 1f;
-                    heights.pCurrs[19] = 1f;
+                    heights.pCurrs[10] = -.1f;
+                    heights.pCurrs[11] = -.1f;
+                    heights.pCurrs[12] = -.3f;
+                    heights.pCurrs[13] = -.2f;
+                    heights.pCurrs[14] = -.1f;
+                    heights.pCurrs[15] = -.1f;
+                    heights.pCurrs[16] = -.5f;
+                    heights.pCurrs[17] = .1f;
+                    heights.pCurrs[18] = .1f;
+                    heights.pCurrs[19] = .1f;
                 })
                 .Run();
         }
@@ -44,10 +44,12 @@ namespace DotsLite.HeightGrid
 
         protected override unsafe void OnUpdate()
         {
-            var dt = this.Time.DeltaTime;// * 3;
+            var dt = this.Time.DeltaTime * 3;
             var dtrate = dt * TimeEx.PrevDeltaTimeRcp;
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
+
+            using var deps = new NativeList<JobHandle>(32, Allocator.Temp);
 
             this.Entities
                 .WithoutBurst()
@@ -61,7 +63,7 @@ namespace DotsLite.HeightGrid
                     var span4 = new int2(span.x >> 2, span.y);
 
 
-                    this.Dependency = new WaveGridCaluclationJob
+                    var dep = new WaveGridCaluclationJob
                     {
                         pNext = (float4*)heights.pNexts,
                         pCurr = (float4*)heights.pCurrs,
@@ -82,9 +84,17 @@ namespace DotsLite.HeightGrid
                     //}
                     //.Schedule(total, 128, this.Dependency);
 
+                    deps.Add(dep);
+
+                    var pPrev = heights.pPrevs;
+                    heights.pPrevs = heights.pCurrs;
+                    heights.pCurrs = heights.pNexts;
+                    heights.pNexts = pPrev;
+
                 })
                 .Run();
 
+            this.Dependency = JobHandle.CombineDependencies(deps);
         }
 
         [BurstCompile]
@@ -209,5 +219,52 @@ namespace DotsLite.HeightGrid
             }
         }
 
+        [BurstCompile]
+        unsafe struct WaveGridCopyJob2 : IJobParallelFor
+        {
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public void* pPrev;
+            [NoAlias]
+            [NativeDisableUnsafePtrRestriction] public void* pCurr;
+            [NoAlias]
+            [ReadOnly]
+            [NativeDisableUnsafePtrRestriction] public void* pNext;
+
+            [BurstCompile]
+            public void Execute(int index)
+            {
+                if (X86.Avx2.IsAvx2Supported)
+                {
+                    var pcurr = (v256*)this.pCurr;
+                    var pprev = (v256*)this.pPrev;
+                    var pnext = (v256*)this.pNext;
+                    var hc = X86.Avx2.mm256_stream_load_si256(pcurr + index);
+                    var hn = X86.Avx2.mm256_stream_load_si256(pnext + index);
+                    X86.Avx.mm256_stream_si256(pprev + index, hc);
+                    X86.Avx.mm256_stream_si256(pcurr + index, hn);
+                }
+                else if (X86.Avx.IsAvxSupported)
+                {
+                    var pcurr = (v256*)this.pCurr;
+                    var pprev = (v256*)this.pPrev;
+                    var pnext = (v256*)this.pNext;
+                    var hc = X86.Avx.mm256_load_si256(pcurr + index);
+                    var hn = X86.Avx.mm256_load_si256(pnext + index);
+                    X86.Avx.mm256_stream_si256(pprev + index, hc);
+                    X86.Avx.mm256_stream_si256(pcurr + index, hn);
+                }
+                else
+                {
+                    var i = index << 1;
+                    var pcurr = (float4*)this.pCurr;
+                    var pprev = (float4*)this.pPrev;
+                    var pnext = (float4*)this.pNext;
+                    pprev[i + 0] = pcurr[i + 0];
+                    pcurr[i + 0] = pnext[i + 0];
+                    pprev[i + 1] = pcurr[i + 1];
+                    pcurr[i + 1] = pnext[i + 1];
+                }
+            }
+        }
     }
 }

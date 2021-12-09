@@ -150,7 +150,7 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                     typeof(Translation),
                 };
-                if (lodlevel == 0) types.Add(typeof(Height.GridLevel0Tag));
+                if (lodlevel == 0) types.Add(typeof(Height.GridLv0Tag));
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
 
