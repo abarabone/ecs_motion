@@ -7,6 +7,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
+using Unity.Physics.Authoring;
 
 namespace DotsLite.HeightGrid.Aurthoring
 {
@@ -21,11 +22,11 @@ namespace DotsLite.HeightGrid.Aurthoring
     using DotsLite.Misc;
     using DotsLite.Particle.Aurthoring;
 
-    public class HeightGridWithAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class HeightGridWithAuthoring : MonoBehaviour, IConvertGameObjectToEntity//, IDeclareReferencedPrefabs
     {
 
         public float UnitDistance;
-        public GridBinaryLength2 UnitLengthInGrid;
+        //public GridBinaryLength2 UnitLengthInGrid;
         public BinaryLength2 NumGrids;
 
         public int MaxLodLevel;
@@ -35,14 +36,18 @@ namespace DotsLite.HeightGrid.Aurthoring
 
         public bool UseHalfSlantMesh;
 
+        [SerializeField] PhysicsCategoryTags belongsTo;
+        [SerializeField] PhysicsCategoryTags collidesWith;
+        //[SerializeField] int groupIndex;
 
-        public ParticleAuthoringBase SplashPrefab;
+
+        //public ParticleAuthoringBase SplashPrefab;
 
 
-        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        {
-            referencedPrefabs.Add(this.SplashPrefab.gameObject);
-        }
+        //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        //{
+        //    referencedPrefabs.Add(this.SplashPrefab.gameObject);
+        //}
 
 
         /// <summary>
@@ -50,15 +55,20 @@ namespace DotsLite.HeightGrid.Aurthoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            if (!this.gameObject.activeSelf) return;
+            if (!this.gameObject.activeInHierarchy) return;
+
+            var terrainData = getTrrainData_();
+            if (terrainData == null) return;
 
             var gcs = conversionSystem;
             var em = dstManager;
 
+            var w = terrainData.heightmapTexture.width - 1;
+            var h = terrainData.heightmapTexture.height - 1;
             var ww = this.NumGrids.x;
             var wh = this.NumGrids.y;
-            var lw = this.UnitLengthInGrid.x;
-            var lh = this.UnitLengthInGrid.y;
+            var lw = w / ww;
+            var lh = h / wh;
 
             var mesh = this.UseHalfSlantMesh
                 ? MeshUtility.CreateSlantHalfGridMesh(lw, lh, 1.0f)
@@ -67,12 +77,25 @@ namespace DotsLite.HeightGrid.Aurthoring
             initMasterEntityComponent_(entity);
 
             var model = createModelEntity_(mesh);
-            createAllGrids_(this.MaxLodLevel, model);
+            createAllGrids_(this.MaxLodLevel, model, entity);
 
-            initEmitting_(entity);
+            //initEmitting_(entity);
 
             return;
 
+
+            TerrainData getTrrainData_()
+            {
+                var terrain = GetComponent<Terrain>();
+
+                if (terrain == null)
+                {
+                    Debug.LogError("No terrain found!");
+                    return null;
+                }
+
+                return terrain.terrainData;
+            }
 
             Entity createModelEntity_(Mesh mesh)
             {
@@ -101,46 +124,46 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(GridMaster.DimensionData),
                     typeof(GridMaster.InitializeTag),
                 };
+                em.AddComponents(ent, new ComponentTypes(types));
 
                 var pos = this.transform.position - new Vector3(ww * lw, 0.0f, wh * lh) * this.UnitDistance * 0.5f;
                 em.SetComponentData(ent, new GridMaster.DimensionData
                 {
-                    NumGrids = this.NumGrids,
-                    UnitLengthInGrid = this.UnitLengthInGrid,
+                    NumGrids = new int2(ww, wh),
+                    UnitLengthInGrid = new int2(lw, lh),
                     UnitScale = this.UnitDistance,
-                    Dumping = this.Dumping,
-                    Constraint2 = this.Constraint2,
                     LeftTopLocation = pos.As_float3().xz.x_y(),
 
-                    TotalLength = this.NumGrids * (int2)this.UnitLengthInGrid,
+                    TotalLength = new int2(w, h),
                     UnitScaleRcp = 1 / this.UnitDistance,
                 });
             }
 
 
-            void createAllGrids_(int lodlevel, Entity model)
+            void createAllGrids_(int lodlevel, Entity model, Entity area)
             {
                 var q =
                     from ix in Enumerable.Range(0, ww >> lodlevel)
                     from iy in Enumerable.Range(0, wh >> lodlevel)
                     select new int2(ix, iy);
-                q.ForEach(i => createGridEntity_(lodlevel, i, model));
+                q.ForEach(i => createGridEntity_(lodlevel, i, model, area));
 
                 if (lodlevel - 1 < 0) return;
 
-                createAllGrids_(lodlevel - 1, model);
+                createAllGrids_(lodlevel - 1, model, area);
             }
 
 
-            void createGridEntity_(int lodlevel, int2 i, Entity model)
+            void createGridEntity_(int lodlevel, int2 i, Entity model, Entity area)
             {
                 var ent = gcs.CreateAdditionalEntity(this);
 
-                gcs.DstEntityManager.SetName_(ent, $"wavegrid@{lodlevel}:{i.x}:{i.y}");
+                gcs.DstEntityManager.SetName_(ent, $"heightgrid@{lodlevel}:{i.x}:{i.y}");
 
 
                 var types = new List<ComponentType>
                 {
+                    typeof(Height.AreaLinkData),
                     typeof(Height.GridData),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
@@ -151,6 +174,10 @@ namespace DotsLite.HeightGrid.Aurthoring
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
 
+                em.SetComponentData(ent, new Height.AreaLinkData
+                {
+                    ParentAreaEntity = area,
+                });
                 em.SetComponentData(ent, new Height.GridData
                 {
                     GridId = i,
@@ -170,8 +197,8 @@ namespace DotsLite.HeightGrid.Aurthoring
                     }
                 );
 
-                var total = this.UnitDistance * (float2)((int2)this.UnitLengthInGrid * (int2)this.NumGrids);
-                var span = (float2)(int2)this.UnitLengthInGrid * this.UnitDistance * (1 << lodlevel);
+                var total = this.UnitDistance * (float2)new int2(w, h);
+                var span = (float2)new int2(ww, wh) * this.UnitDistance * (1 << lodlevel);
                 var startPosition = this.transform.position.As_float3().xz - (float2)total * 0.5f;
                 var offset = (float2)i * span;
                 em.SetComponentData(ent,
@@ -183,16 +210,16 @@ namespace DotsLite.HeightGrid.Aurthoring
             }
 
 
-            void initEmitting_(Entity entity)
-            {
-                var gcs = conversionSystem;
-                var em = gcs.DstEntityManager;
+            //void initEmitting_(Entity entity)
+            //{
+            //    var gcs = conversionSystem;
+            //    var em = gcs.DstEntityManager;
 
-                em.AddComponentData(entity, new GridMaster.Emitting
-                {
-                    SplashPrefab = gcs.GetPrimaryEntity(this.SplashPrefab),
-                });
-            }
+            //    em.AddComponentData(entity, new GridMaster.Emitting
+            //    {
+            //        SplashPrefab = gcs.GetPrimaryEntity(this.SplashPrefab),
+            //    });
+            //}
 
         }
 

@@ -35,6 +35,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public unsafe void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            if (!this.gameObject.activeInHierarchy) return;
 
             init_(conversionSystem, entity);
 

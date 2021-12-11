@@ -42,6 +42,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            if (!this.gameObject.activeInHierarchy) return;
 
             createDataEntity_(conversionSystem, entity);
 

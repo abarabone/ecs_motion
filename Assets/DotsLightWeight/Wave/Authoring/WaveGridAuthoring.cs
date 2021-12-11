@@ -53,7 +53,7 @@ namespace DotsLite.HeightGrid.Aurthoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            if (!this.gameObject.activeSelf) return;
+            if (!this.gameObject.activeInHierarchy) return;
 
             var gcs = conversionSystem;
             var em = dstManager;
