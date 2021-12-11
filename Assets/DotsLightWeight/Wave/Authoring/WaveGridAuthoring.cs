@@ -70,7 +70,7 @@ namespace DotsLite.HeightGrid.Aurthoring
             initMasterEntityComponent_(entity);
 
             var model = createModelEntity_(mesh);
-            createAllGrids_(this.MaxLodLevel, model);
+            createAllGrids_(this.MaxLodLevel, model, entity);
 
             initEmitting_(entity);
 
@@ -97,46 +97,45 @@ namespace DotsLite.HeightGrid.Aurthoring
 
             void initMasterEntityComponent_(Entity ent)
             {
-
-                var totalLength = ww*lw * wh*lh + wh*lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
-                var pos = this.transform.position - new Vector3(ww * lw, 0.0f, wh * lh) * this.UnitDistance * 0.5f;
-
-                em.AddComponentData(ent, new GridMaster.Data
+                var types = new ComponentType[]
                 {
-                    Prevs = new NativeArray<float>(totalLength, Allocator.Persistent),
-                    Currs = new NativeArray<float>(totalLength, Allocator.Persistent),
-                    Nexts = new NativeArray<float>(totalLength, Allocator.Persistent),
-                    Info = new GridMaster.DimensionData
-                    {
-                        NumGrids = this.NumGrids,
-                        UnitLengthInGrid = this.UnitLengthInGrid,
-                        UnitScale = this.UnitDistance,
-                        Dumping = this.Dumping,
-                        Constraint2 = this.Constraint2,
-                        LeftTopLocation = pos.As_float3().xz.x_y(),
+                    typeof(GridMaster.HeightFieldData),
+                    typeof(GridMaster.DimensionData),
+                    typeof(GridMaster.InitializeTag),
+                };
+                em.AddComponents(ent, new ComponentTypes(types));
 
-                        TotalLength = this.NumGrids * (int2)this.UnitLengthInGrid,
-                        UnitScaleRcp = 1 / this.UnitDistance,
-                    }
+                var pos = this.transform.position - new Vector3(ww * lw, 0.0f, wh * lh) * this.UnitDistance * 0.5f;
+                em.SetComponentData(ent, new GridMaster.DimensionData
+                {
+                    NumGrids = this.NumGrids,
+                    UnitLengthInGrid = this.UnitLengthInGrid,
+                    UnitScale = this.UnitDistance,
+                    Dumping = this.Dumping,
+                    Constraint2 = this.Constraint2,
+                    LeftTopLocation = pos.As_float3().xz.x_y(),
+
+                    TotalLength = this.NumGrids * (int2)this.UnitLengthInGrid,
+                    UnitScaleRcp = 1 / this.UnitDistance,
                 });
             }
 
 
-            void createAllGrids_(int lodlevel, Entity model)
+            void createAllGrids_(int lodlevel, Entity model, Entity area)
             {
                 var q =
                     from ix in Enumerable.Range(0, ww >> lodlevel)
                     from iy in Enumerable.Range(0, wh >> lodlevel)
                     select new int2(ix, iy);
-                q.ForEach(i => createGridEntity_(lodlevel, i, model));
+                q.ForEach(i => createGridEntity_(lodlevel, i, model, area));
 
                 if (lodlevel - 1 < 0) return;
 
-                createAllGrids_(lodlevel - 1, model);
+                createAllGrids_(lodlevel - 1, model, area);
             }
 
 
-            void createGridEntity_(int lodlevel, int2 i, Entity model)
+            void createGridEntity_(int lodlevel, int2 i, Entity model, Entity area)
             {
                 var ent = gcs.CreateAdditionalEntity(this);
 
@@ -145,6 +144,7 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                 var types = new List<ComponentType>
                 {
+                    typeof(Height.AreaLinkData),
                     typeof(Height.GridData),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
@@ -155,6 +155,10 @@ namespace DotsLite.HeightGrid.Aurthoring
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
 
+                em.SetComponentData(ent, new Height.AreaLinkData
+                {
+                    ParentAreaEntity = area,
+                });
                 em.SetComponentData(ent, new Height.GridData
                 {
                     GridId = i,

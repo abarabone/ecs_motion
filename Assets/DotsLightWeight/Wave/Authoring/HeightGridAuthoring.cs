@@ -27,14 +27,11 @@ namespace DotsLite.HeightGrid.Aurthoring
         public float UnitDistance;
         public GridBinaryLength2 UnitLengthInGrid;
         public BinaryLength2 NumGrids;
-        //public int2 NumGrids;
+
         public int MaxLodLevel;
 
         public Shader DrawShader;
         public Texture Texture;
-
-        public float Dumping = 0.999f;
-        public float Constraint2 = 0.8f;
 
         public bool UseHalfSlantMesh;
 

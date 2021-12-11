@@ -37,10 +37,12 @@ namespace DotsLite.HeightGrid
         {
             using var cmdscope = this.cmddep.WithDependencyScope();
 
-            var cmd = cmdscope.CommandBuffer;
+            //var cmd = cmdscope.CommandBuffer;
+            var em = this.EntityManager;
 
             this.Entities
                 .WithoutBurst()
+                .WithStructuralChanges()
                 .WithAll<GridMaster.InitializeTag>()
                 .ForEach((
                     Entity ent,
@@ -49,9 +51,11 @@ namespace DotsLite.HeightGrid
                 {
                     heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);
 
-                    cmd.RemoveComponent<GridMaster.InitializeTag>(ent);
+                    //cmd.RemoveComponent<GridMaster.InitializeTag>(ent);
+                    em.RemoveComponent<GridMaster.InitializeTag>(ent);
                 })
-                .Schedule();
+                //.Schedule();
+                .Run();
         }
 
         protected override void OnDestroy()
@@ -59,11 +63,13 @@ namespace DotsLite.HeightGrid
 
             this.Entities
                 .WithoutBurst()
+                .WithStructuralChanges()
                 .ForEach((ref GridMaster.HeightFieldData heights) =>
                 {
                     heights.Dispose();
                 })
-                .Schedule();
+                //.Schedule();
+                .Run();
 
         }
     }

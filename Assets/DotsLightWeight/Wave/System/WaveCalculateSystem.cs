@@ -49,7 +49,7 @@ namespace DotsLite.HeightGrid
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
 
-            using var deps = new NativeList<JobHandle>(32, Allocator.Temp);
+            var deps = new NativeList<JobHandle>(32, Allocator.Temp);
 
             this.Entities
                 .WithoutBurst()
@@ -86,15 +86,14 @@ namespace DotsLite.HeightGrid
 
                     deps.Add(dep);
 
-                    var pPrev = heights.pPrevs;
-                    heights.pPrevs = heights.pCurrs;
-                    heights.pCurrs = heights.pNexts;
-                    heights.pNexts = pPrev;
+
+                    heights.SwapShiftBuffers();
 
                 })
                 .Run();
 
             this.Dependency = JobHandle.CombineDependencies(deps);
+            deps.Dispose();
         }
 
         [BurstCompile]

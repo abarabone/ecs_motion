@@ -48,11 +48,12 @@ namespace DotsLite.HeightGrid
             public float *pCurrs;
             public float *pPrevs;
 
-            public void SwapShift()
+            public void SwapShiftBuffers()
             {
+                var preprevs = this.pPrevs;
                 this.pPrevs = this.pCurrs;
                 this.pCurrs = this.pNexts;
-                this.pNexts = this.pPrevs;
+                this.pNexts = preprevs;
             }
 
             public void Alloc(int2 numGrids, int2 unitLengthInGrid)
@@ -80,22 +81,6 @@ namespace DotsLite.HeightGrid
             }
         }
 
-        public class Data : IComponentData, IDisposable
-        {
-            public NativeArray<float> Nexts;
-            public NativeArray<float> Currs;
-            public NativeArray<float> Prevs;
-
-            public DimensionData Info;
-
-            public void Dispose()
-            {
-                this.Nexts.Dispose();
-                this.Currs.Dispose();
-                this.Prevs.Dispose();
-                Debug.Log("disposed");
-            }
-        }
 
         public struct DimensionData : IComponentData
         {
