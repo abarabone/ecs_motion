@@ -27,16 +27,16 @@ namespace DotsLite.HeightGrid
             this.Entities
                 .ForEach((in GridMaster.HeightFieldData heights) =>
                 {
-                    heights.pCurrs[10] = -.1f;
-                    heights.pCurrs[11] = -.1f;
-                    heights.pCurrs[12] = -.3f;
-                    heights.pCurrs[13] = -.2f;
-                    heights.pCurrs[14] = -.1f;
-                    heights.pCurrs[15] = -.1f;
-                    heights.pCurrs[16] = -.5f;
-                    heights.pCurrs[17] = .1f;
-                    heights.pCurrs[18] = .1f;
-                    heights.pCurrs[19] = .1f;
+                    heights.p[10] = -.1f;
+                    heights.p[11] = -.1f;
+                    heights.p[12] = -.3f;
+                    heights.p[13] = -.2f;
+                    heights.p[14] = -.1f;
+                    heights.p[15] = -.1f;
+                    heights.p[16] = -.5f;
+                    heights.p[17] = .1f;
+                    heights.p[18] = .1f;
+                    heights.p[19] = .1f;
                 })
                 .Run();
         }
@@ -66,7 +66,7 @@ namespace DotsLite.HeightGrid
                     var dep = new WaveGridCaluclationJob
                     {
                         pNext = (float4*)heights.pNexts,
-                        pCurr = (float4*)heights.pCurrs,
+                        pCurr = (float4*)heights.p,
                         pPrev = (float4*)heights.pPrevs,
                         span = span4,
                         harfsqdt = harfsqdt,

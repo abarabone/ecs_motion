@@ -44,16 +44,38 @@ namespace DotsLite.HeightGrid
     {
         public unsafe struct HeightFieldData : IComponentData//, IDisposable
         {
+            public float* p;
+
+            public void Alloc(int2 numGrids, int2 unitLengthInGrid)
+            {
+                var ww = numGrids.x;
+                var wh = numGrids.y;
+                var lw = unitLengthInGrid.x;
+                var lh = unitLengthInGrid.y;
+                var totalLength = ww * lw * wh * lh + wh * lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
+
+                this.p = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 16, Allocator.Persistent);
+
+                UnsafeUtility.MemClear(this.p, totalLength * sizeof(float));
+            }
+            public void Dispose()
+            {
+                UnsafeUtility.Free(this.p, Allocator.Persistent);
+                Debug.Log("height disposed");
+            }
+        }
+
+        public unsafe struct WaveFieldData : IComponentData//, IDisposable
+        {
             public float *pNexts;
-            public float *pCurrs;
             public float *pPrevs;
 
-            public void SwapShiftBuffers()
+            public void SwapShiftBuffers(ref HeightFieldData heights)
             {
-                var preprevs = this.pPrevs;
-                this.pPrevs = this.pCurrs;
-                this.pCurrs = this.pNexts;
-                this.pNexts = preprevs;
+                var pCurrs = heights.p;
+                heights.p = this.pNexts;
+                this.pNexts = this.pPrevs;
+                this.pPrevs = pCurrs;
             }
 
             public void Alloc(int2 numGrids, int2 unitLengthInGrid)
@@ -65,21 +87,19 @@ namespace DotsLite.HeightGrid
                 var totalLength = ww * lw * wh * lh + wh * lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
 
                 this.pNexts = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 16, Allocator.Persistent);
-                this.pCurrs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 16, Allocator.Persistent);
                 this.pPrevs = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 16, Allocator.Persistent);
 
                 UnsafeUtility.MemClear(this.pNexts, totalLength * sizeof(float));
-                UnsafeUtility.MemClear(this.pCurrs, totalLength * sizeof(float));
                 UnsafeUtility.MemClear(this.pPrevs, totalLength * sizeof(float));
             }
             public void Dispose()
             {
                 UnsafeUtility.Free(this.pNexts, Allocator.Persistent);
-                UnsafeUtility.Free(this.pCurrs, Allocator.Persistent);
                 UnsafeUtility.Free(this.pPrevs, Allocator.Persistent);
-                Debug.Log("disposed");
+                Debug.Log("wave disposed");
             }
         }
+
 
 
         public struct DimensionData : IComponentData
