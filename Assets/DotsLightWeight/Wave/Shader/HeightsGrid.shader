@@ -1,5 +1,5 @@
 
-Shader "Custom/WaveGrid"
+Shader "Custom/HeightsGrid"
 {
 	
 	Properties
@@ -60,15 +60,19 @@ Shader "Custom/WaveGrid"
 
 			sampler2D	_MainTex;
 			
+			StructuredBuffer<float> Heights;
+			int WidthSpan;
+			int LengthInGrid;
+
+
 			static const float4 element_mask_table[] =
 			{
 				{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}
 			};
-			float get_h(int ih, int ibase)
+			float get_h(int ih, int offset)
 			{
-				float4 vh = BoneVectorBuffer[ibase + (ih >> 2)];
-				float4 mask = element_mask_table[ih & 3];
-				return dot(vh, mask);
+				int2 i = int2(ih & (LengthInGrid-1), ih >> countbits(LengthInGrid-1));
+				float h = Heights[offset + i.y * WidthSpan + i.x];
 			}
 
 			v2f vert(appdata v , uint i : SV_InstanceID )
@@ -79,11 +83,14 @@ Shader "Custom/WaveGrid"
 				int inext = ibase + VectorLengthPerInstance;
 				int ih = asint(v.vertex.y);
 
+				int4 info = BoneVectorBuffer[ibase];
+				int offset = asint(info.x);
+
 				float4 tf = BoneVectorBuffer[inext - 1];
 
 				float whscale = tf.w;
 				float3 wpos = tf.xyz;
-				float3 lvt = float3(v.vertex.xz * whscale, get_h(ih, ibase)).xzy;
+				float3 lvt = float3(v.vertex.xz * whscale, get_h(ih, offset)).xzy;
 
 				float4	wvt = UnityObjectToClipPos(wpos + lvt);
 

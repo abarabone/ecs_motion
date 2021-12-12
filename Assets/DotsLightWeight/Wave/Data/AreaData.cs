@@ -69,9 +69,9 @@ namespace DotsLite.HeightGrid
         /// ハイトフィールドの場合、高さデータが変化しない時間のほうが多いので、
         /// ＧＰＵに高さデータを送っておく
         /// </summary>
-        public unsafe struct HeightFieldShaderResourceData : IComponentData
+        public unsafe class HeightFieldShaderResourceData : IComponentData
         {
-
+            public HeightFieldBuffer Heights;
         }
 
         /// <summary>
@@ -138,19 +138,63 @@ namespace DotsLite.HeightGrid
     }
 
 
-    public struct HeightFieldBufferTexture : IDisposable
-    {
-        //public GraphicsBuffer Buffer { get; private set; }
-        public Texture2D Buffer { get; private set; }
+    //public struct HeightFieldBufferTexture : IDisposable
+    //{
+    //    public Texture2D Texture { get; private set; }
 
-        public void Alloc()
+    //    public static HeightFieldBufferTexture Create(int2 length)
+    //    {
+    //        var format = UnityEngine.Experimental.Rendering.GraphicsFormat.R16_SFloat;
+    //        var flags = UnityEngine.Experimental.Rendering.TextureCreationFlags.None;
+    //        var buffer = new Texture2D(length.x, length.y, format, flags);
+    //        buffer.enableRandomWrite = true;
+    //        buffer.set
+    //        buffer.dimension = UnityEngine.Rendering.TextureDimension.Tex2D;
+    //        buffer.Create();
+
+    //        return new HeightFieldBufferTexture
+    //        {
+    //            Texture = buffer,
+    //        };
+    //    }
+    //    public void Dispose()
+    //    {
+    //        this.Texture?.Release();
+    //        this.Texture = null;
+    //    }
+    //}
+    public struct HeightFieldBuffer : IDisposable
+    {
+        public GraphicsBuffer Buffer { get; private set; }
+
+        public static HeightFieldBuffer Create(int2 length) => new HeightFieldBuffer
         {
-            //this.Buffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured)
-        }
+            Buffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, length.x * length.y, sizeof(float))
+        };
         public void Dispose()
         {
             this.Buffer?.Release();
             this.Buffer = null;
+        }
+    }
+
+    static class InitUtility
+    {
+        // 暫定
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Init(this GridMaster.HeightFieldShaderResourceData res, TerrainData data)
+        {
+            var size = new int2(data.heightmapTexture.width, data.heightmapTexture.height);
+            var terrainHeights = data.GetHeights(0, 0, size.x, size.y);
+            res.Heights.Buffer.SetData(terrainHeights, 0, 0, terrainHeights.Length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetResourcesTo(this GridMaster.HeightFieldShaderResourceData res, Material mat, GridMaster.DimensionData dim)
+        {
+            mat.SetBuffer("heights", res.Heights.Buffer);
+            mat.SetInt("WidthSpan", dim.NumGrids.x * dim.UnitLengthInGrid.x);
+            mat.SetInt("LengthInGrid", dim.UnitLengthInGrid.x);
         }
     }
 }

@@ -39,6 +39,7 @@ namespace DotsLite.HeightField
         static PhysicsCollider CreateTerrainCollider(TerrainData terrainData, CollisionFilter filter)
         {
             var physicsCollider = new PhysicsCollider();
+
             //var size = new int2(terrainData.heightmapWidth, terrainData.heightmapHeight);
             var size = new int2(terrainData.heightmapTexture.width, terrainData.heightmapTexture.height);
             var scale = terrainData.heightmapScale;Debug.Log(size);

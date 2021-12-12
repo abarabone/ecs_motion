@@ -103,6 +103,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(GridMaster.WaveFieldData),
                     typeof(GridMaster.DimensionData),
                     typeof(GridMaster.InitializeTag),
+                    typeof(GridMaster.HeightFieldShaderResourceData),
                 };
                 em.AddComponents(ent, new ComponentTypes(types));
 
@@ -118,6 +119,11 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                     TotalLength = this.NumGrids * (int2)this.UnitLengthInGrid,
                     UnitScaleRcp = 1 / this.UnitDistance,
+                });
+
+                em.SetComponentData(ent, new GridMaster.HeightFieldShaderResourceData
+                {
+                    Heights = new HeightFieldBufferTexture()
                 });
             }
 
