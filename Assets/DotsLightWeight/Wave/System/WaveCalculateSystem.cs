@@ -55,6 +55,7 @@ namespace DotsLite.HeightGrid
                 .WithoutBurst()
                 .ForEach((
                     ref GridMaster.HeightFieldData heights,
+                    ref GridMaster.WaveFieldData wave,
                     in GridMaster.DimensionData dim) =>
                 {
                     var span = dim.NumGrids * dim.UnitLengthInGrid;
@@ -65,9 +66,9 @@ namespace DotsLite.HeightGrid
 
                     var dep = new WaveGridCaluclationJob
                     {
-                        pNext = (float4*)heights.pNexts,
+                        pNext = (float4*)wave.pNexts,
                         pCurr = (float4*)heights.p,
-                        pPrev = (float4*)heights.pPrevs,
+                        pPrev = (float4*)wave.pPrevs,
                         span = span4,
                         harfsqdt = harfsqdt,
                         c2 = dim.Constraint2,
@@ -87,7 +88,7 @@ namespace DotsLite.HeightGrid
                     deps.Add(dep);
 
 
-                    heights.SwapShiftBuffers();
+                    wave.SwapShiftBuffers(ref heights);
 
                 })
                 .Run();

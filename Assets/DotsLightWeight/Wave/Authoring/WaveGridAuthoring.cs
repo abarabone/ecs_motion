@@ -100,6 +100,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                 var types = new ComponentType[]
                 {
                     typeof(GridMaster.HeightFieldData),
+                    typeof(GridMaster.WaveFieldData),
                     typeof(GridMaster.DimensionData),
                     typeof(GridMaster.InitializeTag),
                 };

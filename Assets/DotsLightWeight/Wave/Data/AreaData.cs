@@ -65,6 +65,19 @@ namespace DotsLite.HeightGrid
             }
         }
 
+        /// <summary>
+        /// ハイトフィールドの場合、高さデータが変化しない時間のほうが多いので、
+        /// ＧＰＵに高さデータを送っておく
+        /// </summary>
+        public unsafe struct HeightFieldShaderResourceData : IComponentData
+        {
+
+        }
+
+        /// <summary>
+        /// 波の場合、毎フレームデータが変化する。
+        /// そのため、毎フレーム transform データとともにバッファに送る。
+        /// </summary>
         public unsafe struct WaveFieldData : IComponentData//, IDisposable
         {
             public float *pNexts;

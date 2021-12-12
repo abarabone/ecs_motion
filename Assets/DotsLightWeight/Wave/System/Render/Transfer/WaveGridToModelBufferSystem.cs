@@ -95,7 +95,7 @@ namespace DotsLite.Draw
                     var unitScale = dim.UnitScale;
 
 
-                    var pUnit = heights.pNexts;
+                    var pUnit = heights.p;
                     var pSrc = pUnit + (grid.GridId.x * srcw + grid.GridId.y * srcwwh);
 
                     //var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
@@ -109,6 +109,7 @@ namespace DotsLite.Draw
 
                     var elementSize = dstspan;
                     UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, elementSize, count);
+                    // 現状、末端の行と列がうまくとれていないので、あとで修正する（ループのずれ）
 
                     var lodUnitScale = unitScale * (1 << grid.LodLevel);
                     //((float*)(pDst + i))[-1] = lodUnitScale;

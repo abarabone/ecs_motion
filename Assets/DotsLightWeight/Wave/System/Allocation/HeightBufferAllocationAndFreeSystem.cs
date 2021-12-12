@@ -20,25 +20,39 @@ namespace DotsLite.HeightGrid
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class HeightBufferAllocationAndFreeSystem : DependencyAccessableSystemBase
+    public class HeightBufferAllocationAndFreeSystem : SystemBase//DependencyAccessableSystemBase
     {
 
-        CommandBufferDependency.Sender cmddep;
+        //CommandBufferDependency.Sender cmddep;
 
 
-        protected override void OnCreate()
-        {
-            base.OnCreate();
+        //protected override void OnCreate()
+        //{
+        //    base.OnCreate();
 
-            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-        }
+        //    this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        //}
 
         protected unsafe override void OnUpdate()
         {
-            using var cmdscope = this.cmddep.WithDependencyScope();
+            //using var cmdscope = this.cmddep.WithDependencyScope();
 
             //var cmd = cmdscope.CommandBuffer;
             var em = this.EntityManager;
+
+            this.Entities
+                .WithoutBurst()
+                .WithStructuralChanges()
+                .WithAll<GridMaster.InitializeTag>()
+                .ForEach((
+                    Entity ent,
+                    ref GridMaster.WaveFieldData wave,
+                    in GridMaster.DimensionData dim) =>
+                {
+                    wave.Alloc(dim.NumGrids, dim.UnitLengthInGrid);
+                })
+                //.Schedule();
+                .Run();
 
             this.Entities
                 .WithoutBurst()
@@ -60,6 +74,16 @@ namespace DotsLite.HeightGrid
 
         protected override void OnDestroy()
         {
+
+            this.Entities
+                .WithoutBurst()
+                .WithStructuralChanges()
+                .ForEach((ref GridMaster.WaveFieldData wave) =>
+                {
+                    wave.Dispose();
+                })
+                //.Schedule();
+                .Run();
 
             this.Entities
                 .WithoutBurst()
