@@ -138,5 +138,19 @@ namespace DotsLite.HeightGrid
     }
 
 
+    public struct HeightFieldBufferTexture : IDisposable
+    {
+        //public GraphicsBuffer Buffer { get; private set; }
+        public Texture2D Buffer { get; private set; }
 
+        public void Alloc()
+        {
+            //this.Buffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured)
+        }
+        public void Dispose()
+        {
+            this.Buffer?.Release();
+            this.Buffer = null;
+        }
+    }
 }
