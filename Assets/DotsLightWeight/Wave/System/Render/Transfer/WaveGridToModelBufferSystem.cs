@@ -56,7 +56,7 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
-                .WithAll<Height.GridLv0Tag>()
+                .WithAll<Height.GridLv0Tag, Height.WaveTransferTag>()
                 .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithReadOnly(heightss)

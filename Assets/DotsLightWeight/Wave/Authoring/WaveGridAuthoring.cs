@@ -145,6 +145,7 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                 var types = new List<ComponentType>
                 {
+                    typeof(Height.WaveTransferTag),
                     typeof(Height.AreaLinkData),
                     typeof(Height.GridData),
                     typeof(DrawInstance.ModelLinkData),

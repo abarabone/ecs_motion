@@ -23,6 +23,9 @@ namespace DotsLite.HeightGrid
             public float UnitScaleOnLod;
         }
 
+        public struct WaveTransferTag : IComponentData
+        { }
+
         public struct BoundingBox : IComponentData
         {
             public AABB WorldBbox;
