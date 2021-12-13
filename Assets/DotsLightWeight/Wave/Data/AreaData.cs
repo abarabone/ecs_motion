@@ -180,7 +180,7 @@ namespace DotsLite.HeightGrid
 
     static class InitUtility
     {
-        // 暫定
+        // 暫定（直接地形データを渡すよりよい方法ないか？）
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Init(this GridMaster.HeightFieldShaderResourceData res, TerrainData data)
         {

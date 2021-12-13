@@ -76,7 +76,8 @@ namespace DotsLite.HeightGrid.Aurthoring
 
             initMasterEntityComponent_(entity);
 
-            var model = createModelEntity_(mesh);
+            var mat = new Material(this.DrawShader);
+            var model = createModelEntity_(mesh, mat);
             createAllGrids_(this.MaxLodLevel, model, entity);
 
             //initEmitting_(entity);
@@ -97,9 +98,8 @@ namespace DotsLite.HeightGrid.Aurthoring
                 return terrain.terrainData;
             }
 
-            Entity createModelEntity_(Mesh mesh)
+            Entity createModelEntity_(Mesh mesh, Material mat)
             {
-                var mat = new Material(this.DrawShader);
                 mat.mainTexture = this.Texture;
                 var boneLength = 1;
                 var optionalVectorLength = 1;// x: grid_lv, y: grid_serial_id
@@ -115,7 +115,7 @@ namespace DotsLite.HeightGrid.Aurthoring
             }
 
 
-            void initMasterEntityComponent_(Entity ent)
+            void initMasterEntityComponent_(Entity ent, Material mat)
             {
 
                 var types = new ComponentType[]
@@ -123,11 +123,23 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(GridMaster.HeightFieldData),
                     typeof(GridMaster.DimensionData),
                     typeof(GridMaster.InitializeTag),
+                    typeof(GridMaster.HeightFieldShaderResourceData),
+                    typeof(GridMaster.InitializeTag),
                 };
                 em.AddComponents(ent, new ComponentTypes(types));
 
                 var pos = this.transform.position - new Vector3(ww * lw, 0.0f, wh * lh) * this.UnitDistance * 0.5f;
-                em.SetComponentData(ent, new GridMaster.DimensionData
+                //em.SetComponentData(ent, new GridMaster.DimensionData
+                //{
+                //    NumGrids = new int2(ww, wh),
+                //    UnitLengthInGrid = new int2(lw, lh),
+                //    UnitScale = this.UnitDistance,
+                //    LeftTopLocation = pos.As_float3().xz.x_y(),
+
+                //    TotalLength = new int2(w, h),
+                //    UnitScaleRcp = 1 / this.UnitDistance,
+                //});
+                var dim = new GridMaster.DimensionData
                 {
                     NumGrids = new int2(ww, wh),
                     UnitLengthInGrid = new int2(lw, lh),
@@ -136,7 +148,21 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                     TotalLength = new int2(w, h),
                     UnitScaleRcp = 1 / this.UnitDistance,
-                });
+                };
+                em.SetComponentData(ent, dim);
+
+                //em.SetComponentData(ent, new GridMaster.HeightFieldShaderResourceData
+                //{
+                //    Heights = new HeightFieldBuffer()
+                //});
+                var res = new GridMaster.HeightFieldShaderResourceData
+                {
+                    Heights = new HeightFieldBuffer()
+                };
+                em.SetComponentData(ent, res);
+
+                res.Init(terrainData);
+                res.SetResourcesTo(mat, dim);
             }
 
 

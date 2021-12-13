@@ -54,6 +54,7 @@ Shader "Custom/HeightsGrid"
 			};
 
 			
+			// x,y,z: pos, w: lv as int
 			StructuredBuffer<float4> BoneVectorBuffer;
 			int	VectorLengthPerInstance;
 			int BoneVectorOffset;
@@ -61,9 +62,7 @@ Shader "Custom/HeightsGrid"
 			sampler2D	_MainTex;
 			
 			StructuredBuffer<float> Heights;
-			int WidthSpan;
-			int LengthInGrid;
-
+			int4 DimInfo;// x,y: lengthInGrid, z: widthSpan
 
 			static const float4 element_mask_table[] =
 			{
@@ -71,8 +70,11 @@ Shader "Custom/HeightsGrid"
 			};
 			float get_h(int ih, int offset)
 			{
-				int2 i = int2(ih & (LengthInGrid-1), ih >> countbits(LengthInGrid-1));
-				float h = Heights[offset + i.y * WidthSpan + i.x];
+				int2 lengthInGrid = DimInfo.xy;
+				int widthSpan = DimInfo.z;
+				int2 i = int2(ih & (lengthInGrid-1), ih >> countbits(lengthInGrid-1));
+
+				float h = Heights[offset + i.y * widthSpan + i.x];
 			}
 
 			v2f vert(appdata v , uint i : SV_InstanceID )
@@ -83,7 +85,7 @@ Shader "Custom/HeightsGrid"
 				int inext = ibase + VectorLengthPerInstance;
 				int ih = asint(v.vertex.y);
 
-				int4 info = BoneVectorBuffer[ibase];
+				float4 info = BoneVectorBuffer[ibase];
 				int offset = asint(info.x);
 
 				float4 tf = BoneVectorBuffer[inext - 1];
