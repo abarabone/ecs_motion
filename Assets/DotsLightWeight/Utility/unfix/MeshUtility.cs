@@ -117,6 +117,7 @@ namespace DotsLite.Geometry
 					i0+0, i0+1, i1+0,//0, 1, 2,
 					i1+0, i0+1, i1+1,//2, 1, 3,
                 }
+				.Reverse()
 				select i
 				;
 			mesh.SetIndices(qIdx.ToArray(), MeshTopology.Triangles, 0);

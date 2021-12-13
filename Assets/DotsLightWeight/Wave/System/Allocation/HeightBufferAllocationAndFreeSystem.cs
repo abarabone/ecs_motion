@@ -88,9 +88,10 @@ namespace DotsLite.HeightGrid
             this.Entities
                 .WithoutBurst()
                 .WithStructuralChanges()
-                .ForEach((ref GridMaster.HeightFieldData heights) =>
+                .ForEach((GridMaster.HeightFieldShaderResourceData res, ref GridMaster.HeightFieldData heights) =>
                 {
                     heights.Dispose();
+                    res.Dispose();
                 })
                 //.Schedule();
                 .Run();

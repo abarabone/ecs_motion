@@ -102,6 +102,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(GridMaster.HeightFieldData),
                     typeof(GridMaster.WaveFieldData),
                     typeof(GridMaster.DimensionData),
+                    typeof(GridMaster.InitializeTag),
                 };
                 em.AddComponents(ent, new ComponentTypes(types));
 

@@ -72,6 +72,12 @@ namespace DotsLite.HeightGrid
         public unsafe class HeightFieldShaderResourceData : IComponentData
         {
             public HeightFieldBuffer Heights;
+
+            public void Dispose()
+            {
+                this.Heights.Dispose();
+                Debug.Log("height resouce disposed");
+            }
         }
 
         /// <summary>
@@ -184,17 +190,27 @@ namespace DotsLite.HeightGrid
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Init(this GridMaster.HeightFieldShaderResourceData res, TerrainData data)
         {
-            var size = new int2(data.heightmapTexture.width, data.heightmapTexture.height);
-            var terrainHeights = data.GetHeights(0, 0, size.x, size.y);
-            res.Heights.Buffer.SetData(terrainHeights, 0, 0, terrainHeights.Length);
+            var length = data.heightmapResolution - 1;
+            var terrainHeights = data.GetHeights(0, 0, length, length);
+            var flatten = new float[terrainHeights.Length];
+            var i = 0;
+            foreach (var f in terrainHeights) flatten[i++] = f * data.heightmapScale.y;
+            
+            var heights = HeightFieldBuffer.Create(length);
+            heights.Buffer.SetData(flatten, 0, 0, terrainHeights.Length);
+            res.Heights = heights;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetResourcesTo(this GridMaster.HeightFieldShaderResourceData res, Material mat, GridMaster.DimensionData dim)
         {
-            mat.SetBuffer("heights", res.Heights.Buffer);
-            mat.SetInt("WidthSpan", dim.NumGrids.x * dim.UnitLengthInGrid.x);
-            mat.SetInt("LengthInGrid", dim.UnitLengthInGrid.x);
+            mat.SetBuffer("Heights", res.Heights.Buffer);
+
+            var lengthInGrid = dim.UnitLengthInGrid;
+            var widthSpan = dim.TotalLength.x;
+            var scale = dim.UnitScale;
+            var value = new float4(math.asfloat(lengthInGrid), math.asfloat(widthSpan), scale);
+            mat.SetVector("DimInfo", value);
         }
     }
 }

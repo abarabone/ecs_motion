@@ -20,7 +20,6 @@ Shader "Custom/HeightsGrid"
 		{
 			Mode Off
 		}
-		Cull Off
 
 		LOD 200
 		
@@ -54,15 +53,17 @@ Shader "Custom/HeightsGrid"
 			};
 
 			
-			// x,y,z: pos, w: lv as int
+			
 			StructuredBuffer<float4> BoneVectorBuffer;
+			// [0] x: flat height index offset as int, y: lv as int
+			// [1] x,y,z: pos, w: scale * lv
 			int	VectorLengthPerInstance;
 			int BoneVectorOffset;
 
 			sampler2D	_MainTex;
 			
 			StructuredBuffer<float> Heights;
-			int4 DimInfo;// x,y: lengthInGrid, z: widthSpan
+			float4 DimInfo;// x,y: lengthInGrid, z: widthSpan
 
 			static const float4 element_mask_table[] =
 			{
@@ -70,11 +71,12 @@ Shader "Custom/HeightsGrid"
 			};
 			float get_h(int ih, int offset)
 			{
-				int2 lengthInGrid = DimInfo.xy;
-				int widthSpan = DimInfo.z;
-				int2 i = int2(ih & (lengthInGrid-1), ih >> countbits(lengthInGrid-1));
+				int2 lengthInGrid = asint(DimInfo.xy);
+				int widthSpan = asint(DimInfo.z);
+				int2 i = int2(ih & (lengthInGrid.x-1), ih >> countbits(lengthInGrid.x-1));
 
 				float h = Heights[offset + i.y * widthSpan + i.x];
+				return h;
 			}
 
 			v2f vert(appdata v , uint i : SV_InstanceID )
@@ -82,23 +84,23 @@ Shader "Custom/HeightsGrid"
 				v2f o;
 
 				int ibase = BoneVectorOffset + i * VectorLengthPerInstance;
-				int inext = ibase + VectorLengthPerInstance;
 				int ih = asint(v.vertex.y);
 
-				float4 info = BoneVectorBuffer[ibase];
+				float4 tf = BoneVectorBuffer[ibase + 1];
+
+				int lv = asint(tf.w);
+				float4 info = BoneVectorBuffer[ibase + 0];
 				int offset = asint(info.x);
 
-				float4 tf = BoneVectorBuffer[inext - 1];
-
 				float whscale = tf.w;
-				float3 wpos = tf.xyz;
 				float3 lvt = float3(v.vertex.xz * whscale, get_h(ih, offset)).xzy;
 
+				float3 wpos = tf.xyz;
 				float4	wvt = UnityObjectToClipPos(wpos + lvt);
 
 				o.vertex = wvt;
 				o.uv = lvt.xz * (1.0f/16.0f);//v.uv;
-				o.color = fixed4(1,1,1,wvt.z * 0.2f + 0.8f);
+				o.color = fixed4(1,1,1,1);//wvt.z * 0.2f + 0.8f);
 
 				return o;
 			}
