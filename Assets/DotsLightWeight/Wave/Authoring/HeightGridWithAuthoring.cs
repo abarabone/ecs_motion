@@ -63,14 +63,14 @@ namespace DotsLite.HeightGrid.Aurthoring
             var gcs = conversionSystem;
             var em = dstManager;
 
-            var w = terrainData.heightmapTexture.width - 1;
-            var h = terrainData.heightmapTexture.height - 1;
+            var w = terrainData.heightmapResolution - 1;
+            var h = terrainData.heightmapResolution - 1;
             var ww = this.NumGrids.x;
             var wh = this.NumGrids.y;
             var lw = w / ww;
             var lh = h / wh;
 
-            var unitScale =terrainData.heightmapResolution / (w + 1);
+            var unitScale = terrainData.heightmapScale.x;
 
             var mesh = this.UseHalfSlantMesh
                 ? MeshUtility.CreateSlantHalfGridMesh(lw, lh, 1.0f)
@@ -129,7 +129,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                 };
                 em.AddComponents(ent, new ComponentTypes(types));
 
-                var pos = (float3)this.transform.position - new float3(ww * lw, 0.0f, wh * lh) * unitScale * 0.5f;
+                var pos = (float3)this.transform.position - new float3(w, 0.0f, h) * unitScale * 0.5f;
                 //em.SetComponentData(ent, new GridMaster.DimensionData
                 //{
                 //    NumGrids = new int2(ww, wh),
@@ -147,12 +147,13 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                 var dim = new GridMaster.DimensionData
                 {
-                    NumGrids = new int2(ww, wh),
-                    UnitLengthInGrid = new int2(lw, lh),
-                    UnitScale = unitScale,
-                    LeftTopLocation = pos.xz.x_y(),
+                    LeftTopLocation = pos,
 
                     TotalLength = new int2(w, h),
+                    NumGrids = new int2(ww, wh),
+                    UnitLengthInGrid = new int2(lw, lh),
+
+                    UnitScale = unitScale,
                     UnitScaleRcp = 1 / unitScale,
                 };
                 em.SetComponentData(ent, dim);
@@ -222,14 +223,14 @@ namespace DotsLite.HeightGrid.Aurthoring
                     }
                 );
 
-                var total = unitScale * (float2)new int2(w, h);
-                var span = (float2)new int2(ww, wh) * unitScale * (1 << lodlevel);
-                var startPosition = this.transform.position.As_float3().xz - (float2)total * 0.5f;
-                var offset = (float2)i * span;
+                var total = new float3(w, 0, h) * unitScale;
+                var startPosition = (float3)this.transform.position - total * 0.5f;
+                var span = new float3(lw, 0, lh) * unitScale * (1 << lodlevel);
+                var offset = new float3(i.x, 0, i.y) * span;
                 em.SetComponentData(ent,
                     new Translation
                     {
-                        Value = (startPosition + offset).x_y(),
+                        Value = startPosition + offset,
                     }
                 );
             }

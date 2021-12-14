@@ -73,6 +73,11 @@ namespace DotsLite.HeightGrid
         {
             public HeightFieldBuffer Heights;
 
+            public void Alloc(int2 numGrids, int2 unitLengthInGrid)
+            {
+                var length = numGrids * (unitLengthInGrid + 1);
+                this.Heights = HeightFieldBuffer.Create(length.x * length.y);
+            }
             public void Dispose()
             {
                 this.Heights.Dispose();
@@ -175,7 +180,8 @@ namespace DotsLite.HeightGrid
 
         public static HeightFieldBuffer Create(int2 length) => new HeightFieldBuffer
         {
-            Buffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, length.x * length.y, sizeof(float))
+            //Buffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, length.x * length.y, sizeof(float))
+            Buffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, (length.x+1) * (length.y+1), sizeof(float))
         };
         public void Dispose()
         {
@@ -199,6 +205,14 @@ namespace DotsLite.HeightGrid
             var heights = HeightFieldBuffer.Create(length);
             heights.Buffer.SetData(flatten, 0, 0, terrainHeights.Length);
             res.Heights = heights;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void Init(this GridMaster.HeightFieldData heights, TerrainData data, int2 gridids)
+        {
+            var length = data.heightmapResolution - 1;
+            var terrainHeights = data.GetHeights(0, 0, length, length);
+            var i = 0;
+            foreach (var f in terrainHeights) heights.p[i++] = f * data.heightmapScale.y;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,5 +1,5 @@
 
-Shader "Custom/HeightsGrid"
+Shader "Custom/HeightsGrid flat"
 {
 	
 	Properties

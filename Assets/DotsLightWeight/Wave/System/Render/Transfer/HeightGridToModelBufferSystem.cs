@@ -106,7 +106,7 @@ namespace DotsLite.Draw
 
                     pDst[0] = new float4
                     {
-                        x = math.asfloat(grid.GridId.y * dim.TotalLength.x + grid.GridId.x * dim.UnitLengthInGrid.x),
+                        x = math.asfloat(grid.GridId.y * dim.UnitLengthInGrid.y * dim.TotalLength.x + grid.GridId.x * dim.UnitLengthInGrid.x),
                         y = math.asfloat(grid.LodLevel),
                     };
 
