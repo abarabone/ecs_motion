@@ -194,11 +194,12 @@ namespace DotsLite.HeightGrid
     {
         // 暫定（直接地形データを渡すよりよい方法ないか？）
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Init(this GridMaster.HeightFieldShaderResourceData res, TerrainData data)
+        public static void InitResourceData(this GridMaster.HeightFieldShaderResourceData res, TerrainData data)
         {
             var length = data.heightmapResolution - 1;
             var terrainHeights = data.GetHeights(0, 0, length, length);
             var flatten = new float[terrainHeights.Length];
+
             var i = 0;
             foreach (var f in terrainHeights) flatten[i++] = f * data.heightmapScale.y;
             
@@ -207,10 +208,11 @@ namespace DotsLite.HeightGrid
             res.Heights = heights;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Init(this GridMaster.HeightFieldData heights, TerrainData data, int2 gridids)
+        public static unsafe void InitHeightBuffer(this GridMaster.HeightFieldData heights, TerrainData data)
         {
             var length = data.heightmapResolution - 1;
             var terrainHeights = data.GetHeights(0, 0, length, length);
+
             var i = 0;
             foreach (var f in terrainHeights) heights.p[i++] = f * data.heightmapScale.y;
         }

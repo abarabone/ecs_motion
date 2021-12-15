@@ -63,7 +63,7 @@ namespace DotsLite.HeightGrid
                     ref GridMaster.HeightFieldData heights,
                     in GridMaster.DimensionData dim) =>
                 {
-                    heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);
+                    ////heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);Žb’è‚ÅŠO‚µ‚Ä‚é
 
                     //cmd.RemoveComponent<GridMaster.InitializeTag>(ent);
                     em.RemoveComponent<GridMaster.InitializeTag>(ent);
