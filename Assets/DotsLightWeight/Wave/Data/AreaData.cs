@@ -217,6 +217,17 @@ namespace DotsLite.HeightGrid
             foreach (var f in terrainHeights) heights.p[i++] = f * data.heightmapScale.y;
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyResourceFrom(
+            this GridMaster.HeightFieldShaderResourceData res, GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
+            Height.GridData grid)
+        {
+            dim.
+            grid.GridId
+        }
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetResourcesTo(this GridMaster.HeightFieldShaderResourceData res, Material mat, GridMaster.DimensionData dim)
         {

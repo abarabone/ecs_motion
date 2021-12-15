@@ -11,7 +11,7 @@ using Unity.Mathematics;
 namespace DotsLite.HeightGrid
 {
 
-    public static class Height
+    public static partial class Height
     {
         public struct GridLv0Tag : IComponentData
         { }
@@ -36,6 +36,5 @@ namespace DotsLite.HeightGrid
             public Entity ParentAreaEntity;
         }
     }
-
 
 }
