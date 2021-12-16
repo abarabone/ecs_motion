@@ -9,6 +9,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using System.Runtime.CompilerServices;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Burst.Intrinsics;
 
 namespace DotsLite.HeightGrid
 {
@@ -222,16 +223,68 @@ namespace DotsLite.HeightGrid
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CopyResourceFrom(
+        public static unsafe void CopyResourceFrom(
             this GridMaster.HeightFieldShaderResourceData res, GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
             Height.GridData grid, int2 begin, int2 end)
         {
+            //var length = (end.y - begin.y) * dim.UnitLengthInGrid.x - begin.x + end.x + 1;
+            var l2 = end - begin;
+            var length = l2.y * dim.UnitLengthInGrid.x + l2.x + 1;
+
+            var buf = new NativeArray<float>((l2.y + 1) * dim.UnitLengthInGrid.x, Allocator.Temp);
+
+            //var srcstride = dim.TotalLength.x * sizeof(float);
+            //var dststride = dim.UnitLengthInGrid.x;
+            //var pSrc = heights.p + begin.y * srcstride;
+            //var pDst = buf.GetUnsafePtr();
+            //UnsafeUtility.MemCpyStride(pDst, dststride, pSrc, srcstride, dststride, l2.y + 1);
+            var srcstride = dim.TotalLength.x;
+            var dststride = dim.UnitLengthInGrid.x;
+            var pSrc = heights.p + begin.y * srcstride;
+            var pDst = (float*)buf.GetUnsafePtr();
+            copy_(pSrc, srcstride, pDst, dststride, l2);
+
             var startIndex = dim.ToGridIndex(grid.GridId);
-
-            var beginIndex = begin.y * dim.TotalLength.x + begin.x;
-            var endIndex = end.y * dim.TotalLength.x + end.x;
-
-            var length = begin.
+            var beginIndex = startIndex + begin.y * dim.TotalLength.x + begin.x;
+            res.Heights.Buffer.SetData(buf, begin.x, beginIndex, length);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void copy_(float *pSrc, int srcStride, float *pDst, int dstStride, int2 l2)
+        {
+            if (X86.Avx2.IsAvx2Supported)
+            {
+                var pDst_ = (v256*)pDst;
+                var pSrc_ = (v256*)pSrc;
+                var dstStride_ = dstStride >> 4;
+                var srcStride_ = srcStride >> 4;
+                var i = 0;
+                for (var iy = 0; iy < l2.y + 1; iy++)
+                {
+                    for (var ix = 0; ix < dstStride_; ix++)
+                    {
+                        pDst_[ix] = pSrc_[ix];
+                    }
+                    pDst_ += dstStride_;
+                    pSrc_ += srcStride_;
+                }
+            }
+            else
+            {
+                var pDst_ = (float4*)pDst;
+                var pSrc_ = (float4*)pSrc;
+                var dstStride_ = dstStride >> 2;
+                var srcStride_ = srcStride >> 2;
+                var i = 0;
+                for (var iy = 0; iy < l2.y + 1; iy++)
+                {
+                    for (var ix = 0; ix < dstStride_; ix++)
+                    {
+                        pDst_[ix] = pSrc_[ix];
+                    }
+                    pDst_ += dstStride_;
+                    pSrc_ += srcStride_;
+                }
+            }
         }
 
 
