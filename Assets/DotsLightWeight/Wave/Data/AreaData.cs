@@ -137,6 +137,9 @@ namespace DotsLite.HeightGrid
 
             public int2 TotalLength;
             public float UnitScaleRcp;
+
+            public int ToGridIndex(int2 gridLocation) =>
+                gridLocation.y * this.UnitLengthInGrid.y * this.TotalLength.x + gridLocation.x * this.UnitLengthInGrid.x;
         }
 
         public struct Emitting : IComponentData
@@ -221,10 +224,14 @@ namespace DotsLite.HeightGrid
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyResourceFrom(
             this GridMaster.HeightFieldShaderResourceData res, GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
-            Height.GridData grid)
+            Height.GridData grid, int2 begin, int2 end)
         {
-            dim.
-            grid.GridId
+            var startIndex = dim.ToGridIndex(grid.GridId);
+
+            var beginIndex = begin.y * dim.TotalLength.x + begin.x;
+            var endIndex = end.y * dim.TotalLength.x + end.x;
+
+            var length = begin.
         }
 
 
