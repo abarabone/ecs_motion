@@ -27,6 +27,7 @@ namespace DotsLite.MarchingCubes.Gpu
             this.RequireSingletonForUpdate<Common.DrawShaderResourceData>();
         }
 
+        //int i = 0;
         protected unsafe override void OnUpdate()
         {
             this.Entities
@@ -45,7 +46,7 @@ namespace DotsLite.MarchingCubes.Gpu
 
                     //if (cs == null) return;
 
-
+                    //if (i++ == 0)
                     {
                         data.CubeInstances.Buffer.SetCounterValue(0);// これ最後のほうがよかったりするかな
 

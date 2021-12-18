@@ -227,29 +227,26 @@ namespace DotsLite.HeightGrid
             this GridMaster.HeightFieldShaderResourceData res, GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
             Height.GridData grid, int2 begin, int2 end)
         {
-            //var length = (end.y - begin.y) * dim.UnitLengthInGrid.x - begin.x + end.x + 1;
-            var l2 = end - begin;
-            var length = l2.y * dim.UnitLengthInGrid.x + l2.x + 1;
+            var unitlength = dim.UnitLengthInGrid + 1;
 
-            var buf = new NativeArray<float>((l2.y + 1) * dim.UnitLengthInGrid.x, Allocator.Temp);
+            //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
+            var length2 = end - begin;
+            var length = length2.y * unitlength.x + length2.x + 1;
 
-            //var srcstride = dim.TotalLength.x * sizeof(float);
-            //var dststride = dim.UnitLengthInGrid.x;
-            //var pSrc = heights.p + begin.y * srcstride;
-            //var pDst = buf.GetUnsafePtr();
-            //UnsafeUtility.MemCpyStride(pDst, dststride, pSrc, srcstride, dststride, l2.y + 1);
+            var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
+
             var srcstride = dim.TotalLength.x;
-            var dststride = dim.UnitLengthInGrid.x;
+            var dststride = unitlength.x;
             var pSrc = heights.p + begin.y * srcstride;
             var pDst = (float*)buf.GetUnsafePtr();
-            copy_(pSrc, srcstride, pDst, dststride, l2);
+            copy_(pSrc, srcstride, pDst, dststride, length2);
 
-            var startIndex = dim.ToGridIndex(grid.GridId);
-            var beginIndex = startIndex + begin.y * dim.TotalLength.x + begin.x;
+            var gridStartIndex = dim.ToGridIndex(grid.GridId);
+            var beginIndex = gridStartIndex + begin.y * dim.TotalLength.x + begin.x;
             res.Heights.Buffer.SetData(buf, begin.x, beginIndex, length);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void copy_(float *pSrc, int srcStride, float *pDst, int dstStride, int2 l2)
+        static unsafe void copy_(float *pSrc, int srcStride, float *pDst, int dstStride, int2 length2)
         {
             if (X86.Avx2.IsAvx2Supported)
             {
@@ -257,34 +254,34 @@ namespace DotsLite.HeightGrid
                 var pSrc_ = (v256*)pSrc;
                 var dstStride_ = dstStride >> 4;
                 var srcStride_ = srcStride >> 4;
-                var i = 0;
-                for (var iy = 0; iy < l2.y + 1; iy++)
+                for (var iy = 0; iy < length2.y + 1; iy++)
                 {
+                    var pSrcSave_ = pSrc_;
+
                     for (var ix = 0; ix < dstStride_; ix++)
                     {
-                        pDst_[ix] = pSrc_[ix];
+                        var val = X86.Avx2.mm256_stream_load_si256(pSrc_++);
+                        X86.Avx.mm256_storeu_ps(pDst_++, val);
                     }
-                    pDst_ += dstStride_;
-                    pSrc_ += srcStride_;
+
+                    var pSrc1_ = (float*)pSrc_;
+                    var pDst1_ = (float*)pDst_;
+                    *pDst1_++ = *pSrc1_;
+
+                    pDst_ = (v256*)pDst1_;
+                    pSrc_ = pSrcSave_ + srcStride_;
                 }
             }
             else
             {
-                var pDst_ = (float4*)pDst;
-                var pSrc_ = (float4*)pSrc;
-                var dstStride_ = dstStride >> 2;
-                var srcStride_ = srcStride >> 2;
-                var i = 0;
-                for (var iy = 0; iy < l2.y + 1; iy++)
-                {
-                    for (var ix = 0; ix < dstStride_; ix++)
-                    {
-                        pDst_[ix] = pSrc_[ix];
-                    }
-                    pDst_ += dstStride_;
-                    pSrc_ += srcStride_;
-                }
+                MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, length2.y + 1);
             }
+        }
+        public static unsafe void MemCpyStride<T>(T* pDst, int dstStride, T*pSrc, int srcStride, int elementSize, int count)
+            where T : unmanaged
+        {
+            var u = sizeof(float);
+            UnsafeUtility.MemCpyStride(pDst, dstStride * u, pSrc, srcStride * u, elementSize * u, count * u);
         }
 
 
