@@ -10,6 +10,7 @@ using Unity.Mathematics;
 using System.Runtime.CompilerServices;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Burst.Intrinsics;
+using Unity.Burst;
 
 namespace DotsLite.HeightGrid
 {
@@ -194,6 +195,14 @@ namespace DotsLite.HeightGrid
         }
     }
 
+    // 地形はさほど変化しないので、ＧＰＵにバッファおいたほうがよさそう
+    // 波は毎フレーム全書き換えなので、グリッドごとに送ればよいと思う　書き換えの間引きをするなら別だけど…
+
+    // ＧＰＵバッファ考えたこと
+    // ・フラット　　　… 悪くない　無駄なＧＰＵ転送　ｙ軸またぐと連続領域じゃなくなる
+    // ・グリッドごと　… いいのかも　位置の計算が面倒　ＬＯＤで不利かと思ったけど、可能かも？（頂点ごとに別計算なので）
+    // ・モートン順序　… ベストかもと思ったけど全転送でＮＧ　ＬＯＤが画一　ＧＰＵ転送がよさそうと思ったが、真ん中領域で全転送　位置計算がちょっとだけ不利
+    [BurstCompile]
     static class InitUtility
     {
         // 暫定（直接地形データを渡すよりよい方法ないか？）
@@ -227,7 +236,8 @@ namespace DotsLite.HeightGrid
             this GridMaster.HeightFieldShaderResourceData res, GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
             Height.GridData grid, int2 begin, int2 end)
         {
-            var unitlength = dim.UnitLengthInGrid + 1;
+            //var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
+            var unitlength = dim.UnitLengthInGrid;
 
             //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
             var length2 = end - begin;
@@ -240,13 +250,67 @@ namespace DotsLite.HeightGrid
             var pSrc = heights.p + begin.y * srcstride;
             var pDst = (float*)buf.GetUnsafePtr();
             copy_(pSrc, srcstride, pDst, dststride, length2);
+            //var buf = makebuffer_(heights, dim, begin, end);
 
             var gridStartIndex = dim.ToGridIndex(grid.GridId);
             var beginIndex = gridStartIndex + begin.y * dim.TotalLength.x + begin.x;
-            res.Heights.Buffer.SetData(buf, begin.x, beginIndex, length);
+            res.Heights.Buffer.SetData(buf, begin.x, beginIndex, buf.Length);
+
+            buf.Dispose();
         }
+        //[BurstCompile]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static unsafe NativeArray<float> makebuffer_(
+        //    GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
+        //    int2 begin, int2 end)
+        //{
+        //    //var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
+        //    var unitlength = dim.UnitLengthInGrid;
+
+        //    //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
+        //    var length2 = end - begin;
+        //    var length = length2.y * unitlength.x + length2.x + 1;
+
+        //    var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
+
+        //    var srcstride = dim.TotalLength.x;
+        //    var dststride = unitlength.x;
+        //    var pSrc = heights.p + begin.y * srcstride;
+        //    var pDst = (float*)buf.GetUnsafePtr();
+        //    copy_(pSrc, srcstride, pDst, dststride, length2);
+
+        //    return buf;
+        //}
+        [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void copy_(float *pSrc, int srcStride, float *pDst, int dstStride, int2 length2)
+        static unsafe void copy_(float* pSrc, int srcStride, float* pDst, int dstStride, int2 length2)
+        {
+            if (X86.Avx2.IsAvx2Supported)
+            {
+                var pDst_ = (v256*)pDst;
+                var pSrc_ = (v256*)pSrc;
+                var dstStride_ = dstStride >> 4;
+                var srcStride_ = srcStride >> 4;
+                for (var iy = 0; iy < length2.y + 1; iy++)
+                {
+                    for (var ix = 0; ix < dstStride_; ix++)
+                    {
+                        var val = X86.Avx2.mm256_stream_load_si256(pSrc_ + ix);
+                        //X86.Avx.mm256_stream_ps(pDst_++, val);// キャッシュなし
+                        X86.Avx.mm256_store_ps(pDst_++, val);// 残念だが、stream でないとアライン版つかってくれないっぽい（ドキュメントより）
+                    }
+
+                    pSrc_ += srcStride_;
+                }
+            }
+            else
+            {
+                MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, length2.y + 1);
+            }
+        }
+        [BurstCompile]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void copy_no_align_(float *pSrc, int srcStride, float *pDst, int dstStride, int2 length2)
         {
             if (X86.Avx2.IsAvx2Supported)
             {
