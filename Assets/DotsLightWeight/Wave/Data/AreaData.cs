@@ -233,8 +233,10 @@ namespace DotsLite.HeightGrid
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void CopyResourceFrom(
-            this GridMaster.HeightFieldShaderResourceData res, GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
-            Height.GridData grid, int2 begin, int2 end)
+            this GridMaster.HeightFieldShaderResourceData res,
+            GridMaster.HeightFieldData heights,
+            GridMaster.DimensionData dim,
+            int2 gridid, int2 begin, int2 end)
         {
             //var unitlength = dim.UnitLengthInGrid + 1;// ‚Æ‚È‚è‚ÌƒOƒŠƒbƒh•ª‚à‚à‚½‚¹‚Ä‚¨‚­
             var unitlength = dim.UnitLengthInGrid;
@@ -252,7 +254,7 @@ namespace DotsLite.HeightGrid
             copy_(pSrc, srcstride, pDst, dststride, length2);
             //var buf = makebuffer_(heights, dim, begin, end);
 
-            var gridStartIndex = dim.ToGridIndex(grid.GridId);
+            var gridStartIndex = dim.ToGridIndex(gridid);
             var beginIndex = gridStartIndex + begin.y * dim.TotalLength.x + begin.x;
             res.Heights.Buffer.SetData(buf, begin.x, beginIndex, buf.Length);
 

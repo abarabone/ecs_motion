@@ -62,7 +62,7 @@ Shader "Custom/HeightsGrid"
 
 			sampler2D	_MainTex;
 			
-			StructuredBuffer<float> Heights;
+			StructuredBuffer<float> Heights;// [gridid][lw * lh]
 			float4 DimInfo;// x,y: lengthInGrid, z: widthSpan
 
 			static const float4 element_mask_table[] =

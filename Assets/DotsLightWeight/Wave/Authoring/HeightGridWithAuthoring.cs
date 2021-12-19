@@ -164,7 +164,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                 var heights = new GridMaster.HeightFieldData { };
                 heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);//
                 heights.InitHeightBuffer(terrainData);
-                res.CopyResourceFrom(heights, dim, )
+                res.CopyResourceFrom(heights, dim, new int2(0, 0), 0, new int2(lw, lh));
                 res.SetResourcesTo(mat, dim);
             }
 
