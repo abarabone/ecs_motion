@@ -25,6 +25,7 @@ namespace DotsLite.HeightGrid
         protected unsafe override void OnStartRunning()
         {
             this.Entities
+                .WithAll<GridMaster.WaveFieldData>()
                 .ForEach((in GridMaster.HeightFieldData heights) =>
                 {
                     heights.p[10] = -.1f;

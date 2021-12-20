@@ -1,5 +1,5 @@
 
-Shader "Custom/HeightsGrid"
+Shader "Custom/HeightsGridBlock"
 {
 	
 	Properties
@@ -55,7 +55,7 @@ Shader "Custom/HeightsGrid"
 			
 			
 			StructuredBuffer<float4> BoneVectorBuffer;
-			// [0] x: flat height index offset as int, y: lv as int
+			// [0] x: grid id, y: lv as int, z: grid index start
 			// [1] x,y,z: pos, w: scale * lv
 			int	VectorLengthPerInstance;
 			int BoneVectorOffset;
@@ -63,21 +63,37 @@ Shader "Custom/HeightsGrid"
 			sampler2D	_MainTex;
 			
 			StructuredBuffer<float> Heights;// [gridid][lw * lh]
-			float4 DimInfo;// x,y: lengthInGrid, z: widthSpan
+			float4 DimInfo;// x,y: lengthInGrid, z,w:grid span
 
 			static const float4 element_mask_table[] =
 			{
 				{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}
 			};
-			float get_h(int ih, int offset)
+			float get_h(int ih, int grid_start)
 			{
-				int2 lengthInGrid = asint(DimInfo.xy);
-				int widthSpan = asint(DimInfo.z);
-				int2 i = int2(ih & (lengthInGrid.x-1), ih >> countbits(lengthInGrid.x-1));
-
-				float h = Heights[offset + i.y * widthSpan + i.x];
-				return h;
+				return Heights[grid_start + ih];
 			}
+			
+			//int get_grid_index_offset(int grid_index_offset, int2 index_in_grid)
+			//{
+			//	const int grid_out_span = DimInfo.z;
+			//	const int grid_in_span  = DimInfo.x;
+
+			//	const int xmask = DimInfo.x - 1;
+			//	const int ymask = DimInfo.y - 1;
+
+			//	const int xin = index_in_grid.x & xmask);
+			//	const int yin = index_in_grid.y & ymask);
+
+			//	const int xout = index_in_grid.x >> countbits(xmask);
+			//	const int yout = index_in_grid.y >> countbits(ymask);
+
+
+			//	const int grid_out = xout * grid_out_span.x + yout * grid_out_span.y;
+			//	const int grid_in  = xin + yin * grid_in_span.x;
+				
+			//	return grid_index_offset + grid_out + grid_in;
+			//}
 
 			v2f vert(appdata v , uint i : SV_InstanceID )
 			{
@@ -90,10 +106,10 @@ Shader "Custom/HeightsGrid"
 
 				float4 info = BoneVectorBuffer[ibase + 0];
 				int lv = asint(info.y);
-				int offset = asint(info.x);
+				int grid_start = asint(info.z);
 
 				float whscale = tf.w;
-				float3 lvt = float3(v.vertex.xz * whscale, get_h(ih, offset)).xzy;
+				float3 lvt = float3(v.vertex.xz * whscale, get_h(ih, grid_start)).xzy;
 
 				float3 wpos = tf.xyz;
 				float4	wvt = UnityObjectToClipPos(wpos + lvt);

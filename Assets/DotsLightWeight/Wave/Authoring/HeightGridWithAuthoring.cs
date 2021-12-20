@@ -7,7 +7,10 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Physics.Authoring;
+
+using Material = UnityEngine.Material;
 
 namespace DotsLite.HeightGrid.Aurthoring
 {
@@ -160,6 +163,7 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                 var res = new GridMaster.HeightFieldShaderResourceData { };
                 em.SetComponentData(ent, res);
+                res.Alloc(new int2(ww, wh), new int2(lw, lh));
 
                 var heights = new GridMaster.HeightFieldData { };
                 heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);//
@@ -250,6 +254,33 @@ namespace DotsLite.HeightGrid.Aurthoring
             //    });
             //}
 
+            static PhysicsCollider CreateTerrainCollider(TerrainData terrainData, CollisionFilter filter)
+            {
+                var physicsCollider = new PhysicsCollider();
+
+                //var size = new int2(terrainData.heightmapWidth, terrainData.heightmapHeight);
+                var size = new int2(terrainData.heightmapTexture.width, terrainData.heightmapTexture.height);
+                var scale = terrainData.heightmapScale; Debug.Log(size);
+
+                var colliderHeights = new NativeArray<float>(size.x * size.y, Allocator.TempJob);
+
+                var terrainHeights = terrainData.GetHeights(0, 0, size.x, size.y);
+
+
+                for (int j = 0; j < size.y; j++)
+                    for (int i = 0; i < size.x; i++)
+                    {
+                        var h = terrainHeights[i, j];
+                        colliderHeights[j + i * size.x] = h;
+                    }
+
+                var meshtype = Unity.Physics.TerrainCollider.CollisionMethod.VertexSamples;
+                physicsCollider.Value = Unity.Physics.TerrainCollider.Create(colliderHeights, size, scale, meshtype, filter);
+
+                colliderHeights.Dispose();
+
+                return physicsCollider;
+            }
         }
 
     }

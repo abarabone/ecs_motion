@@ -231,40 +231,12 @@ namespace DotsLite.HeightGrid
         }
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void CopyResourceFrom(
-            this GridMaster.HeightFieldShaderResourceData res,
-            GridMaster.HeightFieldData heights,
-            GridMaster.DimensionData dim,
-            int2 gridid, int2 begin, int2 end)
-        {
-            //var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
-            var unitlength = dim.UnitLengthInGrid;
-
-            //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
-            var length2 = end - begin;
-            var length = length2.y * unitlength.x + length2.x + 1;
-
-            var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
-
-            var srcstride = dim.TotalLength.x;
-            var dststride = unitlength.x;
-            var pSrc = heights.p + begin.y * srcstride;
-            var pDst = (float*)buf.GetUnsafePtr();
-            copy_(pSrc, srcstride, pDst, dststride, length2);
-            //var buf = makebuffer_(heights, dim, begin, end);
-
-            var gridStartIndex = dim.ToGridIndex(gridid);
-            var beginIndex = gridStartIndex + begin.y * dim.TotalLength.x + begin.x;
-            res.Heights.Buffer.SetData(buf, begin.x, beginIndex, buf.Length);
-
-            buf.Dispose();
-        }
-        //[BurstCompile]
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static unsafe NativeArray<float> makebuffer_(
-        //    GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
-        //    int2 begin, int2 end)
+        //public static unsafe void CopyResourceFrom(
+        //    this GridMaster.HeightFieldShaderResourceData res,
+        //    GridMaster.HeightFieldData heights,
+        //    GridMaster.DimensionData dim,
+        //    int2 gridid, int2 begin, int2 end)
         //{
         //    //var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
         //    var unitlength = dim.UnitLengthInGrid;
@@ -280,9 +252,41 @@ namespace DotsLite.HeightGrid
         //    var pSrc = heights.p + begin.y * srcstride;
         //    var pDst = (float*)buf.GetUnsafePtr();
         //    copy_(pSrc, srcstride, pDst, dststride, length2);
+        //    //var buf = makebuffer_(heights, dim, begin, end);
 
-        //    return buf;
+        //    var gridStartIndex = dim.ToGridIndex(gridid);
+        //    var beginIndex = gridStartIndex + begin.y * dim.TotalLength.x + begin.x;
+        //    res.Heights.Buffer.SetData(buf, begin.x, beginIndex, buf.Length);
+
+        //    buf.Dispose();
         //}
+        [BurstCompile]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void CopyResourceFrom(
+            this GridMaster.HeightFieldShaderResourceData res,
+            GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
+            int2 gridid, int2 begin, int2 end)
+        {
+            var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
+
+            //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
+            var length2 = end - begin;
+            var length = length2.y * unitlength.x + length2.x + 1;
+
+            var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
+
+            var srcstride = dim.TotalLength.x;
+            var dststride = unitlength.x;
+            var pSrc = heights.p + begin.y * srcstride;
+            var pDst = (float*)buf.GetUnsafePtr();
+            copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
+
+            var gridStartIndex = dim.ToGridIndex(gridid);
+            var beginIndex = gridStartIndex + begin.y * dim.TotalLength.x + begin.x;
+            res.Heights.Buffer.SetData(buf, begin.x, beginIndex, buf.Length);
+
+            buf.Dispose();
+        }
         [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static unsafe void copy_(float* pSrc, int srcStride, float* pDst, int dstStride, int2 length2)
@@ -312,7 +316,7 @@ namespace DotsLite.HeightGrid
         }
         [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void copy_no_align_(float *pSrc, int srcStride, float *pDst, int dstStride, int2 length2)
+        static unsafe void copy_plus1_(float *pSrc, int srcStride, float *pDst, int dstStride, int2 length2)
         {
             if (X86.Avx2.IsAvx2Supported)
             {
