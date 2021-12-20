@@ -254,7 +254,8 @@ namespace DotsLite.HeightGrid
         //    copy_(pSrc, srcstride, pDst, dststride, length2);
         //    //var buf = makebuffer_(heights, dim, begin, end);
 
-        //    var gridStartIndex = dim.ToGridIndex(gridid);
+        //    var gridStartIndex = dim.ToGridIndex(grid
+        //    id);
         //    var beginIndex = gridStartIndex + begin.y * dim.TotalLength.x + begin.x;
         //    res.Heights.Buffer.SetData(buf, begin.x, beginIndex, buf.Length);
 
