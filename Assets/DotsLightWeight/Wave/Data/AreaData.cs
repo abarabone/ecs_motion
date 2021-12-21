@@ -140,8 +140,8 @@ namespace DotsLite.HeightGrid
             public int2 TotalLength;
             public float UnitScaleRcp;
 
-            public int ToGridIndex(int2 gridLocation) =>
-                gridLocation.y * this.UnitLengthInGrid.y * this.TotalLength.x + gridLocation.x * this.UnitLengthInGrid.x;
+            //public int ToGridIndex(int2 gridLocation) =>
+            //    gridLocation.y * this.UnitLengthInGrid.y * this.TotalLength.x + gridLocation.x * this.UnitLengthInGrid.x;
         }
 
         public struct Emitting : IComponentData
@@ -266,9 +266,11 @@ namespace DotsLite.HeightGrid
         public static unsafe void CopyResourceFrom(
             this GridMaster.HeightFieldShaderResourceData res,
             GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
-            int2 gridid, int2 begin, int2 end)
+            int srcSerialIndex, int dstSerialIndex,
+            int2 begin, int2 end)
         {
             var unitlength = dim.UnitLengthInGrid + 1;// ‚Æ‚È‚è‚ÌƒOƒŠƒbƒh•ª‚à‚à‚½‚¹‚Ä‚¨‚­
+            var srcGridSpan = dim.UnitLengthInGrid.x * dim.UnitLengthInGrid.y;
 
             //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
             var length2 = end - begin;
@@ -278,13 +280,12 @@ namespace DotsLite.HeightGrid
 
             var srcstride = dim.TotalLength.x;
             var dststride = unitlength.x;
-            var pSrc = heights.p + begin.y * srcstride;
+            var pSrc = heights.p + srcSerialIndex + begin.y * srcstride;
             var pDst = (float*)buf.GetUnsafePtr();
             copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
 
-            var gridStartIndex = dim.ToGridIndex(gridid);
-            var beginIndex = gridStartIndex + begin.y * dim.TotalLength.x + begin.x;
-            res.Heights.Buffer.SetData(buf, begin.x, beginIndex, buf.Length);
+            var beginIndex = dstSerialIndex + begin.y * srcstride + begin.x;
+            res.Heights.Buffer.SetData(buf, begin.x, beginIndex, length);
 
             buf.Dispose();
         }

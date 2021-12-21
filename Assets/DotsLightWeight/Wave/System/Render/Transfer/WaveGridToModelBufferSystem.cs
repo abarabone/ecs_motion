@@ -56,7 +56,7 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
-                .WithAll<Height.GridLv0Tag, Height.WaveTransferTag>()
+                .WithAll<HeightGrid.GridLv0Tag, HeightGrid.WaveTransferTag>()
                 .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithReadOnly(heightss)
@@ -64,8 +64,8 @@ namespace DotsLite.Draw
                 .ForEach((
                     in DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData linker,
-                    in Height.GridData grid,
-                    in Height.AreaLinkData arealink,
+                    in HeightGrid.GridData grid,
+                    in HeightGrid.AreaLinkData arealink,
                     in Translation pos) =>
                 {
                     if (target.DrawInstanceId == -1) return;

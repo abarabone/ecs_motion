@@ -38,7 +38,7 @@ namespace DotsLite.Draw
                 .WithNativeDisableParallelForRestriction(drawModels)
                 .WithNativeDisableContainerSafetyRestriction(drawModels)
 
-                .WithAll<Height.GridLv0Tag>()
+                .WithAll<HeightGrid.GridLv0Tag>()
 
                 .WithNone<DrawInstance.BoneModelTag>()
                 .WithNone<DrawInstance.PostureLinkData>()
@@ -46,7 +46,7 @@ namespace DotsLite.Draw
                 .ForEach((
                     ref DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData modellink,
-                    in Height.GridData grid,
+                    in HeightGrid.GridData grid,
                     in Translation pos) =>
                 {
                     if (modellink.DrawModelEntityCurrent == Entity.Null)

@@ -168,7 +168,9 @@ namespace DotsLite.HeightGrid.Aurthoring
                 var heights = new GridMaster.HeightFieldData { };
                 heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);//
                 heights.InitHeightBuffer(terrainData);
-                res.CopyResourceFrom(heights, dim, new int2(0, 0), 0, new int2(lw, lh));
+                for (var iy = 0; iy < wh; iy++)
+                for (var ix = 0; ix < ww; ix++)
+                    res.CopyResourceFrom(heights, dim, srcSerialIndex_(ix, iy), dstSerialIndex_(ix, iy), 0, new int2(lw, lh));
                 res.SetResourcesTo(mat, dim);
             }
 
@@ -196,25 +198,32 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                 var types = new List<ComponentType>
                 {
-                    typeof(Height.AreaLinkData),
-                    typeof(Height.GridData),
+                    typeof(HeightGrid.AreaLinkData),
+                    typeof(HeightGrid.GridData),
+                    typeof(HeightGrid.BlockBufferOnGpuData),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
 
                     typeof(Translation),
                 };
-                if (lodlevel == 0) types.Add(typeof(Height.GridLv0Tag));
+                if (lodlevel == 0) types.Add(typeof(HeightGrid.GridLv0Tag));
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
 
-                em.SetComponentData(ent, new Height.AreaLinkData
+                em.SetComponentData(ent, new HeightGrid.AreaLinkData
                 {
                     ParentAreaEntity = area,
                 });
-                em.SetComponentData(ent, new Height.GridData
+                em.SetComponentData(ent, new HeightGrid.GridData
                 {
                     GridId = i,
+                    SerialIndex = srcSerialIndex_(i.x, i.y),
                     UnitScaleOnLod = unitScale * (1 << lodlevel),
+                    LodLevel = lodlevel,
+                });
+                em.SetComponentData(ent, new HeightGrid.BlockBufferOnGpuData
+                {
+                    SerialIndex = dstSerialIndex_(i.x, i.y),
                 });
 
                 em.SetComponentData(ent,
@@ -240,6 +249,13 @@ namespace DotsLite.HeightGrid.Aurthoring
                         Value = startPosition + offset,
                     }
                 );
+            }
+            int srcSerialIndex_(int x, int y) => y * lh * w + x * lw;
+            int dstSerialIndex_(int x, int y)
+            {
+                var gridSerialId = y * ww + x;
+                var gridBlockSpan = (lh + 1) * (lw + 1);
+                return gridSerialId * gridBlockSpan;
             }
 
 

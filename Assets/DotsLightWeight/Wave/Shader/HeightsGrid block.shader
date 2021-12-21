@@ -55,7 +55,7 @@ Shader "Custom/HeightsGridBlock"
 			
 			
 			StructuredBuffer<float4> BoneVectorBuffer;
-			// [0] x: grid id, y: lv as int, z: grid index start
+			// [0] x: grid serial index, y: lv as int
 			// [1] x,y,z: pos, w: scale * lv
 			int	VectorLengthPerInstance;
 			int BoneVectorOffset;
@@ -106,7 +106,7 @@ Shader "Custom/HeightsGridBlock"
 
 				float4 info = BoneVectorBuffer[ibase + 0];
 				int lv = asint(info.y);
-				int grid_start = asint(info.z);
+				int grid_start = asint(info.x);
 
 				float whscale = tf.w;
 				float3 lvt = float3(v.vertex.xz * whscale, get_h(ih, grid_start)).xzy;

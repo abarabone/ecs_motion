@@ -56,8 +56,8 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
-                .WithAll<Height.GridLv0Tag>()
-                .WithNone<Height.WaveTransferTag>()
+                .WithAll<HeightGrid.GridLv0Tag>()
+                .WithNone<HeightGrid.WaveTransferTag>()
                 .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 //.WithReadOnly(heightss)
@@ -65,8 +65,9 @@ namespace DotsLite.Draw
                 .ForEach((
                     in DrawInstance.TargetWorkData target,
                     in DrawInstance.ModelLinkData linker,
-                    in Height.GridData grid,
-                    in Height.AreaLinkData arealink,
+                    in HeightGrid.GridData grid,
+                    in HeightGrid.BlockBufferOnGpuData gpu,
+                    in HeightGrid.AreaLinkData arealink,
                     in Translation pos) =>
                 {
                     if (target.DrawInstanceId == -1) return;
@@ -79,34 +80,19 @@ namespace DotsLite.Draw
                     var instanceBufferOffset = target.DrawInstanceId * lengthOfInstance;
 
 
-                    //var heights = heightss[arealink.ParentAreaEntity];
-
-                    //// length はセグメント数、頂点は + 1 個送る
-
                     var dim = dims[arealink.ParentAreaEntity];
-                    //var srcw = dim.UnitLengthInGrid.x;
-                    //var srcww = dim.NumGrids.x * dim.UnitLengthInGrid.x;
-                    //var srch = dim.UnitLengthInGrid.y;
-                    //var srcwwh = srcww * srch;
 
-                    ////var lengthInGrid = this.gridMaster.UnitLengthInGrid * sizeof(float);
-                    //var srcspan = srcww * sizeof(float);
-                    //var dstspan = (srcw + 1) * sizeof(float);
-                    //var count = srch + 1;
-                    //var unitScale = dim.UnitScale;
-
-
-                    //var pUnit = heights.p;
-                    //var pSrc = pUnit + (grid.GridId.x * srcw + grid.GridId.y * srcwwh);
-
-                    //var pModel = offsetInfo.pVectorOffsetPerModelInBuffer;
                     var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
                     var pDst = pModel + instanceBufferOffset;
                     var i = offsetInfo.OptionalVectorLengthPerInstance;
 
+                    // [0] x: grid serial index, y: lv as int
+                    // [1] x,y,z: pos, w: scale * lv
+
                     pDst[0] = new float4
                     {
-                        x = math.asfloat(grid.GridId.y * dim.UnitLengthInGrid.y * dim.TotalLength.x + grid.GridId.x * dim.UnitLengthInGrid.x),
+                        x = math.asfloat(gpu.SerialIndex),
+                        //x = math.asfloat(grid.SerialIndex),
                         y = math.asfloat(grid.LodLevel),
                     };
 

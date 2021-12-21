@@ -145,23 +145,23 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                 var types = new List<ComponentType>
                 {
-                    typeof(Height.WaveTransferTag),
-                    typeof(Height.AreaLinkData),
-                    typeof(Height.GridData),
+                    typeof(HeightGrid.WaveTransferTag),
+                    typeof(HeightGrid.AreaLinkData),
+                    typeof(HeightGrid.GridData),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
 
                     typeof(Translation),
                 };
-                if (lodlevel == 0) types.Add(typeof(Height.GridLv0Tag));
+                if (lodlevel == 0) types.Add(typeof(HeightGrid.GridLv0Tag));
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
 
-                em.SetComponentData(ent, new Height.AreaLinkData
+                em.SetComponentData(ent, new HeightGrid.AreaLinkData
                 {
                     ParentAreaEntity = area,
                 });
-                em.SetComponentData(ent, new Height.GridData
+                em.SetComponentData(ent, new HeightGrid.GridData
                 {
                     GridId = i,
                     UnitScaleOnLod = this.UnitDistance * (1 << lodlevel),
