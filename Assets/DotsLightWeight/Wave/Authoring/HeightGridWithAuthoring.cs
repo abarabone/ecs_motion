@@ -169,8 +169,8 @@ namespace DotsLite.HeightGrid.Aurthoring
                 heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);//
                 heights.InitHeightBuffer(terrainData);
                 for (var iy = 0; iy < wh; iy++)
-                for (var ix = 0; ix < ww; ix++)
-                    res.CopyResourceFrom(heights, dim, srcSerialIndex_(ix, iy), dstSerialIndex_(ix, iy), 0, new int2(lw, lh));
+                    for (var ix = 0; ix < ww; ix++)
+                        res.CopyResourceFrom(heights, dim, srcSerialIndex_(ix, iy), dstSerialIndex_(ix, iy), 0, new int2(lw, lh));
                 res.SetResourcesTo(mat, dim);
             }
 
