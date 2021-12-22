@@ -5,6 +5,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Collections;
+using Unity.Burst.Intrinsics;
 
 public class testc : MonoBehaviour
 {
@@ -12,8 +13,9 @@ public class testc : MonoBehaviour
     void Start()
     {
 
-        testcompile.testfunc(0);
-
+        //var (x, y) = testcompile.testfunc(0);
+        testcompile.testfunc(0, out var x, out var y);
+        Debug.Log(x + y);
     }
 
     // Update is called once per frame
@@ -24,13 +26,34 @@ public class testc : MonoBehaviour
 
     [BurstCompile]
     static unsafe class testcompile
-    { 
+    {
+        // 戻り値あるとエディタが落ちるっぽい？
+        //[BurstCompile]
+        //public static (int x, int y) testfunc(in int2 a)
+        //{
+        //    using var arr1 = new NativeArray<float>(1, Allocator.Temp);
+        //    using var arr2 = new NativeArray<float>(1, Allocator.Temp);
+        //    UnsafeUtility.MemCpy(arr1.GetUnsafePtr(), arr2.GetUnsafePtr(), 4);
+
+        //    return (1, 2);
+        //}
         [BurstCompile]
-        public static void testfunc(in int2 a)
+        public static void testfunc(in int2 a, out int x, out int y)
         {
-            using var arr1 = new NativeArray<float>(1, Allocator.Temp);
-            using var arr2 = new NativeArray<float>(1, Allocator.Temp);
-            UnsafeUtility.MemCpy(arr1.GetUnsafePtr(), arr2.GetUnsafePtr(), 4);
+            if (X86.Avx.IsAvxSupported)
+            {
+                using var arr1 = new NativeArray<float>(1, Allocator.Temp);
+                using var arr2 = new NativeArray<float>(1, Allocator.Temp);
+                UnsafeUtility.MemCpy(arr1.GetUnsafePtr(), arr2.GetUnsafePtr(), 4);
+
+                x = 1;
+                y = 2;
+            }
+            else
+            {
+                x = 34;
+                y = 345;
+            }
         }
     }
 

@@ -202,7 +202,6 @@ namespace DotsLite.HeightGrid
     // ・フラット　　　… 悪くない　無駄なＧＰＵ転送　ｙ軸またぐと連続領域じゃなくなる
     // ・グリッドごと　… いいのかも　位置の計算が面倒　ＬＯＤで不利かと思ったけど、可能かも？（頂点ごとに別計算なので）
     // ・モートン順序　… ベストかもと思ったけど全転送でＮＧ　ＬＯＤが画一　ＧＰＵ転送がよさそうと思ったが、真ん中領域で全転送　位置計算がちょっとだけ不利
-    [BurstCompile]
     static class InitUtility
     {
         // 暫定（直接地形データを渡すよりよい方法ないか？）
@@ -261,7 +260,6 @@ namespace DotsLite.HeightGrid
 
         //    buf.Dispose();
         //}
-        //[BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void CopyResourceFrom(
             this GridMaster.HeightFieldShaderResourceData res,
@@ -275,19 +273,78 @@ namespace DotsLite.HeightGrid
             var length2 = end - begin;
             var length = length2.y * unitlength.x + length2.x + 1;
 
-            var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
-            //var buf = new NativeArray<float>(length, Allocator.Temp); 
+            //var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
+            var buf = new NativeArray<float>(length, Allocator.Temp);
 
             var srcstride = dim.TotalLength.x;
             var dststride = unitlength.x;
             var pSrc = heights.p + srcSerialIndex + begin.y * srcstride;
             var pDst = (float*)buf.GetUnsafePtr();
-            copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
+            BurstUtility.copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
 
             var beginIndex = dstSerialIndex + begin.y * srcstride + begin.x;
             res.Heights.Buffer.SetData(buf, begin.x, beginIndex, length);
 
             buf.Dispose();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void MemCpyStride<T>(T* pDst, int dstStride, T*pSrc, int srcStride, int elementSize, int count)
+            where T : unmanaged
+        {
+            var u = sizeof(float);
+            UnsafeUtility.MemCpyStride(pDst, dstStride * u, pSrc, srcStride * u, elementSize * u, count * u);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetResourcesTo(this GridMaster.HeightFieldShaderResourceData res, Material mat, GridMaster.DimensionData dim)
+        {
+            mat.SetBuffer("Heights", res.Heights.Buffer);
+
+            var lengthInGrid = dim.UnitLengthInGrid;
+            var widthSpan = dim.TotalLength.x;
+            var scale = dim.UnitScale;
+            var value = new float4(math.asfloat(lengthInGrid), math.asfloat(widthSpan), scale);
+            mat.SetVector("DimInfo", value);
+        }
+    }
+    [BurstCompile]
+    static class BurstUtility
+    {
+        [BurstCompile]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void copy_plus1_(
+            float* pSrc, in int srcStride, float* pDst, in int dstStride, in int2 length2)
+        {
+            if (X86.Avx2.IsAvx2Supported)
+            {
+                var pDst_ = (v256*)pDst;
+                var pSrc_ = (v256*)pSrc;
+                var dstStride_ = dstStride >> 4;
+                var srcStride_ = srcStride >> 4;
+                for (var iy = 0; iy < length2.y + 1; iy++)
+                {
+                    var pSrcSave_ = pSrc_;
+
+                    for (var ix = 0; ix < dstStride_; ix++)
+                    {
+                        var val = X86.Avx2.mm256_stream_load_si256(pSrc_++);
+                        X86.Avx.mm256_storeu_ps(pDst_++, val);
+                    }
+
+                    var pSrc1_ = (float*)pSrc_;
+                    var pDst1_ = (float*)pDst_;
+                    *pDst1_++ = *pSrc1_;
+
+                    pDst_ = (v256*)pDst1_;
+                    pSrc_ = pSrcSave_ + srcStride_;
+                }
+            }
+            else
+            {
+                InitUtility.MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, length2.y + 1);
+            }
         }
         //[BurstCompile]
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -316,58 +373,14 @@ namespace DotsLite.HeightGrid
         //        MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, length2.y + 1);
         //    }
         //}
-        [BurstCompile]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void copy_plus1_(float *pSrc, in int srcStride, float *pDst, in int dstStride, in int2 length2)
-        {
-            if (X86.Avx2.IsAvx2Supported)
-            {
-                var pDst_ = (v256*)pDst;
-                var pSrc_ = (v256*)pSrc;
-                var dstStride_ = dstStride >> 4;
-                var srcStride_ = srcStride >> 4;
-                for (var iy = 0; iy < length2.y + 1; iy++)
-                {
-                    var pSrcSave_ = pSrc_;
 
-                    for (var ix = 0; ix < dstStride_; ix++)
-                    {
-                        var val = X86.Avx2.mm256_stream_load_si256(pSrc_++);
-                        X86.Avx.mm256_storeu_ps(pDst_++, val);
-                    }
+        //[BurstCompile]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //static unsafe void copy_(float* pSrc, int srcStride, float* pDst, int dstStride, int2 length2)
+        //{
 
-                    var pSrc1_ = (float*)pSrc_;
-                    var pDst1_ = (float*)pDst_;
-                    *pDst1_++ = *pSrc1_;
+        //}
 
-                    pDst_ = (v256*)pDst1_;
-                    pSrc_ = pSrcSave_ + srcStride_;
-                }
-            }
-            else
-            {
-                MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, length2.y + 1);
-            }
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void MemCpyStride<T>(T* pDst, int dstStride, T*pSrc, int srcStride, int elementSize, int count)
-            where T : unmanaged
-        {
-            var u = sizeof(float);
-            UnsafeUtility.MemCpyStride(pDst, dstStride * u, pSrc, srcStride * u, elementSize * u, count * u);
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetResourcesTo(this GridMaster.HeightFieldShaderResourceData res, Material mat, GridMaster.DimensionData dim)
-        {
-            mat.SetBuffer("Heights", res.Heights.Buffer);
-
-            var lengthInGrid = dim.UnitLengthInGrid;
-            var widthSpan = dim.TotalLength.x;
-            var scale = dim.UnitScale;
-            var value = new float4(math.asfloat(lengthInGrid), math.asfloat(widthSpan), scale);
-            mat.SetVector("DimInfo", value);
-        }
     }
+
 }
