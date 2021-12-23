@@ -40,12 +40,13 @@ public class testc : MonoBehaviour
         [BurstCompile]
         public static void testfunc(in int2 a, out int x, out int y)
         {
-            if (X86.Avx.IsAvxSupported)
+            if (X86.Sse2.IsSse2Supported)
+            //if (X86.Avx2.IsAvx2Supported)
             {
                 using var arr1 = new NativeArray<float>(1, Allocator.Temp);
                 using var arr2 = new NativeArray<float>(1, Allocator.Temp);
                 UnsafeUtility.MemCpy(arr1.GetUnsafePtr(), arr2.GetUnsafePtr(), 4);
-
+                
                 x = 1;
                 y = 2;
             }

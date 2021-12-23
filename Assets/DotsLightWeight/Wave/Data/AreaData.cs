@@ -309,6 +309,7 @@ namespace DotsLite.HeightGrid
             mat.SetVector("DimInfo", value);
         }
     }
+
     [BurstCompile]
     static class BurstUtility
     {
@@ -318,6 +319,7 @@ namespace DotsLite.HeightGrid
             float* pSrc, in int srcStride, float* pDst, in int dstStride, in int2 length2)
         {
             if (X86.Avx2.IsAvx2Supported)
+            //if (X86.Avx.IsAvxSupported)
             {
                 var pDst_ = (v256*)pDst;
                 var pSrc_ = (v256*)pSrc;
@@ -330,6 +332,7 @@ namespace DotsLite.HeightGrid
                     for (var ix = 0; ix < dstStride_; ix++)
                     {
                         var val = X86.Avx2.mm256_stream_load_si256(pSrc_++);
+                        //var val = X86.Avx.mm256_load_ps(pSrc_++);
                         X86.Avx.mm256_storeu_ps(pDst_++, val);
                     }
 
