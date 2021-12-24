@@ -80,7 +80,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                 : MeshUtility.CreateGridMesh(lw, lh, 1.0f);
             var mat = new Material(this.DrawShader);
 
-            initMasterEntityComponent_(entity, mat);
+            var (heights, dim, res) = initMasterEntityComponent_(entity, mat);
 
             var model = createModelEntity_(mesh, mat);
             createAllGrids_(this.MaxLodLevel, model, entity);
@@ -120,7 +120,8 @@ namespace DotsLite.HeightGrid.Aurthoring
             }
 
 
-            void initMasterEntityComponent_(Entity ent, Material mat)
+            (GridMaster.HeightFieldData, GridMaster.DimensionData, GridMaster.HeightFieldShaderResourceData)
+                initMasterEntityComponent_(Entity ent, Material mat)
             {
 
                 var types = new ComponentType[]
@@ -166,12 +167,11 @@ namespace DotsLite.HeightGrid.Aurthoring
                 res.Alloc(new int2(ww, wh), new int2(lw, lh));
 
                 var heights = new GridMaster.HeightFieldData { };
-                heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);//
+                heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);
                 heights.InitHeightBuffer(terrainData);
-                for (var iy = 0; iy < wh; iy++)
-                    for (var ix = 0; ix < ww; ix++)
-                        res.CopyResourceFrom(heights, dim, srcSerialIndex_(ix, iy), dstSerialIndex_(ix, iy), 0, new int2(lw, lh));
                 res.SetResourcesTo(mat, dim);
+
+                return (heights, dim, res);
             }
 
 
@@ -204,7 +204,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
 
-                    //typeof(PhysicsCollider),
+                    typeof(PhysicsCollider),
                     typeof(Translation),
                 };
                 if (lodlevel == 0) types.Add(typeof(HeightGrid.GridLv0Tag));
@@ -250,6 +250,18 @@ namespace DotsLite.HeightGrid.Aurthoring
                         Value = startPosition + offset,
                     }
                 );
+
+                using var buffer = heights.MakeCopyOfGridBuffer(dim, srcSerialIndex_(i.x, i.y), 0, new int2(lw, lh));
+                res.CopyResourceFrom(buffer, dim, dstSerialIndex_(i.x, i.y), 0);
+                var filter = new CollisionFilter
+                {
+                    BelongsTo = belongsTo.Value,
+                    CollidesWith = collidesWith.Value,
+                };
+                em.SetComponentData(ent, new PhysicsCollider
+                {
+                    Value = InitUtility.CreateColliderFrom(buffer, dim, filter),
+                });
             }
             int srcSerialIndex_(int x, int y) => y * lh * w + x * lw;
             int dstSerialIndex_(int x, int y)
@@ -270,34 +282,6 @@ namespace DotsLite.HeightGrid.Aurthoring
             //        SplashPrefab = gcs.GetPrimaryEntity(this.SplashPrefab),
             //    });
             //}
-
-            static PhysicsCollider CreateTerrainCollider(TerrainData terrainData, CollisionFilter filter)
-            {
-                var physicsCollider = new PhysicsCollider();
-
-                //var size = new int2(terrainData.heightmapWidth, terrainData.heightmapHeight);
-                var size = new int2(terrainData.heightmapTexture.width, terrainData.heightmapTexture.height);
-                var scale = terrainData.heightmapScale; Debug.Log(size);
-
-                var colliderHeights = new NativeArray<float>(size.x * size.y, Allocator.TempJob);
-
-                var terrainHeights = terrainData.GetHeights(0, 0, size.x, size.y);
-
-
-                for (int j = 0; j < size.y; j++)
-                    for (int i = 0; i < size.x; i++)
-                    {
-                        var h = terrainHeights[i, j];
-                        colliderHeights[j + i * size.x] = h;
-                    }
-
-                var meshtype = Unity.Physics.TerrainCollider.CollisionMethod.VertexSamples;
-                physicsCollider.Value = Unity.Physics.TerrainCollider.Create(colliderHeights, size, scale, meshtype, filter);
-
-                colliderHeights.Dispose();
-
-                return physicsCollider;
-            }
         }
 
     }

@@ -11,6 +11,11 @@ using System.Runtime.CompilerServices;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Burst.Intrinsics;
 using Unity.Burst;
+using Unity.Physics;
+
+using Collider = Unity.Physics.Collider;
+using TerrainCollider = Unity.Physics.TerrainCollider;
+using Material = UnityEngine.Material;
 
 namespace DotsLite.HeightGrid
 {
@@ -261,55 +266,39 @@ namespace DotsLite.HeightGrid
         //    buf.Dispose();
         //}
 
-        public unsafe struct NativeTempBuffer<T> : IDisposable
-            where T : unmanaged
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe NativeTempBuffer<float> MakeCopyOfGridBuffer(
+            this GridMaster.HeightFieldData heights, in GridMaster.DimensionData dim,
+            int srcSerialIndex,
+            int2 begin, int2 end)
         {
-            public T* p { get; }
-            public static NativeTempBuffer<T> Create() => 
-            public void Dispose() => UnsafeUtility.Free(pBuf, Allocator.Temp);
+            BurstUtility.CopyGridToNativeBuffer(heights, dim, srcSerialIndex, begin, end, out var buffer);
+            return buffer;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void CopyResourceFrom(
             this GridMaster.HeightFieldShaderResourceData res,
-            GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
-            int srcSerialIndex, int dstSerialIndex,
-            int2 begin, int2 end)
+            NativeTempBuffer<float> gridBuffer,
+            GridMaster.DimensionData dim,
+            int dstSerialIndex,
+            int2 begin)
         {
-            //var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
-
-            ////var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
-            //var length2 = end - begin;
-            //var length = length2.y * unitlength.x + length2.x + 1;
-
-            ////var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
-            //var buf = new NativeArray<float>(length, Allocator.Temp);
-
-            //var srcstride = dim.TotalLength.x;
-            //var dststride = unitlength.x;
-            //var pSrc = heights.p + srcSerialIndex + begin.y * srcstride;
-            //var pDst = (float*)buf.GetUnsafePtr();
-            //BurstUtility.copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
-
-            //var beginIndex = dstSerialIndex + begin.y * srcstride + begin.x;
-            //res.Heights.Buffer.SetData(buf, begin.x, beginIndex, length);
-
-            BurstUtility.CopyGridToNativeBuffer(heights, dim, srcSerialIndex, dstSerialIndex, begin, end, out var pBuf, out var length);
-            var na = NativeUtility.PtrToNativeArray(pBuf, length);
             var beginIndex = dstSerialIndex + begin.y * dim.TotalLength.x + begin.x;
-            res.Heights.Buffer.SetData(na, begin.x, beginIndex, length);
-            UnsafeUtility.Free(pBuf, Allocator.Temp);
+            res.Heights.Buffer.SetData(gridBuffer.AsNativeArray(), begin.x, beginIndex, gridBuffer.length);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe PhysicsCollider CreateColliderFrom(
-            this GridMaster.HeightFieldShaderResourceData res,
-            GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
-            int srcSerialIndex, int dstSerialIndex,
-            int2 begin, int2 end)
+        public static unsafe BlobAssetReference<Collider> CreateColliderFrom(
+            NativeTempBuffer<float> gridBuffer,
+            GridMaster.DimensionData dim,
+            CollisionFilter filter)
         {
-
+            var meshtype = TerrainCollider.CollisionMethod.VertexSamples;
+            var size = dim.UnitLengthInGrid + 1;
+            var scale = new float3(dim.UnitScale, 1, dim.UnitScale);
+            return TerrainCollider.Create(gridBuffer.AsNativeArray(), size, scale, meshtype, filter);
         }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MemCpyStride<T>(T* pDst, int dstStride, T*pSrc, int srcStride, int elementSize, int count)
             where T : unmanaged
         {
@@ -331,6 +320,24 @@ namespace DotsLite.HeightGrid
         }
     }
 
+    public unsafe struct NativeTempBuffer<T> : IDisposable
+        where T : unmanaged
+    {
+        public T* p { get; private set; }
+        public int length { get; private set; }
+        public static NativeTempBuffer<T> Create(int length) => new NativeTempBuffer<T>
+        {
+            p = (T*)UnsafeUtility.Malloc(length * sizeof(T), 4 * 8, Allocator.Temp),
+            length = length,
+        };
+        public NativeArray<T> AsNativeArray() => NativeUtility.PtrToNativeArray(this.p, this.length);
+        public void Dispose()
+        {
+            UnsafeUtility.Free(this.p, Allocator.Temp);
+            this.p = null;
+            this.length = 0;
+        }
+    }
     [BurstCompile]
     static class BurstUtility
     {
@@ -338,8 +345,8 @@ namespace DotsLite.HeightGrid
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void CopyGridToNativeBuffer(
             in GridMaster.HeightFieldData heights, in GridMaster.DimensionData dim,
-            in int srcSerialIndex, in int dstSerialIndex,
-            in int2 begin, in int2 end, out float *pBuffer, out int bufferLength)
+            in int srcSerialIndex,
+            in int2 begin, in int2 end, out NativeTempBuffer<float> buffer)
         {
             var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
 
@@ -348,17 +355,13 @@ namespace DotsLite.HeightGrid
             var length = length2.y * unitlength.x + length2.x + 1;
 
             //var buffer = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
-            //var buffer = new NativeArray<float>(length, Allocator.Temp);
-            pBuffer = (float*)UnsafeUtility.Malloc(length * sizeof(float), 4 * 8, Allocator.Temp);
+            buffer = NativeTempBuffer<float>.Create(length);
 
             var srcstride = dim.TotalLength.x;
             var dststride = unitlength.x;
             var pSrc = heights.p + srcSerialIndex + begin.y * srcstride;
-            var pDst = pBuffer;//(float*)buffer.GetUnsafePtr();
+            var pDst = buffer.p;
             BurstUtility.copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
-
-            //pBuffer = (float*)buffer.GetUnsafePtr();
-            bufferLength = length;
         }
 
         [BurstCompile]
@@ -366,7 +369,7 @@ namespace DotsLite.HeightGrid
         public static unsafe void copy_plus1_(
             float* pSrc, in int srcStride, float* pDst, in int dstStride, in int2 length2)
         {
-            if (X86.Avx2.IsAvx2Supported)
+            if (false && X86.Avx2.IsAvx2Supported)
             //if (X86.Avx.IsAvxSupported)
             {
                 var pDst_ = (v256*)pDst;
