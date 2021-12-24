@@ -260,6 +260,14 @@ namespace DotsLite.HeightGrid
 
         //    buf.Dispose();
         //}
+
+        public unsafe struct NativeTempBuffer<T> : IDisposable
+            where T : unmanaged
+        {
+            public T* p { get; }
+            public static NativeTempBuffer<T> Create() => 
+            public void Dispose() => UnsafeUtility.Free(pBuf, Allocator.Temp);
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void CopyResourceFrom(
             this GridMaster.HeightFieldShaderResourceData res,
@@ -267,28 +275,41 @@ namespace DotsLite.HeightGrid
             int srcSerialIndex, int dstSerialIndex,
             int2 begin, int2 end)
         {
-            var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
+            //var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
 
-            //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
-            var length2 = end - begin;
-            var length = length2.y * unitlength.x + length2.x + 1;
+            ////var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
+            //var length2 = end - begin;
+            //var length = length2.y * unitlength.x + length2.x + 1;
 
-            //var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
-            var buf = new NativeArray<float>(length, Allocator.Temp);
+            ////var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
+            //var buf = new NativeArray<float>(length, Allocator.Temp);
 
-            var srcstride = dim.TotalLength.x;
-            var dststride = unitlength.x;
-            var pSrc = heights.p + srcSerialIndex + begin.y * srcstride;
-            var pDst = (float*)buf.GetUnsafePtr();
-            BurstUtility.copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
+            //var srcstride = dim.TotalLength.x;
+            //var dststride = unitlength.x;
+            //var pSrc = heights.p + srcSerialIndex + begin.y * srcstride;
+            //var pDst = (float*)buf.GetUnsafePtr();
+            //BurstUtility.copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
 
-            var beginIndex = dstSerialIndex + begin.y * srcstride + begin.x;
-            res.Heights.Buffer.SetData(buf, begin.x, beginIndex, length);
+            //var beginIndex = dstSerialIndex + begin.y * srcstride + begin.x;
+            //res.Heights.Buffer.SetData(buf, begin.x, beginIndex, length);
 
-            buf.Dispose();
+            BurstUtility.CopyGridToNativeBuffer(heights, dim, srcSerialIndex, dstSerialIndex, begin, end, out var pBuf, out var length);
+            var na = NativeUtility.PtrToNativeArray(pBuf, length);
+            var beginIndex = dstSerialIndex + begin.y * dim.TotalLength.x + begin.x;
+            res.Heights.Buffer.SetData(na, begin.x, beginIndex, length);
+            UnsafeUtility.Free(pBuf, Allocator.Temp);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe PhysicsCollider CreateColliderFrom(
+            this GridMaster.HeightFieldShaderResourceData res,
+            GridMaster.HeightFieldData heights, GridMaster.DimensionData dim,
+            int srcSerialIndex, int dstSerialIndex,
+            int2 begin, int2 end)
+        {
+
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MemCpyStride<T>(T* pDst, int dstStride, T*pSrc, int srcStride, int elementSize, int count)
             where T : unmanaged
         {
@@ -313,6 +334,33 @@ namespace DotsLite.HeightGrid
     [BurstCompile]
     static class BurstUtility
     {
+        [BurstCompile]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void CopyGridToNativeBuffer(
+            in GridMaster.HeightFieldData heights, in GridMaster.DimensionData dim,
+            in int srcSerialIndex, in int dstSerialIndex,
+            in int2 begin, in int2 end, out float *pBuffer, out int bufferLength)
+        {
+            var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
+
+            //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
+            var length2 = end - begin;
+            var length = length2.y * unitlength.x + length2.x + 1;
+
+            //var buffer = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
+            //var buffer = new NativeArray<float>(length, Allocator.Temp);
+            pBuffer = (float*)UnsafeUtility.Malloc(length * sizeof(float), 4 * 8, Allocator.Temp);
+
+            var srcstride = dim.TotalLength.x;
+            var dststride = unitlength.x;
+            var pSrc = heights.p + srcSerialIndex + begin.y * srcstride;
+            var pDst = pBuffer;//(float*)buffer.GetUnsafePtr();
+            BurstUtility.copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
+
+            //pBuffer = (float*)buffer.GetUnsafePtr();
+            bufferLength = length;
+        }
+
         [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void copy_plus1_(

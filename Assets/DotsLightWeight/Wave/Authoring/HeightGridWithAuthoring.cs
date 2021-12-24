@@ -204,6 +204,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
 
+                    //typeof(PhysicsCollider),
                     typeof(Translation),
                 };
                 if (lodlevel == 0) types.Add(typeof(HeightGrid.GridLv0Tag));
