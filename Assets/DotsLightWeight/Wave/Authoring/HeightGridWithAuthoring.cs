@@ -72,18 +72,28 @@ namespace DotsLite.HeightGrid.Aurthoring
             var wh = this.NumGrids.y;
             var lw = w / ww;
             var lh = h / wh;
+            Debug.Log($"{w} {h} / {ww} {wh} / {lw} {lh}");
 
             var unitScale = terrainData.heightmapScale.x;
+            Debug.Log(unitScale);
+
 
             var mesh = this.UseHalfSlantMesh
                 ? MeshUtility.CreateSlantHalfGridMesh(lw, lh, 1.0f)
                 : MeshUtility.CreateGridMesh(lw, lh, 1.0f);
             var mat = new Material(this.DrawShader);
+            var model = createModelEntity_(mesh, mat);
 
             var (heights, dim, res) = initMasterEntityComponent_(entity, mat);
 
-            var model = createModelEntity_(mesh, mat);
-            createAllGrids_(this.MaxLodLevel, model, entity);
+            var filter = new CollisionFilter
+            {
+                BelongsTo = this.belongsTo.Value,
+                CollidesWith = this.collidesWith.Value,
+                GroupIndex = 0,
+            };
+            createAllGrids_(this.MaxLodLevel, model, entity, filter);
+                //.ForEach(_ => { });
 
             //initEmitting_(entity);
 
@@ -130,6 +140,8 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(GridMaster.DimensionData),
                     typeof(GridMaster.HeightFieldShaderResourceData),
                     typeof(GridMaster.InitializeTag),
+
+                    //typeof(PhysicsCollider),
                 };
                 em.AddComponents(ent, new ComponentTypes(types));
 
@@ -169,27 +181,43 @@ namespace DotsLite.HeightGrid.Aurthoring
                 var heights = new GridMaster.HeightFieldData { };
                 heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);
                 heights.InitHeightBuffer(terrainData);
+                Debug.Log(dim.UnitScale);
                 res.SetResourcesTo(mat, dim);
 
                 return (heights, dim, res);
             }
 
 
-            void createAllGrids_(int lodlevel, Entity model, Entity area)
+            //IEnumerable<Entity> createAllGrids_(int lodlevel, Entity model, Entity area)
+            //{
+            //    var qEntity =
+            //        from ix in Enumerable.Range(0, ww >> lodlevel)
+            //        from iy in Enumerable.Range(0, wh >> lodlevel)
+            //        let i = new int2(ix, iy)
+            //        select createGridEntity_(lodlevel, i, model, area)
+            //        ;
+
+            //    if (lodlevel - 1 < 0) return qEntity;
+
+            //    return createAllGrids_(lodlevel - 1, model, area)
+            //        .Concat(qEntity);
+            //}
+            void createAllGrids_(int lodlevel, Entity model, Entity area, CollisionFilter filter)
             {
                 var q =
                     from ix in Enumerable.Range(0, ww >> lodlevel)
                     from iy in Enumerable.Range(0, wh >> lodlevel)
-                    select new int2(ix, iy);
-                q.ForEach(i => createGridEntity_(lodlevel, i, model, area));
+                    select new int2(ix, iy)
+                    ;
+                q.ForEach(i => createGridEntity_(lodlevel, i, model, area, filter));
 
                 if (lodlevel - 1 < 0) return;
 
-                createAllGrids_(lodlevel - 1, model, area);
+                createAllGrids_(lodlevel - 1, model, area, filter);
             }
 
 
-            void createGridEntity_(int lodlevel, int2 i, Entity model, Entity area)
+            Entity createGridEntity_(int lodlevel, int2 i, Entity model, Entity area, CollisionFilter filter)
             {
                 var ent = gcs.CreateAdditionalEntity(this);
 
@@ -252,16 +280,14 @@ namespace DotsLite.HeightGrid.Aurthoring
                 );
 
                 using var buffer = heights.MakeCopyOfGridBuffer(dim, srcSerialIndex_(i.x, i.y), 0, new int2(lw, lh));
-                res.CopyResourceFrom(buffer, dim, dstSerialIndex_(i.x, i.y), 0);
-                var filter = new CollisionFilter
-                {
-                    BelongsTo = belongsTo.Value,
-                    CollidesWith = collidesWith.Value,
-                };
+                res.CopyResourceFrom(buffer, dim, dstSerialIndex_(i.x, i.y));
+                var collider = InitUtility.CreateColliderFrom(buffer, dim, filter);
                 em.SetComponentData(ent, new PhysicsCollider
                 {
-                    Value = InitUtility.CreateColliderFrom(buffer, dim, filter),
+                    Value = collider,
                 });
+
+                return ent;
             }
             int srcSerialIndex_(int x, int y) => y * lh * w + x * lw;
             int dstSerialIndex_(int x, int y)

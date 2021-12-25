@@ -37,7 +37,7 @@ namespace DotsLite.MarchingCubes.Data
             {
                 this.Dispose();
                 var size = length.x * length.y * length.z * sizeof(Entity);
-                pGrid3dArray = (Entity*)UnsafeUtility.Malloc(size, 8, Allocator.Persistent);
+                pGrid3dArray = (Entity*)UnsafeUtility.Malloc(size, 32, Allocator.Persistent);
                 UnsafeUtility.MemClear(this.pGrid3dArray, size);
             }
             public void Dispose()
