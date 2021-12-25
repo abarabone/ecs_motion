@@ -60,6 +60,7 @@ namespace DotsLite.HeightGrid
                 var lw = unitLengthInGrid.x;
                 var lh = unitLengthInGrid.y;
                 var totalLength = ww * lw * wh * lh + wh * lh;// 最後に１ライン余分に加え、ループ用にコピーエリアとする
+                Debug.Log($"heights {ww},{wh} {lw},{lh} {totalLength}");
 
                 this.p = (float*)UnsafeUtility.Malloc(totalLength * sizeof(float), 32, Allocator.Persistent);
 

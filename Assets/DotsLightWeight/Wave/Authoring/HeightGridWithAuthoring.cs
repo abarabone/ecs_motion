@@ -191,8 +191,8 @@ namespace DotsLite.HeightGrid.Aurthoring
             //IEnumerable<Entity> createAllGrids_(int lodlevel, Entity model, Entity area)
             //{
             //    var qEntity =
-            //        from ix in Enumerable.Range(0, ww >> lodlevel)
             //        from iy in Enumerable.Range(0, wh >> lodlevel)
+            //        from ix in Enumerable.Range(0, ww >> lodlevel)
             //        let i = new int2(ix, iy)
             //        select createGridEntity_(lodlevel, i, model, area)
             //        ;
@@ -205,8 +205,8 @@ namespace DotsLite.HeightGrid.Aurthoring
             void createAllGrids_(int lodlevel, Entity model, Entity area, CollisionFilter filter)
             {
                 var q =
-                    from ix in Enumerable.Range(0, ww >> lodlevel)
                     from iy in Enumerable.Range(0, wh >> lodlevel)
+                    from ix in Enumerable.Range(0, ww >> lodlevel)
                     select new int2(ix, iy)
                     ;
                 q.ForEach(i => createGridEntity_(lodlevel, i, model, area, filter));
@@ -232,7 +232,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
 
-                    typeof(PhysicsCollider),
+                    //typeof(PhysicsCollider),
                     typeof(Translation),
                 };
                 if (lodlevel == 0) types.Add(typeof(HeightGrid.GridLv0Tag));
@@ -281,11 +281,11 @@ namespace DotsLite.HeightGrid.Aurthoring
 
                 using var buffer = heights.MakeCopyOfGridBuffer(dim, srcSerialIndex_(i.x, i.y), 0, new int2(lw, lh));
                 res.CopyResourceFrom(buffer, dim, dstSerialIndex_(i.x, i.y));
-                var collider = InitUtility.CreateColliderFrom(buffer, dim, filter);
-                em.SetComponentData(ent, new PhysicsCollider
-                {
-                    Value = collider,
-                });
+                //var collider = InitUtility.CreateColliderFrom(buffer, dim, filter);
+                //em.SetComponentData(ent, new PhysicsCollider
+                //{
+                //    Value = collider,
+                //});
 
                 return ent;
             }
