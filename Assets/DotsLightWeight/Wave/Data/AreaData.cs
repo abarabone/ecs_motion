@@ -287,8 +287,9 @@ namespace DotsLite.HeightGrid
             var begin = gridBuffer.begin;
             var length = gridBuffer.length;
             var span = dim.UnitLengthInGrid.x + 1;
+            var srcBeginIndex = begin.x;
             var dstBeginIndex = dstSerialIndex + begin.y * span + begin.x;
-            res.Heights.Buffer.SetData(gridBuffer.AsNativeArray(), begin.x, dstBeginIndex, length);
+            res.Heights.Buffer.SetData(gridBuffer.AsNativeArray(), srcBeginIndex, dstBeginIndex, length);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe BlobAssetReference<Collider> CreateColliderFrom(
@@ -330,13 +331,15 @@ namespace DotsLite.HeightGrid
         public T* p { get; private set; }
         public int2 begin { get; private set; }
         public int length { get; private set; }
+        int allocLength;
         public static GridHeightsTempBuffer<T> Create(int allocLength, int2 begin, int length) => new GridHeightsTempBuffer<T>
         {
             p = (T*)UnsafeUtility.Malloc(allocLength * sizeof(T), 32, Allocator.Temp),
             begin = begin,
             length = length,
+            allocLength = allocLength,
         };
-        public NativeArray<T> AsNativeArray() => NativeUtility.PtrToNativeArray(this.p, this.length);
+        public NativeArray<T> AsNativeArray() => NativeUtility.PtrToNativeArray(this.p, this.allocLength);
         public void Dispose()
         {
             UnsafeUtility.Free(this.p, Allocator.Temp);
