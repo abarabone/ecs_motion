@@ -232,7 +232,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
 
-                    //typeof(PhysicsCollider),
+                    typeof(PhysicsCollider),
                     typeof(Translation),
                 };
                 if (lodlevel == 0) types.Add(typeof(HeightGrid.GridLv0Tag));
@@ -280,16 +280,18 @@ namespace DotsLite.HeightGrid.Aurthoring
                 );
 
                 using var buffer = heights.MakeCopyOfGridBuffer(dim, srcSerialIndex_(i.x, i.y), 0, new int2(lw, lh));
-                //res.CopyResourceFrom(buffer, dim, dstSerialIndex_(i.x, i.y));
-                //var collider = InitUtility.CreateColliderFrom(buffer, dim, filter);
-                //em.SetComponentData(ent, new PhysicsCollider
-                //{
-                //    Value = collider,
-                //});
+                buffer.CopyToResource(res, dim, dstSerialIndex_(i.x, i.y));
+                var collider = buffer.CreateCollider(dim, filter);
+                em.SetComponentData(ent, new PhysicsCollider
+                {
+                    Value = collider,
+                });
 
                 return ent;
             }
+
             int srcSerialIndex_(int x, int y) => y * lh * w + x * lw;
+
             int dstSerialIndex_(int x, int y)
             {
                 var gridSerialId = y * ww + x;

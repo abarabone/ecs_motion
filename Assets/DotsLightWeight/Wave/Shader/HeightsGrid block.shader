@@ -11,9 +11,10 @@ Shader "Custom/HeightsGridBlock"
 	
 	SubShader
 	{
-		Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
+		Tags { "RenderType"="Opaque" }
+		//Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		
-        Blend SrcAlpha OneMinusSrcAlpha
+        //Blend SrcAlpha OneMinusSrcAlpha
 		Lighting Off
 		//ZWrite Off
 		Fog

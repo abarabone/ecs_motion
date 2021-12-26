@@ -208,7 +208,7 @@ namespace DotsLite.HeightGrid
 
     // ＧＰＵバッファ考えたこと
     // ・フラット　　　… 悪くない　無駄なＧＰＵ転送　ｙ軸またぐと連続領域じゃなくなる
-    // ・グリッドごと　… いいのかも　位置の計算が面倒　ＬＯＤで不利かと思ったけど、可能かも？（頂点ごとに別計算なので）
+    // ・グリッドごと　… いいのかも　位置の計算が面倒　ＬＯＤで不利かと思ったけど、可能かも？（どうせ shader では頂点ごとに別計算なので）
     // ・モートン順序　… ベストかもと思ったけど全転送でＮＧ　ＬＯＤが画一　ＧＰＵ転送がよさそうと思ったが、真ん中領域で全転送　位置計算がちょっとだけ不利
     static class InitUtility
     {
@@ -237,38 +237,6 @@ namespace DotsLite.HeightGrid
             foreach (var f in terrainHeights) heights.p[i++] = f * data.heightmapScale.y;
         }
 
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static unsafe void CopyResourceFrom(
-        //    this GridMaster.HeightFieldShaderResourceData res,
-        //    GridMaster.HeightFieldData heights,
-        //    GridMaster.DimensionData dim,
-        //    int2 gridid, int2 begin, int2 end)
-        //{
-        //    //var unitlength = dim.UnitLengthInGrid + 1;// となりのグリッド分ももたせておく
-        //    var unitlength = dim.UnitLengthInGrid;
-
-        //    //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
-        //    var length2 = end - begin;
-        //    var length = length2.y * unitlength.x + length2.x + 1;
-
-        //    var buf = new NativeArray<float>((length2.y + 1) * unitlength.x, Allocator.Temp);
-
-        //    var srcstride = dim.TotalLength.x;
-        //    var dststride = unitlength.x;
-        //    var pSrc = heights.p + begin.y * srcstride;
-        //    var pDst = (float*)buf.GetUnsafePtr();
-        //    copy_(pSrc, srcstride, pDst, dststride, length2);
-        //    //var buf = makebuffer_(heights, dim, begin, end);
-
-        //    var gridStartIndex = dim.ToGridIndex(grid
-        //    id);
-        //    var beginIndex = gridStartIndex + begin.y * dim.TotalLength.x + begin.x;
-        //    res.Heights.Buffer.SetData(buf, begin.x, beginIndex, buf.Length);
-
-        //    buf.Dispose();
-        //}
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe GridHeightsTempBuffer<float> MakeCopyOfGridBuffer(
             this GridMaster.HeightFieldData heights, in GridMaster.DimensionData dim,
@@ -277,31 +245,6 @@ namespace DotsLite.HeightGrid
             BurstUtility.CopyGridToNativeBuffer(heights, dim, srcSerialIndex, begin, end, out var buffer);
             return buffer;
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void CopyResourceFrom(
-            this GridMaster.HeightFieldShaderResourceData res,
-            GridHeightsTempBuffer<float> gridBuffer,
-            GridMaster.DimensionData dim,
-            int dstSerialIndex)
-        {
-            var begin = gridBuffer.begin;
-            var length = gridBuffer.length;
-            var span = dim.UnitLengthInGrid.x + 1;
-            var srcBeginIndex = begin.x;
-            var dstBeginIndex = dstSerialIndex + begin.y * span + begin.x;
-            res.Heights.Buffer.SetData(gridBuffer.AsNativeArray(), srcBeginIndex, dstBeginIndex, length);
-        }
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static unsafe BlobAssetReference<Collider> CreateColliderFrom(
-        //    GridHeightsTempBuffer<float> gridBuffer,
-        //    GridMaster.DimensionData dim,
-        //    CollisionFilter filter)
-        //{
-        //    var meshtype = TerrainCollider.CollisionMethod.VertexSamples;
-        //    var size = dim.UnitLengthInGrid + 1;
-        //    var scale = new float3(dim.UnitScale, 1, dim.UnitScale);
-        //    return TerrainCollider.Create(gridBuffer.AsNativeArray(), size, scale, meshtype, filter);
-        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MemCpyStride<T>(T* pDst, int dstStride, T*pSrc, int srcStride, int elementLength, int count)
@@ -332,6 +275,8 @@ namespace DotsLite.HeightGrid
         public int2 begin { get; private set; }
         public int length { get; private set; }
         int allocLength;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static GridHeightsTempBuffer<T> Create(int allocLength, int2 begin, int length) => new GridHeightsTempBuffer<T>
         {
             p = (T*)UnsafeUtility.Malloc(allocLength * sizeof(T), 32, Allocator.Temp),
@@ -339,17 +284,47 @@ namespace DotsLite.HeightGrid
             length = length,
             allocLength = allocLength,
         };
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public NativeArray<T> AsNativeArray() => NativeUtility.PtrToNativeArray(this.p, this.allocLength);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose()
         {
             UnsafeUtility.Free(this.p, Allocator.Temp);
             this.p = null;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void CopyToResource(
+            GridMaster.HeightFieldShaderResourceData res,
+            GridMaster.DimensionData dim,
+            int dstSerialIndex)
+        {
+            var begin = this.begin;
+            var length = this.length;
+            var span = dim.UnitLengthInGrid.x + 1;
+            var srcBeginIndex = begin.x;
+            var dstBeginIndex = dstSerialIndex + begin.y * span + begin.x;
+            res.Heights.Buffer.SetData(this.AsNativeArray(), srcBeginIndex, dstBeginIndex, length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlobAssetReference<Collider> CreateCollider(
+            GridMaster.DimensionData dim,
+            CollisionFilter filter)
+        {
+            var meshtype = TerrainCollider.CollisionMethod.VertexSamples;
+            var size = dim.UnitLengthInGrid + 1;
+            var scale = new float3(dim.UnitScale, 1, dim.UnitScale);
+            var na = NativeUtility.PtrToNativeArray<float>((float*)this.p, this.allocLength);
+            return TerrainCollider.Create(na, size, scale, meshtype, filter);
+        }
     }
-    //[BurstCompile]
+    [BurstCompile]
     static class BurstUtility
     {
-        //[BurstCompile]
+        [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void CopyGridToNativeBuffer(
             in GridMaster.HeightFieldData heights, in GridMaster.DimensionData dim,
@@ -369,81 +344,82 @@ namespace DotsLite.HeightGrid
 
             var pSrc = heights.p + srcSerialIndex + begin.y * srcstride;
             var pDst = buffer.p;
-            Debug.Log($"copy grid : unit{unitlength} span{span} length{length} alloc{span.y * dststride} srcIndex{srcSerialIndex}+{begin.y}*{srcstride}={srcSerialIndex + begin.y * srcstride} dststrid{dststride}");
-            BurstUtility.copy_plus1_(pSrc, srcstride, pDst, dststride, span.y);
+            //Debug.Log($"copy grid : unit{unitlength} span{span} length{length} alloc{span.y * dststride} srcIndex{srcSerialIndex}+{begin.y}*{srcstride}={srcSerialIndex + begin.y * srcstride} dststrid{dststride}");
+            copy_plus1_(pSrc, srcstride, pDst, dststride, span.y);
         }
 
-        //[BurstCompile]
+        [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void copy_plus1_(
+        static unsafe void copy_plus1_(
             float* pSrc, in int srcStride, float* pDst, in int dstStride, in int spanY)
         {
             if (X86.Avx2.IsAvx2Supported)
             //if (X86.Avx.IsAvxSupported)
             {
-                //var pDst_ = (v256*)pDst;
-                //var pSrc_ = (v256*)pSrc;
-                //var dstStride_ = dstStride >> 3;
-                //var srcStride_ = srcStride >> 3;
-                //for (var iy = 0; iy < spanY; iy++)
-                //{
-                //    var pSrcSave_ = pSrc_;
+                var pDst_ = (v256*)pDst;
+                var pSrc_ = (v256*)pSrc;
+                var dstStride_ = dstStride >> 3;
+                var srcStride_ = srcStride >> 3;
+                for (var iy = 0; iy < spanY; iy++)
+                {
+                    var pSrcSave_ = pSrc_;
 
-                //    for (var ix = 0; ix < dstStride_; ix++)
-                //    {
-                //        var val = X86.Avx2.mm256_stream_load_si256(pSrc_++);
-                //        //var val = X86.Avx.mm256_load_ps(pSrc_++);
-                //        X86.Avx.mm256_storeu_ps(pDst_++, val);
-                //    }
+                    for (var ix = 0; ix < dstStride_; ix++)
+                    {
+                        var val = X86.Avx2.mm256_stream_load_si256(pSrc_++);
+                        //var val = X86.Avx.mm256_load_ps(pSrc_++);
+                        X86.Avx.mm256_storeu_ps(pDst_++, val);
+                    }
 
-                //    var pSrc1_ = (float*)pSrc_;
-                //    var pDst1_ = (float*)pDst_;
-                //    *pDst1_++ = *pSrc1_;
+                    var pSrc1_ = (float*)pSrc_;
+                    var pDst1_ = (float*)pDst_;
+                    *pDst1_++ = *pSrc1_;
 
-                //    pDst_ = (v256*)pDst1_;
-                //    pSrc_ = pSrcSave_ + srcStride_;
-                //}
+                    pDst_ = (v256*)pDst1_;
+                    pSrc_ = pSrcSave_ + srcStride_;
+                }
+            }
+            else if(X86.Sse4_1.IsSse41Supported)
+            {
+                var pDst_ = (v128*)pDst;
+                var pSrc_ = (v128*)pSrc;
+                var dstStride_ = dstStride >> 2;
+                var srcStride_ = srcStride >> 2;
+                for (var iy = 0; iy < spanY; iy++)
+                {
+                    var pSrcSave_ = pSrc_;
+
+                    for (var ix = 0; ix < dstStride_; ix++)
+                    {
+                        var val = X86.Sse4_1.stream_load_si128(pSrc_++);
+                        X86.Sse2.stream_si128(pDst_++, val);
+                    }
+
+                    var pSrc1_ = (float*)pSrc_;
+                    var pDst1_ = (float*)pDst_;
+                    *pDst1_++ = *pSrc1_;
+
+                    pDst_ = (v128*)pDst1_;
+                    pSrc_ = pSrcSave_ + srcStride_;
+                }
             }
             else
             {
-                InitUtility.MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, spanY);
+                //InitUtility.MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, spanY);
+                // ↑なんかエディタがおちる…
+                for (var iy = 0; iy < spanY; iy++)
+                {
+                    var pSrcSave = pSrc;
+
+                    for (var ix = 0; ix < dstStride; ix++)
+                    {
+                        *pDst++ = *pSrc++;
+                    }
+
+                    pSrc = pSrcSave + srcStride;
+                }
             }
         }
-        //[BurstCompile]
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static unsafe void copy_(float* pSrc, int srcStride, float* pDst, int dstStride, int2 length2)
-        //{
-        //    if (X86.Avx2.IsAvx2Supported)
-        //    {
-        //        var pDst_ = (v256*)pDst;
-        //        var pSrc_ = (v256*)pSrc;
-        //        var dstStride_ = dstStride >> 4;
-        //        var srcStride_ = srcStride >> 4;
-        //        for (var iy = 0; iy < length2.y + 1; iy++)
-        //        {
-        //            for (var ix = 0; ix < dstStride_; ix++)
-        //            {
-        //                var val = X86.Avx2.mm256_stream_load_si256(pSrc_ + ix);
-        //                //X86.Avx.mm256_stream_ps(pDst_++, val);// キャッシュなし
-        //                X86.Avx.mm256_store_ps(pDst_++, val);// 残念だが、stream でないとアライン版つかってくれないっぽい（ドキュメントより）
-        //            }
-
-        //            pSrc_ += srcStride_;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, length2.y + 1);
-        //    }
-        //}
-
-        //[BurstCompile]
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //static unsafe void copy_(float* pSrc, int srcStride, float* pDst, int dstStride, int2 length2)
-        //{
-
-        //}
-
     }
 
 }
