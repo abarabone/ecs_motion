@@ -92,8 +92,8 @@ namespace DotsLite.HeightGrid.Aurthoring
                 CollidesWith = this.collidesWith.Value,
                 GroupIndex = 0,
             };
-            createAllGrids_(this.MaxLodLevel, model, entity, filter);
-                //.ForEach(_ => { });
+            createAllGrids_(this.MaxLodLevel, model, entity, filter)
+                .ForEach(_ => { });
 
             //initEmitting_(entity);
 
@@ -188,33 +188,32 @@ namespace DotsLite.HeightGrid.Aurthoring
             }
 
 
-            //IEnumerable<Entity> createAllGrids_(int lodlevel, Entity model, Entity area)
-            //{
-            //    var qEntity =
-            //        from iy in Enumerable.Range(0, wh >> lodlevel)
-            //        from ix in Enumerable.Range(0, ww >> lodlevel)
-            //        let i = new int2(ix, iy)
-            //        select createGridEntity_(lodlevel, i, model, area)
-            //        ;
-
-            //    if (lodlevel - 1 < 0) return qEntity;
-
-            //    return createAllGrids_(lodlevel - 1, model, area)
-            //        .Concat(qEntity);
-            //}
-            void createAllGrids_(int lodlevel, Entity model, Entity area, CollisionFilter filter)
+            IEnumerable<Entity> createAllGrids_(int lodlevel, Entity model, Entity area, CollisionFilter filter)
             {
-                var q =
+                var qEntity =
                     from iy in Enumerable.Range(0, wh >> lodlevel)
                     from ix in Enumerable.Range(0, ww >> lodlevel)
-                    select new int2(ix, iy)
+                    let i = new int2(ix, iy)
+                    select createGridEntity_(lodlevel, i, model, area, filter)
                     ;
-                q.ForEach(i => createGridEntity_(lodlevel, i, model, area, filter));
 
-                if (lodlevel - 1 < 0) return;
+                if (lodlevel - 1 < 0) return qEntity;
 
-                createAllGrids_(lodlevel - 1, model, area, filter);
+                return qEntity.Concat(createAllGrids_(lodlevel - 1, model, area, filter));
             }
+            //void createAllGrids_(int lodlevel, Entity model, Entity area, CollisionFilter filter)
+            //{
+            //    var q =
+            //        from iy in Enumerable.Range(0, wh >> lodlevel)
+            //        from ix in Enumerable.Range(0, ww >> lodlevel)
+            //        select new int2(ix, iy)
+            //        ;
+            //    q.ForEach(i => createGridEntity_(lodlevel, i, model, area, filter));
+
+            //    if (lodlevel - 1 < 0) return;
+
+            //    createAllGrids_(lodlevel - 1, model, area, filter);
+            //}
 
 
             Entity createGridEntity_(int lodlevel, int2 i, Entity model, Entity area, CollisionFilter filter)
