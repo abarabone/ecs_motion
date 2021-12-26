@@ -280,7 +280,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                 );
 
                 using var buffer = heights.MakeCopyOfGridBuffer(dim, srcSerialIndex_(i.x, i.y), 0, new int2(lw, lh));
-                res.CopyResourceFrom(buffer, dim, dstSerialIndex_(i.x, i.y));
+                //res.CopyResourceFrom(buffer, dim, dstSerialIndex_(i.x, i.y));
                 //var collider = InitUtility.CreateColliderFrom(buffer, dim, filter);
                 //em.SetComponentData(ent, new PhysicsCollider
                 //{

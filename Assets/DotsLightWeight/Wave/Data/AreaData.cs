@@ -291,24 +291,24 @@ namespace DotsLite.HeightGrid
             var dstBeginIndex = dstSerialIndex + begin.y * span + begin.x;
             res.Heights.Buffer.SetData(gridBuffer.AsNativeArray(), srcBeginIndex, dstBeginIndex, length);
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe BlobAssetReference<Collider> CreateColliderFrom(
-            GridHeightsTempBuffer<float> gridBuffer,
-            GridMaster.DimensionData dim,
-            CollisionFilter filter)
-        {
-            var meshtype = TerrainCollider.CollisionMethod.VertexSamples;
-            var size = dim.UnitLengthInGrid + 1;
-            var scale = new float3(dim.UnitScale, 1, dim.UnitScale);
-            return TerrainCollider.Create(gridBuffer.AsNativeArray(), size, scale, meshtype, filter);
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static unsafe BlobAssetReference<Collider> CreateColliderFrom(
+        //    GridHeightsTempBuffer<float> gridBuffer,
+        //    GridMaster.DimensionData dim,
+        //    CollisionFilter filter)
+        //{
+        //    var meshtype = TerrainCollider.CollisionMethod.VertexSamples;
+        //    var size = dim.UnitLengthInGrid + 1;
+        //    var scale = new float3(dim.UnitScale, 1, dim.UnitScale);
+        //    return TerrainCollider.Create(gridBuffer.AsNativeArray(), size, scale, meshtype, filter);
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void MemCpyStride<T>(T* pDst, int dstStride, T*pSrc, int srcStride, int elementSize, int count)
+        public static unsafe void MemCpyStride<T>(T* pDst, int dstStride, T*pSrc, int srcStride, int elementLength, int count)
             where T : unmanaged
         {
-            var u = sizeof(float);
-            UnsafeUtility.MemCpyStride(pDst, dstStride * u, pSrc, srcStride * u, elementSize * u, count * u);
+            var u = sizeof(T);
+            UnsafeUtility.MemCpyStride(pDst, dstStride * u, pSrc, srcStride * u, elementLength * u, count * u);
         }
 
 
@@ -359,53 +359,54 @@ namespace DotsLite.HeightGrid
             var unitlength = dim.UnitLengthInGrid + 1;// ‚Æ‚È‚è‚ÌƒOƒŠƒbƒh•ª‚à‚à‚½‚¹‚Ä‚¨‚­
 
             //var length = (end.y - begin.y) * unitlength.x - begin.x + end.x + 1;
-            var length2 = end - begin;
-            var length = length2.y * unitlength.x + length2.x + 1;
+            var span = end - begin + 1;
+            var length = (span.y - 1) * unitlength.x + span.x;
 
             var srcstride = dim.TotalLength.x;
             var dststride = unitlength.x;
 
-            buffer = GridHeightsTempBuffer<float>.Create((length2.y + 1) * dststride, begin, length);
+            buffer = GridHeightsTempBuffer<float>.Create(span.y * dststride, begin, length);
 
             var pSrc = heights.p + srcSerialIndex + begin.y * srcstride;
             var pDst = buffer.p;
-            BurstUtility.copy_plus1_(pSrc, srcstride, pDst, dststride, length2);
+            Debug.Log($"copy grid : unit{unitlength} span{span} length{length} alloc{span.y * dststride} srcIndex{srcSerialIndex}+{begin.y}*{srcstride}={srcSerialIndex + begin.y * srcstride} dststrid{dststride}");
+            BurstUtility.copy_plus1_(pSrc, srcstride, pDst, dststride, span.y);
         }
 
         //[BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void copy_plus1_(
-            float* pSrc, in int srcStride, float* pDst, in int dstStride, in int2 length2)
+            float* pSrc, in int srcStride, float* pDst, in int dstStride, in int spanY)
         {
             if (X86.Avx2.IsAvx2Supported)
             //if (X86.Avx.IsAvxSupported)
             {
-                var pDst_ = (v256*)pDst;
-                var pSrc_ = (v256*)pSrc;
-                var dstStride_ = dstStride >> 4;
-                var srcStride_ = srcStride >> 4;
-                for (var iy = 0; iy < length2.y + 1; iy++)
-                {
-                    var pSrcSave_ = pSrc_;
+                //var pDst_ = (v256*)pDst;
+                //var pSrc_ = (v256*)pSrc;
+                //var dstStride_ = dstStride >> 3;
+                //var srcStride_ = srcStride >> 3;
+                //for (var iy = 0; iy < spanY; iy++)
+                //{
+                //    var pSrcSave_ = pSrc_;
 
-                    for (var ix = 0; ix < dstStride_; ix++)
-                    {
-                        var val = X86.Avx2.mm256_stream_load_si256(pSrc_++);
-                        //var val = X86.Avx.mm256_load_ps(pSrc_++);
-                        X86.Avx.mm256_storeu_ps(pDst_++, val);
-                    }
+                //    for (var ix = 0; ix < dstStride_; ix++)
+                //    {
+                //        var val = X86.Avx2.mm256_stream_load_si256(pSrc_++);
+                //        //var val = X86.Avx.mm256_load_ps(pSrc_++);
+                //        X86.Avx.mm256_storeu_ps(pDst_++, val);
+                //    }
 
-                    var pSrc1_ = (float*)pSrc_;
-                    var pDst1_ = (float*)pDst_;
-                    *pDst1_++ = *pSrc1_;
+                //    var pSrc1_ = (float*)pSrc_;
+                //    var pDst1_ = (float*)pDst_;
+                //    *pDst1_++ = *pSrc1_;
 
-                    pDst_ = (v256*)pDst1_;
-                    pSrc_ = pSrcSave_ + srcStride_;
-                }
+                //    pDst_ = (v256*)pDst1_;
+                //    pSrc_ = pSrcSave_ + srcStride_;
+                //}
             }
             else
             {
-                InitUtility.MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, length2.y + 1);
+                InitUtility.MemCpyStride(pDst, dstStride, pSrc, srcStride, dstStride, spanY);
             }
         }
         //[BurstCompile]
