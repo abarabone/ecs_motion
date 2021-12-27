@@ -392,7 +392,7 @@ namespace DotsLite.HeightGrid
                     for (var ix = 0; ix < dstStride_; ix++)
                     {
                         var val = X86.Sse4_1.stream_load_si128(pSrc_++);
-                        X86.Sse2.stream_si128(pDst_++, val);
+                        X86.Sse2.storeu_si128(pDst_++, val);
                     }
 
                     var pSrc1_ = (float*)pSrc_;
