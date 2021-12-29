@@ -24,11 +24,11 @@ public class PathSegment3 : MonoBehaviour
 	void Awake()
 	{
 
-		if( Application.isEditor )
-		foreach( var rp in GetComponentsInChildren<EditorOnlyObject>( true ) )
-		{
-			Destroy( rp.gameObject );
-		}
+		//if( Application.isEditor )
+		//foreach( var rp in GetComponentsInChildren<EditorOnlyObject>( true ) )
+		//{
+		//	Destroy( rp.gameObject );
+		//}
 
 
 		unitObject = PathMeshTemplateMaker3.build( unitObject );
