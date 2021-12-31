@@ -25,7 +25,7 @@ public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
     public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
     {
-        //if (!this.isActiveAndEnabled) return;
+        if (!this.isActiveAndEnabled) return;
 
         referencedPrefabs.Add( this.prefab.gameObject );
 
@@ -33,7 +33,7 @@ public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
     public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
     {
-        //if (!this.isActiveAndEnabled) return;
+        if (!this.isActiveAndEnabled) return;
 
 
         var prefab_ent = conversionSystem.GetPrimaryEntity( this.prefab );
