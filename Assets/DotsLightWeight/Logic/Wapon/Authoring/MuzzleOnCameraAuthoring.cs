@@ -15,6 +15,9 @@ namespace DotsLite.Arms.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //if (!this.isActiveAndEnabled) return;
+
+
             var muzzle = conversionSystem.CreateAdditionalEntity(this);
 
             var types = new ComponentTypes(

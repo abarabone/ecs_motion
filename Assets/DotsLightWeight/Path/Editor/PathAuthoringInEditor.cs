@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace DotsLite.Path.Authoring
+namespace DotsLite.LoadPath.Authoring
 {
     using DotsLite.Geometry;
     using DotsLite.Structure.Authoring;
@@ -27,13 +27,20 @@ namespace DotsLite.Path.Authoring
             {
                 var parts = this.targets
                     .OfType<PathAuthoring>()
-                    .SelectMany(st => st.GetComponentsInChildren<StructurePartAuthoring>())
-                    .Select(pt => (pt, PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject)));
-                foreach (var (pt, masterPrefab) in parts)
+                    //.SelectMany(st => st.GetComponentsInChildren<StructurePartAuthoring>())
+                    //.Select(pt => (pt, PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject)))
+                    ;
+                //foreach (var (pt, masterPrefab) in parts)
+                //{
+                //    (pt.PartModelOfMasterPrefab as PartModel<UI32, PositionNormalUvVertex>)
+                //        .SetObject(masterPrefab ?? pt.gameObject);
+                //    Debug.Log($"{pt.name} <- {pt.PartModelOfMasterPrefab.Obj.name}");
+
+                //    EditorUtility.SetDirty(pt);
+                //}
+                foreach (var pt in parts)
                 {
-                    (pt.PartModelOfMasterPrefab as PartModel<UI32, PositionNormalUvVertex>)
-                        .SetObject(masterPrefab ?? pt.gameObject);
-                    Debug.Log($"{pt.name} <- {pt.PartModelOfMasterPrefab.Obj.name}");
+                    pt.CreateInstances();
 
                     EditorUtility.SetDirty(pt);
                 }

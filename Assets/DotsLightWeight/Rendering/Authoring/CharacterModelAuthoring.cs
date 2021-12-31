@@ -51,6 +51,8 @@ namespace DotsLite.Model.Authoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //if (!this.isActiveAndEnabled) return;
+
 
             var top = this;
             var posture = this.GetComponentInChildren<PostureAuthoring>();

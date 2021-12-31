@@ -50,6 +50,9 @@ namespace DotsLite.Structure.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
+            if (!this.isActiveAndEnabled) return;
+
+
             var qStructures = this.GetComponentsInChildren<StructureBuildingModelAliasAuthoring>();
             var stlist = qStructures.ToArray();
 
@@ -66,6 +69,8 @@ namespace DotsLite.Structure.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            if (!this.isActiveAndEnabled) return;
+
 
             var top = this.gameObject;
             var main = top.Children().First();

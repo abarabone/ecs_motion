@@ -16,6 +16,9 @@ namespace DotsLite.Arms.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //if (!this.isActiveAndEnabled) return;
+
+
             var units = this.GetComponentsInChildren<IFunctionUnitAuthoring>()
                 .Cast<MonoBehaviour>();
 

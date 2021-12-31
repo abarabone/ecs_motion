@@ -37,6 +37,8 @@ namespace DotsLite.Model.Authoring
 
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //if (!this.isActiveAndEnabled) return;
+
             base.Convert(entity, dstManager, conversionSystem);
 
 

@@ -50,6 +50,9 @@ namespace DotsLite.Arms.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
+            //if (!this.isActiveAndEnabled) return;
+
+
             var bullet = this.BulletPrefab;
             referencedPrefabs.Add(bullet.gameObject);
 
@@ -62,6 +65,8 @@ namespace DotsLite.Arms.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //if (!this.isActiveAndEnabled) return;
+
 
             switch (this.MuzzleEffectPrefab == null)
             {

@@ -29,6 +29,8 @@ namespace DotsLite.Particle.Aurthoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //if (!this.isActiveAndEnabled) return;
+
             var gcs = conversionSystem;
 
             var radiusFirst = this.GetComponent<ParticleAuthoring>().Radius;

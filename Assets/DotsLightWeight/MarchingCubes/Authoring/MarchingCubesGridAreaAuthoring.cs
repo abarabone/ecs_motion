@@ -40,13 +40,16 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
+            if (!this.isActiveAndEnabled) return;
+
             referencedPrefabs.Add(this.GridPrefab.gameObject);
             referencedPrefabs.Add(this.GridStocker.gameObject);
         }
 
         public unsafe void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            if (!this.gameObject.activeInHierarchy) return;
+            if (!this.isActiveAndEnabled) return;
+
 
             initGridArea_(conversionSystem, entity);
 

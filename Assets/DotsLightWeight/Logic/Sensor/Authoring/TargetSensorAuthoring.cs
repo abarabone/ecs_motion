@@ -47,6 +47,8 @@ namespace DotsLite.Character.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //if (!this.isActiveAndEnabled) return;
+
 
             var top = this.FindParent<ModelGroupAuthoring.ModelAuthoringBase>();
             var state = top.GetComponentInChildren<ActionStateAuthoring>();

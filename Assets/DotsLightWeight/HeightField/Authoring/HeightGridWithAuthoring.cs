@@ -49,6 +49,8 @@ namespace DotsLite.HeightGrid.Aurthoring
 
         //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         //{
+        //    if (!this.isActiveAndEnabled) return;
+
         //    referencedPrefabs.Add(this.SplashPrefab.gameObject);
         //}
 
@@ -58,7 +60,8 @@ namespace DotsLite.HeightGrid.Aurthoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            if (!this.gameObject.activeInHierarchy) return;
+            if (!this.isActiveAndEnabled) return;
+
 
             var terrainData = getTrrainData_();
             if (terrainData == null) return;

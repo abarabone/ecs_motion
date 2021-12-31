@@ -54,6 +54,8 @@ namespace DotsLite.Structure.Authoring
         public void Convert
             (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //if (!this.isActiveAndEnabled) return;
+
 
             //Debug.Log("pt auth "+this.name);
 

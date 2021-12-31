@@ -43,12 +43,16 @@ namespace DotsLite.Model.Authoring
 
         public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
         {
+            //if (!this.isActiveAndEnabled) return;
+
             referencedPrefabs.AddRange(this.ModelPrefabs.Select(x => x.gameObject));
         }
 
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
+            //if (!this.isActiveAndEnabled) return;
+
 
             var meshDict = conversionSystem.GetMeshDictionary();
             var atlasDict = conversionSystem.GetTextureAtlasDictionary();

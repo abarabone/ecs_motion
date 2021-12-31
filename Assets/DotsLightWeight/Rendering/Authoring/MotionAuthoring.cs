@@ -27,6 +27,8 @@ namespace DotsLite.CharacterMotion.Authoring
         
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
+            //if (!this.isActiveAndEnabled) return;
+
 
             var bones = this.GetComponentInChildren<SkinnedMeshRenderer>().bones
                 .Where( bone => !bone.name.StartsWith( "_" ) )

@@ -31,6 +31,8 @@ namespace DotsLite.Arms.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
+            //if (!this.isActiveAndEnabled) return;
+
 
             //var functions = this.Wapons
             //    .Where(x => x != null)

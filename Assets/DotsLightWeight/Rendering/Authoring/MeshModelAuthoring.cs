@@ -46,6 +46,8 @@ namespace DotsLite.Model.Authoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+            //if (!this.isActiveAndEnabled) return;
+
 
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 

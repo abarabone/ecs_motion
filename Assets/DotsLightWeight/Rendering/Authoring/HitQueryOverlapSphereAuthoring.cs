@@ -41,6 +41,8 @@ namespace DotsLite.Collision.Authoring
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
+            //if (!this.isActiveAndEnabled) return;
+
 
             var em = dstManager;
             var ent = getPostureOrBoneEntity_(conversionSystem, entity, this.gameObject);
