@@ -35,20 +35,26 @@ namespace DotsLite.LoadPath.Authoring
 				select meshModel
 				;
 			var conv = new PathMeshConvertor(this.StartAnchor, this.EffectStartSide, this.EndAnchor, this.EffectEndSide, this.Frequency);
-			foreach (var (ptMeshModel, i) in qMeshModel.Select((x,i) => (x,i)))
-            {
-				conv.BuildAnchorParams(this.transform);
-				conv.setUnitObject(ptMeshModel.Obj);
-				foreach (var mmt in ptMeshModel.QueryMmts)
-                {
-					Debug.Log(mmt.mesh.name);
-					var newmesh = conv.buildMesh(i, mmt.mesh, mmt.tf.position, ptMeshModel.TfRoot.position.y);
-					var go = new GameObject();
-					var mf = go.AddComponent<MeshFilter>();
-					mf.mesh = newmesh;
-					var mr = go.AddComponent<MeshRenderer>();
-					mr.material = mmt.mats.First();
-                }
+			conv.BuildAnchorParams(this.transform);
+			foreach (var (ptMeshModel, i) in Enumerable.Range(0, this.Frequency).Select(i => (qMeshModel, i)))
+			{
+				Debug.Log(i);
+				foreach (var x in ptMeshModel)
+				{
+					//conv.setUnitObject(x.Obj);
+					foreach (var mmt in x.QueryMmts)
+					{
+						Debug.Log(mmt.mesh.name);
+						var newmesh = conv.buildMesh(i, mmt.mesh, mmt.tf.position, x.TfRoot.position.y);
+						var go = new GameObject();
+						var mf = go.AddComponent<MeshFilter>();
+						mf.mesh = newmesh;
+						var mr = go.AddComponent<MeshRenderer>();
+						mr.material = mmt.mats.First();
+						go.transform.position = this.transform.position;
+						go.transform.SetParent(this.transform);
+					}
+				}
             }
         }
 
@@ -88,17 +94,16 @@ namespace DotsLite.LoadPath.Authoring
 
 			var dist = math.distance(this.endPosition, this.startPosition);
 
-			effectStart = (tfEffectStart == null)
+			this.effectStart = (tfEffectStart == null)
 				? (float3)tfStart.forward * dist
-				: (float3)tfEffectStart.position - startPosition;
+				: (float3)tfEffectStart.position - this.startPosition;
 
-			effectEnd = (tfEffectEnd == null)
+			this.effectEnd = (tfEffectEnd == null)
 				? (float3)tfEnd.forward * dist
-				: (float3)tfEffectEnd.position - endPosition;
+				: (float3)tfEffectEnd.position - this.endPosition;
 
 
 			this.tunit = 1.0f / frequency;
-			//this.frequency = frequency;
 		}
 
 
@@ -132,9 +137,8 @@ namespace DotsLite.LoadPath.Authoring
 
 			var dstvtxs =
 				srcMesh.vertices
-					.Cast<float3>()
-					.Select(vtx => interpolatePosition3d(i, vtx, offsetHeight) - partPos)
-					.Cast<Vector3>()
+					.Select(vtx => interpolatePosition3d(i, vtx, offsetHeight))// - partPos)
+					.Select(v => new Vector3(v.x, v.y, v.z))
 					.ToArray();
 
 			var dstMesh = new Mesh();
