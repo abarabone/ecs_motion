@@ -28,35 +28,64 @@ namespace DotsLite.LoadPath.Authoring
 		}
 
 		public void CreateInstances()
-        {
-			var qMeshModel =
-				from pt in this.ModelTopPrefab.GetComponentsInChildren<StructurePartAuthoring>()
-				from meshModel in pt.QueryModel
-				select meshModel
+		{
+			var tf = this.transform;
+
+			var maxZ = this.ModelTopPrefab.GetComponentsInChildren<MeshFilter>()
+				.SelectMany(mf => mf.sharedMesh.vertices)
+				.Max(v => v.z);
+			Debug.Log(maxZ);
+
+			var q =
+				from i in Enumerable.Range(0, this.Frequency)
+				let top = GameObject.Instantiate(this.ModelTopPrefab, this.transform)
+				from mf in top.GetComponentsInChildren<MeshFilter>()
+				select (top, mf, i)
 				;
-			var conv = new PathMeshConvertor(this.StartAnchor, this.EffectStartSide, this.EndAnchor, this.EffectEndSide, this.Frequency);
-			conv.BuildAnchorParams(this.transform);
-			foreach (var (ptMeshModel, i) in Enumerable.Range(0, this.Frequency).Select(i => (qMeshModel, i)))
+			//foreach (var (top, mf, i) in q)
+			foreach (var x in q)
 			{
-				Debug.Log(i);
-				foreach (var x in ptMeshModel)
-				{
-					//conv.setUnitObject(x.Obj);
-					foreach (var mmt in x.QueryMmts)
-					{
-						Debug.Log(mmt.mesh.name);
-						var newmesh = conv.buildMesh(i, mmt.mesh, mmt.tf.position, x.TfRoot.position.y);
-						var go = new GameObject();
-						var mf = go.AddComponent<MeshFilter>();
-						mf.mesh = newmesh;
-						var mr = go.AddComponent<MeshRenderer>();
-						mr.material = mmt.mats.First();
-						go.transform.position = this.transform.position;
-						go.transform.SetParent(this.transform);
-					}
-				}
-            }
-        }
+				var (top, mf, i) = x;
+				Debug.Log($"{i} mesh:{mf.name} top:{top.name}");
+
+				var conv = new PathMeshConvertor(
+					this.StartAnchor, this.EffectStartSide, this.EndAnchor, this.EffectEndSide, this.Frequency, maxZ, tf);
+
+				var newmesh = conv.BuildMesh(i, mf.sharedMesh, 0.0f);
+				mf.sharedMesh = newmesh;
+				mf.transform.localPosition = Vector3.zero;
+			}
+		}
+		//public void CreateInstances()
+		//      {
+		//	var qMeshModel =
+		//		from pt in this.ModelTopPrefab.GetComponentsInChildren<StructurePartAuthoring>()
+		//		from meshModel in pt.QueryModel
+		//		select meshModel
+		//		;
+		//	var conv = new PathMeshConvertor(this.StartAnchor, this.EffectStartSide, this.EndAnchor, this.EffectEndSide, this.Frequency);
+		//	conv.BuildAnchorParams(this.transform);
+		//	foreach (var (ptMeshModel, i) in Enumerable.Range(0, this.Frequency).Select(i => (qMeshModel, i)))
+		//	{
+		//		Debug.Log(i);
+		//		foreach (var x in ptMeshModel)
+		//		{
+		//			//conv.setUnitObject(x.Obj);
+		//			foreach (var mmt in x.QueryMmts)
+		//			{
+		//				Debug.Log(mmt.mesh.name);
+		//				var newmesh = conv.buildMesh(i, mmt.mesh, mmt.tf.position, x.TfRoot.position.y);
+		//				var go = new GameObject();
+		//				var mf = go.AddComponent<MeshFilter>();
+		//				mf.mesh = newmesh;
+		//				var mr = go.AddComponent<MeshRenderer>();
+		//				mr.material = mmt.mats.First();
+		//				go.transform.position = this.transform.position;
+		//				go.transform.SetParent(this.transform);
+		//			}
+		//		}
+		//          }
+		//      }
 
 		void convertMesh()
         {
@@ -75,42 +104,28 @@ namespace DotsLite.LoadPath.Authoring
 		float3 effectStart;
 		float3 effectEnd;
 
-		float tunit;
-		//float unitRatio;
-
-		//int frequency;
-
-		GameObject unitObject;
-
-		Transform tfSegment;
-
+		float unitRatio;
+		float maxZR;
 
 		public PathMeshConvertor(
-			Transform tfStart, Transform tfEffectStart, Transform tfEnd, Transform tfEffectEnd, int frequency)
+			Transform tfStart, Transform tfEffectStart, Transform tfEnd, Transform tfEffectEnd, int frequency, float maxZ, Transform tfTop)
 		{
-			this.startPosition = tfStart.position;
-			this.endPosition = tfEnd.position;
+			var startPosition = (float3)tfStart.position;
+			var endPosition = (float3)tfEnd.position;
 
 
-			var dist = math.distance(this.endPosition, this.startPosition);
+			var dist = math.distance(endPosition, startPosition);
 
-			this.effectStart = (tfEffectStart == null)
+			var effectStart = (tfEffectStart == null)
 				? (float3)tfStart.forward * dist
-				: (float3)tfEffectStart.position - this.startPosition;
+				: (float3)tfEffectStart.position - startPosition;
 
-			this.effectEnd = (tfEffectEnd == null)
+			var effectEnd = (tfEffectEnd == null)
 				? (float3)tfEnd.forward * dist
-				: (float3)tfEffectEnd.position - this.endPosition;
+				: endPosition - (float3)tfEffectEnd.position;
 
 
-			this.tunit = 1.0f / frequency;
-		}
-
-
-
-		public void BuildAnchorParams(Transform tfBase)
-		{
-			var mtInv = tfBase.worldToLocalMatrix;
+			var mtInv = tfTop.worldToLocalMatrix;
 
 			this.startPosition = mtInv.MultiplyPoint3x4(startPosition);
 			this.endPosition = mtInv.MultiplyPoint3x4(endPosition);
@@ -118,28 +133,20 @@ namespace DotsLite.LoadPath.Authoring
 			this.effectStart = mtInv.MultiplyVector(effectStart);
 			this.effectEnd = mtInv.MultiplyVector(effectEnd);
 
-			this.tfSegment = tfBase;
+
+			this.maxZR = 1.0f / maxZ;
+			this.unitRatio = 1.0f / frequency;
 		}
 
 
-		public void setUnitObject(GameObject unit)
+		public Mesh BuildMesh(int i, Mesh srcMesh, float offsetHeight)
 		{
+			var srcvtxs = srcMesh.vertices;
 
-			unitObject = unit;
-
-		}
-
-
-
-
-		public Mesh buildMesh(int i, Mesh srcMesh, float3 partPos, float offsetHeight)
-		{
-
-			var dstvtxs =
-				srcMesh.vertices
-					.Select(vtx => interpolatePosition3d(i, vtx, offsetHeight))// - partPos)
-					.Select(v => new Vector3(v.x, v.y, v.z))
-					.ToArray();
+			var dstvtxs = srcvtxs
+				.Select(vtx => interpolatePosition3d(i, vtx, offsetHeight))// - partPos)
+				.Select(v => new Vector3(v.x, v.y, v.z))
+				.ToArray();
 
 			var dstMesh = new Mesh();
 
@@ -153,7 +160,7 @@ namespace DotsLite.LoadPath.Authoring
 
 		float3 interpolatePosition3d(int i, float3 vtx, float offsetHeight)
 		{
-			var t = vtx.z * this.tunit + this.tunit * (float)i;
+			var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
 
 			var p0 = startPosition;
 			var p1 = endPosition;
