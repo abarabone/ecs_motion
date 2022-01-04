@@ -74,9 +74,11 @@ namespace DotsLite.LoadPath.Authoring
 
                     var tfChild = mf.transform;
 					var pos = conv.CalculateBasePoint(i, pre.pos, float4x4.identity);
-					var forward = conv.CalculateBasePoint(i, pre.front, mtSegInv) - pos;
                     tfChild.position = pos;
+                    //var forward = conv.CalculateBasePoint(i, pre.front, mtSegInv) - pos;
                     //tfChild.forward = forward;
+                    var front = conv.CalculateBasePoint(i, pre.front, float4x4.identity);
+					tfChild.LookAt(front, Vector3.up);
 
                     if (mf.GetComponent<WithoutShapeTransforming>() != null)
                     {
@@ -84,7 +86,7 @@ namespace DotsLite.LoadPath.Authoring
                     }
 
                     Debug.Log($"{i} mesh:{mf.name} top:{segtop.name} {pos} {pre.pos}");
-                    var newmesh = conv.BuildMesh(i, mf.sharedMesh, tfChild.worldToLocalMatrix);
+                    var newmesh = conv.BuildMesh(i, mf.sharedMesh, segtop.transform.worldToLocalMatrix);
                     mf.sharedMesh = newmesh;
 
                     //// コライダー以外のメッシュはそのまま維持
