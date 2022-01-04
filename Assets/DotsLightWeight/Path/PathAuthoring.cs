@@ -56,35 +56,36 @@ namespace DotsLite.LoadPath.Authoring
 			void createPartSegments_(PathMeshConvertor conv)
 			{
 				var tfSegment = this.transform;
-				var mtSegInv = tfSegment.worldToLocalMatrix;
+				var mtSegInv = (float4x4)tfSegment.worldToLocalMatrix;
+				var mtStInv = (float4x4)this.StartAnchor.transform.worldToLocalMatrix;
 				var q =
 					from i in Enumerable.Range(0, this.Frequency)
 					let segtop = instantiate_()
 					from mf in segtop.GetComponentsInChildren<MeshFilter>()
 					let tf = mf.transform
 					let mtinv = (float4x4)tf.worldToLocalMatrix
-					let pos = (float3)tf.position
-					let front = pos + (float3)tf.forward
+					let pos = tf.position//math.transform(mtStInv, tf.position)
+					let front = pos + tf.forward//math.transform(mtStInv, tf.forward)
 					select (segtop, mf, i, (mtinv, pos, front))
 					;
-				foreach (var x in q)
+				foreach (var x in q.ToArray())
 				{
                     var (segtop, mf, i, pre) = x;
 
                     var tfChild = mf.transform;
-					var pos = conv.CalculateBasePoint(i, pre.pos, float4x4.identity);// mtSegInv);
+					var pos = conv.CalculateBasePoint(i, pre.pos, float4x4.identity);
 					var forward = conv.CalculateBasePoint(i, pre.front, mtSegInv) - pos;
                     tfChild.position = pos;
                     //tfChild.forward = forward;
 
-                    //if (mf.GetComponent<WithoutShapeTransforming>() != null)
-                    //{
-                    //    continue;
-                    //}
+                    if (mf.GetComponent<WithoutShapeTransforming>() != null)
+                    {
+                        continue;
+                    }
 
                     Debug.Log($"{i} mesh:{mf.name} top:{segtop.name} {pos} {pre.pos}");
-					//var newmesh = conv.BuildMesh(i, mf.sharedMesh, tfChild.worldToLocalMatrix);
-     //               mf.sharedMesh = newmesh;
+                    var newmesh = conv.BuildMesh(i, mf.sharedMesh, tfChild.worldToLocalMatrix);
+                    mf.sharedMesh = newmesh;
 
                     //// コライダー以外のメッシュはそのまま維持
                     //// 暫定で常に外形メッシュと同じものをセット
@@ -99,7 +100,7 @@ namespace DotsLite.LoadPath.Authoring
 					var go = Instantiate(this.ModelTopPrefab);
 					var tf = go.transform;
 					Debug.Log(tf.position);
-					tf.SetParent(tfSegment, worldPositionStays: false);
+					tf.SetParent(tfSegment, worldPositionStays: true);
 					Debug.Log(tf.position);
 					return go;
 				}
@@ -202,12 +203,14 @@ namespace DotsLite.LoadPath.Authoring
 
 			var d = 3.0f * att + 2.0f * bt + v0;
 
-            //pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
-			pos += vtx.x * math.normalize(new float3(d.z, d.y, -d.x));
-			pos += vtx.y * math.normalize(new float3(d.z, d.y, -d.x));
+			//pos += vtx.x * math.normalize(new float3(d.z, d.y, -d.x));
+			//pos += vtx.y * math.normalize(new float3(d.z, d.y, -d.x));
 
-			//return new float3(pos.x, pos.y + vtx.y, pos.z);
-			return new float3(pos.x, pos.y, pos.z);
+			//return new float3(pos.x, pos.y, pos.z);
+
+			pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
+
+			return new float3(pos.x, pos.y + vtx.y, pos.z);
 		}
 
 	}
