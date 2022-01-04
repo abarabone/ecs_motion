@@ -14,8 +14,8 @@ namespace DotsLite.LoadPath.Authoring
 		public Transform StartAnchor;
 		public Transform EndAnchor;
 
-		public Transform EffectStartSide;
-		public Transform EffectEndSide;
+		//public Transform EffectStartSide;
+		//public Transform EffectEndSide;
 
 		public int Frequency;
 
@@ -48,8 +48,7 @@ namespace DotsLite.LoadPath.Authoring
 				var (top, mf, i) = x;
 				Debug.Log($"{i} mesh:{mf.name} top:{top.name}");
 
-				var conv = new PathMeshConvertor(
-					this.StartAnchor, this.EffectStartSide, this.EndAnchor, this.EffectEndSide, this.Frequency, maxZ, tf);
+				var conv = new PathMeshConvertor(this.StartAnchor, this.EndAnchor, this.Frequency, maxZ, tf);
 
 				var newmesh = conv.BuildMesh(i, mf.sharedMesh, 0.0f);
 				mf.sharedMesh = newmesh;
@@ -101,28 +100,19 @@ namespace DotsLite.LoadPath.Authoring
 		float3 startPosition;
 		float3 endPosition;
 
-		float3 effectStart;
-		float3 effectEnd;
-
 		float unitRatio;
 		float maxZR;
 
 		public PathMeshConvertor(
-			Transform tfStart, Transform tfEffectStart, Transform tfEnd, Transform tfEffectEnd, int frequency, float maxZ, Transform tfTop)
+			Transform tfStart, Transform tfEnd, int frequency, float maxZ, Transform tfTop)
 		{
 			var startPosition = (float3)tfStart.position;
 			var endPosition = (float3)tfEnd.position;
 
 
 			var dist = math.distance(endPosition, startPosition);
-
-			var effectStart = (tfEffectStart == null)
-				? (float3)tfStart.forward * dist
-				: (float3)tfEffectStart.position - startPosition;
-
-			var effectEnd = (tfEffectEnd == null)
-				? (float3)tfEnd.forward * dist
-				: endPosition - (float3)tfEffectEnd.position;
+			var effectStart = (float3)tfStart.forward * dist;
+			var effectEnd = (float3)tfEnd.forward * dist;
 
 
 			var mtInv = tfTop.worldToLocalMatrix;
