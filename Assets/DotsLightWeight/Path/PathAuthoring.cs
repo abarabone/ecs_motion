@@ -56,43 +56,51 @@ namespace DotsLite.LoadPath.Authoring
 			void createPartSegments_(PathMeshConvertor conv)
 			{
 				var tfSegment = this.transform;
+				var mtSegInv = tfSegment.worldToLocalMatrix;
 				var q =
 					from i in Enumerable.Range(0, this.Frequency)
 					let segtop = instantiate_()
 					from mf in segtop.GetComponentsInChildren<MeshFilter>()
-					let pos = mf.transform.position
-					let forward = mf.transform.forward
-					select (segtop, mf, i, (pos, forward))
+					let tf = mf.transform
+					let mtinv = (float4x4)tf.worldToLocalMatrix
+					let pos = (float3)tf.position
+					let front = pos + (float3)tf.forward
+					select (segtop, mf, i, (mtinv, pos, front))
 					;
 				foreach (var x in q)
 				{
-					var (segtop, mf, i, pre) = x;
-					Debug.Log($"{i} mesh:{mf.name} top:{segtop.name} {pre.pos} {pre.forward}");
+                    var (segtop, mf, i, pre) = x;
 
                     var tfChild = mf.transform;
-                    tfChild.position = conv.CalculateBasePoint(i, pre.pos);
+					var pos = conv.CalculateBasePoint(i, pre.pos, float4x4.identity);// mtSegInv);
+					var forward = conv.CalculateBasePoint(i, pre.front, mtSegInv) - pos;
+                    tfChild.position = pos;
+                    //tfChild.forward = forward;
 
-					if (mf.GetComponent<WithoutShapeTransforming>() != null)
-					{
-						mf.transform.forward = conv.CalculateBaseDirection(i, pre.forward);
-						continue;
-                    }
+                    //if (mf.GetComponent<WithoutShapeTransforming>() != null)
+                    //{
+                    //    continue;
+                    //}
 
-					var newmesh = conv.BuildMesh(i, mf.sharedMesh, tfChild.worldToLocalMatrix);
-					mf.sharedMesh = newmesh;
+                    Debug.Log($"{i} mesh:{mf.name} top:{segtop.name} {pos} {pre.pos}");
+					//var newmesh = conv.BuildMesh(i, mf.sharedMesh, tfChild.worldToLocalMatrix);
+     //               mf.sharedMesh = newmesh;
 
-					// コライダー以外のメッシュはそのまま維持
-					// 暫定で常に外形メッシュと同じものをセット
-                    var col = mf.GetComponent<PhysicsShapeAuthoring>();
-                    if (col != null && col.ShapeType == ShapeType.Mesh)
-                    {
-						col.SetMesh(newmesh);
-                    }
-				}
+                    //// コライダー以外のメッシュはそのまま維持
+                    //// 暫定で常に外形メッシュと同じものをセット
+                    //var col = mf.GetComponent<PhysicsShapeAuthoring>();
+                    //if (col != null && col.ShapeType == ShapeType.Mesh)
+                    //{
+                    //    col.SetMesh(newmesh);
+                    //}
+                }
 				GameObject instantiate_()
 				{
-					var go = GameObject.Instantiate(this.ModelTopPrefab);
-					go.transform.SetParent(tfSegment, worldPositionStays: true);
+					var go = Instantiate(this.ModelTopPrefab);
+					var tf = go.transform;
+					Debug.Log(tf.position);
+					tf.SetParent(tfSegment, worldPositionStays: false);
+					Debug.Log(tf.position);
 					return go;
 				}
 			}
@@ -175,10 +183,8 @@ namespace DotsLite.LoadPath.Authoring
 			return dstMesh;
 		}
 
-		public float3 CalculateBasePoint(int i, float3 pos) =>
-			this.interpolatePosition3d(i, pos, float4x4.identity);
-		public float3 CalculateBaseDirection(int i, float3 forward) =>
-			this.interpolatePosition3d(i, forward, float4x4.identity);
+		public float3 CalculateBasePoint(int i, float3 pos, float4x4 mtInv) =>
+			this.interpolatePosition3d(i, pos, mtInv);
 
 		float3 interpolatePosition3d(int i, float3 vtx, float4x4 mtInv)
 		{
@@ -196,9 +202,12 @@ namespace DotsLite.LoadPath.Authoring
 
 			var d = 3.0f * att + 2.0f * bt + v0;
 
-			pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
+            //pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
+			pos += vtx.x * math.normalize(new float3(d.z, d.y, -d.x));
+			pos += vtx.y * math.normalize(new float3(d.z, d.y, -d.x));
 
-			return new float3(pos.x, pos.y + vtx.y, pos.z);
+			//return new float3(pos.x, pos.y + vtx.y, pos.z);
+			return new float3(pos.x, pos.y, pos.z);
 		}
 
 	}
