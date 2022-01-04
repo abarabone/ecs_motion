@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Unity.Mathematics;
+using Unity.Linq;
+using Unity.Physics.Authoring;
 
 namespace DotsLite.LoadPath.Authoring
 {
@@ -12,14 +14,14 @@ namespace DotsLite.LoadPath.Authoring
 	{
 
 		public Transform StartAnchor;
+		public bool IsReverseStart;
 		public Transform EndAnchor;
-
-		//public Transform EffectStartSide;
-		//public Transform EffectEndSide;
+		public bool IsReverseEnd;
 
 		public int Frequency;
 
 		public GameObject ModelTopPrefab;
+		public GameObject LevelingColliderPrefab;
 
 
 		void Awake()
@@ -27,64 +29,95 @@ namespace DotsLite.LoadPath.Authoring
 			
 		}
 
-		public void CreateInstances()
+		public void CreatePathParts()
 		{
-			var tf = this.transform;
+			removeChildren_();
+			var conv = createConvertor_();
+			createPartSegments_(conv);
+			//createColliderSegments_(conv);
+			return;
 
-			var maxZ = this.ModelTopPrefab.GetComponentsInChildren<MeshFilter>()
-				.SelectMany(mf => mf.sharedMesh.vertices)
-				.Max(v => v.z);
-			Debug.Log(maxZ);
-
-			var q =
-				from i in Enumerable.Range(0, this.Frequency)
-				let top = GameObject.Instantiate(this.ModelTopPrefab, this.transform)
-				from mf in top.GetComponentsInChildren<MeshFilter>()
-				select (top, mf, i)
-				;
-			//foreach (var (top, mf, i) in q)
-			foreach (var x in q)
+			void removeChildren_()
+            {
+				var children = this.gameObject.Children().ToArray();
+				children.ForEach(go => DestroyImmediate(go));
+            }
+			PathMeshConvertor createConvertor_()
+            {
+				var maxZ = this.LevelingColliderPrefab.GetComponent<MeshCollider>()
+					.sharedMesh
+					.vertices
+					.Max(v => v.z);
+				var conv = new PathMeshConvertor(
+					this.StartAnchor, this.IsReverseStart, this.EndAnchor, this.IsReverseEnd,
+					this.Frequency, maxZ);
+				return conv;
+            }
+			void createPartSegments_(PathMeshConvertor conv)
 			{
-				var (top, mf, i) = x;
-				Debug.Log($"{i} mesh:{mf.name} top:{top.name}");
+				var tfSegment = this.transform;
+				var q =
+					from i in Enumerable.Range(0, this.Frequency)
+					let segtop = instantiate_()
+					from mf in segtop.GetComponentsInChildren<MeshFilter>()
+					let pos = mf.transform.position
+					let forward = mf.transform.forward
+					select (segtop, mf, i, (pos, forward))
+					;
+				foreach (var x in q)
+				{
+					var (segtop, mf, i, pre) = x;
+					Debug.Log($"{i} mesh:{mf.name} top:{segtop.name} {pre.pos} {pre.forward}");
 
-				var conv = new PathMeshConvertor(this.StartAnchor, this.EndAnchor, this.Frequency, maxZ, tf);
+                    var tfChild = mf.transform;
+                    tfChild.position = conv.CalculateBasePoint(i, pre.pos);
 
-				var newmesh = conv.BuildMesh(i, mf.sharedMesh, 0.0f);
-				mf.sharedMesh = newmesh;
-				mf.transform.localPosition = Vector3.zero;
+					if (mf.GetComponent<WithoutShapeTransforming>() != null)
+					{
+						mf.transform.forward = conv.CalculateBaseDirection(i, pre.forward);
+						continue;
+                    }
+
+					var newmesh = conv.BuildMesh(i, mf.sharedMesh, tfChild.worldToLocalMatrix);
+					mf.sharedMesh = newmesh;
+
+					// コライダー以外のメッシュはそのまま維持
+					// 暫定で常に外形メッシュと同じものをセット
+                    var col = mf.GetComponent<PhysicsShapeAuthoring>();
+                    if (col != null && col.ShapeType == ShapeType.Mesh)
+                    {
+						col.SetMesh(newmesh);
+                    }
+				}
+				GameObject instantiate_()
+				{
+					var go = GameObject.Instantiate(this.ModelTopPrefab);
+					go.transform.SetParent(tfSegment, worldPositionStays: true);
+					return go;
+				}
 			}
+			//void createColliderSegments_(PathMeshConvertor conv)
+			//{
+			//	var tf = this.transform;
+			//	var col = this.LevelingColliderPrefab.GetComponent<MeshCollider>();
+			//	var q =
+			//		from i in Enumerable.Range(0, this.Frequency)
+			//		let seg = new GameObject($"collider {i}")
+			//		select (seg, col, i)
+			//		;
+			//	foreach (var x in q)
+			//	{
+			//		var (seg, srccol, i) = x;
+			//		Debug.Log($"{i} collider:{srccol.name} top:{seg.name}");
+
+			//		var newmesh = conv.BuildMesh(i, srccol.sharedMesh, 0.0f);
+			//		var dstcol = seg.AddComponent<MeshCollider>();
+			//		dstcol.sharedMesh = newmesh;
+			//		seg.transform.SetParent(tf, worldPositionStays: true);
+			//		seg.transform.localPosition = Vector3.zero;
+			//	}
+			//}
 		}
-		//public void CreateInstances()
-		//      {
-		//	var qMeshModel =
-		//		from pt in this.ModelTopPrefab.GetComponentsInChildren<StructurePartAuthoring>()
-		//		from meshModel in pt.QueryModel
-		//		select meshModel
-		//		;
-		//	var conv = new PathMeshConvertor(this.StartAnchor, this.EffectStartSide, this.EndAnchor, this.EffectEndSide, this.Frequency);
-		//	conv.BuildAnchorParams(this.transform);
-		//	foreach (var (ptMeshModel, i) in Enumerable.Range(0, this.Frequency).Select(i => (qMeshModel, i)))
-		//	{
-		//		Debug.Log(i);
-		//		foreach (var x in ptMeshModel)
-		//		{
-		//			//conv.setUnitObject(x.Obj);
-		//			foreach (var mmt in x.QueryMmts)
-		//			{
-		//				Debug.Log(mmt.mesh.name);
-		//				var newmesh = conv.buildMesh(i, mmt.mesh, mmt.tf.position, x.TfRoot.position.y);
-		//				var go = new GameObject();
-		//				var mf = go.AddComponent<MeshFilter>();
-		//				mf.mesh = newmesh;
-		//				var mr = go.AddComponent<MeshRenderer>();
-		//				mr.material = mmt.mats.First();
-		//				go.transform.position = this.transform.position;
-		//				go.transform.SetParent(this.transform);
-		//			}
-		//		}
-		//          }
-		//      }
 
 		void convertMesh()
         {
@@ -100,41 +133,35 @@ namespace DotsLite.LoadPath.Authoring
 		float3 startPosition;
 		float3 endPosition;
 
+		float3 effectStart;
+		float3 effectEnd;
+
 		float unitRatio;
 		float maxZR;
 
 		public PathMeshConvertor(
-			Transform tfStart, Transform tfEnd, int frequency, float maxZ, Transform tfTop)
+			Transform tfStart, bool isReverseStart,
+			Transform tfEnd, bool isReverseEnd,
+			int frequency, float maxZ)
 		{
-			var startPosition = (float3)tfStart.position;
-			var endPosition = (float3)tfEnd.position;
-
+			this.startPosition = (float3)tfStart.position;
+			this.endPosition = (float3)tfEnd.position;
 
 			var dist = math.distance(endPosition, startPosition);
-			var effectStart = (float3)tfStart.forward * dist;
-			var effectEnd = (float3)tfEnd.forward * dist;
-
-
-			var mtInv = tfTop.worldToLocalMatrix;
-
-			this.startPosition = mtInv.MultiplyPoint3x4(startPosition);
-			this.endPosition = mtInv.MultiplyPoint3x4(endPosition);
-
-			this.effectStart = mtInv.MultiplyVector(effectStart);
-			this.effectEnd = mtInv.MultiplyVector(effectEnd);
-
+			this.effectStart = (float3)tfStart.forward * (dist * math.select(1, -1, isReverseStart));
+			this.effectEnd = (float3)tfEnd.forward * (dist * math.select(1, -1, isReverseEnd));
 
 			this.maxZR = 1.0f / maxZ;
 			this.unitRatio = 1.0f / frequency;
 		}
 
 
-		public Mesh BuildMesh(int i, Mesh srcMesh, float offsetHeight)
+		public Mesh BuildMesh(int i, Mesh srcMesh, float4x4 mtChildInv)
 		{
 			var srcvtxs = srcMesh.vertices;
 
 			var dstvtxs = srcvtxs
-				.Select(vtx => interpolatePosition3d(i, vtx, offsetHeight))// - partPos)
+				.Select(vtx => interpolatePosition3d(i, vtx, mtChildInv))
 				.Select(v => new Vector3(v.x, v.y, v.z))
 				.ToArray();
 
@@ -148,14 +175,19 @@ namespace DotsLite.LoadPath.Authoring
 			return dstMesh;
 		}
 
-		float3 interpolatePosition3d(int i, float3 vtx, float offsetHeight)
+		public float3 CalculateBasePoint(int i, float3 pos) =>
+			this.interpolatePosition3d(i, pos, float4x4.identity);
+		public float3 CalculateBaseDirection(int i, float3 forward) =>
+			this.interpolatePosition3d(i, forward, float4x4.identity);
+
+		float3 interpolatePosition3d(int i, float3 vtx, float4x4 mtInv)
 		{
 			var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
 
-			var p0 = startPosition;
-			var p1 = endPosition;
-			var v0 = effectStart;
-			var v1 = effectEnd;
+			var p0 = math.transform(mtInv, startPosition);
+			var p1 = math.transform(mtInv, endPosition);
+			var v0 = math.rotate(mtInv, effectStart);
+			var v1 = math.rotate(mtInv, effectEnd);
 
 			var att = (2.0f * p0 - 2.0f * p1 + v0 + v1) * t * t;
 			var bt = (-3.0f * p0 + 3.0f * p1 - 2.0f * v0 - v1) * t;
@@ -166,7 +198,7 @@ namespace DotsLite.LoadPath.Authoring
 
 			pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
 
-			return new float3(pos.x, pos.y + vtx.y + offsetHeight, pos.z);
+			return new float3(pos.x, pos.y + vtx.y, pos.z);
 		}
 
 	}

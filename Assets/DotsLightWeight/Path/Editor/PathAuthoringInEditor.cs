@@ -40,7 +40,7 @@ namespace DotsLite.LoadPath.Authoring
                 //}
                 foreach (var pt in parts)
                 {
-                    pt.CreateInstances();
+                    pt.CreatePathParts();
 
                     EditorUtility.SetDirty(pt);
                 }
