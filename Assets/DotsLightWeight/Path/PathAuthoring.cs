@@ -139,6 +139,7 @@ namespace DotsLite.LoadPath.Authoring
 			var ss = math.select(1, -1, isReverseStart);
 			var se = math.select(1, -1, isReverseEnd);
 
+			// 向きを
 			var dist = math.distance(endPosition, startPosition);
 			this.forwardStart = (float3)tfStart.forward * (dist * ss);
 			this.forwardEnd = (float3)tfEnd.forward * (dist * se);
@@ -175,7 +176,7 @@ namespace DotsLite.LoadPath.Authoring
 		public float3 CalculateBasePoint(int i, float3 pos, float4x4 mtInv) =>
 			this.interpolatePosition3d(i, pos, mtInv);
 
-		float3 interpolatePosition3d(int i, float3 vtx, float4x4 mtInv)
+		float3 interpolatePosition3d_(int i, float3 vtx, float4x4 mtInv)
 		{
 			var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
 
@@ -199,29 +200,67 @@ namespace DotsLite.LoadPath.Authoring
             return new float3(pos.x, pos.y + vtx.y, pos.z);
         }
 
-		float3 interpolatePosition3d2(int i, float3 vtx, float4x4 mtInv)
-		{
-			var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
+        //float3 interpolatePosition3d2(int i, float3 vtx, float4x4 mtInv)
+        //{
+        //	var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
 
-			var p0 = math.transform(mtInv, startPosition);
-			var p1 = math.transform(mtInv, endPosition);
-			var v0 = math.rotate(mtInv, forwardStart);
-			var v1 = math.rotate(mtInv, forwardEnd);
+        //	var p0 = math.transform(mtInv, startPosition);  // v1 -> p0
+        //	var p1 = math.transform(mtInv, endPosition);    // v2 -> p1
+        //	var v0 = math.rotate(mtInv, forwardStart);      // v0 -> v0
+        //	var v1 = math.rotate(mtInv, forwardEnd);        // v3 -> v1
 
-			var att = (2.0f * p0 - 2.0f * p1 + v0 + v1) * t * t;
-			var bt = (-3.0f * p0 + 3.0f * p1 - 2.0f * v0 - v1) * t;
+        //	// v1 + 0.5f * t * ((p1 + v0) + ((2.0f * -v0 - 5.0f * p0 + 4.0f * p1 + v1) + (v0 + 3.0f * p0 - 3.0f * p1 - v1) * t) * t);
+        //	var att = (2.0f * p0 - 2.0f * p1 + v0 + v1) * t * t;
+        //	var bt = (-3.0f * p0 + 3.0f * p1 - 2.0f * v0 - v1) * t;
 
-			var pos = att * t + bt * t + v0 * t + p0;
+        //	var pos = att * t + bt * t + v0 * t + p0;
 
-			var d = 3.0f * att + 2.0f * bt + v0;// pos の微分（割合？）
+        //	var d = 3.0f * att + 2.0f * bt + v0;// pos の微分（割合？）
 
-			//pos += vtx.x * math.normalize(new float3(d.z, d.y, -d.x));
-			//pos += vtx.y * math.normalize(new float3(d.z, d.y, -d.x));
-			//return new float3(pos.x, pos.y, pos.z);
 
-			pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
-			return new float3(pos.x, pos.y + vtx.y, pos.z);
-		}
-	}
+        //	pos += vtx.x * //math.normalize(new float3(d.z, 0.0f, -d.x));
+        //	pos += vtx.y * //math.normalize(new float3(d.z, 0.0f, -d.x));
+        //	return new float3(pos.x, pos.y, pos.z);
+        //}
+        float3 interpolatePosition3d(int i, float3 vtx, float4x4 mtInv)
+        {
+            var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
+
+            var p0f = math.transform(mtInv, startPosition);
+            var p1f = math.transform(mtInv, endPosition);
+            var v0f = math.rotate(mtInv, forwardStart);
+            var v1f = math.rotate(mtInv, forwardEnd);
+
+            var attf = (2.0f * p0f - 2.0f * p1f + v0f + v1f) * t * t;
+            var btf = (-3.0f * p0f + 3.0f * p1f - 2.0f * v0f - v1f) * t;
+
+            var posf = attf * t + btf * t + v0f * t + p0f;
+
+
+			var p0r = math.transform(mtInv, startPosition + this.rightStart);
+			var p1r = math.transform(mtInv, endPosition + this.rightEnd);
+			var v0r = math.rotate(mtInv, forwardStart + this.rightStart);
+			var v1r = math.rotate(mtInv, forwardEnd + this.rightEnd);
+
+			var attr = (2.0f * p0r - 2.0f * p1r + v0r + v1r) * t * t;
+			var btr = (-3.0f * p0r + 3.0f * p1r - 2.0f * v0r - v1r) * t;
+
+			var posr = attr * t + btr * t + v0r * t + p0r;
+
+
+			var p0u = math.transform(mtInv, startPosition + this.upStart);
+			var p1u = math.transform(mtInv, endPosition + this.upEnd);
+			var v0u = math.rotate(mtInv, forwardStart + this.upStart);
+			var v1u = math.rotate(mtInv, forwardEnd + this.upEnd);
+
+			var attu = (2.0f * p0u - 2.0f * p1u + v0u + v1u) * t * t;
+			var btu = (-3.0f * p0u + 3.0f * p1u - 2.0f * v0u - v1u) * t;
+
+			var posu = attu * t + btu * t + v0u * t + p0u;
+
+
+			return posf + (posu - posf) * vtx.y + (posr - posf) * vtx.x;
+        }
+    }
 
 }
