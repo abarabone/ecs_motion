@@ -60,33 +60,34 @@ namespace DotsLite.LoadPath.Authoring
 				var mtStInv = (float4x4)this.StartAnchor.transform.worldToLocalMatrix;
 				var q =
 					from i in Enumerable.Range(0, this.Frequency)
-					let segtop = instantiate_()
-					from mf in segtop.GetComponentsInChildren<MeshFilter>()
+					let tfSegtop = instantiate_()
+					from mf in tfSegtop.GetComponentsInChildren<MeshFilter>()
 					let tf = mf.transform
 					let mtinv = (float4x4)tf.worldToLocalMatrix
 					let pos = tf.position//math.transform(mtStInv, tf.position)
 					let front = pos + tf.forward//math.transform(mtStInv, tf.forward)
-					select (segtop, mf, i, (mtinv, pos, front))
+					select (tfSegtop, mf, i, (mtinv, pos, front))
 					;
 				foreach (var x in q.ToArray())
 				{
-                    var (segtop, mf, i, pre) = x;
+                    var (tfSegtop, mf, i, pre) = x;
 
                     var tfChild = mf.transform;
 					var pos = conv.CalculateBasePoint(i, pre.pos, float4x4.identity);
                     tfChild.position = pos;
-                    //var forward = conv.CalculateBasePoint(i, pre.front, mtSegInv) - pos;
-                    //tfChild.forward = forward;
-                    var front = conv.CalculateBasePoint(i, pre.front, float4x4.identity);
-					tfChild.LookAt(front, Vector3.up);
+
+                    Debug.Log($"{i} mesh:{mf.name} top:{tfSegtop.name} {pos} {pre.pos}");
 
                     if (mf.GetComponent<WithoutShapeTransforming>() != null)
                     {
+						//var forward = conv.CalculateBasePoint(i, pre.front, mtSegInv) - pos;
+						//tfChild.forward = forward;
+						var front = conv.CalculateBasePoint(i, pre.front, float4x4.identity);
+						tfChild.LookAt(front, Vector3.up);
                         continue;
                     }
 
-                    Debug.Log($"{i} mesh:{mf.name} top:{segtop.name} {pos} {pre.pos}");
-                    var newmesh = conv.BuildMesh(i, mf.sharedMesh, segtop.transform.worldToLocalMatrix);
+					var newmesh = conv.BuildMesh(i, mf.sharedMesh, tfChild.worldToLocalMatrix);
                     mf.sharedMesh = newmesh;
 
                     //// コライダー以外のメッシュはそのまま維持
@@ -97,43 +98,15 @@ namespace DotsLite.LoadPath.Authoring
                     //    col.SetMesh(newmesh);
                     //}
                 }
-				GameObject instantiate_()
+				Transform instantiate_()
 				{
-					var go = Instantiate(this.ModelTopPrefab);
-					var tf = go.transform;
-					Debug.Log(tf.position);
+					var tf = Instantiate(this.ModelTopPrefab).transform;
 					tf.SetParent(tfSegment, worldPositionStays: true);
-					Debug.Log(tf.position);
-					return go;
+					return tf;
 				}
 			}
-			//void createColliderSegments_(PathMeshConvertor conv)
-			//{
-			//	var tf = this.transform;
-			//	var col = this.LevelingColliderPrefab.GetComponent<MeshCollider>();
-			//	var q =
-			//		from i in Enumerable.Range(0, this.Frequency)
-			//		let seg = new GameObject($"collider {i}")
-			//		select (seg, col, i)
-			//		;
-			//	foreach (var x in q)
-			//	{
-			//		var (seg, srccol, i) = x;
-			//		Debug.Log($"{i} collider:{srccol.name} top:{seg.name}");
-
-			//		var newmesh = conv.BuildMesh(i, srccol.sharedMesh, 0.0f);
-			//		var dstcol = seg.AddComponent<MeshCollider>();
-			//		dstcol.sharedMesh = newmesh;
-			//		seg.transform.SetParent(tf, worldPositionStays: true);
-			//		seg.transform.localPosition = Vector3.zero;
-			//	}
-			//}
 		}
 
-		void convertMesh()
-        {
-
-		}
 
 	}
 
@@ -144,8 +117,13 @@ namespace DotsLite.LoadPath.Authoring
 		float3 startPosition;
 		float3 endPosition;
 
-		float3 effectStart;
-		float3 effectEnd;
+		float3 forwardStart;
+		float3 forwardEnd;
+
+		float3 rightStart;
+		float3 rightEnd;
+		float3 upStart;
+		float3 upEnd;
 
 		float unitRatio;
 		float maxZR;
@@ -158,9 +136,17 @@ namespace DotsLite.LoadPath.Authoring
 			this.startPosition = (float3)tfStart.position;
 			this.endPosition = (float3)tfEnd.position;
 
+			var ss = math.select(1, -1, isReverseStart);
+			var se = math.select(1, -1, isReverseEnd);
+
 			var dist = math.distance(endPosition, startPosition);
-			this.effectStart = (float3)tfStart.forward * (dist * math.select(1, -1, isReverseStart));
-			this.effectEnd = (float3)tfEnd.forward * (dist * math.select(1, -1, isReverseEnd));
+			this.forwardStart = (float3)tfStart.forward * (dist * ss);
+			this.forwardEnd = (float3)tfEnd.forward * (dist * se);
+
+			this.rightStart = tfStart.right * ss;
+			this.rightEnd = tfEnd.right * se;
+			this.upStart = tfStart.up;
+			this.upEnd = tfStart.up;
 
 			this.maxZR = 1.0f / maxZ;
 			this.unitRatio = 1.0f / frequency;
@@ -195,26 +181,47 @@ namespace DotsLite.LoadPath.Authoring
 
 			var p0 = math.transform(mtInv, startPosition);
 			var p1 = math.transform(mtInv, endPosition);
-			var v0 = math.rotate(mtInv, effectStart);
-			var v1 = math.rotate(mtInv, effectEnd);
+			var v0 = math.rotate(mtInv, forwardStart);
+			var v1 = math.rotate(mtInv, forwardEnd);
 
 			var att = (2.0f * p0 - 2.0f * p1 + v0 + v1) * t * t;
 			var bt = (-3.0f * p0 + 3.0f * p1 - 2.0f * v0 - v1) * t;
 
 			var pos = att * t + bt * t + v0 * t + p0;
 
-			var d = 3.0f * att + 2.0f * bt + v0;
+			var d = 3.0f * att + 2.0f * bt + v0;// pos の微分（割合？）
+
+            //pos += vtx.x * math.normalize(new float3(d.z, d.y, -d.x));
+            //pos += vtx.y * math.normalize(new float3(d.z, d.y, -d.x));
+            //return new float3(pos.x, pos.y, pos.z);
+
+            pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
+            return new float3(pos.x, pos.y + vtx.y, pos.z);
+        }
+
+		float3 interpolatePosition3d2(int i, float3 vtx, float4x4 mtInv)
+		{
+			var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
+
+			var p0 = math.transform(mtInv, startPosition);
+			var p1 = math.transform(mtInv, endPosition);
+			var v0 = math.rotate(mtInv, forwardStart);
+			var v1 = math.rotate(mtInv, forwardEnd);
+
+			var att = (2.0f * p0 - 2.0f * p1 + v0 + v1) * t * t;
+			var bt = (-3.0f * p0 + 3.0f * p1 - 2.0f * v0 - v1) * t;
+
+			var pos = att * t + bt * t + v0 * t + p0;
+
+			var d = 3.0f * att + 2.0f * bt + v0;// pos の微分（割合？）
 
 			//pos += vtx.x * math.normalize(new float3(d.z, d.y, -d.x));
 			//pos += vtx.y * math.normalize(new float3(d.z, d.y, -d.x));
-
 			//return new float3(pos.x, pos.y, pos.z);
 
 			pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
-
 			return new float3(pos.x, pos.y + vtx.y, pos.z);
 		}
-
 	}
 
 }
