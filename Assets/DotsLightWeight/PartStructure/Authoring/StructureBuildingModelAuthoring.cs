@@ -189,6 +189,9 @@ namespace DotsLite.Structure.Authoring
 
         // ---------------------------------------------------------------------
 
+        /// <summary>
+        /// main, near, far, part 以外の entity を削除する
+        /// </summary>
         static void trimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
             var em = gcs.DstEntityManager;
@@ -212,6 +215,9 @@ namespace DotsLite.Structure.Authoring
                 em.DestroyEntity(ent);
             }
         }
+        /// <summary>
+        /// part entity の遅延的破棄をセットする
+        /// </summary>
         static void orderTrimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
         {
             var em = gcs.DstEntityManager;
