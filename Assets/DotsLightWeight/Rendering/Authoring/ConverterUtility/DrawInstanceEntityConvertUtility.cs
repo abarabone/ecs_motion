@@ -116,26 +116,26 @@ namespace DotsLite.Draw.Authoring
         /// </summary>
         static public void AddLod2ComponentToDrawInstanceEntity
             (
-                this GameObjectConversionSystem gcs_,
-                Entity drawInstance_, GameObject top_, IMeshModelLod[] lods_
+                this GameObjectConversionSystem gcs,
+                Entity drawInstance, GameObject top, IMeshModelLod[] lods
             )
         {
-            if (lods_.Length != 2) return;
+            if (lods.Length != 2) return;
 
-            var lod0_ = lods_[0].Obj ?? top_;
-            var lod1_ = lods_[1].Obj ?? top_;
+            var obj0 = lods[0].Obj ?? top;
+            var obj1 = lods[1].Obj ?? top;
 
-            var em = gcs_.DstEntityManager;
+            var em = gcs.DstEntityManager;
 
-            em.AddComponentData(drawInstance_,
+            em.AddComponentData(drawInstance,
                 new DrawInstance.ModelLod2LinkData
                 {
-                    DrawModelEntityNear = gcs_.GetFromModelEntityDictionary(lod0_),
-                    DrawModelEntityFar = gcs_.GetFromModelEntityDictionary(lod1_),
-                    LimitDistanceSqrNear = pow2_(lods_[0].LimitDistance),
-                    LimitDistanceSqrFar = pow2_(lods_[1].LimitDistance),
-                    MarginDistanceSqrNear = pow2_(lods_[0].LimitDistance + lods_[0].Margin),
-                    MarginDistanceSqrFar = pow2_(lods_[1].LimitDistance + lods_[1].Margin),
+                    DrawModelEntityNear = gcs.GetFromModelEntityDictionary(obj0),
+                    DrawModelEntityFar = gcs.GetFromModelEntityDictionary(obj1),
+                    LimitDistanceSqrNear = pow2_(lods[0].LimitDistance),
+                    LimitDistanceSqrFar = pow2_(lods[1].LimitDistance),
+                    MarginDistanceSqrNear = pow2_(lods[0].LimitDistance + lods[0].Margin),
+                    MarginDistanceSqrFar = pow2_(lods[1].LimitDistance + lods[1].Margin),
                 }
             );
             
@@ -145,6 +145,31 @@ namespace DotsLite.Draw.Authoring
             static float pow2_(float d) => d * d;
         }
 
+
+        static public void AddLod1ComponentToDrawInstanceEntity
+            (
+                this GameObjectConversionSystem gcs,
+                Entity drawInstance, GameObject top, IMeshModelLod lod
+            )
+        {
+            var obj = lod.Obj ?? top;
+
+            var em = gcs.DstEntityManager;
+
+            em.AddComponentData(drawInstance,
+                new DrawInstance.ModelLod1LinkData
+                {
+                    DrawModelEntityNear = gcs.GetFromModelEntityDictionary(obj),
+                    LimitDistanceSqrNear = pow2_(lod.LimitDistance),
+                    MarginDistanceSqrNear = pow2_(lod.LimitDistance + lod.Margin),
+                }
+            );
+
+            return;
+
+
+            static float pow2_(float d) => d * d;
+        }
     }
 
 }
