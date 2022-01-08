@@ -31,7 +31,7 @@ namespace DotsLite.Arms.Authoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            //if (!this.isActiveAndEnabled) return;
+            //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
             //var functions = this.Wapons

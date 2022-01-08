@@ -43,7 +43,7 @@ namespace DotsLite.Particle.Aurthoring
 
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
-            //if (!this.isActiveAndEnabled) return;
+            //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
             referencedPrefabs.Add(this.ModelSource.gameObject);
         }
@@ -54,7 +54,7 @@ namespace DotsLite.Particle.Aurthoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            //if (!this.isActiveAndEnabled) return;
+            //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
             var gcs = conversionSystem;
 

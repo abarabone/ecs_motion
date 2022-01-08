@@ -19,7 +19,7 @@ namespace DotsLite.Draw.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            //if (!this.isActiveAndEnabled) return;
+            //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
             initEntity_(entity, dstManager, this.UseTempJobNativeBuffer, this.UseDrawInstanceSort);

@@ -42,7 +42,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            if (!this.isActiveAndEnabled) return;
+            if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
             createDataEntity_(conversionSystem, entity);
 

@@ -33,7 +33,7 @@ public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
     public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
     {
-        if (!this.isActiveAndEnabled) return;
+        if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
         var prefab_ent = conversionSystem.GetPrimaryEntity( this.prefab );

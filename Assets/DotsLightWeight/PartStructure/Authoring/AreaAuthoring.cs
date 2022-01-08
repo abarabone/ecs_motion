@@ -13,7 +13,6 @@ using UnityEditor;
 
 namespace DotsLite.Structure.Authoring
 {
-
     using DotsLite.Model;
     using DotsLite.Draw;
     using DotsLite.Model.Authoring;
@@ -25,9 +24,20 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Utilities;
     using DotsLite.Structure.Authoring;
 
-    public class AreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class AreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
-        
+
+        public StructureModel<UI32, StructureVertex> NearModel;
+
+        public GameObject Envelope;
+        public AreaAuthoring MasterPrefab;
+
+
+        public override IEnumerable<IMeshModel> QueryModel =>
+            new IMeshModel[] { this.NearModel };
+
+
+
         public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         {
             if (!this.isActiveAndEnabled) return;
@@ -38,27 +48,25 @@ namespace DotsLite.Structure.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            if (!this.isActiveAndEnabled) return;
+            if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
-
+            CreateStructureEntities_Compound(conversionSystem);
         }
 
-        static public void CreateStructureEntities_Compound
-            (GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+        void CreateStructureEntities_Compound(GameObjectConversionSystem gcs)
         {
-            var top = st;
-            var far = st.FarModel.Obj;
-            var near = st.NearModel.Obj;
-            var env = st.Envelope;
-            var posture = st.GetComponentInChildren<PostureAuthoring>();
-            var parts = near.GetComponentsInChildren<StructurePartAuthoring>();
+            var top = this;
+            var near = this.NearModel.Obj;
+            var env = this.Envelope;
+            var posture = this.GetComponentInChildren<PostureAuthoring>();
+            var parts = near.GetComponentsInChildren<StructureAreaPartAuthoring>();
 
-            st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
+            this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
             initBinderEntity_(gcs, top, posture);
-            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
+            initMainEntity_(gcs, top, posture, this.NearModel, parts.Length);
 
-            initCompoundColliderEntity(gcs, near);
+            //initCompoundColliderEntity(gcs, near);
 
             //setBoneForFarEntity_(gcs, posture, far, top.transform);
             //setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
@@ -68,7 +76,7 @@ namespace DotsLite.Structure.Authoring
         }
 
         static void initBinderEntity_
-            (GameObjectConversionSystem gcs, StructureBuildingModelAuthoring top, PostureAuthoring main)
+            (GameObjectConversionSystem gcs, AreaAuthoring top, PostureAuthoring main)
         {
             var em_ = gcs.DstEntityManager;
 
@@ -91,8 +99,8 @@ namespace DotsLite.Structure.Authoring
         }
 
         static void initMainEntity_(
-            GameObjectConversionSystem gcs, StructureBuildingModelAuthoring top, PostureAuthoring main,
-            IMeshModelLod near, IMeshModelLod far, int partLength)
+            GameObjectConversionSystem gcs, AreaAuthoring top, PostureAuthoring main,
+            IMeshModelLod near, int partLength)
         {
             var em = gcs.DstEntityManager;
 

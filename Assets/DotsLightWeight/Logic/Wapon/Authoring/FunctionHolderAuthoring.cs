@@ -25,7 +25,7 @@ namespace DotsLite.Arms.Authoring
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            //if (!this.isActiveAndEnabled) return;
+            //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
             var funits = this.GetComponentsInChildren<IFunctionUnitAuthoring>();

@@ -50,7 +50,7 @@ namespace DotsLite.Structure.Authoring
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
-            new[] { this.NearModel as IMeshModel, this.FarModel };
+            new IMeshModel [] { this.NearModel, this.FarModel };
 
 
         public PartColliderMode ColliderMode;
@@ -68,7 +68,7 @@ namespace DotsLite.Structure.Authoring
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            //if (!this.isActiveAndEnabled) return;
+            //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
             switch (this.ColliderMode)

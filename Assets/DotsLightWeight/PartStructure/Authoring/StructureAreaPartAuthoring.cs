@@ -1,18 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 using UnityEngine;
+using Unity.Entities;
+using Unity.Collections;
+using Unity.Transforms;
+using Unity.Mathematics;
+using System.Threading.Tasks;
+using Unity.Linq;
+using UnityEditor;
 
-public class StructureAreaPartAuthoring : MonoBehaviour
+namespace DotsLite.Structure.Authoring
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    using DotsLite.Model;
+    using DotsLite.Draw;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Draw.Authoring;
+    using DotsLite.Geometry;
+    using Unity.Physics.Authoring;
+    using System.Runtime.InteropServices;
+    using DotsLite.Common.Extension;
+    using DotsLite.Utilities;
+    using DotsLite.Structure.Authoring;
 
-    // Update is called once per frame
-    void Update()
+    public class StructureAreaPartAuthoring : MonoBehaviour
     {
-        
+        // Start is called before the first frame update
+        void Start()
+        {
+
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
     }
 }

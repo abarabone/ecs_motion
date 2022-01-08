@@ -35,7 +35,7 @@ namespace DotsLite.MarchingCubes.Authoring
 
         public unsafe void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            if (!this.isActiveAndEnabled) return;
+            if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
             init_(conversionSystem, entity);

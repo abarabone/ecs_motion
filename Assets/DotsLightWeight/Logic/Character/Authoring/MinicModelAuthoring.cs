@@ -37,7 +37,7 @@ namespace DotsLite.Model.Authoring
 
         public new void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            //if (!this.isActiveAndEnabled) return;
+            //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
             base.Convert(entity, dstManager, conversionSystem);
 
