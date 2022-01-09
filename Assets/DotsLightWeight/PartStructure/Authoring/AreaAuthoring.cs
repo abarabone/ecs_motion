@@ -10,6 +10,9 @@ using Unity.Mathematics;
 using System.Threading.Tasks;
 using Unity.Linq;
 using UnityEditor;
+using Unity.Physics;
+
+using Collider = Unity.Physics.Collider;
 
 namespace DotsLite.Structure.Authoring
 {
@@ -24,7 +27,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Utilities;
     using DotsLite.Structure.Authoring;
 
-    public class AreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+    public class AreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
         public StructureModel<UI32, StructureVertex> NearModel;
@@ -38,17 +41,11 @@ namespace DotsLite.Structure.Authoring
 
 
 
-        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
-        {
-            if (!this.isActiveAndEnabled) return;
-
-
-        }
-
-
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
+
+
 
             CreateStructureEntities_Compound(conversionSystem);
         }
@@ -60,13 +57,14 @@ namespace DotsLite.Structure.Authoring
             var env = this.Envelope;
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             var parts = near.GetComponentsInChildren<StructureAreaPartAuthoring>();
+            //var bones = near.GetComponentsInChildren<StructureBone>();
 
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
             initBinderEntity_(gcs, top, posture);
             initMainEntity_(gcs, top, posture, this.NearModel, parts.Length);
 
-            //initCompoundColliderEntity(gcs, near);
+            initCompoundColliderEntity(gcs, top.gameObject, parts);
 
             //setBoneForFarEntity_(gcs, posture, far, top.transform);
             //setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
@@ -187,17 +185,42 @@ namespace DotsLite.Structure.Authoring
             em.SetName_(mainEntity, $"{top.name} main");
         }
 
-        static void initCompoundColliderEntity(GameObjectConversionSystem gcs, GameObject near)
+        static void initCompoundColliderEntity(GameObjectConversionSystem gcs, GameObject main, StructureAreaPartAuthoring[] parts)
         {
             var em = gcs.DstEntityManager;
 
-            var nearent = gcs.GetPrimaryEntity(near);
+            var nearent = gcs.GetPrimaryEntity(main);
             em.AddComponentData(nearent, new LateBuildCompoundColliderConversion.TargetData
             {
-                Dst = near,
-                Srcs = near.GetComponentsInChildren<StructurePartAuthoring>().Select(x => x.gameObject),
+                Dst = main,
+                Srcs = parts.Select(x => x.gameObject),
             });
         }
 
+        //public BlobAssetReference<Collider> createCompoundCollider(StructureAreaPartAuthoring[] parts, CollisionFilter filter)
+        //{
+        //    var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
+        //        parts.Length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+
+        //    for (var i = 0; i < parts.Length; i++)
+        //    {
+        //        var srccollider = parts[i].GetComponent<Physics.sh;
+        //        var child = new CompoundCollider.ColliderBlobInstance
+        //        {
+        //            Collider = part..Collider,
+        //            CompoundFromChild = new RigidTransform
+        //            {
+        //                pos = origin + new float3(cube.x, -cube.y, -cube.z) + new float3(0.5f, -0.5f, -0.5f),
+        //                rot = srccube.Rotation,
+        //            }
+        //        };
+        //        //dst.AddNoResize(child);
+        //        dst[i] = child;
+        //    }
+
+        //    var res = CompoundCollider.Create(dst);
+        //    dst.Dispose();
+        //    return res;
+        //}
     }
 }
