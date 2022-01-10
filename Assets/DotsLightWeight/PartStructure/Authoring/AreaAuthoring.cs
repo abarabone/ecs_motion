@@ -27,6 +27,19 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Utilities;
     using DotsLite.Structure.Authoring;
 
+
+    //binder
+    //main
+    // pos
+    // draw instance
+    // collider
+    //part
+    // debris prefab
+    //bone
+    // bone id
+
+
+
     public class AreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
@@ -63,7 +76,7 @@ namespace DotsLite.Structure.Authoring
             initBinderEntity_(gcs, top, posture);
             initMainEntity_(gcs, top, posture, this.NearModel, parts.Length);
 
-            initCompoundColliderEntity(gcs, top.gameObject, parts);
+            //initCompoundColliderEntity(gcs, top.gameObject, parts);
 
             //setBoneForFarEntity_(gcs, posture, far, top.transform);
             //setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
