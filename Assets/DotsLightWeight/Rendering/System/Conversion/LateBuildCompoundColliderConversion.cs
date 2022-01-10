@@ -44,11 +44,12 @@ namespace DotsLite.Model.Authoring
         protected override void OnUpdate()
         {
             var em = this.DstEntityManager;
-
+            Debug.Log("aaaaaaa");
             this.Entities.ForEach
             (
                 (Entity e, TargetData c) =>
                 {
+                    Debug.Log(c.Dst.name);
                     var qPartCollider =
                         from src in c.Srcs
                         let tf = src.transform
@@ -57,6 +58,7 @@ namespace DotsLite.Model.Authoring
                         select new CompoundCollider.ColliderBlobInstance
                         {
                             Collider = col.Value,
+                            //Collider = BlobAssetReference<Collider>.Null,
                             CompoundFromChild = new RigidTransform
                             {
                                 pos = tf.localPosition,

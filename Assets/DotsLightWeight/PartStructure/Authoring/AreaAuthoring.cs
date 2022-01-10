@@ -46,7 +46,6 @@ namespace DotsLite.Structure.Authoring
             if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
-
             CreateStructureEntities_Compound(conversionSystem);
         }
 
@@ -120,7 +119,8 @@ namespace DotsLite.Structure.Authoring
                     typeof(Main.PartDestructionData),
                     typeof(Collision.Hit.TargetData),
                     //typeof(Main.SleepTimerData),
-                    typeof(DrawInstance.NeedLodCurrentTag)
+                    typeof(DrawInstance.NeedLodCurrentTag),
+                    typeof(PhysicsCollider),
                 }
             );
             em.AddComponents(mainEntity, mainAddtypes);
@@ -185,17 +185,18 @@ namespace DotsLite.Structure.Authoring
             em.SetName_(mainEntity, $"{top.name} main");
         }
 
-        static void initCompoundColliderEntity(GameObjectConversionSystem gcs, GameObject main, StructureAreaPartAuthoring[] parts)
-        {
-            var em = gcs.DstEntityManager;
+        //static void initCompoundColliderEntity(GameObjectConversionSystem gcs, GameObject main, StructureAreaPartAuthoring[] parts)
+        //{
+        //    var em = gcs.DstEntityManager;
+        //    Debug.Log(main.name);
 
-            var nearent = gcs.GetPrimaryEntity(main);
-            em.AddComponentData(nearent, new LateBuildCompoundColliderConversion.TargetData
-            {
-                Dst = main,
-                Srcs = parts.Select(x => x.gameObject),
-            });
-        }
+        //    var ent = gcs.GetPrimaryEntity(main);
+        //    em.AddComponentData(ent, new LateBuildCompoundColliderConversion.TargetData
+        //    {
+        //        Dst = main,
+        //        Srcs = parts.Select(x => x.gameObject),
+        //    });
+        //}
 
         //public BlobAssetReference<Collider> createCompoundCollider(StructureAreaPartAuthoring[] parts, CollisionFilter filter)
         //{
