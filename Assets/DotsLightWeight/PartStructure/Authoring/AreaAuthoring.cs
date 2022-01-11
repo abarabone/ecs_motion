@@ -128,17 +128,18 @@ namespace DotsLite.Structure.Authoring
             (
                 new ComponentType[]
                 {
-                    typeof(Main.MainTag),
                     typeof(DrawInstance.MeshTag),
-                    //typeof(NonUniformScale),//Žb’è
-                    //typeof(ObjectMain.ObjectMainTag),
-                    typeof(Main.BinderLinkData),//Žb’è
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(Main.PartDestructionData),
-                    typeof(Collision.Hit.TargetData),
-                    //typeof(Main.SleepTimerData),
                     typeof(DrawInstance.NeedLodCurrentTag),
+                    //typeof(NonUniformScale),//Žb’è
+                    //typeof(ObjectMain.ObjectMainTag),
+                    typeof(Main.MainTag),
+                    typeof(Main.BinderLinkData),//Žb’è
+                    typeof(Main.PartDestructionData),
+                    typeof(Main.PartData),
+                    //typeof(Main.SleepTimerData),
+                    typeof(Collision.Hit.TargetData),
                     typeof(PhysicsCollider),
                 }
             );

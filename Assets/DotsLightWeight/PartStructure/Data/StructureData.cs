@@ -15,6 +15,8 @@ using DotsLite.Geometry;
 using System.Runtime.InteropServices;
 using System;
 
+using Collider = Unity.Physics.Collider;
+
 namespace DotsLite.Structure
 {
     using DotsLite.Utilities;
@@ -45,6 +47,16 @@ namespace DotsLite.Structure
         public struct BinderLinkData : IComponentData
         {
             public Entity BinderEntity;
+        }
+
+
+
+        [InternalBufferCapacity(0)]
+        public struct PartData : IBufferElementData
+        {
+            //public int PartId;
+            public BlobAssetReference<Collider> Collider;
+            public Entity DebrisPrefab;
         }
 
 
