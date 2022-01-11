@@ -30,9 +30,10 @@ namespace DotsLite.Structure.Authoring
 
     //binder
     //main
-    // pos
+    // posture
     // draw instance
     // collider
+    // destructions
     //part
     // debris prefab
     //bone
@@ -60,6 +61,7 @@ namespace DotsLite.Structure.Authoring
 
 
             CreateStructureEntities_Compound(conversionSystem);
+
         }
 
         void CreateStructureEntities_Compound(GameObjectConversionSystem gcs)
@@ -77,6 +79,10 @@ namespace DotsLite.Structure.Authoring
             initMainEntity_(gcs, top, posture, this.NearModel, parts.Length);
 
             //initCompoundColliderEntity(gcs, top.gameObject, parts);
+            gcs.DstEntityManager.SetComponentData(gcs.GetPrimaryEntity(top), new PhysicsCollider
+            {
+                Value = createCompoundCollider(parts, CollisionFilter.Default)
+            });
 
             //setBoneForFarEntity_(gcs, posture, far, top.transform);
             //setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
@@ -211,30 +217,27 @@ namespace DotsLite.Structure.Authoring
         //    });
         //}
 
-        //public BlobAssetReference<Collider> createCompoundCollider(StructureAreaPartAuthoring[] parts, CollisionFilter filter)
-        //{
-        //    var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
-        //        parts.Length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+        public BlobAssetReference<Collider> createCompoundCollider(StructureAreaPartAuthoring[] parts, CollisionFilter filter)
+        {
+            var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
+                parts.Length, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
-        //    for (var i = 0; i < parts.Length; i++)
-        //    {
-        //        var srccollider = parts[i].GetComponent<Physics.sh;
-        //        var child = new CompoundCollider.ColliderBlobInstance
-        //        {
-        //            Collider = part..Collider,
-        //            CompoundFromChild = new RigidTransform
-        //            {
-        //                pos = origin + new float3(cube.x, -cube.y, -cube.z) + new float3(0.5f, -0.5f, -0.5f),
-        //                rot = srccube.Rotation,
-        //            }
-        //        };
-        //        //dst.AddNoResize(child);
-        //        dst[i] = child;
-        //    }
+            for (var i = 0; i < parts.Length; i++)
+            {
+                dst[i] = new CompoundCollider.ColliderBlobInstance
+                {
+                    Collider = BlobAssetReference<Collider>.Null,
+                    CompoundFromChild = new RigidTransform
+                    {
+                        pos = float3.zero,
+                        rot = quaternion.identity,
+                    }
+                };
+            }
 
-        //    var res = CompoundCollider.Create(dst);
-        //    dst.Dispose();
-        //    return res;
-        //}
+            var res = CompoundCollider.Create(dst);
+            dst.Dispose();
+            return res;
+        }
     }
 }
