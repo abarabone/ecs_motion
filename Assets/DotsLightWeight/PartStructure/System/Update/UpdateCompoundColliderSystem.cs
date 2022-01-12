@@ -54,5 +54,67 @@ namespace DotsLite.Draw
 
         }
 
+        BarrierDependency.Sender barcopydep;
+        //BarrierDependency.Sender barfreedep;
+
+        BitGridMessageAllocSystem messageSystem;
+
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            this.barcopydep = BarrierDependency.Sender.Create<BitGridCopyToGpuSystem>(this);
+            //this.barfreedep = BarrierDependency.Sender.Create<BitGridMessageFreeSystem>(this);
+
+            this.messageSystem = this.World.GetOrCreateSystem<BitGridMessageAllocSystem>();
+        }
+
+        protected override void OnUpdate()
+        {
+            using var barcopyScope = this.barcopydep.WithDependencyScope();
+            //using var barfreeScope = this.barfreedep.WithDependencyScope();
+
+            this.Dependency = new JobExecution
+            {
+                bitgrids = this.GetComponentDataFromEntity<BitGrid.BitLinesData>(isReadOnly: true),
+                dirties = this.GetComponentDataFromEntity<BitGrid.UpdateDirtyRangeData>(),
+                parents = this.GetComponentDataFromEntity<BitGrid.ParentAreaData>(isReadOnly: true),
+                origins = this.GetComponentDataFromEntity<BitGrid.WorldOriginData>(isReadOnly: true),
+                areas = this.GetComponentDataFromEntity<BitGridArea.GridLinkData>(isReadOnly: true),
+                dims = this.GetComponentDataFromEntity<BitGridArea.UnitDimensionData>(isReadOnly: true),
+            }
+            .ScheduleParallelKey(this.messageSystem.Reciever, 1, this.Dependency);
+        }
+
+
+        [BurstCompile]
+        public struct JobExecution : HitMessage<UpdateMessage>.IApplyJobExecutionForKey
+        {
+            [ReadOnly]
+            public ComponentDataFromEntity<BitGrid.BitLinesData> bitgrids;
+            [ReadOnly]
+            public ComponentDataFromEntity<BitGrid.ParentAreaData> parents;
+            [ReadOnly]
+            public ComponentDataFromEntity<BitGrid.WorldOriginData> origins;
+
+            [ReadOnly]
+            public ComponentDataFromEntity<BitGridArea.GridLinkData> areas;
+            [ReadOnly]
+            public ComponentDataFromEntity<BitGridArea.UnitDimensionData> dims;
+
+            [WriteOnly]
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<BitGrid.UpdateDirtyRangeData> dirties;
+
+
+            [BurstCompile]
+            public unsafe void Execute(
+                int index, Entity targetEntity,
+                NativeMultiHashMap<Entity, UpdateMessage>.Enumerator msgs)
+            {
+
+            }
+        }
     }
 }
