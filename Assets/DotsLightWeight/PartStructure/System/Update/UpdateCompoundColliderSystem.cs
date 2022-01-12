@@ -91,22 +91,6 @@ namespace DotsLite.Draw
         [BurstCompile]
         public struct JobExecution : HitMessage<UpdateMessage>.IApplyJobExecutionForKey
         {
-            [ReadOnly]
-            public ComponentDataFromEntity<BitGrid.BitLinesData> bitgrids;
-            [ReadOnly]
-            public ComponentDataFromEntity<BitGrid.ParentAreaData> parents;
-            [ReadOnly]
-            public ComponentDataFromEntity<BitGrid.WorldOriginData> origins;
-
-            [ReadOnly]
-            public ComponentDataFromEntity<BitGridArea.GridLinkData> areas;
-            [ReadOnly]
-            public ComponentDataFromEntity<BitGridArea.UnitDimensionData> dims;
-
-            [WriteOnly]
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<BitGrid.UpdateDirtyRangeData> dirties;
-
 
             [BurstCompile]
             public unsafe void Execute(

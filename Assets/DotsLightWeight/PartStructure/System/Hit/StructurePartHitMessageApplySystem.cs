@@ -27,7 +27,7 @@ namespace DotsLite.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class tructurePartHitMessageAllocSystem : SystemBase
+    public class StructurePartHitMessageAllocSystem : SystemBase
     {
         StructurePartHitMessageApplySystem sys;
 
