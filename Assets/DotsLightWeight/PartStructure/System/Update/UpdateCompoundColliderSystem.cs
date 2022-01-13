@@ -34,6 +34,7 @@ namespace DotsLite.Draw
     public class UpdateCompoundColliderSystem : DependencyAccessableSystemBase
     {
 
+        public HitMessage<PartHitMessage>.Reciever Reciever { get; private set; }
 
         CommandBufferDependency.Sender cmddep;
 
@@ -42,7 +43,16 @@ namespace DotsLite.Draw
         {
             base.OnCreate();
 
+            this.Reciever = new HitMessage<PartHitMessage>.Reciever(10000);
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
+
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            this.Reciever.Dispose();
         }
 
         protected override void OnUpdate()
@@ -52,53 +62,37 @@ namespace DotsLite.Draw
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
-        }
-
-        BarrierDependency.Sender barcopydep;
-        //BarrierDependency.Sender barfreedep;
-
-        BitGridMessageAllocSystem messageSystem;
-
-
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-
-            this.barcopydep = BarrierDependency.Sender.Create<BitGridCopyToGpuSystem>(this);
-            //this.barfreedep = BarrierDependency.Sender.Create<BitGridMessageFreeSystem>(this);
-
-            this.messageSystem = this.World.GetOrCreateSystem<BitGridMessageAllocSystem>();
-        }
-
-        protected override void OnUpdate()
-        {
-            using var barcopyScope = this.barcopydep.WithDependencyScope();
-            //using var barfreeScope = this.barfreedep.WithDependencyScope();
-
             this.Dependency = new JobExecution
             {
-                bitgrids = this.GetComponentDataFromEntity<BitGrid.BitLinesData>(isReadOnly: true),
-                dirties = this.GetComponentDataFromEntity<BitGrid.UpdateDirtyRangeData>(),
-                parents = this.GetComponentDataFromEntity<BitGrid.ParentAreaData>(isReadOnly: true),
-                origins = this.GetComponentDataFromEntity<BitGrid.WorldOriginData>(isReadOnly: true),
-                areas = this.GetComponentDataFromEntity<BitGridArea.GridLinkData>(isReadOnly: true),
-                dims = this.GetComponentDataFromEntity<BitGridArea.UnitDimensionData>(isReadOnly: true),
+                cmd = cmd,
+
+                destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
             }
-            .ScheduleParallelKey(this.messageSystem.Reciever, 1, this.Dependency);
+            .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
+
+            this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
 
         [BurstCompile]
-        public struct JobExecution : HitMessage<UpdateMessage>.IApplyJobExecutionForKey
+        public struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForKey
         {
+
+            public EntityCommandBuffer.ParallelWriter cmd;
+
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<Main.PartDestructionData> destructions;
+
 
             [BurstCompile]
             public unsafe void Execute(
-                int index, Entity targetEntity,
-                NativeMultiHashMap<Entity, UpdateMessage>.Enumerator msgs)
+                int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
 
+
+
             }
+
         }
     }
 }
