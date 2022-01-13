@@ -66,11 +66,12 @@ namespace DotsLite.Draw
             {
                 cmd = cmd,
 
-                destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
+                cols = this.GetComponentDataFromEntity<PhysicsCollider>(),
+                infos = this.GetComponentDataFromEntity<Main.PartInfoData>(isReadOnly: true),
+                ress = this.GetBufferFromEntity<Main.PartDestructionResourceData>(isReadOnly: true),
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
 
-            this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
         }
 
 
@@ -80,17 +81,35 @@ namespace DotsLite.Draw
 
             public EntityCommandBuffer.ParallelWriter cmd;
 
-            [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<Main.PartDestructionData> destructions;
+            public ComponentDataFromEntity<PhysicsCollider> cols;
+
+            [ReadOnly]
+            public ComponentDataFromEntity<Main.PartInfoData> infos;
+
+            [ReadOnly]
+            public BufferFromEntity<Main.PartDestructionResourceData> ress;
 
 
             [BurstCompile]
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
+                var info = this.infos[mainEntity];
 
+                var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
+                    info.LivePartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
+                var buffer = this.ress[mainEntity];
+                for (var i = 0; i < info.LivePartLength; i++)
+                {
+                    dst[i] = buffer[i].ColliderInstance;
+                }
 
+                this.cols[mainEntity] = new PhysicsCollider
+                {
+                    Value = CompoundCollider.Create(dst),
+                };
+                dst.Dispose();
             }
 
         }

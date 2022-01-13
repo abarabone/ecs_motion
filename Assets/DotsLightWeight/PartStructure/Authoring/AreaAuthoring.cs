@@ -137,7 +137,8 @@ namespace DotsLite.Structure.Authoring
                     typeof(Main.MainTag),
                     typeof(Main.BinderLinkData),//Žb’è
                     typeof(Main.PartDestructionData),
-                    typeof(Main.PartData),
+                    typeof(Main.PartDestructionResourceData),
+                    typeof(Main.PartInfoData),
                     //typeof(Main.SleepTimerData),
                     typeof(Collision.Hit.TargetData),
                     typeof(PhysicsCollider),
@@ -183,9 +184,10 @@ namespace DotsLite.Structure.Authoring
 
 
             em.SetComponentData(mainEntity,
-                new Main.PartDestructionData
+                new Main.PartInfoData
                 {
-                    partLength = partLength,
+                    PartLength = partLength,
+                    LivePartLength = partLength,
                 }
             );
             //em.SetComponentData(mainEntity,

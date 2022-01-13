@@ -83,6 +83,7 @@ namespace DotsLite.Structure
             {
                 cmd = cmd,
 
+                infos = this.GetComponentDataFromEntity<Main.PartInfoData>(isReadOnly: true),
                 destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
                 Prefabs = this.GetComponentDataFromEntity<Part.DebrisPrefabData>(isReadOnly: true),
                 Rotations = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true),
@@ -106,6 +107,7 @@ namespace DotsLite.Structure
 
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Main.PartDestructionData> destructions;
+            [ReadOnly] public ComponentDataFromEntity<Main.PartInfoData> infos;
 
             // パーツ用
             [ReadOnly] public ComponentDataFromEntity<Part.DebrisPrefabData> Prefabs;
@@ -122,7 +124,7 @@ namespace DotsLite.Structure
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                var targetParts = new UnsafeHashSet<Entity>(this.destructions[mainEntity].partLength, Allocator.Temp);
+                var targetParts = new UnsafeHashSet<Entity>(this.infos[mainEntity].PartLength, Allocator.Temp);
 
                 //wakeupMain_(index, mainEntity);
                 //applyDamgeToMain_();

@@ -274,7 +274,8 @@ namespace DotsLite.Structure.Authoring
                     typeof(Main.PartDestructionData),
                     typeof(Collision.Hit.TargetData),
                     typeof(Main.SleepTimerData),
-                    typeof(DrawInstance.NeedLodCurrentTag)
+                    typeof(DrawInstance.NeedLodCurrentTag),
+                    typeof(Main.PartInfoData),
                 }
             );
             em.AddComponents(mainEntity, mainAddtypes);
@@ -316,9 +317,10 @@ namespace DotsLite.Structure.Authoring
 
 
             em.SetComponentData(mainEntity,
-                new Main.PartDestructionData
+                new Main.PartInfoData
                 {
-                    partLength = partLength,
+                    PartLength = partLength,
+                    LivePartLength = partLength,
                 }
             );
             em.SetComponentData(mainEntity,

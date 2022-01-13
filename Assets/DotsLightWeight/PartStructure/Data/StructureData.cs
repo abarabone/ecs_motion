@@ -14,6 +14,7 @@ using Unity.Burst;
 using DotsLite.Geometry;
 using System.Runtime.InteropServices;
 using System;
+using Unity.Physics;
 
 using Collider = Unity.Physics.Collider;
 
@@ -51,11 +52,17 @@ namespace DotsLite.Structure
 
 
 
-        [InternalBufferCapacity(0)]
-        public struct PartData : IBufferElementData
+        public struct PartInfoData : IComponentData
         {
-            //public int PartId;
-            public BlobAssetReference<Collider> Collider;
+            public int PartLength;
+            public int LivePartLength;
+        }
+
+        [InternalBufferCapacity(0)]
+        public struct PartDestructionResourceData : IBufferElementData
+        {
+            public int PartId;
+            public CompoundCollider.ColliderBlobInstance ColliderInstance;
             public Entity DebrisPrefab;
         }
 
@@ -75,8 +82,6 @@ namespace DotsLite.Structure
             [FieldOffset(16)] public uint4 _values1;
             [FieldOffset(32)] public uint4 _values2;
             [FieldOffset(48)] public uint4 _values3;
-
-            [FieldOffset(64)] public int partLength;
 
             public void SetDestroyed( int id ) => this.Destructions[id >> 5] |= (uint)(1 << (id & 0b11111));
             public void SetAlive( int id ) => this.Destructions[id >> 5] &= ~(uint)(1 << (id & 0b11111));
