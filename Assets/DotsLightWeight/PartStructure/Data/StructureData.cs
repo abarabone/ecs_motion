@@ -51,6 +51,8 @@ namespace DotsLite.Structure
         }
 
 
+        public struct ColliderInitializeTag : IComponentData
+        { }
 
         public struct PartInfoData : IComponentData
         {

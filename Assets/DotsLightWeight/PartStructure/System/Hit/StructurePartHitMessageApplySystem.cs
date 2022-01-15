@@ -5,10 +5,13 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Physics;
 using System;
 using Unity.Jobs.LowLevel.Unsafe;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+
+using Colider = Unity.Physics.Collider;
 
 namespace DotsLite.Structure
 {
@@ -76,7 +79,7 @@ namespace DotsLite.Structure
         {
             using var cmdScope = this.cmddep.WithDependencyScope();
 
-            
+
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
             this.Dependency = new JobExecution
@@ -92,6 +95,15 @@ namespace DotsLite.Structure
                 //binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
                 //parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
                 //linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
+
+                updateCollider = new UpdateCollider
+                {
+                    cmd = cmd,
+
+                    cols = this.GetComponentDataFromEntity<PhysicsCollider>(),
+                    infos = this.GetComponentDataFromEntity<Main.PartInfoData>(isReadOnly: true),
+                    ress = this.GetBufferFromEntity<Main.PartDestructionResourceData>(isReadOnly: true),
+                },
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
 
@@ -120,6 +132,9 @@ namespace DotsLite.Structure
             //[ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
 
 
+            public UpdateCollider updateCollider;
+
+
             [BurstCompile]
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
@@ -131,6 +146,8 @@ namespace DotsLite.Structure
 
                 applyDestructions_(mainEntity, hitMessages, ref targetParts);
                 destroyPartAndCreateDebris_(index, in targetParts);
+
+                this.updateCollider.Execute(mainEntity, hitMessages);
 
                 targetParts.Dispose();
             }
@@ -145,7 +162,7 @@ namespace DotsLite.Structure
 
                 foreach (var msg in hitMessages)
                 {
-                    _._log($"{msg.PartId} {(uint)(destruction.Destructions[msg.PartId >> 5] & (uint)(1 << (msg.PartId & 0b11111)))} {destruction.IsDestroyed(msg.PartId)} {this.Prefabs.HasComponent(msg.PartEntity)}");
+                    //_._log($"{msg.PartId} {(uint)(destruction.Destructions[msg.PartId >> 5] & (uint)(1 << (msg.PartId & 0b11111)))} {destruction.IsDestroyed(msg.PartId)} {this.Prefabs.HasComponent(msg.PartEntity)}");
                     if (destruction.IsDestroyed(msg.PartId)) continue;
                     if (!this.Positions.HasComponent(msg.PartEntity)) continue;
 
@@ -162,7 +179,7 @@ namespace DotsLite.Structure
             {
                 foreach (var part in targetParts)
                 {
-                    _._log($"{part}");
+                    //_._log($"{part}");
                     var prefab = this.Prefabs[part].DebrisPrefab;
                     var rot = this.Rotations[part];
                     var pos = this.Positions[part];
@@ -206,7 +223,49 @@ namespace DotsLite.Structure
             //    var damage = 0.0f;
             //    var force = float3.zero;
             //}
-        }
-    }
 
+
+        }
+
+        [BurstCompile]
+        public struct UpdateCollider
+        {
+
+            public EntityCommandBuffer.ParallelWriter cmd;
+
+
+            public ComponentDataFromEntity<PhysicsCollider> cols;
+
+            [ReadOnly]
+            public ComponentDataFromEntity<Main.PartInfoData> infos;
+
+            [ReadOnly]
+            public BufferFromEntity<Main.PartDestructionResourceData> ress;
+
+
+            [BurstCompile]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public unsafe void Execute(
+                Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
+            {
+                var info = this.infos[mainEntity];
+
+                var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
+                    info.LivePartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+
+                var buffer = this.ress[mainEntity];
+                for (var i = 0; i < info.LivePartLength; i++)
+                {
+                    dst[i] = buffer[i].ColliderInstance;
+                }
+
+                this.cols[mainEntity] = new PhysicsCollider
+                {
+                    Value = CompoundCollider.Create(dst),
+                };
+                dst.Dispose();
+            }
+        }
+
+    }
 }
