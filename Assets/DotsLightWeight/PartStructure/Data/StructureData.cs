@@ -51,8 +51,12 @@ namespace DotsLite.Structure
         }
 
 
-        public struct ColliderInitializeTag : IComponentData
-        { }
+        [InternalBufferCapacity(0)]
+        public struct ColliderInitializeData : IComponentData
+        {
+            public Entity ChildPartEntity;
+            public RigidTransform RigidTransform;
+        }
 
         public struct PartInfoData : IComponentData
         {

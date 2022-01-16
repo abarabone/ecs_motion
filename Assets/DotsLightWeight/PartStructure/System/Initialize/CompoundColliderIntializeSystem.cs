@@ -18,6 +18,7 @@ namespace DotsLite.Structure
     using DotsLite.Dependency;
 
 
+
     public class CompoundColliderInitializeSystem : SystemBase
     {
 
@@ -25,12 +26,30 @@ namespace DotsLite.Structure
 
         protected override void OnUpdate()
         {
-            this.Entities
-                .WithAll<Main.ColliderInitializeTag>()
-                .ForEach((
-                    ref Main.PartDestructionResourceData res) =>
-                {
+            var colliders = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true);
 
+
+            this.Entities
+                .WithAll<Main.ColliderInitializeData>()
+                .ForEach((
+                    ref DynamicBuffer<Main.PartDestructionResourceData> ress,
+                    in DynamicBuffer<Main.ColliderInitializeData> inits) =>
+                {
+                    for (var i = 0; i < inits.Length; i++)
+                    {
+                        var res = ress[i];
+                        var init = inits[i];
+                        ress[i] = new Main.PartDestructionResourceData
+                        {
+                            ColliderInstance = new CompoundCollider.ColliderBlobInstance
+                            {
+                                Collider = colliders[init.ChildPartEntity].Value,
+                                CompoundFromChild = init.RigidTransform,
+                            },
+                            PartId = res.PartId,
+                            DebrisPrefab = res.DebrisPrefab,
+                        };
+                    }
                 })
                 .ScheduleParallel();
         }

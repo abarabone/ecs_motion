@@ -220,6 +220,10 @@ namespace DotsLite.Structure.Authoring
         //    });
         //}
 
+        public void initColliders(StructureAreaPartAuthoring[] parts, CollisionFilter filter)
+        {
+
+        }
         public BlobAssetReference<Collider> createCompoundCollider(StructureAreaPartAuthoring[] parts, CollisionFilter filter)
         {
             var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
