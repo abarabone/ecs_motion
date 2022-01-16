@@ -51,27 +51,6 @@ namespace DotsLite.Structure
         }
 
 
-        [InternalBufferCapacity(0)]
-        public struct ColliderInitializeData : IComponentData
-        {
-            public Entity ChildPartEntity;
-            public RigidTransform RigidTransform;
-        }
-
-        public struct PartInfoData : IComponentData
-        {
-            public int PartLength;
-            public int LivePartLength;
-        }
-
-        [InternalBufferCapacity(0)]
-        public struct PartDestructionResourceData : IBufferElementData
-        {
-            public int PartId;
-            public CompoundCollider.ColliderBlobInstance ColliderInstance;
-            public Entity DebrisPrefab;
-        }
-
 
         /// <summary>
         /// 破壊したパーツのビットフラグがオンになる
@@ -113,7 +92,26 @@ namespace DotsLite.Structure
 
     static public partial class Bone
     {
+        [InternalBufferCapacity(0)]
+        public struct ColliderInitializeData : IBufferElementData
+        {
+            public Entity ChildPartEntity;
+            public RigidTransform RigidTransform;
+        }
 
+        public struct PartInfoData : IComponentData
+        {
+            public int PartLength;
+            public int LivePartLength;
+        }
+
+        [InternalBufferCapacity(0)]
+        public struct PartDestructionResourceData : IBufferElementData
+        {
+            public int PartId;
+            public CompoundCollider.ColliderBlobInstance ColliderInstance;
+            public Entity DebrisPrefab;
+        }
     }
 
     static public partial class Bone

@@ -2,17 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StructureBone : MonoBehaviour
+namespace DotsLite.Structure.Authoring
 {
-    // Start is called before the first frame update
-    void Start()
+    public class StructureBone : MonoBehaviour
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public int BoneId;
     }
 }

@@ -101,8 +101,8 @@ namespace DotsLite.Structure
                     cmd = cmd,
 
                     cols = this.GetComponentDataFromEntity<PhysicsCollider>(),
-                    infos = this.GetComponentDataFromEntity<Main.PartInfoData>(isReadOnly: true),
-                    ress = this.GetBufferFromEntity<Main.PartDestructionResourceData>(isReadOnly: true),
+                    infos = this.GetComponentDataFromEntity<Bone.PartInfoData>(isReadOnly: true),
+                    ress = this.GetBufferFromEntity<Bone.PartDestructionResourceData>(isReadOnly: true),
                 },
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
@@ -119,7 +119,7 @@ namespace DotsLite.Structure
 
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Main.PartDestructionData> destructions;
-            [ReadOnly] public ComponentDataFromEntity<Main.PartInfoData> infos;
+            [ReadOnly] public ComponentDataFromEntity<Bone.PartInfoData> infos;
 
             // パーツ用
             [ReadOnly] public ComponentDataFromEntity<Part.DebrisPrefabData> Prefabs;
