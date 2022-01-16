@@ -220,9 +220,17 @@ namespace DotsLite.Structure.Authoring
         //    });
         //}
 
-        public void initColliders(StructureAreaPartAuthoring[] parts, CollisionFilter filter)
+        public void initColliders(
+            GameObjectConversionSystem gcs, PostureAuthoring main,
+            StructureAreaPartAuthoring[] parts, CollisionFilter filter)
         {
+            var em = gcs.DstEntityManager;
+            var mtinv = main.transform.worldToLocalMatrix;
 
+            for (var i = 0; i < parts.Length; i++)
+            {
+
+            }
         }
         public BlobAssetReference<Collider> createCompoundCollider(StructureAreaPartAuthoring[] parts, CollisionFilter filter)
         {

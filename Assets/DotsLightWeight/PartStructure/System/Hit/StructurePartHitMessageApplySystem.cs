@@ -246,20 +246,22 @@ namespace DotsLite.Structure
             [BurstCompile]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public unsafe void Execute(
-                Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
+                Entity ent, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                var info = this.infos[mainEntity];
+                if (!this.ress.HasComponent(ent)) return;
+
+                var info = this.infos[ent];
 
                 var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
                     info.LivePartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
-                var buffer = this.ress[mainEntity];
+                var buffer = this.ress[ent];
                 for (var i = 0; i < info.LivePartLength; i++)
                 {
                     dst[i] = buffer[i].ColliderInstance;
                 }
 
-                this.cols[mainEntity] = new PhysicsCollider
+                this.cols[ent] = new PhysicsCollider
                 {
                     Value = CompoundCollider.Create(dst),
                 };

@@ -111,6 +111,10 @@ namespace DotsLite.Structure
 
     }
 
+    static public partial class Bone
+    {
+
+    }
 
     static public partial class Bone
     {
