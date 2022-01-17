@@ -19,7 +19,8 @@ namespace DotsLite.Structure
 
 
 
-    public class CompoundColliderInitializeSystem : SystemBase
+    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    public class CompoundColliderInitializeSystem : GameObjectConversionSystem
     {
 
         
@@ -27,19 +28,20 @@ namespace DotsLite.Structure
         protected override void OnUpdate()
         {
             var colliders = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true);
+            var ptress = this.GetBufferFromEntity<Structure.Bone.PartDestructionResourceData>();
+            var inits = this.GetBufferFromEntity<Structure.Bone.ColliderInitializeData>(isReadOnly: true);
 
 
             this.Entities
-                .WithAll<Main.ColliderInitializeData>()
                 .ForEach((
-                    ref DynamicBuffer<Main.PartDestructionResourceData> ress,
-                    in DynamicBuffer<Main.ColliderInitializeData> inits) =>
+                    ref DynamicBuffer<> ress,
+                    in DynamicBuffer<Structure.Bone.ColliderInitializeData> inits) =>
                 {
                     for (var i = 0; i < inits.Length; i++)
                     {
                         var res = ress[i];
                         var init = inits[i];
-                        ress[i] = new Main.PartDestructionResourceData
+                        ress[i] = new Structure.Bone.PartDestructionResourceData
                         {
                             ColliderInstance = new CompoundCollider.ColliderBlobInstance
                             {
@@ -50,8 +52,7 @@ namespace DotsLite.Structure
                             DebrisPrefab = res.DebrisPrefab,
                         };
                     }
-                })
-                .ScheduleParallel();
+                });
         }
 
     }

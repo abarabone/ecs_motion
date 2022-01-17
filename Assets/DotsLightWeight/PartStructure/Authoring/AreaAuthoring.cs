@@ -171,14 +171,6 @@ namespace DotsLite.Structure.Authoring
                 }
             );
 
-            em.SetComponentData(mainEntity,
-                new Collision.Hit.TargetData
-                {
-                    MainEntity = gcs.GetPrimaryEntity(main),
-                    HitType = Collision.HitType.envelope,
-                }
-            );
-
 
             //em.SetComponentData(mainEntity,
             //    new Main.SleepTimerData
@@ -226,6 +218,12 @@ namespace DotsLite.Structure.Authoring
                 typeof(PhysicsCollider),
             });
             em.AddComponents(ent, addtypes);
+
+            em.SetComponentData(ent, new Collision.Hit.TargetData
+            {
+                MainEntity = gcs.GetPrimaryEntity(bone),
+                HitType = Collision.HitType.part,
+            });
 
             var partLength = parts.Count();
             em.SetComponentData(ent, new Structure.Bone.PartInfoData
