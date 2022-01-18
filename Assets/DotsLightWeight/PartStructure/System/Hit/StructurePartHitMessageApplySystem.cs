@@ -86,8 +86,8 @@ namespace DotsLite.Structure
             {
                 cmd = cmd,
 
-                infos = this.GetComponentDataFromEntity<Main.PartInfoData>(isReadOnly: true),
                 destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
+                lengths = this.GetComponentDataFromEntity<Main.PartLengthData>(isReadOnly: true),
                 Prefabs = this.GetComponentDataFromEntity<Part.DebrisPrefabData>(isReadOnly: true),
                 Rotations = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true),
                 Positions = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
@@ -100,9 +100,9 @@ namespace DotsLite.Structure
                 {
                     cmd = cmd,
 
-                    cols = this.GetComponentDataFromEntity<PhysicsCollider>(),
-                    infos = this.GetComponentDataFromEntity<Bone.PartInfoData>(isReadOnly: true),
-                    ress = this.GetBufferFromEntity<Bone.PartDestructionResourceData>(isReadOnly: true),
+                    cols = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
+                    infos = this.GetComponentDataFromEntity<Structure.Bone.PartInfoData>(isReadOnly: true),
+                    ress = this.GetBufferFromEntity<Structure.Bone.PartDestructionResourceData>(isReadOnly: true),
                 },
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
@@ -119,7 +119,7 @@ namespace DotsLite.Structure
 
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Main.PartDestructionData> destructions;
-            [ReadOnly] public ComponentDataFromEntity<Bone.PartInfoData> infos;
+            [ReadOnly] public ComponentDataFromEntity<Main.PartLengthData> lengths;
 
             // パーツ用
             [ReadOnly] public ComponentDataFromEntity<Part.DebrisPrefabData> Prefabs;
@@ -139,7 +139,7 @@ namespace DotsLite.Structure
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                var targetParts = new UnsafeHashSet<Entity>(this.infos[mainEntity].PartLength, Allocator.Temp);
+                var targetParts = new UnsafeHashSet<Entity>(this.lengths[mainEntity].TotalPartLength, Allocator.Temp);
 
                 //wakeupMain_(index, mainEntity);
                 //applyDamgeToMain_();
@@ -147,7 +147,7 @@ namespace DotsLite.Structure
                 applyDestructions_(mainEntity, hitMessages, ref targetParts);
                 destroyPartAndCreateDebris_(index, in targetParts);
 
-                this.updateCollider.Execute(mainEntity, hitMessages);
+                //this.updateCollider.Execute(mainEntity, hitMessages);
 
                 targetParts.Dispose();
             }
@@ -234,13 +234,14 @@ namespace DotsLite.Structure
             public EntityCommandBuffer.ParallelWriter cmd;
 
 
+            [ReadOnly]
             public ComponentDataFromEntity<PhysicsCollider> cols;
 
             [ReadOnly]
-            public ComponentDataFromEntity<Main.PartInfoData> infos;
+            public ComponentDataFromEntity<Structure.Bone.PartInfoData> infos;
 
             [ReadOnly]
-            public BufferFromEntity<Main.PartDestructionResourceData> ress;
+            public BufferFromEntity<Structure.Bone.PartDestructionResourceData> ress;
 
 
             [BurstCompile]

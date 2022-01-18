@@ -136,6 +136,7 @@ namespace DotsLite.Structure.Authoring
                     typeof(Main.MainTag),
                     typeof(Main.BinderLinkData),//暫定
                     typeof(Main.PartDestructionData),
+                    typeof(Main.PartLengthData),
                     //typeof(Main.SleepTimerData),
                     //typeof(Collision.Hit.TargetData),
                     //typeof(PhysicsCollider),
@@ -143,33 +144,29 @@ namespace DotsLite.Structure.Authoring
             );
             em.AddComponents(mainEntity, mainAddtypes);
 
-            //em_.SetComponentData(mainEntity,
-            //    new NonUniformScale
-            //    {
-            //        Value = new float3(1, 1, 1)
-            //    }
-            //);
-            em.SetComponentData(mainEntity,
-                new Main.BinderLinkData
-                {
-                    BinderEntity = binderEntity,
-                }
-            );
-            em.SetComponentData(mainEntity,
-                new DrawInstance.ModelLinkData
-                {
-                    DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(near.Obj),
-                    //DrawModelEntityCurrent = Entity.Null,//gcs_.GetFromModelEntityDictionary(far_.objectTop),//(top_),
-                    //DrawModelEntityCurrent = mainEntity,// ダミーとして、モデルでないものを入れとく（危険かなぁ…）
-                    // 最初のＬＯＤ判定で Null もタグ付けさせるため
-                }
-            );
-            em.SetComponentData(mainEntity,
-                new DrawInstance.TargetWorkData
-                {
-                    DrawInstanceId = -1,
-                }
-            );
+            //em.SetComponentData(mainEntity, new NonUniformScale
+            //{
+            //    Value = new float3(1, 1, 1)
+            //});
+            em.SetComponentData(mainEntity, new Main.BinderLinkData
+            {
+                BinderEntity = binderEntity,
+            });
+            em.SetComponentData(mainEntity, new DrawInstance.ModelLinkData
+            {
+                DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(near.Obj),
+                //DrawModelEntityCurrent = Entity.Null,//gcs_.GetFromModelEntityDictionary(far_.objectTop),//(top_),
+                //DrawModelEntityCurrent = mainEntity,// ダミーとして、モデルでないものを入れとく（危険かなぁ…）
+                // 最初のＬＯＤ判定で Null もタグ付けさせるため
+            });
+            em.SetComponentData(mainEntity, new DrawInstance.TargetWorkData
+            {
+                DrawInstanceId = -1,
+            });
+            em.SetComponentData(mainEntity, new Main.PartLengthData
+            {
+                TotalPartLength = partLength,
+            });
 
 
             //em.SetComponentData(mainEntity,

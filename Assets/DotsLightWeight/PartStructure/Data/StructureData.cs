@@ -74,6 +74,11 @@ namespace DotsLite.Structure
             public bool IsDestroyed(int id) => (this.Destructions[id >> 5] & (uint)(1 << (id & 0b11111))) != 0;
         }
 
+        public struct PartLengthData : IComponentData
+        {
+            public int TotalPartLength;
+        }
+
         //public struct PartLinkData : IComponentData
         //{
         //    public Entity NextEntity;
