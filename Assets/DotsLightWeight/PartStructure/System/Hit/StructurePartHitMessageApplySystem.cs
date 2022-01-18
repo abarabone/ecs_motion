@@ -98,8 +98,6 @@ namespace DotsLite.Structure
 
                 updateCollider = new UpdateCollider
                 {
-                    cmd = cmd,
-
                     cols = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
                     infos = this.GetComponentDataFromEntity<Structure.Bone.PartInfoData>(isReadOnly: true),
                     ress = this.GetBufferFromEntity<Structure.Bone.PartDestructionResourceData>(isReadOnly: true),
@@ -231,9 +229,6 @@ namespace DotsLite.Structure
         public struct UpdateCollider
         {
 
-            public EntityCommandBuffer.ParallelWriter cmd;
-
-
             [ReadOnly]
             public ComponentDataFromEntity<PhysicsCollider> cols;
 
@@ -247,6 +242,7 @@ namespace DotsLite.Structure
             [BurstCompile]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public unsafe void Execute(
+                EntityCommandBuffer.ParallelWriter cmd,
                 Entity ent, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
                 if (!this.ress.HasComponent(ent)) return;
