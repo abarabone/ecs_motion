@@ -102,6 +102,8 @@ namespace DotsLite.Structure
         {
             public Entity ChildPartEntity;
             public RigidTransform RigidTransform;
+            public int PartId;
+            public Entity DebrisPrefab;
         }
 
         public struct PartInfoData : IComponentData

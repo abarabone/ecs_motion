@@ -200,7 +200,7 @@ namespace DotsLite.Structure.Authoring
         //}
 
         public void initStructureBone(
-            GameObjectConversionSystem gcs, StructureBone bone,
+            GameObjectConversionSystem gcs, PostureAuthoring main, StructureBone bone,
             IEnumerable<StructureAreaPartAuthoring> parts)
         {
             var em = gcs.DstEntityManager;
@@ -218,7 +218,7 @@ namespace DotsLite.Structure.Authoring
 
             em.SetComponentData(ent, new Collision.Hit.TargetData
             {
-                MainEntity = gcs.GetPrimaryEntity(bone),
+                MainEntity = gcs.GetPrimaryEntity(main),
                 HitType = Collision.HitType.part,
             });
 
@@ -229,20 +229,25 @@ namespace DotsLite.Structure.Authoring
                 LivePartLength = partLength,
             });
 
+            var resbuf = em.AddBuffer<Structure.Bone.PartDestructionResourceData>(ent);
+
+
             var mtinv = bone.transform.worldToLocalMatrix;
-            var buffer = em.AddBuffer<Structure.Bone.ColliderInitializeData>(ent);
+            var initbuf = em.AddBuffer<Structure.Bone.ColliderInitializeData>(ent);
             foreach (var pt in parts)
             {
                 var tf = pt.transform;
 
-                buffer.Add(new Structure.Bone.ColliderInitializeData
+                initbuf.Add(new Structure.Bone.ColliderInitializeData
                 {
                     ChildPartEntity = gcs.GetPrimaryEntity(pt),
                     RigidTransform = new RigidTransform
                     {
                         pos = mtinv.MultiplyPoint3x4(tf.position),
                         rot = tf.rotation * mtinv.rotation,
-                    }
+                    },
+                    PartId = pt.PartId,
+                    DebrisPrefab = Entity.Null,
                 });
             }
         }
