@@ -41,7 +41,7 @@ namespace DotsLite.Structure.Authoring
 
 
 
-    public class AreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+    public class AreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
     {
 
         public StructureModel<UI32, StructureVertex> NearModel;
@@ -81,7 +81,7 @@ namespace DotsLite.Structure.Authoring
             var bone0 = bones.First();
             var qParts0 = parts
                 .Where(x => x.GetComponentInParent<StructureBone>().BoneId == 0);
-            initStructureBone(gcs, bone0, qParts0);
+            initStructureBone(gcs, posture, bone0, qParts0);
 
             //setBoneForFarEntity_(gcs, posture, far, top.transform);
             //setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
@@ -208,7 +208,7 @@ namespace DotsLite.Structure.Authoring
 
             var addtypes = new ComponentTypes(new ComponentType[]
             {
-                typeof(Structure.Bone.ColliderInitializeData),
+                //typeof(Structure.Bone.ColliderInitializeData),
                 typeof(Structure.Bone.PartDestructionResourceData),
                 typeof(Structure.Bone.PartInfoData),
                 typeof(Collision.Hit.TargetData),
@@ -229,22 +229,24 @@ namespace DotsLite.Structure.Authoring
                 LivePartLength = partLength,
             });
 
-            var resbuf = em.AddBuffer<Structure.Bone.PartDestructionResourceData>(ent);
-
 
             var mtinv = bone.transform.worldToLocalMatrix;
-            var initbuf = em.AddBuffer<Structure.Bone.ColliderInitializeData>(ent);
+            var resbuf = em.AddBuffer<Structure.Bone.PartDestructionResourceData>(ent);
             foreach (var pt in parts)
             {
-                var tf = pt.transform;
+                var tf = pt.transform;Debug.Log(pt.name);
+                var ptent = gcs.GetPrimaryEntity(pt);
 
-                initbuf.Add(new Structure.Bone.ColliderInitializeData
+                resbuf.Add(new Structure.Bone.PartDestructionResourceData
                 {
-                    ChildPartEntity = gcs.GetPrimaryEntity(pt),
-                    RigidTransform = new RigidTransform
+                    ColliderInstance = new CompoundCollider.ColliderBlobInstance
                     {
-                        pos = mtinv.MultiplyPoint3x4(tf.position),
-                        rot = tf.rotation * mtinv.rotation,
+                        Collider = em.GetComponentData<PhysicsCollider>(ptent).Value,
+                        CompoundFromChild = new RigidTransform
+                        {
+                            pos = mtinv.MultiplyPoint3x4(tf.position),
+                            rot = tf.rotation * mtinv.rotation,
+                        },
                     },
                     PartId = pt.PartId,
                     DebrisPrefab = Entity.Null,
