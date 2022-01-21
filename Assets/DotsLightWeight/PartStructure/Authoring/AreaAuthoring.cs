@@ -204,7 +204,7 @@ namespace DotsLite.Structure.Authoring
             IEnumerable<StructureAreaPartAuthoring> parts)
         {
             var em = gcs.DstEntityManager;
-            var ent = gcs.GetPrimaryEntity(bone);
+            var ent = gcs.GetPrimaryEntity(main);// bone);
 
             var addtypes = new ComponentTypes(new ComponentType[]
             {
@@ -236,6 +236,8 @@ namespace DotsLite.Structure.Authoring
             {
                 var tf = pt.transform;Debug.Log(pt.name);
                 var ptent = gcs.GetPrimaryEntity(pt);
+
+                if (!em.HasComponent<PhysicsCollider>(ptent)) return;
 
                 resbuf.Add(new Structure.Bone.PartDestructionResourceData
                 {
