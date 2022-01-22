@@ -44,7 +44,7 @@ namespace DotsLite.Model.Authoring
         protected override void OnUpdate()
         {
             var em = this.DstEntityManager;
-            Debug.Log("aaaaaaa");
+
             this.Entities.ForEach
             (
                 (Entity e, TargetData c) =>

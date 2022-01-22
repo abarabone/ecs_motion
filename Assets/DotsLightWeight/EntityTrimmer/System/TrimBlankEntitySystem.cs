@@ -1,18 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
+using Unity.Transforms;
+using Unity.Physics.Authoring;
+using Unity.Entities.Conversion;
+using Unity.Entities.Hybrid;
+using System.Linq;
 
-public class TrimBlankEntitiesSystem : MonoBehaviour
+namespace DotsLite.EntityTrimmer.Authoring
 {
-    // Start is called before the first frame update
-    void Start()
+    using Utilities;
+
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    public class TrimBlankEntitySystem : GameObjectConversionSystem
     {
-        
+        protected override void OnUpdate()
+        {
+            var em = this.DstEntityManager;
+
+            // 空のエンティティだけ取得できるクエリかなんかないんかな
+            //this.Entities
+            //    .ForEach(
+            //        (Entity ent) =>
+            //        {
+            //            var em = this.DstEntityManager;
+
+            //            if (em.GetComponentCount(ent) > 0) return;
+
+            //            em.DestroyEntity(ent);
+            //        }
+            //    );
+
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
