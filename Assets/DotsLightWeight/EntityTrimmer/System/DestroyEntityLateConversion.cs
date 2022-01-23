@@ -19,11 +19,12 @@ using Unity.Jobs.LowLevel.Unsafe;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-namespace DotsLite.Model.Authoring
+namespace DotsLite.EntityTrimmer.Authoring
 {
 
-    [UpdateBefore(typeof(TrimLinkedEntityBlankConversion))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    [UpdateBefore(typeof(TrimLinkedEntityConversion))]
+    [UpdateBefore(typeof(DestroyEntityLateConversion))]
     public class DestroyEntityLateConversion : GameObjectConversionSystem
     {
 
@@ -34,29 +35,38 @@ namespace DotsLite.Model.Authoring
 
 
         protected override void OnUpdate()
-        { }
-        protected override void OnDestroy()
         {
+        //}
+        //protected override void OnDestroy()
+        //{
             var em = this.DstEntityManager;
 
-            var desc0 = new EntityQueryDesc
+            var desc = new EntityQueryDesc
             {
                 All = new ComponentType[]
                 {
                     typeof(TargetTag),
-                    typeof(Prefab),
-                    typeof(Disabled)
-                }
+                },
+                Options = EntityQueryOptions.IncludePrefab | EntityQueryOptions.IncludeDisabled,
             };
-            var desc1 = new EntityQueryDesc
-            {
-                All = new ComponentType[]
-                {
-                    typeof(TargetTag),
-                    typeof(Disabled)
-                }
-            };
-            using var q = em.CreateEntityQuery(desc0, desc1);
+            //var desc0 = new EntityQueryDesc
+            //{
+            //    All = new ComponentType[]
+            //    {
+            //        typeof(TargetTag),
+            //        typeof(Prefab),
+            //        typeof(Disabled)
+            //    }
+            //};
+            //var desc1 = new EntityQueryDesc
+            //{
+            //    All = new ComponentType[]
+            //    {
+            //        typeof(TargetTag),
+            //        typeof(Disabled)
+            //    }
+            //};
+            using var q = em.CreateEntityQuery(desc);// desc0, desc1);
 
             using var ents = q.ToEntityArray(Allocator.Temp);
             foreach (var ent in ents)

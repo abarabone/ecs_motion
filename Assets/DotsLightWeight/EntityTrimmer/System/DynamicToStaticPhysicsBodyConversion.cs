@@ -7,7 +7,7 @@ using Unity.Entities.Conversion;
 using Unity.Entities.Hybrid;
 using System.Linq;
 
-namespace DotsLite.Model.Authoring
+namespace DotsLite.EntityTrimmer.Authoring
 {
 
     /// <summary>

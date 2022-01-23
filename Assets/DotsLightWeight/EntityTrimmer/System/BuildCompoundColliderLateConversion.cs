@@ -19,7 +19,7 @@ using Unity.Jobs.LowLevel.Unsafe;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
-namespace DotsLite.Model.Authoring
+namespace DotsLite.EntityTrimmer.Authoring
 {
     using DotsLite.Misc;
 

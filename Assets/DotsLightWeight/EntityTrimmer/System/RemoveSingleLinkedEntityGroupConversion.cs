@@ -8,7 +8,7 @@ using Unity.Entities.Conversion;
 using Unity.Entities.Hybrid;
 using System.Linq;
 
-namespace DotsLite.Model.Authoring
+namespace DotsLite.EntityTrimmer.Authoring
 {
 
     /// <summary>
@@ -18,12 +18,14 @@ namespace DotsLite.Model.Authoring
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class RemoveSingleLinkedEntityGroupSystem : GameObjectConversionSystem
+    [UpdateAfter(typeof(TrimLinkedEntityConversion))]
+    public class RemoveSingleLinkedEntityGroupConversion : GameObjectConversionSystem
     {
         protected override void OnUpdate()
-        { }
-        protected override void OnDestroy()
         {
+        //}
+        //protected override void OnDestroy()
+        //{
             var em = this.DstEntityManager;
 
             {

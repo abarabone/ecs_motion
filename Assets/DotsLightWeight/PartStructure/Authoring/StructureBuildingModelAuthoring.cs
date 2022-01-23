@@ -21,6 +21,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Geometry;
     using DotsLite.Structure.Authoring;
     using DotsLite.Character;//ObjectMain はここにある、名前変えるべきか？
+    using DotsLite.EntityTrimmer.Authoring;
 
     using DotsLite.Common.Extension;
     using DotsLite.Structure;
