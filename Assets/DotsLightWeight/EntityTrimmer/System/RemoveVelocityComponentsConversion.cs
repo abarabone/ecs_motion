@@ -16,7 +16,7 @@ namespace DotsLite.Model.Authoring
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class RemoveVelocityComponentsConversion : GameObjectConversionSystem
+    public class DynamicToStaticPhysicsBodyConversion : GameObjectConversionSystem
     {
         protected override void OnUpdate()
         {
@@ -24,7 +24,7 @@ namespace DotsLite.Model.Authoring
 
             this.Entities.ForEach
             (
-                (Entity e, DynamicToStaticRigidBody c) =>
+                (Entity e, DynamicToStaticPhysicsBody c) =>
                 {
                     foreach (var tf in c.GetComponentsInChildren<Transform>())
                     {

@@ -224,7 +224,7 @@ namespace DotsLite.Structure.Authoring
 
             var qEnt = st.GetComponentsInChildren<StructurePartAuthoring>()
                 .Select(x => gcs.GetPrimaryEntity(x));
-            em.AddComponentData(qEnt, new LateDestroyEntityConversion.TargetTag { });
+            em.AddComponentData(qEnt, new DestroyEntityLateConversion.TargetTag { });
         }
 
         static void initBinderEntity_
@@ -409,7 +409,7 @@ namespace DotsLite.Structure.Authoring
             var em = gcs.DstEntityManager;
 
             var nearent = gcs.GetPrimaryEntity(near);
-            em.AddComponentData(nearent, new LateBuildCompoundColliderConversion.TargetData
+            em.AddComponentData(nearent, new BuildCompoundColliderLateConversion.TargetData
             {
                 Dst = near,
                 Srcs = near.GetComponentsInChildren<StructurePartAuthoring>().Select(x => x.gameObject),

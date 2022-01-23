@@ -14,10 +14,11 @@ namespace DotsLite.Model.Authoring
     /// <summary>
     /// 単体のエンティティなのに LinkedEntityGroup がついてしまうのを避けたい
     /// 今のところあとから消すくらししか思いつかない
+    /// prefab 対応
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class NoNeedLinkedEntityGroupCleanUpSystem : GameObjectConversionSystem
+    public class RemoveSingleLinkedEntityGroupSystem : GameObjectConversionSystem
     {
         protected override void OnUpdate()
         { }
@@ -25,31 +26,49 @@ namespace DotsLite.Model.Authoring
         {
             var em = this.DstEntityManager;
 
-            var desc0 = new EntityQueryDesc
             {
-                All = new ComponentType[]
+                var desc = new EntityQueryDesc
                 {
-                    typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                    typeof(LinkedEntityGroup),
-                    typeof(Prefab)
-                }
-            };
-            var desc1 = new EntityQueryDesc
-            {
-                All = new ComponentType[]
-                {
-                    typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
-                    typeof(LinkedEntityGroup)
-                }
-            };
-            using var q = em.CreateEntityQuery(desc0, desc1);
+                    All = new ComponentType[]
+                    {
+                        //typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
+                        typeof(LinkedEntityGroup)
+                    }
+                };
+                using var q = em.CreateEntityQuery(desc);
 
-            using var ents = q.ToEntityArray(Allocator.Temp);
-            foreach (var ent in ents)
+                using var ents = q.ToEntityArray(Allocator.Temp);
+                foreach (var ent in ents)
+                {
+                    if (em.GetComponentCount(ent) != 1) continue;
+
+                    //Debug.Log(em.GetName_(ent));
+                    em.RemoveComponent<LinkedEntityGroup>(ent);
+                    //em.RemoveComponent<ModelPrefabNoNeedLinkedEntityGroupTag>(ent);
+                }
+            }
+
             {
-                //Debug.Log(em.GetName_(ent));
-                em.RemoveComponent<LinkedEntityGroup>(ent);
-                em.RemoveComponent<ModelPrefabNoNeedLinkedEntityGroupTag>(ent);
+                var desc = new EntityQueryDesc
+                {
+                    All = new ComponentType[]
+                    {
+                        //typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
+                        typeof(LinkedEntityGroup),
+                        typeof(Prefab)
+                    }
+                };
+                using var q = em.CreateEntityQuery(desc);
+
+                using var ents = q.ToEntityArray(Allocator.Temp);
+                foreach (var ent in ents)
+                {
+                    if (em.GetComponentCount(ent) != 2) continue;
+
+                    //Debug.Log(em.GetName_(ent));
+                    em.RemoveComponent<LinkedEntityGroup>(ent);
+                    //em.RemoveComponent<ModelPrefabNoNeedLinkedEntityGroupTag>(ent);
+                }
             }
         }
 

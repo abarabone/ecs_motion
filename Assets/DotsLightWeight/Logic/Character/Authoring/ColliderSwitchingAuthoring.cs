@@ -44,7 +44,7 @@ namespace DotsLite.Character.Authoring
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(NoNeedLinkedEntityGroupCleanUpSystem))]
+    [UpdateBefore(typeof(TrimLinkedEntityBlankConversion))]
     public class MakeColliderBankSystem : GameObjectConversionSystem
     {
         protected override void OnUpdate()

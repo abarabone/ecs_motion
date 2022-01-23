@@ -19,7 +19,7 @@ namespace DotsLite.Model.Authoring
     //[DisableAutoCreation]
     //[UpdateBefore(typeof(NoNeedLinkedEntityGroupCleanUpConversion))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class TrimBlankEntityFromLinkedEntityGroupConversion : GameObjectConversionSystem
+    public class TrimLinkedEntityBlankConversion : GameObjectConversionSystem
     {
         protected override void OnUpdate()
         { }

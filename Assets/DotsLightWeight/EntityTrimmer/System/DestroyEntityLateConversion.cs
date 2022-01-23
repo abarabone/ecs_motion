@@ -22,9 +22,9 @@ using SphereCollider = Unity.Physics.SphereCollider;
 namespace DotsLite.Model.Authoring
 {
 
-    [UpdateBefore(typeof(TrimBlankEntityFromLinkedEntityGroupConversion))]
+    [UpdateBefore(typeof(TrimLinkedEntityBlankConversion))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class LateDestroyEntityConversion : GameObjectConversionSystem
+    public class DestroyEntityLateConversion : GameObjectConversionSystem
     {
 
 

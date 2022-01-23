@@ -28,7 +28,7 @@ namespace DotsLite.Model.Authoring
     /// 
     /// </summary>
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class LateBuildCompoundColliderConversion : GameObjectConversionSystem
+    public class BuildCompoundColliderLateConversion : GameObjectConversionSystem
     {
 
 
@@ -36,6 +36,7 @@ namespace DotsLite.Model.Authoring
         public class TargetData : IComponentData
         {
             public GameObject Dst;
+            //public Transform TfSrcParent;//ÉÅÉCÉìÇÃÇsÇe
             public IEnumerable<GameObject> Srcs;
         }
 
