@@ -23,8 +23,8 @@ namespace DotsLite.EntityTrimmer.Authoring
 {
 
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(TrimLinkedEntityConversion))]
-    [UpdateBefore(typeof(DestroyEntityLateConversion))]
+    [UpdateBefore(typeof(RemoveTransformAllConversion))]
+    [UpdateBefore(typeof(DestroyBlankEntityConversion))]
     public class DestroyEntityLateConversion : GameObjectConversionSystem
     {
 
@@ -49,24 +49,7 @@ namespace DotsLite.EntityTrimmer.Authoring
                 },
                 Options = EntityQueryOptions.IncludePrefab | EntityQueryOptions.IncludeDisabled,
             };
-            //var desc0 = new EntityQueryDesc
-            //{
-            //    All = new ComponentType[]
-            //    {
-            //        typeof(TargetTag),
-            //        typeof(Prefab),
-            //        typeof(Disabled)
-            //    }
-            //};
-            //var desc1 = new EntityQueryDesc
-            //{
-            //    All = new ComponentType[]
-            //    {
-            //        typeof(TargetTag),
-            //        typeof(Disabled)
-            //    }
-            //};
-            using var q = em.CreateEntityQuery(desc);// desc0, desc1);
+            using var q = em.CreateEntityQuery(desc);
 
             using var ents = q.ToEntityArray(Allocator.Temp);
             foreach (var ent in ents)

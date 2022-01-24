@@ -28,8 +28,9 @@ namespace DotsLite.EntityTrimmer.Authoring
                 .WithNone<ExcludeRemoveTransform>()
                 .ForEach
             (
-                (Entity ent) =>
+                (Entity ent, Transform tf) =>
                 {
+                    //Debug.Log($"remove all {tf.name}");
                     em.RemoveComponent<LocalToParent>(ent);
                     em.RemoveComponent<LocalToWorld>(ent);
                     em.RemoveComponent<PreviousParent>(ent);

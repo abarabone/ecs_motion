@@ -16,7 +16,7 @@ namespace DotsLite.EntityTrimmer.Authoring
     /// 今のところあとから消すくらししか思いつかない
     /// prefab 対応
     /// </summary>
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     [UpdateAfter(typeof(TrimLinkedEntityConversion))]
     public class RemoveSingleLinkedEntityGroupConversion : GameObjectConversionSystem

@@ -12,9 +12,8 @@ namespace DotsLite.EntityTrimmer.Authoring
 {
 
     /// <summary>
-    /// 空の子エンティティや存在しないエンティティへのリンクをトリムする。
-    /// LinkedEntityGroup のトリムと、子エンティティの破棄を行う。
-    /// prefab がついていても処理される。
+    /// LinkedEntityGroup のトリムを行う。
+    /// prefab, Disable がついていても処理される。
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
@@ -27,23 +26,6 @@ namespace DotsLite.EntityTrimmer.Authoring
         //{
             var em = this.DstEntityManager;
 
-            //var desc0 = new EntityQueryDesc
-            //{
-            //    All = new ComponentType[]
-            //    {
-            //        //typeof(BinderTrimBlankLinkedEntityGroupTag),
-            //        typeof(LinkedEntityGroup),
-            //        typeof(Prefab)
-            //    }
-            //};
-            //var desc1 = new EntityQueryDesc
-            //{
-            //    All = new ComponentType[]
-            //    {
-            //        //typeof(BinderTrimBlankLinkedEntityGroupTag),
-            //        typeof(LinkedEntityGroup)
-            //    }
-            //};
             var desc = new EntityQueryDesc
             {
                 All = new ComponentType[]
@@ -70,10 +52,23 @@ namespace DotsLite.EntityTrimmer.Authoring
                     }
                 }
 
-                if (needs.Length > 0)
+                if (needs.Length == buf.Length) continue;
+
+
+                switch (needs.Length)
                 {
-                    buf.Clear();
-                    buf.AddRange(needs.AsArray());
+                    case 1 when buf[0].Value == ent:
+                        em.RemoveComponent<LinkedEntityGroup>(ent);
+                        break;
+
+                    case 0:
+                        em.RemoveComponent<LinkedEntityGroup>(ent);
+                        break;
+
+                    default:
+                        buf.Clear();
+                        buf.AddRange(needs.AsArray());
+                        break;
                 }
 
                 needs.Clear();

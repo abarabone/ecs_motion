@@ -31,6 +31,7 @@ namespace DotsLite.EntityTrimmer.Authoring
                 (Entity ent, TransformAuthoring authoring) =>
                 {
                     var tf = authoring.transform;
+                    //Debug.Log($"add all {tf.name}");
 
                     if (authoring.Translation) em.AddComponentData(ent, new Translation
                     {
