@@ -11,7 +11,7 @@ namespace DotsLite.EntityTrimmer.Authoring
 {
     using Utilities;
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     [UpdateBefore(typeof(TrimLinkedEntityConversion))]
     public class DestroyBlankEntityConversion : GameObjectConversionSystem
@@ -21,7 +21,10 @@ namespace DotsLite.EntityTrimmer.Authoring
             var em = this.DstEntityManager;
 
             // 空のエンティティだけ取得できるクエリかなんかないんかな
-            var desc = new EntityQueryDesc { };
+            var desc = new EntityQueryDesc
+            {
+                Options = EntityQueryOptions.IncludeDisabled | EntityQueryOptions.IncludePrefab
+            };
             using var q = em.CreateEntityQuery(desc);
 
             using var ents = q.ToEntityArray(Allocator.Temp);

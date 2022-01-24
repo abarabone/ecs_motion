@@ -25,12 +25,13 @@ namespace DotsLite.EntityTrimmer.Authoring
             var em = this.DstEntityManager;
 
             this.Entities
+                .WithIncludeAll()
                 .WithNone<ExcludeRemoveTransform>()
                 .ForEach
             (
                 (Entity ent, Transform tf) =>
                 {
-                    //Debug.Log($"remove all {tf.name}");
+                    Debug.Log($"remove all {tf.name}");
                     em.RemoveComponent<LocalToParent>(ent);
                     em.RemoveComponent<LocalToWorld>(ent);
                     em.RemoveComponent<PreviousParent>(ent);
@@ -40,9 +41,46 @@ namespace DotsLite.EntityTrimmer.Authoring
                     em.RemoveComponent<Rotation>(ent);
                     em.RemoveComponent<NonUniformScale>(ent);
                     em.RemoveComponent<Scale>(ent);
+                    em.RemoveComponent<CompositeScale>(ent);
                 }
             );
 
+            //{
+            //    var desc = new EntityQueryDesc
+            //    {
+            //        None = new ComponentType[]
+            //        {
+            //            typeof(ExcludeRemoveTransformTag),
+            //        },
+            //        Options = EntityQueryOptions.IncludePrefab | EntityQueryOptions.IncludeDisabled,
+            //    };
+
+            //    using var q = em.CreateEntityQuery(desc);
+
+            //    em.RemoveComponent<LocalToParent>(q);
+            //    em.RemoveComponent<LocalToWorld>(q);
+            //    em.RemoveComponent<PreviousParent>(q);
+            //    em.RemoveComponent<Parent>(q);
+            //    em.RemoveComponent<Child>(q);
+            //    em.RemoveComponent<Translation>(q);
+            //    em.RemoveComponent<Rotation>(q);
+            //    em.RemoveComponent<NonUniformScale>(q);
+            //    em.RemoveComponent<Scale>(q);
+            //}
+            //{
+            //    var desc = new EntityQueryDesc
+            //    {
+            //        All = new ComponentType[]
+            //        {
+            //            typeof(ExcludeRemoveTransformTag),
+            //        },
+            //        Options = EntityQueryOptions.IncludePrefab | EntityQueryOptions.IncludeDisabled,
+            //    };
+
+            //    using var q = em.CreateEntityQuery(desc);
+
+            //    em.RemoveComponent<ExcludeRemoveTransformTag>(q);
+            //}
         }
     }
 

@@ -6,3 +6,9 @@ public class ExcludeRemoveTransform : MonoBehaviour
 {
 
 }
+
+//[GenerateAuthoringComponent]
+//public struct ExcludeRemoveTransformTag : IComponentData
+//{
+
+//}

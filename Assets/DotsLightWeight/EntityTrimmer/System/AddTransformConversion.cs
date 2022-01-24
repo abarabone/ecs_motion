@@ -26,12 +26,13 @@ namespace DotsLite.EntityTrimmer.Authoring
             var em = this.DstEntityManager;
 
             this.Entities
+                .WithIncludeAll()
                 .ForEach
             (
                 (Entity ent, TransformAuthoring authoring) =>
                 {
                     var tf = authoring.transform;
-                    //Debug.Log($"add all {tf.name}");
+                    Debug.Log($"add all {tf.name}");
 
                     if (authoring.Translation) em.AddComponentData(ent, new Translation
                     {
@@ -52,6 +53,11 @@ namespace DotsLite.EntityTrimmer.Authoring
                     {
                         Value = tf.lossyScale,
                     });
+
+                    //if (authoring.CompositeScale) em.AddComponentData(ent, new CompositeScale
+                    //{
+                    //    Value = tf.
+                    //});
 
                     if (authoring.LocalToWorldMatrix) em.AddComponentData(ent, new LocalToWorld
                     {

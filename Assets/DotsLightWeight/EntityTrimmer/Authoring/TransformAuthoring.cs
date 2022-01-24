@@ -8,5 +8,6 @@ public class TransformAuthoring : MonoBehaviour
     public bool Rotation;
     public bool Scale;
     public bool NonUniformScale;
+    public bool CompositeScale;
     public bool LocalToWorldMatrix;
 }
