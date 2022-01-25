@@ -185,8 +185,8 @@ namespace DotsLite.Arms.Authoring
                         typeof(Emitter.OwnerLinkData),
                         typeof(FunctionUnit.holderLinkData),
                         typeof(FunctionUnitInWapon.TriggerSpecificData),
-                        typeof(Translation),
-                        typeof(Rotation)
+                        typeof(AddTransformConversion.Translation),
+                        typeof(AddTransformConversion.Rotation)
                     };
                     //if (unitObject.UseEffect)
                     //{

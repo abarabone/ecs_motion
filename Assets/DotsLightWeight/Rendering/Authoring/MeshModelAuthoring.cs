@@ -75,9 +75,9 @@ namespace DotsLite.Model.Authoring
                     typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(Translation),
-                    typeof(Rotation),
-                    typeof(NonUniformScale)
+                    typeof(AddTransformConversion.Translation),
+                    typeof(AddTransformConversion.Rotation),
+                    typeof(AddTransformConversion.NonUniformScale)
                 );
                 em.SetArchetype(mainEntity, archetype);
 

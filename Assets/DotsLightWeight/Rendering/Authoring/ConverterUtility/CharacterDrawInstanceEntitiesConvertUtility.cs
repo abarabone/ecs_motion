@@ -89,8 +89,8 @@ namespace DotsLite.Draw.Authoring
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.BoneLinkData),
                     typeof(DrawInstance.TransformOffsetData),
-                    typeof(Translation),
-                    typeof(Rotation),
+                    typeof(AddTransformConversion.Translation),
+                    typeof(AddTransformConversion.Rotation),
                     typeof(Bone.TransformTargetTag)
                 );
             EntityArchetype archetypeForJobPerDepth_() =>
@@ -101,8 +101,8 @@ namespace DotsLite.Draw.Authoring
                     typeof(DrawInstance.PostureLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.TransformOffsetData),
-                    typeof(Translation),
-                    typeof(Rotation)
+                    typeof(AddTransformConversion.Translation),
+                    typeof(AddTransformConversion.Rotation)
                 );
 
             void setDrawComponents_()

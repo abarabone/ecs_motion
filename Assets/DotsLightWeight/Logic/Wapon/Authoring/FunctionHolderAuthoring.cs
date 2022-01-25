@@ -96,8 +96,8 @@ namespace DotsLite.Arms.Authoring
                     //typeof(Emitter.BulletMuzzleLinkData),
                     typeof(Emitter.MuzzleTransformData),
                     typeof(FunctionUnitAiming.ParentBoneLinkData),
-                    typeof(Rotation),
-                    typeof(Translation),
+                    typeof(AddTransformConversion.Rotation),
+                    typeof(AddTransformConversion.Translation),
                 };
                 //if (unitObject.UseEffect)
                 //{

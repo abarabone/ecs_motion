@@ -91,7 +91,7 @@ namespace DotsLite.Particle.Aurthoring
             {
                     typeof(DrawInstance.BillBoadTag),
                     typeof(BillBoad.RotationData),
-                    typeof(Translation)
+                    typeof(AddTransformConversion.Translation)
             });
             em.AddComponents(mainEntity, types);
 
@@ -120,7 +120,7 @@ namespace DotsLite.Particle.Aurthoring
 
             var types = new ComponentTypes(
                 typeof(DrawInstance.PsylliumTag),
-                typeof(Translation),
+                typeof(AddTransformConversion.Translation),
                 typeof(Psyllium.TranslationTailData)
             );
             em.AddComponents(mainEntity, types);
@@ -138,7 +138,7 @@ namespace DotsLite.Particle.Aurthoring
 
             var types = new ComponentTypes(
                 typeof(DrawInstance.LineParticleTag),
-                typeof(Translation),
+                typeof(AddTransformConversion.Translation),
                 typeof(Psyllium.TranslationTailData),
                 typeof(LineParticle.TranslationTailLineData)
             );
@@ -160,7 +160,7 @@ namespace DotsLite.Particle.Aurthoring
 
         //    var types = new ComponentTypes(
         //        typeof(DrawInstance.LineParticleTag),
-        //        typeof(Translation),
+        //        typeof(AddTransformConversion.Translation),
         //        typeof(Psyllium.TranslationTailData),
         //        typeof(LineParticle.TranslationTailLineData)
         //    );

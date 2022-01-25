@@ -50,13 +50,14 @@ namespace DotsLite.EntityTrimmer.Authoring
                 Options = EntityQueryOptions.IncludePrefab | EntityQueryOptions.IncludeDisabled,
             };
             using var q = em.CreateEntityQuery(desc);
+            em.DestroyEntity(q);
 
-            using var ents = q.ToEntityArray(Allocator.Temp);
-            foreach (var ent in ents)
-            {
-                //Debug.Log(em.GetName_(ent));
-                em.DestroyEntity(ent);
-            }
+            //using var ents = q.ToEntityArray(Allocator.Temp);
+            //foreach (var ent in ents)
+            //{
+            //    //Debug.Log(em.GetName_(ent));
+            //    em.DestroyEntity(ent);
+            //}
         }
 
     }
