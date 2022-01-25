@@ -24,7 +24,7 @@ namespace DotsLite.EntityTrimmer.Authoring
 
             this.Entities.ForEach
             (
-                (Entity e, DynamicToStaticPhysicsBody c) =>
+                (DynamicToStaticPhysicsBody c) =>
                 {
                     foreach (var tf in c.GetComponentsInChildren<Transform>())
                     {

@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Entities;
 
-public class ExcludeRemoveTransform : MonoBehaviour
-{
-
-}
-
-//[GenerateAuthoringComponent]
-//public struct ExcludeRemoveTransformTag : IComponentData
+//public class ExcludeRemoveTransform : MonoBehaviour
 //{
 
 //}
+
+[GenerateAuthoringComponent]
+public struct ExcludeRemoveTransform : IComponentData
+{
+
+}

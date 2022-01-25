@@ -11,7 +11,7 @@ namespace DotsLite.EntityTrimmer.Authoring
 {
     using Utilities;
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     [UpdateBefore(typeof(TrimLinkedEntityConversion))]
     public class DestroyBlankEntityConversion : GameObjectConversionSystem

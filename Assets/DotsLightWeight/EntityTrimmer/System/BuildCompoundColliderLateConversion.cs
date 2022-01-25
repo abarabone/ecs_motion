@@ -48,7 +48,7 @@ namespace DotsLite.EntityTrimmer.Authoring
 
             this.Entities.ForEach
             (
-                (Entity e, TargetData c) =>
+                (TargetData c) =>
                 {
                     Debug.Log(c.Dst.name);
                     var qPartCollider =
