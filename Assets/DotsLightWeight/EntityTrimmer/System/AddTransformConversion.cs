@@ -81,11 +81,11 @@ namespace DotsLite.EntityTrimmer.Authoring
 
             addComponent(em, (Translation src) => new Unity.Transforms.Translation
             {
-                Value = src.Value
+                Value = float3.zero//src.Value
             });
             addComponent(em, (Rotation src) => new Unity.Transforms.Rotation
             {
-                Value = src.Value
+                Value = quaternion.identity//src.Value
             });
             addComponent(em, (Scale src) => new Unity.Transforms.Scale
             {

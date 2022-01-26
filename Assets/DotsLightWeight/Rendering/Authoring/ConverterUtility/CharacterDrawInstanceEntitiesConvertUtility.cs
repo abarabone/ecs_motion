@@ -21,6 +21,7 @@ namespace DotsLite.Draw.Authoring
     using DotsLite.Utilities;
     using Unity.Linq;
     using DotsLite.Model;
+    using DotsLite.EntityTrimmer.Authoring;
 
     static public class CharacterDrawInstanceEntitiesConvertUtility
     {

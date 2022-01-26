@@ -18,6 +18,7 @@ namespace DotsLite.MarchingCubes.Authoring
     using DotsLite.MarchingCubes.Data;
     using DotsLite.Draw.Authoring;
     using DotsLite.Utilities;
+    using DotsLite.EntityTrimmer.Authoring;
 
     public class MarchingCubesGridAreaAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {

@@ -1,6 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 using Unity.Transforms;
+using Unity.Physics;
 using Unity.Physics.Authoring;
 using Unity.Entities.Conversion;
 using Unity.Entities.Hybrid;
@@ -55,6 +56,14 @@ namespace DotsLite.EntityTrimmer.Authoring
                     },
                     Options = EntityQueryOptions.IncludePrefab | EntityQueryOptions.IncludeDisabled,
                 };
+                //var desc1 = new EntityQueryDesc
+                //{
+                //    None = new ComponentType[]
+                //    {
+                //        typeof(PhysicsJoint),
+                //    },
+                //    Options = EntityQueryOptions.IncludePrefab | EntityQueryOptions.IncludeDisabled,
+                //};
 
                 using var q = em.CreateEntityQuery(desc);
 

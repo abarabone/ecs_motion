@@ -15,6 +15,7 @@ namespace DotsLite.Particle.Aurthoring.disable
     using DotsLite.Model.Authoring;
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
+    using DotsLite.EntityTrimmer.Authoring;
 
     /// <summary>
     /// 

@@ -20,6 +20,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Utilities;
     using Unity.Physics;
     using Unity.Physics.Authoring;
+    using DotsLite.EntityTrimmer.Authoring;
 
     // ボーン
     // ・ボーンＩＤは、SkinnedMeshRenderer.bones の並び順

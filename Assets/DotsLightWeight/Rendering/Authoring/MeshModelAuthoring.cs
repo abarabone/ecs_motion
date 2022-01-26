@@ -21,6 +21,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Utilities;
     using DotsLite.Common.Extension;
     using DotsLite.Misc;
+    using DotsLite.EntityTrimmer.Authoring;
 
     /// <summary>
     /// 
@@ -97,19 +98,19 @@ namespace DotsLite.Model.Authoring
                 );
 
                 em.SetComponentData(mainEntity,
-                    new Translation
+                    new AddTransformConversion.Translation
                     {
                         Value = float3.zero,
                     }
                 );
                 em.SetComponentData(mainEntity,
-                    new Rotation
+                    new AddTransformConversion.Rotation
                     {
                         Value = quaternion.identity,
                     }
                 );
                 em.SetComponentData(mainEntity,
-                    new NonUniformScale
+                    new AddTransformConversion.NonUniformScale
                     {
                         Value = new float3(1.0f, 1.0f, 1.0f),
                     }

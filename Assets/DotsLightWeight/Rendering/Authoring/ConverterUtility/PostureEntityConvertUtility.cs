@@ -13,13 +13,13 @@ namespace DotsLite.Model.Authoring
     using CharacterMotion;
     using Draw;
     using Character;
-    
 
     using DotsLite.Common.Extension;
     using DotsLite.Misc;
     using DotsLite.Utilities;
     using Unity.Physics;
     using Unity.Physics.Authoring;
+    using DotsLite.EntityTrimmer.Authoring;
 
     static public class PostureEntitiesConvertUtility
     {

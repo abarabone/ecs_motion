@@ -8,6 +8,7 @@ using Unity.Transforms;
 namespace DotsLite.Arms.Authoring
 {
     using DotsLite.Utilities;
+    using DotsLite.EntityTrimmer.Authoring;
 
     public class MuzzleOnCameraAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {

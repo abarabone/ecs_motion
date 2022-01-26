@@ -18,6 +18,7 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.CharacterMotion;
     using DotsLite.Arms;
     using DotsLite.Utilities;
+    using DotsLite.EntityTrimmer.Authoring;
 
     public class FunctionHolderAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {

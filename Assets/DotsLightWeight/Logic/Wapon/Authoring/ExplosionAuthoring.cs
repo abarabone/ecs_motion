@@ -21,6 +21,7 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Particle;
     using DotsLite.Targeting;
     using DotsLite.Particle.Aurthoring;
+    using DotsLite.EntityTrimmer.Authoring;
 
     /// <summary>
     /// 

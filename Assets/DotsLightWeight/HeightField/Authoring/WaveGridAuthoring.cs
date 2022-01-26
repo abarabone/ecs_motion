@@ -20,6 +20,7 @@ namespace DotsLite.HeightGrid.Aurthoring
     using DotsLite.Utilities;
     using DotsLite.Misc;
     using DotsLite.Particle.Aurthoring;
+    using DotsLite.EntityTrimmer.Authoring;
 
     public class WaveGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {

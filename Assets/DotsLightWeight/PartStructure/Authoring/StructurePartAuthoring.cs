@@ -21,6 +21,7 @@ namespace DotsLite.Structure.Authoring
     using Unity.Transforms;
     using DotsLite.Geometry;
     using DotsLite.Utilities;
+    using DotsLite.EntityTrimmer.Authoring;
 
     using Material = UnityEngine.Material;
     using Unity.Physics.Authoring;
