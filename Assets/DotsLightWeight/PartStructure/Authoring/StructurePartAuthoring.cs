@@ -169,8 +169,8 @@ namespace DotsLite.Structure.Authoring
                     typeof(PhysicsVelocity),//暫定
                     typeof(PhysicsGravityFactor),//暫定
                     typeof(PhysicsMass),//暫定
-                    typeof(AddTransformConversion.Rotation),
-                    typeof(AddTransformConversion.Translation),
+                    typeof(Marker.Rotation),
+                    typeof(Marker.Translation),
                     //typeof(NonUniformScale),//暫定
                     typeof(Prefab)
                 );

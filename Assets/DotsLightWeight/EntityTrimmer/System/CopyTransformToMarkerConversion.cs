@@ -13,39 +13,6 @@ namespace DotsLite.EntityTrimmer.Authoring
 {
     using Utilities;
 
-    public static class Marker
-    {
-        public struct Translation : IComponentData
-        {
-            public float3 Value;
-        }
-
-        public struct Rotation : IComponentData
-        {
-            public quaternion Value;
-        }
-
-        public struct Scale : IComponentData
-        {
-            public float Value;
-        }
-
-        public struct NonUniformScale : IComponentData
-        {
-            public float3 Value;
-        }
-
-        public struct CompositeScale : IComponentData
-        {
-            public float4x4 Value;
-        }
-
-        public struct LocalToWorld : IComponentData
-        {
-            public float4x4 Value;
-        }
-    }
-
     /// <summary>
     /// TransformConversion によって付与される、トランスフォーム系のコンポーネントデータを削除する。
     /// ExcludeTransformConversion とか はよ
@@ -54,22 +21,21 @@ namespace DotsLite.EntityTrimmer.Authoring
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(DestroyBlankEntityConversion))]
-    public class AddTransformConversion : GameObjectConversionSystem
+    [UpdateBefore(typeof(RemoveTransformAllConversion))]
+    public class CopyTransformToMarkerConversion : GameObjectConversionSystem
     {
-        static void addComponent<TSrc, TDst>(EntityManager em, Func<TSrc, TDst> srcToDst)
+        static void CopyComponent<TSrc, TDst>(EntityManager em, Func<TSrc, TDst> srcToDst)
             where TSrc : struct, IComponentData
             where TDst : struct, IComponentData
         {
             var desc = new EntityQueryDesc
             {
-                All = new ComponentType[] { typeof(TSrc) },
+                All = new ComponentType[] { typeof(TSrc), typeof(TDst) },
                 Options = EntityQueryOptions.IncludePrefab | EntityQueryOptions.IncludeDisabled,
             };
             using var q = em.CreateEntityQuery(desc);
             using var ents = q.ToEntityArray(Allocator.Temp);
 
-            em.AddComponent<TDst>(q);
             foreach (var ent in ents)
             {
                 var src = em.GetComponentData<TSrc>(ent);
@@ -82,27 +48,27 @@ namespace DotsLite.EntityTrimmer.Authoring
         {
             var em = this.DstEntityManager;
 
-            addComponent(em, (Marker.Translation src) => new Unity.Transforms.Translation
+            CopyComponent(em, (Translation src) => new Marker.Translation
             {
                 Value = src.Value
             });
-            addComponent(em, (Marker.Rotation src) => new Unity.Transforms.Rotation
+            CopyComponent(em, (Rotation src) => new Marker.Rotation
             {
                 Value = src.Value
             });
-            addComponent(em, (Marker.Scale src) => new Unity.Transforms.Scale
+            CopyComponent(em, (Scale src) => new Marker.Scale
             {
                 Value = src.Value
             });
-            addComponent(em, (Marker.NonUniformScale src) => new Unity.Transforms.NonUniformScale
+            CopyComponent(em, (NonUniformScale src) => new Marker.NonUniformScale
             {
                 Value = src.Value
             });
-            addComponent(em, (Marker.CompositeScale src) => new Unity.Transforms.CompositeScale
+            CopyComponent(em, (CompositeScale src) => new Marker.CompositeScale
             {
                 Value = src.Value
             });
-            addComponent(em, (Marker.LocalToWorld src) => new Unity.Transforms.LocalToWorld
+            CopyComponent(em, (LocalToWorld src) => new Marker.LocalToWorld
             {
                 Value = src.Value
             });

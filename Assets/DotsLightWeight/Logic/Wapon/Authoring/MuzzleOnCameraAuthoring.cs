@@ -23,8 +23,8 @@ namespace DotsLite.Arms.Authoring
 
             var types = new ComponentTypes(
                 typeof(Emitter.MuzzleTransformData),
-                typeof(AddTransformConversion.Translation),
-                typeof(AddTransformConversion.Rotation)
+                typeof(Marker.Translation),
+                typeof(Marker.Rotation)
             );
             dstManager.AddComponents(muzzle, types);
 

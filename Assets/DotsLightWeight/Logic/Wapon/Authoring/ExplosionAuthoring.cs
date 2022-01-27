@@ -54,7 +54,7 @@ namespace DotsLite.Arms.Authoring
                     typeof(Bullet.PointDamageSpecData),
                     typeof(Explosion.SpecData),
                     typeof(CorpsGroup.TargetWithArmsData),
-                    typeof(AddTransformConversion.Translation)
+                    typeof(Marker.Translation)
                 });
                 em.AddComponents(bulletEntity, types);
 

@@ -184,8 +184,8 @@ namespace DotsLite.Model.Authoring
                 //typeof( DrawTransform.TargetWorkData ),
                 typeof(Bone.RelationLinkData),
                 typeof(Bone.LocalValueData),// 回転と移動をわけたほうがいいか？
-                typeof(AddTransformConversion.Translation),
-                typeof(AddTransformConversion.Rotation)
+                typeof(Marker.Translation),
+                typeof(Marker.Rotation)
             );
         }
         static ComponentTypes addtypeComponentsLeveled_()
@@ -197,8 +197,8 @@ namespace DotsLite.Model.Authoring
                 //typeof( DrawTransform.IndexData ),
                 //typeof( DrawTransform.TargetWorkData ),
                 typeof(Bone.LocalValueData),// 回転と移動をわけたほうがいいか？
-                typeof(AddTransformConversion.Translation),
-                typeof(AddTransformConversion.Rotation)
+                typeof(Marker.Translation),
+                typeof(Marker.Rotation)
             );
         }
 

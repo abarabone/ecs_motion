@@ -73,7 +73,7 @@ namespace DotsLite.Particle.Aurthoring.disable
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(Particle.OptionalData),
-                    typeof(AddTransformConversion.Translation),
+                    typeof(Marker.Translation),
                     typeof(Psyllium.TranslationTailData)
                 );
                 em.SetArchetype( mainEntity, archetype );

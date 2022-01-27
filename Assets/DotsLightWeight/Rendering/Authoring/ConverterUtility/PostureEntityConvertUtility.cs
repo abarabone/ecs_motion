@@ -48,8 +48,8 @@ namespace DotsLite.Model.Authoring
                 (
                     //typeof( Posture.NeedTransformTag ),
                     //typeof( Posture.LinkData ),
-                    typeof(AddTransformConversion.Translation),
-                    typeof(AddTransformConversion.Rotation)
+                    typeof(Marker.Translation),
+                    typeof(Marker.Rotation)
                 );
                 em.AddComponents(ent, addtypes);
                 //var ent = gcs.CreateAdditionalEntity(main, addtypes);

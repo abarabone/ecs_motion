@@ -76,9 +76,9 @@ namespace DotsLite.Model.Authoring
                     typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(AddTransformConversion.Translation),
-                    typeof(AddTransformConversion.Rotation),
-                    typeof(AddTransformConversion.NonUniformScale)
+                    typeof(Marker.Translation),
+                    typeof(Marker.Rotation)
+                    //typeof(Marker.NonUniformScale)
                 );
                 em.SetArchetype(mainEntity, archetype);
 
@@ -97,24 +97,24 @@ namespace DotsLite.Model.Authoring
                     }
                 );
 
-                em.SetComponentData(mainEntity,
-                    new AddTransformConversion.Translation
-                    {
-                        Value = float3.zero,
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new AddTransformConversion.Rotation
-                    {
-                        Value = quaternion.identity,
-                    }
-                );
-                em.SetComponentData(mainEntity,
-                    new AddTransformConversion.NonUniformScale
-                    {
-                        Value = new float3(1.0f, 1.0f, 1.0f),
-                    }
-                );
+                //em.SetComponentData(mainEntity,
+                //    new Marker.Translation
+                //    {
+                //        Value = float3.zero,
+                //    }
+                //);
+                //em.SetComponentData(mainEntity,
+                //    new Marker.Rotation
+                //    {
+                //        Value = quaternion.identity,
+                //    }
+                //);
+                //em.SetComponentData(mainEntity,
+                //    new Marker.NonUniformScale
+                //    {
+                //        Value = new float3(1.0f, 1.0f, 1.0f),
+                //    }
+                //);
 
                 return mainEntity;
             }
