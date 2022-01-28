@@ -18,6 +18,7 @@ namespace DotsLite.MarchingCubes.Authoring
     using DotsLite.Model.Authoring;
     using DotsLite.MarchingCubes.Data;
     using DotsLite.MarchingCubes.Data.Resource;
+    using DotsLite.EntityTrimmer.Authoring;
 
     public class MarchingCubesDrawModelAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -108,6 +109,8 @@ namespace DotsLite.MarchingCubes.Authoring
                 typeof(CubeDrawModel.MakeCubesShaderResourceData),
                 typeof(CubeDrawModel.GridIdSeedData),
                 typeof(CubeDrawModel.InitializeData),
+                    //typeof(Marker.Rotation),
+                    //typeof(Marker.Translation),
             });
             em.AddComponents(ent, types);
 

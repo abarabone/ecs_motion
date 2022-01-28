@@ -107,6 +107,9 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(GridMaster.WaveFieldData),
                     typeof(GridMaster.DimensionData),
                     typeof(GridMaster.InitializeTag),
+
+                    //typeof(Marker.Rotation),
+                    typeof(Marker.Translation),
                 };
                 em.AddComponents(ent, new ComponentTypes(types));
 
@@ -155,9 +158,13 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
 
+                    //typeof(Marker.Rotation),
                     typeof(Marker.Translation),
                 };
-                if (lodlevel == 0) types.Add(typeof(HeightGrid.GridLv0Tag));
+                switch (lodlevel)
+                {
+                    case 0: types.Add(typeof(HeightGrid.GridLv0Tag)); break;
+                }
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
 
@@ -171,29 +178,23 @@ namespace DotsLite.HeightGrid.Aurthoring
                     UnitScaleOnLod = this.UnitDistance * (1 << lodlevel),
                 });
 
-                em.SetComponentData(ent,
-                    new DrawInstance.ModelLinkData
-                    {
-                        DrawModelEntityCurrent = model,
-                    }
-                );
-                em.SetComponentData(ent,
-                    new DrawInstance.TargetWorkData
-                    {
-                        DrawInstanceId = -1,
-                    }
-                );
+                em.SetComponentData(ent, new DrawInstance.ModelLinkData
+                {
+                    DrawModelEntityCurrent = model,
+                });
+                em.SetComponentData(ent, new DrawInstance.TargetWorkData
+                {
+                    DrawInstanceId = -1,
+                });
 
                 var total = this.UnitDistance * (float2)((int2)this.UnitLengthInGrid * (int2)this.NumGrids);
                 var span = (float2)(int2)this.UnitLengthInGrid * this.UnitDistance * (1 << lodlevel);
                 var startPosition = this.transform.position.As_float3().xz - (float2)total * 0.5f;
                 var offset = (float2)i * span;
-                em.SetComponentData(ent,
-                    new Translation
-                    {
-                        Value = (startPosition + offset).x_y(),
-                    }
-                );
+                em.SetComponentData(ent, new Marker.Translation
+                {
+                    Value = (startPosition + offset).x_y(),
+                });
             }
 
 

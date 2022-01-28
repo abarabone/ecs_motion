@@ -16,6 +16,7 @@ namespace DotsLite.MarchingCubes.Authoring
     using DotsLite.Draw;
     using DotsLite.Model;
     using DotsLite.MarchingCubes.Data;
+    using DotsLite.EntityTrimmer.Authoring;
 
     public class MarchingCubesBitGridAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -47,12 +48,16 @@ namespace DotsLite.MarchingCubes.Authoring
                     typeof(BitGrid.LocationInAreaData),
                     typeof(BitGrid.UpdateDirtyRangeData),
                     typeof(BitGrid.ParentAreaData),
-                    //typeof(Unity.Physics.PhysicsCollider),
-                    typeof(Collision.Hit.TargetData),
+
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.WorldBbox),
                     typeof(BitGrid.WorldOriginData),
+
+                    //typeof(Unity.Physics.PhysicsCollider),
+                    typeof(Collision.Hit.TargetData),
+                    typeof(Marker.Rotation),
+                    typeof(Marker.Translation),
                 };
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 

@@ -144,7 +144,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(GridMaster.DimensionData),
                     typeof(GridMaster.HeightFieldShaderResourceData),
                     typeof(GridMaster.InitializeTag),
-
+                    typeof(Marker.Translation),
                     //typeof(PhysicsCollider),
                 };
                 em.AddComponents(ent, new ComponentTypes(types));
@@ -238,7 +238,10 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(PhysicsCollider),
                     typeof(Marker.Translation),
                 };
-                if (lodlevel == 0) types.Add(typeof(HeightGrid.GridLv0Tag));
+                switch (lodlevel)
+                {
+                    case 0: types.Add(typeof(HeightGrid.GridLv0Tag)); break;
+                }
                 em.AddComponents(ent, new ComponentTypes(types.ToArray()));
 
 
@@ -258,29 +261,23 @@ namespace DotsLite.HeightGrid.Aurthoring
                     SerialIndex = dstSerialIndex_(i.x, i.y),
                 });
 
-                em.SetComponentData(ent,
-                    new DrawInstance.ModelLinkData
-                    {
-                        DrawModelEntityCurrent = model,
-                    }
-                );
-                em.SetComponentData(ent,
-                    new DrawInstance.TargetWorkData
-                    {
-                        DrawInstanceId = -1,
-                    }
-                );
+                em.SetComponentData(ent, new DrawInstance.ModelLinkData
+                {
+                    DrawModelEntityCurrent = model,
+                });
+                em.SetComponentData(ent, new DrawInstance.TargetWorkData
+                {
+                    DrawInstanceId = -1,
+                });
 
                 var total = new float3(w, 0, h) * unitScale;
                 var startPosition = (float3)this.transform.position - total * 0.5f;
                 var span = new float3(lw, 0, lh) * unitScale * (1 << lodlevel);
                 var offset = new float3(i.x, 0, i.y) * span;
-                em.SetComponentData(ent,
-                    new Translation
-                    {
-                        Value = startPosition + offset,
-                    }
-                );
+                em.SetComponentData(ent, new Marker.Translation
+                {
+                    Value = startPosition + offset,
+                });
 
                 using var buffer = heights.MakeCopyOfGridBuffer(dim, srcSerialIndex_(i.x, i.y), 0, new int2(lw, lh));
                 buffer.CopyToResource(res, dim, dstSerialIndex_(i.x, i.y));

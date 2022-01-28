@@ -69,12 +69,13 @@ namespace DotsLite.MarchingCubes.Authoring
                     //typeof(BitGridArea.InfoData),
                     //typeof(BitGridArea.InfoWorkData),
                     typeof(BitGridArea.GridInstructionIdData),
-                    typeof(Marker.Rotation),
-                    typeof(Marker.Translation),
                     //typeof(BitGridArea.DrawModelLinkData),
                     //typeof(BitGridArea.PoolLinkData),
                     typeof(BitGridArea.BitGridPrefabData),
-                    typeof(BitGridArea.InitializeData)
+                    typeof(BitGridArea.InitializeData),
+
+                    typeof(Marker.Rotation),
+                    typeof(Marker.Translation),
                 });
                 em.AddComponents(ent, types);
 
@@ -109,14 +110,14 @@ namespace DotsLite.MarchingCubes.Authoring
                 //    GridSpan = new int3(1, this.GridLength.x * this.GridLength.z, this.GridLength.x),
                 //});
 
-                em.SetComponentData(ent, new Rotation
-                {
-                    Value = this.transform.rotation,
-                });
-                em.SetComponentData(ent, new Translation
-                {
-                    Value = this.transform.position,
-                });
+                //em.SetComponentData(ent, new Marker.Rotation
+                //{
+                //    Value = this.transform.rotation,
+                //});
+                //em.SetComponentData(ent, new Marker.Translation
+                //{
+                //    Value = this.transform.position,
+                //});
 
                 //em.SetComponentData(ent, new BitGridArea.DrawModelLinkData
                 //{

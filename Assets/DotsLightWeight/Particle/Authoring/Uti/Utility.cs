@@ -92,7 +92,7 @@ namespace DotsLite.Particle.Aurthoring
             {
                     typeof(DrawInstance.BillBoadTag),
                     typeof(BillBoad.RotationData),
-                    typeof(Marker.Translation)
+                    typeof(Marker.Translation),
             });
             em.AddComponents(mainEntity, types);
 
@@ -103,12 +103,12 @@ namespace DotsLite.Particle.Aurthoring
                 }
             );
 
-            em.SetComponentData(mainEntity, new Translation
+            em.SetComponentData(mainEntity, new Marker.Translation
             {
                 Value = float3.zero,
             });
 
-            em.RemoveComponent<Rotation>(mainEntity);//
+            //em.RemoveComponent<Rotation>(mainEntity);//
         }
 
         public static void AddPsylliumComponents(
@@ -126,7 +126,7 @@ namespace DotsLite.Particle.Aurthoring
             );
             em.AddComponents(mainEntity, types);
 
-            em.RemoveComponent<Rotation>(mainEntity);//
+            //em.RemoveComponent<Rotation>(mainEntity);//
         }
 
         public static void AddLineParticleComponents(
@@ -148,7 +148,7 @@ namespace DotsLite.Particle.Aurthoring
             var buffer = em.AddBuffer<LineParticle.TranslationTailLineData>(mainEntity);
             buffer.Length = isSpring ? segments + 1 : segments + 1 - 2;
 
-            em.RemoveComponent<Rotation>(mainEntity);//
+            //em.RemoveComponent<Rotation>(mainEntity);//
         }
 
         //public static void AddSpringLineParticleComponents(
