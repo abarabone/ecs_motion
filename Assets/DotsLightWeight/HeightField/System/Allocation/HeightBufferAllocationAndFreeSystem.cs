@@ -46,9 +46,11 @@ namespace DotsLite.HeightGrid
                 .WithAll<GridMaster.InitializeTag>()
                 .ForEach((
                     Entity ent,
+                    ref GridMaster.HeightFieldData heights,
                     ref GridMaster.WaveFieldData wave,
                     in GridMaster.DimensionData dim) =>
                 {
+                    heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);
                     wave.Alloc(dim.NumGrids, dim.UnitLengthInGrid);
                 })
                 //.Schedule();
@@ -63,7 +65,7 @@ namespace DotsLite.HeightGrid
                     ref GridMaster.HeightFieldData heights,
                     in GridMaster.DimensionData dim) =>
                 {
-                    ////heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);暫定で外してる
+                    ////heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);暫定で外してる（authoring でやってる）
 
                     //cmd.RemoveComponent<GridMaster.InitializeTag>(ent);
                     em.RemoveComponent<GridMaster.InitializeTag>(ent);
