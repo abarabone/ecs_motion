@@ -26,6 +26,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Common.Extension;
     using DotsLite.Utilities;
     using DotsLite.Structure.Authoring;
+    using DotsLite.EntityTrimmer.Authoring;
 
 
     //binder
@@ -77,7 +78,9 @@ namespace DotsLite.Structure.Authoring
 
             initBinderEntity_(gcs, top, posture);
             initMainEntity_(gcs, top, posture, this.NearModel, parts.Length);
+            gcs.InitPostureEntity(posture);//, far.objectTop.transform);
 
+            // ‚Æ‚è‚ ‚¦‚¸‚Pƒ{[ƒ“‚É‘Î‰ž
             var bone0 = bones.First();
             var qParts0 = parts
                 .Where(x => x.GetComponentInParent<StructureBone>().BoneId == 0);
@@ -127,18 +130,20 @@ namespace DotsLite.Structure.Authoring
             (
                 new ComponentType[]
                 {
-                    typeof(DrawInstance.MeshTag),
-                    typeof(DrawInstance.ModelLinkData),
-                    typeof(DrawInstance.TargetWorkData),
-                    typeof(DrawInstance.NeedLodCurrentTag),
-                    //typeof(NonUniformScale),//Žb’è
-                    //typeof(ObjectMain.ObjectMainTag),
                     typeof(Main.MainTag),
                     typeof(Main.BinderLinkData),//Žb’è
                     typeof(Main.PartDestructionData),
                     typeof(Main.PartLengthData),
                     //typeof(Main.SleepTimerData),
-                    //typeof(Collision.Hit.TargetData),
+
+                    typeof(DrawInstance.MeshTag),
+                    typeof(DrawInstance.ModelLinkData),
+                    typeof(DrawInstance.TargetWorkData),
+                    typeof(DrawInstance.NeedLodCurrentTag),
+
+                    typeof(Collision.Hit.TargetData),
+                    //typeof(NonUniformScale),//Žb’è
+                    //typeof(ObjectMain.ObjectMainTag),
                     //typeof(PhysicsCollider),
                 }
             );
@@ -163,12 +168,18 @@ namespace DotsLite.Structure.Authoring
             {
                 DrawInstanceId = -1,
             });
+            em.SetComponentData(mainEntity,
+                new Collision.Hit.TargetData
+                {
+                    MainEntity = gcs.GetPrimaryEntity(main),
+                    HitType = Collision.HitType.envelope,
+                }
+            );
+
             em.SetComponentData(mainEntity, new Main.PartLengthData
             {
                 TotalPartLength = partLength,
             });
-
-
             //em.SetComponentData(mainEntity,
             //    new Main.SleepTimerData
             //    {
@@ -178,9 +189,6 @@ namespace DotsLite.Structure.Authoring
 
             var draw = mainEntity;
             gcs.AddLod1ComponentToDrawInstanceEntity(draw, top.gameObject, near);
-
-
-            gcs.InitPostureEntity(main);//, far.objectTop.transform);
 
 
             em.SetName_(mainEntity, $"{top.name} main");
@@ -204,7 +212,7 @@ namespace DotsLite.Structure.Authoring
             IEnumerable<StructureAreaPartAuthoring> parts)
         {
             var em = gcs.DstEntityManager;
-            var ent = gcs.GetPrimaryEntity(main);// bone);
+            var ent = gcs.GetPrimaryEntity(bone);
 
             var addtypes = new ComponentTypes(new ComponentType[]
             {
@@ -212,7 +220,9 @@ namespace DotsLite.Structure.Authoring
                 typeof(Structure.Bone.PartDestructionResourceData),
                 typeof(Structure.Bone.PartInfoData),
                 typeof(Collision.Hit.TargetData),
-                typeof(PhysicsCollider),
+                //typeof(PhysicsCollider),
+                typeof(Marker.Rotation),
+                typeof(Marker.Translation),
             });
             em.AddComponents(ent, addtypes);
 

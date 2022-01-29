@@ -109,6 +109,7 @@ namespace DotsLite.Structure.Authoring
 
             initBinderEntity_(gcs, top, posture);
             initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
+            gcs.InitPostureEntity(posture);//, far.objectTop.transform);
 
             setBoneForFarEntity_(gcs, posture, far, top.transform);
             setBoneForPartMultiEntities_(gcs, posture, parts, near.transform);
@@ -152,6 +153,7 @@ namespace DotsLite.Structure.Authoring
 
             initBinderEntity_(gcs, top, posture);
             initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
+            gcs.InitPostureEntity(posture);//, far.objectTop.transform);
 
             initMeshColliderEntity(gcs, near);
 
@@ -176,6 +178,7 @@ namespace DotsLite.Structure.Authoring
 
             initBinderEntity_(gcs, top, posture);
             initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
+            gcs.InitPostureEntity(posture);//, far.objectTop.transform);
 
             initCompoundColliderEntity(gcs, near);
 
@@ -266,17 +269,19 @@ namespace DotsLite.Structure.Authoring
                 new ComponentType[]
                 {
                     typeof(Main.MainTag),
-                    typeof(DrawInstance.MeshTag),
-                    //typeof(NonUniformScale),//暫定
-                    //typeof(ObjectMain.ObjectMainTag),
                     typeof(Main.BinderLinkData),//暫定
+                    typeof(Main.PartDestructionData),
+                    typeof(Main.SleepTimerData),
+                    typeof(Main.PartLengthData),
+
+                    typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
-                    typeof(Main.PartDestructionData),
-                    typeof(Collision.Hit.TargetData),
-                    typeof(Main.SleepTimerData),
                     typeof(DrawInstance.NeedLodCurrentTag),
-                    typeof(Main.PartLengthData),
+
+                    typeof(Collision.Hit.TargetData),
+                    //typeof(NonUniformScale),//暫定
+                    //typeof(ObjectMain.ObjectMainTag),
                 }
             );
             em.AddComponents(mainEntity, mainAddtypes);
@@ -333,9 +338,6 @@ namespace DotsLite.Structure.Authoring
             var draw = mainEntity;
             var lods = new IMeshModelLod[] { near, far };
             gcs.AddLod2ComponentToDrawInstanceEntity(draw, top.gameObject, lods);
-
-
-            gcs.InitPostureEntity(main);//, far.objectTop.transform);
 
 
             em.SetName_(mainEntity, $"{top.name} main");

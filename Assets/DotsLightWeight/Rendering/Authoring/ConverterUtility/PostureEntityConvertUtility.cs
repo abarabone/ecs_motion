@@ -32,7 +32,7 @@ namespace DotsLite.Model.Authoring
             //var postureEntity = createPostureEntity_(gcs, mainGameObject);
             var postureEntity = addComponentsPostureEntity_(gcs, posture);
 
-            setPostureValue(gcs, postureEntity, posture);//, topBone);
+            //setPostureValue(gcs, postureEntity, posture);//, topBone);
 
             return;
 
@@ -58,18 +58,18 @@ namespace DotsLite.Model.Authoring
                 return ent;
             }
 
-            static void setPostureValue
-                (GameObjectConversionSystem gcs, Entity postureEntity, PostureAuthoring postureObject)//, Transform tfbone_)
-            {
-                var em = gcs.DstEntityManager;
+            //static void setPostureValue
+            //    (GameObjectConversionSystem gcs, Entity postureEntity, PostureAuthoring postureObject)//, Transform tfbone_)
+            //{
+            //    var em = gcs.DstEntityManager;
 
-                //var boneEntity = gcs_.GetPrimaryEntity(tfbone_);
-                //em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
+            //    //var boneEntity = gcs_.GetPrimaryEntity(tfbone_);
+            //    //em.SetComponentData( postureEntity, new Posture.LinkData { BoneRelationTop = boneTopEntity } );
 
-                var tf = postureObject.transform;
-                em.SetComponentData(postureEntity, new Rotation { Value = tf.rotation });
-                em.SetComponentData(postureEntity, new Translation { Value = tf.position });
-            }
+            //    var tf = postureObject.transform;
+            //    em.SetComponentData(postureEntity, new Marker.Rotation { Value = tf.rotation });
+            //    em.SetComponentData(postureEntity, new Marker.Translation { Value = tf.position });
+            //}
         }
 
 
