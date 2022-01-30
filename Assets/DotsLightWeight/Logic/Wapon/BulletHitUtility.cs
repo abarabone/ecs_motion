@@ -190,8 +190,9 @@ namespace DotsLite.Arms
                 {
                     Position = hit.posision,
                     Normal = hit.normal,
-                    PartEntity = hit.hitEntity,
+                    ColliderEntity = hit.hitEntity,
                     PartId = parts[hit.hitEntity].PartId,
+                    ColliderChildId = hit.childId,
                     //Force = ,
                 }
             );

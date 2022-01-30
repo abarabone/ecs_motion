@@ -20,7 +20,7 @@ namespace DotsLite.Structure.Authoring
 
 
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class CompoundColliderInitializeSystem : GameObjectConversionSystem
+    public class ExecuteAreaAuthoringConversion : GameObjectConversionSystem
     {
 
 

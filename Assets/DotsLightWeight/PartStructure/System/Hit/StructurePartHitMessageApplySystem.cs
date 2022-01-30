@@ -23,7 +23,8 @@ namespace DotsLite.Structure
     public struct PartHitMessage : IHitMessage
     {
         public int PartId;
-        public Entity PartEntity;
+        public Entity ColliderEntity;
+        public uint ColliderChildId;
         public float3 Position;
         public float3 Normal;
     }
@@ -141,6 +142,7 @@ namespace DotsLite.Structure
 
                 //wakeupMain_(index, mainEntity);
                 //applyDamgeToMain_();
+                Debug.Log($"child id {hitMessages.Current.ColliderChildId}");
 
                 applyDestructions_(mainEntity, hitMessages, ref targetParts);
                 destroyPartAndCreateDebris_(index, in targetParts);
@@ -162,11 +164,11 @@ namespace DotsLite.Structure
                 {
                     //_._log($"{msg.PartId} {(uint)(destruction.Destructions[msg.PartId >> 5] & (uint)(1 << (msg.PartId & 0b11111)))} {destruction.IsDestroyed(msg.PartId)} {this.Prefabs.HasComponent(msg.PartEntity)}");
                     if (destruction.IsDestroyed(msg.PartId)) continue;
-                    if (!this.Positions.HasComponent(msg.PartEntity)) continue;
+                    if (!this.Positions.HasComponent(msg.ColliderEntity)) continue;
 
                     destruction.SetDestroyed(msg.PartId);
 
-                    targetParts.Add(msg.PartEntity);
+                    targetParts.Add(msg.ColliderEntity);
                 }
 
                 this.destructions[mainEntity] = destruction;

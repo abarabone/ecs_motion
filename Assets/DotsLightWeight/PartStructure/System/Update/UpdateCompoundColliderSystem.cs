@@ -1,117 +1,108 @@
-//using System.Collections;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Runtime.InteropServices;
-//using UnityEngine;
-//using Unity.Entities;
-//using Unity.Jobs;
-//using Unity.Collections;
-//using Unity.Burst;
-//using Unity.Mathematics;
-//using Unity.Transforms;
-//using Unity.Physics;
-//using Unity.Physics.Systems;
-//using UnityEngine.InputSystem;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using UnityEngine;
+using Unity.Entities;
+using Unity.Jobs;
+using Unity.Collections;
+using Unity.Burst;
+using Unity.Mathematics;
+using Unity.Transforms;
+using Unity.Physics;
+using Unity.Physics.Systems;
+using UnityEngine.InputSystem;
 
-//using Collider = Unity.Physics.Collider;
-//using SphereCollider = Unity.Physics.SphereCollider;
+using Collider = Unity.Physics.Collider;
+using SphereCollider = Unity.Physics.SphereCollider;
 
-//namespace DotsLite.Draw
-//{
-//    using DotsLite.Misc;
-//    using DotsLite.Utilities;
-//    using DotsLite.SystemGroup;
-//    using DotsLite.Character;
-//    using DotsLite.Structure;
-//    using DotsLite.Dependency;
-
-
-//    /// <summary>
-//    /// 
-//    /// </summary>
-//    //[DisableAutoCreation]
-//    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-//    public class UpdateCompoundColliderSystem : DependencyAccessableSystemBase
-//    {
-
-//        public HitMessage<PartHitMessage>.Reciever Reciever { get; private set; }
-
-//        CommandBufferDependency.Sender cmddep;
+namespace DotsLite.Draw
+{
+    using DotsLite.Misc;
+    using DotsLite.Utilities;
+    using DotsLite.SystemGroup;
+    using DotsLite.Character;
+    using DotsLite.Structure;
+    using DotsLite.Dependency;
 
 
-//        protected override void OnCreate()
-//        {
-//            base.OnCreate();
+    /// <summary>
+    /// 
+    /// </summary>
+    //[DisableAutoCreation]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
+    public class UpdateCompoundColliderSystem : DependencyAccessableSystemBase
+    {
 
-//            this.Reciever = new HitMessage<PartHitMessage>.Reciever(10000);
-//            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-//        }
-
-
-//        protected override void OnDestroy()
-//        {
-//            base.OnDestroy();
-
-//            this.Reciever.Dispose();
-//        }
-
-//        protected override void OnUpdate()
-//        {
-//            using var cmdScope = this.cmddep.WithDependencyScope();
+        StructurePartHitMessageApplySystem sys;
+        CommandBufferDependency.Sender cmddep;
 
 
-//            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
+        protected override void OnCreate()
+        {
+            base.OnCreate();
 
-//            this.Dependency = new JobExecution
-//            {
-//                cmd = cmd,
+            this.sys = this.World.GetOrCreateSystem<StructurePartHitMessageApplySystem>();
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
+        }
 
-//                cols = this.GetComponentDataFromEntity<PhysicsCollider>(),
-//                infos = this.GetComponentDataFromEntity<Main.PartInfoData>(isReadOnly: true),
-//                ress = this.GetBufferFromEntity<Main.PartDestructionResourceData>(isReadOnly: true),
-//            }
-//            .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
-
-//        }
+        protected override void OnUpdate()
+        {
+            using var cmdScope = this.cmddep.WithDependencyScope();
 
 
-//        [BurstCompile]
-//        public struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForKey
-//        {
+            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
-//            public EntityCommandBuffer.ParallelWriter cmd;
+            this.Dependency = new JobExecution
+            {
+                cmd = cmd,
 
-//            public ComponentDataFromEntity<PhysicsCollider> cols;
+                cols = this.GetComponentDataFromEntity<PhysicsCollider>(),
+                infos = this.GetComponentDataFromEntity<Bone.PartInfoData>(isReadOnly: true),
+                ress = this.GetBufferFromEntity<Bone.PartDestructionResourceData>(isReadOnly: true),
+            }
+            .ScheduleParallelKey(this.sys.Reciever, 32, this.Dependency);
 
-//            [ReadOnly]
-//            public ComponentDataFromEntity<Main.PartInfoData> infos;
-
-//            [ReadOnly]
-//            public BufferFromEntity<Main.PartDestructionResourceData> ress;
+        }
 
 
-//            [BurstCompile]
-//            public unsafe void Execute(
-//                int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
-//            {
-//                var info = this.infos[mainEntity];
+        [BurstCompile]
+        public struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForKey
+        {
 
-//                var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
-//                    info.LivePartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            public EntityCommandBuffer.ParallelWriter cmd;
 
-//                var buffer = this.ress[mainEntity];
-//                for (var i = 0; i < info.LivePartLength; i++)
-//                {
-//                    dst[i] = buffer[i].ColliderInstance;
-//                }
+            public ComponentDataFromEntity<PhysicsCollider> cols;
 
-//                this.cols[mainEntity] = new PhysicsCollider
-//                {
-//                    Value = CompoundCollider.Create(dst),
-//                };
-//                dst.Dispose();
-//            }
+            [ReadOnly]
+            public ComponentDataFromEntity<Bone.PartInfoData> infos;
 
-//        }
-//    }
-//}
+            [ReadOnly]
+            public BufferFromEntity<Bone.PartDestructionResourceData> ress;
+
+
+            [BurstCompile]
+            public unsafe void Execute(
+                int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
+            {
+                var info = this.infos[mainEntity];
+
+                var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
+                    info.LivePartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+
+                var buffer = this.ress[mainEntity];
+                for (var i = 0; i < info.LivePartLength; i++)
+                {
+                    dst[i] = buffer[i].ColliderInstance;
+                }
+
+                this.cols[mainEntity] = new PhysicsCollider
+                {
+                    Value = CompoundCollider.Create(dst),
+                };
+                dst.Dispose();
+            }
+
+        }
+    }
+}

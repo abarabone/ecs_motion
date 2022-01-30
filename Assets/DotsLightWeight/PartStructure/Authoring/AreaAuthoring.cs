@@ -247,7 +247,7 @@ namespace DotsLite.Structure.Authoring
                 var tf = pt.transform;Debug.Log(pt.name);
                 var ptent = gcs.GetPrimaryEntity(pt);
 
-                if (!em.HasComponent<PhysicsCollider>(ptent)) return;
+                if (!em.HasComponent<PhysicsCollider>(ptent)) continue;
 
                 resbuf.Add(new Structure.Bone.PartDestructionResourceData
                 {

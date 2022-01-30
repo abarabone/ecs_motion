@@ -55,6 +55,7 @@ namespace DotsLite.Collision
         public float3 normal;
         public Entity hitEntity;
         public Entity stateEntity;
+        public uint childId;
     }
 
     public struct DistanceHitResult
@@ -98,6 +99,7 @@ namespace DotsLite.Collision
                     hitEntity = hit.Entity,
                     posision = hit.Position,
                     normal = hit.SurfaceNormal,
+                    childId = hit.ColliderKey.Value,
                 },
                 distance = hit.Distance,
             };
