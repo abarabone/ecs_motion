@@ -14,8 +14,7 @@ namespace DotsLite.EntityTrimmer.Authoring
     /// 
     /// </summary>
     //[DisableAutoCreation]
-    //[UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
-    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    [UpdateInGroup(typeof(EntityTrimmerSystemGroup))]
     public class DynamicToStaticPhysicsBodyConversion : GameObjectConversionSystem
     {
         protected override void OnUpdate()

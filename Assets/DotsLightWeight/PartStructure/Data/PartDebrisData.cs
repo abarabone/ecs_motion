@@ -14,13 +14,20 @@ using Unity.Burst;
 using DotsLite.Geometry;
 using System.Runtime.InteropServices;
 using System;
+using Unity.Physics;
 
-namespace DotsLite.Structure.Area
+using Collider = Unity.Physics.Collider;
+
+namespace DotsLite.Structure
 {
-    using DotsLite.Utilities;
-
-    static public partial class Area
+    static public partial class PartDebris
     {
 
+        public struct Data : IComponentData
+        {
+            public float LifeTime;
+        }
+
     }
+
 }

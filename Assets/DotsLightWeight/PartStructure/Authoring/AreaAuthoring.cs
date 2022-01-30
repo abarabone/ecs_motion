@@ -217,8 +217,8 @@ namespace DotsLite.Structure.Authoring
             var addtypes = new ComponentTypes(new ComponentType[]
             {
                 //typeof(Structure.Bone.ColliderInitializeData),
-                typeof(Structure.Bone.PartDestructionResourceData),
-                typeof(Structure.Bone.PartInfoData),
+                typeof(Structure.PartBone.PartDestructionResourceData),
+                typeof(Structure.PartBone.PartInfoData),
                 typeof(Collision.Hit.TargetData),
                 //typeof(PhysicsCollider),
                 typeof(Marker.Rotation),
@@ -233,7 +233,7 @@ namespace DotsLite.Structure.Authoring
             });
 
             var partLength = parts.Count();
-            em.SetComponentData(ent, new Structure.Bone.PartInfoData
+            em.SetComponentData(ent, new Structure.PartBone.PartInfoData
             {
                 PartLength = partLength,
                 LivePartLength = partLength,
@@ -241,7 +241,7 @@ namespace DotsLite.Structure.Authoring
 
 
             var mtinv = bone.transform.worldToLocalMatrix;
-            var resbuf = em.AddBuffer<Structure.Bone.PartDestructionResourceData>(ent);
+            var resbuf = em.AddBuffer<Structure.PartBone.PartDestructionResourceData>(ent);
             foreach (var pt in parts)
             {
                 var tf = pt.transform;Debug.Log(pt.name);
@@ -249,7 +249,7 @@ namespace DotsLite.Structure.Authoring
 
                 if (!em.HasComponent<PhysicsCollider>(ptent)) continue;
 
-                resbuf.Add(new Structure.Bone.PartDestructionResourceData
+                resbuf.Add(new Structure.PartBone.PartDestructionResourceData
                 {
                     ColliderInstance = new CompoundCollider.ColliderBlobInstance
                     {

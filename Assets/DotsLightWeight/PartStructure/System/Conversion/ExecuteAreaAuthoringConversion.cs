@@ -17,13 +17,12 @@ namespace DotsLite.Structure.Authoring
 {
     using DotsLite.Dependency;
     using DotsLite.Model.Authoring;
-
+    using DotsLite.EntityTrimmer.Authoring;
 
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    [UpdateBefore(typeof(EntityTrimmerSystemGroup))]
     public class ExecuteAreaAuthoringConversion : GameObjectConversionSystem
     {
-
-
 
         protected override void OnUpdate()
         {
@@ -34,6 +33,20 @@ namespace DotsLite.Structure.Authoring
                 {
                     var ent = this.GetPrimaryEntity(area);
                     area.Convert(ent, this.DstEntityManager, this);
+                });
+
+            this.Entities
+                .ForEach((StructureBone bone) =>
+                {
+                    var ent = this.GetPrimaryEntity(bone);
+
+                    var ress = em.GetBuffer<PartBone.PartDestructionResourceData>(ent);
+                    var info = em.GetComponentData<PartBone.PartInfoData>(ent);
+                    var link = em.GetComponentData<PartBone.LinkToMainData>(ent);
+
+                    var destruction = em.GetComponentData<Main.PartDestructionData>(link.MainEntity);
+
+                    em.SetComponentData<PhysicsCollider>(ent, ress.BuildCompoundCollider(info));
                 });
         }
 

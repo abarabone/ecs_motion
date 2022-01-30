@@ -17,7 +17,7 @@ namespace DotsLite.EntityTrimmer.Authoring
     /// </summary>
     /// transform conversion ‚Í [UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    [UpdateInGroup(typeof(EntityTrimmerSystemGroup))]
     [UpdateBefore(typeof(AddTransformConversion))]
     public class RemoveTransformAllConversion : GameObjectConversionSystem
     {

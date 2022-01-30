@@ -57,9 +57,9 @@ namespace DotsLite.Draw
             {
                 cmd = cmd,
 
-                cols = this.GetComponentDataFromEntity<PhysicsCollider>(),
-                infos = this.GetComponentDataFromEntity<Bone.PartInfoData>(isReadOnly: true),
-                ress = this.GetBufferFromEntity<Bone.PartDestructionResourceData>(isReadOnly: true),
+                //cols = this.GetComponentDataFromEntity<PhysicsCollider>(),
+                //infos = this.GetComponentDataFromEntity<Bone.PartInfoData>(isReadOnly: true),
+                //ress = this.GetBufferFromEntity<Bone.PartDestructionResourceData>(isReadOnly: true),
             }
             .ScheduleParallelKey(this.sys.Reciever, 32, this.Dependency);
 
@@ -72,35 +72,35 @@ namespace DotsLite.Draw
 
             public EntityCommandBuffer.ParallelWriter cmd;
 
-            public ComponentDataFromEntity<PhysicsCollider> cols;
+            //public ComponentDataFromEntity<PhysicsCollider> cols;
 
-            [ReadOnly]
-            public ComponentDataFromEntity<Bone.PartInfoData> infos;
+            //[ReadOnly]
+            //public ComponentDataFromEntity<Bone.PartInfoData> infos;
 
-            [ReadOnly]
-            public BufferFromEntity<Bone.PartDestructionResourceData> ress;
+            //[ReadOnly]
+            //public BufferFromEntity<Bone.PartDestructionResourceData> ress;
 
 
             [BurstCompile]
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                var info = this.infos[mainEntity];
+                //var info = this.infos[mainEntity];
 
-                var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
-                    info.LivePartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+                //var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
+                //    info.LivePartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
-                var buffer = this.ress[mainEntity];
-                for (var i = 0; i < info.LivePartLength; i++)
-                {
-                    dst[i] = buffer[i].ColliderInstance;
-                }
+                //var buffer = this.ress[mainEntity];
+                //for (var i = 0; i < info.LivePartLength; i++)
+                //{
+                //    dst[i] = buffer[i].ColliderInstance;
+                //}
 
-                this.cols[mainEntity] = new PhysicsCollider
-                {
-                    Value = CompoundCollider.Create(dst),
-                };
-                dst.Dispose();
+                //this.cols[mainEntity] = new PhysicsCollider
+                //{
+                //    Value = CompoundCollider.Create(dst),
+                //};
+                //dst.Dispose();
             }
 
         }

@@ -100,8 +100,8 @@ namespace DotsLite.Structure
                 updateCollider = new UpdateCollider
                 {
                     cols = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
-                    infos = this.GetComponentDataFromEntity<Structure.Bone.PartInfoData>(isReadOnly: true),
-                    ress = this.GetBufferFromEntity<Structure.Bone.PartDestructionResourceData>(isReadOnly: true),
+                    infos = this.GetComponentDataFromEntity<PartBone.PartInfoData>(isReadOnly: true),
+                    ress = this.GetBufferFromEntity<PartBone.PartDestructionResourceData>(isReadOnly: true),
                 },
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
@@ -235,10 +235,10 @@ namespace DotsLite.Structure
             public ComponentDataFromEntity<PhysicsCollider> cols;
 
             [ReadOnly]
-            public ComponentDataFromEntity<Structure.Bone.PartInfoData> infos;
+            public ComponentDataFromEntity<PartBone.PartInfoData> infos;
 
             [ReadOnly]
-            public BufferFromEntity<Structure.Bone.PartDestructionResourceData> ress;
+            public BufferFromEntity<PartBone.PartDestructionResourceData> ress;
 
 
             [BurstCompile]
