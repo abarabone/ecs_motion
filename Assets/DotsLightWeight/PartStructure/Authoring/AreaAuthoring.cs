@@ -213,27 +213,35 @@ namespace DotsLite.Structure.Authoring
         {
             var em = gcs.DstEntityManager;
             var ent = gcs.GetPrimaryEntity(bone);
+            var mainent = gcs.GetPrimaryEntity(main);
 
             var addtypes = new ComponentTypes(new ComponentType[]
             {
-                //typeof(Structure.Bone.ColliderInitializeData),
-                typeof(Structure.PartBone.PartDestructionResourceData),
-                typeof(Structure.PartBone.PartInfoData),
+                //typeof(Bone.ColliderInitializeData),
+                typeof(PartBone.PartDestructionResourceData),
+                typeof(PartBone.PartInfoData),
+                typeof(PartBone.LinkToMainData),
+                
                 typeof(Collision.Hit.TargetData),
-                //typeof(PhysicsCollider),
+                typeof(PhysicsCollider),
                 typeof(Marker.Rotation),
                 typeof(Marker.Translation),
             });
             em.AddComponents(ent, addtypes);
 
+            em.SetComponentData(ent, new PartBone.LinkToMainData
+            {
+                MainEntity = mainent,
+            });
+
             em.SetComponentData(ent, new Collision.Hit.TargetData
             {
-                MainEntity = gcs.GetPrimaryEntity(main),
+                MainEntity = mainent,
                 HitType = Collision.HitType.part,
             });
 
             var partLength = parts.Count();
-            em.SetComponentData(ent, new Structure.PartBone.PartInfoData
+            em.SetComponentData(ent, new PartBone.PartInfoData
             {
                 PartLength = partLength,
                 LivePartLength = partLength,
@@ -241,15 +249,15 @@ namespace DotsLite.Structure.Authoring
 
 
             var mtinv = bone.transform.worldToLocalMatrix;
-            var resbuf = em.AddBuffer<Structure.PartBone.PartDestructionResourceData>(ent);
+            var resbuf = em.AddBuffer<PartBone.PartDestructionResourceData>(ent);
             foreach (var pt in parts)
             {
-                var tf = pt.transform;Debug.Log(pt.name);
+                var tf = pt.transform;
                 var ptent = gcs.GetPrimaryEntity(pt);
 
                 if (!em.HasComponent<PhysicsCollider>(ptent)) continue;
-
-                resbuf.Add(new Structure.PartBone.PartDestructionResourceData
+Debug.Log(pt.name);
+                resbuf.Add(new PartBone.PartDestructionResourceData
                 {
                     ColliderInstance = new CompoundCollider.ColliderBlobInstance
                     {

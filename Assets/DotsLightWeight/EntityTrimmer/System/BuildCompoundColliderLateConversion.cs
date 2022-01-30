@@ -27,7 +27,7 @@ namespace DotsLite.EntityTrimmer.Authoring
     /// <summary>
     /// 
     /// </summary>
-    [UpdateInGroup(typeof(EntityTrimmerSystemGroup))]
+    [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     public class BuildCompoundColliderLateConversion : GameObjectConversionSystem
     {
 

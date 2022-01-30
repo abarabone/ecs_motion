@@ -20,7 +20,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.EntityTrimmer.Authoring;
 
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(EntityTrimmerSystemGroup))]
+    [UpdateBefore(typeof(RemoveTransformAllConversion))]
     public class ExecuteAreaAuthoringConversion : GameObjectConversionSystem
     {
 
@@ -44,9 +44,9 @@ namespace DotsLite.Structure.Authoring
                     var info = em.GetComponentData<PartBone.PartInfoData>(ent);
                     var link = em.GetComponentData<PartBone.LinkToMainData>(ent);
 
-                    var destruction = em.GetComponentData<Main.PartDestructionData>(link.MainEntity);
+                    var destructions = em.GetComponentData<Main.PartDestructionData>(link.MainEntity);
 
-                    em.SetComponentData<PhysicsCollider>(ent, ress.BuildCompoundCollider(info));
+                    em.SetComponentData(ent, ress.BuildCompoundCollider(info, destructions));
                 });
         }
 

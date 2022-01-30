@@ -97,12 +97,12 @@ namespace DotsLite.Structure
                 //parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
                 //linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
 
-                updateCollider = new UpdateCollider
-                {
-                    cols = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
-                    infos = this.GetComponentDataFromEntity<PartBone.PartInfoData>(isReadOnly: true),
-                    ress = this.GetBufferFromEntity<PartBone.PartDestructionResourceData>(isReadOnly: true),
-                },
+                //updateCollider = new UpdateCollider
+                //{
+                //    cols = this.GetComponentDataFromEntity<PhysicsCollider>(isReadOnly: true),
+                //    infos = this.GetComponentDataFromEntity<PartBone.PartInfoData>(isReadOnly: true),
+                //    ress = this.GetBufferFromEntity<PartBone.PartDestructionResourceData>(isReadOnly: true),
+                //},
             }
             .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
 
@@ -131,7 +131,7 @@ namespace DotsLite.Structure
             //[ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
 
 
-            public UpdateCollider updateCollider;
+            //public UpdateCollider updateCollider;
 
 
             [BurstCompile]
