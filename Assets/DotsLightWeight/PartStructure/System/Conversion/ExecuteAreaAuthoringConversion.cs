@@ -17,6 +17,7 @@ namespace DotsLite.Structure.Authoring
 {
     using DotsLite.Dependency;
     using DotsLite.Model.Authoring;
+    using DotsLite.Structure;
     using DotsLite.EntityTrimmer.Authoring;
 
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]

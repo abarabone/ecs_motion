@@ -71,8 +71,8 @@ namespace DotsLite.Arms
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
 
-            this.stSender = HitMessage<Structure.EnvelopeHitMessage>.Sender.Create<StructureEnvelopeHitMessageApplySystem>(this);
-            this.ptSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
+            this.stSender = HitMessage<Structure.EnvelopeHitMessage>.Sender.Create<StructureEnvelopeMessageAllocationSystem>(this);
+            this.ptSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartMessageAllocationSystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
 
             //this.prevHitSystem = World.GetExistingSystem<BulletSphereHitSystem>();

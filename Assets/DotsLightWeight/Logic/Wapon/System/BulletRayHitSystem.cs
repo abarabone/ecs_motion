@@ -59,7 +59,7 @@ namespace DotsLite.Arms
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
 
-            this.stSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartHitMessageApplySystem>(this);
+            this.stSender = HitMessage<Structure.PartHitMessage>.Sender.Create<StructurePartMessageAllocationSystem>(this);
             this.chSender = HitMessage<Character.HitMessage>.Sender.Create<CharacterHitMessageApplySystem>(this);
             this.mcSender = HitMessage<MarchingCubes.UpdateMessage>.Sender.Create<MarchingCubes.BitGridMessageAllocSystem>(this);
 
