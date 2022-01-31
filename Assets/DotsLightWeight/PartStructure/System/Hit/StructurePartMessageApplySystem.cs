@@ -23,6 +23,7 @@ namespace DotsLite.Structure
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     //[UpdateAfter(typeof(StructurePartMessageAllocationSystem))]
+    [UpdateAfter(typeof(StructureEnvelopeMessageApplySystem))]
     [UpdateBefore(typeof(StructurePartMessageFreeJobSystem))]
     //[UpdateAfter(typeof(StructureEnvelopeWakeupTriggerSystem))]
     public class StructurePartMessageApplySystem : DependencyAccessableSystemBase
@@ -31,7 +32,7 @@ namespace DotsLite.Structure
 
         StructurePartMessageAllocationSystem allocationSystem;
 
-        BarrierDependency.Sender barcopydep;
+        BarrierDependency.Sender freedep;
         CommandBufferDependency.Sender cmddep;
 
 
@@ -41,13 +42,13 @@ namespace DotsLite.Structure
 
             this.allocationSystem = this.World.GetOrCreateSystem<StructurePartMessageAllocationSystem>();
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-            this.barcopydep = BarrierDependency.Sender.Create<StructurePartMessageFreeJobSystem>(this);
+            this.freedep = BarrierDependency.Sender.Create<StructurePartMessageFreeJobSystem>(this);
         }
 
 
         protected override void OnUpdate()
         {
-            using var barcopyScope = this.barcopydep.WithDependencyScope();
+            using var freeScope = this.freedep.WithDependencyScope();
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 

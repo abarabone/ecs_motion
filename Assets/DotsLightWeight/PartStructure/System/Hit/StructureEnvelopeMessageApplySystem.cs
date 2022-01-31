@@ -26,7 +26,7 @@ namespace DotsLite.Structure
 
         StructureEnvelopeMessageAllocationSystem allocationSystem;
 
-        BarrierDependency.Sender barcopydep;
+        BarrierDependency.Sender freedep;
         CommandBufferDependency.Sender cmddep;
 
 
@@ -36,12 +36,12 @@ namespace DotsLite.Structure
 
             this.allocationSystem = this.World.GetOrCreateSystem<StructureEnvelopeMessageAllocationSystem>();
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
-            this.barcopydep = BarrierDependency.Sender.Create<StructureEnvelopeMessageFreeJobSystem>(this);
+            this.freedep = BarrierDependency.Sender.Create<StructureEnvelopeMessageFreeJobSystem>(this);
         }
 
         protected override void OnUpdate()
         {
-            using var barcopyScope = this.barcopydep.WithDependencyScope();
+            using var freeScope = this.freedep.WithDependencyScope();
             using var cmdScope = this.cmddep.WithDependencyScope();
 
 
