@@ -39,7 +39,7 @@ namespace DotsLite.Structure.Authoring
     /// <summary>
     /// 
     /// </summary>
-    public class StructureBuildingModelAuthoring
+    public class StructureBuildingAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
@@ -47,7 +47,7 @@ namespace DotsLite.Structure.Authoring
         public LodMeshModel<UI32, PositionNormalUvVertex> FarModel;
 
         public GameObject Envelope;
-        public StructureBuildingModelAuthoring MasterPrefab;
+        public StructureBuildingAuthoring MasterPrefab;
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
@@ -96,14 +96,14 @@ namespace DotsLite.Structure.Authoring
     {
 
         static public void CreateStructureEntities
-            (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+            (this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
         {
             var top = st;
             var far = st.FarModel.Obj;
             var near = st.NearModel.Obj;
             var env = st.Envelope;
             var posture = st.GetComponentInChildren<PostureAuthoring>();
-            var parts = near.GetComponentsInChildren<StructurePartAuthoring>();
+            var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
@@ -119,7 +119,7 @@ namespace DotsLite.Structure.Authoring
         }
 
         static public void CreateStructureEntitiesInArea
-            (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring structureModel)
+            (this GameObjectConversionSystem gcs, StructureBuildingAuthoring structureModel)
         {
             //var top = structureModel.gameObject;
             //var far = structureModel.FarMeshObject.objectTop;
@@ -140,14 +140,14 @@ namespace DotsLite.Structure.Authoring
 
 
         static public void CreateStructureEntities_MeshCollider
-            (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+            (this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
         {
             var top = st;
             var far = st.FarModel.Obj;
             var near = st.NearModel.Obj;
             var env = st.Envelope;
             var posture = st.GetComponentInChildren<PostureAuthoring>();
-            var parts = near.GetComponentsInChildren<StructurePartAuthoring>();
+            var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
@@ -165,14 +165,14 @@ namespace DotsLite.Structure.Authoring
         }
 
         static public void CreateStructureEntities_Compound
-            (this GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+            (this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
         {
             var top = st;
             var far = st.FarModel.Obj;
             var near = st.NearModel.Obj;
             var env = st.Envelope;
             var posture = st.GetComponentInChildren<PostureAuthoring>();
-            var parts = near.GetComponentsInChildren<StructurePartAuthoring>();
+            var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
@@ -196,7 +196,7 @@ namespace DotsLite.Structure.Authoring
         /// <summary>
         /// main, near, far, part 以外の entity を削除する
         /// </summary>
-        static void trimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+        static void trimEntities_(GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
         {
             var em = gcs.DstEntityManager;
 
@@ -206,7 +206,7 @@ namespace DotsLite.Structure.Authoring
             var env = st.Envelope;
             var main = env;
 
-            var needs = st.GetComponentsInChildren<StructurePartAuthoring>()
+            var needs = st.GetComponentsInChildren<StructureBuildingPartAuthoring>()
                 .Select(x => x.gameObject)
                 //.Append(top)
                 .Append(main)
@@ -222,17 +222,17 @@ namespace DotsLite.Structure.Authoring
         /// <summary>
         /// part entity の遅延的破棄をセットする
         /// </summary>
-        static void orderTrimEntities_(GameObjectConversionSystem gcs, StructureBuildingModelAuthoring st)
+        static void orderTrimEntities_(GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
         {
             var em = gcs.DstEntityManager;
 
-            var qEnt = st.GetComponentsInChildren<StructurePartAuthoring>()
+            var qEnt = st.GetComponentsInChildren<StructureBuildingPartAuthoring>()
                 .Select(x => gcs.GetPrimaryEntity(x));
             em.AddComponentData(qEnt, new DestroyEntityLateConversion.TargetTag { });
         }
 
         static void initBinderEntity_
-            (GameObjectConversionSystem gcs, StructureBuildingModelAuthoring top, PostureAuthoring main)
+            (GameObjectConversionSystem gcs, StructureBuildingAuthoring top, PostureAuthoring main)
         {
             var em_ = gcs.DstEntityManager;
 
@@ -255,7 +255,7 @@ namespace DotsLite.Structure.Authoring
         }
 
         static void initMainEntity_(
-            GameObjectConversionSystem gcs, StructureBuildingModelAuthoring top, PostureAuthoring main,
+            GameObjectConversionSystem gcs, StructureBuildingAuthoring top, PostureAuthoring main,
             IMeshModelLod near, IMeshModelLod far, int partLength)
         {
             var em = gcs.DstEntityManager;
@@ -355,7 +355,7 @@ namespace DotsLite.Structure.Authoring
 
 
         static void setBoneForPartMultiEntities_
-            (GameObjectConversionSystem gcs, PostureAuthoring parent, IEnumerable<StructurePartAuthoring> parts, Transform root)
+            (GameObjectConversionSystem gcs, PostureAuthoring parent, IEnumerable<StructureBuildingPartAuthoring> parts, Transform root)
         {
             var qTfPart = parts.Select(pt => pt.transform);
 
@@ -415,7 +415,7 @@ namespace DotsLite.Structure.Authoring
             em.AddComponentData(nearent, new BuildCompoundColliderLateConversion.TargetData
             {
                 Dst = near,
-                Srcs = near.GetComponentsInChildren<StructurePartAuthoring>().Select(x => x.gameObject),
+                Srcs = near.GetComponentsInChildren<StructureBuildingPartAuthoring>().Select(x => x.gameObject),
             });
         }
 

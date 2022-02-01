@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace DotsLite.Structure.Authoring
 {
-    public class StructureBuildingModelAliasAuthoring : MonoBehaviour
+    public class StructureBuildingAliasAuthoring : MonoBehaviour
     {
 
-        public StructureBuildingModelAuthoring StructureModelPrefab;
+        public StructureBuildingAuthoring StructureModelPrefab;
 
     }
 }

@@ -204,7 +204,7 @@ namespace DotsLite.Structure
             public ComponentDataFromEntity<PhysicsCollider> cols;
 
             [ReadOnly]
-            public ComponentDataFromEntity<PartBone.PartInfoData> infos;
+            public ComponentDataFromEntity<PartBone.LengthData> infos;
 
             [ReadOnly]
             public BufferFromEntity<PartBone.PartDestructionResourceData> ress;

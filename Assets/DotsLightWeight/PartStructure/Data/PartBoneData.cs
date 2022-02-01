@@ -37,7 +37,7 @@ namespace DotsLite.Structure
             public Entity MainEntity;
         }
 
-        public struct PartInfoData : IComponentData
+        public struct LengthData : IComponentData
         {
             public int PartLength;
             public int LivePartLength;
@@ -49,6 +49,17 @@ namespace DotsLite.Structure
             public int PartId;
             public CompoundCollider.ColliderBlobInstance ColliderInstance;
             public Entity DebrisPrefab;
+        }
+        [InternalBufferCapacity(0)]
+        public struct PartInfoData : IBufferElementData
+        {
+            public int PartId;
+            public Entity DebrisPrefab;
+        }
+        [InternalBufferCapacity(0)]
+        public struct PartColliderResourceData : IBufferElementData
+        {
+            public CompoundCollider.ColliderBlobInstance ColliderInstance;
         }
     }
 
@@ -67,7 +78,7 @@ namespace DotsLite.Structure
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public PhysicsCollider BuildCompoundCollider(
             this DynamicBuffer<PartDestructionResourceData> ress,
-            PartInfoData info,
+            LengthData info,
             Main.PartDestructionData destructions)
         {
             var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(

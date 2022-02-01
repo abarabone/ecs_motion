@@ -26,7 +26,7 @@ namespace DotsLite.Structure.Authoring
     using Material = UnityEngine.Material;
     using Unity.Physics.Authoring;
 
-    public class StructurePartAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+    public class StructureBuildingPartAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
 
@@ -78,7 +78,7 @@ namespace DotsLite.Structure.Authoring
 
 
 
-            var posture = this.FindParent<StructureBuildingModelAuthoring>()
+            var posture = this.FindParent<StructureBuildingAuthoring>()
                 .GetComponentInChildren<PostureAuthoring>();
 
             initPartData_(conversionSystem, posture, this, this.PartId);
@@ -95,7 +95,7 @@ namespace DotsLite.Structure.Authoring
 
 
             static void initPartData_
-                (GameObjectConversionSystem gcs, PostureAuthoring main, StructurePartAuthoring part, int partId)
+                (GameObjectConversionSystem gcs, PostureAuthoring main, StructureBuildingPartAuthoring part, int partId)
             {
                 var em = gcs.DstEntityManager;
 
@@ -163,14 +163,18 @@ namespace DotsLite.Structure.Authoring
                 var types = em_.CreateArchetype
                 (
                     typeof(PartDebris.Data),
+
                     typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
+
                     typeof(PhysicsVelocity),//暫定
                     typeof(PhysicsGravityFactor),//暫定
                     typeof(PhysicsMass),//暫定
+
                     typeof(Marker.Rotation),
                     typeof(Marker.Translation),
+
                     //typeof(NonUniformScale),//暫定
                     typeof(Prefab)
                 );

@@ -30,7 +30,7 @@ namespace DotsLite.Structure.Authoring
             var em = this.DstEntityManager;
 
             this.Entities
-                .ForEach((AreaAuthoring area) =>
+                .ForEach((StructureAreaAuthoring area) =>
                 {
                     var ent = this.GetPrimaryEntity(area);
                     area.Convert(ent, this.DstEntityManager, this);
@@ -42,7 +42,7 @@ namespace DotsLite.Structure.Authoring
                     var ent = this.GetPrimaryEntity(bone);
 
                     var ress = em.GetBuffer<PartBone.PartDestructionResourceData>(ent);
-                    var info = em.GetComponentData<PartBone.PartInfoData>(ent);
+                    var info = em.GetComponentData<PartBone.LengthData>(ent);
                     var link = em.GetComponentData<PartBone.LinkToMainData>(ent);
 
                     var destructions = em.GetComponentData<Main.PartDestructionData>(link.MainEntity);

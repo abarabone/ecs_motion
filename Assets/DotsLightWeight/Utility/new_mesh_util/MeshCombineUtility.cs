@@ -94,7 +94,7 @@ namespace DotsLite.Geometry
                 from mmt in mmts_
                     //.Do(x => Debug.Log($"part id is {x.tf.getInParent<StructurePartAuthoring>()?.PartId ?? -1} from {x.tf.getInParent<StructurePartAuthoring>()?.name ?? "null"}"))
                     //.Do(x => Debug.Log($"part id is {x.tf.findInParent<StructurePartAuthoring>()?.PartId ?? -1} from {x.tf.findInParent<StructurePartAuthoring>()?.name ?? "null"}"))
-                select mmt.tf.getInParent<StructurePartAuthoring>()?.PartId ?? -1
+                select mmt.tf.getInParent<StructureBuildingPartAuthoring>()?.PartId ?? -1
                 //select mmt.tf.gameObject.GetComponentInParent<StructurePartAuthoring>()?.PartId ?? -1
                 ;
             result.partIdPerMesh = qPartIdPerMesh.ToArray();

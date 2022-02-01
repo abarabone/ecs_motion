@@ -12,7 +12,7 @@ namespace DotsLite.Structure.Authoring
     /// すべてのパーツに、マスタープレハブへのリンクをセットする。
     /// 本当は実行時に取得できればいいんだが、プレイヤーでは取得できないし、そもそもプレハブは全部展開される。
     /// </summary>
-    [CustomEditor(typeof(StructureBuildingModelAuthoring))]
+    [CustomEditor(typeof(StructureBuildingAuthoring))]
     public class StructureModelEditor : Editor
     {
         public override void OnInspectorGUI()
@@ -26,8 +26,8 @@ namespace DotsLite.Structure.Authoring
             if (GUILayout.Button("set master prefab link per part"))
             {
                 var parts = this.targets
-                    .OfType<StructureBuildingModelAuthoring>()
-                    .SelectMany(st => st.GetComponentsInChildren<StructurePartAuthoring>())
+                    .OfType<StructureBuildingAuthoring>()
+                    .SelectMany(st => st.GetComponentsInChildren<StructureBuildingPartAuthoring>())
                     .Select(pt => (pt, PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject)));
                 foreach ( var (pt, masterPrefab) in parts )
                 {
@@ -39,9 +39,9 @@ namespace DotsLite.Structure.Authoring
                 }
 
                 var structures = this.targets
-                    .OfType<StructureBuildingModelAuthoring>()
+                    .OfType<StructureBuildingAuthoring>()
                     .Select(st => (st, PrefabUtility.GetCorrespondingObjectFromOriginalSource(st.gameObject)))
-                    .Select(x => (x.st, x.Item2?.GetComponent<StructureBuildingModelAuthoring>()));
+                    .Select(x => (x.st, x.Item2?.GetComponent<StructureBuildingAuthoring>()));
                 foreach (var (st, masterPrefab) in structures)
                 {
                     st.MasterPrefab = masterPrefab ?? st;
@@ -58,7 +58,7 @@ namespace DotsLite.Structure.Authoring
             {
                 var parts = this.targets
                     .OfType<MonoBehaviour>()
-                    .SelectMany(s => s.GetComponentsInChildren<StructurePartAuthoring>())
+                    .SelectMany(s => s.GetComponentsInChildren<StructureBuildingPartAuthoring>())
                     ;
 
                 foreach (var x in parts.Select( (pt, i) => (pt, i) ))

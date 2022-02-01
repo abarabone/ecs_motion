@@ -49,7 +49,7 @@ namespace DotsLite.Structure.Authoring
                 {
                     var q =
                         from child in go.Children()
-                        where child.GetComponent<StructurePartAuthoring>() == null
+                        where child.GetComponent<StructureBuildingPartAuthoring>() == null
                         from x in queryPartBodyObjects_Recursive_(child)
                         select x
                         ;
