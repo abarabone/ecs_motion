@@ -41,13 +41,13 @@ namespace DotsLite.Structure.Authoring
                 {
                     var ent = this.GetPrimaryEntity(bone);
 
-                    var ress = em.GetBuffer<PartBone.PartDestructionResourceData>(ent);
-                    var info = em.GetComponentData<PartBone.LengthData>(ent);
+                    var resbuf = em.GetBuffer<PartBone.PartColliderResourceData>(ent);
+                    var length = em.GetComponentData<PartBone.LengthData>(ent);
                     var link = em.GetComponentData<PartBone.LinkToMainData>(ent);
 
                     var destructions = em.GetComponentData<Main.PartDestructionData>(link.MainEntity);
 
-                    em.SetComponentData(ent, ress.BuildCompoundCollider(info, destructions));
+                    em.SetComponentData(ent, resbuf.BuildCompoundCollider(length, destructions));
                 });
         }
 

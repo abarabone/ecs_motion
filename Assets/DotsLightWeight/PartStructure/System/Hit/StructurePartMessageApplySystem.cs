@@ -196,46 +196,6 @@ namespace DotsLite.Structure
 
         }
 
-        [BurstCompile]
-        public struct UpdateCollider
-        {
-
-            [ReadOnly]
-            public ComponentDataFromEntity<PhysicsCollider> cols;
-
-            [ReadOnly]
-            public ComponentDataFromEntity<PartBone.LengthData> infos;
-
-            [ReadOnly]
-            public BufferFromEntity<PartBone.PartDestructionResourceData> ress;
-
-
-            [BurstCompile]
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public unsafe void Execute(
-                EntityCommandBuffer.ParallelWriter cmd,
-                Entity ent, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
-            {
-                if (!this.ress.HasComponent(ent)) return;
-
-                var info = this.infos[ent];
-
-                var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
-                    info.LivePartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-
-                var buffer = this.ress[ent];
-                for (var i = 0; i < info.LivePartLength; i++)
-                {
-                    dst[i] = buffer[i].ColliderInstance;
-                }
-
-                this.cols[ent] = new PhysicsCollider
-                {
-                    Value = CompoundCollider.Create(dst),
-                };
-                dst.Dispose();
-            }
-        }
 
     }
 }

@@ -77,6 +77,7 @@ namespace DotsLite.Structure
         public struct PartLengthData : IComponentData
         {
             public int TotalPartLength;
+            public int BoneLength;
         }
 
         //public struct PartLinkData : IComponentData

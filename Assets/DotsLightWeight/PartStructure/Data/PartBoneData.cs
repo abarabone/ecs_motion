@@ -40,16 +40,16 @@ namespace DotsLite.Structure
         public struct LengthData : IComponentData
         {
             public int PartLength;
-            public int LivePartLength;
+            //public int LivePartLength;
         }
 
-        [InternalBufferCapacity(0)]
-        public struct PartDestructionResourceData : IBufferElementData
-        {
-            public int PartId;
-            public CompoundCollider.ColliderBlobInstance ColliderInstance;
-            public Entity DebrisPrefab;
-        }
+        //[InternalBufferCapacity(0)]
+        //public struct PartDestructionResourceData : IBufferElementData
+        //{
+        //    public int PartId;
+        //    public CompoundCollider.ColliderBlobInstance ColliderInstance;
+        //    public Entity DebrisPrefab;
+        //}
         [InternalBufferCapacity(0)]
         public struct PartInfoData : IBufferElementData
         {
@@ -77,16 +77,17 @@ namespace DotsLite.Structure
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public PhysicsCollider BuildCompoundCollider(
-            this DynamicBuffer<PartDestructionResourceData> ress,
+            this DynamicBuffer<PartColliderResourceData> partColliderBuffer,
             LengthData info,
             Main.PartDestructionData destructions)
         {
+            var option = NativeArrayOptions.UninitializedMemory;
             var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
-                info.LivePartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+                partColliderBuffer.Length, Allocator.Temp, option);
 
-            for (var i = 0; i < info.LivePartLength; i++)
+            for (var i = 0; i < partColliderBuffer.Length; i++)
             {
-                dst[i] = ress[i].ColliderInstance;
+                dst[i] = partColliderBuffer[i].ColliderInstance;
             }
 
             var collider = new PhysicsCollider

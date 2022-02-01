@@ -176,6 +176,7 @@ namespace DotsLite.Structure.Authoring
             em.SetComponentData(mainEntity, new Main.PartLengthData
             {
                 TotalPartLength = partLength,
+                BoneLength = 1,
             });
             //em.SetComponentData(mainEntity,
             //    new Main.SleepTimerData
@@ -215,7 +216,8 @@ namespace DotsLite.Structure.Authoring
             var addtypes = new ComponentTypes(new ComponentType[]
             {
                 //typeof(Bone.ColliderInitializeData),
-                typeof(PartBone.PartDestructionResourceData),
+                typeof(PartBone.PartInfoData),
+                typeof(PartBone.PartColliderResourceData),
                 typeof(PartBone.LengthData),
                 typeof(PartBone.LinkToMainData),
                 
@@ -241,20 +243,22 @@ namespace DotsLite.Structure.Authoring
             em.SetComponentData(ent, new PartBone.LengthData
             {
                 PartLength = partLength,
-                LivePartLength = partLength,
             });
 
 
             var mtinv = bone.transform.worldToLocalMatrix;
-            var resbuf = em.AddBuffer<PartBone.PartDestructionResourceData>(ent);
+            var infobuf = em.AddBuffer<PartBone.PartInfoData>(ent);
+            var resbuf = em.AddBuffer<PartBone.PartColliderResourceData>(ent);
             foreach (var pt in parts)
             {
                 var tf = pt.transform;
                 var ptent = gcs.GetPrimaryEntity(pt);
 
                 if (!em.HasComponent<PhysicsCollider>(ptent)) continue;
-Debug.Log(pt.name);
-                resbuf.Add(new PartBone.PartDestructionResourceData
+                
+                Debug.Log(pt.name);
+
+                resbuf.Add(new PartBone.PartColliderResourceData
                 {
                     ColliderInstance = new CompoundCollider.ColliderBlobInstance
                     {
@@ -265,6 +269,9 @@ Debug.Log(pt.name);
                             rot = tf.rotation * mtinv.rotation,
                         },
                     },
+                });
+                infobuf.Add(new PartBone.PartInfoData
+                {
                     PartId = pt.PartId,
                     DebrisPrefab = Entity.Null,
                 });
