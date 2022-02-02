@@ -26,7 +26,7 @@ namespace DotsLite.Structure
     [UpdateAfter(typeof(StructureEnvelopeMessageApplySystem))]
     [UpdateBefore(typeof(StructurePartMessageFreeJobSystem))]
     //[UpdateAfter(typeof(StructureEnvelopeWakeupTriggerSystem))]
-    public class StructurePartMessageApplySystem : DependencyAccessableSystemBase
+    public class StructurePartSwitchingSystem : DependencyAccessableSystemBase
     {
 
 
@@ -83,33 +83,30 @@ namespace DotsLite.Structure
             [ReadOnly] public ComponentDataFromEntity<Rotation> Rotations;
             [ReadOnly] public ComponentDataFromEntity<Translation> Positions;
 
-            //// メイン用
-            //[ReadOnly] public ComponentDataFromEntity<Structure.Main.BinderLinkData> binderLinks;
-            //[ReadOnly] public ComponentDataFromEntity<Structure.Part.PartData> parts;
-            //[ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
-
 
             [BurstCompile]
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                var targetEntities = new UnsafeHashSet<Entity>(this.lengths[mainEntity].TotalPartLength, Allocator.Temp);
+                var targetParts = new UnsafeHashSet<Entity>(this.lengths[mainEntity].TotalPartLength, Allocator.Temp);
 
                 //wakeupMain_(index, mainEntity);
                 //applyDamgeToMain_();
                 Debug.Log($"child id {hitMessages.Current.ColliderChildId}");
 
-                applyDestructions_(mainEntity, hitMessages, ref targetEntities);
-                destroyPartAndCreateDebris_(index, in targetEntities);
+                applyDestructions_(mainEntity, hitMessages, ref targetParts);
+                destroyPartAndCreateDebris_(index, in targetParts);
 
-                targetEntities.Dispose();
+                //this.updateCollider.Execute(mainEntity, hitMessages);
+
+                targetParts.Dispose();
             }
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             unsafe void applyDestructions_(
                 Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages,
-                ref UnsafeHashSet<Entity> targetEntities)
+                ref UnsafeHashSet<Entity> targetParts)
             {
                 var destruction = this.destructions[mainEntity];
 
@@ -119,47 +116,26 @@ namespace DotsLite.Structure
                     if (destruction.IsDestroyed(msg.PartId)) continue;
                     if (!this.Positions.HasComponent(msg.ColliderEntity)) continue;
 
-                    destruction.SetDestroyed(msg.PartId);
-
-                    targetEntities.Add(msg.ColliderEntity);
+                    targetParts.Add(msg.ColliderEntity);
                 }
-
-                this.destructions[mainEntity] = destruction;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            void destroyPartAndCreateDebris_(int uniqueIndex, in UnsafeHashSet<Entity> targetEntities)
+            void destroyPartAndCreateDebris_(int uniqueIndex, in UnsafeHashSet<Entity> targetParts)
             {
-
-                foreach (var ent in targetEntities)
+                foreach (var part in targetParts)
                 {
-                    var rot = this.Rotations[ent];
-                    var pos = this.Positions[ent];
-
-                    if (this.Prefabs.HasComponent(ent))
-                    {
-                        var prefab = this.Prefabs[ent].DebrisPrefab;
-
-                        destroyPart_(this.cmd, uniqueIndex, ent);
-                    }
-                    else
-                    {
-
-                    }
-                    
-                    createDebris_(this.cmd, uniqueIndex, prefab, rot, pos);
+                    hideOrShowPart_(this.cmd, uniqueIndex, part);
+                    //destroyPart_(this.cmd, uniqueIndex, part);
                 }
                 return;
 
 
                 //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-                static void createDebris_(
-                    EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity debrisPrefab_,
-                    Rotation rot_, Translation pos_)
+                static void hideOrShowPart_(
+                    EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity part_)
                 {
-                    var ent = cmd_.Instantiate(uniqueIndex_, debrisPrefab_);
-                    cmd_.SetComponent(uniqueIndex_, ent, rot_);
-                    cmd_.SetComponent(uniqueIndex_, ent, pos_);
+                    cmd_.AddComponent<Disabled>(uniqueIndex_, part_);
                 }
 
                 //[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -169,23 +145,6 @@ namespace DotsLite.Structure
                     cmd_.DestroyEntity(uniqueIndex_, part_);
                 }
             }
-
-
-            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-            //void wakeupMain_(int uniqueIndex, Entity mainEntity)
-            //{
-            //    //this.Cmd.AddComponent(index, targetEntity, new Unity.Physics.PhysicsVelocity { });
-            //    var binder = this.binderLinks[mainEntity];
-            //    this.cmd.ChangeComponentsToWakeUp(mainEntity, uniqueIndex, binder, this.parts, this.linkedGroups);
-            //}
-
-            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-            //static void applyDamgeToMain_()
-            //{
-            //    var damage = 0.0f;
-            //    var force = float3.zero;
-            //}
-
 
         }
 
