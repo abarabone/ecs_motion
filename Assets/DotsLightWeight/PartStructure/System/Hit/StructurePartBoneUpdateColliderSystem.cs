@@ -200,8 +200,8 @@ namespace DotsLite.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    //[UpdateAfter(typeof(StructurePartMessageAllocationSystem))]
     [UpdateAfter(typeof(StructureEnvelopeMessageApplySystem))]
+    [UpdateAfter(typeof(StructurePartMessageApplySystem))]
     [UpdateBefore(typeof(StructurePartMessageFreeJobSystem))]
     //[UpdateAfter(typeof(StructureEnvelopeWakeupTriggerSystem))]
     public class StructurePartBoneUpdateColliderSystem : DependencyAccessableSystemBase

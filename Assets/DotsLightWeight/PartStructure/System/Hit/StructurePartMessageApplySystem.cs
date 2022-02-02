@@ -22,10 +22,9 @@ namespace DotsLite.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    //[UpdateAfter(typeof(StructurePartMessageAllocationSystem))]
+    //[UpdateAfter(typeof(StructureEnvelopeWakeupTriggerSystem))]
     [UpdateAfter(typeof(StructureEnvelopeMessageApplySystem))]
     [UpdateBefore(typeof(StructurePartMessageFreeJobSystem))]
-    //[UpdateAfter(typeof(StructureEnvelopeWakeupTriggerSystem))]
     public class StructurePartMessageApplySystem : DependencyAccessableSystemBase
     {
 
@@ -33,7 +32,6 @@ namespace DotsLite.Structure
         StructurePartMessageAllocationSystem allocationSystem;
 
         BarrierDependency.Sender freedep;
-        CommandBufferDependency.Sender cmddep;
 
 
         protected override void OnCreate()
@@ -41,7 +39,6 @@ namespace DotsLite.Structure
             base.OnCreate();
 
             this.allocationSystem = this.World.GetOrCreateSystem<StructurePartMessageAllocationSystem>();
-            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
             this.freedep = BarrierDependency.Sender.Create<StructurePartMessageFreeJobSystem>(this);
         }
 
@@ -49,20 +46,11 @@ namespace DotsLite.Structure
         protected override void OnUpdate()
         {
             using var freeScope = this.freedep.WithDependencyScope();
-            using var cmdScope = this.cmddep.WithDependencyScope();
-
-
-            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
+            
 
             this.Dependency = new JobExecution
             {
-                cmd = cmd,
-
                 destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
-                lengths = this.GetComponentDataFromEntity<Main.PartLengthData>(isReadOnly: true),
-                Prefabs = this.GetComponentDataFromEntity<Part.DebrisPrefabData>(isReadOnly: true),
-                Rotations = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true),
-                Positions = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
             }
             .ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
         }
@@ -72,44 +60,25 @@ namespace DotsLite.Structure
         public struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForKey
         {
 
-            public EntityCommandBuffer.ParallelWriter cmd;
-
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Main.PartDestructionData> destructions;
-            [ReadOnly] public ComponentDataFromEntity<Main.PartLengthData> lengths;
-
-            // パーツ用
-            [ReadOnly] public ComponentDataFromEntity<Part.DebrisPrefabData> Prefabs;
-            [ReadOnly] public ComponentDataFromEntity<Rotation> Rotations;
-            [ReadOnly] public ComponentDataFromEntity<Translation> Positions;
-
-            //// メイン用
-            //[ReadOnly] public ComponentDataFromEntity<Structure.Main.BinderLinkData> binderLinks;
-            //[ReadOnly] public ComponentDataFromEntity<Structure.Part.PartData> parts;
-            //[ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
 
 
             [BurstCompile]
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                var targetEntities = new UnsafeHashSet<Entity>(this.lengths[mainEntity].TotalPartLength, Allocator.Temp);
+                Debug.Log($"child id {hitMessages.Current.ColliderChildId}");
 
                 //wakeupMain_(index, mainEntity);
                 //applyDamgeToMain_();
-                Debug.Log($"child id {hitMessages.Current.ColliderChildId}");
-
-                applyDestructions_(mainEntity, hitMessages, ref targetEntities);
-                destroyPartAndCreateDebris_(index, in targetEntities);
-
-                targetEntities.Dispose();
+                applyDestructions_(mainEntity, hitMessages);
             }
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             unsafe void applyDestructions_(
-                Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages,
-                ref UnsafeHashSet<Entity> targetEntities)
+                Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
                 var destruction = this.destructions[mainEntity];
 
@@ -117,57 +86,11 @@ namespace DotsLite.Structure
                 {
                     //_._log($"{msg.PartId} {(uint)(destruction.Destructions[msg.PartId >> 5] & (uint)(1 << (msg.PartId & 0b11111)))} {destruction.IsDestroyed(msg.PartId)} {this.Prefabs.HasComponent(msg.PartEntity)}");
                     if (destruction.IsDestroyed(msg.PartId)) continue;
-                    if (!this.Positions.HasComponent(msg.ColliderEntity)) continue;
 
                     destruction.SetDestroyed(msg.PartId);
-
-                    targetEntities.Add(msg.ColliderEntity);
                 }
 
                 this.destructions[mainEntity] = destruction;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            void destroyPartAndCreateDebris_(int uniqueIndex, in UnsafeHashSet<Entity> targetEntities)
-            {
-
-                foreach (var ent in targetEntities)
-                {
-                    var rot = this.Rotations[ent];
-                    var pos = this.Positions[ent];
-
-                    if (this.Prefabs.HasComponent(ent))
-                    {
-                        var prefab = this.Prefabs[ent].DebrisPrefab;
-
-                        destroyPart_(this.cmd, uniqueIndex, ent);
-                    }
-                    else
-                    {
-
-                    }
-                    
-                    createDebris_(this.cmd, uniqueIndex, prefab, rot, pos);
-                }
-                return;
-
-
-                //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-                static void createDebris_(
-                    EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity debrisPrefab_,
-                    Rotation rot_, Translation pos_)
-                {
-                    var ent = cmd_.Instantiate(uniqueIndex_, debrisPrefab_);
-                    cmd_.SetComponent(uniqueIndex_, ent, rot_);
-                    cmd_.SetComponent(uniqueIndex_, ent, pos_);
-                }
-
-                //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-                static void destroyPart_(
-                    EntityCommandBuffer.ParallelWriter cmd_, int uniqueIndex_, Entity part_)
-                {
-                    cmd_.DestroyEntity(uniqueIndex_, part_);
-                }
             }
 
 
