@@ -35,6 +35,9 @@ namespace DotsLite.Structure
         public struct SleepingTag : IComponentData
         { }
 
+        public struct CompoundColliderTag : IComponentData
+        { }
+
 
         // draw instance の lod タグと組み合わせて、切り替え時だけシステムが走るようにする
         public struct NearTag : IComponentData

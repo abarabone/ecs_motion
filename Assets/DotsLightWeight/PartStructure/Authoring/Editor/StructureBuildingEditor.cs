@@ -13,7 +13,7 @@ namespace DotsLite.Structure.Authoring
     /// 本当は実行時に取得できればいいんだが、プレイヤーでは取得できないし、そもそもプレハブは全部展開される。
     /// </summary>
     [CustomEditor(typeof(StructureBuildingAuthoring))]
-    public class StructureModelEditor : Editor
+    public class StructureBuildingEditor : Editor
     {
         public override void OnInspectorGUI()
         {

@@ -128,6 +128,7 @@ namespace DotsLite.Structure.Authoring
 
             var mainAddtypes = new ComponentTypes(new ComponentType[]
             {
+                typeof(Main.CompoundColliderTag),
                 typeof(Main.MainTag),
                 typeof(Main.BinderLinkData),//暫定
                 typeof(Main.PartDestructionData),
@@ -225,6 +226,7 @@ namespace DotsLite.Structure.Authoring
                 typeof(PhysicsCollider),
                 typeof(Marker.Rotation),
                 typeof(Marker.Translation),
+                typeof(Part.PartData),//とりあえずテスト的に
             });
             em.AddComponents(ent, addtypes);
 

@@ -51,7 +51,10 @@ namespace DotsLite.Structure
             this.Dependency = new JobExecution
             {
                 Cmd = cmd,
+
+                //compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
                 binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
+
                 parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
                 linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
             }
@@ -66,13 +69,18 @@ namespace DotsLite.Structure
 
             public EntityCommandBuffer.ParallelWriter Cmd;
             //public float CurrentTime;
-            [ReadOnly] public ComponentDataFromEntity<Structure.Main.BinderLinkData> binderLinks;
-            [ReadOnly] public ComponentDataFromEntity<Structure.Part.PartData> parts;
+
+            //[ReadOnly] public ComponentDataFromEntity<Main.CompoundColliderTag> compoundTags;
+            [ReadOnly] public ComponentDataFromEntity<Main.BinderLinkData> binderLinks;
+
+            [ReadOnly] public ComponentDataFromEntity<Part.PartData> parts;
             [ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
 
             [BurstCompile]
             public void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, EnvelopeHitMessage>.Enumerator msgs)
             {
+                //if (this.compoundTags.HasComponent(targetEntity)) return;
+
 
                 var damage = 0.0f;
                 var force = float3.zero;

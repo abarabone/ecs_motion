@@ -85,8 +85,7 @@ namespace DotsLite.Structure
                 foreach (var msg in hitMessages)
                 {
                     //_._log($"{msg.PartId} {(uint)(destruction.Destructions[msg.PartId >> 5] & (uint)(1 << (msg.PartId & 0b11111)))} {destruction.IsDestroyed(msg.PartId)} {this.Prefabs.HasComponent(msg.PartEntity)}");
-                    if (destruction.IsDestroyed(msg.PartId)) continue;
-
+                    
                     destruction.SetDestroyed(msg.PartId);
                 }
 

@@ -201,32 +201,36 @@ namespace DotsLite.Structure
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(StructureEnvelopeMessageApplySystem))]
-    [UpdateAfter(typeof(StructurePartMessageApplySystem))]
+    [UpdateBefore(typeof(StructurePartMessageApplySystem))]
     [UpdateBefore(typeof(StructurePartMessageFreeJobSystem))]
     //[UpdateAfter(typeof(StructureEnvelopeWakeupTriggerSystem))]
     public class StructurePartBoneUpdateColliderSystem : DependencyAccessableSystemBase
     {
 
 
-        public NativeList<Entity> TargetPartBones { get; private set; }
+        StructurePartMessageAllocationSystem allocationSystem;
 
+        BarrierDependency.Sender freedep;
 
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
+            this.allocationSystem = this.World.GetOrCreateSystem<StructurePartMessageAllocationSystem>();
+            this.freedep = BarrierDependency.Sender.Create<StructurePartMessageFreeJobSystem>(this);
         }
 
 
         protected override void OnUpdate()
         {
-            this.TargetPartBones = new NativeList<Entity>(10000, Allocator.TempJob);
+            using var freeScope = this.freedep.WithDependencyScope();
+
 
             this.Dependency = new JobExecution
             {
-                boneParts = this.TargetPartBones.AsDeferredJobArray(),
-
+                destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(isReadOnly: true),
+                compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
                 lengths = this.GetComponentDataFromEntity<Main.PartLengthData>(isReadOnly: true),
 
                 colliders = this.GetComponentDataFromEntity<PhysicsCollider>(),
@@ -234,21 +238,20 @@ namespace DotsLite.Structure
                 boneInfoBuffers = this.GetBufferFromEntity<PartBone.PartInfoData>(),
                 boneColliderBuffers = this.GetBufferFromEntity<PartBone.PartColliderResourceData>(),
             }
-            .Schedule(this.TargetPartBones, 32, this.Dependency);
+            .ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
         }
 
 
         [BurstCompile]
-        struct JobExecution : IJobParallelForDefer
+        struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForKey
         {
 
-            [DeallocateOnJobCompletion]
-            [ReadOnly] public NativeArray<Entity> boneParts;
-
+            [ReadOnly] public ComponentDataFromEntity<Main.PartDestructionData> destructions;
+            [ReadOnly] public ComponentDataFromEntity<Main.CompoundColliderTag> compoundTags;
             [ReadOnly] public ComponentDataFromEntity<Main.PartLengthData> lengths;
 
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<PhysicsCollider> colliders;
+            [WriteOnly] public ComponentDataFromEntity<PhysicsCollider> colliders;
 
             [NativeDisableParallelForRestriction]
             public BufferFromEntity<PartBone.PartInfoData> boneInfoBuffers;
@@ -256,24 +259,24 @@ namespace DotsLite.Structure
             public BufferFromEntity<PartBone.PartColliderResourceData> boneColliderBuffers;
 
 
-            [BurstCompile]
-            public void Execute(int index)
-            {
-                var boneEntity = this.boneParts[index];
+            //[BurstCompile]
+            //public void Execute(int index)
+            //{
+            //    var boneEntity = this.boneParts[index];
 
-                var destruction = this.destructions[mainEntity];
-                var boneInfoBuffer = this.boneInfoBuffers[boneEntity];
-                var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
+            //    var destruction = this.destructions[mainEntity];
+            //    var boneInfoBuffer = this.boneInfoBuffers[boneEntity];
+            //    var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
 
-                var bonePartsDesc = makeBoneParts(hitMessages, boneInfoBuffer.Length);
+            //    var bonePartsDesc = makeBoneParts(hitMessages, boneInfoBuffer.Length);
 
-                TrimBoneColliderBuffer(bonePartsDesc, destruction, boneInfoBuffer, boneColliderBuffer);
+            //    TrimBoneColliderBuffer(bonePartsDesc, destruction, boneInfoBuffer, boneColliderBuffer);
 
-                this.colliders[boneEntity] = new PhysicsCollider
-                {
-                    Value = buildBoneCollider(boneColliderBuffer)
-                };
-            }
+            //    this.colliders[boneEntity] = new PhysicsCollider
+            //    {
+            //        Value = buildBoneCollider(boneColliderBuffer)
+            //    };
+            //}
 
 
 
@@ -281,39 +284,37 @@ namespace DotsLite.Structure
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
+                if (!this.compoundTags.HasComponent(mainEntity)) return;
+
+
                 var length = this.lengths[mainEntity];
-                var targetBones = makeBones(hitMessages, length.BoneLength);
+                var destruction = this.destructions[mainEntity];
+                using var targetBones = makeTargetBoneList(destruction, hitMessages, length.BoneLength);
 
                 foreach (var boneEntity in targetBones)
                 {
-                    var destruction = this.destructions[mainEntity];
                     var boneInfoBuffer = this.boneInfoBuffers[boneEntity];
                     var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
 
-                    var bonePartsDesc = makeBoneParts(hitMessages, boneInfoBuffer.Length);
+                    var bonePartsDesc = makeSortedBonePartList(hitMessages, boneInfoBuffer.Length);
 
-                    TrimBoneColliderBuffer(bonePartsDesc, destruction, boneInfoBuffer, boneColliderBuffer);
+                    TrimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
 
                     this.colliders[boneEntity] = new PhysicsCollider
                     {
                         Value = buildBoneCollider(boneColliderBuffer)
                     };
                 }
-
-                targetBones.Dispose();
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void TrimBoneColliderBuffer(
                 NativeArray<int> partIndices,
-                Main.PartDestructionData destructions,
                 DynamicBuffer<PartBone.PartInfoData> boneInfoBuffer,
                 DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer)
             {
                 foreach (var i in partIndices)
                 {
                     var partid = boneInfoBuffer[i].PartId;
-
-                    if (destructions.IsDestroyed(partid)) continue;
 
                     boneColliderBuffer.RemoveAtSwapBack(i);
                     boneInfoBuffer.RemoveAtSwapBack(i);
@@ -328,20 +329,23 @@ namespace DotsLite.Structure
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeHashSet<Entity> makeBones(
+            NativeHashSet<Entity> makeTargetBoneList(
+                Main.PartDestructionData destructions,
                 NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int boneLength)
             {
                 var targetBones = new NativeHashSet<Entity>(boneLength, Allocator.Temp);
 
                 foreach (var msg in hitMessages)
                 {
+                    if (destructions.IsDestroyed(msg.PartId)) continue;
+
                     targetBones.Add(msg.ColliderEntity);
                 }
 
                 return targetBones;
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeArray<int> makeBoneParts(
+            NativeArray<int> makeSortedBonePartList(
                 NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int bonePartsLength)
             {
                 var targetBoneParts = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);
@@ -356,8 +360,6 @@ namespace DotsLite.Structure
 
                 return boneParts;
             }
-
-
             struct Desc : IComparer<int>
             {
                 public int Compare(int x, int y) => y - x;

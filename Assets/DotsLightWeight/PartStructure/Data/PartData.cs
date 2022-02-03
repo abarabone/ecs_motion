@@ -27,7 +27,7 @@ namespace DotsLite.Structure
         {
             public int PartId;
 
-            public float Life;
+            //public float Life;
         }
 
         public struct LocalPositionData : IComponentData
