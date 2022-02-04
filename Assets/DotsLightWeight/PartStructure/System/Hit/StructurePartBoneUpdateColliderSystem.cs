@@ -296,14 +296,14 @@ namespace DotsLite.Structure
                     var boneInfoBuffer = this.boneInfoBuffers[boneEntity];
                     var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
 
-                    var bonePartsDesc = makeSortedBonePartList(hitMessages, boneInfoBuffer.Length);
+                    using var bonePartsDesc = makeSortedBonePartList(hitMessages, boneInfoBuffer.Length);
 
-                    TrimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
+                    //TrimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
 
-                    this.colliders[boneEntity] = new PhysicsCollider
-                    {
-                        Value = buildBoneCollider(boneColliderBuffer)
-                    };
+                    //this.colliders[boneEntity] = new PhysicsCollider
+                    //{
+                    //    Value = buildBoneCollider(boneColliderBuffer)
+                    //};
                 }
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -358,6 +358,7 @@ namespace DotsLite.Structure
                 var boneParts = targetBoneParts.ToNativeArray(Allocator.Temp);
                 boneParts.Sort(new Desc());
 
+                targetBoneParts.Dispose();
                 return boneParts;
             }
             struct Desc : IComparer<int>
