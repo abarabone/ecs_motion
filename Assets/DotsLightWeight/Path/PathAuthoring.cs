@@ -44,7 +44,8 @@ namespace DotsLite.LoadPath.Authoring
             }
 			PathMeshConvertor createConvertor_()
             {
-				var maxZ = this.LevelingColliderPrefab.GetComponent<MeshCollider>()
+				//var maxZ = this.LevelingColliderPrefab.GetComponent<MeshCollider>()
+				var maxZ = this.LevelingColliderPrefab.GetComponent<MeshFilter>()
 					.sharedMesh
 					.vertices
 					.Max(v => v.z);

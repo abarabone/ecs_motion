@@ -22,6 +22,7 @@ using SphereCollider = Unity.Physics.SphereCollider;
 namespace DotsLite.EntityTrimmer.Authoring
 {
 
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     [UpdateBefore(typeof(RemoveTransformAllConversion))]
     [UpdateBefore(typeof(DestroyBlankEntityConversion))]

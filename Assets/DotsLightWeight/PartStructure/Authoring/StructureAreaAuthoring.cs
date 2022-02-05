@@ -89,8 +89,8 @@ namespace DotsLite.Structure.Authoring
             //setBoneForFarEntity_(gcs, posture, far, top.transform);
             //setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
 
-            //trimEntities_(gcs, st);
-            //orderTrimEntities_(gcs, st);
+            trimEntities_(gcs, this);
+            orderTrimEntities_(gcs, this);
         }
 
         static void initBinderEntity_
@@ -258,7 +258,7 @@ namespace DotsLite.Structure.Authoring
 
                 if (!em.HasComponent<PhysicsCollider>(ptent)) continue;
                 
-                Debug.Log(pt.name);
+                //Debug.Log($"add collider part {pt.name}");
 
                 resbuf.Add(new PartBone.PartColliderResourceData
                 {
@@ -318,5 +318,45 @@ namespace DotsLite.Structure.Authoring
         //    dst.Dispose();
         //    return res;
         //}
+
+
+        /// <summary>
+        /// main, near, far, part 以外の entity を削除する
+        /// </summary>
+        static void trimEntities_(GameObjectConversionSystem gcs, StructureAreaAuthoring st)
+        {
+            var em = gcs.DstEntityManager;
+
+            //var top = st.gameObject;
+            //var far = st.FarModel.Obj;
+            var near = st.NearModel.Obj;
+            var env = st.Envelope;
+            var main = env;
+
+            var needs = st.GetComponentsInChildren<StructureAreaPartAuthoring>()
+                .Select(x => x.gameObject)
+                //.Append(top)
+                .Append(main)
+                .Append(near)
+                //.Append(far)
+                ;
+            foreach (var obj in st.gameObject.Descendants().Except(needs))
+            {
+                var ent = gcs.GetPrimaryEntity(obj);
+                em.DestroyEntity(ent);
+            }
+        }
+        /// <summary>
+        /// part entity の遅延的破棄をセットする
+        /// </summary>
+        static void orderTrimEntities_(GameObjectConversionSystem gcs, StructureAreaAuthoring st)
+        {
+            var em = gcs.DstEntityManager;
+
+            var qEnt = st.GetComponentsInChildren<StructureAreaPartAuthoring>()
+                .Select(x => gcs.GetPrimaryEntity(x));
+            em.AddComponentData(qEnt, new DestroyEntityLateConversion.TargetTag { });
+        }
+
     }
 }

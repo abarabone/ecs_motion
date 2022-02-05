@@ -259,26 +259,6 @@ namespace DotsLite.Structure
             public BufferFromEntity<PartBone.PartColliderResourceData> boneColliderBuffers;
 
 
-            //[BurstCompile]
-            //public void Execute(int index)
-            //{
-            //    var boneEntity = this.boneParts[index];
-
-            //    var destruction = this.destructions[mainEntity];
-            //    var boneInfoBuffer = this.boneInfoBuffers[boneEntity];
-            //    var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
-
-            //    var bonePartsDesc = makeBoneParts(hitMessages, boneInfoBuffer.Length);
-
-            //    TrimBoneColliderBuffer(bonePartsDesc, destruction, boneInfoBuffer, boneColliderBuffer);
-
-            //    this.colliders[boneEntity] = new PhysicsCollider
-            //    {
-            //        Value = buildBoneCollider(boneColliderBuffer)
-            //    };
-            //}
-
-
 
             [BurstCompile]
             public unsafe void Execute(
@@ -289,15 +269,21 @@ namespace DotsLite.Structure
 
                 var length = this.lengths[mainEntity];
                 var destruction = this.destructions[mainEntity];
-                using var targetBones = makeTargetBoneList(destruction, hitMessages, length.BoneLength);
+                using var targets = makeTargetBoneAndPartChildIndices(destruction, hitMessages, length.TotalPartLength);
 
-                foreach (var boneEntity in targetBones)
+                using var bones = targets.GetKeyArray(Allocator.Temp);
+                foreach (var boneEntity in bones)
                 {
                     var boneInfoBuffer = this.boneInfoBuffers[boneEntity];
                     var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
 
-                    using var bonePartsDesc = makeSortedBonePartList(hitMessages, boneInfoBuffer.Length);
+                    var indexEnumerator = targets.GetValuesForKey(boneEntity);
+                    using var bonePartsDesc = makeSortedPartIndexList(indexEnumerator, boneInfoBuffer.Length);
 
+                    foreach (var i in bonePartsDesc)
+                    {
+                        Debug.Log($"{boneEntity} {i}");
+                    }
                     //TrimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
 
                     //this.colliders[boneEntity] = new PhysicsCollider
@@ -328,44 +314,81 @@ namespace DotsLite.Structure
                 return CompoundCollider.Create(na);
             }
 
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            //NativeHashSet<Entity> makeTargetBoneList(
+            //    Main.PartDestructionData destructions,
+            //    NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int boneLength)
+            //{
+            //    var targetBones = new NativeHashSet<Entity>(boneLength, Allocator.Temp);
+
+            //    foreach (var msg in hitMessages)
+            //    {
+            //        if (destructions.IsDestroyed(msg.PartId)) continue;
+
+            //        targetBones.Add(msg.ColliderEntity);
+            //    }
+
+            //    return targetBones;
+            //}
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            //NativeArray<int> makeSortedBonePartList(
+            //    NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int bonePartsLength)
+            //{
+            //    var targetBoneParts = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);
+
+            //    foreach (var msg in hitMessages)
+            //    {
+            //        targetBoneParts.Add((int)msg.ColliderChildId);
+            //    }
+
+            //    var boneParts = targetBoneParts.ToNativeArray(Allocator.Temp);
+            //    boneParts.Sort(new Desc());
+
+            //    targetBoneParts.Dispose();
+            //    return boneParts;
+            //}
+            //struct Desc : IComparer<int>
+            //{
+            //    public int Compare(int x, int y) => y - x;
+            //}
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeHashSet<Entity> makeTargetBoneList(
+            NativeMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
                 Main.PartDestructionData destructions,
-                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int boneLength)
+                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int maxPartLength)
             {
-                var targetBones = new NativeHashSet<Entity>(boneLength, Allocator.Temp);
+                var targets = new NativeMultiHashMap<Entity, int>(maxPartLength, Allocator.Temp);
 
                 foreach (var msg in hitMessages)
                 {
                     if (destructions.IsDestroyed(msg.PartId)) continue;
 
-                    targetBones.Add(msg.ColliderEntity);
+                    targets.Add(msg.ColliderEntity, (int)msg.ColliderChildIndex);
                 }
 
-                return targetBones;
+                return targets;
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeArray<int> makeSortedBonePartList(
-                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int bonePartsLength)
+            NativeArray<int> makeSortedPartIndexList(
+                NativeMultiHashMap<Entity, int>.Enumerator partIndices, int bonePartsLength)
             {
-                var targetBoneParts = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);
+                using var uniqueIndices = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);
 
-                foreach (var msg in hitMessages)
+                foreach (var idx in partIndices)
                 {
-                    targetBoneParts.Add((int)msg.ColliderChildId);
+                    Debug.Log($"raw indices {idx}");
+                    uniqueIndices.Add(idx);
                 }
 
-                var boneParts = targetBoneParts.ToNativeArray(Allocator.Temp);
+                using var boneParts = uniqueIndices.ToNativeArray(Allocator.Temp);
                 boneParts.Sort(new Desc());
 
-                targetBoneParts.Dispose();
                 return boneParts;
             }
             struct Desc : IComparer<int>
             {
                 public int Compare(int x, int y) => y - x;
             }
-
         }
     }
 }
