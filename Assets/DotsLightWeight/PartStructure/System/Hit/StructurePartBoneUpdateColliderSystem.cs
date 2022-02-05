@@ -298,7 +298,7 @@ namespace DotsLite.Structure
 
                     using var bonePartsDesc = makeSortedBonePartList(hitMessages, boneInfoBuffer.Length);
 
-                    //TrimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
+                    //trimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
 
                     //this.colliders[boneEntity] = new PhysicsCollider
                     //{
@@ -307,7 +307,7 @@ namespace DotsLite.Structure
                 }
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void TrimBoneColliderBuffer(
+            void trimBoneColliderBuffer(
                 NativeArray<int> partIndices,
                 DynamicBuffer<PartBone.PartInfoData> boneInfoBuffer,
                 DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer)
@@ -321,7 +321,7 @@ namespace DotsLite.Structure
                 }
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public BlobAssetReference<Collider> buildBoneCollider(
+            BlobAssetReference<Collider> buildBoneCollider(
                 DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer)
             {
                 var na = boneColliderBuffer.Reinterpret<CompoundCollider.ColliderBlobInstance>().AsNativeArray();
@@ -329,11 +329,12 @@ namespace DotsLite.Structure
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeHashSet<Entity> makeTargetBoneList(
+            UnsafeHashSet<Entity> makeTargetBoneList(
                 Main.PartDestructionData destructions,
                 NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int boneLength)
             {
-                var targetBones = new NativeHashSet<Entity>(boneLength, Allocator.Temp);
+                //var targetBones = new NativeHashSet<Entity>(boneLength, Allocator.Temp);
+                var targetBones = new UnsafeHashSet<Entity>(boneLength, Allocator.Temp);
 
                 foreach (var msg in hitMessages)
                 {
@@ -364,6 +365,14 @@ namespace DotsLite.Structure
             struct Desc : IComparer<int>
             {
                 public int Compare(int x, int y) => y - x;
+            }
+
+
+            NativeMultiHashMap<Entity, int> makeBoneAndPartsList(
+                Main.PartDestructionData destructions,
+                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int boneLength)
+            {
+                var targets = 
             }
 
         }
