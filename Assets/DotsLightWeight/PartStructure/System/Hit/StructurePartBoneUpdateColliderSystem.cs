@@ -233,6 +233,7 @@ namespace DotsLite.Structure
                 compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
                 lengths = this.GetComponentDataFromEntity<Main.PartLengthData>(isReadOnly: true),
 
+                partBones = this.GetComponentDataFromEntity<PartBone.LengthData>(isReadOnly: true),
                 colliders = this.GetComponentDataFromEntity<PhysicsCollider>(),
 
                 boneInfoBuffers = this.GetBufferFromEntity<PartBone.PartInfoData>(),
@@ -250,6 +251,7 @@ namespace DotsLite.Structure
             [ReadOnly] public ComponentDataFromEntity<Main.CompoundColliderTag> compoundTags;
             [ReadOnly] public ComponentDataFromEntity<Main.PartLengthData> lengths;
 
+            [ReadOnly] public ComponentDataFromEntity<PartBone.LengthData> partBones;
             [NativeDisableParallelForRestriction]
             [WriteOnly] public ComponentDataFromEntity<PhysicsCollider> colliders;
 
@@ -351,7 +353,8 @@ namespace DotsLite.Structure
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             NativeMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
                 Main.PartDestructionData destructions,
-                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int maxPartLength, uint )
+                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages,
+                int maxPartLength)
             {
                 var targets = new NativeMultiHashMap<Entity, int>(maxPartLength, Allocator.Temp);
 
@@ -359,8 +362,9 @@ namespace DotsLite.Structure
                 {
                     if (destructions.IsDestroyed(msg.PartId)) continue;
 
-                    var index = ;
-                    targets.Add(msg.ColliderEntity, (int));
+                    var numSubkeyBits = this.partBones[msg.ColliderEntity].NumSubkeyBits;
+                    msg.ColliderChildKey.PopSubKey(numSubkeyBits, out var childIndex);
+                    targets.Add(msg.ColliderEntity, (int)childIndex);
                 }
 
                 return targets;

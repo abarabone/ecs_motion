@@ -69,6 +69,11 @@ namespace DotsLite.Structure.Authoring
                     HitType = Collision.HitType.part,
                 });
 
+                em.SetComponentData(ent, new Part.PartData
+                {
+                    PartId = -1,// コンポジットコライダーであることを示す
+                });
+
 
                 var mtinv = bone.transform.worldToLocalMatrix;
                 var infobuf = em.AddBuffer<PartBone.PartInfoData>(ent);

@@ -102,13 +102,13 @@ namespace DotsLite.Arms
             var isHit = cw.CastRay(hitInput, ref collector);
 
 
-            if (isHit)
-            {
-                var ckey = collector.ClosestHit.ColliderKey;
-                var res1 = ckey.PopSubKey(6, out var o1);
-                var res2 = ckey.PopSubKey(15, out var o2);
-                Debug.Log($"{ckey} {res1}/{o1} {res2}/{o2}");
-            }
+            //if (isHit)
+            //{
+            //    var ckey = collector.ClosestHit.ColliderKey;
+            //    var res1 = ckey.PopSubKey(6, out var o1);
+            //    var res2 = ckey.PopSubKey(15, out var o2);
+            //    Debug.Log($"{ckey} {res1}/{o1} {res2}/{o2}");
+            //}
             return new BulletHit
             {
                 isHit = isHit,
@@ -119,7 +119,7 @@ namespace DotsLite.Arms
                     normal = collector.ClosestHit.SurfaceNormal,
                     hitEntity = collector.ClosestHit.Entity,
                     stateEntity = collector.OtherStateEntity,
-                    childId = (uint)collector.ClosestHit.ColliderKey.Value,
+                    childColliderKey = collector.ClosestHit.ColliderKey,
                 }
             };
         }
@@ -156,7 +156,7 @@ namespace DotsLite.Arms
                     normal = collector.ClosestHit.SurfaceNormal,
                     hitEntity = collector.ClosestHit.Entity,
                     stateEntity = collector.OtherStateEntity,
-                    childId = collector.ClosestHit.ColliderKey.Value,
+                    childColliderKey = collector.ClosestHit.ColliderKey,
                 }
             };
         }
@@ -201,7 +201,7 @@ namespace DotsLite.Arms
                     Normal = hit.normal,
                     ColliderEntity = hit.hitEntity,
                     PartId = parts[hit.hitEntity].PartId,
-                    ColliderChildKey = hit.childId,
+                    ColliderChildKey = hit.childColliderKey,
                     //Force = ,
                 }
             );

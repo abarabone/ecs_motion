@@ -51,6 +51,8 @@ namespace DotsLite.Structure
             this.Dependency = new JobExecution
             {
                 destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
+                partboneLengths = this.GetComponentDataFromEntity<PartBone.LengthData>(isReadOnly: true),
+                partboneInfos = this.GetBufferFromEntity<PartBone.PartInfoData>(isReadOnly: true),
             }
             .ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
         }
@@ -62,6 +64,9 @@ namespace DotsLite.Structure
 
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Main.PartDestructionData> destructions;
+
+            [ReadOnly] public ComponentDataFromEntity<PartBone.LengthData> partboneLengths;
+            [ReadOnly] public BufferFromEntity<PartBone.PartInfoData> partboneInfos;
 
 
             [BurstCompile]
@@ -82,11 +87,22 @@ namespace DotsLite.Structure
 
                 foreach (var msg in hitMessages)
                 {
-                    Debug.Log($"child id {msg.ColliderChildKey}");
+                    //Debug.Log($"child id {msg.ColliderChildKey}");
 
                     //_._log($"{msg.PartId} {(uint)(destruction.Destructions[msg.PartId >> 5] & (uint)(1 << (msg.PartId & 0b11111)))} {destruction.IsDestroyed(msg.PartId)} {this.Prefabs.HasComponent(msg.PartEntity)}");
                     
-                    destruction.SetDestroyed(msg.PartId);
+                    if (msg.PartId != -1)
+                    {
+                        destruction.SetDestroyed(msg.PartId);
+                    }
+                    else
+                    {
+                        // やっぱだめだ、この時コライダはアップデートされてる
+                        var numSubkeyBits = this.partboneLengths[msg.ColliderEntity].NumSubkeyBits;
+                        msg.ColliderChildKey.PopSubKey(numSubkeyBits, out var index);
+                        var partid = this.partboneInfos[msg.ColliderEntity][(int)index].PartId;
+                        destruction.SetDestroyed(partid);
+                    }
                 }
 
                 this.destructions[mainEntity] = destruction;
