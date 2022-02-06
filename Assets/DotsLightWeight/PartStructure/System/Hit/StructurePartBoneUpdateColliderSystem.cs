@@ -278,7 +278,7 @@ namespace DotsLite.Structure
                     var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
 
                     var indexEnumerator = targets.GetValuesForKey(boneEntity);
-                    using var bonePartsDesc = makeSortedPartIndexList(indexEnumerator, boneInfoBuffer.Length);
+                    using var bonePartsDesc = makeUniqueSortedPartIndexList(indexEnumerator, boneInfoBuffer.Length);
 
                     //TrimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
 
@@ -351,7 +351,7 @@ namespace DotsLite.Structure
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             NativeMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
                 Main.PartDestructionData destructions,
-                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int maxPartLength)
+                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int maxPartLength, uint )
             {
                 var targets = new NativeMultiHashMap<Entity, int>(maxPartLength, Allocator.Temp);
 
@@ -359,13 +359,14 @@ namespace DotsLite.Structure
                 {
                     if (destructions.IsDestroyed(msg.PartId)) continue;
 
-                    targets.Add(msg.ColliderEntity, (int)msg.ColliderChildIndex);
+                    var index = ;
+                    targets.Add(msg.ColliderEntity, (int));
                 }
 
                 return targets;
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeArray<int> makeSortedPartIndexList(
+            NativeArray<int> makeUniqueSortedPartIndexList(
                 NativeMultiHashMap<Entity, int>.Enumerator partIndices, int bonePartsLength)
             {
                 using var uniqueIndices = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);

@@ -41,6 +41,7 @@ namespace DotsLite.Structure
         {
             public int PartLength;
             //public int LivePartLength;
+            public uint NumSubkeyBits;
         }
 
         //[InternalBufferCapacity(0)]
@@ -78,7 +79,6 @@ namespace DotsLite.Structure
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public PhysicsCollider BuildCompoundCollider(
             this DynamicBuffer<PartColliderResourceData> partColliderBuffer,
-            LengthData info,
             Main.PartDestructionData destructions)
         {
             var dst = partColliderBuffer.Reinterpret<CompoundCollider.ColliderBlobInstance>().AsNativeArray();
@@ -86,12 +86,6 @@ namespace DotsLite.Structure
             {
                 Value = CompoundCollider.Create(dst),
             };
-            //for (var i = 0; i < dst.Length; i++)
-            //{
-            //    ILeafColliderCollector
-            //    collider.Value.Value.GetLeaves(ref c);
-            //    Debug.Log($"{}");
-            //}
             return collider;
         }
     }

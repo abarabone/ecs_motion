@@ -194,7 +194,7 @@ namespace DotsLite.Arms
                     Normal = hit.normal,
                     ColliderEntity = hit.hitEntity,
                     PartId = parts[hit.hitEntity].PartId,
-                    ColliderChildIndex = hit.childId,
+                    ColliderChildKey = hit.childId,
                     //Force = ,
                 }
             );

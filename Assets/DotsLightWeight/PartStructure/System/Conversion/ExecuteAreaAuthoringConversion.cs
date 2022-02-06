@@ -40,14 +40,7 @@ namespace DotsLite.Structure.Authoring
                 .ForEach((StructureBone bone) =>
                 {
                     var ent = this.GetPrimaryEntity(bone);
-
-                    var resbuf = em.GetBuffer<PartBone.PartColliderResourceData>(ent);
-                    var length = em.GetComponentData<PartBone.LengthData>(ent);
-                    var link = em.GetComponentData<PartBone.LinkToMainData>(ent);
-
-                    var destructions = em.GetComponentData<Main.PartDestructionData>(link.MainEntity);
-
-                    em.SetComponentData(ent, resbuf.BuildCompoundCollider(length, destructions));
+                    bone.Convert(ent, this.DstEntityManager, this);
                 });
         }
 
