@@ -86,6 +86,7 @@ namespace DotsLite.Structure
             {
                 Value = CompoundCollider.Create(dst),
             };
+            Debug.Log($"{collider.Value.Value.NumColliderKeyBits} {collider.Value.Value.TotalNumColliderKeyBits}");
             //for (var i = 0; i < dst.Length; i++)
             //{
             //    ILeafColliderCollector
