@@ -72,7 +72,7 @@ namespace DotsLite.Structure.Authoring
             var env = this.Envelope;
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             var parts = near.GetComponentsInChildren<StructureAreaPartAuthoring>();
-            var bones = near.GetComponentsInChildren<StructureBone>();
+            //var bones = near.GetComponentsInChildren<StructureBone>();
 
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
@@ -80,11 +80,11 @@ namespace DotsLite.Structure.Authoring
             gcs.InitPostureEntity(posture);//, far.objectTop.transform);
             initMainEntity_(gcs, top, posture, this.NearModel, parts.Length);
 
-            // とりあえず１ボーンに対応
-            var bone0 = bones.First();
-            var qParts0 = parts
-                .Where(x => x.GetComponentInParent<StructureBone>().BoneId == 0);
-            initStructureBone(gcs, posture, bone0, qParts0);
+            //// とりあえず１ボーンに対応
+            //var bone0 = bones.First();
+            //var qParts0 = parts
+            //    .Where(x => x.GetComponentInParent<StructureBone>().BoneId == 0);
+            //initStructureBone(gcs, posture, bone0, qParts0);
 
             //setBoneForFarEntity_(gcs, posture, far, top.transform);
             //setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
@@ -206,79 +206,6 @@ namespace DotsLite.Structure.Authoring
         //    });
         //}
 
-        public void initStructureBone(
-            GameObjectConversionSystem gcs, PostureAuthoring main, StructureBone bone,
-            IEnumerable<StructureAreaPartAuthoring> parts)
-        {
-            var em = gcs.DstEntityManager;
-            var ent = gcs.GetPrimaryEntity(bone);
-            var mainent = gcs.GetPrimaryEntity(main);
-
-            var addtypes = new ComponentTypes(new ComponentType[]
-            {
-                //typeof(Bone.ColliderInitializeData),
-                typeof(PartBone.PartInfoData),
-                typeof(PartBone.PartColliderResourceData),
-                typeof(PartBone.LengthData),
-                typeof(PartBone.LinkToMainData),
-                
-                typeof(Collision.Hit.TargetData),
-                typeof(PhysicsCollider),
-                typeof(Marker.Rotation),
-                typeof(Marker.Translation),
-                typeof(Part.PartData),//とりあえずテスト的に
-            });
-            em.AddComponents(ent, addtypes);
-
-            em.SetComponentData(ent, new PartBone.LinkToMainData
-            {
-                MainEntity = mainent,
-            });
-
-            em.SetComponentData(ent, new Collision.Hit.TargetData
-            {
-                MainEntity = mainent,
-                HitType = Collision.HitType.part,
-            });
-
-            var partLength = parts.Count();
-            em.SetComponentData(ent, new PartBone.LengthData
-            {
-                PartLength = partLength,
-            });
-
-
-            var mtinv = bone.transform.worldToLocalMatrix;
-            var infobuf = em.AddBuffer<PartBone.PartInfoData>(ent);
-            var resbuf = em.AddBuffer<PartBone.PartColliderResourceData>(ent);
-            foreach (var pt in parts)
-            {
-                var tf = pt.transform;
-                var ptent = gcs.GetPrimaryEntity(pt);
-
-                if (!em.HasComponent<PhysicsCollider>(ptent)) continue;
-                
-                //Debug.Log($"add collider part {pt.name}");
-
-                resbuf.Add(new PartBone.PartColliderResourceData
-                {
-                    ColliderInstance = new CompoundCollider.ColliderBlobInstance
-                    {
-                        Collider = em.GetComponentData<PhysicsCollider>(ptent).Value,
-                        CompoundFromChild = new RigidTransform
-                        {
-                            pos = mtinv.MultiplyPoint3x4(tf.position),
-                            rot = tf.rotation * mtinv.rotation,
-                        },
-                    },
-                });
-                infobuf.Add(new PartBone.PartInfoData
-                {
-                    PartId = pt.PartId,
-                    DebrisPrefab = Entity.Null,
-                });
-            }
-        }
         //public void initBoneColliders(
         //    GameObjectConversionSystem gcs, StructureBone bone,
         //    IEnumerable<StructureAreaPartAuthoring> parts, CollisionFilter filter)

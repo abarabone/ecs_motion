@@ -92,7 +92,7 @@ namespace DotsLite.Structure
                 if (this.compoundTags.HasComponent(mainEntity)) return;
 
 
-                Debug.Log($"child id {hitMessages.Current.ColliderChildIndex}");
+                Debug.Log($"child id {hitMessages.Current.ColliderChildKey}");
 
                 var destruction = this.destructions[mainEntity];
                 var partLength = this.lengths[mainEntity].TotalPartLength;
