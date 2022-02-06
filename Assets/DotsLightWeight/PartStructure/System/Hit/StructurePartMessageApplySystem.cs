@@ -68,8 +68,6 @@ namespace DotsLite.Structure
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                Debug.Log($"child id {hitMessages.Current.ColliderChildId}");
-
                 //wakeupMain_(index, mainEntity);
                 //applyDamgeToMain_();
                 applyDestructions_(mainEntity, hitMessages);
@@ -84,6 +82,8 @@ namespace DotsLite.Structure
 
                 foreach (var msg in hitMessages)
                 {
+                    Debug.Log($"child id {msg.ColliderChildIndex}");
+
                     //_._log($"{msg.PartId} {(uint)(destruction.Destructions[msg.PartId >> 5] & (uint)(1 << (msg.PartId & 0b11111)))} {destruction.IsDestroyed(msg.PartId)} {this.Prefabs.HasComponent(msg.PartEntity)}");
                     
                     destruction.SetDestroyed(msg.PartId);

@@ -26,7 +26,7 @@ namespace DotsLite.Structure
     {
         public int PartId;
         public Entity ColliderEntity;
-        public uint ColliderChildId;
+        public uint ColliderChildIndex;
         public float3 Position;
         public float3 Normal;
     }

@@ -112,6 +112,7 @@ namespace DotsLite.Arms
                     normal = collector.ClosestHit.SurfaceNormal,
                     hitEntity = collector.ClosestHit.Entity,
                     stateEntity = collector.OtherStateEntity,
+                    childId = collector.ClosestHit.ColliderKey.Value,
                 }
             };
         }
@@ -148,6 +149,7 @@ namespace DotsLite.Arms
                     normal = collector.ClosestHit.SurfaceNormal,
                     hitEntity = collector.ClosestHit.Entity,
                     stateEntity = collector.OtherStateEntity,
+                    childId = collector.ClosestHit.ColliderKey.Value,
                 }
             };
         }
@@ -192,7 +194,7 @@ namespace DotsLite.Arms
                     Normal = hit.normal,
                     ColliderEntity = hit.hitEntity,
                     PartId = parts[hit.hitEntity].PartId,
-                    ColliderChildId = hit.childId,
+                    ColliderChildIndex = hit.childId,
                     //Force = ,
                 }
             );

@@ -81,21 +81,17 @@ namespace DotsLite.Structure
             LengthData info,
             Main.PartDestructionData destructions)
         {
-            var option = NativeArrayOptions.UninitializedMemory;
-            var dst = new NativeArray<CompoundCollider.ColliderBlobInstance>(
-                partColliderBuffer.Length, Allocator.Temp, option);
-
-            for (var i = 0; i < partColliderBuffer.Length; i++)
-            {
-                dst[i] = partColliderBuffer[i].ColliderInstance;
-            }
-
+            var dst = partColliderBuffer.Reinterpret<CompoundCollider.ColliderBlobInstance>().AsNativeArray();
             var collider = new PhysicsCollider
             {
                 Value = CompoundCollider.Create(dst),
             };
-
-            dst.Dispose();
+            //for (var i = 0; i < dst.Length; i++)
+            //{
+            //    ILeafColliderCollector
+            //    collider.Value.Value.GetLeaves(ref c);
+            //    Debug.Log($"{}");
+            //}
             return collider;
         }
     }
