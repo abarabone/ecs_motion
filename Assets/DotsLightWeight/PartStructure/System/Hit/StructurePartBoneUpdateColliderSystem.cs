@@ -233,7 +233,7 @@ namespace DotsLite.Structure
                 compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
                 lengths = this.GetComponentDataFromEntity<Main.PartLengthData>(isReadOnly: true),
 
-                partBones = this.GetComponentDataFromEntity<PartBone.LengthData>(isReadOnly: true),
+                //partBones = this.GetComponentDataFromEntity<PartBone.LengthData>(isReadOnly: true),
                 colliders = this.GetComponentDataFromEntity<PhysicsCollider>(),
 
                 boneInfoBuffers = this.GetBufferFromEntity<PartBone.PartInfoData>(),
@@ -253,9 +253,9 @@ namespace DotsLite.Structure
             [ReadOnly] public ComponentDataFromEntity<Main.CompoundColliderTag> compoundTags;
             [ReadOnly] public ComponentDataFromEntity<Main.PartLengthData> lengths;
 
-            [ReadOnly] public ComponentDataFromEntity<PartBone.LengthData> partBones;
             [NativeDisableParallelForRestriction]
-            [WriteOnly] public ComponentDataFromEntity<PhysicsCollider> colliders;
+            public ComponentDataFromEntity<PhysicsCollider> colliders;
+            //public ComponentDataFromEntity<PartBone.LengthData> partBones;
 
             [NativeDisableParallelForRestriction]
             public BufferFromEntity<PartBone.PartInfoData> boneInfoBuffers;
@@ -270,8 +270,8 @@ namespace DotsLite.Structure
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                if (!this.compoundTags.HasComponent(mainEntity)) return;
-
+                //if (!this.compoundTags.HasComponent(mainEntity)) return;
+                if (hitMessages.Current.PartId != -1) return;
 
                 var length = this.lengths[mainEntity];
                 var destruction = this.destructions[mainEntity];
@@ -286,11 +286,17 @@ namespace DotsLite.Structure
                     var indexEnumerator = targets.GetValuesForKey(boneEntity);
                     using var bonePartsDesc = makeUniqueSortedPartIndexList(indexEnumerator, boneInfoBuffer.Length);
 
-                    //TrimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
+                    trimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
 
-                    //this.colliders[boneEntity] = new PhysicsCollider
+                    var newCollider = buildBoneCollider(boneColliderBuffer);
+                    this.colliders[boneEntity] = new PhysicsCollider
+                    {
+                        Value = newCollider,
+                    };
+                    //this.partBones[boneEntity] = new PartBone.LengthData
                     //{
-                    //    Value = buildBoneCollider(boneColliderBuffer)
+                    //    PartLength = this.partBones[boneEntity].PartLength,
+                    //    NumSubkeyBits = newCollider.Value.NumColliderKeyBits,
                     //};
                 }
             }
@@ -302,7 +308,7 @@ namespace DotsLite.Structure
             {
                 foreach (var i in partIndices)
                 {
-                    var partid = boneInfoBuffer[i].PartId;
+                    Debug.Log($"trim indices {i}/{boneInfoBuffer.Length}");
 
                     boneColliderBuffer.RemoveAtSwapBack(i);
                     boneInfoBuffer.RemoveAtSwapBack(i);
@@ -366,7 +372,8 @@ namespace DotsLite.Structure
                 {
                     if (destructions.IsDestroyed(msg.PartId)) continue;
 
-                    var numSubkeyBits = this.partBones[msg.ColliderEntity].NumSubkeyBits;
+                    //var numSubkeyBits = this.partBones[msg.ColliderEntity].NumSubkeyBits;
+                    var numSubkeyBits = this.colliders[msg.ColliderEntity].Value.Value.NumColliderKeyBits;
                     msg.ColliderChildKey.PopSubKey(numSubkeyBits, out var childIndex);
                     targets.Add(msg.ColliderEntity, (int)childIndex);
                 }

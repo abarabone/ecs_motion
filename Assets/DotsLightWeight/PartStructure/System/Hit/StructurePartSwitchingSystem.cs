@@ -89,7 +89,8 @@ namespace DotsLite.Structure
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                if (this.compoundTags.HasComponent(mainEntity)) return;
+                //if (this.compoundTags.HasComponent(mainEntity)) return;
+                if (hitMessages.Current.PartId == -1) return;
 
 
                 Debug.Log($"child id {hitMessages.Current.ColliderChildKey}");
