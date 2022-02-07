@@ -238,6 +238,8 @@ namespace DotsLite.Structure
 
                 boneInfoBuffers = this.GetBufferFromEntity<PartBone.PartInfoData>(),
                 boneColliderBuffers = this.GetBufferFromEntity<PartBone.PartColliderResourceData>(),
+
+                //time = Time.ElapsedTime,
             }
             .ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
         }
@@ -260,6 +262,8 @@ namespace DotsLite.Structure
             [NativeDisableParallelForRestriction]
             public BufferFromEntity<PartBone.PartColliderResourceData> boneColliderBuffers;
 
+
+            //public double time;
 
 
             [BurstCompile]

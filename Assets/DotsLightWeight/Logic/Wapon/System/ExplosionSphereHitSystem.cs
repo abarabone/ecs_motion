@@ -101,6 +101,7 @@ namespace DotsLite.Arms
             var corpss = this.GetComponentDataFromEntity<CorpsGroup.Data>(isReadOnly: true);
 
             var dt = this.Time.DeltaTime;
+            var time = this.Time.ElapsedTime;
 
             this.Entities
                 .WithBurst()
@@ -144,10 +145,14 @@ namespace DotsLite.Arms
                         if (!isHit) return;
 
 
+                        var unique = new NativeHashSet<Entity>(collector.NumHits, Allocator.Temp);
                         for (var i = 0; i < collector.NumHits; i++)
                         {
                             ref var hit_ = ref UnsafeUtility.ArrayElementAsRef<DistanceHitResult>(results.GetUnsafePtr(), i);
                             var hit = hit_.core;
+
+                            if (!unique.Add(hit_.core.hitEntity)) continue;
+                            // 同一コライダはまとめる（バラのほうがいいか？）　メッシュ相手だとポリゴン単位できてる可能性あり
 
                             switch (hit.hitType)
                             {
@@ -156,20 +161,20 @@ namespace DotsLite.Arms
                                 case HitType.envelope:
 
                                     hit.PostStructureEnvelopeHitMessage(sthit);
-                                    if (!isHit) hit.PostStructureEnvelopeHitMessage(sthit);
+                                    //if (!isHit) hit.PostStructureEnvelopeHitMessage(sthit);
                                     break;
 
                                 case HitType.part:
 
                                     hit.PostStructurePartHitMessage(pthit, parts);
-                                    if (!isHit) hit.PostStructurePartHitMessage(pthit, parts);
+                                    //if (!isHit) hit.PostStructurePartHitMessage(pthit, parts);
                                     break;
 
 
                                 case HitType.charactor:
 
-                                    var otherCorpts = corpss[hit.hitEntity];
-                                    if ((otherCorpts.BelongTo & corps.TargetCorps) == 0) return;
+                                    var otherCorps = corpss[hit.hitEntity];
+                                    if ((otherCorps.BelongTo & corps.TargetCorps) == 0) return;
 
                                     var pow = spec.HitRadius * math.rcp(hit_.distance) * (hit.posision - pos.Value);
                                     hit.PostCharacterHitMessage(chhit, 1.0f, pow);
@@ -180,7 +185,7 @@ namespace DotsLite.Arms
                                     break;
                             }
                         }
-
+                        unique.Dispose();
                     }
                 )
                 .ScheduleParallel();
