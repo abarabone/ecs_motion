@@ -37,12 +37,12 @@ namespace DotsLite.Structure
             public Entity MainEntity;
         }
 
-        public struct LengthData : IComponentData
-        {
-            public int PartLength;
-            //public int LivePartLength;
-            public uint NumSubkeyBits;
-        }
+        //public struct LengthData : IComponentData
+        //{
+        //    public int PartLength;
+        //    //public int LivePartLength;
+        //    public uint NumSubkeyBits;
+        //}
 
         //[InternalBufferCapacity(0)]
         //public struct PartDestructionResourceData : IBufferElementData

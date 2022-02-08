@@ -47,7 +47,7 @@ namespace DotsLite.Structure.Authoring
                     //typeof(Bone.ColliderInitializeData),
                     typeof(PartBone.PartInfoData),
                     typeof(PartBone.PartColliderResourceData),
-                    typeof(PartBone.LengthData),
+                    //typeof(PartBone.LengthData),
                     typeof(PartBone.LinkToMainData),
 
                     typeof(Collision.Hit.TargetData),
@@ -110,11 +110,11 @@ namespace DotsLite.Structure.Authoring
                 var compoundColider = resbuf.BuildCompoundCollider(destructiondata);
                 em.SetComponentData(ent, compoundColider);
 
-                em.SetComponentData(ent, new PartBone.LengthData
-                {
-                    PartLength = parts.Count(),
-                    NumSubkeyBits = compoundColider.Value.Value.NumColliderKeyBits,
-                });
+                //em.SetComponentData(ent, new PartBone.LengthData
+                //{
+                //    PartLength = parts.Count(),
+                //    NumSubkeyBits = compoundColider.Value.Value.NumColliderKeyBits,
+                //});
 
             }
         }

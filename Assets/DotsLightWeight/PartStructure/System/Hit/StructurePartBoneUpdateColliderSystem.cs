@@ -229,7 +229,7 @@ namespace DotsLite.Structure
 
             this.Dependency = new JobExecution
             {
-                destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(isReadOnly: true),
+                destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),//isReadOnly: true),
                 compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
                 lengths = this.GetComponentDataFromEntity<Main.PartLengthData>(isReadOnly: true),
 
@@ -249,12 +249,12 @@ namespace DotsLite.Structure
         struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForKey
         {
 
-            [ReadOnly] public ComponentDataFromEntity<Main.PartDestructionData> destructions;
+            public ComponentDataFromEntity<Main.PartDestructionData> destructions;
             [ReadOnly] public ComponentDataFromEntity<Main.CompoundColliderTag> compoundTags;
             [ReadOnly] public ComponentDataFromEntity<Main.PartLengthData> lengths;
 
             [NativeDisableParallelForRestriction]
-            public ComponentDataFromEntity<PhysicsCollider> colliders;
+            [WriteOnly] public ComponentDataFromEntity<PhysicsCollider> colliders;
             //public ComponentDataFromEntity<PartBone.LengthData> partBones;
 
             [NativeDisableParallelForRestriction]
@@ -270,12 +270,14 @@ namespace DotsLite.Structure
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                //if (!this.compoundTags.HasComponent(mainEntity)) return;
-                if (hitMessages.Current.PartId != -1) return;
+                if (!this.compoundTags.HasComponent(mainEntity)) return;
+                //if (hitMessages.Current.PartId != -1) return;
+
+                var destruction = this.destructions[mainEntity];
+
 
                 var length = this.lengths[mainEntity];
-                var destruction = this.destructions[mainEntity];
-                using var targets = makeTargetBoneAndPartChildIndices(destruction, hitMessages, length.TotalPartLength);
+                using var targets = makeTargetBoneAndPartChildIndices(this.colliders, this.boneInfoBuffers, destruction, hitMessages, length.TotalPartLength);
 
                 using var bones = targets.GetKeyArray(Allocator.Temp);
                 foreach (var boneEntity in bones)
@@ -298,10 +300,17 @@ namespace DotsLite.Structure
                     //    PartLength = this.partBones[boneEntity].PartLength,
                     //    NumSubkeyBits = newCollider.Value.NumColliderKeyBits,
                     //};
+
+                    foreach (var partid in bonePartsDesc)
+                    {
+                        destruction.SetDestroyed(partid);
+                    }
                 }
+
+                this.destructions[mainEntity] = destruction;
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            void trimBoneColliderBuffer(
+            static void trimBoneColliderBuffer(
                 NativeArray<int> partIndices,
                 DynamicBuffer<PartBone.PartInfoData> boneInfoBuffer,
                 DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer)
@@ -315,53 +324,18 @@ namespace DotsLite.Structure
                 }
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            BlobAssetReference<Collider> buildBoneCollider(
+            static BlobAssetReference<Collider> buildBoneCollider(
                 DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer)
             {
                 var na = boneColliderBuffer.Reinterpret<CompoundCollider.ColliderBlobInstance>().AsNativeArray();
                 return CompoundCollider.Create(na);
             }
 
-            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-            //NativeHashSet<Entity> makeTargetBoneList(
-            //    Main.PartDestructionData destructions,
-            //    NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int boneLength)
-            //{
-            //    var targetBones = new NativeHashSet<Entity>(boneLength, Allocator.Temp);
-
-            //    foreach (var msg in hitMessages)
-            //    {
-            //        if (destructions.IsDestroyed(msg.PartId)) continue;
-
-            //        targetBones.Add(msg.ColliderEntity);
-            //    }
-
-            //    return targetBones;
-            //}
-            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-            //NativeArray<int> makeSortedBonePartList(
-            //    NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int bonePartsLength)
-            //{
-            //    var targetBoneParts = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);
-
-            //    foreach (var msg in hitMessages)
-            //    {
-            //        targetBoneParts.Add((int)msg.ColliderChildId);
-            //    }
-
-            //    var boneParts = targetBoneParts.ToNativeArray(Allocator.Temp);
-            //    boneParts.Sort(new Desc());
-
-            //    targetBoneParts.Dispose();
-            //    return boneParts;
-            //}
-            //struct Desc : IComparer<int>
-            //{
-            //    public int Compare(int x, int y) => y - x;
-            //}
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
+            static NativeMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
+                ComponentDataFromEntity<PhysicsCollider> colliders,
+                BufferFromEntity<PartBone.PartInfoData> boneInfoBuffers,
                 Main.PartDestructionData destructions,
                 NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages,
                 int maxPartLength)
@@ -370,18 +344,24 @@ namespace DotsLite.Structure
 
                 foreach (var msg in hitMessages)
                 {
-                    if (destructions.IsDestroyed(msg.PartId)) continue;
-
                     //var numSubkeyBits = this.partBones[msg.ColliderEntity].NumSubkeyBits;
-                    var numSubkeyBits = this.colliders[msg.ColliderEntity].Value.Value.NumColliderKeyBits;
+                    var numSubkeyBits = colliders[msg.ColliderEntity].Value.Value.NumColliderKeyBits;
+
                     msg.ColliderChildKey.PopSubKey(numSubkeyBits, out var childIndex);
+
+
+                    var partid = boneInfoBuffers[msg.ColliderEntity][(int)childIndex].PartId;
+
+                    if (destructions.IsDestroyed(partid)) continue;
+
+
                     targets.Add(msg.ColliderEntity, (int)childIndex);
                 }
 
                 return targets;
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeArray<int> makeUniqueSortedPartIndexList(
+            static NativeArray<int> makeUniqueSortedPartIndexList(
                 NativeMultiHashMap<Entity, int>.Enumerator partIndices, int bonePartsLength)
             {
                 using var uniqueIndices = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);
