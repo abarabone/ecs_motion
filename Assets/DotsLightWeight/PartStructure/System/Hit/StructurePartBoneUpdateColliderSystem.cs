@@ -201,7 +201,6 @@ namespace DotsLite.Structure
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(StructureEnvelopeMessageApplySystem))]
-    [UpdateBefore(typeof(StructurePartMessageApplySystem))]
     [UpdateBefore(typeof(StructurePartMessageFreeJobSystem))]
     //[UpdateAfter(typeof(StructureEnvelopeWakeupTriggerSystem))]
     public class StructurePartBoneUpdateColliderSystem : DependencyAccessableSystemBase
@@ -249,14 +248,15 @@ namespace DotsLite.Structure
         struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForKey
         {
 
-            public ComponentDataFromEntity<Main.PartDestructionData> destructions;
             [ReadOnly] public ComponentDataFromEntity<Main.CompoundColliderTag> compoundTags;
             [ReadOnly] public ComponentDataFromEntity<Main.PartLengthData> lengths;
 
             [NativeDisableParallelForRestriction]
-            [WriteOnly] public ComponentDataFromEntity<PhysicsCollider> colliders;
-            //public ComponentDataFromEntity<PartBone.LengthData> partBones;
+            public ComponentDataFromEntity<Main.PartDestructionData> destructions;
 
+            //public ComponentDataFromEntity<PartBone.LengthData> partBones;
+            [NativeDisableParallelForRestriction]
+            public ComponentDataFromEntity<PhysicsCollider> colliders;
             [NativeDisableParallelForRestriction]
             public BufferFromEntity<PartBone.PartInfoData> boneInfoBuffers;
             [NativeDisableParallelForRestriction]
@@ -277,7 +277,8 @@ namespace DotsLite.Structure
 
 
                 var length = this.lengths[mainEntity];
-                using var targets = makeTargetBoneAndPartChildIndices(this.colliders, this.boneInfoBuffers, destruction, hitMessages, length.TotalPartLength);
+                using var targets = makeTargetBoneAndPartChildIndices(
+                    this.colliders, this.boneInfoBuffers, destruction, hitMessages, length.TotalPartLength);
 
                 using var bones = targets.GetKeyArray(Allocator.Temp);
                 foreach (var boneEntity in bones)
@@ -290,16 +291,10 @@ namespace DotsLite.Structure
 
                     trimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
 
-                    var newCollider = buildBoneCollider(boneColliderBuffer);
                     this.colliders[boneEntity] = new PhysicsCollider
                     {
-                        Value = newCollider,
+                        Value = buildBoneCollider(boneColliderBuffer),
                     };
-                    //this.partBones[boneEntity] = new PartBone.LengthData
-                    //{
-                    //    PartLength = this.partBones[boneEntity].PartLength,
-                    //    NumSubkeyBits = newCollider.Value.NumColliderKeyBits,
-                    //};
 
                     foreach (var partid in bonePartsDesc)
                     {
@@ -307,8 +302,59 @@ namespace DotsLite.Structure
                     }
                 }
 
+
                 this.destructions[mainEntity] = destruction;
             }
+
+
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static NativeMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
+                ComponentDataFromEntity<PhysicsCollider> colliders,
+                BufferFromEntity<PartBone.PartInfoData> boneInfoBuffers,
+                Main.PartDestructionData destructions,
+                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages,
+                int maxPartLength)
+            {
+                var targets = new NativeMultiHashMap<Entity, int>(maxPartLength, Allocator.Temp);
+
+                foreach (var msg in hitMessages)
+                {
+                    var numSubkeyBits = colliders[msg.ColliderEntity].Value.Value.NumColliderKeyBits;
+                    msg.ColliderChildKey.PopSubKey(numSubkeyBits, out var childIndex);
+
+                    var partid = boneInfoBuffers[msg.ColliderEntity][(int)childIndex].PartId;
+                    if (destructions.IsDestroyed(partid)) continue;
+
+                    targets.Add(msg.ColliderEntity, (int)childIndex);
+                }
+
+                return targets;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static NativeArray<int> makeUniqueSortedPartIndexList(
+                NativeMultiHashMap<Entity, int>.Enumerator partIndices, int bonePartsLength)
+            {
+                using var uniqueIndices = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);
+
+                foreach (var idx in partIndices)
+                {
+                    Debug.Log($"raw indices {idx}");
+                    uniqueIndices.Add(idx);
+                }
+
+                using var boneParts = uniqueIndices.ToNativeArray(Allocator.Temp);
+                boneParts.Sort(new Desc());
+
+                return boneParts;
+            }
+            struct Desc : IComparer<int>
+            {
+                public int Compare(int x, int y) => y - x;
+            }
+
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static void trimBoneColliderBuffer(
                 NativeArray<int> partIndices,
@@ -332,55 +378,6 @@ namespace DotsLite.Structure
             }
 
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static NativeMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
-                ComponentDataFromEntity<PhysicsCollider> colliders,
-                BufferFromEntity<PartBone.PartInfoData> boneInfoBuffers,
-                Main.PartDestructionData destructions,
-                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages,
-                int maxPartLength)
-            {
-                var targets = new NativeMultiHashMap<Entity, int>(maxPartLength, Allocator.Temp);
-
-                foreach (var msg in hitMessages)
-                {
-                    //var numSubkeyBits = this.partBones[msg.ColliderEntity].NumSubkeyBits;
-                    var numSubkeyBits = colliders[msg.ColliderEntity].Value.Value.NumColliderKeyBits;
-
-                    msg.ColliderChildKey.PopSubKey(numSubkeyBits, out var childIndex);
-
-
-                    var partid = boneInfoBuffers[msg.ColliderEntity][(int)childIndex].PartId;
-
-                    if (destructions.IsDestroyed(partid)) continue;
-
-
-                    targets.Add(msg.ColliderEntity, (int)childIndex);
-                }
-
-                return targets;
-            }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static NativeArray<int> makeUniqueSortedPartIndexList(
-                NativeMultiHashMap<Entity, int>.Enumerator partIndices, int bonePartsLength)
-            {
-                using var uniqueIndices = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);
-
-                foreach (var idx in partIndices)
-                {
-                    Debug.Log($"raw indices {idx}");
-                    uniqueIndices.Add(idx);
-                }
-
-                using var boneParts = uniqueIndices.ToNativeArray(Allocator.Temp);
-                boneParts.Sort(new Desc());
-
-                return boneParts;
-            }
-            struct Desc : IComparer<int>
-            {
-                public int Compare(int x, int y) => y - x;
-            }
         }
     }
 }
