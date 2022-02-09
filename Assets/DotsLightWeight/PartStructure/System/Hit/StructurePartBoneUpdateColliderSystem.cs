@@ -273,6 +273,7 @@ namespace DotsLite.Structure
                 if (!this.compoundTags.HasComponent(mainEntity)) return;
                 //if (hitMessages.Current.PartId != -1) return;
 
+                Debug.Log($"first {mainEntity}");
                 var destruction = this.destructions[mainEntity];
 
 
@@ -283,6 +284,7 @@ namespace DotsLite.Structure
                 using var bones = targets.GetKeyArray(Allocator.Temp);
                 foreach (var boneEntity in bones)
                 {
+                    Debug.Log($"bone {boneEntity}");
                     var boneInfoBuffer = this.boneInfoBuffers[boneEntity];
                     var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
 
