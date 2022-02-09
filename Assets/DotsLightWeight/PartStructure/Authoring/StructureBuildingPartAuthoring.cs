@@ -26,11 +26,12 @@ namespace DotsLite.Structure.Authoring
     using Material = UnityEngine.Material;
     using Unity.Physics.Authoring;
 
-    public class StructureBuildingPartAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+    public class StructureBuildingPartAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IStructurePart
     {
 
 
         public int PartId;
+        public int partId => this.PartId;
         //public int Life;
 
         //public Material MaterialToDraw;

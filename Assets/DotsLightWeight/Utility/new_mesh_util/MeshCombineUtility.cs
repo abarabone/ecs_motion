@@ -24,13 +24,11 @@ namespace DotsLite.Geometry
     {
 
 
-        public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>
-            (
-                this SrcMeshesModelCombinePack srcmeshpack,
-                Transform tfRoot,
-                Func<int, Rect> texHashToUvRectFunc = null,
-                Transform[] tfBones = null
-            )
+        public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>(
+            this SrcMeshesModelCombinePack srcmeshpack,
+            Transform tfRoot,
+            Func<int, Rect> texHashToUvRectFunc = null,
+            Transform[] tfBones = null)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
             where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         {
@@ -43,25 +41,22 @@ namespace DotsLite.Geometry
         /// <summary>
         /// 
         /// </summary>
-        public static Task<MeshElements<TIdx, TVtx>> ToTask<TIdx, TVtx>
-            (this Func<MeshElements<TIdx, TVtx>> f)
+        public static Task<MeshElements<TIdx, TVtx>> ToTask<TIdx, TVtx>(
+            this Func<MeshElements<TIdx, TVtx>> f)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
             where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         =>
             Task.Run(f);
 
-        public static Task<IMeshElements> ToTask(this Func<IMeshElements> f)
-        =>
+        public static Task<IMeshElements> ToTask(this Func<IMeshElements> f) =>
             Task.Run(f);
 
 
 
-        static AdditionalParameters calculateParameters
-            (
-                this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
-                Transform tfBase, Func<int, Rect> texHashToUvRectFunc,
-                Transform[] tfBones
-            )
+        static AdditionalParameters calculateParameters(
+            this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
+            Transform tfBase, Func<int, Rect> texHashToUvRectFunc,
+            Transform[] tfBones)
         {
             var mmts_ = mmts.ToArray();
             var meshes = mmts_
@@ -94,7 +89,7 @@ namespace DotsLite.Geometry
                 from mmt in mmts_
                     //.Do(x => Debug.Log($"part id is {x.tf.getInParent<StructurePartAuthoring>()?.PartId ?? -1} from {x.tf.getInParent<StructurePartAuthoring>()?.name ?? "null"}"))
                     //.Do(x => Debug.Log($"part id is {x.tf.findInParent<StructurePartAuthoring>()?.PartId ?? -1} from {x.tf.findInParent<StructurePartAuthoring>()?.name ?? "null"}"))
-                select mmt.tf.getInParent<StructureBuildingPartAuthoring>()?.PartId ?? -1
+                select mmt.tf.getInParent<IStructurePart>()?.partId ?? -1
                 //select mmt.tf.gameObject.GetComponentInParent<StructurePartAuthoring>()?.PartId ?? -1
                 ;
             result.partIdPerMesh = qPartIdPerMesh.ToArray();
@@ -130,11 +125,12 @@ namespace DotsLite.Geometry
         //static T findInParent<T>(this Transform tf) where T : MonoBehaviour => tf.gameObject.findInParent<T>();
 
         static T getInParent<T>(this GameObject obj)
-            where T : MonoBehaviour
-        => obj.GetComponentsInParent<T>(true).FirstOrDefault();
-        
+            where T : IStructurePart
+        //=> obj.GetComponentsInParent<T>(true).FirstOrDefault();
+        => obj.GetComponentInParent<T>(true);
+
         static T getInParent<T>(this Transform tf)
-            where T : MonoBehaviour
+            where T : IStructurePart
         => tf.gameObject.getInParent<T>();
 
     }

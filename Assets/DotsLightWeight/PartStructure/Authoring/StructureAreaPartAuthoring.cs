@@ -24,9 +24,10 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Utilities;
     using DotsLite.Structure.Authoring;
 
-    public class StructureAreaPartAuthoring : MonoBehaviour//, IConvertGameObjectToEntity
+    public class StructureAreaPartAuthoring : MonoBehaviour, IStructurePart//, IConvertGameObjectToEntity
     {
         public int PartId;
+        public int partId => this.PartId;
 
         //public void Convert
         //    (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)

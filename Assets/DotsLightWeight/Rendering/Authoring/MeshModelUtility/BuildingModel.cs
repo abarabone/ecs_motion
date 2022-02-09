@@ -22,12 +22,12 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class StructureModel<TIdx, TVtx> : LodMeshModel<TIdx, TVtx>
+    public class BuildingModel<TIdx, TVtx> : LodMeshModel<TIdx, TVtx>
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
 
-        public StructureModel(GameObject obj, Shader shader) : base(obj, shader)
+        public BuildingModel(GameObject obj, Shader shader) : base(obj, shader)
         { }
 
 

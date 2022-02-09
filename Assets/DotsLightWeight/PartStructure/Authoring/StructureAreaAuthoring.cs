@@ -45,7 +45,7 @@ namespace DotsLite.Structure.Authoring
     public class StructureAreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
     {
 
-        public StructureModel<UI32, StructureVertex> NearModel;
+        public AreaModel<UI32, StructureVertex> NearModel;
 
         public GameObject Envelope;
         public StructureAreaAuthoring MasterPrefab;
@@ -139,6 +139,7 @@ namespace DotsLite.Structure.Authoring
                 typeof(DrawInstance.ModelLinkData),
                 typeof(DrawInstance.TargetWorkData),
                 typeof(DrawInstance.NeedLodCurrentTag),
+                typeof(DrawInstance.LodCurrentIsNearTag),
 
                 typeof(Collision.Hit.TargetData),
                 //typeof(NonUniformScale),//Žb’è

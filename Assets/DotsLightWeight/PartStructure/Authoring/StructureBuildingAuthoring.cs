@@ -43,7 +43,7 @@ namespace DotsLite.Structure.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public StructureModel<UI32, StructureVertex> NearModel;
+        public BuildingModel<UI32, StructureVertex> NearModel;
         public LodMeshModel<UI32, PositionNormalUvVertex> FarModel;
 
         public GameObject Envelope;
