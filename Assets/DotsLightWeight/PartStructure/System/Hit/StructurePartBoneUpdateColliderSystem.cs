@@ -289,17 +289,12 @@ namespace DotsLite.Structure
                     var indexEnumerator = targets.GetValuesForKey(boneEntity);
                     using var bonePartsDesc = makeUniqueSortedPartIndexList(indexEnumerator, boneInfoBuffer.Length);
 
-                    trimBoneColliderBuffer(bonePartsDesc, boneInfoBuffer, boneColliderBuffer);
+                    trimBoneColliderBufferAndMarkDestroy_(bonePartsDesc, boneInfoBuffer, boneColliderBuffer, ref destruction);
 
                     this.colliders[boneEntity] = new PhysicsCollider
                     {
                         Value = buildBoneCollider(boneColliderBuffer),
                     };
-
-                    foreach (var partid in bonePartsDesc)
-                    {
-                        destruction.SetDestroyed(partid);
-                    }
                 }
 
 
@@ -356,14 +351,17 @@ namespace DotsLite.Structure
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static void trimBoneColliderBuffer(
+            static void trimBoneColliderBufferAndMarkDestroy_(
                 NativeArray<int> partIndices,
                 DynamicBuffer<PartBone.PartInfoData> boneInfoBuffer,
-                DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer)
+                DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer,
+                ref Main.PartDestructionData destructions)
             {
                 foreach (var i in partIndices)
                 {
                     Debug.Log($"trim indices {i}/{boneInfoBuffer.Length}");
+
+                    destructions.SetDestroyed(boneInfoBuffer[i].PartId);
 
                     boneColliderBuffer.RemoveAtSwapBack(i);
                     boneInfoBuffer.RemoveAtSwapBack(i);
