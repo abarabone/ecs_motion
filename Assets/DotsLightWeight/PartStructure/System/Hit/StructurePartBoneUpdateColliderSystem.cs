@@ -51,17 +51,14 @@ namespace DotsLite.Structure
 
             this.Dependency = new JobExecution
             {
-                destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),//isReadOnly: true),
+                destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
                 compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
                 lengths = this.GetComponentDataFromEntity<Main.PartLengthData>(isReadOnly: true),
 
-                //partBones = this.GetComponentDataFromEntity<PartBone.LengthData>(isReadOnly: true),
                 colliders = this.GetComponentDataFromEntity<PhysicsCollider>(),
 
                 boneInfoBuffers = this.GetBufferFromEntity<PartBone.PartInfoData>(),
                 boneColliderBuffers = this.GetBufferFromEntity<PartBone.PartColliderResourceData>(),
-
-                //time = Time.ElapsedTime,
             }
             .ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
         }
@@ -77,7 +74,6 @@ namespace DotsLite.Structure
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Main.PartDestructionData> destructions;
 
-            //public ComponentDataFromEntity<PartBone.LengthData> partBones;
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<PhysicsCollider> colliders;
             [NativeDisableParallelForRestriction]
@@ -85,8 +81,6 @@ namespace DotsLite.Structure
             [NativeDisableParallelForRestriction]
             public BufferFromEntity<PartBone.PartColliderResourceData> boneColliderBuffers;
 
-
-            //public double time;
 
 
             [BurstCompile]
@@ -96,20 +90,21 @@ namespace DotsLite.Structure
                 if (!this.compoundTags.HasComponent(mainEntity)) return;
                 //if (hitMessages.Current.PartId != -1) return;
 
-                Debug.Log($"first {mainEntity}");
+                Debug.Log($"main {mainEntity}");
                 var destruction = this.destructions[mainEntity];
 
 
-                var length = this.lengths[mainEntity];
-                using var targets = makeTargetBoneAndPartChildIndices(destruction, hitMessages, length.TotalPartLength);
+                var ptlength = this.lengths[mainEntity].TotalPartLength;
+                using var targets = makeTargetBoneAndPartChildIndices(hitMessages, destruction, ptlength, out var msgCount);
 
                 using var _bones = getUniqueBones(targets, out var bones);
                 foreach (var boneEntity in bones)
                 {
-                    Debug.Log($"bone {boneEntity}");
                     var boneInfoBuffer = this.boneInfoBuffers[boneEntity];
                     var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
-                    using var _parts = makeUniqueSortedPartIndexList(targets, boneEntity, boneInfoBuffer.Length, out var bonePartsDesc);
+
+                    Debug.Log($"bone {boneEntity}");
+                    using var _parts = makeUniqueSortedPartIndexList(targets, boneEntity, msgCount, out var bonePartsDesc);
 
                     trimBoneColliderBufferAndMarkDestroy_(bonePartsDesc, boneInfoBuffer, boneColliderBuffer, ref destruction);
 
@@ -127,14 +122,17 @@ namespace DotsLite.Structure
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             NativeMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
-                Main.PartDestructionData destructions,
                 NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages,
-                int maxPartLength)
+                Main.PartDestructionData destructions, int maxPartLength,
+                out int msgCount)
             {
                 var targets = new NativeMultiHashMap<Entity, int>(maxPartLength, Allocator.Temp);
 
+                var count = 0;
                 foreach (var msg in hitMessages)
                 {
+                    count++;
+
                     var numSubkeyBits = this.colliders[msg.ColliderEntity].Value.Value.NumColliderKeyBits;
                     msg.ColliderChildKey.PopSubKey(numSubkeyBits, out var childIndex);
 
@@ -144,6 +142,7 @@ namespace DotsLite.Structure
                     targets.Add(msg.ColliderEntity, (int)childIndex);
                 }
 
+                msgCount = count;
                 return targets;
             }
 
@@ -157,16 +156,19 @@ namespace DotsLite.Structure
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static NativeArray<int> makeUniqueSortedPartIndexList(
-                NativeMultiHashMap<Entity, int> partIndices, Entity boneEntity, int maxPartLength, out NativeSlice<int> uniqueValues)
+                NativeMultiHashMap<Entity, int> partIndices, Entity boneEntity, int msgCount, out NativeSlice<int> uniqueValues)
             {
-                var na = new NativeArray<int>(maxPartLength, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-                var i = 0;
+                var na = new NativeArray<int>(msgCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+                
+                var count = 0;
                 foreach (var item in partIndices.GetValuesForKey(boneEntity))
                 {
-                    Debug.Log($"item {item}");
-                    na[i++] = item;
+                    na[count++] = item;
                 }
-                var slice = na.Slice(0, i);
+
+                // HashMapExtension からコード拝借
+
+                var slice = na.Slice(0, count);
                 slice.Sort(new Desc());
                 uniqueValues = slice.Slice(0, unique(slice));
                 return na;
@@ -187,23 +189,6 @@ namespace DotsLite.Structure
                     return ++result;
                 }
             }
-            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-            //static NativeArray<int> makeUniqueSortedPartIndexList(
-            //    NativeMultiHashMap<Entity, int>.Enumerator partIndices, int bonePartsLength)
-            //{
-            //    using var uniqueIndices = new NativeHashSet<int>(bonePartsLength, Allocator.Temp);
-
-            //    foreach (var idx in partIndices)
-            //    {
-            //        Debug.Log($"raw indices {idx}");
-            //        uniqueIndices.Add(idx);
-            //    }
-
-            //    using var boneParts = uniqueIndices.ToNativeArray(Allocator.Temp);
-            //    boneParts.Sort(new Desc());
-
-            //    return boneParts;
-            //}
             struct Desc : IComparer<int>
             {
                 public int Compare(int x, int y) => y - x;
