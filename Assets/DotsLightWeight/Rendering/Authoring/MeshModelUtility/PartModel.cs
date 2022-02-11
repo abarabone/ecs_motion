@@ -23,16 +23,35 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class PartModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>
+    public class PartModel<TIdx, TVtx> : PartModelBase<TIdx, TVtx, StructureBuildingPartAuthoring>
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-
         public PartModel(GameObject obj, Shader shader) : base(obj, shader)
+        { }
+    }
+
+    [Serializable]
+    public class AreaPartModel<TIdx, TVtx> : PartModelBase<TIdx, TVtx, StructureAreaPartAuthoring>
+        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+    {
+        public AreaPartModel(GameObject obj, Shader shader) : base(obj, shader)
+        { }
+    }
+
+    [Serializable]
+    public abstract class PartModelBase<TIdx, TVtx, TPart> : MeshModel<TIdx, TVtx>
+        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        where TPart : IStructurePart
+    {
+
+        protected PartModelBase(GameObject obj, Shader shader) : base(obj, shader)
         { }
 
 
-        public void SetObject(GameObject obj) => this.objectTop = obj;
+        public virtual void SetObject(GameObject obj) => this.objectTop = obj;
 
 
         public override IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts
@@ -49,7 +68,7 @@ namespace DotsLite.Structure.Authoring
                 {
                     var q =
                         from child in go.Children()
-                        where child.GetComponent<StructureBuildingPartAuthoring>() == null
+                        where child.GetComponent<TPart>() == null
                         from x in queryPartBodyObjects_Recursive_(child)
                         select x
                         ;

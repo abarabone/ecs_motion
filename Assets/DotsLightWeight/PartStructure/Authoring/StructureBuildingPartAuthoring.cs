@@ -86,7 +86,7 @@ namespace DotsLite.Structure.Authoring
 
             //createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
             //createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
-            var prefab = createDebrisPrefab_(conversionSystem, this.gameObject, this.PartModelOfMasterPrefab.Obj);
+            var prefab = StructurePartUtility.CreateDebrisPrefab(conversionSystem, this.gameObject, this.PartModelOfMasterPrefab.Obj);
             var part = conversionSystem.GetPrimaryEntity(this.gameObject);
 
             setPrefabToPart_(conversionSystem, part, prefab);
@@ -126,6 +126,17 @@ namespace DotsLite.Structure.Authoring
                 );
             }
 
+            void setPrefabToPart_(GameObjectConversionSystem gcs, Entity part, Entity prefab)
+            {
+                var em = gcs.DstEntityManager;
+
+                em.AddComponentData(part,
+                    new Part.DebrisPrefabData
+                    {
+                        DebrisPrefab = prefab,
+                    }
+                );
+            }
 
             //static void createMeshAndSetToDictionary_
             //    (GameObjectConversionSystem gcs, GameObject go, Func<(GameObject go, Func<MeshCombinerElements> f, Mesh mesh)> meshHolder)
@@ -155,125 +166,41 @@ namespace DotsLite.Structure.Authoring
             //    var modelEntity_ = gcs.CreateDrawModelEntityComponents(masterPrefab, mesh, mat, BoneType, boneLength);
             //}
 
-            // 同じプレハブをまとめることはできないだろうか？
-            static Entity createDebrisPrefab_(GameObjectConversionSystem gcs, GameObject part, GameObject master)
-            {
-                var em_ = gcs.DstEntityManager;
 
 
-                var types = em_.CreateArchetype
-                (
-                    typeof(PartDebris.Data),
 
-                    typeof(DrawInstance.MeshTag),
-                    typeof(DrawInstance.ModelLinkData),
-                    typeof(DrawInstance.TargetWorkData),
+            ///// <summary>
+            ///// 元となったプレハブから自身と子を合成する関数を取得する。ただし子からパーツは除外する。
+            ///// また、オブジェクトが１つの時は直接メッシュを取得する。
+            ///// </summary>
+            //public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
+            //{
 
-                    typeof(PhysicsVelocity),//暫定
-                    typeof(PhysicsGravityFactor),//暫定
-                    typeof(PhysicsMass),//暫定
+            //    var part = this.MasterPrefab;
+            //    var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
 
-                    typeof(Marker.Rotation),
-                    typeof(Marker.Translation),
+            //    var isSingle = children.IsSingle();//children.Length == 1;
+            //    var f = !isSingle
+            //        ? MeshCombiner.BuildNormalMeshElements(children, part.transform)
+            //        : null;
+            //    var mesh = isSingle
+            //        ? children.First().GetComponent<MeshFilter>().sharedMesh
+            //        : null;
 
-                    //typeof(NonUniformScale),//暫定
-                    typeof(Prefab)
-                );
-                //var prefabEnt = gcs_.CreateAdditionalEntity(part_, types);
-                var prefabEnt = em_.CreateEntity(types);
-
-
-                em_.SetComponentData(prefabEnt,
-                    new PartDebris.Data
-                    {
-                        LifeTime = 5.0f,
-                    }
-                );
-
-                //em_.SetComponentData(mainEntity,
-                //    new NonUniformScale
-                //    {
-                //        Value = new float3(1, 1, 1)
-                //    }
-                //);
-                em_.SetComponentData(prefabEnt,
-                    new DrawInstance.ModelLinkData
-                    {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(master),
-                    }
-                );
-                em_.SetComponentData(prefabEnt,
-                    new DrawInstance.TargetWorkData
-                    {
-                        DrawInstanceId = -1,
-                    }
-                );
-
-                //var mass = part_.GetComponent<PhysicsBodyAuthoring>().CustomMassDistribution;
-                //var mass = em_.GetComponentData<PhysicsCollider>(gcs_.GetPrimaryEntity(part_)).MassProperties;
-                em_.SetComponentData(prefabEnt,
-                    //PhysicsMass.CreateDynamic( mass, 1.0f )
-                    PhysicsMass.CreateDynamic(MassProperties.UnitSphere, 1.0f)// 暫定だっけ？
-                );
-                em_.SetComponentData(prefabEnt,
-                    new PhysicsGravityFactor
-                    {
-                        Value = 1.0f,
-                    }
-                );
+            //    return (part, f, mesh);
 
 
-                em_.SetName_(prefabEnt, $"{part.name} debris");
-
-                return prefabEnt;
-            }
-
-            void setPrefabToPart_(GameObjectConversionSystem gcs, Entity part, Entity prefab)
-            {
-                var em = gcs.DstEntityManager;
-
-                em.AddComponentData(part,
-                    new Part.DebrisPrefabData
-                    {
-                        DebrisPrefab = prefab,
-                    }
-                );
-            }
+            //    static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
+            //    {
+            //        var q =
+            //            from child in go.Children()
+            //            where child.GetComponent<StructurePartAuthoring>() == null
+            //            from x in queryPartBodyObjects_Recursive_(child)
+            //            select x
+            //            ;
+            //        return q.Prepend(go);
+            //    }
+            //}
         }
-
-
-
-        ///// <summary>
-        ///// 元となったプレハブから自身と子を合成する関数を取得する。ただし子からパーツは除外する。
-        ///// また、オブジェクトが１つの時は直接メッシュを取得する。
-        ///// </summary>
-        //public (GameObject go, Func<MeshCombinerElements> f, Mesh mesh) GetPartsMeshesAndFuncs()
-        //{
-
-        //    var part = this.MasterPrefab;
-        //    var children = queryPartBodyObjects_Recursive_(part);//.ToArray();
-
-        //    var isSingle = children.IsSingle();//children.Length == 1;
-        //    var f = !isSingle
-        //        ? MeshCombiner.BuildNormalMeshElements(children, part.transform)
-        //        : null;
-        //    var mesh = isSingle
-        //        ? children.First().GetComponent<MeshFilter>().sharedMesh
-        //        : null;
-
-        //    return (part, f, mesh);
-
-
-        //    static IEnumerable<GameObject> queryPartBodyObjects_Recursive_(GameObject go)
-        //    {
-        //        var q =
-        //            from child in go.Children()
-        //            where child.GetComponent<StructurePartAuthoring>() == null
-        //            from x in queryPartBodyObjects_Recursive_(child)
-        //            select x
-        //            ;
-        //        return q.Prepend(go);
-        //    }
-        //}
     }
 }

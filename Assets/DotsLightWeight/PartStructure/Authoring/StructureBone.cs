@@ -13,12 +13,16 @@ namespace DotsLite.Structure.Authoring
 {
     using DotsLite.Model.Authoring;
     using DotsLite.EntityTrimmer.Authoring;
+    using DotsLite.Model.Authoring;
+    using DotsLite.Geometry;
+    using DotsLite.Utilities;
 
     public class StructureBone : MonoBehaviour//, IConvertGameObjectToEntity
     {
 
 
         public int BoneId;
+
 
 
 
@@ -102,7 +106,7 @@ namespace DotsLite.Structure.Authoring
                     infobuf.Add(new PartBone.PartInfoData
                     {
                         PartId = pt.PartId,
-                        DebrisPrefab = Entity.Null,
+                        DebrisPrefab = StructurePartUtility.CreateDebrisPrefab(gcs, pt.gameObject),
                     });
                 }
 

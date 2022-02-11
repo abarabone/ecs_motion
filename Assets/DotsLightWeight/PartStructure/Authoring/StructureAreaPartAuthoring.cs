@@ -26,8 +26,12 @@ namespace DotsLite.Structure.Authoring
 
     public class StructureAreaPartAuthoring : MonoBehaviour, IStructurePart//, IConvertGameObjectToEntity
     {
+
         public int PartId;
         public int partId => this.PartId;
+
+        public AreaPartModel<UI32, PositionNormalUvVertex> PartModel;
+
 
         //public void Convert
         //    (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
