@@ -102,6 +102,26 @@ namespace DotsLite.Structure.Authoring
             return prefabEnt;
         }
 
+
+        static public void SetPartId<T>(IEnumerable<T> parts)
+            where T: IStructurePart
+        {
+
+
+
+        }
+
+        static public void SetPartId<T>(IEnumerable<T> parts)
+            where T : IStructurePart
+        {
+
+
+
+            int getPartHash_(T part)
+            {
+
+            }
+        }
     }
 }
 

@@ -31,7 +31,7 @@ namespace DotsLite.Structure.Authoring
 
 
         public int PartId;
-        public int partId => this.PartId;
+        public int partId { get => this.PartId; set => this.PartId = value; }
         //public int Life;
 
         //public Material MaterialToDraw;

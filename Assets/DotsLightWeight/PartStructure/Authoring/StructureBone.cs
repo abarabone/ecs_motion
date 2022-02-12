@@ -13,7 +13,6 @@ namespace DotsLite.Structure.Authoring
 {
     using DotsLite.Model.Authoring;
     using DotsLite.EntityTrimmer.Authoring;
-    using DotsLite.Model.Authoring;
     using DotsLite.Geometry;
     using DotsLite.Utilities;
 
