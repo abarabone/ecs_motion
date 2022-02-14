@@ -33,6 +33,10 @@ namespace DotsLite.Structure.Authoring
         public AreaPartModel<UI32, PositionNormalUvVertex> PartModel;
 
 
+        public IEnumerable<IMeshModel> QueryModel =>
+            this.PartModel
+            .WrapEnumerable();
+
         //public void Convert
         //    (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         //{
