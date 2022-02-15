@@ -23,15 +23,12 @@ namespace DotsLite.Geometry
         IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts { get; }
 
 
-        void CreateModelEntity
-            (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
+        void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
 
 
-        (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
-            (
-                SrcMeshesModelCombinePack meshpack,
-                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
-            );
+        (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner(
+            SrcMeshesModelCombinePack meshpack,
+            Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary);
     }
 
 

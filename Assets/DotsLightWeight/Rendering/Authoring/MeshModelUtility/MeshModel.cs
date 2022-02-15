@@ -48,8 +48,7 @@ namespace DotsLite.Model.Authoring
                 .QueryMeshMatsTransform_IfHaving();
 
 
-        public virtual void CreateModelEntity
-            (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        public virtual void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.shader);
             mat.enableInstancing = true;
@@ -61,11 +60,9 @@ namespace DotsLite.Model.Authoring
             gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
         }
 
-        public virtual (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner
-            (
-                SrcMeshesModelCombinePack meshpack,
-                Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary
-            )
+        public virtual (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner(
+            SrcMeshesModelCombinePack meshpack,
+            Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
             var atlas = atlasDictionary.objectToAtlas[this.objectTop].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
