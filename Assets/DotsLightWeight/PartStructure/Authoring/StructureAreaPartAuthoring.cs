@@ -26,6 +26,7 @@ namespace DotsLite.Structure.Authoring
 
     public class StructureAreaPartAuthoring : MonoBehaviour, IStructurePart//, IConvertGameObjectToEntity
     {
+        public bool IsNotMeshDeformation;
 
         public int PartId;
         public int partId { get => this.PartId; set => this.PartId = value; }
