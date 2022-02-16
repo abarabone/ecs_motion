@@ -25,28 +25,28 @@ public class MultiMeshesToDrawModelEntityDictionary
 {
     Dictionary<int, Mesh> dict;
 
-    public Mesh GetOrCreateMesh(IMeshModel srcModel)
-    {
-        var mmts = srcModel.QueryMmts.ToArray();
-        var hash = getMeshesHash_(mmts.Select(x => x.mesh));
+    //public Mesh GetOrCreateMesh(IMeshModel srcModel)
+    //{
+    //    var mmts = srcModel.QueryMmts.ToArray();
+    //    var hash = getMeshesHash_(mmts.Select(x => x.mesh));
 
-        if (this.dict.ContainsKey(hash)) return this.dict[hash];
+    //    if (this.dict.ContainsKey(hash)) return this.dict[hash];
 
-        var mesh = srcModel.BuildMeshCombiner()
+    //    var mesh = srcModel.BuildMeshCombiner()
 
-        return;
+    //    return;
 
-        int getMeshesHash_(IEnumerable<Mesh> meshes)
-        {
-            var qHash =
-                from mesh in meshes
-                select mesh.GetHashCode()
-                ;
-            return meshes
-                .Select(mesh => mesh.GetHashCode())
-                .Select((x, i) => x * 31 ^ i)
-                .Do(x => Debug.Log($"model {srcModel.Obj.name}, hash {x}"))
-                .Sum();
-        }
-    }
+    //    int getMeshesHash_(IEnumerable<Mesh> meshes)
+    //    {
+    //        var qHash =
+    //            from mesh in meshes
+    //            select mesh.GetHashCode()
+    //            ;
+    //        return meshes
+    //            .Select(mesh => mesh.GetHashCode())
+    //            .Select((x, i) => x * 31 ^ i)
+    //            .Do(x => Debug.Log($"model {srcModel.Obj.name}, hash {x}"))
+    //            .Sum();
+    //    }
+    //}
 }

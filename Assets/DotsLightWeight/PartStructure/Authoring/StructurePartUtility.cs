@@ -123,7 +123,7 @@ namespace DotsLite.Structure.Authoring
                 ;
             foreach (var (hash, mmts) in q)
             {
-                dict.
+                //dict.
             }
 
             int getPartMeshesHash_(T part)

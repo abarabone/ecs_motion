@@ -24,7 +24,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Utilities;
     using DotsLite.Structure.Authoring;
 
-    public class StructureAreaPartAuthoring : MonoBehaviour, IStructurePart//, IConvertGameObjectToEntity
+    public class StructureAreaPartAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IStructurePart//, IConvertGameObjectToEntity
     {
         public bool IsNotMeshDeformation;
 
