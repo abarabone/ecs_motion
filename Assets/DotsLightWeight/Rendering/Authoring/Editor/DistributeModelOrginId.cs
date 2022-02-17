@@ -26,10 +26,10 @@ namespace DotsLite.Model.Authoring
 
                 foreach (var (model, prefab) in xs)
                 {
-                    Debug.Log(prefab?.OriginId);
+                    Debug.Log(prefab?.SourcePrefabKey);
                     if (prefab != null)
                     {
-                        model.OriginId = prefab.OriginId;
+                        model.SourcePrefabKey = prefab.SourcePrefabKey;
                     }
                     else
                     {

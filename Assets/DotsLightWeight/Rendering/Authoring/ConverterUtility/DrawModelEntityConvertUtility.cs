@@ -54,7 +54,7 @@ namespace DotsLite.Draw.Authoring
 
             var em = gcs.DstEntityManager;
 
-            setShaderProps_(em, mat, mesh, boneLength * (int)BoneType + instanceDataVectorLength);
+            setShaderProps_(em, mat, boneLength * (int)BoneType + instanceDataVectorLength);
 
             addComponents_(gcs, topGameObject, drawModelEntity, order != DrawModel.SortOrder.none);
             initInfomationData_(em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength, order);
@@ -64,7 +64,7 @@ namespace DotsLite.Draw.Authoring
 
 
 
-            static void setShaderProps_(EntityManager em_, Material mat_, Mesh mesh_, int vectorLengthPerInstance)
+            static void setShaderProps_(EntityManager em_, Material mat_, int vectorLengthPerInstance)
             {
                 var sys = em_.World.GetOrCreateSystem<DrawBufferManagementSystem>();
                 var boneVectorBuffer = sys.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;

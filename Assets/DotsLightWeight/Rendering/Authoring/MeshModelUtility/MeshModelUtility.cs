@@ -38,11 +38,9 @@ namespace DotsLite.Geometry
 
 
 
-        public static void CreateModelToDictionary
-            (
-                this IEnumerable<IMeshModel> models,
-                Dictionary<GameObject, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict
-            )
+        public static void CreateModelToDictionary(
+            this IEnumerable<IMeshModel> models,
+            Dictionary<GameObject, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
         {
             var qMmts =
                 from model in models

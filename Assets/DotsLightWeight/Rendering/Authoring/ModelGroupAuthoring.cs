@@ -6,6 +6,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
+using UnityEngine.Serialization;
 
 namespace DotsLite.Model.Authoring
 {
@@ -31,8 +32,9 @@ namespace DotsLite.Model.Authoring
         /// </summary>
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
-            public int OriginId;
-            public void SetOridinId() => this.OriginId = new System.Random(this.name.GetHashCode() + this.GetHashCode()).Next();
+            [FormerlySerializedAs("OriginId")]
+            public int SourcePrefabKey;
+            public void SetOridinId() => this.SourcePrefabKey = new System.Random(this.name.GetHashCode() + this.GetHashCode()).Next();
             private void Reset() => this.SetOridinId();
 
             public virtual IEnumerable<IMeshModel> QueryModel =>
