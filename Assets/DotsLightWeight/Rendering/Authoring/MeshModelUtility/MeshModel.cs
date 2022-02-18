@@ -29,6 +29,7 @@ namespace DotsLite.Model.Authoring
         {
             this.objectTop = obj;
             this.shader = shader;
+            this.SourcePrefabKey = obj.GetComponent<ModelGroupAuthoring.ModelAuthoringBase>().SourcePrefabKey;
         }
 
         [SerializeField]
@@ -41,6 +42,7 @@ namespace DotsLite.Model.Authoring
         public virtual GameObject Obj => this.objectTop;
         public virtual Transform TfRoot => this.objectTop.transform;
         public virtual Transform[] Bones => null;
+        public virtual int SourcePrefabKey { get; }
 
         public virtual IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
             this.objectTop.GetComponentsInChildren<Renderer>()

@@ -14,14 +14,14 @@ namespace DotsLite.Geometry
 
     public interface IMeshModel
     {
+        int SourcePrefabKey { get; }
 
         GameObject Obj { get; }
         Transform TfRoot { get; }
         Transform[] Bones { get; }
 
-
         IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts { get; }
-
+        
 
         void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
 

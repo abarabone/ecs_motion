@@ -70,6 +70,7 @@ namespace DotsLite.Structure.Authoring
             //        Value = new float3(1, 1, 1)
             //    }
             //);
+            Debug.Log($"part : <{master}> <{part}>");
             em_.SetComponentData(prefabEnt,
                 new DrawInstance.ModelLinkData
                 {

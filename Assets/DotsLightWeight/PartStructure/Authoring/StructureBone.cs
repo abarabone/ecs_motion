@@ -105,7 +105,7 @@ namespace DotsLite.Structure.Authoring
                     infobuf.Add(new PartBone.PartInfoData
                     {
                         PartId = pt.PartId,
-                        DebrisPrefab = StructurePartUtility.CreateDebrisPrefab(gcs, pt.gameObject),
+                        //DebrisPrefab = StructurePartUtility.CreateDebrisPrefab(gcs, pt.gameObject),
                     });
                 }
 

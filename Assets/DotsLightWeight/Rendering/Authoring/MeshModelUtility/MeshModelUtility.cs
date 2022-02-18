@@ -43,7 +43,7 @@ namespace DotsLite.Geometry
             Dictionary<GameObject, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
         {
             var qMmts =
-                from model in models
+                from model in models.Do(x => Debug.Log($"srckey {x.SourcePrefabKey} at {x.Obj.name}"))
                 select model.QueryMmts
                 ;
             using var meshAll = qMmts.QueryMeshDataFromModel();

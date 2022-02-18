@@ -29,6 +29,7 @@ namespace DotsLite.Model.Authoring
             this.objectTop = obj;
             this.shader = shader;
             this.BoneTop = boneTop;
+            this.SourcePrefabKey = obj.GetComponent<Model.Authoring.ModelGroupAuthoring.ModelAuthoringBase>().SourcePrefabKey;
         }
 
         [SerializeField]
@@ -47,8 +48,8 @@ namespace DotsLite.Model.Authoring
 
 
         public GameObject Obj => this.objectTop;
-        
         public Transform TfRoot => this.objectTop.Children().First().transform;// これでいいのか？
+        public int SourcePrefabKey { get; }
 
         Transform[] _bones = null;
         public Transform[] Bones => this._bones ??= this.BoneTop.gameObject.DescendantsAndSelf()

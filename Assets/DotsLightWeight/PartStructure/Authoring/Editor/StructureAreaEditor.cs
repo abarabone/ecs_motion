@@ -12,7 +12,7 @@ namespace DotsLite.Structure.Authoring
     /// すべてのパーツに、マスタープレハブへのリンクをセットする。
     /// 本当は実行時に取得できればいいんだが、プレイヤーでは取得できないし、そもそもプレハブは全部展開される。
     /// </summary>
-    [CustomEditor(typeof(StructureAreaAuthoring))]
+    //[CustomEditor(typeof(StructureAreaAuthoring))]
     public class StructureAreaEditor : Editor
     {
         public override void OnInspectorGUI()
