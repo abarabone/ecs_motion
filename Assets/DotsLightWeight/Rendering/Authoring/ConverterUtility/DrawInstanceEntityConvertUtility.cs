@@ -106,32 +106,21 @@ namespace DotsLite.Draw.Authoring
         //}
 
 
-        /// <summary>
-        /// 必要であれば、DrawInstanceEntity にＬＯＤコンポーネントデータを追加する。
-        /// ・ＬＯＤが登録されていない場合は、コンポーネントデータを追加しない。
-        /// ・ＬＯＤ枠が確保されていて、ＬＯＤにオブジェクトが登録されている場合は、
-        /// 　そのオブジェクト以下の結合メッシュを採用する。
-        /// ・ＬＯＤ枠が確保されていて、ＬＯＤ登録が Nothing の場合は、
-        /// 　オブジェクトトップから見つかった最初のメッシュを無加工で採用する。
-        /// </summary>
         static public void AddLod2ComponentToDrawInstanceEntity
             (
                 this GameObjectConversionSystem gcs,
-                Entity drawInstance, GameObject top, IMeshModelLod[] lods
+                Entity drawInstance, IMeshModelLod[] lods
             )
         {
             if (lods.Length != 2) return;
-
-            var obj0 = lods[0].Obj ?? top;
-            var obj1 = lods[1].Obj ?? top;
 
             var em = gcs.DstEntityManager;
 
             em.AddComponentData(drawInstance,
                 new DrawInstance.ModelLod2LinkData
                 {
-                    DrawModelEntityNear = gcs.GetFromModelEntityDictionary(obj0),
-                    DrawModelEntityFar = gcs.GetFromModelEntityDictionary(obj1),
+                    DrawModelEntityNear = gcs.GetFromModelEntityDictionary(lods[0].SourcePrefabKey),
+                    DrawModelEntityFar = gcs.GetFromModelEntityDictionary(lods[1].SourcePrefabKey),
                     LimitDistanceSqrNear = pow2_(lods[0].LimitDistance),
                     LimitDistanceSqrFar = pow2_(lods[1].LimitDistance),
                     MarginDistanceSqrNear = pow2_(lods[0].LimitDistance + lods[0].Margin),
@@ -152,14 +141,12 @@ namespace DotsLite.Draw.Authoring
                 Entity drawInstance, GameObject top, IMeshModelLod lod
             )
         {
-            var obj = lod.Obj ?? top;
-
             var em = gcs.DstEntityManager;
 
             em.AddComponentData(drawInstance,
                 new DrawInstance.ModelLod1LinkData
                 {
-                    DrawModelEntityNear = gcs.GetFromModelEntityDictionary(obj),
+                    DrawModelEntityNear = gcs.GetFromModelEntityDictionary(lod.SourcePrefabKey),
                     LimitDistanceSqrNear = pow2_(lod.LimitDistance),
                     MarginDistanceSqrNear = pow2_(lod.LimitDistance + lod.Margin),
                 }

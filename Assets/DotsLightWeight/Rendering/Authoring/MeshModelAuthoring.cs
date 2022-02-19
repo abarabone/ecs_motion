@@ -122,7 +122,7 @@ namespace DotsLite.Model.Authoring
                     new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(main),//gcs.GetDrawModelEntity(main, lodOpts),
+                        DrawModelEntityCurrent = Entity.Null,//gcs.GetFromModelEntityDictionary(main),//gcs.GetDrawModelEntity(main, lodOpts),
                     }
                 );
                 em.SetComponentData(mainEntity,

@@ -64,7 +64,7 @@ namespace DotsLite.Model.Authoring
             const BoneType BoneType = BoneType.RT;
             const int boneLength = 1;
 
-            gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
+            gcs.CreateDrawModelEntityComponents(this, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
         }
 
         public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
