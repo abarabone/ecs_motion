@@ -104,42 +104,41 @@ namespace DotsLite.Structure.Authoring
         }
 
 
-        static public void SetPartId<T>(IEnumerable<T> parts)
-            where T: IStructurePart
+        static public void DispatchPartId(IEnumerable<IStructurePart> parts)
         {
 
-
+            parts.ForEach((x, i) => x.partId = i);
 
         }
 
-        static public void CombineMeshesWithDictionary<T>(IEnumerable<T> parts, MultiMeshesToDrawModelEntityDictionary dict)
-            where T : IStructurePart
-        {
+        //static public void CombineMeshesWithDictionary<T>(IEnumerable<T> parts, MultiMeshesToDrawModelEntityDictionary dict)
+        //    where T : IStructurePart
+        //{
 
-            var q =
-                from part in parts
-                let hash = getPartMeshesHash_(part)
-                from model in part.QueryModel
-                select (hash, model.QueryMmts)
-                ;
-            foreach (var (hash, mmts) in q)
-            {
-                //dict.
-            }
+        //    var q =
+        //        from part in parts
+        //        let hash = getPartMeshesHash_(part)
+        //        from model in part.QueryModel
+        //        select (hash, model.QueryMmts)
+        //        ;
+        //    foreach (var (hash, mmts) in q)
+        //    {
+        //        //dict.
+        //    }
 
-            int getPartMeshesHash_(T part)
-            {
-                var qHash =
-                    from model in part.QueryModel
-                    from mmt in model.QueryMmts
-                    select mmt.mesh.GetHashCode()
-                    ;
-                return qHash
-                    .Select((x, i) => x * 31 ^ i)
-                    .Do(x => Debug.Log($"part {part.partId} hash {x}"))
-                    .Sum();
-            }
-        }
+        //    int getPartMeshesHash_(T part)
+        //    {
+        //        var qHash =
+        //            from model in part.QueryModel
+        //            from mmt in model.QueryMmts
+        //            select mmt.mesh.GetHashCode()
+        //            ;
+        //        return qHash
+        //            .Select((x, i) => x * 31 ^ i)
+        //            .Do(x => Debug.Log($"part {part.partId} hash {x}"))
+        //            .Sum();
+        //    }
+        //}
     }
 }
 

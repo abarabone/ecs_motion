@@ -25,24 +25,29 @@ namespace DotsLite.Model.Authoring
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        public MeshModel(GameObject obj, Shader shader)
-        {
-            this.objectTop = obj;
-            this.shader = shader;
-            this.SourcePrefabKey = obj.GetComponent<ModelGroupAuthoring.ModelAuthoringBase>().SourcePrefabKey;
-        }
+        //public MeshModel(GameObject obj, Shader shader)
+        //{
+        //    this.objectTop = obj;
+        //    this.shader = shader;
+        //    this.SourcePrefabKey = obj.GetComponent<ModelGroupAuthoring.ModelAuthoringBase>().SourcePrefabKey;
+        //}
+        public void GenerateSourcePrefabKey() =>
+            this.sourcePrefabKey = new System.Random(this.GetHashCode()).Next();
 
         [SerializeField]
-        protected GameObject objectTop;
+        protected int sourcePrefabKey;
 
         [SerializeField]
-        protected Shader shader;
+        public GameObject objectTop;
+
+        [SerializeField]
+        public Shader shader;
 
 
         public virtual GameObject Obj => this.objectTop;
         public virtual Transform TfRoot => this.objectTop.transform;
-        public virtual Transform[] Bones => null;
-        public virtual int SourcePrefabKey { get; }
+        public virtual IEnumerable<Transform> QueryBones => null;
+        public virtual int SourcePrefabKey => this.sourcePrefabKey;
 
         public virtual IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
             this.objectTop.GetComponentsInChildren<Renderer>()
@@ -70,7 +75,7 @@ namespace DotsLite.Model.Authoring
             var texdict = atlasDictionary.texHashToUvRect;
             return (
                 this.objectTop,
-                meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, part => texdict[atlas, part], this.Bones)
+                meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, part => texdict[atlas, part], this.QueryBones?.ToArray())
             );
         }
     }
@@ -81,14 +86,14 @@ namespace DotsLite.Model.Authoring
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        public LodMeshModel(GameObject obj, Shader shader) : base(obj, shader)
-        { }
+        //public LodMeshModel(GameObject obj, Shader shader) : base(obj, shader)
+        //{ }
 
         [SerializeField]
-        float limitDistance;
+        public float limitDistance;
 
         [SerializeField]
-        float margin;
+        public float margin;
 
 
         public float LimitDistance => this.limitDistance;

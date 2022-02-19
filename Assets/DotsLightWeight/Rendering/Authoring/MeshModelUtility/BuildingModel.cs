@@ -27,8 +27,8 @@ namespace DotsLite.Structure.Authoring
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
 
-        public BuildingModel(GameObject obj, Shader shader) : base(obj, shader)
-        { }
+        //public BuildingModel(GameObject obj, Shader shader) : base(obj, shader)
+        //{ }
 
 
         //public override Transform TfRoot => this.Obj.GetComponentsInParent<StructureBuildingModelAuthoring>(true)

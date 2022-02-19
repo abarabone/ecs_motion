@@ -27,8 +27,8 @@ namespace DotsLite.Structure.Authoring
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        public PartModel(GameObject obj, Shader shader) : base(obj, shader)
-        { }
+        //public PartModel(GameObject obj, Shader shader) : base(obj, shader)
+        //{ }
     }
 
     [Serializable]
@@ -36,8 +36,8 @@ namespace DotsLite.Structure.Authoring
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        public AreaPartModel(GameObject obj, Shader shader) : base(obj, shader)
-        { }
+        //public AreaPartModel(GameObject obj, Shader shader) : base(obj, shader)
+        //{ }
     }
 
     [Serializable]
@@ -47,8 +47,8 @@ namespace DotsLite.Structure.Authoring
         where TPart : IStructurePart
     {
 
-        protected PartModelBase(GameObject obj, Shader shader) : base(obj, shader)
-        { }
+        //protected PartModelBase(GameObject obj, Shader shader) : base(obj, shader)
+        //{ }
 
 
         public virtual void SetObject(GameObject obj) => this.objectTop = obj;

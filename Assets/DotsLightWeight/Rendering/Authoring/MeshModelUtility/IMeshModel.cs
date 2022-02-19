@@ -15,11 +15,12 @@ namespace DotsLite.Geometry
     public interface IMeshModel
     {
         int SourcePrefabKey { get; }
+        void GenerateSourcePrefabKey();
 
         GameObject Obj { get; }
         Transform TfRoot { get; }
-        Transform[] Bones { get; }
 
+        IEnumerable<Transform> QueryBones { get; }
         IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts { get; }
         
 

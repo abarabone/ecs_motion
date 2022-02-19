@@ -26,21 +26,37 @@ namespace DotsLite.Model.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public Shader DrawShader;
-
+        //public Shader DrawShader;
 
         public EnBoneType BoneMode;
 
 
-        IEnumerable<IMeshModel> _models = null;
+        //IEnumerable<IMeshModel> _models = null;
 
-        public override IEnumerable<IMeshModel> QueryModel => _models ??= new CharacterModel<UI32, PositionNormalUvBonedVertex>
-        (
-            this.gameObject,
-            this.DrawShader,
-            this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First()
-        )
-        .WrapEnumerable();
+        public override IEnumerable<IMeshModel> QueryModel
+        {
+            get
+            {
+                this.Model.boneTop ??= this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
+                
+                return this.Model.WrapEnumerable();
+            }
+        }
+        //public override IEnumerable<IMeshModel> QueryModel => _models ??= new CharacterModel<UI32, PositionNormalUvBonedVertex>
+        //{
+        //    objectTop = this.gameObject,
+        //    shader = this.DrawShader,
+        //    boneTop = this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First(),
+        //}
+        //.WrapEnumerable();
+
+        protected override void Reset()
+        {
+            base.Reset();
+            this.Model.objectTop = this.gameObject;
+        }
+
+        public CharacterModel<UI32, PositionNormalUvBonedVertex> Model;
 
 
 
@@ -56,7 +72,7 @@ namespace DotsLite.Model.Authoring
 
             var top = this;
             var posture = this.GetComponentInChildren<PostureAuthoring>();
-            var bones = this.QueryModel.First().Bones;
+            var bones = this.QueryModel.First().QueryBones.ToArray();
 
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 

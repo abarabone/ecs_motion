@@ -30,17 +30,52 @@ namespace DotsLite.Model.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public Material Material;
-        public Shader ShaderToDraw;
+        //public Material Material;
+        //public Shader ShaderToDraw;
 
-        [SerializeField]
-        public ObjectAndDistance[] LodOptionalMeshTops;
+        protected override void Reset()
+        {
+            base.Reset();
+            this.Model.objectTop = this.gameObject;
+        }
+
+        //[SerializeField]
+        //public ObjectAndDistance[] LodOptionalMeshTops;
 
 
         //[SerializeReference, SubclassSelector]
         //public IMeshModel[] Models = new[] { new LodMeshModel<UI32, PositionNormalUvVertex> { } };
 
-        public LodMeshModel<UI32, PositionNormalUvVertex>[] Models;
+        //public LodMeshModel<UI32, PositionNormalUvVertex>[] Models;
+        public MeshModel<UI32, PositionNormalUvVertex> Model;
+
+
+
+        public override IEnumerable<IMeshModel> QueryModel => this.Model.WrapEnumerable();
+        //public override IEnumerable<IMeshModel> QueryModel
+        //{
+        //    get
+        //    {
+        //        var qMain = this.gameObject.WrapEnumerable()
+        //            .Select(x => new MeshModel<UI32, PositionNormalUvVertex>
+        //            {
+        //                objectTop = x,
+        //                shader = this.ShaderToDraw,
+        //            })
+        //            .Cast<IMeshModel>()
+        //            .Where(x => this.Models == null || this.Models?.Length == 0);
+
+        //        var qLod = this.Models
+        //            //.Select(x => x.obj = x.obj ?? this.gameObject)
+        //            .Cast<IMeshModel>();
+
+        //        return qMain.Concat(qLod)
+        //            .Distinct();
+        //    }
+        //}
+
+
+
 
         /// <summary>
         /// 
@@ -54,7 +89,7 @@ namespace DotsLite.Model.Authoring
 
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject);
 
-            conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
+            //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
 
             return;
 
@@ -121,23 +156,5 @@ namespace DotsLite.Model.Authoring
 
         }
 
-
-        public override IEnumerable<IMeshModel> QueryModel
-        {
-            get
-            {
-                var qMain = this.gameObject.WrapEnumerable()
-                    .Select(x => new LodMeshModel<UI32, PositionNormalUvVertex>(x, this.ShaderToDraw))//暫定
-                    .Cast<IMeshModel>()
-                    .Where(x => this.Models == null || this.Models?.Length == 0);
-
-                var qLod = this.Models
-                    //.Select(x => x.obj = x.obj ?? this.gameObject)
-                    .Cast<IMeshModel>();
-
-                return qMain.Concat(qLod)
-                    .Distinct();
-            }
-        }
     }
 }

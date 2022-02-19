@@ -15,8 +15,9 @@ namespace DotsLite.Model.Authoring
         {
             //GUILayout.BeginHorizontal();
 
+
             //ƒ{ƒ^ƒ“‚ð•\Ž¦
-            if (GUILayout.Button("set or get model origin id"))
+            if (GUILayout.Button("generate or get model origin id"))
             {
                 var xs =
                     from model in this.targets
@@ -26,14 +27,10 @@ namespace DotsLite.Model.Authoring
 
                 foreach (var (model, prefab) in xs)
                 {
-                    Debug.Log(prefab?.SourcePrefabKey);
-                    if (prefab != null)
+                    if (prefab == null)
                     {
-                        model.SourcePrefabKey = prefab.SourcePrefabKey;
-                    }
-                    else
-                    {
-                        model.SetOridinId();
+                        model.QueryModel.ForEach(m => m.GenerateSourcePrefabKey());
+                        model.QueryModel.ForEach(m => Debug.Log($"prefab key generated : {model.name} {m.SourcePrefabKey}"));
                     }
                     EditorUtility.SetDirty(model);
                 }

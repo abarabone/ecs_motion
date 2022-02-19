@@ -32,13 +32,12 @@ namespace DotsLite.Model.Authoring
         /// </summary>
         public abstract class ModelAuthoringBase : MonoBehaviour
         {
-            [FormerlySerializedAs("OriginId")]
-            public int SourcePrefabKey;
-            public void SetOridinId() => this.SourcePrefabKey = new System.Random(this.name.GetHashCode() + this.GetHashCode()).Next();
-            private void Reset() => this.SetOridinId();
+            //[FormerlySerializedAs("OriginId")]
+            //public int SourcePrefabKey;
+            //public void SetOridinId() => this.SourcePrefabKey = new System.Random(this.name.GetHashCode() + this.GetHashCode()).Next();
+            protected virtual void Reset() => this.QueryModel.ForEach(m => m.GenerateSourcePrefabKey());
 
-            public virtual IEnumerable<IMeshModel> QueryModel =>
-                throw new NotImplementedException();
+            public virtual IEnumerable<IMeshModel> QueryModel => throw new NotImplementedException();
         }
 
 

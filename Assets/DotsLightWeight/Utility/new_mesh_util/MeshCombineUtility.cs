@@ -95,6 +95,7 @@ namespace DotsLite.Geometry
             result.partIdPerMesh = qPartIdPerMesh.ToArray();
 
             if (tfBones == null) return result;
+            if (!tfBones.Any()) return result;
 
 
             var qBoneWeights =
