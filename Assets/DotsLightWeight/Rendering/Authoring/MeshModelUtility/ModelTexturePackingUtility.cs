@@ -18,18 +18,18 @@ namespace DotsLite.Model.Authoring
     {
 
         static public void PackTextureToDictionary
-            (this IEnumerable<GameObject> objs, TextureAtlasDictionary.Data atlasDict)
+            (this IEnumerable<IMeshModel> models, TextureAtlasDictionary.Data atlasDict)
         {
-            var texobjs = objs
-                .Where(x => !atlasDict.objectToAtlas.ContainsKey(x))
+            var texmodels = models
+                .Where(x => !atlasDict.objectToAtlas.ContainsKey(x.SourcePrefabKey))
                 //.Logging(x => x.name)
                 .ToArray();
 
-            if (texobjs.Length == 0) return;
+            if (texmodels.Length == 0) return;
 
             var qMat =
-                from obj in texobjs
-                from r in obj.GetComponentsInChildren<Renderer>()
+                from model in texmodels
+                from r in model.Obj.GetComponentsInChildren<Renderer>()
                 from mat in r.sharedMaterials
                 select mat
                 ;
@@ -37,7 +37,7 @@ namespace DotsLite.Model.Authoring
             var tex = qMat.QueryUniqueTextures().ToAtlasOrPassThroughAndParameters();
 
             atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-            atlasDict.objectToAtlas.AddRange(texobjs, tex.atlas);
+            atlasDict.objectToAtlas.AddRange(texmodels.Select(x => x.SourcePrefabKey), tex.atlas);
         }
     }
 }

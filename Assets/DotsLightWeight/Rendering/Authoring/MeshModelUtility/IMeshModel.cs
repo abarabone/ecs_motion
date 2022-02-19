@@ -12,9 +12,16 @@ using Unity.Mathematics;
 namespace DotsLite.Geometry
 {
 
+    [Serializable]
+    public struct SourcePrefabKeyUnit
+    {
+        public int Value;
+    }
+
+
     public interface IMeshModel
     {
-        int SourcePrefabKey { get; }
+        SourcePrefabKeyUnit SourcePrefabKey { get; }
         void GenerateSourcePrefabKey();
 
         GameObject Obj { get; }
@@ -27,9 +34,9 @@ namespace DotsLite.Geometry
         void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
 
 
-        (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner(
+        (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary);
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary);
     }
 
 

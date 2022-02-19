@@ -20,9 +20,11 @@ namespace DotsLite.Geometry
     public static class MeshModelUtility
     {
 
-        public static IEnumerable<GameObject> Objs(this IEnumerable<IMeshModel> models) =>
-            models.Select(x => x.Obj);
+        //public static IEnumerable<GameObject> Objs(this IEnumerable<IMeshModel> models) =>
+        //    models.Select(x => x.Obj);
 
+        //public static IEnumerable<SourcePrefabKeyUnit> Keys(this IEnumerable<IMeshModel> models) =>
+        //    models.Select(x => x.SourcePrefabKey);
 
 
         public static void CreateMeshAndModelEntitiesWithDictionary
@@ -31,7 +33,7 @@ namespace DotsLite.Geometry
             var meshDict = gcs.GetMeshDictionary();
             var atlasDict = gcs.GetTextureAtlasDictionary();
 
-            models.Objs().PackTextureToDictionary(atlasDict);
+            models.PackTextureToDictionary(atlasDict);
             models.CreateModelToDictionary(meshDict, atlasDict);
             models.CreateModelEntities(gcs, meshDict, atlasDict);
         }
@@ -40,10 +42,10 @@ namespace DotsLite.Geometry
 
         public static void CreateModelToDictionary(
             this IEnumerable<IMeshModel> models,
-            Dictionary<GameObject, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
         {
             var qMmts =
-                from model in models.Do(x => Debug.Log($"srckey {x.SourcePrefabKey} at {x.Obj.name}"))
+                from model in models.Do(x => Debug.Log($"srckey {x.SourcePrefabKey.Value} at {x.Obj.name}"))
                 select model.QueryMmts
                 ;
             using var meshAll = qMmts.QueryMeshDataFromModel();
@@ -53,16 +55,16 @@ namespace DotsLite.Geometry
                     //.Do(x => Debug.Log($"create from {x.src1.Obj?.name} {x.src1.Obj?.GetHashCode()} {meshDict.ContainsKey(x.src1?.Obj)}"))
                 let meshsrc = x.src0
                 let model = x.src1
-                where !meshDict.ContainsKey(model.Obj)
+                where !meshDict.ContainsKey(model.SourcePrefabKey)
                 select model.BuildMeshCombiner(meshsrc, meshDict, atlasDict);
             var ofs = qOfs.ToArray();
 
-            var qMObj = ofs.Select(x => x.obj);
+            var qKey = ofs.Select(x => x.key);
             var qMesh = ofs.Select(x => x.f.ToTask())
                 .WhenAll().Result
                 .Select(x => x.CreateMesh());
             //var qMesh = ofs.Select(x => x.f().CreateMesh());
-            meshDict.AddRange(qMObj, qMesh);
+            meshDict.AddRange(qKey, qMesh);
         }
 
 
@@ -71,19 +73,19 @@ namespace DotsLite.Geometry
             (
                 this IEnumerable<IMeshModel> models,
                 GameObjectConversionSystem gcs,
-                Dictionary<GameObject, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict
+                Dictionary<SourcePrefabKeyUnit, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict
             )
         {
             foreach (var model in models)
             {
                 //Debug.Log($"{model.Obj.name} model ent");
-                if (gcs.IsExistsInModelEntityDictionary(model.Obj)) continue;
+                if (gcs.IsExistsInModelEntityDictionary(model.SourcePrefabKey)) continue;
 
-                var obj = model.Obj;
+                var key = model.SourcePrefabKey;
                 //Debug.Log($"create");
 
-                var mesh = meshDict[obj];
-                var atlas = atlasDict.objectToAtlas[obj];
+                var mesh = meshDict[key];
+                var atlas = atlasDict.objectToAtlas[key];
                 model.CreateModelEntity(gcs, mesh, atlas);
             }
         }

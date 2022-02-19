@@ -40,8 +40,6 @@ namespace DotsLite.Structure.Authoring
     //bone
     // bone id
 
-
-
     public class StructureAreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
     {
 
@@ -53,6 +51,9 @@ namespace DotsLite.Structure.Authoring
 
         public override IEnumerable<IMeshModel> QueryModel =>
             new IMeshModel[] { this.NearModel };
+
+        [SerializeField]
+        public SourcePrefabKeyUnit key;
 
 
 

@@ -157,7 +157,7 @@ namespace DotsLite.Structure.Authoring
             initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
             gcs.InitPostureEntity(posture);//, far.objectTop.transform);
 
-            initMeshColliderEntity(gcs, near);
+            initMeshColliderEntity(gcs, st.NearModel);
 
             setBoneForFarEntity_(gcs, posture, far, top.transform);
             setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
@@ -389,11 +389,11 @@ namespace DotsLite.Structure.Authoring
 
 
 
-        static void initMeshColliderEntity(GameObjectConversionSystem gcs, GameObject near)
+        static void initMeshColliderEntity(GameObjectConversionSystem gcs, IMeshModel near)
         {
             var em = gcs.DstEntityManager;
 
-            var mesh = gcs.GetFromMeshDictionary(near);
+            var mesh = gcs.GetMeshFromDictionary(near.SourcePrefabKey);
             using var data = Mesh.AcquireReadOnlyMeshData(mesh);
             using var vtxs = new NativeArray<Vector3>(mesh.vertexCount, Allocator.Temp);
             using var idxs = new NativeArray<int>((int)mesh.GetIndexCount(0) * 3, Allocator.Temp);
@@ -402,7 +402,7 @@ namespace DotsLite.Structure.Authoring
             var collider = Unity.Physics.MeshCollider.Create
                 (vtxs.Reinterpret<float3>(), idxs.Reinterpret<int3>(sizeof(int)));
 
-            var ent = gcs.GetPrimaryEntity(near);
+            var ent = gcs.GetPrimaryEntity(near.Obj);
             em.AddComponentData(ent, new PhysicsCollider
             {
                 Value = collider,

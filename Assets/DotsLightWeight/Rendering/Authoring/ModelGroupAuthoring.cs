@@ -65,7 +65,7 @@ namespace DotsLite.Model.Authoring
             var prefabModels = this.ModelPrefabs.Distinct();
 
             prefabModels
-                .SelectMany(model => model.QueryModel.Objs())
+                .SelectMany(model => model.QueryModel)
                 .PackTextureToDictionary(atlasDict);
 
             prefabModels

@@ -32,10 +32,10 @@ namespace DotsLite.Model.Authoring
         //    this.SourcePrefabKey = obj.GetComponent<ModelGroupAuthoring.ModelAuthoringBase>().SourcePrefabKey;
         //}
         public void GenerateSourcePrefabKey() =>
-            this.sourcePrefabKey = new System.Random(this.GetHashCode()).Next();
+            this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
 
         [SerializeField]
-        protected int sourcePrefabKey;
+        protected SourcePrefabKeyUnit sourcePrefabKey;
 
         [SerializeField]
         public GameObject objectTop;
@@ -47,7 +47,7 @@ namespace DotsLite.Model.Authoring
         public virtual GameObject Obj => this.objectTop;
         public virtual Transform TfRoot => this.objectTop.transform;
         public virtual IEnumerable<Transform> QueryBones => null;
-        public virtual int SourcePrefabKey => this.sourcePrefabKey;
+        public virtual SourcePrefabKeyUnit SourcePrefabKey => this.sourcePrefabKey;
 
         public virtual IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
             this.objectTop.GetComponentsInChildren<Renderer>()
@@ -67,14 +67,14 @@ namespace DotsLite.Model.Authoring
             gcs.CreateDrawModelEntityComponents(this.Obj, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
         }
 
-        public virtual (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner(
+        public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<GameObject, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
-            var atlas = atlasDictionary.objectToAtlas[this.objectTop].GetHashCode();
+            var atlas = atlasDictionary.objectToAtlas[this.sourcePrefabKey].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             return (
-                this.objectTop,
+                this.sourcePrefabKey,
                 meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, part => texdict[atlas, part], this.QueryBones?.ToArray())
             );
         }

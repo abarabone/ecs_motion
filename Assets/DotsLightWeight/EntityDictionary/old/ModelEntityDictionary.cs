@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace DotsLite.Model.Authoring
 {
+    using DotsLite.Geometry;
 
     /// <summary>
     /// モデルエンティティとゲームオブジェクトを紐づける仕組み。
@@ -19,14 +20,14 @@ namespace DotsLite.Model.Authoring
 
         public class Data : IComponentData
         {
-            public Dictionary<GameObject, Entity> ModelDictionary;
+            public Dictionary<SourcePrefabKeyUnit, Entity> ModelDictionary;
         }
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            var dict = new Dictionary<GameObject, Entity>();
+            var dict = new Dictionary<SourcePrefabKeyUnit, Entity>();
             this.EntityManager.CreateEntity( typeof( Data ) );
             this.SetSingleton( new Data { ModelDictionary = dict } );
         }
@@ -48,15 +49,15 @@ namespace DotsLite.Model.Authoring
     static public class ModelEntityDictionaryExtension
     {
 
-        static public void AddToModelEntityDictionary(this GameObjectConversionSystem gcs, GameObject topGameObject, Entity entity) =>
+        static public void AddToModelEntityDictionary(this GameObjectConversionSystem gcs, SourcePrefabKeyUnit key, Entity entity) =>
             gcs.GetSingleton<ModelEntityDictionary.Data>()
                 .ModelDictionary
-                .Add(topGameObject, entity);
+                .Add(key, entity);
 
-        static public Entity GetFromModelEntityDictionary(this GameObjectConversionSystem gcs, GameObject topGameObject)
+        static public Entity GetFromModelEntityDictionary(this GameObjectConversionSystem gcs, SourcePrefabKeyUnit key)
         {
             return gcs.GetSingleton<ModelEntityDictionary.Data>()
-                .ModelDictionary[topGameObject];
+                .ModelDictionary[key];
             //gcs.GetSingleton<ModelEntityDictionary.Data>()
             //    .ModelDictionary
             //    .TryGetValue(topGameObject, out var entity);
@@ -64,10 +65,10 @@ namespace DotsLite.Model.Authoring
             //return entity;
         }
 
-        static public bool IsExistsInModelEntityDictionary(this GameObjectConversionSystem gcs, GameObject topGameObject) =>
+        static public bool IsExistsInModelEntityDictionary(this GameObjectConversionSystem gcs, SourcePrefabKeyUnit key) =>
             gcs.GetSingleton<ModelEntityDictionary.Data>()
                 .ModelDictionary
-                .ContainsKey(topGameObject);
+                .ContainsKey(key);
 
     }
 
