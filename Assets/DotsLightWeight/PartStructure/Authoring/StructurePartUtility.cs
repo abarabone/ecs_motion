@@ -104,15 +104,17 @@ namespace DotsLite.Structure.Authoring
         }
 
 
-        static public void DispatchPartId(this IEnumerable<IStructurePart> parts)
+        static public void DispatchPartId<T>(this IEnumerable<T> parts)
+            where T : IStructurePart
         {
             parts.ForEach((x, i) => x.partId = i);
         }
 
-        static public void BuildPartModelEntities(this IEnumerable<IStructurePart> parts, GameObjectConversionSystem gcs)
-        {
-            parts.ForEach(x => x.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs));
-        }
+        //static public void BuildPartModelEntities<T>(this IEnumerable<T> parts, GameObjectConversionSystem gcs)
+        //    where T : IStructurePart
+        //{
+        //    parts.ForEach(x => x.QueryModel.CreateModelEntitiesWithDictionary(gcs));
+        //}
 
         //static public void CombineMeshesWithDictionary<T>(IEnumerable<T> parts, MultiMeshesToDrawModelEntityDictionary dict)
         //    where T : IStructurePart

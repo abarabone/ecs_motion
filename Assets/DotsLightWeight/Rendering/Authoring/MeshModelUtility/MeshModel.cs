@@ -55,7 +55,7 @@ namespace DotsLite.Model.Authoring
                 .QueryMeshMatsTransform_IfHaving();
 
 
-        public virtual void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        public virtual Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.shader);
             mat.enableInstancing = true;
@@ -65,7 +65,7 @@ namespace DotsLite.Model.Authoring
             const int boneLength = 1;
 
             var key = this.sourcePrefabKey;
-            gcs.CreateDrawModelEntityComponents(key, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
+            return gcs.CreateDrawModelEntityComponents(key, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
         }
 
         public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(

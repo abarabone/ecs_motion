@@ -95,8 +95,6 @@ namespace DotsLite.Draw.Authoring
                 };
                 if (useSort) types.Add(typeof(DrawModel.SortSettingData));
                 em.AddComponents(drawModelEntity, new ComponentTypes(types.ToArray()));
-
-                gcs.AddToModelEntityDictionary(key, drawModelEntity);
             }
 
 

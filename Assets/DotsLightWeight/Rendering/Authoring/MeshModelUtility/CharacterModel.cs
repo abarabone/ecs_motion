@@ -41,7 +41,7 @@ namespace DotsLite.Model.Authoring
 
 
 
-        public override void CreateModelEntity
+        public override Entity CreateModelEntity
             (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.shader);
@@ -52,7 +52,7 @@ namespace DotsLite.Model.Authoring
             var boneLength = this.QueryBones.Count();
 
             var key = this.sourcePrefabKey;
-            gcs.CreateDrawModelEntityComponents(key, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
+            return gcs.CreateDrawModelEntityComponents(key, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
         }
 
     }

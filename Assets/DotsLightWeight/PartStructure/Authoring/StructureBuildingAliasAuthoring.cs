@@ -5,10 +5,16 @@ using UnityEngine;
 
 namespace DotsLite.Structure.Authoring
 {
-    public class StructureBuildingAliasAuthoring : MonoBehaviour
+    using DotsLite.Model.Authoring;
+    using DotsLite.Geometry;
+
+    public class StructureBuildingAliasAuthoring : ModelGroupAuthoring.ModelAuthoringBase
     {
 
         public StructureBuildingAuthoring StructureModelPrefab;
+
+
+        public override IEnumerable<IMeshModel> QueryModel => this.StructureModelPrefab.QueryModel;
 
     }
 }

@@ -85,7 +85,7 @@ namespace DotsLite.Model.Authoring
             //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
-            this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
+            this.QueryModel.BuildModelToDictionary(conversionSystem);
 
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject);
 
@@ -122,7 +122,7 @@ namespace DotsLite.Model.Authoring
                     new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = Entity.Null,//gcs.GetFromModelEntityDictionary(main),//gcs.GetDrawModelEntity(main, lodOpts),
+                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(this.QueryModel.First().SourcePrefabKey),
                     }
                 );
                 em.SetComponentData(mainEntity,

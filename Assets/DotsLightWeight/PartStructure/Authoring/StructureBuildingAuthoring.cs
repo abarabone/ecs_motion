@@ -78,12 +78,12 @@ namespace DotsLite.Structure.Authoring
                 case PartColliderMode.separate:
                     conversionSystem.CreateStructureEntities(this);
                     break;
-                case PartColliderMode.compound:
-                    conversionSystem.CreateStructureEntities_Compound(this);
-                    break;
-                case PartColliderMode.mesh:
-                    conversionSystem.CreateStructureEntities_MeshCollider(this);
-                    break;
+                ////case PartColliderMode.compound:
+                ////    conversionSystem.CreateStructureEntities_Compound(this);
+                ////    break;
+                ////case PartColliderMode.mesh:
+                ////    conversionSystem.CreateStructureEntities_MeshCollider(this);
+                ////    break;
             }
 
             //conversionSystem.AddHitTargetsAllRigidBody(this, )
@@ -106,10 +106,12 @@ namespace DotsLite.Structure.Authoring
             var posture = st.GetComponentInChildren<PostureAuthoring>();
             var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
 
-            parts.Cast<IStructurePart>().DispatchPartId();
-            parts.Cast<IStructurePart>().BuildPartModelEntities(gcs);
+            parts.DispatchPartId();
 
-            st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
+            st.WrapEnumerable<ModelGroupAuthoring.ModelAuthoringBase>()
+                .Concat(parts)
+                .BuildModelToDictionary(gcs);
+
 
             initBinderEntity_(gcs, top, posture);
             initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
@@ -143,55 +145,55 @@ namespace DotsLite.Structure.Authoring
         }
 
 
-        static public void CreateStructureEntities_MeshCollider(
-            this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
-        {
-            var top = st;
-            var far = st.FarModel.Obj;
-            var near = st.NearModel.Obj;
-            var env = st.Envelope;
-            var posture = st.GetComponentInChildren<PostureAuthoring>();
-            var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
+        ////static public void CreateStructureEntities_MeshCollider(
+        ////    this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
+        ////{
+        ////    var top = st;
+        ////    var far = st.FarModel.Obj;
+        ////    var near = st.NearModel.Obj;
+        ////    var env = st.Envelope;
+        ////    var posture = st.GetComponentInChildren<PostureAuthoring>();
+        ////    var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
 
-            st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
+        ////    st.QueryModel.BuildModelToDictionary(gcs);
 
-            initBinderEntity_(gcs, top, posture);
-            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
-            gcs.InitPostureEntity(posture);//, far.objectTop.transform);
+        ////    initBinderEntity_(gcs, top, posture);
+        ////    initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
+        ////    gcs.InitPostureEntity(posture);//, far.objectTop.transform);
 
-            initMeshColliderEntity(gcs, st.NearModel);
+        ////    initMeshColliderEntity(gcs, st.NearModel);
 
-            setBoneForFarEntity_(gcs, posture, far, top.transform);
-            setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
+        ////    setBoneForFarEntity_(gcs, posture, far, top.transform);
+        ////    setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
 
-            trimEntities_(gcs, st);
-            orderTrimEntities_(gcs, st);
-        }
+        ////    trimEntities_(gcs, st);
+        ////    orderTrimEntities_(gcs, st);
+        ////}
 
-        static public void CreateStructureEntities_Compound
-            (this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
-        {
-            var top = st;
-            var far = st.FarModel.Obj;
-            var near = st.NearModel.Obj;
-            var env = st.Envelope;
-            var posture = st.GetComponentInChildren<PostureAuthoring>();
-            var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
+        ////static public void CreateStructureEntities_Compound
+        ////    (this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
+        ////{
+        ////    var top = st;
+        ////    var far = st.FarModel.Obj;
+        ////    var near = st.NearModel.Obj;
+        ////    var env = st.Envelope;
+        ////    var posture = st.GetComponentInChildren<PostureAuthoring>();
+        ////    var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
 
-            st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
+        ////    st.QueryModel.BuildModelToDictionary(gcs);
 
-            initBinderEntity_(gcs, top, posture);
-            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
-            gcs.InitPostureEntity(posture);//, far.objectTop.transform);
+        ////    initBinderEntity_(gcs, top, posture);
+        ////    initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
+        ////    gcs.InitPostureEntity(posture);//, far.objectTop.transform);
 
-            initCompoundColliderEntity(gcs, near);
+        ////    initCompoundColliderEntity(gcs, near);
 
-            setBoneForFarEntity_(gcs, posture, far, top.transform);
-            setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
+        ////    setBoneForFarEntity_(gcs, posture, far, top.transform);
+        ////    setBoneForNearSingleEntity_(gcs, posture, near, near.transform);
 
-            trimEntities_(gcs, st);
-            orderTrimEntities_(gcs, st);
-        }
+        ////    trimEntities_(gcs, st);
+        ////    orderTrimEntities_(gcs, st);
+        ////}
 
 
 

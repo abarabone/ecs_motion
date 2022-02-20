@@ -31,7 +31,7 @@ namespace DotsLite.Geometry
         IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts { get; }
         
 
-        void CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
+        Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
 
 
         (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(

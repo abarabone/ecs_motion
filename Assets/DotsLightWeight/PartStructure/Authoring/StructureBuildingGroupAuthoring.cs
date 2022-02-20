@@ -72,6 +72,10 @@ namespace DotsLite.Structure.Authoring
             if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
+            this.structures
+                .BuildModelToDictionary(conversionSystem);
+
+
             var top = this.gameObject;
             var main = top.Children().First();
 

@@ -74,7 +74,7 @@ namespace DotsLite.Structure.Authoring
             //if (!dstManager.Exists(entity)) return;//
 
 
-            this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
+            this.QueryModel.BuildModelToDictionary(conversionSystem);
             var modelEntity = conversionSystem.GetFromModelEntityDictionary(this.PartModelOfMasterPrefab.SourcePrefabKey);
 
 

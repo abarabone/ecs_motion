@@ -48,7 +48,7 @@ namespace DotsLite.Model.Authoring
 
         public void DeclareReferencedPrefabs( List<GameObject> referencedPrefabs )
         {
-            //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
+            if (!this.isActiveAndEnabled) return;
 
             referencedPrefabs.AddRange(this.ModelPrefabs.Select(x => x.gameObject));
         }
@@ -56,23 +56,12 @@ namespace DotsLite.Model.Authoring
 
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
-            //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
+            if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
-            var meshDict = conversionSystem.GetMeshDictionary();
-            var atlasDict = conversionSystem.GetTextureAtlasDictionary();
-
-            var prefabModels = this.ModelPrefabs.Distinct();
-
-            prefabModels
-                .SelectMany(model => model.QueryModel)
-                .PackTextureToDictionary(atlasDict);
-
-            prefabModels
-                .SelectMany(model => model.QueryModel)
-                .CreateModelToDictionary(meshDict, atlasDict);
-
-
+            this.ModelPrefabs
+                .Distinct()
+                .BuildModelToDictionary(conversionSystem);
 
 
             // モデルグループ自体にはエンティティは不要

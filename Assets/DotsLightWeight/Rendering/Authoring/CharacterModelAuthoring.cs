@@ -74,7 +74,7 @@ namespace DotsLite.Model.Authoring
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             var bones = this.QueryModel.First().QueryBones.ToArray();
 
-            this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
+            this.QueryModel.BuildModelToDictionary(conversionSystem);
 
             initBinderEntity_(conversionSystem, top, posture);
 
