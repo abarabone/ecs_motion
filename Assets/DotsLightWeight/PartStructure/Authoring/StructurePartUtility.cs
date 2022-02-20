@@ -29,6 +29,7 @@ namespace DotsLite.Structure.Authoring
     public static class StructurePartUtility
     {
 
+
         // 同じプレハブをまとめることはできないだろうか？
         public static Entity CreateDebrisPrefab(this GameObjectConversionSystem gcs, GameObject part, Entity modelEntity)
         {
@@ -103,11 +104,14 @@ namespace DotsLite.Structure.Authoring
         }
 
 
-        static public void DispatchPartId(IEnumerable<IStructurePart> parts)
+        static public void DispatchPartId(this IEnumerable<IStructurePart> parts)
         {
-
             parts.ForEach((x, i) => x.partId = i);
+        }
 
+        static public void BuildPartModelEntities(this IEnumerable<IStructurePart> parts, GameObjectConversionSystem gcs)
+        {
+            parts.ForEach(x => x.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs));
         }
 
         //static public void CombineMeshesWithDictionary<T>(IEnumerable<T> parts, MultiMeshesToDrawModelEntityDictionary dict)

@@ -106,7 +106,8 @@ namespace DotsLite.Structure.Authoring
             var posture = st.GetComponentInChildren<PostureAuthoring>();
             var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
 
-            StructurePartUtility.DispatchPartId(parts.Cast<IStructurePart>());
+            parts.Cast<IStructurePart>().DispatchPartId();
+            parts.Cast<IStructurePart>().BuildPartModelEntities(gcs);
 
             st.QueryModel.CreateMeshAndModelEntitiesWithDictionary(gcs);
 
