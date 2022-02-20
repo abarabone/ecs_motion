@@ -66,6 +66,7 @@ namespace DotsLite.Structure.Authoring
 
         /// <summary>
         /// near と far のモデルエンティティを生成、
+        /// いずれボーン対応にしたい
         /// </summary>
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
@@ -95,8 +96,8 @@ namespace DotsLite.Structure.Authoring
     static public class StructureConvertUtility
     {
 
-        static public void CreateStructureEntities
-            (this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
+        static public void CreateStructureEntities(
+            this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
         {
             var top = st;
             var far = st.FarModel.Obj;
@@ -120,8 +121,8 @@ namespace DotsLite.Structure.Authoring
             //if (env.GetComponent<DynamicToStaticRigidBody>().As() != null) addExcludeTransform_(gcs, far, near);
         }
 
-        static public void CreateStructureEntitiesInArea
-            (this GameObjectConversionSystem gcs, StructureBuildingAuthoring structureModel)
+        static public void CreateStructureEntitiesInArea(
+            this GameObjectConversionSystem gcs, StructureBuildingAuthoring structureModel)
         {
             //var top = structureModel.gameObject;
             //var far = structureModel.FarMeshObject.objectTop;
@@ -141,8 +142,8 @@ namespace DotsLite.Structure.Authoring
         }
 
 
-        static public void CreateStructureEntities_MeshCollider
-            (this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
+        static public void CreateStructureEntities_MeshCollider(
+            this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
         {
             var top = st;
             var far = st.FarModel.Obj;
@@ -339,7 +340,7 @@ namespace DotsLite.Structure.Authoring
 
             var draw = mainEntity;
             var lods = new IMeshModelLod[] { near, far };
-            gcs.AddLod2ComponentToDrawInstanceEntity(draw, top.gameObject, lods);
+            gcs.AddLod2ComponentToDrawInstanceEntity(draw, lods);
 
 
             em.SetName_(mainEntity, $"{top.name} main");

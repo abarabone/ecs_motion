@@ -30,7 +30,7 @@ namespace DotsLite.Structure.Authoring
     {
 
         // 同じプレハブをまとめることはできないだろうか？
-        public static Entity CreateDebrisPrefab(GameObjectConversionSystem gcs, GameObject part, GameObject master = null)
+        public static Entity CreateDebrisPrefab(this GameObjectConversionSystem gcs, GameObject part, Entity modelEntity)
         {
             var em_ = gcs.DstEntityManager;
 
@@ -70,11 +70,10 @@ namespace DotsLite.Structure.Authoring
             //        Value = new float3(1, 1, 1)
             //    }
             //);
-            Debug.Log($"part : <{master}> <{part}>");
             em_.SetComponentData(prefabEnt,
                 new DrawInstance.ModelLinkData
                 {
-                    DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(master ?? part),
+                    DrawModelEntityCurrent = modelEntity,
                 }
             );
             em_.SetComponentData(prefabEnt,

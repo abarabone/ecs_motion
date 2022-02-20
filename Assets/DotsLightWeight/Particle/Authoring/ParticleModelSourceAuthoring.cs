@@ -116,7 +116,8 @@ namespace DotsLite.Particle.Aurthoring
                 const int boneLength = 1;
                 const DrawModel.SortOrder order = DrawModel.SortOrder.acs;
 
-                gcs.InitDrawModelEntityComponents(main, entity, mesh, mat, bonetype, boneLength, order);
+                var key = new SourcePrefabKeyUnit { Value = main.GetHashCode() }; 
+                gcs.InitDrawModelEntityComponents(key, entity, mesh, mat, bonetype, boneLength, order);
             }
 
             static void addParamComponents_(

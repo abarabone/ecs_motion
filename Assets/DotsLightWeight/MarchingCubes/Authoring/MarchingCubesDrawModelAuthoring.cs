@@ -19,6 +19,7 @@ namespace DotsLite.MarchingCubes.Authoring
     using DotsLite.MarchingCubes.Data;
     using DotsLite.MarchingCubes.Data.Resource;
     using DotsLite.EntityTrimmer.Authoring;
+    using DotsLite.Geometry;
 
     public class MarchingCubesDrawModelAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -63,8 +64,9 @@ namespace DotsLite.MarchingCubes.Authoring
                     var sort = DrawModel.SortOrder.desc;
                     var boneType = BoneType.T;
                     var dataLength = sizeof(NearGridIndex) / 16;
+                    var key = new SourcePrefabKeyUnit { Value = this.GetHashCode() };
                     gcs.InitDrawModelEntityComponents(
-                        this.gameObject, ent, mesh, mat, boneType, boneLength, sort, dataLength);
+                        key, ent, mesh, mat, boneType, boneLength, sort, dataLength);
                 }
 
                 void setComputeShaderParametor_(ComputeShader cs)

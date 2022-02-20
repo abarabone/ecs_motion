@@ -31,7 +31,7 @@ namespace DotsLite.Draw.Authoring
     {
 
         static public Entity CreateDrawModelEntityComponents(
-            this GameObjectConversionSystem gcs, IMeshModel meshModel,
+            this GameObjectConversionSystem gcs, SourcePrefabKeyUnit key,
             Mesh mesh, Material mat,
             BoneType BoneType, int boneLength,
             DrawModel.SortOrder order,// = DrawModel.SortOrder.none)
@@ -39,13 +39,13 @@ namespace DotsLite.Draw.Authoring
         {
             var em = gcs.DstEntityManager;
             var ent = em.CreateEntity();
-            return InitDrawModelEntityComponents(
-                gcs, meshModel, ent, mesh, mat, BoneType, boneLength, order, instanceDataVectorLength);
+            return gcs.InitDrawModelEntityComponents(
+                key, ent, mesh, mat, BoneType, boneLength, order, instanceDataVectorLength);
         }
 
 
         static public Entity InitDrawModelEntityComponents(
-            this GameObjectConversionSystem gcs, IMeshModel meshModel, Entity drawModelEntity,
+            this GameObjectConversionSystem gcs, SourcePrefabKeyUnit key, Entity drawModelEntity,
             Mesh mesh, Material mat,
             BoneType BoneType, int boneLength,
             DrawModel.SortOrder order,// = DrawModel.SortOrder.none
@@ -56,10 +56,11 @@ namespace DotsLite.Draw.Authoring
 
             setShaderProps_(em, mat, boneLength * (int)BoneType + instanceDataVectorLength);
 
-            addComponents_(gcs, meshModel, drawModelEntity, order != DrawModel.SortOrder.none);
+            addComponents_(gcs, key, drawModelEntity, order != DrawModel.SortOrder.none);
             initInfomationData_(em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength, order);
             initResourceData_(em, drawModelEntity, mat, mesh);
 
+            em.SetName_(drawModelEntity, $"{mesh.name} model");
             return drawModelEntity;
 
 
@@ -77,7 +78,7 @@ namespace DotsLite.Draw.Authoring
             }
 
 
-            static void addComponents_(GameObjectConversionSystem gcs, IMeshModel meshModel, Entity drawModelEntity, bool useSort)
+            static void addComponents_(GameObjectConversionSystem gcs, SourcePrefabKeyUnit key, Entity drawModelEntity, bool useSort)
             {
                 var em = gcs.DstEntityManager;
 
@@ -95,10 +96,7 @@ namespace DotsLite.Draw.Authoring
                 if (useSort) types.Add(typeof(DrawModel.SortSettingData));
                 em.AddComponents(drawModelEntity, new ComponentTypes(types.ToArray()));
 
-                gcs.AddToModelEntityDictionary(meshModel.SourcePrefabKey, drawModelEntity);
-
-
-                em.SetName_(drawModelEntity, $"{meshModel.Obj.name} model" );
+                gcs.AddToModelEntityDictionary(key, drawModelEntity);
             }
 
 

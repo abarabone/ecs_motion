@@ -53,8 +53,7 @@ namespace DotsLite.Structure.Authoring
         /// パーツインスタンスエンティティを生成する。モデルは同じパーツで１つ。
         /// 破壊されたときの落下プレハブもインスタンス単位で作成しているが、破壊時に位置を仕込んでいるため、１つでよいのでは？
         /// </summary>
-        public void Convert
-            (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
@@ -76,7 +75,7 @@ namespace DotsLite.Structure.Authoring
 
 
             this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
-
+            var modelEntity = conversionSystem.GetFromModelEntityDictionary(this.PartModelOfMasterPrefab.SourcePrefabKey);
 
 
             var posture = this.FindParent<StructureBuildingAuthoring>()
@@ -86,7 +85,7 @@ namespace DotsLite.Structure.Authoring
 
             //createMeshAndSetToDictionary_(conversionSystem, this.MasterPrefab, this.GetPartsMeshesAndFuncs);
             //createModelEntity_IfNotExists_(conversionSystem, this.MasterPrefab, this.MaterialToDraw);
-            var prefab = StructurePartUtility.CreateDebrisPrefab(conversionSystem, this.gameObject, this.PartModelOfMasterPrefab.Obj);
+            var prefab = StructurePartUtility.CreateDebrisPrefab(conversionSystem, this.gameObject, modelEntity);
             var part = conversionSystem.GetPrimaryEntity(this.gameObject);
 
             setPrefabToPart_(conversionSystem, part, prefab);
@@ -95,8 +94,8 @@ namespace DotsLite.Structure.Authoring
 
 
 
-            static void initPartData_
-                (GameObjectConversionSystem gcs, PostureAuthoring main, StructureBuildingPartAuthoring part, int partId)
+            static void initPartData_(
+                GameObjectConversionSystem gcs, PostureAuthoring main, StructureBuildingPartAuthoring part, int partId)
             {
                 var em = gcs.DstEntityManager;
 

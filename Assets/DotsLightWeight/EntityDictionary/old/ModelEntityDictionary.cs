@@ -69,7 +69,6 @@ namespace DotsLite.Model.Authoring
             gcs.GetSingleton<ModelEntityDictionary.Data>()
                 .ModelDictionary
                 .ContainsKey(key);
-
     }
 
 }

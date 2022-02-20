@@ -37,35 +37,35 @@ namespace DotsLite.Particle.Aurthoring.disable
         /// </summary>
         public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
         {
-            
-            createModelEntity_( conversionSystem, this.gameObject, this.Material );
-            
-            initPsylliumEntityComponents_( conversionSystem, this.gameObject );
-            
+
+            var modelEntity = createModelEntity_(conversionSystem, this.Material);
+
+            initPsylliumEntityComponents_(conversionSystem, entity, modelEntity);
+
             return;
 
 
-            void createModelEntity_
-                ( GameObjectConversionSystem gcs, GameObject main, Material srcMaterial )
+            Entity createModelEntity_(GameObjectConversionSystem gcs, Material srcMaterial)
             {
-                var mat = new Material( srcMaterial );
+                var mat = new Material(srcMaterial);
                 var mesh = createMesh();
 
                 const BoneType BoneType = BoneType.RT;
                 const int boneLength = 1;
                 const DrawModel.SortOrder order = DrawModel.SortOrder.acs;
 
-                var modelEntity_ = gcs.CreateDrawModelEntityComponents( main, mesh, mat, BoneType, boneLength, order );
+                var key = new SourcePrefabKeyUnit { Value = this.GetHashCode() };
+                return gcs.CreateDrawModelEntityComponents(key, mesh, mat, BoneType, boneLength, order);
             }
 
-            void initPsylliumEntityComponents_( GameObjectConversionSystem gcs, GameObject main )
+            void initPsylliumEntityComponents_(GameObjectConversionSystem gcs, Entity main, Entity model)
             {
                 dstManager.SetName_( entity, $"{this.name}" );
 
                 var em = gcs.DstEntityManager;
 
 
-                var mainEntity = gcs.GetPrimaryEntity( main );
+                var mainEntity = model;
 
                 var archetype = em.CreateArchetype(
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
@@ -83,7 +83,7 @@ namespace DotsLite.Particle.Aurthoring.disable
                     new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary( main ),
+                        DrawModelEntityCurrent = model,
                     }
                 );
                 em.SetComponentData( mainEntity,

@@ -102,10 +102,12 @@ namespace DotsLite.Structure.Authoring
                             },
                         },
                     });
+
+                    var modelEntity = gcs.GetFromModelEntityDictionary(pt.QueryModel.First().SourcePrefabKey);
                     infobuf.Add(new PartBone.PartInfoData
                     {
                         PartId = pt.PartId,
-                        //DebrisPrefab = StructurePartUtility.CreateDebrisPrefab(gcs, pt.gameObject),
+                        DebrisPrefab = gcs.CreateDebrisPrefab(pt.gameObject, modelEntity),
                     });
                 }
 
