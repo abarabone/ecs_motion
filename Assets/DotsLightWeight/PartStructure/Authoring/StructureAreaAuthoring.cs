@@ -76,14 +76,10 @@ namespace DotsLite.Structure.Authoring
             //var bones = near.GetComponentsInChildren<StructureBone>();
 
             parts.DispatchPartId();
-            ////parts.BuildPartModelEntities(gcs);
 
-            ////this.QueryModel.CreateModelEntitiesWithDictionary(gcs);
-
-
-            ////this.WrapEnumerable<ModelGroupAuthoring.ModelAuthoringBase>()
-            ////    .Concat(parts)
-            ////    .BuildModelToDictionary(gcs);
+            this.WrapEnumerable<ModelGroupAuthoring.ModelAuthoringBase>()
+                .Concat(parts)
+                .BuildModelToDictionary(gcs);
 
             initBinderEntity_(gcs, top, posture);
             gcs.InitPostureEntity(posture);//, far.objectTop.transform);
