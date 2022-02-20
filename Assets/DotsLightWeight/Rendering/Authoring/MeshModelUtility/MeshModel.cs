@@ -64,15 +64,14 @@ namespace DotsLite.Model.Authoring
             const BoneType BoneType = BoneType.RT;
             const int boneLength = 1;
 
-            var key = this.sourcePrefabKey;
-            return gcs.CreateDrawModelEntityComponents(key, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
+            return gcs.CreateDrawModelEntityComponents(mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
         }
 
         public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
-            var atlas = atlasDictionary.objectToAtlas[this.sourcePrefabKey].GetHashCode();
+            var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             return (
                 this.sourcePrefabKey,

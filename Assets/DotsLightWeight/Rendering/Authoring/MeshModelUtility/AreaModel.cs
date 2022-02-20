@@ -46,9 +46,8 @@ namespace DotsLite.Structure.Authoring
             const int boneLength = 1;
             const int vectorOffsetPerInstance = 4;
 
-            var key = this.sourcePrefabKey;
             return gcs.CreateDrawModelEntityComponents(
-                key, mesh, mat, boneType, boneLength, DrawModel.SortOrder.desc, vectorOffsetPerInstance);
+                mesh, mat, boneType, boneLength, DrawModel.SortOrder.desc, vectorOffsetPerInstance);
         }
 
 

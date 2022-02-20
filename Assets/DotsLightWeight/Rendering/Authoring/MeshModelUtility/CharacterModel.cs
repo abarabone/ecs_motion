@@ -51,8 +51,8 @@ namespace DotsLite.Model.Authoring
             const BoneType BoneType = BoneType.RT;
             var boneLength = this.QueryBones.Count();
 
-            var key = this.sourcePrefabKey;
-            return gcs.CreateDrawModelEntityComponents(key, mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
+            return gcs.CreateDrawModelEntityComponents(
+                mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
         }
 
     }

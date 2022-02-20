@@ -54,8 +54,7 @@ namespace DotsLite.Particle.Aurthoring.disable
                 const int boneLength = 1;
                 const DrawModel.SortOrder order = DrawModel.SortOrder.acs;
 
-                var key = new SourcePrefabKeyUnit { Value = this.GetHashCode() };
-                return gcs.CreateDrawModelEntityComponents(key, mesh, mat, BoneType, boneLength, order);
+                return gcs.CreateDrawModelEntityComponents(mesh, mat, BoneType, boneLength, order);
             }
 
             void initPsylliumEntityComponents_(GameObjectConversionSystem gcs, Entity main, Entity model)

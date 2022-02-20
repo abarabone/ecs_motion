@@ -94,7 +94,7 @@ namespace DotsLite.Utilities
                 dict.Add(key, value);
             }
         }
-        public static void AddRange<Tkey, Tvalue>
+        public static void AddEach<Tkey, Tvalue>
             (this Dictionary<Tkey, Tvalue> dict, IEnumerable<Tkey> keys, Tvalue value)
         {
             foreach (var key in keys)

@@ -99,7 +99,7 @@ namespace DotsLite.Geometry
                 var key = model.SourcePrefabKey;
 
                 var mesh = meshDict[key];
-                var atlas = atlasDict.objectToAtlas[key];
+                var atlas = atlasDict.srckeyToAtlas[key];
                 var modelEntity = model.CreateModelEntity(gcs, mesh, atlas);
 
                 gcs.AddToModelEntityDictionary(key, modelEntity);

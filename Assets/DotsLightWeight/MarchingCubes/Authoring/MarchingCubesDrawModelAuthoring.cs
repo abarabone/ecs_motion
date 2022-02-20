@@ -64,9 +64,8 @@ namespace DotsLite.MarchingCubes.Authoring
                     var sort = DrawModel.SortOrder.desc;
                     var boneType = BoneType.T;
                     var dataLength = sizeof(NearGridIndex) / 16;
-                    var key = new SourcePrefabKeyUnit { Value = this.GetHashCode() };
                     gcs.InitDrawModelEntityComponents(
-                        key, ent, mesh, mat, boneType, boneLength, sort, dataLength);
+                        ent, mesh, mat, boneType, boneLength, sort, dataLength);
                 }
 
                 void setComputeShaderParametor_(ComputeShader cs)

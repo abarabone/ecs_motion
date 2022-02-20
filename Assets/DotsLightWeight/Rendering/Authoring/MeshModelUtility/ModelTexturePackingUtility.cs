@@ -17,11 +17,11 @@ namespace DotsLite.Model.Authoring
     static public class ModelTexturePackingUtility
     {
 
-        static public void PackTextureToDictionary
-            (this IEnumerable<IMeshModel> models, TextureAtlasDictionary.Data atlasDict)
+        static public void PackTextureToDictionary(
+            this IEnumerable<IMeshModel> models, TextureAtlasDictionary.Data atlasDict)
         {
             var texmodels = models
-                .Where(x => !atlasDict.objectToAtlas.ContainsKey(x.SourcePrefabKey))
+                .Where(x => !atlasDict.srckeyToAtlas.ContainsKey(x.SourcePrefabKey))
                 //.Logging(x => x.name)
                 .ToArray();
 
@@ -37,7 +37,7 @@ namespace DotsLite.Model.Authoring
             var tex = qMat.QueryUniqueTextures().ToAtlasOrPassThroughAndParameters();
 
             atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-            atlasDict.objectToAtlas.AddRange(texmodels.Select(x => x.SourcePrefabKey), tex.atlas);
+            atlasDict.srckeyToAtlas.AddEach(texmodels.Select(x => x.SourcePrefabKey), tex.atlas);
         }
     }
 }

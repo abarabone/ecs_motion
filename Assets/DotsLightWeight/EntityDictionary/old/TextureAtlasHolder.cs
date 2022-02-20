@@ -13,7 +13,7 @@ namespace DotsLite.Geometry
         public class Data : IComponentData
         {
             // ゲームオブジェクト、プレハブからアトラスを取得する
-            public Dictionary<SourcePrefabKeyUnit, Texture2D> objectToAtlas;
+            public Dictionary<SourcePrefabKeyUnit, Texture2D> srckeyToAtlas;
 
             // アトラスとパートテクスチャからＵＶ調整矩形を取得する
             public HashToRect texHashToUvRect;
@@ -48,7 +48,7 @@ namespace DotsLite.Geometry
                 var newent = gcs.EntityManager.CreateEntity(typeof(TextureAtlasDictionary.Data));
                 var newholder = new TextureAtlasDictionary.Data
                 {
-                    objectToAtlas = new Dictionary<SourcePrefabKeyUnit, Texture2D>(),
+                    srckeyToAtlas = new Dictionary<SourcePrefabKeyUnit, Texture2D>(),
                     texHashToUvRect = new Dictionary<(int atlas, int part), Rect>(),
                 };
                 gcs.EntityManager.SetComponentData(newent, newholder);

@@ -91,8 +91,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                 Debug.Log(mat);
                 Debug.Log(this.Texture);
 
-                var key = new SourcePrefabKeyUnit { Value = this.GetHashCode() };
-                return gcs.CreateDrawModelEntityComponents(key,
+                return gcs.CreateDrawModelEntityComponents(
                     mesh, mat, BoneType.T, boneLength,
                     DrawModel.SortOrder.desc, optionalVectorLength);
             }
