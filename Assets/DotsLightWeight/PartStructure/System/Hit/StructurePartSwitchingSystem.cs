@@ -50,12 +50,9 @@ namespace DotsLite.Structure
             using var freeScope = this.freedep.WithDependencyScope();
             using var cmdScope = this.cmddep.WithDependencyScope();
 
-
-            var cmd = cmdScope.CommandBuffer.AsParallelWriter();
-
             this.Dependency = new JobExecution
             {
-                cmd = cmd,
+                cmd = cmdScope.CommandBuffer.AsParallelWriter(),
 
                 destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
                 compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),

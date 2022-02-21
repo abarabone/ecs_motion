@@ -33,6 +33,7 @@ namespace DotsLite.Structure
         StructurePartMessageAllocationSystem allocationSystem;
 
         BarrierDependency.Sender freedep;
+        CommandBufferDependency.Sender cmddep;
 
 
         protected override void OnCreate()
@@ -40,6 +41,7 @@ namespace DotsLite.Structure
             base.OnCreate();
 
             this.allocationSystem = this.World.GetOrCreateSystem<StructurePartMessageAllocationSystem>();
+            this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
             this.freedep = BarrierDependency.Sender.Create<StructurePartMessageFreeJobSystem>(this);
         }
 
@@ -47,10 +49,12 @@ namespace DotsLite.Structure
         protected override void OnUpdate()
         {
             using var freeScope = this.freedep.WithDependencyScope();
-
+            using var cmdScope = this.cmddep.WithDependencyScope();
 
             this.Dependency = new JobExecution
             {
+                cmd = cmdScope.CommandBuffer.AsParallelWriter(),
+
                 destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
                 compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
                 lengths = this.GetComponentDataFromEntity<Main.PartLengthData>(isReadOnly: true),
@@ -67,6 +71,9 @@ namespace DotsLite.Structure
         [BurstCompile]
         struct JobExecution : HitMessage<PartHitMessage>.IApplyJobExecutionForKey
         {
+
+            public EntityCommandBuffer.ParallelWriter cmd;
+
 
             [ReadOnly] public ComponentDataFromEntity<Main.CompoundColliderTag> compoundTags;
             [ReadOnly] public ComponentDataFromEntity<Main.PartLengthData> lengths;
@@ -106,7 +113,18 @@ namespace DotsLite.Structure
                     Debug.Log($"bone {boneEntity}");
                     using var _parts = makeUniqueSortedPartIndexList(targets, boneEntity, msgCount, out var bonePartsDesc);
 
-                    trimBoneColliderBufferAndMarkDestroy_(bonePartsDesc, boneInfoBuffer, boneColliderBuffer, ref destruction);
+                    //trimBoneColliderBufferAndMarkDestroy_(bonePartsDesc, boneInfoBuffer, boneColliderBuffer, ref destruction);
+                    foreach (var i in bonePartsDesc)
+                    {
+                        Debug.Log($"trim indices {i}/{boneInfoBuffer.Length}");
+
+                        destruction.SetDestroyed(boneInfoBuffer[i].PartId);
+
+
+
+                        boneColliderBuffer.RemoveAtSwapBack(i);
+                        boneInfoBuffer.RemoveAtSwapBack(i);
+                    }
 
                     this.colliders[boneEntity] = new PhysicsCollider
                     {
@@ -195,23 +213,23 @@ namespace DotsLite.Structure
             }
 
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static void trimBoneColliderBufferAndMarkDestroy_(
-                NativeSlice<int> partIndices,
-                DynamicBuffer<PartBone.PartInfoData> boneInfoBuffer,
-                DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer,
-                ref Main.PartDestructionData destructions)
-            {
-                foreach (var i in partIndices)
-                {
-                    Debug.Log($"trim indices {i}/{boneInfoBuffer.Length}");
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            //static void trimBoneColliderBufferAndMarkDestroy_(
+            //    NativeSlice<int> partIndices,
+            //    DynamicBuffer<PartBone.PartInfoData> boneInfoBuffer,
+            //    DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer,
+            //    ref Main.PartDestructionData destructions)
+            //{
+            //    foreach (var i in partIndices)
+            //    {
+            //        Debug.Log($"trim indices {i}/{boneInfoBuffer.Length}");
 
-                    destructions.SetDestroyed(boneInfoBuffer[i].PartId);
+            //        destructions.SetDestroyed(boneInfoBuffer[i].PartId);
 
-                    boneColliderBuffer.RemoveAtSwapBack(i);
-                    boneInfoBuffer.RemoveAtSwapBack(i);
-                }
-            }
+            //        boneColliderBuffer.RemoveAtSwapBack(i);
+            //        boneInfoBuffer.RemoveAtSwapBack(i);
+            //    }
+            //}
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static BlobAssetReference<Collider> buildBoneCollider(
                 DynamicBuffer<PartBone.PartColliderResourceData> boneColliderBuffer)
@@ -221,6 +239,17 @@ namespace DotsLite.Structure
             }
 
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void createDebris_(int uniqueIndex, Entity part)
+            {
+                var debrisPrefab = this.Prefabs[part].DebrisPrefab;
+                var rot = this.Rotations[part];
+                var pos = this.Positions[part];
+
+                var ent = this.cmd.Instantiate(uniqueIndex, debrisPrefab);
+                this.cmd.SetComponent(uniqueIndex, ent, rot);
+                this.cmd.SetComponent(uniqueIndex, ent, pos);
+            }
         }
     }
 }
