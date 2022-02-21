@@ -35,7 +35,10 @@ namespace DotsLite.Geometry
             var meshDict = gcs.GetMeshDictionary();
             var atlasDict = gcs.GetTextureAtlasDictionary();
             
-            var meshmodels = models.SelectMany(model => model.QueryModel).ToArray();
+            var meshmodels = models
+                .SelectMany(model => model.QueryModel)
+                .Distinct(x => x.SourcePrefabKey)
+                .ToArray();
 
             meshmodels.PackTextureToDictionary(atlasDict);
 
@@ -49,9 +52,12 @@ namespace DotsLite.Geometry
             var meshDict = gcs.GetMeshDictionary();
             var atlasDict = gcs.GetTextureAtlasDictionary();
 
-            models.PackTextureToDictionary(atlasDict);
-            models.CreateModelToDictionary(meshDict, atlasDict);
-            models.CreateModelEntitiesToDictionary(gcs, meshDict, atlasDict);
+            var meshmodels = models
+                .Distinct(x => x.SourcePrefabKey)
+                .ToArray();
+            meshmodels.PackTextureToDictionary(atlasDict);
+            meshmodels.CreateModelToDictionary(meshDict, atlasDict);
+            meshmodels.CreateModelEntitiesToDictionary(gcs, meshDict, atlasDict);
         }
 
 
@@ -61,7 +67,8 @@ namespace DotsLite.Geometry
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
         {
             var qMmts =
-                from model in models.Do(x => Debug.Log($"srckey {x.SourcePrefabKey.Value} at {x.Obj.name}"))
+                from model in models
+                    .Do(x => Debug.Log($"srckey {x.SourcePrefabKey.Value} at {x.Obj.name}"))
                 select model.QueryMmts
                 ;
             using var meshAll = qMmts.QueryMeshDataFromModel();

@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Mathematics;
+using Unity.Collections;
 
 using Collider = Unity.Physics.Collider;
 
@@ -15,6 +16,8 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.EntityTrimmer.Authoring;
     using DotsLite.Geometry;
     using DotsLite.Utilities;
+    using DotsLite.Common.Extension;
+    using DotsLite.Misc;
 
     public class StructureBone : MonoBehaviour//, IConvertGameObjectToEntity
     {
@@ -32,6 +35,7 @@ namespace DotsLite.Structure.Authoring
             var top = this.GetComponentInParent<StructureAreaAuthoring>();
             var main = top.GetComponentInChildren<PostureAuthoring>();
             var parts = this.GetComponentsInChildren<StructureAreaPartAuthoring>();
+            Debug.Log($"part length {parts.Length}");
             initStructureBone_(conversionSystem, main, this, parts);
 
             return;
@@ -78,17 +82,57 @@ namespace DotsLite.Structure.Authoring
                 });
 
 
-                var mtinv = bone.transform.worldToLocalMatrix;
+
+                //var qSrc =
+                //    from pt in parts
+                //    let ptent = gcs.GetPrimaryEntity(pt)
+                //    where em.HasComponent<PhysicsCollider>(ptent)
+                //    select (pt, ptent)
+                //    ;
+                //var srcs = qSrc.ToArray();
+
+                //var qInfo =
+                //    from x in srcs
+                //    let key = x.pt.QueryModel.First().SourcePrefabKey
+                //    let modelEntity = gcs.GetFromModelEntityDictionary(key)
+                //    select new PartBone.PartInfoData
+                //    {
+                //        PartId = x.pt.PartId,
+                //        DebrisPrefab = Entity.Null,//gcs.CreateDebrisPrefab(x.pt.gameObject, modelEntity),
+                //    };
                 var infobuf = em.AddBuffer<PartBone.PartInfoData>(ent);
+                //using var infos = qInfo.ToNativeArray(Allocator.Temp);
+                //infobuf.AddRange(infos);
+
+                var mtinv = bone.transform.worldToLocalMatrix;
+                //var qRes =
+                //    from x in srcs
+                //    let tf = x.pt.transform
+                //    select new PartBone.PartColliderResourceData
+                //    {
+                //        ColliderInstance = new CompoundCollider.ColliderBlobInstance
+                //        {
+                //            Collider = em.GetComponentData<PhysicsCollider>(x.ptent).Value,
+                //            CompoundFromChild = new RigidTransform
+                //            {
+                //                pos = mtinv.MultiplyPoint3x4(tf.position),
+                //                rot = tf.rotation * mtinv.rotation,
+                //            }
+                //        }
+                //    };
                 var resbuf = em.AddBuffer<PartBone.PartColliderResourceData>(ent);
+                //using var ress = qRes.ToNativeArray(Allocator.Temp);
+                //resbuf.AddRange(ress);
+
+
                 foreach (var pt in parts)
                 {
                     var tf = pt.transform;
                     var ptent = gcs.GetPrimaryEntity(pt);
 
+                    Debug.Log($"pre part {pt.name}");
                     if (!em.HasComponent<PhysicsCollider>(ptent)) continue;
-
-                    //Debug.Log($"add collider part {pt.name}");
+                    Debug.Log($"add collider part {pt.name}");
 
                     resbuf.Add(new PartBone.PartColliderResourceData
                     {
@@ -107,7 +151,7 @@ namespace DotsLite.Structure.Authoring
                     infobuf.Add(new PartBone.PartInfoData
                     {
                         PartId = pt.PartId,
-                        DebrisPrefab = gcs.CreateDebrisPrefab(pt.gameObject, modelEntity),
+                        DebrisPrefab = Entity.Null,//gcs.CreateDebrisPrefab(pt.gameObject, modelEntity),
                     });
                 }
 
