@@ -150,6 +150,8 @@ namespace DotsLite.Structure.Authoring
                 //typeof(NonUniformScale),//Žb’è
                 //typeof(ObjectMain.ObjectMainTag),
                 //typeof(PhysicsCollider),
+                typeof(Marker.Rotation),
+                typeof(Marker.Translation),
             });
             em.AddComponents(mainEntity, mainAddtypes);
 

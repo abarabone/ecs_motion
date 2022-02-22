@@ -55,9 +55,12 @@ namespace DotsLite.Structure
             {
                 cmd = cmdScope.CommandBuffer.AsParallelWriter(),
 
-                destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
                 compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
                 lengths = this.GetComponentDataFromEntity<Main.PartLengthData>(isReadOnly: true),
+                rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true),
+                poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true),
+
+                destructions = this.GetComponentDataFromEntity<Main.PartDestructionData>(),
 
                 colliders = this.GetComponentDataFromEntity<PhysicsCollider>(),
 
@@ -77,6 +80,8 @@ namespace DotsLite.Structure
 
             [ReadOnly] public ComponentDataFromEntity<Main.CompoundColliderTag> compoundTags;
             [ReadOnly] public ComponentDataFromEntity<Main.PartLengthData> lengths;
+            [ReadOnly] public ComponentDataFromEntity<Rotation> rots;
+            [ReadOnly] public ComponentDataFromEntity<Translation> poss;
 
             [NativeDisableParallelForRestriction]
             public ComponentDataFromEntity<Main.PartDestructionData> destructions;
@@ -101,6 +106,9 @@ namespace DotsLite.Structure
                 var destruction = this.destructions[mainEntity];
 
 
+                var wrot = this.rots[mainEntity].Value;
+                var wpos = this.poss[mainEntity].Value;
+
                 var ptlength = this.lengths[mainEntity].TotalPartLength;
                 using var targets = makeTargetBoneAndPartChildIndices(hitMessages, destruction, ptlength, out var msgCount);
 
@@ -111,17 +119,19 @@ namespace DotsLite.Structure
                     var boneColliderBuffer = this.boneColliderBuffers[boneEntity];
 
                     Debug.Log($"bone {boneEntity}");
-                    using var _parts = makeUniqueSortedPartIndexList(targets, boneEntity, msgCount, out var bonePartsDesc);
+                    using var _parts = makeUniqueSortedPartIndexList(targets, boneEntity, msgCount, out var bonePartIdsDesc);
 
                     //trimBoneColliderBufferAndMarkDestroy_(bonePartsDesc, boneInfoBuffer, boneColliderBuffer, ref destruction);
-                    foreach (var i in bonePartsDesc)
+                    foreach (var i in bonePartIdsDesc)
                     {
                         Debug.Log($"trim indices {i}/{boneInfoBuffer.Length}");
+                        var info = boneInfoBuffer[i];
+                        var collider = boneColliderBuffer[i];
 
-                        destruction.SetDestroyed(boneInfoBuffer[i].PartId);
+                        destruction.SetDestroyed(info.PartId);
 
-
-
+                        createDebris_(index, wrot, wpos, info, collider);
+                        
                         boneColliderBuffer.RemoveAtSwapBack(i);
                         boneInfoBuffer.RemoveAtSwapBack(i);
                     }
@@ -240,15 +250,17 @@ namespace DotsLite.Structure
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            void createDebris_(int uniqueIndex, Entity part)
+            void createDebris_(int uniqueIndex, quaternion wrot, float3 wpos,
+                PartBone.PartInfoData info, PartBone.PartColliderResourceData collider)
             {
-                var debrisPrefab = this.Prefabs[part].DebrisPrefab;
-                var rot = this.Rotations[part];
-                var pos = this.Positions[part];
+                var debrisPrefab = info.DebrisPrefab;
+                var tf = collider.ColliderInstance.CompoundFromChild;
+                var rot = math.mul(wrot, tf.rot);
+                var pos = math.rotate(wrot, tf.pos);
 
                 var ent = this.cmd.Instantiate(uniqueIndex, debrisPrefab);
-                this.cmd.SetComponent(uniqueIndex, ent, rot);
-                this.cmd.SetComponent(uniqueIndex, ent, pos);
+                this.cmd.SetComponent(uniqueIndex, ent, new Rotation { Value = rot });
+                this.cmd.SetComponent(uniqueIndex, ent, new Translation { Value = pos });
             }
         }
     }
