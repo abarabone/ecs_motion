@@ -21,20 +21,53 @@ namespace DotsLite.EntityTrimmer.Authoring
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(RemoveTransformAllConversion))]
+    [UpdateAfter(typeof(RemoveTransformAllConversion))]
     public class CopyTransformToMarkerConversion1 : GameObjectConversionSystem
     {
         protected override void OnUpdate()
         {
             var em = this.DstEntityManager;
 
+            var pos_markers = this.GetComponentDataFromEntity<Marker.Translation>(isReadOnly: true);
+            var rot_markers = this.GetComponentDataFromEntity<Marker.Rotation>(isReadOnly: true);
+            var scale_markers = this.GetComponentDataFromEntity<Marker.Scale>(isReadOnly: true);
+            var scale3_markers = this.GetComponentDataFromEntity<Marker.NonUniformScale>(isReadOnly: true);
+            //var scale4x4_markers = this.GetComponentDataFromEntity<Marker.CompositeScale>(isReadOnly: true);
+
             this.Entities
-                .ForEach((Entity e, Transform tf) =>
+                .ForEach((Transform tf) =>
                 {
-                    if (tf.)
+                    var ent = this.GetPrimaryEntity(tf);
 
-                    Debug.Log(tf.name);
+                    addComponentData_(pos_markers, () => new Translation
+                    {
+                        Value = tf.position
+                    });
+                    addComponentData_(rot_markers, () => new Rotation
+                    {
+                        Value = tf.rotation
+                    });
+                    addComponentData_(scale_markers, () => new Scale
+                    {
+                        Value = tf.lossyScale.magnitude
+                    });
+                    addComponentData_(scale3_markers, () => new NonUniformScale
+                    {
+                        Value = tf.lossyScale
+                    });
+                    //addComponentData_(scale4x4_markers, () => new CompositeScale
+                    //{
+                    //    Value = tf.position
+                    //});
 
+                    void addComponentData_<TSrc, TDst>(ComponentDataFromEntity<TSrc> markers, Func<TDst> f)
+                        where TSrc : struct, IComponentData
+                        where TDst : struct, IComponentData
+                    {
+                        if (!markers.HasComponent(ent)) return;
+
+                        em.AddComponentData(ent, f());
+                    }
                 });
         }
     }

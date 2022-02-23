@@ -21,7 +21,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.EntityTrimmer.Authoring;
 
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(CopyTransformToMarkerConversion))]
+    //[UpdateBefore(typeof(CopyTransformToMarkerConversion))]
     [UpdateBefore(typeof(RemoveTransformAllConversion))]
     public class ExecuteAreaAuthoringConversion : GameObjectConversionSystem
     {
