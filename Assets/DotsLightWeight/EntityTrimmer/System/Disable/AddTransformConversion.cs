@@ -13,45 +13,12 @@ namespace DotsLite.EntityTrimmer.Authoring
 {
     using Utilities;
 
-    public static class Marker
-    {
-        public struct Translation : IComponentData
-        {
-            public float3 Value;
-        }
-
-        public struct Rotation : IComponentData
-        {
-            public quaternion Value;
-        }
-
-        public struct Scale : IComponentData
-        {
-            public float Value;
-        }
-
-        public struct NonUniformScale : IComponentData
-        {
-            public float3 Value;
-        }
-
-        public struct CompositeScale : IComponentData
-        {
-            public float4x4 Value;
-        }
-
-        public struct LocalToWorld : IComponentData
-        {
-            public float4x4 Value;
-        }
-    }
-
     /// <summary>
     /// TransformConversion によって付与される、トランスフォーム系のコンポーネントデータを削除する。
     /// ExcludeTransformConversion とか はよ
     /// </summary>
     /// transform conversion は [UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     [UpdateBefore(typeof(DestroyBlankEntityConversion))]
     public class AddTransformConversion : GameObjectConversionSystem

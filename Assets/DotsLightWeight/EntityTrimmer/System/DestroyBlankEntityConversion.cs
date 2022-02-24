@@ -11,9 +11,12 @@ namespace DotsLite.EntityTrimmer.Authoring
 {
     using Utilities;
 
+    /// <summary>
+    /// コンポーネントのついていないエンティティを破棄する。
+    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(TrimLinkedEntityConversion))]
+    [UpdateAfter(typeof(RemoveTransformAllConversion))]
     public class DestroyBlankEntityConversion : GameObjectConversionSystem
     {
         protected override void OnUpdate()

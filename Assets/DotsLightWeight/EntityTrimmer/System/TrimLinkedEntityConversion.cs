@@ -12,11 +12,12 @@ namespace DotsLite.EntityTrimmer.Authoring
 {
 
     /// <summary>
-    /// LinkedEntityGroup のトリムを行う。
+    /// 他へのつながりのない LinkedEntityGroup を削除する。
     /// prefab, Disable がついていても処理される。
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
+    [UpdateAfter(typeof(RemoveTransformAllConversion))]
     public class TrimLinkedEntityConversion : GameObjectConversionSystem
     {
         protected override void OnUpdate()
