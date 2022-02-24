@@ -81,54 +81,66 @@ namespace DotsLite.Structure.Authoring
                     PartId = -1,// コンポジットコライダーであることを示す
                 });
 
-
-
-                var qColliderPart =
-                    from pt in parts
-                    let ptent = gcs.GetPrimaryEntity(pt)
-                    where em.HasComponent<PhysicsCollider>(ptent)
-                    select (pt, ptent)
-                    ;
-                var colliderParts = qColliderPart.ToArray();
-
-                var qPartInfoData =
-                    from x in colliderParts
-                    let key = x.pt.QueryModel.First().SourcePrefabKey
-                    let modelEntity = gcs.GetFromModelEntityDictionary(key)
-                    select new PartBone.PartInfoData
+                {
+                    var tf = bone.transform;
+                    em.SetComponentData(ent, new Marker.Translation
                     {
-                        PartId = x.pt.PartId,
-                        DebrisPrefab = gcs.CreateDebrisPrefab(x.pt.gameObject, modelEntity),
-                    };
-                using var partInfos = qPartInfoData.ToNativeArray(Allocator.Temp);
-
-                var mtinv = bone.transform.worldToLocalMatrix;
-                var qPartColliderResource =
-                    from x in colliderParts
-                    let tf = x.pt.transform
-                    select new PartBone.PartColliderResourceData
+                        Value = tf.position
+                    });
+                    em.SetComponentData(ent, new Marker.Rotation
                     {
-                        ColliderInstance = new CompoundCollider.ColliderBlobInstance
+                        Value = tf.rotation
+                    });
+                }
+
+                {
+                    var qColliderPart =
+                        from pt in parts
+                        let ptent = gcs.GetPrimaryEntity(pt)
+                        where em.HasComponent<PhysicsCollider>(ptent)
+                        select (pt, ptent)
+                        ;
+                    var colliderParts = qColliderPart.ToArray();
+
+                    var qPartInfoData =
+                        from x in colliderParts
+                        let key = x.pt.QueryModel.First().SourcePrefabKey
+                        let modelEntity = gcs.GetFromModelEntityDictionary(key)
+                        select new PartBone.PartInfoData
                         {
-                            Collider = em.GetComponentData<PhysicsCollider>(x.ptent).Value,
-                            CompoundFromChild = new RigidTransform
+                            PartId = x.pt.PartId,
+                            DebrisPrefab = gcs.CreateDebrisPrefab(x.pt.gameObject, modelEntity),
+                        };
+                    using var partInfos = qPartInfoData.ToNativeArray(Allocator.Temp);
+
+                    var mtinv = bone.transform.worldToLocalMatrix;
+                    var qPartColliderResource =
+                        from x in colliderParts
+                        let tf = x.pt.transform
+                        select new PartBone.PartColliderResourceData
+                        {
+                            ColliderInstance = new CompoundCollider.ColliderBlobInstance
                             {
-                                pos = mtinv.MultiplyPoint3x4(tf.position),
-                                rot = tf.rotation * mtinv.rotation,
+                                Collider = em.GetComponentData<PhysicsCollider>(x.ptent).Value,
+                                CompoundFromChild = new RigidTransform
+                                {
+                                    pos = mtinv.MultiplyPoint3x4(tf.position),
+                                    rot = tf.rotation * mtinv.rotation,
+                                }
                             }
-                        }
-                    };
-                using var partColliderResources = qPartColliderResource.ToNativeArray(Allocator.Temp);
+                        };
+                    using var partColliderResources = qPartColliderResource.ToNativeArray(Allocator.Temp);
 
-                var infobuf = em.AddBuffer<PartBone.PartInfoData>(ent);
-                infobuf.AddRange(partInfos);
+                    var infobuf = em.AddBuffer<PartBone.PartInfoData>(ent);
+                    infobuf.AddRange(partInfos);
 
-                var resbuf = em.AddBuffer<PartBone.PartColliderResourceData>(ent);
-                resbuf.AddRange(partColliderResources);
+                    var resbuf = em.AddBuffer<PartBone.PartColliderResourceData>(ent);
+                    resbuf.AddRange(partColliderResources);
 
-                var destructiondata = em.GetComponentData<Main.PartDestructionData>(mainent);
-                var compoundColider = resbuf.BuildCompoundCollider(destructiondata);
-                em.SetComponentData(ent, compoundColider);
+                    var destructiondata = em.GetComponentData<Main.PartDestructionData>(mainent);
+                    var compoundColider = resbuf.BuildCompoundCollider(destructiondata);
+                    em.SetComponentData(ent, compoundColider);
+                }
             }
         }
 

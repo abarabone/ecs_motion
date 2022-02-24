@@ -23,7 +23,8 @@ namespace DotsLite.Structure.Authoring
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     //[UpdateBefore(typeof(CopyTransformToMarkerConversion))]
     [UpdateBefore(typeof(RemoveTransformAllConversion))]
-    [UpdateBefore(typeof(AddTransformByMarkerConversion))]
+    //[UpdateBefore(typeof(AddTransformByMarkerConversion))]
+    //[UpdateBefore(typeof(AddTransformConversion))]
     public class ExecuteAreaAuthoringConversion : GameObjectConversionSystem
     {
 

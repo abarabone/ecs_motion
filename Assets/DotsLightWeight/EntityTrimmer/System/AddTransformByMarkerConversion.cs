@@ -50,7 +50,7 @@ namespace DotsLite.EntityTrimmer.Authoring
     /// Marker を頼りに Transform 系のコンポーネントをつけていく
     /// ついでに Marker を消す
     /// </summary>
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     [UpdateAfter(typeof(RemoveTransformAllConversion))]

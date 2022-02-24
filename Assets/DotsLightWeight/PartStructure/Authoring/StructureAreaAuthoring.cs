@@ -193,6 +193,18 @@ namespace DotsLite.Structure.Authoring
             //        PrePositionAndTime = new float4(0, 0, 0, Main.SleepTimerData.Margin),
             //    }
             //);
+            
+            {
+                var tf = main.transform;
+                em.SetComponentData(mainEntity, new Marker.Translation
+                {
+                    Value = tf.position
+                });
+                em.SetComponentData(mainEntity, new Marker.Rotation
+                {
+                    Value = tf.rotation
+                });
+            }
 
             var draw = mainEntity;
             gcs.AddLod1ComponentToDrawInstanceEntity(draw, top.gameObject, near);

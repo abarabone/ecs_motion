@@ -18,9 +18,9 @@ namespace DotsLite.EntityTrimmer.Authoring
     /// ExcludeTransformConversion ‚Æ‚© ‚Í‚æ
     /// </summary>
     /// transform conversion ‚Í [UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    [UpdateBefore(typeof(DestroyBlankEntityConversion))]
+    [UpdateAfter(typeof(RemoveTransformAllConversion))]
     public class AddTransformConversion : GameObjectConversionSystem
     {
         static void addComponent<TSrc, TDst>(EntityManager em, Func<TSrc, TDst> srcToDst)

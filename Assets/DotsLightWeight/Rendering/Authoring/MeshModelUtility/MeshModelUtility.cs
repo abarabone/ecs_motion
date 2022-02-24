@@ -68,7 +68,7 @@ namespace DotsLite.Geometry
         {
             var qMmts =
                 from model in models
-                    .Do(x => Debug.Log($"srckey {x.SourcePrefabKey.Value} at {x.Obj.name}"))
+                    //.Do(x => Debug.Log($"srckey {x.SourcePrefabKey.Value} at {x.Obj.name}"))
                 select model.QueryMmts
                 ;
             using var meshAll = qMmts.QueryMeshDataFromModel();

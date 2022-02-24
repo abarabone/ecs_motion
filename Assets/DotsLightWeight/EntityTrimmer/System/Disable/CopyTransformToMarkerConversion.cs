@@ -19,7 +19,6 @@ namespace DotsLite.EntityTrimmer.Authoring
     /// </summary>
     /// transform conversion ‚Í [UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     [DisableAutoCreation]
-    //[UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     [UpdateBefore(typeof(RemoveTransformAllConversion))]
     public class CopyTransformToMarkerConversion : GameObjectConversionSystem
