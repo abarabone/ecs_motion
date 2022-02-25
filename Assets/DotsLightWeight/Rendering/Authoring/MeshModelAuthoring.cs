@@ -117,6 +117,8 @@ namespace DotsLite.Model.Authoring
                 );
                 em.SetArchetype(mainEntity, archetype);
 
+                em.CopyTransformToMarker(mainEntity, main.transform);
+
 
                 em.SetComponentData(mainEntity,
                     new DrawInstance.ModelLinkData

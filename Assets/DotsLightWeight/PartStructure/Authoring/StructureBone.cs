@@ -65,6 +65,9 @@ namespace DotsLite.Structure.Authoring
                 });
                 em.AddComponents(ent, addtypes);
 
+                em.CopyTransformToMarker(ent, bone.transform);
+
+
                 em.SetComponentData(ent, new PartBone.LinkToMainData
                 {
                     MainEntity = mainent,

@@ -285,12 +285,17 @@ namespace DotsLite.Structure.Authoring
                     typeof(DrawInstance.TargetWorkData),
                     typeof(DrawInstance.NeedLodCurrentTag),
 
+                    typeof(Marker.Translation),
+                    typeof(Marker.Rotation),
                     typeof(Collision.Hit.TargetData),
                     //typeof(NonUniformScale),//暫定
                     //typeof(ObjectMain.ObjectMainTag),
                 }
             );
             em.AddComponents(mainEntity, mainAddtypes);
+
+            em.CopyTransformToMarker(mainEntity, main.transform);
+
 
             //em_.SetComponentData(mainEntity,
             //    new NonUniformScale

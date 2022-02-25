@@ -104,9 +104,15 @@ namespace DotsLite.Structure.Authoring
                 (
                     typeof(Part.PartData),
                     typeof(Collision.Hit.TargetData),
-                    typeof(Disabled)
+                    typeof(Disabled),
+
+                    typeof(Marker.Translation),
+                    typeof(Marker.Rotation)
                 );
                 em.AddComponents(ent, addtypes);
+
+                em.CopyTransformToMarker(ent, part.transform);
+
 
 
                 em.SetComponentData(ent,

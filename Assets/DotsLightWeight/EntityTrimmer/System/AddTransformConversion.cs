@@ -14,8 +14,7 @@ namespace DotsLite.EntityTrimmer.Authoring
     using Utilities;
 
     /// <summary>
-    /// TransformConversion によって付与される、トランスフォーム系のコンポーネントデータを削除する。
-    /// ExcludeTransformConversion とか はよ
+    /// 
     /// </summary>
     /// transform conversion は [UpdateInGroup(typeof(GameObjectBeforeConversionGroup))]
     //[DisableAutoCreation]

@@ -54,6 +54,9 @@ namespace DotsLite.Model.Authoring
                 em.AddComponents(ent, addtypes);
                 //var ent = gcs.CreateAdditionalEntity(main, addtypes);
 
+                em.CopyTransformToMarker(ent, postureObject.transform);
+
+
                 em.SetName_(ent, $"{postureObject.transform.parent.name} posture");
                 return ent;
             }

@@ -13,39 +13,6 @@ namespace DotsLite.EntityTrimmer.Authoring
 {
     using Utilities;
 
-    public static class Marker
-    {
-        public struct Translation : IComponentData
-        {
-            public float3 Value;
-        }
-
-        public struct Rotation : IComponentData
-        {
-            public quaternion Value;
-        }
-
-        public struct Scale : IComponentData
-        {
-            public float Value;
-        }
-
-        public struct NonUniformScale : IComponentData
-        {
-            public float3 Value;
-        }
-
-        public struct CompositeScale : IComponentData
-        {
-            public float4x4 Value;
-        }
-
-        public struct LocalToWorld : IComponentData
-        {
-            public float4x4 Value;
-        }
-    }
-
     /// <summary>
     /// Marker を頼りに Transform 系のコンポーネントをつけていく
     /// ついでに Marker を消す
