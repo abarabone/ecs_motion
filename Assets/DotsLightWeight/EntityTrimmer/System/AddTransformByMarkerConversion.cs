@@ -94,10 +94,9 @@ namespace DotsLite.EntityTrimmer.Authoring
                     void addAndRemove_<TSrc, TDst>(Func<TDst> f)
                         where TSrc : struct, IComponentData
                         where TDst : struct, IComponentData
-                {
-                    if (!em.HasComponent<TSrc>(e)) return;
+                    {
+                        if (!em.HasComponent<TSrc>(e)) return;
 
-                    Debug.Log($"{tf.name} {tf.position}");
                         em.AddComponentData(e, f());
                         em.RemoveComponent<TSrc>(e);
                     }
