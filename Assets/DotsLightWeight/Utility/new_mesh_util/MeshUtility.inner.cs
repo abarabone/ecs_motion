@@ -37,8 +37,8 @@ namespace DotsLite.Geometry.inner
     static partial class ConvertIndicesUtility
     {
 
-        public static IEnumerable<TIdx> QueryConvertIndexData<TIdx>
-            (this IEnumerable<SrcMeshUnit> srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
+        public static IEnumerable<TIdx> QueryConvertIndexData<TIdx>(
+            this IEnumerable<SrcMeshUnit> srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
             where TIdx : struct, IIndexUnit<TIdx>
         =>
             from x in srcmeshes.QuerySubMeshForIndexData<TIdx>(mtsPerMesh)
@@ -56,8 +56,8 @@ namespace DotsLite.Geometry.inner
     static class ConvertVertexUtility
     {
 
-        static public IEnumerable<Vector3> QueryConvertPositions
-            (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        static public IEnumerable<Vector3> QueryConvertPositions(
+            this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         =>
             from permesh in (srcmeshes, p.mtPerMesh).Zip()
             let mesh = permesh.src0.MeshData

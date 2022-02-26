@@ -29,8 +29,7 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
 
 
-        public MeshElements<TIdx, StructureVertex> BuildCombiner<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        public MeshElements<TIdx, StructureVertex> BuildCombiner<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             new MeshElements<TIdx, StructureVertex>

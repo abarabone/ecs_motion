@@ -35,8 +35,7 @@ namespace DotsLite.Geometry
 
     public struct srcMeshDataFromModel : IDisposable
     {
-        public srcMeshDataFromModel
-            (Mesh.MeshDataArray marr, IEnumerable<SrcMeshesModelCombinePack> e)
+        public srcMeshDataFromModel(Mesh.MeshDataArray marr, IEnumerable<SrcMeshesModelCombinePack> e)
         {
             this.marr = marr;
             this.AsEnumerable = e;
@@ -50,8 +49,8 @@ namespace DotsLite.Geometry
 
     public struct SrcMeshesModelCombinePack
     {
-        public SrcMeshesModelCombinePack
-            (IEnumerable<SrcMeshUnit> e, IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
+        public SrcMeshesModelCombinePack(
+            IEnumerable<SrcMeshUnit> e, IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
         {
             this.AsEnumerable = e;
             this.mmts = mmts.ToArray();
@@ -101,10 +100,13 @@ namespace DotsLite.Geometry
         //    }
         //}
         
-        public static srcMeshDataFromModel QueryMeshDataFromModel
-            (this IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>> mmtss)
+        public static srcMeshDataFromModel QueryMeshDataFromModel(
+            this IEnumerable<IEnumerable<(Mesh mesh, Material[] mats, Transform tf)>> mmtss)
         {
-            var srcmeshes = mmtss.SelectMany().Select(x => x.mesh).ToArray();
+            var srcmeshes = mmtss
+                .SelectMany()
+                .Select(x => x.mesh)
+                .ToArray();
             var mesharr = Mesh.AcquireReadOnlyMeshData(srcmeshes);
 
             var imesh = 0;
