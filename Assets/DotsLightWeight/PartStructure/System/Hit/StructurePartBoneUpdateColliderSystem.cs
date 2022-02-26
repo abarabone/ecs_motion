@@ -256,7 +256,7 @@ namespace DotsLite.Structure
                 var debrisPrefab = info.DebrisPrefab;
                 var tf = collider.ColliderInstance.CompoundFromChild;
                 var rot = math.mul(wrot, tf.rot);
-                var pos = math.rotate(wrot, tf.pos);
+                var pos = math.rotate(wrot, tf.pos) + wpos;
 
                 var ent = this.cmd.Instantiate(uniqueIndex, debrisPrefab);
                 this.cmd.SetComponent(uniqueIndex, ent, new Rotation { Value = rot });
