@@ -61,7 +61,7 @@ namespace DotsLite.Geometry.inner
         =>
             from permesh in (srcmeshes, p.mtPerMesh).Zip()
             let mesh = permesh.src0.MeshData
-            let mt = permesh.src1 * p.mtBaseInv
+            let mt = math.mul(p.mtBaseInv, permesh.src1)
             from vtx in mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetVertices(arr), VertexAttribute.Position)
             select(Vector3)math.transform(mt, vtx)
             ;
@@ -72,9 +72,10 @@ namespace DotsLite.Geometry.inner
         =>
             from permesh in (srcmeshes, p.mtPerMesh).Zip()
             let mesh = permesh.src0.MeshData
-            let mt = permesh.src1 * p.mtBaseInv
+            let mt = math.mul(p.mtBaseInv, permesh.src1)
             from nm in mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetNormals(arr), VertexAttribute.Normal)
-            select (Vector3)math.mul(mt.rotation, nm)
+            //select (Vector3)math.mul(math.quaternion(mt), nm)
+            select(Vector3)math.rotate(mt, nm)
             ;
 
 
@@ -101,11 +102,12 @@ namespace DotsLite.Geometry.inner
             let mesh = permesh.src0.MeshData
             let mtInvs = permesh.src1// Ç±ÇÍÇ¢Ç¢ÇÃÇ©ÅH
             let weis = permesh.src2
-            let mt = permesh.src3 * p.mtBaseInv//p.mtBaseInv
+            //let mt = permesh.src3 * p.mtBaseInv//p.mtBaseInv
+            let mt = math.mul(p.mtBaseInv, permesh.src3)//p.mtBaseInv
             from x in (mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetVertices(arr), VertexAttribute.Position), weis).Zip()
             let vtx = x.src0
             let wei = x.src1
-            select (Vector3)math.transform(mtInvs[wei.boneIndex0] * mt, vtx)
+            select (Vector3)math.transform(math.mul(mtInvs[wei.boneIndex0], mt), vtx)
             ;
         static public IEnumerable<uint> QueryConvertBoneIndices
             (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)

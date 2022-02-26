@@ -13,7 +13,6 @@ namespace DotsLite.Model.Authoring
     using CharacterMotion;
     using Draw;
     using Character;
-    
 
     using DotsLite.Common.Extension;
     using DotsLite.Misc;
@@ -21,6 +20,7 @@ namespace DotsLite.Model.Authoring
     using Unity.Physics;
     using Unity.Physics.Authoring;
     using DotsLite.EntityTrimmer.Authoring;
+    using DotsLite.EntityTrimmer;
 
     // ボーン
     // ・ボーンＩＤは、SkinnedMeshRenderer.bones の並び順
@@ -104,6 +104,7 @@ namespace DotsLite.Model.Authoring
             addMainEntityLinkForCollider(gcs, posture, bones);
 
             initLocalPosition(em, boneEntities, posture, bones);
+            (bones, boneEntities).Zip().ForEach(x => em.CopyTransformToMarker(x.src1, x.src0.transform));
 
             var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneRelationLinksChain(em, postureEntity, boneEntities, paths );
@@ -120,6 +121,7 @@ namespace DotsLite.Model.Authoring
             addMainEntityLinkForCollider(gcs, posture, bones);
 
             initLocalPosition(em, boneEntities, posture, bones);
+            (bones, boneEntities).Zip().ForEach(x => em.CopyTransformToMarker(x.src1, x.src0.transform));
 
             var paths = queryBonePath_(bones, root);//.Do(x=>Debug.Log($"@ {x}"));
             setBoneLinksLeveled(em, postureEntity, boneEntities, paths);
