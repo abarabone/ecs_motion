@@ -50,7 +50,7 @@ namespace DotsLite.Model.Authoring
         //}
         //.WrapEnumerable();
 
-        protected override void Reset()
+        protected new void Reset()
         {
             base.Reset();
             this.Model.objectTop = this.gameObject;

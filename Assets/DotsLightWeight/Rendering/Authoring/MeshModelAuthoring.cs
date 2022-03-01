@@ -33,10 +33,11 @@ namespace DotsLite.Model.Authoring
         //public Material Material;
         //public Shader ShaderToDraw;
 
-        protected override void Reset()
+        protected new void Reset()
         {
-            base.Reset();
+            this.Model ??= new MeshModel<UI32, PositionNormalUvVertex>();
             this.Model.objectTop = this.gameObject;
+            base.Reset();
         }
 
         //[SerializeField]

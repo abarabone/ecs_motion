@@ -33,7 +33,7 @@ namespace DotsLite.Structure.Authoring
 
         public AreaPartModel<UI32, PositionNormalUvVertex> PartModel;
 
-        protected override void Reset()
+        protected new void Reset()
         {
             base.Reset();
             this.PartModel.objectTop = this.gameObject;

@@ -202,16 +202,17 @@ namespace DotsLite.Geometry.inner
         public static IEnumerable<SrcSubMeshUnit<T>> QuerySubmeshesForVertices<T>
             (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr) where T : struct
         {
-            var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
+            using var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
             if (meshdata.GetVertexAttributeDimension(attr) > 0)
             {
                 getElementSrc(meshdata, array);
             }
-            return
+            var q =
                 from i in 0.Inc(meshdata.subMeshCount)
                 let desc = meshdata.GetSubMesh(i)
-                select new SrcSubMeshUnit<T>(i, desc, () => array.rangeWithUsing(desc.firstVertex, desc.vertexCount))
+                select new SrcSubMeshUnit<T>(i, desc, () => array.range(desc.firstVertex, desc.vertexCount))
                 ;
+            foreach (var e in q) yield return e;
         }
 
         public static IEnumerable<SrcSubMeshUnit<T>> QuerySubmeshesForIndexData<T>

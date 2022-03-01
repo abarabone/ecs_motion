@@ -250,7 +250,9 @@ namespace DotsLite.Utilities
             return arr;
         }
 
-        static public IEnumerable<T> Range<T>(this NativeArray<T> src, int start, int length) where T : struct =>
+        static public IEnumerable<T> Range<T>(this NativeArray<T> src, int start, int length)
+            where T : struct
+        =>
             from i in Enumerable.Range(start, length) select src[i];
     }
 
