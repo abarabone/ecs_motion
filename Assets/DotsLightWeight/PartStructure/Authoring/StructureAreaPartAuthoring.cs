@@ -27,6 +27,8 @@ namespace DotsLite.Structure.Authoring
     public class StructureAreaPartAuthoring : ModelGroupAuthoring.ModelAuthoringBase, IStructurePart//, IConvertGameObjectToEntity
     {
         public bool DoNotPathDeform;            // メッシュをパス変形させない
+        //public bool IsPathProjectionToTerrain;  // パスメッシュを地形にそって変形させる
+        public bool DoNotPathDeform;            // メッシュをパス変形させない
         public bool NoDebris;
 
         public int PartId;

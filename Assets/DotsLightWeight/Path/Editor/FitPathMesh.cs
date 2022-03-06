@@ -2,18 +2,19 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Unity.Linq;
 
 namespace DotsLite.LoadPath.Authoring
 {
     using DotsLite.Geometry;
     using DotsLite.Structure.Authoring;
-
+    using DotsLite.Model.Authoring;
 
     /// <summary>
     /// 
     /// </summary>
-    [CustomEditor(typeof(StructureAreaPartAuthoring))]
-    public class FitPathMesh : Editor
+    [CustomEditor(typeof(StructureAreaAuthoring))]
+    public class FitPathMesh : DistributeModelOriginId//Editor
     {
         public override void OnInspectorGUI()
         {
@@ -23,30 +24,57 @@ namespace DotsLite.LoadPath.Authoring
             GUILayout.BeginHorizontal();
 
             //ボタンを表示
-            if (GUILayout.Button("make path part meshes"))
+            if (GUILayout.Button("build path meshes"))
             {
-                //var parts = this.targets
-                //    .OfType<PathAuthoring>()
-                //    //.SelectMany(st => st.GetComponentsInChildren<StructurePartAuthoring>())
-                //    //.Select(pt => (pt, PrefabUtility.GetCorrespondingObjectFromOriginalSource(pt.gameObject)))
-                //    ;
-                ////foreach (var (pt, masterPrefab) in parts)
-                ////{
-                ////    (pt.PartModelOfMasterPrefab as PartModel<UI32, PositionNormalUvVertex>)
-                ////        .SetObject(masterPrefab ?? pt.gameObject);
-                ////    Debug.Log($"{pt.name} <- {pt.PartModelOfMasterPrefab.Obj.name}");
+                var qPath =
+                    from monobe in this.targets.OfType<MonoBehaviour>()
+                    from path in monobe.gameObject.GetComponentsInChildren<PathAuthoring>()
+                    select path
+                    ;
+                foreach (var path in qPath)
+                {
+                    path.BuildPathMeshes();
 
-                ////    EditorUtility.SetDirty(pt);
-                ////}
-                //foreach (var pt in parts)
-                //{
-                //    pt.CreatePathParts();
+                    EditorUtility.SetDirty(path);
+                }
 
-                //    EditorUtility.SetDirty(pt);
-                //}
-
-                //AssetDatabase.SaveAssets();
+                AssetDatabase.SaveAssets();
             }
+
+            //ボタンを表示
+            if (GUILayout.Button("fit terrain to path"))
+            {
+                var paths = this.targets
+                    .OfType<MonoBehaviour>()
+                    .SelectMany(x => x.gameObject.GetComponentsInChildren<PathAuthoring>())
+                    ;
+                foreach (var path in paths)
+                {
+                    path.BuildPathMeshes();
+
+                    EditorUtility.SetDirty(path);
+                }
+
+                AssetDatabase.SaveAssets();
+            }
+
+            //ボタンを表示
+            if (GUILayout.Button("fit path to terrain"))
+            {
+                var paths = this.targets
+                    .OfType<MonoBehaviour>()
+                    .SelectMany(x => x.gameObject.GetComponentsInChildren<PathAuthoring>())
+                    ;
+                foreach (var path in paths)
+                {
+                    path.BuildPathMeshes();
+
+                    EditorUtility.SetDirty(path);
+                }
+
+                AssetDatabase.SaveAssets();
+            }
+
 
             GUILayout.EndHorizontal();
         }
