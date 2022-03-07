@@ -10,6 +10,19 @@ namespace DotsLite.LoadPath.Authoring
 {
 	using DotsLite.Structure.Authoring;
 
+
+	// ・コライダによる地形フィットではなく、パスと幅によるフィットのほうがいいかも？
+	// ・
+
+	// ・地形フィット　コライダ？パスと幅？
+	// ・メッシュを地形にフィット　テッセレート
+	// ・メッシュはパス変形させないこともできる　パーツ単位？
+	// ・
+
+
+	/// <summary>
+	/// 
+	/// </summary>
 	public class PathAuthoring : MonoBehaviour
 	{
 
