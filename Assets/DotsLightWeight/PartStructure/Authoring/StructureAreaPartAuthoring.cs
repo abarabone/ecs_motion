@@ -29,6 +29,7 @@ namespace DotsLite.Structure.Authoring
         public bool DoNotPathDeform;            // メッシュをパス変形させない
         //public bool IsPathProjectionToTerrain;  // パスメッシュを地形にそって変形させる
         public bool NoDebris;
+        public bool UseUpInterpolation;
 
         public int PartId;
         public int partId { get => this.PartId; set => this.PartId = value; }

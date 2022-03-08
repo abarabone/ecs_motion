@@ -11,6 +11,7 @@ namespace DotsLite.LoadPath.Authoring
 	using DotsLite.Structure.Authoring;
 
 
+	// ・
 	// ・コライダによる地形フィットではなく、パスと幅によるフィットのほうがいいかも？
 	// ・
 
@@ -35,6 +36,10 @@ namespace DotsLite.LoadPath.Authoring
 
 		public GameObject ModelTopPrefab;
 		public GameObject LevelingColliderPrefab;
+
+
+		public float PathWidthForTerrainFit;
+		public bool UseUpInterpolationForTerrainFit;
 
 
 		void Awake()

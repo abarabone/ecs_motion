@@ -132,7 +132,7 @@ namespace DotsLite.LoadPath.Authoring
 			this.rightStart = tfStart.right * ss;
 			this.rightEnd = tfEnd.right * se;
 			this.upStart = tfStart.up;
-			this.upEnd = tfStart.up;
+			this.upEnd = tfEnd.up;// tfStart.up;
 
 			this.maxZR = 1.0f / maxZ;
 			this.unitRatio = 1.0f / frequency;
@@ -202,8 +202,8 @@ namespace DotsLite.LoadPath.Authoring
 
 			var p0r = math.transform(mtInv, startPosition + this.rightStart);
 			var p1r = math.transform(mtInv, endPosition + this.rightEnd);
-			var v0r = math.rotate(mtInv, forwardStart);
-			var v1r = math.rotate(mtInv, forwardEnd);
+			var v0r = math.rotate(mtInv, forwardStart);// + this.rightStart);
+			var v1r = math.rotate(mtInv, forwardEnd);// + this.rightEnd);
 
 			var attr = (2.0f * p0r - 2.0f * p1r + v0r + v1r) * t * t;
 			var btr = (-3.0f * p0r + 3.0f * p1r - 2.0f * v0r - v1r) * t;
@@ -213,8 +213,8 @@ namespace DotsLite.LoadPath.Authoring
 
 			var p0u = math.transform(mtInv, startPosition + this.upStart);
 			var p1u = math.transform(mtInv, endPosition + this.upEnd);
-			var v0u = math.rotate(mtInv, forwardStart);
-			var v1u = math.rotate(mtInv, forwardEnd);
+			var v0u = math.rotate(mtInv, forwardStart);// + this.upStart);
+			var v1u = math.rotate(mtInv, forwardEnd);// + this.upEnd);
 
 			var attu = (2.0f * p0u - 2.0f * p1u + v0u + v1u) * t * t;
 			var btu = (-3.0f * p0u + 3.0f * p1u - 2.0f * v0u - v1u) * t;
