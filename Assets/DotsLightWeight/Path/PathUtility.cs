@@ -144,7 +144,7 @@ namespace DotsLite.LoadPath.Authoring
 			var srcvtxs = srcMesh.vertices;
 
 			var dstvtxs = srcvtxs
-				.Select(vtx => interpolatePosition3d(i, vtx, mtChildInv))
+				.Select(vtx => interpolatePosition3d_(i, vtx, mtChildInv))
 				.Select(v => new Vector3(v.x, v.y, v.z))
 				.ToArray();
 
@@ -177,12 +177,10 @@ namespace DotsLite.LoadPath.Authoring
 
 			var d = 3.0f * att + 2.0f * bt + v0;// pos ÇÃî˜ï™ÅiäÑçáÅHÅj
 
-			//pos += vtx.x * math.normalize(new float3(d.z, d.y, -d.x));
-			//pos += vtx.y * math.normalize(new float3(d.z, d.y, -d.x));
-			//return new float3(pos.x, pos.y, pos.z);
-
-			pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
-			return new float3(pos.x, pos.y + vtx.y, pos.z);
+            pos += vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
+            //pos += vtx.x * math.normalize(new float3(d.z, d.y, -d.x));
+            //pos += vtx.y * math.normalize(new float3(d.x, d.z, d.y));
+            return new float3(pos.x, pos.y + vtx.y, pos.z);
 		}
 
 		float3 interpolatePosition3d(int i, float3 vtx, float4x4 mtInv)
