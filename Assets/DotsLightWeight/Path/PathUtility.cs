@@ -144,7 +144,7 @@ namespace DotsLite.LoadPath.Authoring
 			var srcvtxs = srcMesh.vertices;
 
 			var dstvtxs = srcvtxs
-				.Select(vtx => interpolatePosition3d_(i, vtx, mtChildInv))
+				.Select(vtx => interpolatePosition3d(i, vtx, mtChildInv))
 				.Select(v => new Vector3(v.x, v.y, v.z))
 				.ToArray();
 
@@ -161,11 +161,11 @@ namespace DotsLite.LoadPath.Authoring
 		public float3 CalculateBasePoint(int i, float3 pos, float4x4 mtInv) =>
 			this.interpolatePosition3d(i, pos, mtInv);
 
-		float3 interpolatePosition3d_(int i, float3 vtx, float4x4 mtInv)
+		float3 interpolatePosition3d(int i, float3 vtx, float4x4 mtInv)
 		{
-			var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
+            var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
 
-			var p0 = math.transform(mtInv, startPosition);
+            var p0 = math.transform(mtInv, startPosition);
 			var p1 = math.transform(mtInv, endPosition);
 			var v0 = math.rotate(mtInv, forwardStart);
 			var v1 = math.rotate(mtInv, forwardEnd);
@@ -183,39 +183,39 @@ namespace DotsLite.LoadPath.Authoring
             return new float3(pos.x, pos.y + vtx.y, pos.z);
 		}
 
-		float3 interpolatePosition3d(int i, float3 vtx, float4x4 mtInv)
-		{
-			var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
+		//float3 interpolatePosition3d(int i, float3 vtx, float4x4 mtInv)
+		//{
+		//	var t = vtx.z * this.maxZR * this.unitRatio + this.unitRatio * (float)i;
 
-			var p0 = math.transform(mtInv, startPosition);
-			var p1 = math.transform(mtInv, endPosition);
-			var v0 = math.rotate(mtInv, forwardStart);
-			var v1 = math.rotate(mtInv, forwardEnd);
+		//	var p0 = math.transform(mtInv, startPosition);
+		//	var p1 = math.transform(mtInv, endPosition);
+		//	var v0 = math.rotate(mtInv, forwardStart);
+		//	var v1 = math.rotate(mtInv, forwardEnd);
 
-			var att = (2.0f * p0 - 2.0f * p1 + v0 + v1) * t * t;
-			var bt = (-3.0f * p0 + 3.0f * p1 - 2.0f * v0 - v1) * t;
+		//	var att = (2.0f * p0 - 2.0f * p1 + v0 + v1) * t * t;
+		//	var bt = (-3.0f * p0 + 3.0f * p1 - 2.0f * v0 - v1) * t;
 
-			var pos = att * t + bt * t + v0 * t + p0;
+		//	var pos = att * t + bt * t + v0 * t + p0;
 
-			var d = 3.0f * att + 2.0f * bt + v0;// pos の微分（割合？）
-			var xofs = vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
-
-
-            var p0u = math.transform(mtInv, this.upStart);
-            var p1u = math.transform(mtInv, this.upEnd);
-            var v0u = math.rotate(mtInv, forwardStart);
-            var v1u = math.rotate(mtInv, forwardEnd);
-
-            var attu = (2.0f * p0u - 2.0f * p1u + v0u + v1u) * t * t;
-            var btu = (-3.0f * p0u + 3.0f * p1u - 2.0f * v0u - v1u) * t;
-
-            var posu = attu * t + btu * t + v0u * t + p0u;
+		//	var d = 3.0f * att + 2.0f * bt + v0;// pos の微分（割合？）
+		//	var xofs = vtx.x * math.normalize(new float3(d.z, 0.0f, -d.x));
 
 
+  //          var p0u = math.transform(mtInv, this.upStart);
+  //          var p1u = math.transform(mtInv, this.upEnd);
+  //          var v0u = math.rotate(mtInv, forwardStart);
+  //          var v1u = math.rotate(mtInv, forwardEnd);
 
-            pos += xofs;
-			return new float3(pos.x, pos.y + vtx.y, pos.z);
-		}
+  //          var attu = (2.0f * p0u - 2.0f * p1u + v0u + v1u) * t * t;
+  //          var btu = (-3.0f * p0u + 3.0f * p1u - 2.0f * v0u - v1u) * t;
+
+  //          var posu = attu * t + btu * t + v0u * t + p0u;
+
+
+
+  //          pos += xofs;
+		//	return new float3(pos.x, pos.y + vtx.y, pos.z);
+		//}
 
 		//float3 interpolatePosition3d(int i, float3 vtx, float4x4 mtInv)
 		//{
