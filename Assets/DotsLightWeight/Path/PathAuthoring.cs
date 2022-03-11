@@ -52,8 +52,8 @@ namespace DotsLite.LoadPath.Authoring
 			removeChildren_();
 			var conv = createConvertor_();
 			createPartSegments_(conv);
-			//createColliderSegments_(conv);
-			return;
+            createColliderSegments_(conv);
+            return;
 
 			void removeChildren_()
             {
@@ -62,9 +62,9 @@ namespace DotsLite.LoadPath.Authoring
             }
 			PathMeshConvertor createConvertor_()
             {
-				//var maxZ = this.LevelingColliderPrefab.GetComponent<MeshCollider>()
-				var maxZ = this.LevelingColliderPrefab.GetComponent<MeshFilter>()
-					.sharedMesh
+                var maxZ = this.ModelTopPrefab.GetComponent<MeshCollider>()
+                    //var maxZ = this.LevelingColliderPrefab.GetComponent<MeshFilter>()
+                    .sharedMesh
 					.vertices
 					.Max(v => v.z);
 				var conv = new PathMeshConvertor(
@@ -85,45 +85,117 @@ namespace DotsLite.LoadPath.Authoring
 					let mtinv = (float4x4)tf.worldToLocalMatrix
 					let pos = tf.position//math.transform(mtStInv, tf.position)
 					let front = pos + tf.forward//math.transform(mtStInv, tf.forward)
-					select (tfSegtop, mf, i, (mtinv, pos, front))
+					select (i, tfSegtop, mf, (mtinv, pos, front))
 					;
 				foreach (var x in q.ToArray())
 				{
-                    var (tfSegtop, mf, i, pre) = x;
+                    var (i, tfSegtop, mf, pre) = x;
+					var tfChild = mf.transform;
 
-                    var tfChild = mf.transform;
-					var pos = conv.CalculateBasePoint(i, pre.pos, float4x4.identity);
-                    tfChild.position = pos;
+                    Debug.Log($"{i} mesh:{mf.name} top:{tfSegtop.name}");
 
-                    Debug.Log($"{i} mesh:{mf.name} top:{tfSegtop.name} {pos} {pre.pos}");
-
-                    if (mf.GetComponent<WithoutShapeTransforming>() != null)
+                    switch (useMeshDeforming_())
                     {
-						//var forward = conv.CalculateBasePoint(i, pre.front, mtSegInv) - pos;
-						//tfChild.forward = forward;
+                        case true:
+                            setPosision_();
+                            var mesh = buildMesh_();
+                            setDrawMesh_(mesh);
+                            setDotsColliderMesh_(mesh);
+                            break;
+
+                        case false:
+                            setPosision_();
+                            setDirection_();
+                            break;
+                    }
+
+                    continue;
+
+
+					void setPosision_()
+					{
+						var pos = conv.CalculateBasePoint(i, pre.pos, float4x4.identity);
+						tfChild.position = pos;
+					}
+
+					bool useMeshDeforming_() =>
+						!mf.GetComponentInParent<StructureAreaPartAuthoring>().DoNotPathDeform;
+
+					void setDirection_()
+					{
 						var front = conv.CalculateBasePoint(i, pre.front, float4x4.identity);
 						tfChild.LookAt(front, Vector3.up);
-                        continue;
-                    }
+					}
 
-					var newmesh = conv.BuildMesh(i, mf.sharedMesh, tfSegtop.worldToLocalMatrix);
-                    mf.sharedMesh = newmesh;
+					Mesh buildMesh_() =>
+						conv.BuildMesh(i, mf.sharedMesh, tfSegtop.worldToLocalMatrix);
 
-                    // コライダー以外のメッシュはそのまま維持
-                    // 暫定で常に外形メッシュと同じものをセット
-                    var col = mf.GetComponent<PhysicsShapeAuthoring>();
-                    if (col != null && col.ShapeType == ShapeType.Mesh)
-                    {
-                        col.SetMesh(newmesh);
-                    }
+                    void setDrawMesh_(Mesh newmesh)
+					{
+						mf.sharedMesh = newmesh;
+					}
+
+					void setDotsColliderMesh_(Mesh newmesh)
+					{
+						var col = mf.GetComponent<PhysicsShapeAuthoring>();
+						if (col == null || col.ShapeType != ShapeType.Mesh) return;
+
+						col.SetMesh(newmesh);
+					}
                 }
 				Transform instantiate_()
 				{
 					var tf = Instantiate(this.ModelTopPrefab).transform;
 					tf.SetParent(tfSegment, worldPositionStays: true);
+					GameObject.DestroyImmediate(tf.GetComponent<MeshCollider>());
 					return tf;
 				}
 			}
+
+            void createColliderSegments_(PathMeshConvertor conv)
+            {
+                var tfSegment = this.transform;
+                var mtSegInv = (float4x4)tfSegment.worldToLocalMatrix;
+                var mtStInv = (float4x4)this.StartAnchor.transform.worldToLocalMatrix;
+                var q =
+                    from i in Enumerable.Range(0, this.Frequency)
+                    let tfSegtop = instantiate_()
+                    let srccollider = this.ModelTopPrefab.GetComponent<MeshCollider>()
+                    let collider = tfSegtop.gameObject.AddComponent<MeshCollider>()
+                    select (i, tfSegtop, collider, srccollider, tfSegtop.position)
+                    ;
+                foreach (var x in q.ToArray())
+                {
+                    var (i, tfSegtop, collider, srccollider, prepos) = x;
+                    var tfChild = collider.transform;
+
+                    setPosision_();
+                    var mesh = buildMesh_();
+                    setColliderMesh_(mesh);
+                    continue;
+
+
+                    void setPosision_()
+                    {
+                        var pos = conv.CalculateBasePoint(i, prepos, float4x4.identity);
+                        tfChild.position = pos;
+                    }
+
+                    Mesh buildMesh_() =>
+                        conv.BuildMesh(i, srccollider.sharedMesh, tfSegtop.worldToLocalMatrix);
+
+                    void setColliderMesh_(Mesh newmesh)
+                    {
+                        collider.sharedMesh = newmesh;
+                    }
+                }
+                Transform instantiate_()
+                {
+                    var tf = new GameObject("path collider").transform;
+                    tf.SetParent(tfSegment, worldPositionStays: true);
+                    return tf;
+                }
+            }
 		}
 
 
