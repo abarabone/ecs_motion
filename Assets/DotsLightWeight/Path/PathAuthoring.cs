@@ -220,6 +220,8 @@ namespace DotsLite.LoadPath.Authoring
 
 				return dict.Values.ToArray();
 			}
+
+			//getTerrain_()
         }
 
 		public void FitPathToTerrain()
@@ -228,5 +230,7 @@ namespace DotsLite.LoadPath.Authoring
         }
 
 	}
+
+
 
 }
