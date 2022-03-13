@@ -79,7 +79,7 @@ namespace DotsLite.HeightGrid.Aurthoring
             Debug.Log($"{w} {h} / {ww} {wh} / {lw} {lh}");
 
             var unitScale = terrainData.heightmapScale.x;
-            Debug.Log(unitScale);
+            Debug.Log($"unit scale {unitScale}");
 
 
             var mesh = this.UseHalfSlantMesh
