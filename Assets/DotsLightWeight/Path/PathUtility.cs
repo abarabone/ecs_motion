@@ -407,23 +407,7 @@ namespace DotsLite.LoadPath.Authoring
 
 	// 地形を変形させる ***********************************
 
-	// SimpleTerrainOperator	… 高さ・テクスチャ・詳細がすべて同じ解像度の場合に使う（半端実装）
-	// TerrainOperator			… 高さ・テクスチャを別個に処理する
-	// FullTerrainOperator		… 高さ・テクスチャ・詳細を別個に処理する
-
-
-	public interface ITerrainOperator
-	{
-
-		void adjustMesh(MeshCollider mc);
-		// メッシュにフィットさせる
-
-		//IEnumerator adjustSphere(Vector3 center, float radius, float impact, Terrain tr, TerrainCollider tc, Rigidbody rb);
-		//// 爆発円で変形させる
-
-	}
-
-	public class SimpleTerrainOperator : ITerrainOperator
+	public class SimpleTerrainOperator
 	// ハイトとスプラットが同じ解像度の時に使える　でもそんなことないか、ハイトは奇数・スプラットは偶数だし
 	{
 

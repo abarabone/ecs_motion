@@ -201,6 +201,8 @@ namespace DotsLite.LoadPath.Authoring
 
 		public void FitTerrainToPath()
         {
+			var terrains = GameObject.FindObjectsOfType<Terrain>();
+
 			var tf = this.transform;
 			var meshes = getMeshesFromColliderOrMeshFilter_();
 			foreach (var mesh in meshes)
@@ -221,7 +223,6 @@ namespace DotsLite.LoadPath.Authoring
 				return dict.Values.ToArray();
 			}
 
-			//getTerrain_()
         }
 
 		public void FitPathToTerrain()
