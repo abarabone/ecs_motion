@@ -201,33 +201,23 @@ namespace DotsLite.LoadPath.Authoring
 
 		public void FitTerrainToPath()
         {
-			var terrains = GameObject.FindObjectsOfType<Terrain>();
-
-			var tf = this.transform;
-			var meshes = getMeshesFromColliderOrMeshFilter_();
-			foreach (var mesh in meshes)
-            {
-				//mesh.
-            }
-			return;
-
-
-			(Transform tf, Mesh mesh)[] getMeshesFromColliderOrMeshFilter_()
-			{
-				var mfs = this.GetComponentsInChildren<MeshFilter>();
-				var mcs = this.GetComponentsInChildren<MeshCollider>();
-
-				var dict = mfs.ToDictionary(x => x.gameObject, x => (x.transform, x.sharedMesh));
-				mcs.ForEach(x => dict[x.gameObject] = (x.transform, x.sharedMesh));
-
-				return dict.Values.ToArray();
-			}
 
         }
 
 		public void FitPathToTerrain()
         {
-
+			var colliders = this.GetComponentsInChildren<MeshCollider>();
+			var terrains = GameObject.FindObjectsOfType<Terrain>();
+			var q =
+				from terrain in terrains
+				from collider in colliders
+				select (terrain, collider)
+				;
+			foreach (var (terrain, collider) in q)
+			{
+				Debug.Log($"{terrain.name} x {collider.name}");
+				PathUtility.AdjustHeights(collider, terrain);
+			}
         }
 
 	}

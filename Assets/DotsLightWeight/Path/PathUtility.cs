@@ -94,6 +94,41 @@ namespace DotsLite.LoadPath.Authoring
 		//	}
 		//}
 
+		public static void AdjustHeights(MeshCollider mc, Terrain terrain)
+		{
+			var op = new SimpleTerrainOperator(terrain);
+
+			var min = new Vector2(mc.bounds.min.x, mc.bounds.min.z) - op.terrainPosition;
+			var max = new Vector2(mc.bounds.max.x, mc.bounds.max.z) - op.terrainPosition;
+			var m = new FieldManipulator(min, max, op.fieldUnitR, op.fieldLength);
+
+			var hs = m.getHeights(op.td);
+
+			var tofs = new Vector3(op.terrainPosition.x, op.terrainPositionHeight, op.terrainPosition.y);
+
+			for (var iy = 0; iy < m.len.y; iy++)
+				for (var ix = 0; ix < m.len.x; ix++)
+				{
+
+					var pos = m.getIterationPosition3d(ix, iy, op.fieldUnit) + tofs;
+
+					var start = pos + Vector3.up * 512.0f;
+					var end = pos + Vector3.down * 512.0f;
+
+					var ray = new Ray(start, end - start);
+					var res = new RaycastHit();
+					if (mc.Raycast(ray, out res, 1024.0f))
+					{
+
+						hs[iy, ix] = (res.point.y - op.terrainPositionHeight) * op.fieldUnitHeightR;
+
+					}
+
+				}
+
+			m.setHeights(op.td, hs);
+
+		}
 	}
 
 	public class PathMeshConvertor
@@ -469,51 +504,12 @@ namespace DotsLite.LoadPath.Authoring
 		Vector2 min;
 		Vector2 max;
 
-		Vector3 tofs;
 
 
-		public FieldAdjusterForRoadMesh(MeshCollider mc, SimpleTerrainOperator op)
-		{
-			min = new Vector2(mc.bounds.min.x, mc.bounds.min.z) - op.terrainPosition;
-			max = new Vector2(mc.bounds.max.x, mc.bounds.max.z) - op.terrainPosition;
+		//public FieldAdjusterForRoadMesh(SimpleTerrainOperator op)
+		//{
+		//}
 
-			this.mc = mc;
-
-			tofs = new Vector3(op.terrainPosition.x, op.terrainPositionHeight, op.terrainPosition.y);
-		}
-
-		public void adjustHeights(SimpleTerrainOperator op)
-		{
-
-			var m = new FieldManipulator(min, max, op.fieldUnitR, op.fieldLength);
-
-			var hs = m.getHeights(op.td);
-
-			var tofs = new Vector3(op.terrainPosition.x, op.terrainPositionHeight, op.terrainPosition.y);
-
-			for (var iy = 0; iy < m.len.y; iy++)
-				for (var ix = 0; ix < m.len.x; ix++)
-				{
-
-					var pos = m.getIterationPosition3d(ix, iy, op.fieldUnit) + tofs;
-
-					var start = pos + Vector3.up * 512.0f;
-					var end = pos + Vector3.down * 512.0f;
-
-					var ray = new Ray(start, end - start);
-					var res = new RaycastHit();
-					if (mc.Raycast(ray, out res, 1024.0f))
-					{
-
-						hs[iy, ix] = (res.point.y - op.terrainPositionHeight) * op.fieldUnitHeightR;
-
-					}
-
-				}
-
-			m.setHeights(op.td, hs);
-
-		}
 
 		//public void adjustAlphamaps(TerrainOperator op)
 		//{

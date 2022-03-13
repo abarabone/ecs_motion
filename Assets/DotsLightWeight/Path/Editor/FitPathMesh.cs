@@ -67,7 +67,7 @@ namespace DotsLite.LoadPath.Authoring
                     ;
                 foreach (var path in paths)
                 {
-                    path.BuildPathMeshes();
+                    path.FitPathToTerrain();
 
                     EditorUtility.SetDirty(path);
                 }
