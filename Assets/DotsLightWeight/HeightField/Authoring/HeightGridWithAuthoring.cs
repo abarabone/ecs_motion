@@ -146,6 +146,8 @@ namespace DotsLite.HeightGrid.Aurthoring
                 };
                 em.AddComponents(ent, new ComponentTypes(types));
 
+
+                // テレインの中心位置
                 var pos = (float3)this.transform.position - new float3(w, 0.0f, h) * unitScale * 0.5f;
                 //em.SetComponentData(ent, new GridMaster.DimensionData
                 //{
@@ -268,7 +270,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                 });
 
                 var total = new float3(w, 0, h) * unitScale;
-                var startPosition = (float3)this.transform.position - total * 0.5f;
+                var startPosition = (float3)this.transform.position;// - total;// * 0.5f;
                 var span = new float3(lw, 0, lh) * unitScale * (1 << lodlevel);
                 var offset = new float3(i.x, 0, i.y) * span;
                 em.SetComponentData(ent, new Marker.Translation
