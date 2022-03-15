@@ -32,6 +32,8 @@ namespace DotsLite.Geometry.inner.unit
         public Func<int, Rect> texHashToUvRect;
 
         public IEnumerable<int> partIdPerMesh;
+
+        public IEnumerable<(int baseIndex, int subIndex)> palletIndexPerMesh;
     }
 
     //public struct MeshSourceUnit
