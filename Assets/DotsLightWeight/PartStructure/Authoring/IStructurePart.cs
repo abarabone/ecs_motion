@@ -38,4 +38,30 @@ namespace DotsLite.Structure.Authoring
 
 ・パレット
 ・隣接パーツ
+
+
+
+パレット付きモデル
+・シーンで共通のバッファ
+・モデルごとの base index
+・頂点／テクスチャフェッチごとの sub index
+pallets[base index + sub index]
+
+uns[] ... アトラス内の矩形要素の個数分
+  offset
+  range
+
+6 bytes
+up, left, forward
+down, right, back
+
+pos     x,y,z
+size    x,y,z
+rot     x,y,z,w
+indices
+ pallet sub index   ulf-, drb-
+ uv index           ulf-, drb-
+ 
+
+ 
 */

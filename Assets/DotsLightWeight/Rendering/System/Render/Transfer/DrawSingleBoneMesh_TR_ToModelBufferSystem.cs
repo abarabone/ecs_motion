@@ -13,9 +13,6 @@ namespace DotsLite.Draw
 {
     using DotsLite.Dependency;
 
-    /// <summary>
-    /// TRSだが、現在はTRのみ対応
-    /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
     //[UpdateAfter(typeof())]

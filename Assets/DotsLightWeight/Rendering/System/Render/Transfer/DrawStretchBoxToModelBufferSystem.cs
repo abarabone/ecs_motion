@@ -13,12 +13,15 @@ namespace DotsLite.Draw
 {
     using DotsLite.Dependency;
 
+    /// <summary>
+    /// TRSだが、現在はTRのみ対応
+    /// </summary>
     //[DisableAutoCreation]
-    [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer ) )]
+    [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     //[UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class DrawSingleBoneMesh_T_ToModelBufferSystem : DependencyAccessableSystemBase
+    public class DrawStretchBoxToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 
@@ -40,7 +43,7 @@ namespace DotsLite.Draw
             var nativeBuffers = this.GetComponentDataFromEntity<DrawSystem.NativeTransformBufferData>(isReadOnly: true);
             var drawSysEnt = this.GetSingletonEntity<DrawSystem.NativeTransformBufferData>();
 
-            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>( isReadOnly: true );
+            var offsetsOfDrawModel = this.GetComponentDataFromEntity<DrawModel.VectorIndexData>(isReadOnly: true);
 
             this.Entities
                 .WithBurst()
@@ -48,12 +51,15 @@ namespace DotsLite.Draw
                 .WithReadOnly(nativeBuffers)
                 .WithAll<DrawInstance.MeshTag>()
                 .WithNone<DrawInstance.BoneModelTag>()
-                .WithNone<Rotation, NonUniformScale>()
                 .ForEach(
                     (
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
-                        in Translation pos
+                        in Translation pos,
+                        in Rotation rot,
+                        in StretchBox.SizeData size,
+                        in StretchBox.UvIndexData iuv,
+                        in Pallet.PalletIndexData ipallet
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
@@ -61,12 +67,14 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var lengthOfInstance = 1 + offsetInfo.OptionalVectorLengthPerInstance;
+                        var lengthOfInstance = 4 + offsetInfo.OptionalVectorLengthPerInstance;
                         var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.OptionalVectorLengthPerInstance;
 
                         var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
                         pModel[i + 0] = new float4(pos.Value, 1.0f);
-
+                        pModel[i + 1] = rot.Value.value;
+                        pModel[i + 2] = size.Size;
+                        pModel[i + 3] = new float4(iuv.as_float2, ipallet.as_float2);
                     }
                 )
                 .ScheduleParallel();
