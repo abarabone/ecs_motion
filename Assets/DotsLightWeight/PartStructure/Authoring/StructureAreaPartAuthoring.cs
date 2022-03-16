@@ -30,6 +30,7 @@ namespace DotsLite.Structure.Authoring
         //public bool IsPathProjectionToTerrain;  // パスメッシュを地形にそって変形させる
         public bool NoDebris;
         public bool UseUpInterpolation;
+        public bool IsStretchBoxMesh;
 
         public int PartId;
         public int partId { get => this.PartId; set => this.PartId = value; }
@@ -44,7 +45,13 @@ namespace DotsLite.Structure.Authoring
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
-            this.PartModel
+            (this.IsStretchBoxMesh
+                ? (IMeshModel)new StretchBoxModel<UI32, PositionNormalVertex>
+                {
+                    objectTop = this.PartModel.objectTop,
+                    shader = this.PartModel.shader
+                }
+                : this.PartModel)
             .WrapEnumerable();
 
         //public void Convert

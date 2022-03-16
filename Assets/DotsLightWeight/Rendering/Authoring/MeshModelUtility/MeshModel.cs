@@ -75,7 +75,7 @@ namespace DotsLite.Model.Authoring
             var texdict = atlasDictionary.texHashToUvRect;
             return (
                 this.sourcePrefabKey,
-                meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, part => texdict[atlas, part], this.QueryBones?.ToArray())
+                meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, this.QueryBones?.ToArray(), part => texdict[atlas, part])
             );
         }
     }

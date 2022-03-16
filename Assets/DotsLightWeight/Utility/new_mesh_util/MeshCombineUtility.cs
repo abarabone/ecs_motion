@@ -27,12 +27,13 @@ namespace DotsLite.Geometry
         public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>(
             this SrcMeshesModelCombinePack srcmeshpack,
             Transform tfRoot,
+            Transform[] tfBones = null,
             Func<int, Rect> texHashToUvRectFunc = null,
-            Transform[] tfBones = null)
+            Func<int, int> texHashToUvIndexFunc = null)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
             where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         {
-            var p = srcmeshpack.mmts.calculateParameters(tfRoot, texHashToUvRectFunc, tfBones);
+            var p = srcmeshpack.mmts.calculateParameters(tfRoot, tfBones, texHashToUvRectFunc, texHashToUvIndexFunc);
 
             return () => new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable, p);
         }
@@ -55,8 +56,8 @@ namespace DotsLite.Geometry
 
         static AdditionalParameters calculateParameters(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
-            Transform tfBase, Func<int, Rect> texHashToUvRectFunc,
-            Transform[] tfBones)
+            Transform tfBase,  Transform[] tfBones,
+            Func<int, Rect> texHashToUvRectFunc, Func<int, int> texHashToUvIndexFunc)
         {
             var mmts_ = mmts.ToArray();
             var meshes = mmts_
@@ -83,6 +84,7 @@ namespace DotsLite.Geometry
                 //atlasHash = atlas?.GetHashCode() ?? 0,
                 //texhashToUvRect = texHashToUvRect,
                 texHashToUvRect = texHashToUvRectFunc,
+                texHashToUvIndex = texHashToUvIndexFunc,
             };
 
             var qPartIdPerMesh =

@@ -30,6 +30,7 @@ namespace DotsLite.Geometry.inner.unit
         public IEnumerable<IEnumerable<int>> texhashPerSubMesh;
         //public HashToRect texhashToUvRect;
         public Func<int, Rect> texHashToUvRect;
+        public Func<int, int> texHashToUvIndex;
 
         public IEnumerable<int> partIdPerMesh;
 
