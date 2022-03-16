@@ -29,18 +29,51 @@ namespace DotsLite.Structure.Authoring
     {
 
 
-        public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
+        public override Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        {
+            var mat = new Material(this.shader);
+            mat.enableInstancing = true;
+            mat.mainTexture = atlas;
+
+            const BoneType BoneType = BoneType.RT;
+            const int boneLength = 1;
+            const int instanceDataVectorLength = 3;
+
+            return gcs.CreateDrawModelEntityComponents(
+                mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc, instanceDataVectorLength);
+        }
+
+        public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
-            var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
-            var texdict = atlasDictionary.texHashToUvRect;
-            return (
-                this.sourcePrefabKey,
-                meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, this.QueryBones?.ToArray(),
-                    part => texdict[atlas, part],
-                    isubmesh => 0)
-            );
+            //var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
+            //var texdict = atlasDictionary.texHashToUvRect;
+            //return (
+            //    this.sourcePrefabKey,
+            //    meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, this.QueryBones?.ToArray(),
+            //        part => texdict[atlas, part],
+            //        isubmesh => 0)
+            //);
+
+            return (this.sourcePrefabKey, () =>
+            {
+
+                return createMesh_();
+            });
+
+            //Dictionary<int, int> buildTexHashToUvIndexDictionary_()
+            //{
+
+            //}
+
+            MeshElements<TIdx, TVtx> createMesh_()
+            {
+                return new MeshElements<TIdx, TVtx>
+                {
+
+                };
+            }
         }
 
     }
