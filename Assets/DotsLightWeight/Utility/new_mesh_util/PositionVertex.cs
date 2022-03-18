@@ -25,6 +25,10 @@ namespace DotsLite.Geometry
         public Vector3 Position;
 
 
+        public Func<(TIdx[], PositionVertex[])> BuildCombiner2<TIdx>
+            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams => default;
+
         public MeshElements<TIdx, PositionVertex> BuildCombiner<TIdx>
             (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams

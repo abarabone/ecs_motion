@@ -45,7 +45,11 @@ namespace DotsLite.Geometry
             };
 
 
-        public IEnumerable<PositionNormalUvBonedVertex> Packing<TIdx>(MeshElements<TIdx, PositionNormalUvBonedVertex> src)
+        public Func<(TIdx[], PositionNormalUvBonedVertex[])> BuildCombiner2<TIdx>
+            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams => default;
+
+            public IEnumerable<PositionNormalUvBonedVertex> Packing<TIdx>(MeshElements<TIdx, PositionNormalUvBonedVertex> src)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>
             from x in (src.poss, src.nms, src.uvs, src.bws, src.bids).Zip()

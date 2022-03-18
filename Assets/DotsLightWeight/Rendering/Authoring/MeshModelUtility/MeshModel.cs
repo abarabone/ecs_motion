@@ -78,6 +78,17 @@ namespace DotsLite.Model.Authoring
                 meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, this.QueryBones?.ToArray(), part => texdict[atlas, part])
             );
         }
+        public virtual (SourcePrefabKeyUnit key, Func<(TIdx[], TVtx[])> f) BuildMeshCombiner2(
+            SrcMeshesModelCombinePack meshpack,
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+        {
+            var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
+            var texdict = atlasDictionary.texHashToUvRect;
+            return (
+                this.sourcePrefabKey,
+                meshpack.BuildCombiner2<TIdx, TVtx>(this.TfRoot, this.QueryBones?.ToArray(), part => texdict[atlas, part])
+            );
+        }
     }
 
 

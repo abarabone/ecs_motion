@@ -53,6 +53,31 @@ namespace DotsLite.Geometry
             };
 
 
+        public Func<(TIdx[], PositionNormalUvVertex[])> BuildCombiner2<TIdx>
+            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        {
+            return () =>
+            {
+                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
+
+                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+                var qVtx =
+                    from x in (poss, nms, uvs).Zip()
+                    select new PositionNormalUvVertex
+                    {
+                        Position = x.src0,
+                        Normal = x.src1,
+                        Uv = x.src2,
+                    };
+                var vtxs = qVtx.ToArray();
+
+                return (idxs, vtxs);
+            };
+        }
+
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
         {
             var layout = new[]

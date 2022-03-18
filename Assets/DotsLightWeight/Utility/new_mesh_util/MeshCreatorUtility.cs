@@ -48,6 +48,32 @@ namespace DotsLite.Geometry
             return dstmesh;
         }
 
+        public static Mesh CreateMesh<TIdx, TVtx>(this (TIdx[] idxs, TVtx[] vtxs) meshElements)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        {
+            var dstmeshes = Mesh.AllocateWritableMeshData(1);
+            var dstmesh = new Mesh();
+
+            var src = meshElements;
+            var dst = dstmeshes[0];
+
+            var idxs = src.idxs;
+            dst.setBufferParams<TIdx>(idxs.Length);
+            dst.GetIndexData<TIdx>().CopyFrom(idxs);
+
+            var vtxs = src.vtxs;
+            dst.setBufferParams<TVtx>(vtxs.Length);
+            dst.GetVertexData<TVtx>().CopyFrom(vtxs);
+
+            dst.subMeshCount = 1;
+            dst.SetSubMesh(0, new SubMeshDescriptor(0, idxs.Length));
+
+            Mesh.ApplyAndDisposeWritableMeshData(dstmeshes, dstmesh);
+            dstmesh.RecalculateBounds();
+
+            return dstmesh;
+        }
 
 
         static IEnumerable<TVtx> selectAll<TIdx, TVtx>(this MeshElements<TIdx, TVtx> src)

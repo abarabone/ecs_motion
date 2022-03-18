@@ -38,6 +38,10 @@ namespace DotsLite.Geometry
             };
 
 
+        public Func<(TIdx[], PositionUvVertex[])> BuildCombiner2<TIdx>
+            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams => default;
+
         public IEnumerable<PositionUvVertex> Packing<TIdx>(MeshElements<TIdx, PositionUvVertex> src)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         =>

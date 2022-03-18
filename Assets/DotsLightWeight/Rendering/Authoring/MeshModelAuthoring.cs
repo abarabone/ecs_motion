@@ -53,6 +53,7 @@ namespace DotsLite.Model.Authoring
 
 
         public override IEnumerable<IMeshModel> QueryModel => this.Model.WrapEnumerable();
+        public IEnumerable<MeshModel<UI32, PositionNormalUvVertex>> QueryModel2 => this.Model.WrapEnumerable();
         //public override IEnumerable<IMeshModel> QueryModel
         //{
         //    get
@@ -86,7 +87,7 @@ namespace DotsLite.Model.Authoring
             //if (!this.isActiveAndEnabled) { conversionSystem.DstEntityManager.DestroyEntity(entity); return; }
 
 
-            this.QueryModel.BuildModelToDictionary(conversionSystem);
+            this.QueryModel2.BuildModelToDictionary2(conversionSystem);
 
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject);
 

@@ -48,7 +48,7 @@ namespace DotsLite.Geometry.inner
                 ? submesh.Elements().AsTriangle().Reverse()
                 : submesh.Elements().AsTriangle()
             from idx in tri//.Do(x => Debug.Log(x))//
-            select idx.Add(x.mesh.BaseVertex + submesh.Descriptor.baseVertex)
+            select idx.Add((uint)x.mesh.BaseVertex + (uint)submesh.Descriptor.baseVertex)
             ;
         
     }
@@ -79,21 +79,36 @@ namespace DotsLite.Geometry.inner
             ;
 
 
-        static public IEnumerable<Vector2> QueryConvertUvs
-            (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, int channel)
-        =>
+        static public IEnumerable<Vector2> QueryConvertUvs(
+            this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, int channel)
+        {
+            return
             p.texHashToUvRect != null
             ?
-                from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), VertexAttribute.TexCoord0)
+                from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
                 from xsub in x.submeshes
                 from uv in xsub.submesh.Elements()
                 select uv.ScaleUv(p.texHashToUvRect(xsub.texhash))
             :
                 from mesh in srcmeshes
-                from uv in mesh.MeshData.QueryMeshVertices<Vector2>((md, arr) => md.GetUVs(channel, arr), VertexAttribute.TexCoord0)
+                from uv in mesh.MeshData.QueryMeshVertices<Vector2>((md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
                 select uv
             ;
 
+            VertexAttribute getAttr_(int channel) =>
+                channel switch
+                {
+                    0 => VertexAttribute.TexCoord0,
+                    1 => VertexAttribute.TexCoord1,
+                    2 => VertexAttribute.TexCoord2,
+                    3 => VertexAttribute.TexCoord3,
+                    4 => VertexAttribute.TexCoord4,
+                    5 => VertexAttribute.TexCoord5,
+                    6 => VertexAttribute.TexCoord6,
+                    7 => VertexAttribute.TexCoord7,
+                    _ => VertexAttribute.TexCoord0,
+                };
+        }
 
         static public IEnumerable<Vector3> QueryConvertPositionsWithBone
             (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
@@ -153,8 +168,8 @@ namespace DotsLite.Geometry.inner
                 this IEnumerable<SrcMeshUnit> srcmeshes,
                 AdditionalParameters p,
                 Action<Mesh.MeshData, NativeArray<T>> getElementSrc,
-                VertexAttribute attr
-            ) where T : struct
+                VertexAttribute attr)
+            where T : struct
         =>
             from x in (srcmeshes, p.mtPerMesh, p.texhashPerSubMesh).Zip()
             let submeshes = x.src0.MeshData.QuerySubmeshesForVertices(getElementSrc, attr)
@@ -188,21 +203,33 @@ namespace DotsLite.Geometry.inner
     static class MeshElementsSourceUtility
     {
 
-        public static IEnumerable<T> QueryMeshVertices<T>
-            (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr) where T : struct
+        public static IEnumerable<T> QueryMeshVertices<T>(this Mesh.MeshData meshdata,
+            Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr)
+            where T : struct
         {
+            //var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
+            //if (meshdata.GetVertexAttributeDimension(attr) > 0)
+            //{
+            //    getElementSrc(meshdata, array);
+            //}
+            //return array.rangeWithUsing(0, array.Length);
+            Debug.Log($"aaa {attr}");
             var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
+            using var d = new disposablelogger<T> { dispo = array, msg = $"{attr}" };
             if (meshdata.GetVertexAttributeDimension(attr) > 0)
             {
                 getElementSrc(meshdata, array);
             }
-            return array.rangeWithUsing(0, array.Length);
+            foreach (var e in array.Slice(0, array.Length)) yield return e;
         }
 
-        public static IEnumerable<SrcSubMeshUnit<T>> QuerySubmeshesForVertices<T>
-            (this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr) where T : struct
+        public static IEnumerable<SrcSubMeshUnit<T>> QuerySubmeshesForVertices<T>(
+            this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr)
+            where T : struct
         {
-            using var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
+            Debug.Log($"bbb {attr}");
+            var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
+            using var d = new disposablelogger<T> { dispo = array, msg = $"{attr}" };
             if (meshdata.GetVertexAttributeDimension(attr) > 0)
             {
                 getElementSrc(meshdata, array);
@@ -210,13 +237,13 @@ namespace DotsLite.Geometry.inner
             var q =
                 from i in 0.Inc(meshdata.subMeshCount)
                 let desc = meshdata.GetSubMesh(i)
-                select new SrcSubMeshUnit<T>(i, desc, () => array.range(desc.firstVertex, desc.vertexCount))
+                select new SrcSubMeshUnit<T>(i, desc, () => array.Slice(desc.firstVertex, desc.vertexCount))
                 ;
             foreach (var e in q) yield return e;
         }
 
-        public static IEnumerable<SrcSubMeshUnit<T>> QuerySubmeshesForIndexData<T>
-            (this Mesh.MeshData meshdata) where T : struct, IIndexUnit<T>
+        public static IEnumerable<SrcSubMeshUnit<T>> QuerySubmeshesForIndexData<T>(this Mesh.MeshData meshdata)
+            where T : struct, IIndexUnit<T>
         {
             return
                 from i in 0.Inc(meshdata.subMeshCount)
@@ -224,20 +251,19 @@ namespace DotsLite.Geometry.inner
                 select new SrcSubMeshUnit<T>(i, desc, () => getIndexDataNativeArray_(desc))
                 ;
 
+            // GetIndexData() はバッファへの参照を返すので、破棄不要
             IEnumerable<T> getIndexDataNativeArray_(SubMeshDescriptor desc) =>
                 meshdata.indexFormat switch
                 {
                     IndexFormat.UInt16 when !(default(T) is ushort) =>
                         meshdata.GetIndexData<ushort>()
-                            .Select(x => new T().Add(x))
-                            .ToNativeArray(Allocator.TempJob)
-                            .rangeWithUsing(desc.indexStart, desc.indexCount),
+                            .Slice(desc.indexStart, desc.indexCount)
+                            .Select(x => new T().Add(x)),
 
                     IndexFormat.UInt32 when !(default(T) is uint) =>
                         meshdata.GetIndexData<uint>()
-                            .Select(x => new T().Add((int)x))
-                            .ToNativeArray(Allocator.TempJob)
-                            .rangeWithUsing(desc.indexStart, desc.indexCount),
+                            .Slice(desc.indexStart, desc.indexCount)
+                            .Select(x => new T().Add(x)),
 
                     _ =>
                         meshdata.GetIndexData<T>()
@@ -245,13 +271,26 @@ namespace DotsLite.Geometry.inner
                 };
         }
 
-        static IEnumerable<T> rangeWithUsing<T>(this NativeArray<T> array, int first, int length) where T : struct
+        static IEnumerable<T> range<T>(this NativeArray<T> src, int first, int length) where T : struct
         {
-            using (array) { foreach (var x in array.Range(first, length)) yield return x; }
+            foreach (var x in src.Range(first, length)) yield return x;
         }
-        static IEnumerable<T> range<T>(this NativeArray<T> array, int first, int length) where T : struct
+
+        //static IEnumerable<T> rangeWithUsing<T>(this NativeArray<T> src, int first, int length) where T : struct
+        //{
+        //    using var arr = new disposablelogger { dispo = src, msg = $"-" };
+        //    foreach (var x in src.Range(first, length)) yield return x;
+        //    //using (array) { foreach (var x in array.Range(first, length)) yield return x; }
+        //}
+        class disposablelogger<T> : IDisposable where T: struct
         {
-            foreach (var x in array.Range(first, length)) yield return x;
+            public string msg;
+            public NativeArray<T> dispo;
+            public void Dispose()
+            {
+                Debug.Log($"dispose {this.dispo.IsCreated} {this.msg}");
+                //this.dispo.Dispose();
+            }
         }
     }
 

@@ -37,6 +37,19 @@ namespace DotsLite.Geometry
 
             return () => new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable, p);
         }
+        public static Func<(TIdx[], TVtx[])> BuildCombiner2<TIdx, TVtx>(
+            this SrcMeshesModelCombinePack srcmeshpack,
+            Transform tfRoot,
+            Transform[] tfBones = null,
+            Func<int, Rect> texHashToUvRectFunc = null,
+            Func<int, int> texHashToUvIndexFunc = null)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        {
+            var p = srcmeshpack.mmts.calculateParameters(tfRoot, tfBones, texHashToUvRectFunc, texHashToUvIndexFunc);
+
+            return new TVtx().BuildCombiner2<TIdx>(srcmeshpack.AsEnumerable, p);
+        }
 
 
         /// <summary>
@@ -50,6 +63,12 @@ namespace DotsLite.Geometry
             Task.Run(f);
 
         public static Task<IMeshElements> ToTask(this Func<IMeshElements> f) =>
+            Task.Run(f);
+
+        public static Task<(TIdx[], TVtx[])> ToTask<TIdx, TVtx>(this Func<(TIdx[], TVtx[])> f)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        =>
             Task.Run(f);
 
 

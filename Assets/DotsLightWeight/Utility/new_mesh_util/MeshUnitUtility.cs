@@ -39,6 +39,16 @@ namespace DotsLite.Geometry
         public Mesh CreateMesh() => MeshCreatorUtility.CreateMesh(this);
     }
 
+    public static class _
+    {
+        public static Mesh CreateMesh2<TIdx, TVtx>(this (TIdx[], TVtx[]) src)
+            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        {
+            return MeshCreatorUtility.CreateMesh(src);
+        }
+    }
+
 
     public interface ISetBufferParams
     {
