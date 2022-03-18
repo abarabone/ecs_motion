@@ -26,31 +26,28 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
 
 
-        public MeshElements<TIdx, PositionUvVertex> BuildCombiner<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        public Func<MeshElements<TIdx, PositionUvVertex>> BuildCombiner<TIdx>(
+            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            new MeshElements<TIdx, PositionUvVertex>
+        {
+            return () =>
             {
-                idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
-                poss = srcmeshes.QueryConvertPositions(p).ToArray(),
-                uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray(),
+                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
+
+                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+                var qVtx =
+                    from x in (poss, uvs).Zip()
+                    select new PositionUvVertex
+                    {
+                        Position = x.src0,
+                        Uv = x.src1,
+                    };
+                var vtxs = qVtx.ToArray();
+
+                return (idxs, vtxs);
             };
-
-
-        public Func<(TIdx[], PositionUvVertex[])> BuildCombiner2<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams => default;
-
-        public IEnumerable<PositionUvVertex> Packing<TIdx>(MeshElements<TIdx, PositionUvVertex> src)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            from x in (src.poss, src.uvs).Zip()
-            select new PositionUvVertex
-            {
-                Position = x.src0,
-                Uv = x.src1,
-            };
+        }
 
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)

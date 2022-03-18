@@ -31,33 +31,6 @@ namespace DotsLite.Geometry
             var src = meshElements;
             var dst = dstmeshes[0];
 
-            var idxs = src.idxs.ToArray();
-            dst.setBufferParams<TIdx>(idxs.Length);
-            dst.GetIndexData<TIdx>().CopyFrom(idxs);
-
-            var vtxs = src.selectAll<TIdx, TVtx>().ToArray();
-            dst.setBufferParams<TVtx>(vtxs.Length);
-            dst.GetVertexData<TVtx>().CopyFrom(vtxs);
-
-            dst.subMeshCount = 1;
-            dst.SetSubMesh(0, new SubMeshDescriptor(0, idxs.Length));
-
-            Mesh.ApplyAndDisposeWritableMeshData(dstmeshes, dstmesh);
-            dstmesh.RecalculateBounds();
-
-            return dstmesh;
-        }
-
-        public static Mesh CreateMesh<TIdx, TVtx>(this (TIdx[] idxs, TVtx[] vtxs) meshElements)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-        {
-            var dstmeshes = Mesh.AllocateWritableMeshData(1);
-            var dstmesh = new Mesh();
-
-            var src = meshElements;
-            var dst = dstmeshes[0];
-
             var idxs = src.idxs;
             dst.setBufferParams<TIdx>(idxs.Length);
             dst.GetIndexData<TIdx>().CopyFrom(idxs);
@@ -76,11 +49,6 @@ namespace DotsLite.Geometry
         }
 
 
-        static IEnumerable<TVtx> selectAll<TIdx, TVtx>(this MeshElements<TIdx, TVtx> src)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-        =>
-            new TVtx().Packing(src);
 
         static void setBufferParams<T>(this Mesh.MeshData meshdata, int elementLength)
             where T : struct, ISetBufferParams

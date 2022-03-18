@@ -33,22 +33,10 @@ namespace DotsLite.Geometry
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
             where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         {
-            var p = srcmeshpack.mmts.calculateParameters(tfRoot, tfBones, texHashToUvRectFunc, texHashToUvIndexFunc);
+            var p = srcmeshpack.mmts.calculateParameters(
+                tfRoot, tfBones, texHashToUvRectFunc, texHashToUvIndexFunc);
 
-            return () => new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable, p);
-        }
-        public static Func<(TIdx[], TVtx[])> BuildCombiner2<TIdx, TVtx>(
-            this SrcMeshesModelCombinePack srcmeshpack,
-            Transform tfRoot,
-            Transform[] tfBones = null,
-            Func<int, Rect> texHashToUvRectFunc = null,
-            Func<int, int> texHashToUvIndexFunc = null)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-        {
-            var p = srcmeshpack.mmts.calculateParameters(tfRoot, tfBones, texHashToUvRectFunc, texHashToUvIndexFunc);
-
-            return new TVtx().BuildCombiner2<TIdx>(srcmeshpack.AsEnumerable, p);
+            return new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable, p);
         }
 
 

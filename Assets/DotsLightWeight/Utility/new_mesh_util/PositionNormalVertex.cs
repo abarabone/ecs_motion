@@ -27,31 +27,28 @@ namespace DotsLite.Geometry
         public Vector3 Normal;
 
 
-        public MeshElements<TIdx, PositionNormalVertex> BuildCombiner<TIdx>
+        public Func<MeshElements<TIdx, PositionNormalVertex>> BuildCombiner<TIdx>
             (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            new MeshElements<TIdx, PositionNormalVertex>
+        {
+            return () =>
             {
-                idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
-                poss = srcmeshes.QueryConvertPositions(p).ToArray(),
-                nms = srcmeshes.QueryConvertNormals(p).ToArray()
+                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
+
+                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+                var qVtx =
+                    from x in (poss, nms).Zip()
+                    select new PositionNormalVertex
+                    {
+                        Position = x.src0,
+                        Normal = x.src1,
+                    };
+                var vtxs = qVtx.ToArray();
+
+                return (idxs, vtxs);
             };
-
-
-        public Func<(TIdx[], PositionNormalVertex[])> BuildCombiner2<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams => default;
-
-        public IEnumerable<PositionNormalVertex> Packing<TIdx>(MeshElements<TIdx, PositionNormalVertex> src)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            from x in (src.poss, src.nms).Zip()
-            select new PositionNormalVertex
-            {
-                Position = x.src0,
-                Normal = x.src1,
-            };
+        }
 
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)

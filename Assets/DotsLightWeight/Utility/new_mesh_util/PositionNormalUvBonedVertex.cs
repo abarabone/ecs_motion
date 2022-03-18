@@ -30,37 +30,35 @@ namespace DotsLite.Geometry
         public uint BoneIndex4;
 
 
-        public MeshElements<TIdx, PositionNormalUvBonedVertex> BuildCombiner<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+
+        public Func<MeshElements<TIdx, PositionNormalUvBonedVertex>> BuildCombiner<TIdx>(
+            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            new MeshElements<TIdx, PositionNormalUvBonedVertex>
+        {
+            return () =>
             {
-                idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
-                poss = srcmeshes.QueryConvertPositionsWithBone(p).ToArray(),
-                nms = srcmeshes.QueryConvertNormals(p).ToArray(),
-                uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray(),
-                bws = srcmeshes.QueryConvertBoneWeights(p).ToArray(),
-                bids = srcmeshes.QueryConvertBoneIndices(p).ToArray(),
+                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
+
+                var poss = srcmeshes.QueryConvertPositionsWithBone(p).ToArray();
+                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+                var bws = srcmeshes.QueryConvertBoneWeights(p).ToArray();
+                var bids = srcmeshes.QueryConvertBoneIndices(p).ToArray();
+                var qVtx =
+                    from x in (poss, nms, uvs, bws, bids).Zip()
+                    select new PositionNormalUvBonedVertex
+                    {
+                        Position = x.src0,
+                        Normal = x.src1,
+                        Uv = x.src2,
+                        BoneWeight4 = x.src3,
+                        BoneIndex4 = x.src4,
+                    };
+                var vtxs = qVtx.ToArray();
+
+                return (idxs, vtxs);
             };
-
-
-        public Func<(TIdx[], PositionNormalUvBonedVertex[])> BuildCombiner2<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams => default;
-
-            public IEnumerable<PositionNormalUvBonedVertex> Packing<TIdx>(MeshElements<TIdx, PositionNormalUvBonedVertex> src)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            from x in (src.poss, src.nms, src.uvs, src.bws, src.bids).Zip()
-            select new PositionNormalUvBonedVertex
-            {
-                Position = x.src0,
-                Normal = x.src1,
-                Uv = x.src2,
-                BoneWeight4 = x.src3,
-                BoneIndex4 = x.src4,
-            };
+        }
 
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
@@ -93,8 +91,8 @@ namespace DotsLite.Geometry
             }
         }
 
-        public static BoneConversionDictionary ToBoneIndexConversionDictionary
-            (this (IEnumerable<Transform[]> tfSrcBonesPerMesh, Transform[] tfDstBones) src)
+        public static BoneConversionDictionary ToBoneIndexConversionDictionary(
+            this (IEnumerable<Transform[]> tfSrcBonesPerMesh, Transform[] tfDstBones) src)
         {
             var qTfToMeshAndBoneIndex =
                 from m in src.tfSrcBonesPerMesh.WithIndex()

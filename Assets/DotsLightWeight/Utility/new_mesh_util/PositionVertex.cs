@@ -25,29 +25,26 @@ namespace DotsLite.Geometry
         public Vector3 Position;
 
 
-        public Func<(TIdx[], PositionVertex[])> BuildCombiner2<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams => default;
-
-        public MeshElements<TIdx, PositionVertex> BuildCombiner<TIdx>
+        public Func<MeshElements<TIdx, PositionVertex>> BuildCombiner<TIdx>
             (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            new MeshElements<TIdx, PositionVertex>
+        {
+            return () =>
             {
-                idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
-                poss = srcmeshes.QueryConvertPositions(p).ToArray(),
-            };
+                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
 
+                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+                var qVtx =
+                    from x in poss
+                    select new PositionVertex
+                    {
+                        Position = x,
+                    };
+                var vtxs = qVtx.ToArray();
 
-        public IEnumerable<PositionVertex> Packing<TIdx>(MeshElements<TIdx, PositionVertex> src)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            from x in src.poss
-            select new PositionVertex
-            {
-                Position = x
+                return (idxs, vtxs);
             };
+        }
 
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)

@@ -29,25 +29,27 @@ namespace DotsLite.Geometry
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
         public TIdx[] idxs;
-        public Vector3[] poss;
-        public Vector2[] uvs;
-        public Vector3[] nms;
-        public uint[] bids;
-        public Vector4[] bws;
-        public Color32[] pids;
+        public TVtx[] vtxs;
 
         public Mesh CreateMesh() => MeshCreatorUtility.CreateMesh(this);
+
+        public static implicit operator MeshElements<TIdx, TVtx> ((TIdx[], TVtx[]) src) =>
+            new MeshElements<TIdx, TVtx>
+            {
+                idxs = src.Item1,
+                vtxs = src.Item2,
+            };
     }
 
-    public static class _
-    {
-        public static Mesh CreateMesh2<TIdx, TVtx>(this (TIdx[], TVtx[]) src)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-        {
-            return MeshCreatorUtility.CreateMesh(src);
-        }
-    }
+    //public static class _
+    //{
+    //    public static Mesh CreateMesh<TIdx, TVtx>(this (TIdx[], TVtx[]) src)
+    //        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+    //        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+    //    {
+    //        return MeshCreatorUtility.CreateMesh(src);
+    //    }
+    //}
 
 
     public interface ISetBufferParams

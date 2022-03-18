@@ -28,32 +28,7 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
 
 
-        public MeshElements<TIdx, PositionNormalUvVertex> BuildCombiner<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            new MeshElements<TIdx, PositionNormalUvVertex>
-            {
-                idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
-                poss = srcmeshes.QueryConvertPositions(p).ToArray(),
-                nms = srcmeshes.QueryConvertNormals(p).ToArray(),
-                uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray(),
-            };
-
-
-        public IEnumerable<PositionNormalUvVertex> Packing<TIdx>(MeshElements<TIdx, PositionNormalUvVertex> src)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            from x in (src.poss, src.nms, src.uvs).Zip()
-            select new PositionNormalUvVertex
-            {
-                Position = x.src0,
-                Normal = x.src1,
-                Uv = x.src2,
-            };
-
-
-        public Func<(TIdx[], PositionNormalUvVertex[])> BuildCombiner2<TIdx>
+        public Func<MeshElements<TIdx, PositionNormalUvVertex>> BuildCombiner<TIdx>
             (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         {

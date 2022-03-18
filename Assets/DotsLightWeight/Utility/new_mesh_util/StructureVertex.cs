@@ -29,35 +29,32 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
 
 
-        public Func<(TIdx[], StructureVertex[])> BuildCombiner2<TIdx>
+        public Func<MeshElements<TIdx, StructureVertex>> BuildCombiner<TIdx>
             (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams => default;
-
-        public MeshElements<TIdx, StructureVertex> BuildCombiner<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            new MeshElements<TIdx, StructureVertex>
+        {
+            return () =>
             {
-                idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray(),
+                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
 
-                poss = srcmeshes.QueryConvertPositions(p).ToArray(),
-                nms = srcmeshes.QueryConvertNormals(p).ToArray(),
-                pids = srcmeshes.QueryConvertPartId(p).ToArray(),
-                uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray(),
+                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+                var pids = srcmeshes.QueryConvertPartId(p).ToArray();
+                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+                var qVtx =
+                    from x in (poss, nms, pids, uvs).Zip()
+                    select new StructureVertex
+                    {
+                        Position = x.src0,
+                        Normal = x.src1,
+                        PardId = x.src2,
+                        Uv = x.src3,
+                    };
+                var vtxs = qVtx.ToArray();
+
+                return (idxs, vtxs);
             };
-
-
-        public IEnumerable<StructureVertex> Packing<TIdx>(MeshElements<TIdx, StructureVertex> src)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        =>
-            from x in (src.poss, src.nms, src.pids, src.uvs).Zip()
-            select new StructureVertex
-            {
-                Position = x.src0,
-                Normal = x.src1,
-                PardId = x.src2,
-                Uv = x.src3,
-            };
+        }
 
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
