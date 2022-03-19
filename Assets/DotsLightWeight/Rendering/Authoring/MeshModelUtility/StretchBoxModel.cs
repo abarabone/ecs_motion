@@ -23,9 +23,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class StretchBoxModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>
-        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+    public class StretchBoxModel : MeshModel<UI16, StructureVertex>
     {
 
 
@@ -42,6 +40,7 @@ namespace DotsLite.Structure.Authoring
             return gcs.CreateDrawModelEntityComponents(
                 mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc, instanceDataVectorLength);
         }
+
 
         public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
@@ -67,9 +66,9 @@ namespace DotsLite.Structure.Authoring
 
             //}
 
-            MeshElements<TIdx, TVtx> createMesh_()
+            MeshElements<UI16, StructureVertex> createMesh_()
             {
-                return new MeshElements<TIdx, TVtx>
+                return new MeshElements<UI16, StructureVertex>
                 {
 
                 };

@@ -32,6 +32,8 @@ namespace DotsLite.Geometry
         {
             meshdata.SetIndexBufferParams(indexLength, IndexFormat.UInt16);
         }
+
+        public static implicit operator UI16 (ushort src) => new UI16 { value = src };
     }
 
     public struct UI32 : IIndexUnit<UI32>, ISetBufferParams
@@ -43,5 +45,7 @@ namespace DotsLite.Geometry
         {
             meshdata.SetIndexBufferParams(indexLength, IndexFormat.UInt32);
         }
+
+        public static implicit operator UI32(uint src) => new UI32 { value = src };
     }
 }

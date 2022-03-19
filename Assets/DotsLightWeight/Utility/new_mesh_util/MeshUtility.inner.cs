@@ -82,18 +82,18 @@ namespace DotsLite.Geometry.inner
         static public IEnumerable<Vector2> QueryConvertUvs(
             this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, int channel)
         {
-            return
-            p.texHashToUvRect != null
-            ?
-                from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
-                from xsub in x.submeshes
-                from uv in xsub.submesh.Elements()
-                select uv.ScaleUv(p.texHashToUvRect(xsub.texhash))
-            :
-                from mesh in srcmeshes
-                from uv in mesh.MeshData.QueryMeshVertices<Vector2>((md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
-                select uv
-            ;
+            return p.texHashToUvRect switch
+            {
+                null =>
+                    from mesh in srcmeshes
+                    from uv in mesh.MeshData.QueryMeshVertices<Vector2>((md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
+                    select uv,
+                _ =>
+                    from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
+                    from xsub in x.submeshes
+                    from uv in xsub.submesh.Elements()
+                    select uv.ScaleUv(p.texHashToUvRect(xsub.texhash)),
+            };
 
             VertexAttribute getAttr_(int channel) =>
                 channel switch
@@ -110,6 +110,7 @@ namespace DotsLite.Geometry.inner
                 };
         }
 
+
         static public IEnumerable<Vector3> QueryConvertPositionsWithBone
             (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         =>
@@ -124,6 +125,7 @@ namespace DotsLite.Geometry.inner
             let wei = x.src1
             select (Vector3)math.transform(math.mul(mtInvs[wei.boneIndex0], mt), vtx)
             ;
+
         static public IEnumerable<uint> QueryConvertBoneIndices
             (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         =>
@@ -135,6 +137,7 @@ namespace DotsLite.Geometry.inner
                 p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex2] << 16 & 0xff |
                 p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex3] << 24 & 0xff
             );
+
         static public IEnumerable<Vector4> QueryConvertBoneWeights
             (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         =>
@@ -157,6 +160,38 @@ namespace DotsLite.Geometry.inner
             from vtx in Enumerable.Range(0, permesh.src1.MeshData.vertexCount)
             select color
             ;
+
+
+        static public IEnumerable<Vector2> QueryPallet(
+            this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, int channel)
+        {
+            return p.texHashToUvRect switch
+            {
+                null =>
+                    from mesh in srcmeshes
+                    from uv in mesh.MeshData.QueryMeshVertices<Vector2>((md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
+                    select uv,
+                _ =>
+                    from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
+                    from xsub in x.submeshes
+                    from uv in xsub.submesh.Elements()
+                    select uv.ScaleUv(p.texHashToUvRect(xsub.texhash)),
+            };
+
+            VertexAttribute getAttr_(int channel) =>
+                channel switch
+                {
+                    0 => VertexAttribute.TexCoord0,
+                    1 => VertexAttribute.TexCoord1,
+                    2 => VertexAttribute.TexCoord2,
+                    3 => VertexAttribute.TexCoord3,
+                    4 => VertexAttribute.TexCoord4,
+                    5 => VertexAttribute.TexCoord5,
+                    6 => VertexAttribute.TexCoord6,
+                    7 => VertexAttribute.TexCoord7,
+                    _ => VertexAttribute.TexCoord0,
+                };
+        }
     }
 
 
@@ -255,26 +290,26 @@ namespace DotsLite.Geometry.inner
             IEnumerable<T> getIndexDataNativeArray_(SubMeshDescriptor desc) =>
                 meshdata.indexFormat switch
                 {
-                    IndexFormat.UInt16 when !(default(T) is ushort) =>
+                    IndexFormat.UInt16 when typeof(T) != typeof(ushort) =>
                         meshdata.GetIndexData<ushort>()
                             .Slice(desc.indexStart, desc.indexCount)
                             .Select(x => new T().Add(x)),
 
-                    IndexFormat.UInt32 when !(default(T) is uint) =>
+                    IndexFormat.UInt32 when typeof(T) != typeof(uint) =>
                         meshdata.GetIndexData<uint>()
                             .Slice(desc.indexStart, desc.indexCount)
                             .Select(x => new T().Add(x)),
 
                     _ =>
                         meshdata.GetIndexData<T>()
-                            .range(desc.indexStart, desc.indexCount),
+                            .Slice(desc.indexStart, desc.indexCount),
                 };
         }
 
-        static IEnumerable<T> range<T>(this NativeArray<T> src, int first, int length) where T : struct
-        {
-            foreach (var x in src.Range(first, length)) yield return x;
-        }
+        //static IEnumerable<T> range<T>(this NativeArray<T> src, int first, int length) where T : struct
+        //{
+        //    foreach (var x in src.Range(first, length)) yield return x;
+        //}
 
         //static IEnumerable<T> rangeWithUsing<T>(this NativeArray<T> src, int first, int length) where T : struct
         //{
@@ -289,7 +324,7 @@ namespace DotsLite.Geometry.inner
             public void Dispose()
             {
                 Debug.Log($"dispose {this.dispo.IsCreated} {this.msg}");
-                //this.dispo.Dispose();
+                this.dispo.Dispose();
             }
         }
     }

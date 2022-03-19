@@ -33,7 +33,7 @@ namespace DotsLite.Geometry
             {
                 var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
 
-                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+                var poss = srcmeshes.QueryConvertPositions(p);//.ToArray();
                 var qVtx =
                     from x in poss
                     select new PositionVertex

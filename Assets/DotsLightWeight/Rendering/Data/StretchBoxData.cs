@@ -35,5 +35,17 @@ namespace DotsLite.Draw
             [FieldOffset(0)]
             public float2 as_float2;
         }
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct PalletIndexData : IComponentData
+        {
+            [FieldOffset(0)]
+            public byte top, left, forward, dummy1;
+            [FieldOffset(4)]
+            public byte bottom, right, back, dummy2;
+
+            [FieldOffset(0)]
+            public float2 as_float2;
+        }
     }
 }
