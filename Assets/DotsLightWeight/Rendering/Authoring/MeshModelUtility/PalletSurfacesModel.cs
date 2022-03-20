@@ -23,7 +23,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class StretchBoxModel : MeshModel<UI16, StructureVertex>
+    public class PalletSurfacesModel : MeshModel<UI16, StructureVertex>
     {
 
 

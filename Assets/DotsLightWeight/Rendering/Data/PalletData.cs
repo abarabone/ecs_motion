@@ -19,16 +19,9 @@ namespace DotsLite.Draw
 
     static public partial class Pallet
     {
-        [StructLayout(LayoutKind.Explicit)]
-        public struct PalletIndexData : IComponentData
+        public struct PalletData : IComponentData
         {
-            [FieldOffset(0)]
-            public byte top, left, forward, dummy1;
-            [FieldOffset(4)]
-            public byte bottom, right, back, dummy2;
-
-            [FieldOffset(0)]
-            public float2 as_float2;
+            public int BaseIndex;
         }
     }
 }

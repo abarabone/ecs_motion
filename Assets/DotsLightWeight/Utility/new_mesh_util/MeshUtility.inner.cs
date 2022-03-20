@@ -162,35 +162,19 @@ namespace DotsLite.Geometry.inner
             ;
 
 
-        static public IEnumerable<Vector2> QueryPallet(
+        static public IEnumerable<Color32> QueryPalletSubIndex(
             this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, int channel)
         {
-            return p.texHashToUvRect switch
+            return
+            from permesh in (p.palletIndexPerMesh, srcmeshes).Zip()
+            let pallet = permesh.src0
+            let color = new Color32
             {
-                null =>
-                    from mesh in srcmeshes
-                    from uv in mesh.MeshData.QueryMeshVertices<Vector2>((md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
-                    select uv,
-                _ =>
-                    from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
-                    from xsub in x.submeshes
-                    from uv in xsub.submesh.Elements()
-                    select uv.ScaleUv(p.texHashToUvRect(xsub.texhash)),
-            };
-
-            VertexAttribute getAttr_(int channel) =>
-                channel switch
-                {
-                    0 => VertexAttribute.TexCoord0,
-                    1 => VertexAttribute.TexCoord1,
-                    2 => VertexAttribute.TexCoord2,
-                    3 => VertexAttribute.TexCoord3,
-                    4 => VertexAttribute.TexCoord4,
-                    5 => VertexAttribute.TexCoord5,
-                    6 => VertexAttribute.TexCoord6,
-                    7 => VertexAttribute.TexCoord7,
-                    _ => VertexAttribute.TexCoord0,
-                };
+                a = (byte)pallet.subIndex,
+            }
+            from vtx in Enumerable.Range(0, permesh.src1.MeshData.vertexCount)
+            select color
+            ;
         }
     }
 

@@ -16,7 +16,7 @@ namespace DotsLite.Geometry
         Dictionary<SourcePrefabKeyUnit, Color32[]> dict = new Dictionary<SourcePrefabKeyUnit, Color32[]>();
 
 
-        public void Add(IMeshModel model)
+        public void AddModel(IMeshModel model)
         {
             if (this.dict.ContainsKey(model.SourcePrefabKey)) return;
 
@@ -40,15 +40,17 @@ namespace DotsLite.Geometry
             return qKeyAndIndex.ToArray();
         }
 
-        public void BuildPalletBuffer()
+        public void BuildPalletShaderBuffer()
         {
+            GraphicsBuffer.
 
-            void buildPallets_()
+            Color32[] buildPallets_()
             {
                 var q = this.dict
                     .SelectMany(x => x.Value)
                     .Prepend((Color32)Color.white)
                     ;
+                
             }
         }
     }
