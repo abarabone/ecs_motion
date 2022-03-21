@@ -233,8 +233,8 @@ namespace DotsLite.Geometry.inner
             //}
             //return array.rangeWithUsing(0, array.Length);
             Debug.Log($"aaa {attr}");
-            var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
-            using var d = new disposablelogger<T> { dispo = array, msg = $"{attr}" };
+            using var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
+            //using var d = new disposablelogger<T> { dispo = array, msg = $"{attr}" };
             if (meshdata.GetVertexAttributeDimension(attr) > 0)
             {
                 getElementSrc(meshdata, array);
@@ -247,8 +247,8 @@ namespace DotsLite.Geometry.inner
             where T : struct
         {
             Debug.Log($"bbb {attr}");
-            var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
-            using var d = new disposablelogger<T> { dispo = array, msg = $"{attr}" };
+            using var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
+            //using var d = new disposablelogger<T> { dispo = array, msg = $"{attr}" };
             if (meshdata.GetVertexAttributeDimension(attr) > 0)
             {
                 getElementSrc(meshdata, array);
@@ -301,16 +301,16 @@ namespace DotsLite.Geometry.inner
         //    foreach (var x in src.Range(first, length)) yield return x;
         //    //using (array) { foreach (var x in array.Range(first, length)) yield return x; }
         //}
-        class disposablelogger<T> : IDisposable where T: struct
-        {
-            public string msg;
-            public NativeArray<T> dispo;
-            public void Dispose()
-            {
-                Debug.Log($"dispose {this.dispo.IsCreated} {this.msg}");
-                this.dispo.Dispose();
-            }
-        }
+        //class disposablelogger<T> : IDisposable where T: struct
+        //{
+        //    public string msg;
+        //    public NativeArray<T> dispo;
+        //    public void Dispose()
+        //    {
+        //        Debug.Log($"dispose {this.dispo.IsCreated} {this.msg}");
+        //        this.dispo.Dispose();
+        //    }
+        //}
     }
 
 }
