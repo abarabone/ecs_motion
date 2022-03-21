@@ -132,8 +132,8 @@ namespace DotsLite.Geometry.inner
             from permesh in p.boneWeightsPerMesh.WithIndex()
             from w in permesh.src
             select (uint)(
-                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex0] << 0 & 0xff |
-                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex1] << 8 & 0xff |
+                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex0] <<  0 & 0xff |
+                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex1] <<  8 & 0xff |
                 p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex2] << 16 & 0xff |
                 p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex3] << 24 & 0xff
             );

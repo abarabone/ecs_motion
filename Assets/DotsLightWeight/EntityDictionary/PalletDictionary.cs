@@ -40,19 +40,19 @@ namespace DotsLite.Geometry
             return qKeyAndIndex.ToArray();
         }
 
-        public void BuildPalletShaderBuffer()
-        {
-            GraphicsBuffer.
+        //public void BuildPalletShaderBuffer()
+        //{
+        //    GraphicsBuffer.
 
-            Color32[] buildPallets_()
-            {
-                var q = this.dict
-                    .SelectMany(x => x.Value)
-                    .Prepend((Color32)Color.white)
-                    ;
+        //    Color32[] buildPallets_()
+        //    {
+        //        var q = this.dict
+        //            .SelectMany(x => x.Value)
+        //            .Prepend((Color32)Color.white)
+        //            ;
                 
-            }
-        }
+        //    }
+        //}
     }
 
 }

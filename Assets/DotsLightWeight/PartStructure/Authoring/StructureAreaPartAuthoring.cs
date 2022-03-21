@@ -45,13 +45,14 @@ namespace DotsLite.Structure.Authoring
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
-            (this.IsStretchBoxMesh
-                ? (IMeshModel)new StretchBoxModel<UI32, PositionNormalVertex>
-                {
-                    objectTop = this.PartModel.objectTop,
-                    shader = this.PartModel.shader
-                }
-                : this.PartModel)
+            //(this.IsStretchBoxMesh
+            //    ? (IMeshModel)new StretchBoxModel<UI32, PositionNormalVertex>
+            //    {
+            //        objectTop = this.PartModel.objectTop,
+            //        shader = this.PartModel.shader
+            //    }
+            //    : this.PartModel)
+            this.PartModel
             .WrapEnumerable();
 
         //public void Convert
