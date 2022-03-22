@@ -26,7 +26,6 @@ namespace DotsLite.Structure.Authoring
     public class PalletSurfacesModel : MeshModel<UI16, StructureVertex>
     {
 
-
         public override Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.shader);
@@ -35,7 +34,7 @@ namespace DotsLite.Structure.Authoring
 
             const BoneType BoneType = BoneType.RT;
             const int boneLength = 1;
-            const int instanceDataVectorLength = 3;
+            const int instanceDataVectorLength = 1;
 
             return gcs.CreateDrawModelEntityComponents(
                 mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc, instanceDataVectorLength);
