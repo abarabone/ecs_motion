@@ -23,6 +23,10 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
     using DotsLite.EntityTrimmer.Authoring;
 
+    // ・パレットインスタンスごとに scriptable object
+    // ・プレハブを唯一とする
+    // ・
+
     /// <summary>
     /// 
     /// </summary>

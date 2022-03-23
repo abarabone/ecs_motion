@@ -24,7 +24,7 @@ namespace DotsLite.Model.Authoring
     // 違うプレハブでも同じモデルを使いまわせるようにしたいんだけど
     // モデルだけ独立させるか…？
 
-    [CreateAssetMenu(fileName="mesh model asset", menuName="Mesh Model")]
+    [CreateAssetMenu(fileName="mesh model asset", menuName= "Custom/Mesh Model")]
     public class MeshModelAsset : ScriptableObject
     {
 
@@ -33,7 +33,7 @@ namespace DotsLite.Model.Authoring
 
     }
 
-    [CreateAssetMenu(fileName = "mesh model asset", menuName = "Mesh Model2")]
+    [CreateAssetMenu(fileName = "mesh model asset", menuName = "Custom/Mesh Model2")]
     public class MeshModelAsset2 : ScriptableObject
     {
 
