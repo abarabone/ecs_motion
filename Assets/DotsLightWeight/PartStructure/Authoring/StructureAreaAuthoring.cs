@@ -48,6 +48,8 @@ namespace DotsLite.Structure.Authoring
         public GameObject Envelope;
         public StructureAreaAuthoring MasterPrefab;
 
+        public PalletAsset Pallet;
+
 
         public override IEnumerable<IMeshModel> QueryModel =>
             new IMeshModel[] { this.NearModel };

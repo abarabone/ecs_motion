@@ -49,6 +49,8 @@ namespace DotsLite.Structure.Authoring
         public GameObject Envelope;
         public StructureBuildingAuthoring MasterPrefab;
 
+        public PalletAsset Pallet;
+
 
         public override IEnumerable<IMeshModel> QueryModel =>
             new IMeshModel [] { this.NearModel, this.FarModel };

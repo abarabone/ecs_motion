@@ -27,6 +27,10 @@ namespace DotsLite.Structure.Authoring
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
 
+        protected override int optionalVectorLength => 4;
+        protected override int boneLength => 1;
+
+
         //public AreaModel(GameObject obj, Shader shader) : base(obj, shader)
         //{ }
 
@@ -35,20 +39,19 @@ namespace DotsLite.Structure.Authoring
         //    .FirstOrDefault()
         //    .transform;
 
-        public override Entity CreateModelEntity
-            (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
-        {
-            var mat = new Material(this.shader);
-            mat.enableInstancing = true;
-            mat.mainTexture = atlas;
+        //public override Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        //{
+        //    var mat = new Material(this.shader);
+        //    mat.enableInstancing = true;
+        //    mat.mainTexture = atlas;
 
-            const BoneType boneType = BoneType.RT;
-            const int boneLength = 1;
-            const int vectorOffsetPerInstance = 4;
+        //    var boneType = this.tfMode.ToBoneType();
+        //    const int boneLength = 1;
+        //    const int vectorOffsetPerInstance = 4;
 
-            return gcs.CreateDrawModelEntityComponents(
-                mesh, mat, boneType, boneLength, DrawModel.SortOrder.desc, vectorOffsetPerInstance);
-        }
+        //    return gcs.CreateDrawModelEntityComponents(
+        //        mesh, mat, boneType, boneLength, DrawModel.SortOrder.desc, vectorOffsetPerInstance);
+        //}
 
 
         //public override (GameObject obj, Func<IMeshElements> f) BuildMeshCombiner

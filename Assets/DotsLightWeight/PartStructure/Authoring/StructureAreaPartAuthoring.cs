@@ -37,6 +37,9 @@ namespace DotsLite.Structure.Authoring
 
         public AreaPartModel<UI32, PositionNormalUvVertex> PartModel;
 
+        public PalletAsset Pallet;
+
+
         protected new void Reset()
         {
             base.Reset();

@@ -43,8 +43,15 @@ namespace DotsLite.Model.Authoring
         [SerializeField]
         public Shader shader;
 
+
         [SerializeField]
-        protected BoneType postureType = BoneType.RT;
+        protected TransformMode tfMode = TransformMode.RT;
+        [SerializeField]
+        protected DrawModel.SortOrder sortOrder = DrawModel.SortOrder.desc;
+        
+        protected virtual int optionalVectorLength => 0;
+        protected virtual int boneLength => 1;
+
 
         public virtual GameObject Obj => this.objectTop;
         public virtual Transform TfRoot => this.objectTop.transform;
@@ -63,10 +70,10 @@ namespace DotsLite.Model.Authoring
             mat.enableInstancing = true;
             mat.mainTexture = atlas;
 
-            var boneType = this.postureType;//BoneType.RT;
-            const int boneLength = 1;
-
-            return gcs.CreateDrawModelEntityComponents(mesh, mat, boneType, boneLength, DrawModel.SortOrder.desc);
+            var boneType = this.tfMode.ToBoneType();
+            return gcs.CreateDrawModelEntityComponents(
+                mesh, mat, boneType,
+                this.boneLength, this.sortOrder, this.optionalVectorLength);
         }
 
         public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(

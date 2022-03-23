@@ -40,6 +40,7 @@ namespace DotsLite.Structure.Authoring
 
         public PartModel<UI32, PositionNormalUvVertex> PartModelOfMasterPrefab;
 
+        public PalletAsset Pallet;
 
 
         public override IEnumerable<IMeshModel> QueryModel =>

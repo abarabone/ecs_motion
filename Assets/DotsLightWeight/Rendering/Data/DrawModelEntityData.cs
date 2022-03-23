@@ -63,8 +63,8 @@ namespace DotsLite.Draw
         public enum SortOrder
         {
             none,
-            acs,
-            desc,
+            acs,    // 奥から
+            desc,   // 手前側から
         }
 
 

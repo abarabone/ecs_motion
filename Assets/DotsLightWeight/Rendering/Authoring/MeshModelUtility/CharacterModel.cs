@@ -40,20 +40,22 @@ namespace DotsLite.Model.Authoring
             .Select(x => x.transform);
 
 
+        protected override int optionalVectorLength => 0;
+        protected override int boneLength => this.QueryBones.Count();
 
-        public override Entity CreateModelEntity
-            (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
-        {
-            var mat = new Material(this.shader);
-            mat.enableInstancing = true;
-            mat.mainTexture = atlas;
+        //public override Entity CreateModelEntity
+        //    (GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        //{
+        //    var mat = new Material(this.shader);
+        //    mat.enableInstancing = true;
+        //    mat.mainTexture = atlas;
 
-            const BoneType BoneType = BoneType.RT;
-            var boneLength = this.QueryBones.Count();
+        //    var boneType = this.tfMode.ToBoneType();
+        //    var boneLength = this.QueryBones.Count();
 
-            return gcs.CreateDrawModelEntityComponents(
-                mesh, mat, BoneType, boneLength, DrawModel.SortOrder.desc);
-        }
+        //    return gcs.CreateDrawModelEntityComponents(
+        //        mesh, mat, boneType, boneLength, DrawModel.SortOrder.desc);
+        //}
 
     }
 
