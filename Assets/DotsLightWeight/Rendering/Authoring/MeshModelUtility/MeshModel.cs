@@ -25,12 +25,7 @@ namespace DotsLite.Model.Authoring
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        //public MeshModel(GameObject obj, Shader shader)
-        //{
-        //    this.objectTop = obj;
-        //    this.shader = shader;
-        //    this.SourcePrefabKey = obj.GetComponent<ModelGroupAuthoring.ModelAuthoringBase>().SourcePrefabKey;
-        //}
+
         public void GenerateSourcePrefabKey() =>
             this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
 
@@ -95,8 +90,6 @@ namespace DotsLite.Model.Authoring
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
-        //public LodMeshModel(GameObject obj, Shader shader) : base(obj, shader)
-        //{ }
 
         [SerializeField]
         public float limitDistance;
