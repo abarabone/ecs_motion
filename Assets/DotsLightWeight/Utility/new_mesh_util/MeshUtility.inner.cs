@@ -162,23 +162,31 @@ namespace DotsLite.Geometry.inner
             ;
 
 
+        struct Unit { }
         static public IEnumerable<Color32> QueryPalletSubIndex(
             this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-        =>
-            from src in (srcmeshes, p.palletIndexPerSubMesh).Zip()
-            let srcmesh = src.src0
-            let subindexs = src.src1
-            from sub in (Enumerable.Range(0, srcmesh.MeshData.subMeshCount), subindexs).Zip()
-            let isub = sub.src0
-            let palletSubindex = sub.src1
-            let color = new Color32
-            {
-                a = (byte)palletSubindex,
-            }
-            let submesh = srcmesh.MeshData.GetSubMesh(isub)
-            from iv in Enumerable.Range(0, submesh.vertexCount)
-            select color
-            ;
+        {
+            var qMesh =
+                from mesh in srcmeshes
+                from isub in Enumerable.Range(0, mesh.MeshData.subMeshCount)
+                let submesh = mesh.MeshData.GetSubMesh(isub)
+                select Enumerable.Repeat(new Unit { }, submesh.vertexCount)
+                ;
+            var qColor =
+                from idxs in p.palletSubIndexPerSubMesh
+                from idx in idxs
+                select new Color32
+                {
+                    a = (byte)idx,
+                };
+            return
+                from x in (qMesh, qColor).Zip()
+                let vtxs = x.src0
+                let color = x.src1
+                from _ in vtxs
+                select color
+                ;
+        }
     }
 
 

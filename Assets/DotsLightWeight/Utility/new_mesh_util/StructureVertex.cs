@@ -40,15 +40,16 @@ namespace DotsLite.Geometry
                 var poss = srcmeshes.QueryConvertPositions(p).ToArray();
                 var nms = srcmeshes.QueryConvertNormals(p).ToArray();
                 var pids = srcmeshes.QueryConvertPartId(p).ToArray();
+                var cids = srcmeshes.QueryPalletSubIndex(p).ToArray();
                 var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
                 var qVtx =
-                    from x in (poss, nms, pids, uvs).Zip()
+                    from x in (poss, nms, pids, cids, uvs).Zip()
                     select new StructureVertex
                     {
                         Position = x.src0,
                         Normal = x.src1,
-                        PardId = x.src2,
-                        Uv = x.src3,
+                        PardId = new Color32(x.src2.r, x.src2.g, x.src2.b, x.src3.a),
+                        Uv = x.src4,
                     };
                 var vtxs = qVtx.ToArray();
 
