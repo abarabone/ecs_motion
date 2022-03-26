@@ -162,16 +162,10 @@ namespace DotsLite.Geometry.inner
             ;
 
 
-        struct Unit { }
         static public IEnumerable<Color32> QueryPalletSubIndex(
             this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
-            var qMesh =
-                from mesh in srcmeshes
-                from isub in Enumerable.Range(0, mesh.MeshData.subMeshCount)
-                let submesh = mesh.MeshData.GetSubMesh(isub)
-                select Enumerable.Repeat(new Unit { }, submesh.vertexCount)
-                ;
+            var qVtx = srcmeshes.QuerySubMeshForUnitVertices();
             var qColor =
                 from idxs in p.palletSubIndexPerSubMesh
                 from idx in idxs
@@ -180,7 +174,26 @@ namespace DotsLite.Geometry.inner
                     a = (byte)idx,
                 };
             return
-                from x in (qMesh, qColor).Zip()
+                from x in (qVtx, qColor).Zip()
+                let vtxs = x.src0
+                let color = x.src1
+                from _ in vtxs
+                select color
+                ;
+        }
+        static public IEnumerable<Color32> QueryUvIndex(
+            this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        {
+            var qVtx = srcmeshes.QuerySubMeshForUnitVertices();
+            var qColor =
+                from idxs in p.UvIndexPerSubMesh
+                from idx in idxs
+                select new Color32
+                {
+                    b = (byte)idx,
+                };
+            return
+                from x in (qVtx, qColor).Zip()
                 let vtxs = x.src0
                 let color = x.src1
                 from _ in vtxs
@@ -192,7 +205,21 @@ namespace DotsLite.Geometry.inner
 
     static class SubmeshQyeryConvertUtility
     {
+        /// <summary>
+        /// メッシュの集合を巡回し、サブメッシュの中の頂点を列挙する。頂点情報は Unit であり、意味を持たない。
+        /// </summary>
+        public static IEnumerable<IEnumerable<Unit>> QuerySubMeshForUnitVertices(this IEnumerable<SrcMeshUnit> srcmeshes) =>
+            from mesh in srcmeshes
+            from isub in Enumerable.Range(0, mesh.MeshData.subMeshCount)
+            let submesh = mesh.MeshData.GetSubMesh(isub)
+            select Enumerable.Repeat(new Unit { }, submesh.vertexCount)
+            ;
+        public struct Unit { }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         public static IEnumerable<(Matrix4x4 mt, IEnumerable<(SrcSubMeshUnit<T> submesh, int texhash)> submeshes)>
             QuerySubMeshForVertices<T>(
                 this IEnumerable<SrcMeshUnit> srcmeshes,
@@ -214,6 +241,9 @@ namespace DotsLite.Geometry.inner
             );
 
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static IEnumerable<(Matrix4x4 mt, SrcMeshUnit mesh, IEnumerable<SrcSubMeshUnit<T>> submeshes)>
             QuerySubMeshForIndexData<T>(this IEnumerable<SrcMeshUnit> srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
             where T : struct, IIndexUnit<T>
