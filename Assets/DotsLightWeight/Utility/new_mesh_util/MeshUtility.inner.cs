@@ -155,7 +155,7 @@ namespace DotsLite.Geometry.inner
             let color = new Color32
             {
                 r = (byte)(pid & 0x1f),
-                g = (byte)(pid >> 5 & 0xff),
+                g = (byte)(pid >> 5 & 0xff),// 32bit ‚È‚Ì‚Å >> 5
             }
             from vtx in Enumerable.Range(0, permesh.src1.MeshData.vertexCount)
             select color

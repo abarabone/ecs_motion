@@ -128,6 +128,30 @@ namespace DotsLite.Geometry
             return result;
         }
 
+
+        static void CalculatePalletSubIndexParameter(
+            this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
+            ref AdditionalParameters p)
+        {
+            var q =
+                from mmt in mmts
+                select mmt.mesh.subMeshCount
+                from mat in mmt.mats
+
+        }
+
+        static void CalculateUvIndexParameter(
+            this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
+            ref AdditionalParameters p)
+        {
+            var q =
+                from mmt in mmts
+                select mmt.mesh.subMeshCount
+                from mat in mmt.mats
+
+        }
+
+
         //static T findInParent<T>(this GameObject obj)
         //    where T : MonoBehaviour
         //=> obj
