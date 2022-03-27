@@ -33,6 +33,9 @@ namespace DotsLite.Geometry
 
         public Mesh CreateMesh() => MeshCreatorUtility.CreateMesh(this);
 
+        /// <summary>
+        /// ƒ^ƒvƒ‹‚©‚ç‚ÌˆÃ–Ù“I•ÏŠ·
+        /// </summary>
         public static implicit operator MeshElements<TIdx, TVtx> ((TIdx[], TVtx[]) src) =>
             new MeshElements<TIdx, TVtx>
             {

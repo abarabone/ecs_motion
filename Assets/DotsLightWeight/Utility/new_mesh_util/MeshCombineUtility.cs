@@ -61,6 +61,10 @@ namespace DotsLite.Geometry
 
 
 
+        /// <summary>
+        /// 別の関数で
+        /// 必要なパラメータだけ計算するようにしたほうがいいかも
+        /// </summary>
         static AdditionalParameters calculateParameters(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
             Transform tfBase,  Transform[] tfBones,
