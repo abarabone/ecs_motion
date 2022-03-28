@@ -205,20 +205,9 @@ namespace DotsLite.Geometry.inner
 
     static class SubmeshQyeryConvertUtility
     {
-        /// <summary>
-        /// メッシュの集合を巡回し、サブメッシュの中の頂点を列挙する。頂点情報は Unit であり、意味を持たない。
-        /// </summary>
-        public static IEnumerable<IEnumerable<Unit>> QuerySubMeshForUnitVertices(this IEnumerable<SrcMeshUnit> srcmeshes) =>
-            from mesh in srcmeshes
-            from isub in Enumerable.Range(0, mesh.MeshData.subMeshCount)
-            let submesh = mesh.MeshData.GetSubMesh(isub)
-            select Enumerable.Repeat(new Unit { }, submesh.vertexCount)
-            ;
-        public struct Unit { }
-
 
         /// <summary>
-        /// 
+        /// メッシュ単位で行列を、サブメッシュ単位で形状・テクスチャ情報を列挙する。
         /// </summary>
         public static IEnumerable<(Matrix4x4 mt, IEnumerable<(SrcSubMeshUnit<T> submesh, int texhash)> submeshes)>
             QuerySubMeshForVertices<T>(
@@ -242,7 +231,7 @@ namespace DotsLite.Geometry.inner
 
 
         /// <summary>
-        /// 
+        /// メッシュ単位で行列・形状、サブメッシュ単位で形状情報を列挙する。
         /// </summary>
         public static IEnumerable<(Matrix4x4 mt, SrcMeshUnit mesh, IEnumerable<SrcSubMeshUnit<T>> submeshes)>
             QuerySubMeshForIndexData<T>(this IEnumerable<SrcMeshUnit> srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
@@ -262,7 +251,21 @@ namespace DotsLite.Geometry.inner
 
     static class MeshElementsSourceUtility
     {
+        /// <summary>
+        /// メッシュの集合を巡回し、サブメッシュの中の頂点を列挙する。頂点情報は Unit であり、意味を持たない。
+        /// </summary>
+        public static IEnumerable<IEnumerable<Unit>> QuerySubMeshForUnitVertices(this IEnumerable<SrcMeshUnit> srcmeshes) =>
+            from mesh in srcmeshes
+            from isub in Enumerable.Range(0, mesh.MeshData.subMeshCount)
+            let submesh = mesh.MeshData.GetSubMesh(isub)
+            select Enumerable.Repeat(new Unit { }, submesh.vertexCount)
+            ;
+        public struct Unit { }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         public static IEnumerable<T> QueryMeshVertices<T>(this Mesh.MeshData meshdata,
             Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr)
             where T : struct
@@ -283,6 +286,9 @@ namespace DotsLite.Geometry.inner
             foreach (var e in array.Slice(0, array.Length)) yield return e;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static IEnumerable<SrcSubMeshUnit<T>> QuerySubmeshesForVertices<T>(
             this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr)
             where T : struct
@@ -302,6 +308,9 @@ namespace DotsLite.Geometry.inner
             foreach (var e in q) yield return e;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static IEnumerable<SrcSubMeshUnit<T>> QuerySubmeshesForIndexData<T>(this Mesh.MeshData meshdata)
             where T : struct, IIndexUnit<T>
         {

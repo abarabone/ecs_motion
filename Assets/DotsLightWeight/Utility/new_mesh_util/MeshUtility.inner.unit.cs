@@ -27,14 +27,14 @@ namespace DotsLite.Geometry.inner.unit
         public BoneConversionUtility.BoneConversionDictionary srcBoneIndexToDstBoneIndex;//
 
         //public int atlasHash;
-        public IEnumerable<IEnumerable<int>> texhashPerSubMesh;
+        public int[][] texhashPerSubMesh;
         //public HashToRect texhashToUvRect;
         public Func<int, Rect> texHashToUvRect;
         public Func<int, int> texHashToUvIndex;
 
-        public IEnumerable<int> partIdPerMesh;
-        public IEnumerable<IEnumerable<int>> palletSubIndexPerSubMesh;  // mesh > submesh . subindex
-        public IEnumerable<IEnumerable<int>> UvIndexPerSubMesh;         // mesh > submesh . uvindex
+        public int[] partIdPerMesh;
+        public int[][] palletSubIndexPerSubMesh;    // mesh > submesh . subindex
+        public int[][] UvIndexPerSubMesh;           // mesh > submesh . uvindex
     }
 
     //public struct MeshSourceUnit

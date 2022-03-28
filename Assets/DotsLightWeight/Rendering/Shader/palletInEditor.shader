@@ -2,7 +2,7 @@ Shader "Custom/palletInEditor"
 {
     Properties
     {
-        _PalletIndex ("Pallet Index", Int) = 0
+        _PalletIndex ("Pallet Sub Index", Int) = 0
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5

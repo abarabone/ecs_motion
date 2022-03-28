@@ -81,7 +81,7 @@ namespace DotsLite.Geometry
                 from mmt in mmts_
                 select
                     from mat in mmt.mats
-                    select mat.mainTexture?.GetHashCode() ?? default
+                    select mat?.mainTexture?.GetHashCode() ?? 0
                 ;
 
             var mtBaseInv = tfBase.worldToLocalMatrix;
@@ -129,27 +129,53 @@ namespace DotsLite.Geometry
         }
 
 
-        static void CalculatePalletSubIndexParameter(
+        /// <summary>
+        /// パレットのサブインデックスを、サブメッシュ単位で列挙する。
+        /// サブインデックスは、マテリアルの pallet sub index から取得する。
+        /// マテリアルが null の場合は、0 を返す。
+        /// </summary>
+        public static void CalculatePalletSubIndexParameter(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
             ref AdditionalParameters p)
         {
             var q =
                 from mmt in mmts
-                select mmt.mesh.subMeshCount
-                from mat in mmt.mats
-
+                select
+                    from mat in mmt.mats
+                    select mat?.GetInt("Pallet Sub Index") ?? 0
+                ;
+            p.palletSubIndexPerSubMesh = q.ToArrayRecursive2();
         }
 
-        static void CalculateUvIndexParameter(
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void CalculateUvIndexParameter(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
-            ref AdditionalParameters p)
+            ref AdditionalParameters p,
+            IEnumerable<int> texhashesForUvSurface)
         {
             var q =
                 from mmt in mmts
-                select mmt.mesh.subMeshCount
-                from mat in mmt.mats
+                select
+                    from mat in mmt.mats
+                    select mat?.mainTexture?.GetHashCode() ?? 0
+                ;
+            var texhashPerSubMesh = q.ToArrayRecursive2();
+
+            var usedTexhashes = texhashPerSubMesh
+                .SelectMany(x => x)
+                .Distinct()
+                .ToArray();
+
+            p.texhashPerSubMesh = texhashPerSubMesh;
 
         }
+        // tex rect は atlas 単位
+        // atlas 単位で buffer 化
+        // buffer には uv surface しか登録しない
+        // uv surfaces の sub mesh ごとに sub index
+        // 頂点に uv sub index を持たせる
 
 
         //static T findInParent<T>(this GameObject obj)
