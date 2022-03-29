@@ -176,7 +176,11 @@ namespace DotsLite.Geometry
         // buffer には uv surface しか登録しない
         // uv surfaces の sub mesh ごとに sub index
         // 頂点に uv sub index を持たせる
-
+        // 同じ uv sub index は同じ surface 
+        // uv は同じ面構成単位で base index 指定　色違いでも同じ物体ならＯＫ
+        // エディタでは、サブメッシュ単位でテクスチャを指定する scriptable object を持たせる
+        // sub index は pallet と同じマテリアルの pallet sub index でよい
+        // pallet はカラーセット単位で base index 指定
 
         //static T findInParent<T>(this GameObject obj)
         //    where T : MonoBehaviour
