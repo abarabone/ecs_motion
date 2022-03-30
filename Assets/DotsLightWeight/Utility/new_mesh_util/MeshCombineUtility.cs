@@ -26,16 +26,10 @@ namespace DotsLite.Geometry
 
         public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>(
             this SrcMeshesModelCombinePack srcmeshpack,
-            Transform tfRoot,
-            Transform[] tfBones = null,
-            Func<int, Rect> texHashToUvRectFunc = null,
-            Func<int, int> texHashToUvIndexFunc = null)
+            AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
             where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
         {
-            var p = srcmeshpack.mmts.calculateParameters(
-                tfRoot, tfBones, texHashToUvRectFunc, texHashToUvIndexFunc);
-
             return new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable, p);
         }
 
@@ -65,7 +59,7 @@ namespace DotsLite.Geometry
         /// 別の関数で
         /// 必要なパラメータだけ計算するようにしたほうがいいかも
         /// </summary>
-        static AdditionalParameters calculateParameters(
+        public static AdditionalParameters calculateParameters(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
             Transform tfBase,  Transform[] tfBones,
             Func<int, Rect> texHashToUvRectFunc, Func<int, int> texHashToUvIndexFunc)
@@ -142,35 +136,37 @@ namespace DotsLite.Geometry
                 from mmt in mmts
                 select
                     from mat in mmt.mats
-                    select mat?.GetInt("Pallet Sub Index") ?? 0
+                    select mat?.HasInt("Pallet Sub Index") ?? false
+                        ? mat.GetInt("Pallet Sub Index")
+                        : 0
                 ;
             p.palletSubIndexPerSubMesh = q.ToArrayRecursive2();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public static void CalculateUvIndexParameter(
-            this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
-            ref AdditionalParameters p,
-            IEnumerable<int> texhashesForUvSurface)
-        {
-            var q =
-                from mmt in mmts
-                select
-                    from mat in mmt.mats
-                    select mat?.mainTexture?.GetHashCode() ?? 0
-                ;
-            var texhashPerSubMesh = q.ToArrayRecursive2();
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public static void CalculateUvIndexParameter(
+        //    this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
+        //    ref AdditionalParameters p,
+        //    IEnumerable<int> texhashesForUvSurface)
+        //{
+        //    var q =
+        //        from mmt in mmts
+        //        select
+        //            from mat in mmt.mats
+        //            select mat?.mainTexture?.GetHashCode() ?? 0
+        //        ;
+        //    var texhashPerSubMesh = q.ToArrayRecursive2();
 
-            var usedTexhashes = texhashPerSubMesh
-                .SelectMany(x => x)
-                .Distinct()
-                .ToArray();
+        //    var usedTexhashes = texhashPerSubMesh
+        //        .SelectMany(x => x)
+        //        .Distinct()
+        //        .ToArray();
 
-            p.texhashPerSubMesh = texhashPerSubMesh;
+        //    p.texhashPerSubMesh = texhashPerSubMesh;
 
-        }
+        //}
         // tex rect は atlas 単位
         // atlas 単位で buffer 化
         // buffer には uv surface しか登録しない

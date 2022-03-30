@@ -32,6 +32,22 @@ namespace DotsLite.Structure.Authoring
         protected override int boneLength => 1;
 
 
+        public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
+            SrcMeshesModelCombinePack meshpack,
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+        {
+            var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
+            var texdict = atlasDictionary.texHashToUvRect;
+            var mmts = this.QueryMmts.ToArray();
+            var p = mmts.calculateParameters(
+                this.TfRoot, this.QueryBones?.ToArray(), part => texdict[atlas, part], null);
+            mmts.CalculatePalletSubIndexParameter(ref p);
+
+            return (
+                this.sourcePrefabKey,
+                meshpack.BuildCombiner<TIdx, TVtx>(p)
+            );
+        }
     }
 
 }
