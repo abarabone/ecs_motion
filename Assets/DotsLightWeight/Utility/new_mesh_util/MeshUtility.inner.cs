@@ -254,7 +254,9 @@ namespace DotsLite.Geometry.inner
         /// <summary>
         /// メッシュの集合を巡回し、サブメッシュの中の頂点を列挙する。頂点情報は Unit であり、意味を持たない。
         /// </summary>
-        public static IEnumerable<IEnumerable<Unit>> QuerySubMeshForUnitVertices(this IEnumerable<SrcMeshUnit> srcmeshes) =>
+        public static IEnumerable<IEnumerable<Unit>> QuerySubMeshForUnitVertices(
+            this IEnumerable<SrcMeshUnit> srcmeshes)
+        =>
             from mesh in srcmeshes
             from isub in Enumerable.Range(0, mesh.MeshData.subMeshCount)
             let submesh = mesh.MeshData.GetSubMesh(isub)
