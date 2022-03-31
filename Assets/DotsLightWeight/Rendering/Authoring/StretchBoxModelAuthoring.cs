@@ -23,9 +23,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
     using DotsLite.EntityTrimmer.Authoring;
 
-    // ・パレットインスタンスごとに scriptable object
-    // ・プレハブを唯一とする
-    // ・
+    // 
 
     /// <summary>
     /// 
@@ -168,6 +166,8 @@ namespace DotsLite.Model.Authoring
 
     public static class PalletUtility
     {
+        // ・モデルから sub index ごとの色を抽出
+        // ・
         public static void BuildColorPallet()
         {
 
