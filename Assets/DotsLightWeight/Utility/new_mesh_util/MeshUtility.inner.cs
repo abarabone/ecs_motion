@@ -278,7 +278,6 @@ namespace DotsLite.Geometry.inner
             //    getElementSrc(meshdata, array);
             //}
             //return array.rangeWithUsing(0, array.Length);
-            Debug.Log($"aaa {attr}");
             using var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
             //using var d = new disposablelogger<T> { dispo = array, msg = $"{attr}" };
             if (meshdata.GetVertexAttributeDimension(attr) > 0)
@@ -295,7 +294,6 @@ namespace DotsLite.Geometry.inner
             this Mesh.MeshData meshdata, Action<Mesh.MeshData, NativeArray<T>> getElementSrc, VertexAttribute attr)
             where T : struct
         {
-            Debug.Log($"bbb {attr}");
             using var array = new NativeArray<T>(meshdata.vertexCount, Allocator.TempJob);
             //using var d = new disposablelogger<T> { dispo = array, msg = $"{attr}" };
             if (meshdata.GetVertexAttributeDimension(attr) > 0)

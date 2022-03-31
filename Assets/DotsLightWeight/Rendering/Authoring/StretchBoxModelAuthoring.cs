@@ -165,4 +165,12 @@ namespace DotsLite.Model.Authoring
         }
 
     }
+
+    public static class PalletUtility
+    {
+        public static void BuildColorPallet()
+        {
+
+        }
+    }
 }
