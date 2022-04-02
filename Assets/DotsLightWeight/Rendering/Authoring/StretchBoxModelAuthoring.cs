@@ -164,13 +164,4 @@ namespace DotsLite.Model.Authoring
 
     }
 
-    public static class PalletUtility
-    {
-        // ・モデルから sub index ごとの色を抽出
-        // ・
-        public static void BuildColorPallet()
-        {
-
-        }
-    }
 }

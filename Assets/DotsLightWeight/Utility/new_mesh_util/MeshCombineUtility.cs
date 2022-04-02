@@ -136,9 +136,7 @@ namespace DotsLite.Geometry
                 from mmt in mmts
                 select
                     from mat in mmt.mats
-                    select mat?.HasInt("Pallet Sub Index") ?? false
-                        ? mat.GetInt("Pallet Sub Index")
-                        : 0
+                    select mat.GetPalletSubIndex()
                 ;
             p.palletSubIndexPerSubMesh = q.ToArrayRecursive2();
         }
@@ -197,5 +195,127 @@ namespace DotsLite.Geometry
             where T : IStructurePart
         => tf.gameObject.getInParent<T>();
 
+    }
+
+
+    public class ColorPalletBuilder
+    {
+        Dictionary<string, (int i, Color32[] colors)> idList = new Dictionary<string, (int, Color32[])>();
+
+        int nextIndex;
+
+        public int this[Color32[] values]
+        {
+            get => this.idList[toKey(values)].i;
+        }
+
+        public void Add(Color32[] values)
+        {
+            var key = toKey(values);
+            if (this.idList.ContainsKey(key))
+            {
+                this.idList[key] = (this.nextIndex++, values);
+            }
+        }
+
+        static string toKey(Color32[] keysrc)
+        {
+            var q =
+                from x in keysrc
+                select $"{x.r},{x.g},{x.b},{x.a}"
+                ;
+            return string.Join("/", q);
+        }
+
+
+    }
+
+    public class UvPalletBuilder
+    {
+        Dictionary<string, (int i, float2[] colors)> idList = new Dictionary<string, (int, float2[])>();
+
+        int nextIndex;
+
+        public int this[float2[] values]
+        {
+            get => this.idList[toKey(values)].i;
+        }
+
+        public void Add(float2[] values)
+        {
+            var key = toKey(values);
+            if (this.idList.ContainsKey(key))
+            {
+                this.idList[key] = (this.nextIndex++, values);
+            }
+        }
+
+        static string toKey(float2[] keysrc)
+        {
+            var q =
+                from x in keysrc
+                select $"{x.x},{x.y}"
+                ;
+            return string.Join("/", q);
+        }
+    }
+
+    public static class PalletUtility
+    {
+
+        public static int GetPalletSubIndex(this Material mat) =>
+            mat?.HasInt("Pallet Sub Index") ?? false
+                ? mat.GetInt("Pallet Sub Index")
+                : 0
+            ;
+
+
+        // ・モデルから sub index ごとの色を抽出
+        // ・color pallet に登録、最後にバッファを構築
+        // ・バッファはシーンに１つ
+        // ・color pallet の base index を、インスタンスに持たせる
+        // ・ただし、すでに同じ構成で登録があれば、その base index を取得する
+        public static Color32[] ToPalletColorEntry(
+            this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
+        {
+            var q =
+                from mmt in mmts
+                from mat in mmt.mats
+                select (index: mat.GetPalletSubIndex(), color: (Color32)mat.color)
+                ;
+            var colors = q.ToLookup(x => x.index, x => x.color);
+            var maxIndex = colors.Max(x => x.Key);
+            var qResult =
+                from i in Enumerable.Range(0, maxIndex + 1)
+                select colors.Contains(i)
+                    ? colors[i].First()
+                    : new Color32()
+                ;
+            return qResult.ToArray();
+        }
+
+        // ・uv pallet に登録、最後にバッファを構築
+        // ・バッファはシーンで１つ
+        // ・uv pallet 
+        public static float2[] ToPalletUvEntry(
+            this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
+            TextureAtlasDictionary.Data texdict)
+        {
+            var q =
+                from mmt in mmts
+                from mat in mmt.mats
+                let index = mat.GetPalletSubIndex()
+                select (index, uv: texdict.texHashToUvRect[0, mat.mainTexture.GetHashCode()])
+                ;
+            var uvs = q.ToLookup(x => x.index, x => x.uv);
+            var maxIndex = uvs.Max(x => x.Key);
+            var qResult =
+                from i in Enumerable.Range(0, maxIndex + 1)
+                let a = uvs.Contains(i)
+                    ? uvs[i].First()
+                    : new Color32()
+                select a;
+            return qResult.ToArray();
+        }
     }
 }
