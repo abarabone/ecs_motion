@@ -40,7 +40,7 @@ namespace DotsLite.Structure.Authoring
             var texdict = atlasDictionary.texHashToUvRect;
             var mmts = this.QueryMmts.ToArray();
             var p = mmts.calculateParameters(
-                this.TfRoot, this.QueryBones?.ToArray(), part => texdict[atlas, part], null);
+                this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
             mmts.CalculatePalletSubIndexParameter(ref p);
 
             return (

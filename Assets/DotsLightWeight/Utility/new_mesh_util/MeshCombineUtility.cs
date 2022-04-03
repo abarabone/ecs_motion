@@ -232,16 +232,16 @@ namespace DotsLite.Geometry
 
     public class UvPalletBuilder
     {
-        Dictionary<string, (int i, float2[] colors)> idList = new Dictionary<string, (int, float2[])>();
+        Dictionary<string, (int i, Rect[] uvs)> idList = new Dictionary<string, (int, Rect[])>();
 
         int nextIndex;
 
-        public int this[float2[] values]
+        public int this[Rect[] values]
         {
             get => this.idList[toKey(values)].i;
         }
 
-        public void Add(float2[] values)
+        public void Add(Rect[] values)
         {
             var key = toKey(values);
             if (this.idList.ContainsKey(key))
@@ -250,7 +250,7 @@ namespace DotsLite.Geometry
             }
         }
 
-        static string toKey(float2[] keysrc)
+        static string toKey(Rect[] keysrc)
         {
             var q =
                 from x in keysrc
@@ -275,6 +275,9 @@ namespace DotsLite.Geometry
         // ・バッファはシーンに１つ
         // ・color pallet の base index を、インスタンスに持たせる
         // ・ただし、すでに同じ構成で登録があれば、その base index を取得する
+        /// <summary>
+        /// 
+        /// </summary>
         public static Color32[] ToPalletColorEntry(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
         {
@@ -297,24 +300,28 @@ namespace DotsLite.Geometry
         // ・uv pallet に登録、最後にバッファを構築
         // ・バッファはシーンで１つ
         // ・uv pallet 
-        public static float2[] ToPalletUvEntry(
+        /// <summary>
+        /// 
+        /// </summary>
+        public static Rect[] ToPalletUvEntry(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
-            TextureAtlasDictionary.Data texdict)
+            Func<int, Rect> texHashToUvRectFunc)
         {
             var q =
                 from mmt in mmts
                 from mat in mmt.mats
                 let index = mat.GetPalletSubIndex()
-                select (index, uv: texdict.texHashToUvRect[0, mat.mainTexture.GetHashCode()])
+                let uv = texHashToUvRectFunc(mat.mainTexture.GetHashCode())
+                select (index, uv)
                 ;
             var uvs = q.ToLookup(x => x.index, x => x.uv);
             var maxIndex = uvs.Max(x => x.Key);
             var qResult =
                 from i in Enumerable.Range(0, maxIndex + 1)
-                let a = uvs.Contains(i)
+                select uvs.Contains(i)
                     ? uvs[i].First()
-                    : new Color32()
-                select a;
+                    : new Rect()
+                ;
             return qResult.ToArray();
         }
     }
