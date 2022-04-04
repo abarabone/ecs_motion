@@ -27,5 +27,6 @@ namespace DotsLite.Model.Authoring
 
         public Color32[] Colors;
 
+
     }
 }

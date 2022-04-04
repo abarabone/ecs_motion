@@ -49,6 +49,10 @@ namespace DotsLite.Structure.Authoring
         public virtual void SetObject(GameObject obj) => this.objectTop = obj;
 
 
+        [SerializeField]
+        protected PalletAsset colorPallet;
+
+
         public override IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts
         {
             get
