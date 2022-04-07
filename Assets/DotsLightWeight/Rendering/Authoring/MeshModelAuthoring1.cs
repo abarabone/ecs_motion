@@ -34,6 +34,7 @@ namespace DotsLite.Model.Authoring
         //public Shader ShaderToDraw;
 
         class pnuv : MeshModel<UI32, PositionNormalUvVertex> { }
+        class pnupv : MeshModel<UI32, PositionNormalUvPalletVertex> { }
 
         protected new void Reset()
         {
