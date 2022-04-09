@@ -41,7 +41,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateAfter(typeof(ParticleLifeTimeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class RotateSystem : SystemBase
+    public partial class RotateSystem : SystemBase
     {
 
         protected override void OnUpdate()

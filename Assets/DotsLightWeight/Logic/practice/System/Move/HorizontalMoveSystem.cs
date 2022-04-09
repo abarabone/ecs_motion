@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -29,7 +29,7 @@ namespace DotsLite.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
-    public class HorizontalMoveSystem : SystemBase
+    public partial class HorizontalMoveSystem : SystemBase
     {
 
 

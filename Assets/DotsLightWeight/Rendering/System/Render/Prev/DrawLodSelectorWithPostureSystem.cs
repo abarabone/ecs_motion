@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -23,7 +23,7 @@ namespace DotsLite.Draw
     ////[UpdateBefore(typeof(DrawCullingSystem))]
     ////[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.Lod))]
-    public class DrawLodSelectorWithPostureSystem : SystemBase
+    public partial class DrawLodSelectorWithPostureSystem : SystemBase
     {
 
         protected override void OnUpdate()

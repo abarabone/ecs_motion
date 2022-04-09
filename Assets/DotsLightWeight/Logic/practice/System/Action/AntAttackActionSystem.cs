@@ -28,13 +28,13 @@ namespace DotsLite.Character.Action
 
 
     /// <summary>
-    /// •à‚«‚ÌƒAƒNƒVƒ‡ƒ“ƒXƒe[ƒg
+    /// æ­©ãæ™‚ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆ
     /// 
     /// </summary>
     //[DisableAutoCreation]
     [UpdateAfter(typeof(AntMoveDirectionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class AntrAttackActionSystem : DependencyAccessableSystemBase
+    public partial class AntrAttackActionSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;
@@ -88,7 +88,7 @@ namespace DotsLite.Character.Action
                 .WithReadOnly(poss)
                 .WithReadOnly(mvspds)
                 .WithNativeDisableParallelForRestriction(motionCursors)
-                //.WithNativeDisableParallelForRestriction(triggers)// ƒ„ƒo‚¢‚©‚à
+                //.WithNativeDisableParallelForRestriction(triggers)// ãƒ¤ãƒã„ã‹ã‚‚
                 .ForEach(
                     (
                         Entity entity, int entityInQueryIndex,

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -58,7 +58,7 @@ namespace DotsLite.Arms
     [UpdateAfter(typeof(CameraMoveSystem))]
     [UpdateAfter(typeof(WaponTriggerSystem))]
     [UpdateAfter(typeof(EmitTimeProgressSystem))]
-    public class EmitBulletSystem : DependencyAccessableSystemBase
+    public partial class EmitBulletSystem : DependencyAccessableSystemBase
     {
 
 

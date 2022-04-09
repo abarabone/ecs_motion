@@ -36,11 +36,11 @@ namespace DotsLite.Particle.disable
 
     using Random = Unity.Mathematics.Random;
 
-    // æ“ª‚¾‚¯ Tail ‚Ìƒo[ƒWƒ‡ƒ“
+    // å…ˆé ­ã ã‘ Tail ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(BulletInitializeSystem))]
-    public class MoveSpringInitializeSystem : SystemBase
+    public partial class MoveSpringInitializeSystem : SystemBase
     {
 
 
@@ -78,7 +78,7 @@ namespace DotsLite.Particle.disable
 
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
-    public class MoveSpringSystem : SystemBase
+    public partial class MoveSpringSystem : SystemBase
     {
 
 
@@ -88,8 +88,8 @@ namespace DotsLite.Particle.disable
             var dt = this.Time.DeltaTime;
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
-            var gravity = UnityEngine.Physics.gravity.As_float3();// ‚Æ‚è‚ ‚¦‚¸ƒGƒ“ƒWƒ“‘¤‚Ì‚ğ
-                                                      // d—Í‚ª•Ï‰»‚·‚é‰Â”\«‚ğl‚¦‚ÄA–ˆƒtƒŒ[ƒ€æ“¾‚·‚é
+            var gravity = UnityEngine.Physics.gravity.As_float3();// ã¨ã‚Šã‚ãˆãšã‚¨ãƒ³ã‚¸ãƒ³å´ã®ã‚’
+                                                      // é‡åŠ›ãŒå¤‰åŒ–ã™ã‚‹å¯èƒ½æ€§ã‚’è€ƒãˆã¦ã€æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å–å¾—ã™ã‚‹
             var g_ = gravity * harfsqdt;
 
             this.Entities
@@ -147,7 +147,7 @@ namespace DotsLite.Particle.disable
                         fttdown = calc_ftt(currpos, nextpos, currvt, nextvt, spec, dt);
 
                         //return currpos + currvt - fttdown;
-                        return currpos - fttdown;// æ“ª‚Í‘¬“xƒx[ƒX‚Åˆ—‚³‚ê‚é
+                        return currpos - fttdown;// å…ˆé ­ã¯é€Ÿåº¦ãƒ™ãƒ¼ã‚¹ã§å‡¦ç†ã•ã‚Œã‚‹
                     }
 
                     //[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -197,7 +197,7 @@ namespace DotsLite.Particle.disable
             var lenrcp = math.select(0.0f, lenrcp_, math.isnan(lenrcp_));
             var dir = line * lenrcp;
 
-            var f0 = (len - spec.Rest) * spec.Spring;// L‚Ñ‚É’ïR‚µAk‚à‚¤‚Æ‚·‚é—Í‚ªƒvƒ‰ƒX
+            var f0 = (len - spec.Rest) * spec.Spring;// ä¼¸ã³ã«æŠµæŠ—ã—ã€ç¸®ã‚‚ã†ã¨ã™ã‚‹åŠ›ãŒãƒ—ãƒ©ã‚¹
             var ft0 = dir * f0 * dt;
 
             var ft1 = spec.Dumper * (vt1 - vt0);

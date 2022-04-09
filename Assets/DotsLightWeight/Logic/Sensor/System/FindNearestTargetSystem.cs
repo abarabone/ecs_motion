@@ -33,7 +33,7 @@ namespace DotsLite.Character
     //[DisableAutoCreation]
     [UpdateAfter(typeof(TargetSensorWakeupAndCopyPositionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class FindNearestTargeSystem : DependencyAccessableSystemBase
+    public partial class FindNearestTargeSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;
@@ -78,11 +78,11 @@ namespace DotsLite.Character
                         var startpos = poss[collision.PostureEntity].Value;
                         cw.OverlapSphereCustom(startpos, collision.Distance, ref collector, collision.Filter);
 
-                        // ƒqƒbƒg‚µ‚È‚¯‚ê‚Î Entity.Null ‚Æ‚¢‚¤‘O’ñ
+                        // ãƒ’ãƒƒãƒˆã—ãªã‘ã‚Œã° Entity.Null ã¨ã„ã†å‰æ
                         target.TargetMainEntity = collector.ClosestHit.Entity;
 
 
-                        // ˆê‰ñÀs‚µ‚½‚ç‚â‚ß‚é
+                        // ä¸€å›å®Ÿè¡Œã—ãŸã‚‰ã‚„ã‚ã‚‹
                         cmd.RemoveComponent<TargetSensor.WakeupFindTag>(entityInQueryIndex, entity);
                     }
                 )

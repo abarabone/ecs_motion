@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -29,7 +29,7 @@ namespace DotsLite.Character
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof(InitializationSystemGroup) )]
-    public class PlayerMoveDirectionSystem : SystemBase
+    public partial class PlayerMoveDirectionSystem : SystemBase
     {
 
 

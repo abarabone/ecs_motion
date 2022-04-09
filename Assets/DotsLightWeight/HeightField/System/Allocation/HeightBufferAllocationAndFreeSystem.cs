@@ -20,7 +20,7 @@ namespace DotsLite.HeightGrid
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class HeightBufferAllocationAndFreeSystem : SystemBase//DependencyAccessableSystemBase
+    public partial class HeightBufferAllocationAndFreeSystem : SystemBase//DependencyAccessableSystemBase
     {
 
         //CommandBufferDependency.Sender cmddep;
@@ -65,7 +65,7 @@ namespace DotsLite.HeightGrid
                     ref GridMaster.HeightFieldData heights,
                     in GridMaster.DimensionData dim) =>
                 {
-                    ////heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);b’è‚ÅŠO‚µ‚Ä‚éiauthoring ‚Å‚â‚Á‚Ä‚éj
+                    ////heights.Alloc(dim.NumGrids, dim.UnitLengthInGrid);æš«å®šã§å¤–ã—ã¦ã‚‹ï¼ˆauthoring ã§ã‚„ã£ã¦ã‚‹ï¼‰
 
                     //cmd.RemoveComponent<GridMaster.InitializeTag>(ent);
                     em.RemoveComponent<GridMaster.InitializeTag>(ent);

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -37,7 +37,7 @@ namespace DotsLite.Draw
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.Lod))]
     //[UpdateAfter(typeof(DrawLodSelectorSingleEntitySystem))]
-    public class StructureLodSwitchingSystem : DependencyAccessableSystemBase
+    public partial class StructureLodSwitchingSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;

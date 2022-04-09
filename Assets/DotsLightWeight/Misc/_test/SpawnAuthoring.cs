@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -76,7 +76,7 @@ static class Spawn
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
-public class SpawnFreqencySystem : DependencyAccessableSystemBase
+public partial class SpawnFreqencySystem : DependencyAccessableSystemBase
 {
 
 
@@ -127,7 +127,7 @@ public class SpawnFreqencySystem : DependencyAccessableSystemBase
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
-public class SpawnSystem : DependencyAccessableSystemBase
+public partial class SpawnSystem : DependencyAccessableSystemBase
 {
 
 
@@ -180,7 +180,7 @@ public struct ObjectInitializeData : IComponentData
 }
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
-public class ObjectInitializeSystem : DependencyAccessableSystemBase
+public partial class ObjectInitializeSystem : DependencyAccessableSystemBase
 {
 
 

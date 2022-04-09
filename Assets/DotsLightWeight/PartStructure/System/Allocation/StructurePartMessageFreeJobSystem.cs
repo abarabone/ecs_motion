@@ -35,7 +35,7 @@ namespace DotsLite.Structure
     //    }
 
     //}
-    public class StructurePartMessageFreeJobSystem : SystemBase, BarrierDependency.IRecievable
+    public partial class StructurePartMessageFreeJobSystem : SystemBase, BarrierDependency.IRecievable
     {
 
         public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();

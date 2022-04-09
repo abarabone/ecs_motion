@@ -28,7 +28,7 @@ namespace DotsLite.Draw
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     //[UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class WaveGridToModelBufferSystem : DependencyAccessableSystemBase
+    public partial class WaveGridToModelBufferSystem : DependencyAccessableSystemBase
     {
 
         BarrierDependency.Sender bardep;
@@ -80,7 +80,7 @@ namespace DotsLite.Draw
 
                     var heights = heightss[arealink.ParentAreaEntity];
 
-                    // length ‚ÍƒZƒOƒƒ“ƒg”A’¸“_‚Í + 1 ŒÂ‘—‚é
+                    // length ã¯ã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ•°ã€é ‚ç‚¹ã¯ + 1 å€‹é€ã‚‹
 
                     var dim = dims[arealink.ParentAreaEntity];
                     var srcw = dim.UnitLengthInGrid.x;
@@ -105,11 +105,11 @@ namespace DotsLite.Draw
                     var i = offsetInfo.OptionalVectorLengthPerInstance;
 
 
-                    pDst[i - 1] = float4.zero;// ‚±‚ê‚ğ‚â‚ç‚È‚¢‚ÆAƒVƒF[ƒ_[‚Ì@dot(vh, mask) ‚Å•s’è’l‚ª“ü‚Á‚Ä‚µ‚Ü‚¤
+                    pDst[i - 1] = float4.zero;// ã“ã‚Œã‚’ã‚„ã‚‰ãªã„ã¨ã€ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã€€dot(vh, mask) ã§ä¸å®šå€¤ãŒå…¥ã£ã¦ã—ã¾ã†
 
                     var elementSize = dstspan;
                     UnsafeUtility.MemCpyStride(pDst, dstspan, pSrc, srcspan, elementSize, count);
-                    // Œ»óA––’[‚Ìs‚Æ—ñ‚ª‚¤‚Ü‚­‚Æ‚ê‚Ä‚¢‚È‚¢‚Ì‚ÅA‚ ‚Æ‚ÅC³‚·‚éiƒ‹[ƒv‚Ì‚¸‚êj
+                    // ç¾çŠ¶ã€æœ«ç«¯ã®è¡Œã¨åˆ—ãŒã†ã¾ãã¨ã‚Œã¦ã„ãªã„ã®ã§ã€ã‚ã¨ã§ä¿®æ­£ã™ã‚‹ï¼ˆãƒ«ãƒ¼ãƒ—ã®ãšã‚Œï¼‰
 
                     var lodUnitScale = unitScale * (1 << grid.LodLevel);
                     //((float*)(pDst + i))[-1] = lodUnitScale;

@@ -28,13 +28,13 @@ namespace DotsLite.Draw
 
 
     /// <summary>
-    /// Eí‚Éƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚ª‘–‚é‚Ì‚Í–³‘Ê
-    /// EƒXƒŠ[ƒv’†‚Íƒgƒ‰ƒ“ƒXƒtƒH[ƒ€•s—v
-    /// @¨ƒXƒŠ[ƒv‚ÉØ‚è‘Ö‚í‚é‚É‚s‚e‚ğƒIƒt‚É‚·‚ê‚Î‚æ‚¢H
-    /// @¨ far ‚© near ‚Ì disable ‚É‚È‚Á‚Ä‚¢‚é‚Ù‚¤‚É”½‰f‚³‚ê‚È‚¢
-    /// EØ‚è‘Ö‚í‚é‚Éˆê“xA—¼•ûƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚·‚ê‚Î‚¢‚¢H
-    /// @EƒRƒ‰ƒCƒ_‚ÌˆÊ’u‚ğ³‚µ‚­‚·‚é‚½‚ß ¨ far, near
-    /// @EƒfƒuƒŠ‚Ì”­¶ˆÊ’u ¨ near
+    /// ãƒ»å¸¸ã«ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ãŒèµ°ã‚‹ã®ã¯ç„¡é§„
+    /// ãƒ»ã‚¹ãƒªãƒ¼ãƒ—ä¸­ã¯ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ä¸è¦
+    /// ã€€â†’ã‚¹ãƒªãƒ¼ãƒ—ã«åˆ‡ã‚Šæ›¿ã‚ã‚‹æ™‚ã«ï¼´ï¼¦ã‚’ã‚ªãƒ•ã«ã™ã‚Œã°ã‚ˆã„ï¼Ÿ
+    /// ã€€â†’ far ã‹ near ã® disable ã«ãªã£ã¦ã„ã‚‹ã»ã†ã«åæ˜ ã•ã‚Œãªã„
+    /// ãƒ»åˆ‡ã‚Šæ›¿ã‚ã‚‹æ™‚ã«ä¸€åº¦ã€ä¸¡æ–¹ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã™ã‚Œã°ã„ã„ï¼Ÿ
+    /// ã€€ãƒ»ã‚³ãƒ©ã‚¤ãƒ€ã®ä½ç½®ã‚’æ­£ã—ãã™ã‚‹ãŸã‚ â†’ far, near
+    /// ã€€ãƒ»ãƒ‡ãƒ–ãƒªã®ç™ºç”Ÿä½ç½® â†’ near
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MonolithicBone))]
@@ -42,7 +42,7 @@ namespace DotsLite.Draw
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     //[UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(BeginInitializationEntityCommandBufferSystem))]
-    public class RemoveStructureTransformOnceOnlyTagSystem : DependencyAccessableSystemBase
+    public partial class RemoveStructureTransformOnceOnlyTagSystem : DependencyAccessableSystemBase
     {
 
 
@@ -68,7 +68,7 @@ namespace DotsLite.Draw
                 .WithAll<PartBone.TransformOnlyOnceTag>()
                 .ForEach((Entity entity, int entityInQueryIndex) =>//, ref Bone.TransformOnlyOnceTag init) =>
                 {
-                    //if (init.count++ < 1) return;// b’è@‚Å‚«‚ê‚Îƒ^ƒO‘€ì‚¾‚¯‚Å‚â‚è‚½‚¢‚ñ‚¾‚¯‚Çc
+                    //if (init.count++ < 1) return;// æš«å®šã€€ã§ãã‚Œã°ã‚¿ã‚°æ“ä½œã ã‘ã§ã‚„ã‚ŠãŸã„ã‚“ã ã‘ã©â€¦
 
                     var eqi = entityInQueryIndex;
                     cmd.RemoveComponent<PartBone.TransformOnlyOnceTag>(eqi, entity);

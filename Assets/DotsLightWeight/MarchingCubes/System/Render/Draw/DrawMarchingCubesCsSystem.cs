@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,7 +18,7 @@ namespace DotsLite.MarchingCubes.Gpu
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     [UpdateAfter(typeof(DrawBufferToShaderDataSystem))]
-    public class DrawMarchingCubeCsSystem : SystemBase
+    public partial class DrawMarchingCubeCsSystem : SystemBase
     {
         protected override void OnCreate()
         {

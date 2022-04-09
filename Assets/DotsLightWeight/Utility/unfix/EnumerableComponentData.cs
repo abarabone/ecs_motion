@@ -22,7 +22,7 @@ namespace DotsLite.Misc
         NativeArray<ArchetypeChunk> chunks;
 
 
-        public EnumerableComponentData( JobComponentSystem sys, EntityQuery query, bool isReadOnly )
+        public EnumerableComponentData( SystemBase sys, EntityQuery query, bool isReadOnly )
         {
             this.ctype = sys.GetComponentTypeHandle<T>( isReadOnly );
             this.chunks = query.CreateArchetypeChunkArray(Allocator.TempJob);// Allocator.Temp );

@@ -24,13 +24,13 @@ namespace DotsLite.Character
     using DotsLite.Dependency;
 
 
-    // ƒƒCƒ“ˆÊ’u‚ğ‚Â•¨‘Ì‚ğA‚¢‚Á‚½‚ñ’P‚È‚éˆÊ’u‚É‚È‚¨‚·
-    // ˆÚ“®ˆ—‚É”Ä—p«‚ğ‚à‚½‚¹‚ç‚ê‚é
+    // ãƒ¡ã‚¤ãƒ³ä½ç½®ã‚’æŒã¤ç‰©ä½“ã‚’ã€ã„ã£ãŸã‚“å˜ãªã‚‹ä½ç½®ã«ãªãŠã™
+    // ç§»å‹•å‡¦ç†ã«æ±ç”¨æ€§ã‚’ã‚‚ãŸã›ã‚‰ã‚Œã‚‹
 
     //[DisableAutoCreation]
     [UpdateAfter(typeof(FindNearestTargeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class AcquireTargetPosiionSystem : DependencyAccessableSystemBase
+    public partial class AcquireTargetPosiionSystem : DependencyAccessableSystemBase
     {
 
 

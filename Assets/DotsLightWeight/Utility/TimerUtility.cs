@@ -22,7 +22,7 @@ namespace DotsLite.Misc
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     //[UpdateAfter(typeof(EndFixedStepSimulationEntityCommandBufferSystem))]
     [UpdateAfter(typeof(EndFramePhysicsSystem))]
-    public class TimeEx : SystemBase
+    public partial class TimeEx : SystemBase
     {
         public static float PrevDeltaTime = 1.0f / 60.0f;
         public static float PrevDeltaTimeRcp = 1.0f / PrevDeltaTime;

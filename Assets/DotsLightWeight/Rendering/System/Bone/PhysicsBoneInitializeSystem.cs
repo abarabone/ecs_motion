@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,7 +27,7 @@ namespace DotsLite.Collision
     //[UpdateInGroup( typeof( BonePhysicsSystemGroup ) )]
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
-    public class PhysicsBoneInitializeSystem : DependencyAccessableSystemBase
+    public partial class PhysicsBoneInitializeSystem : DependencyAccessableSystemBase
     {
 
 

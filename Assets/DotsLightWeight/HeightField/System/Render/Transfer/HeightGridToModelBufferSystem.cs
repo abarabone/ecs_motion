@@ -28,7 +28,7 @@ namespace DotsLite.Draw
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     //[UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class HeightGridToModelBufferSystem : DependencyAccessableSystemBase
+    public partial class HeightGridToModelBufferSystem : DependencyAccessableSystemBase
     {
 
         BarrierDependency.Sender bardep;

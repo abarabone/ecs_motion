@@ -1,4 +1,4 @@
-﻿using Unity.Entities;
+using Unity.Entities;
 
 namespace DotsLite.Draw
 {
@@ -8,7 +8,7 @@ namespace DotsLite.Draw
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.DrawAfter.TempFree ) )]
     //[UpdateAfter( typeof( DrawMeshCsSystem ) )]
-    public class DrawInstanceTempBufferFreeSystem : SystemBase
+    public partial class DrawInstanceTempBufferFreeSystem : SystemBase
     {
 
         protected override void OnCreate()

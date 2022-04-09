@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -39,7 +39,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     [UpdateAfter(typeof(MoveSpringSystem))]
-    public class SpringHitSegmentCopySystem : SystemBase
+    public partial class SpringHitSegmentCopySystem : SystemBase
     {
 
 

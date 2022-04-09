@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -21,7 +21,7 @@ namespace DotsLite.Draw
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     //[UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class DrawStretchBoxToModelBufferSystem : DependencyAccessableSystemBase
+    public partial class DrawStretchBoxToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 

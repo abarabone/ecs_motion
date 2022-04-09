@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -36,7 +36,7 @@ namespace DotsLite.Arms
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(WaponSelectorSystem))]
     //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]//
-    public class WaponTriggerSystem : SystemBase
+    public partial class WaponTriggerSystem : SystemBase
     {
 
         protected override void OnUpdate()

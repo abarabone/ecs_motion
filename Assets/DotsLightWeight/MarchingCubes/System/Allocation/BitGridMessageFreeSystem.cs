@@ -21,7 +21,7 @@ namespace DotsLite.MarchingCubes
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawAfter.TempFree))]
     //[UpdateAfter(typeof(DotGridUpdateSystem))]
     //[UpdateAfter(typeof(Gpu.DrawMarchingCubeCsSystem))]
-    public class BitGridMessageFreeSystem : SystemBase, BarrierDependency.IRecievable
+    public partial class BitGridMessageFreeSystem : SystemBase, BarrierDependency.IRecievable
     {
 
         public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();

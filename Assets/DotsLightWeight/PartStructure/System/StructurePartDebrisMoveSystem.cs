@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -34,7 +34,7 @@ namespace DotsLite.Draw
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     //[UpdateAfter(typeof())]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.MonolithicBoneTransform.MonolithicBoneTransformSystemGroup))]
-    public class StructurePartDebrisMoveSystem : DependencyAccessableSystemBase
+    public partial class StructurePartDebrisMoveSystem : DependencyAccessableSystemBase
     {
 
 

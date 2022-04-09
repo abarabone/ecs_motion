@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -33,7 +33,7 @@ namespace DotsLite.Character.Action
     //[DisableAutoCreation]
     [UpdateAfter(typeof(AntMoveDirectionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class AntrWalkActionSystem : DependencyAccessableSystemBase
+    public partial class AntrWalkActionSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;

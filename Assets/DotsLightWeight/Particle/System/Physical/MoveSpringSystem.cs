@@ -39,7 +39,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(BulletInitializeSystem))]
-    public class MoveSpringInitializeSystem : SystemBase
+    public partial class MoveSpringInitializeSystem : SystemBase
     {
 
 
@@ -85,7 +85,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     [UpdateAfter(typeof(MoveAccSystem))]
-    public class MoveSpringSystem : SystemBase
+    public partial class MoveSpringSystem : SystemBase
     {
 
 
@@ -97,8 +97,8 @@ namespace DotsLite.Particle
             var sqdt = dt * dt;
             var harfsqdt = 0.5f * sqdt;
 
-            var gravity = UnityEngine.Physics.gravity.As_float3();// ‚Æ‚è‚ ‚¦‚¸ƒGƒ“ƒWƒ“‘¤‚Ì‚ğ
-                                                      // d—Í‚ª•Ï‰»‚·‚é‰Â”\«‚ğl‚¦‚ÄA–ˆƒtƒŒ[ƒ€æ“¾‚·‚é
+            var gravity = UnityEngine.Physics.gravity.As_float3();// ã¨ã‚Šã‚ãˆãšã‚¨ãƒ³ã‚¸ãƒ³å´ã®ã‚’
+                                                      // é‡åŠ›ãŒå¤‰åŒ–ã™ã‚‹å¯èƒ½æ€§ã‚’è€ƒãˆã¦ã€æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å–å¾—ã™ã‚‹
             var g = gravity * harfsqdt;
 
             this.Entities
@@ -199,7 +199,7 @@ namespace DotsLite.Particle
             var lenrcp = math.select(math.rcp(len), 0.0f, len == 0.0f);
             var dir = line * lenrcp;//Debug.Log(lenrcp);
 
-            var f0 = (len - spec.Rest) * spec.Spring;// L‚Ñ‚É’ïR‚µAk‚à‚¤‚Æ‚·‚é—Í‚ªƒvƒ‰ƒX
+            var f0 = (len - spec.Rest) * spec.Spring;// ä¼¸ã³ã«æŠµæŠ—ã—ã€ç¸®ã‚‚ã†ã¨ã™ã‚‹åŠ›ãŒãƒ—ãƒ©ã‚¹
             var ft0 = dir * f0 * dt;
 
             var ft1 = spec.Dumper * (vt1 - vt0);

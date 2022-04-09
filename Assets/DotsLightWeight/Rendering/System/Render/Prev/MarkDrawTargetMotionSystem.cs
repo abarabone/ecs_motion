@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,7 +18,7 @@ namespace DotsLite.Draw
     ////[UpdateInGroup( typeof( SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup ) )]
     ////[UpdateAfter( typeof( DrawCullingSystem ) )]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.Marking))]
-    public class MarkDrawTargetMotionSystem : SystemBase
+    public partial class MarkDrawTargetMotionSystem : SystemBase
     {
 
 

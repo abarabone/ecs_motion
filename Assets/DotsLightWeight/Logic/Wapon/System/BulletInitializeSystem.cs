@@ -60,7 +60,7 @@ namespace DotsLite.Arms
     //[UpdateAfter(typeof(ObjectInitializeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateBefore(typeof(InitializeSystem))]
-    public class BulletInitializeSystem : SystemBase
+    public partial class BulletInitializeSystem : SystemBase
     {
 
 
@@ -69,7 +69,7 @@ namespace DotsLite.Arms
 
             var pdt = TimeEx.PrevDeltaTime;
             var dt = this.Time.DeltaTime;
-            var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// とりあえず
+            var gravity = UnityEngine.Physics.gravity.As_float3().As_float4();// 縺ｨ繧翫≠縺医★
 
             var rots = this.GetComponentDataFromEntity<Rotation>(isReadOnly: true);
             var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
@@ -105,7 +105,7 @@ namespace DotsLite.Arms
                     var v = init.AimSpeed.xyz * spec.AimFactor + dir * spec.BulletSpeed;
                     pos.Value = mpos;
                     vfact.PrePosition = (mpos - v * pdt).As_float4();
-                    // pos に足すと進んでしまうので、前フレームから引く
+                    // pos 縺ｫ雜ｳ縺吶→騾ｲ繧薙〒縺励∪縺�縺ｮ縺ｧ縲∝燕繝輔Ξ繝ｼ繝縺九ｉ蠑輔￥
 
 
                     var d = spec.RangeDistanceFactor * init.EmitterRangeDistanceFactor;

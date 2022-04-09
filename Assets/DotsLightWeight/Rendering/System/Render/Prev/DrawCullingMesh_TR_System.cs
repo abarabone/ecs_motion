@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -20,7 +20,7 @@ namespace DotsLite.Draw
 
     ////[UpdateAfter( typeof( DrawInstanceCounterResetSystem ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.DrawPrev.Culling))]
-    public class DrawCullingMesh_TR_System : SystemBase
+    public partial class DrawCullingMesh_TR_System : SystemBase
     {
 
         //BeginDrawCsBarier presentationBarier;// 次のフレームまでにジョブが完了することを保証

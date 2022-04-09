@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace DotsLite.CharacterMotion
 
     [UpdateAfter( typeof( MotionStreamProgressAndInterporationSystem ) )]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transform.MotionBone ) )]
-    public class StreamToBoneSystem : SystemBase
+    public partial class StreamToBoneSystem : SystemBase
     {
 
 

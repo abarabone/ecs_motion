@@ -40,7 +40,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateAfter(typeof(ParticleLifeTimeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class SizingSystem : SystemBase
+    public partial class SizingSystem : SystemBase
     {
 
         protected override void OnUpdate()

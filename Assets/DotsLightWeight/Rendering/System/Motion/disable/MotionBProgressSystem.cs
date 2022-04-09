@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace DotsLite.CharacterMotion
     [UpdateAfter(typeof(MotionBInitializeSystem))]
     [UpdateBefore(typeof(MotionStreamInterporationSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
-    public class MotionProgressSystem : SystemBase//JobComponentSystem
+    public partial class MotionProgressSystem : SystemBase//JobComponentSystem
     {
 
 

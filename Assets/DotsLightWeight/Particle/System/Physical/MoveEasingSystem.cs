@@ -41,7 +41,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateAfter(typeof(ParticleLifeTimeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class MoveEasingSystem : SystemBase
+    public partial class MoveEasingSystem : SystemBase
     {
 
         protected override void OnUpdate()

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -38,7 +38,7 @@ namespace DotsLite.Arms
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(WaponTriggerSystem))]
-    public class EmitTimeProgressSystem : SystemBase
+    public partial class EmitTimeProgressSystem : SystemBase
     {
 
         protected override void OnUpdate()

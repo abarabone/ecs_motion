@@ -9,7 +9,7 @@ using Unity.Collections;
 namespace DotsLite.Dependency
 {
 
-    public abstract class DependencyAccessableSystemBase : SystemBase
+    public abstract partial class DependencyAccessableSystemBase : SystemBase
     {
 
 

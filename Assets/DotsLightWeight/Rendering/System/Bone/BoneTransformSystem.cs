@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -31,7 +31,7 @@ namespace DotsLite.Model
     //[DisableAutoCreation]
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     [UpdateAfter(typeof( StreamToBoneSystem ) )]
-    public class BoneTransformSystem : SystemBase//JobComponentSystem
+    public partial class BoneTransformSystem : SystemBase//JobComponentSystem
     {
 
 

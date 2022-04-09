@@ -21,7 +21,7 @@ namespace DotsLite.MarchingCubes
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Call))]
     //[UpdateAfter(typeof(BitGridUpdateSystem))]
     [UpdateBefore(typeof(Gpu.DrawMarchingCubeCsSystem))]
-    public class BitGridCopyToGpuSystem : DependencyAccessableSystemBase, BarrierDependency.IRecievable
+    public partial class BitGridCopyToGpuSystem : DependencyAccessableSystemBase, BarrierDependency.IRecievable
     {
 
 

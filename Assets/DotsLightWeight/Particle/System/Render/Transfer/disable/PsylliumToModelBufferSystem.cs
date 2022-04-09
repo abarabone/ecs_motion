@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,7 +27,7 @@ namespace DotsLite.Draw.disable
     //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     [UpdateBefore(typeof(DrawBufferToShaderDataSystem))]
-    public class PsylliumToDrawModelBufferSystem : DependencyAccessableSystemBase
+    public partial class PsylliumToDrawModelBufferSystem : DependencyAccessableSystemBase
     {
 
 

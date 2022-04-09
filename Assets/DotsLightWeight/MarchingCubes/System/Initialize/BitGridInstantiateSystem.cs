@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -26,7 +26,7 @@ namespace DotsLite.MarchingCubes
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     //[UpdateAfter(typeof(DotGridLinksInitializeSystem))]
     [UpdateAfter(typeof(ResourceInitializeSystem))]
-    public class BitGridInstantiateSystem : SystemBase
+    public partial class BitGridInstantiateSystem : SystemBase
     {
 
         protected override unsafe void OnUpdate()
@@ -134,7 +134,7 @@ namespace DotsLite.MarchingCubes
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     [UpdateAfter(typeof(BitGridInstantiateSystem))]
     [UpdateAfter(typeof(BitGridMessageAllocSystem))]
-    public class BitGridAddSystem : DependencyAccessableSystemBase
+    public partial class BitGridAddSystem : DependencyAccessableSystemBase
     {
 
         HitMessage<UpdateMessage>.Sender mcSender;

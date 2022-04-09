@@ -30,7 +30,7 @@ namespace DotsLite.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class StructureEnvelopeSleepSwitchingSystem : DependencyAccessableSystemBase
+    public partial class StructureEnvelopeSleepSwitchingSystem : DependencyAccessableSystemBase
     {
 
 
@@ -86,7 +86,7 @@ namespace DotsLite.Structure
                     }
 
 
-                    // ’¼Ú”»•Ê‚µ‚Ä‚µ‚Ü‚¤‚ÆAnear ‚É‚È‚é‘O‚ÌˆÊ’u‚Å‚s‚e‚µ‚Ä‚µ‚Ü‚¤‚Ì‚Å‚¾‚ß
+                    // ç›´æ¥åˆ¤åˆ¥ã—ã¦ã—ã¾ã†ã¨ã€near ã«ãªã‚‹å‰ã®ä½ç½®ã§ï¼´ï¼¦ã—ã¦ã—ã¾ã†ã®ã§ã ã‚
                     //if (model.DrawModelEntityCurrent == mlink.DrawModelEntityNear)
                     //{
                         //resetTimer_(ref timer);
@@ -95,7 +95,7 @@ namespace DotsLite.Structure
                         //_._log("to sleep near");
                         //return;
                     //}
-                    //if (model.DrawModelEntityCurrent == mlink.DrawModelEntityFar) // null ‚àŠÜ‚ß‚é‚½‚ß
+                    //if (model.DrawModelEntityCurrent == mlink.DrawModelEntityFar) // null ã‚‚å«ã‚ã‚‹ãŸã‚
                     {
                         resetTimer_(ref timer);
 
@@ -106,7 +106,7 @@ namespace DotsLite.Structure
                 })
                 .ScheduleParallel();
 
-            //// ‚È‚ñ‚©‚Å‚«‚È‚¢
+            //// ãªã‚“ã‹ã§ããªã„
             //var dep2 = this.Entities
             //    .WithName("near")
             //    .WithBurst()
@@ -170,7 +170,7 @@ namespace DotsLite.Structure
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class StructureEnvelopeSleepSwitchingSystem_near : DependencyAccessableSystemBase
+    public partial class StructureEnvelopeSleepSwitchingSystem_near : DependencyAccessableSystemBase
     {
 
 
@@ -252,8 +252,8 @@ namespace DotsLite.Structure
 
 
     ///// <summary>
-    ///// ‚Æ‚è‚ ‚¦‚¸Afar/near ‚È‚µ‚ÌƒXƒŠ[ƒv‚Í‚±‚±‚Å‚â‚é
-    ///// ‚·‚×‚Ä‚Ìq‚ğˆê“xƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚·‚é
+    ///// ã¨ã‚Šã‚ãˆãšã€far/near ãªã—ã®ã‚¹ãƒªãƒ¼ãƒ—ã¯ã“ã“ã§ã‚„ã‚‹
+    ///// ã™ã¹ã¦ã®å­ã‚’ä¸€åº¦ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã™ã‚‹
     ///// </summary>
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]

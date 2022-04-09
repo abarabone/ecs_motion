@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -34,7 +34,7 @@ namespace DotsLite.Arms
     [UpdateInGroup(typeof(SystemGroup.Simulation.Hit.Hit))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
-    public class BulletRayHitToEmitSystem : DependencyAccessableSystemBase
+    public partial class BulletRayHitToEmitSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -25,7 +25,7 @@ namespace DotsLite.Draw
 
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.DrawPrev ) )]
-    public class DrawBufferManagementSystem : SystemBase
+    public partial class DrawBufferManagementSystem : SystemBase
     {
         
 

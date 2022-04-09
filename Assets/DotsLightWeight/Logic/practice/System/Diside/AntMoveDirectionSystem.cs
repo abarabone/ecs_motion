@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -25,7 +25,7 @@ namespace DotsLite.Character
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class AntMoveDirectionSystem : SystemBase
+    public partial class AntMoveDirectionSystem : SystemBase
     {
 
 

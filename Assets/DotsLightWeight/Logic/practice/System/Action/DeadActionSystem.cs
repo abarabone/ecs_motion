@@ -28,13 +28,13 @@ namespace DotsLite.Character.Action
 
 
     /// <summary>
-    /// •à‚«‚ÌƒAƒNƒVƒ‡ƒ“ƒXƒe[ƒg
+    /// æ­©ãæ™‚ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆ
     /// 
     /// </summary>
     //[DisableAutoCreation]
     [UpdateAfter(typeof(AntMoveDirectionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class DeadActionSystem : DependencyAccessableSystemBase
+    public partial class DeadActionSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;

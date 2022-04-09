@@ -24,15 +24,15 @@ namespace DotsLite.Character
     using DotsLite.Dependency;
 
 
-    // ƒzƒ‹ƒ_[‚©‚çƒZƒ“ƒT[‚ğ‹N“®‚·‚é
-    // ƒZƒ“ƒT[‚ÍƒCƒ“ƒ^[ƒoƒ‹‚²‚Æ‚É WakeupFindTag ‚ğ‚Â‚¯‚Äõ“G‚ğ‹N“®‚·‚é
-    // õ“G‚ğ‚P“xÀs‚µ‚½‚ç‚·‚®‚É WakeupFindTag ‚ğŠO‚µAƒLƒƒƒvƒ`ƒƒ‚µ‚½‘Šè‚ğƒ|[ƒŠƒ“ƒO‚µ‘±‚¯‚é
-    // ƒLƒƒƒvƒ`ƒƒ‚ÍŸ‚ÌƒCƒ“ƒ^[ƒoƒ‹Œã‚Ìõ“G‚Ü‚Å‘±‚­
-    // õ“G‚É¸”s‚µ‚½ƒP[ƒX‚àAõ“G‚Ì‚PƒP[ƒX‚Æ‚µ‚Ä”CˆÓ‚ÌˆÊ’u‚ğƒ|[ƒŠƒ“ƒO‚·‚é©–¢À‘•
+    // ãƒ›ãƒ«ãƒ€ãƒ¼ã‹ã‚‰ã‚»ãƒ³ã‚µãƒ¼ã‚’èµ·å‹•ã™ã‚‹
+    // ã‚»ãƒ³ã‚µãƒ¼ã¯ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«ã”ã¨ã« WakeupFindTag ã‚’ã¤ã‘ã¦ç´¢æ•µã‚’èµ·å‹•ã™ã‚‹
+    // ç´¢æ•µã‚’ï¼‘åº¦å®Ÿè¡Œã—ãŸã‚‰ã™ãã« WakeupFindTag ã‚’å¤–ã—ã€ã‚­ãƒ£ãƒ—ãƒãƒ£ã—ãŸç›¸æ‰‹ã‚’ãƒãƒ¼ãƒªãƒ³ã‚°ã—ç¶šã‘ã‚‹
+    // ã‚­ãƒ£ãƒ—ãƒãƒ£ã¯æ¬¡ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«å¾Œã®ç´¢æ•µã¾ã§ç¶šã
+    // ç´¢æ•µã«å¤±æ•—ã—ãŸã‚±ãƒ¼ã‚¹ã‚‚ã€ç´¢æ•µã®ï¼‘ã‚±ãƒ¼ã‚¹ã¨ã—ã¦ä»»æ„ã®ä½ç½®ã‚’ãƒãƒ¼ãƒªãƒ³ã‚°ã™ã‚‹â†æœªå®Ÿè£…
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class TargetSensorWakeupAndCopyPositionSystem : DependencyAccessableSystemBase
+    public partial class TargetSensorWakeupAndCopyPositionSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;

@@ -39,7 +39,7 @@ namespace DotsLite.Particle
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class ParticleAnimationSystem : SystemBase//DependencyAccessableSystemBase
+    public partial class ParticleAnimationSystem : SystemBase//DependencyAccessableSystemBase
     {
 
 

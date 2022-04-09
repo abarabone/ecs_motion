@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -38,7 +38,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     [UpdateBefore(typeof(MoveAccSystem))]
-    public class MoveTailSystem : SystemBase
+    public partial class MoveTailSystem : SystemBase
     {
 
 

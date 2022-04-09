@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -24,7 +24,7 @@ namespace DotsLite.Draw
     [UpdateInGroup( typeof( SystemGroup.Presentation.Render.Draw.Transfer) )]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     //[UpdateBefore(typeof(DrawMeshCsSystem))]
-    public class StructureParameterToModelBufferSystem : DependencyAccessableSystemBase
+    public partial class StructureParameterToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 

@@ -37,7 +37,7 @@ namespace DotsLite.Arms
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.HitSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class AimAngleShotSystem : DependencyAccessableSystemBase
+    public partial class AimAngleShotSystem : DependencyAccessableSystemBase
     {
 
 
@@ -68,7 +68,7 @@ namespace DotsLite.Arms
 
             var dt = this.Time.DeltaTime;
             var currentTime = this.Time.ElapsedTime;
-            var gravity = UnityEngine.Physics.gravity.As_float3();// Ç∆ÇËÇ†Ç¶Ç∏
+            var gravity = UnityEngine.Physics.gravity.As_float3();// „Å®„Çä„ÅÇ„Åà„Åö
 
 
             this.Entities

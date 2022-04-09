@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -29,7 +29,7 @@ namespace DotsLite.Draw
     //[DisableAutoCreation]
     //[UpdateAfter(typeof( BeginDrawCsBarier ) )]
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.Draw.Call ) )]
-    public class DrawBufferToShaderDataSystem : SystemBase, BarrierDependency.IRecievable
+    public partial class DrawBufferToShaderDataSystem : SystemBase, BarrierDependency.IRecievable
     {
 
 

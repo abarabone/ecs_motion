@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -18,7 +18,7 @@ namespace DotsLite.CharacterMotion
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     [UpdateBefore(typeof(MotionStreamProgressAndInterporationSystem))]
-    public class MotionInitializeSystem : DependencyAccessableSystemBase
+    public partial class MotionInitializeSystem : DependencyAccessableSystemBase
     {
 
 

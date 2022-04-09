@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -39,7 +39,7 @@ namespace DotsLite.Arms
     [UpdateAfter(typeof(BulletSphereHitSystem))]
     //[UpdateAfter(typeof(BulletMoveSystem))]
     //[UpdateBefore(typeof(StructureHitMessageApplySystem))]
-    public class ExplosionSphereHitSystem : DependencyAccessableSystemBase//, BarrierDependency.IRecievable
+    public partial class ExplosionSphereHitSystem : DependencyAccessableSystemBase//, BarrierDependency.IRecievable
     {
 
         //public BarrierDependency.Reciever Reciever { get; } = BarrierDependency.Reciever.Create();

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -30,7 +30,7 @@ namespace DotsLite.Model
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
     [UpdateAfter(typeof(StreamToBoneSystem))]
-    public class BoneTransformLeveld01System : SystemBase
+    public partial class BoneTransformLeveld01System : SystemBase
     {
         protected override void OnUpdate()
         {

@@ -39,7 +39,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(BulletInitializeSystem))]
-    public class StickyInitializeSystem : SystemBase
+    public partial class StickyInitializeSystem : SystemBase
     {
 
 
@@ -64,7 +64,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateBefore(typeof(MoveSpringSystem))]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
-    public class StickySystem : SystemBase
+    public partial class StickySystem : SystemBase
     {
 
 

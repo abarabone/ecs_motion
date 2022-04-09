@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -15,7 +15,7 @@ namespace DotsLite.CharacterMotion
 
     //[UpdateBefore( typeof( MotionProgressSystem ) )]// MotionB
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.Draw.Transform.MotionBone))]
-    public class MotionBInitializeSystem : DependencyAccessableSystemBase
+    public partial class MotionBInitializeSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;

@@ -20,11 +20,11 @@ namespace DotsLite.Draw
     using DotsLite.Dependency;
 
     /// <summary>
-    /// •`‰æƒ[ƒ‚Å‚àƒXƒŒƒbƒhg‚Á‚Ä‚µ‚Ü‚¤‚©‚à@‚»‚Ì‚¤‚¿‚È‚ñ‚Æ‚©‚µ‚½‚¢
+    /// æç”»ã‚¼ãƒ­ã§ã‚‚ã‚¹ãƒ¬ãƒƒãƒ‰ä½¿ã£ã¦ã—ã¾ã†ã‹ã‚‚ã€€ãã®ã†ã¡ãªã‚“ã¨ã‹ã—ãŸã„
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Sort))]
-    public class SortModelBufferSystem : SystemBase
+    public partial class SortModelBufferSystem : SystemBase
     {
 
 
@@ -146,7 +146,7 @@ namespace DotsLite.Draw
                     }
                     else
                     {
-                        // ‚È‚É‚à‚µ‚È‚¢
+                        // ãªã«ã‚‚ã—ãªã„
                     }
                 })
                 .Schedule();

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -24,7 +24,7 @@ namespace DotsLite.Character
     ////[UpdateInGroup(typeof( SystemGroup.Presentation.Logic.ObjectLogicSystemGroup ) )]
     //[UpdateAfter(typeof(PlayerMoveDirectionSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class CameraMoveSystem : SystemBase//ComponentSystem
+    public partial class CameraMoveSystem : SystemBase//ComponentSystem
     {
 
 

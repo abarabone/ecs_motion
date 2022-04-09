@@ -40,7 +40,7 @@ namespace DotsLite.Particle
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateAfter(typeof(BulletInitializeSystem))]
     [UpdateAfter(typeof(MoveSpringInitializeSystem))]
-    public class CopyMuzzlePositionToBulletInitializeSystem : SystemBase
+    public partial class CopyMuzzlePositionToBulletInitializeSystem : SystemBase
     {
 
 
@@ -65,7 +65,7 @@ namespace DotsLite.Particle
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     [UpdateAfter(typeof(MoveSpringSystem))]
-    public class CopyMuzzlePositionToBulletSystem : SystemBase
+    public partial class CopyMuzzlePositionToBulletSystem : SystemBase
     {
 
 

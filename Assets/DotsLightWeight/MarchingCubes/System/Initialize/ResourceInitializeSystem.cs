@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -25,7 +25,7 @@ namespace DotsLite.MarchingCubes
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class ResourceInitializeSystem : DependencyAccessableSystemBase
+    public partial class ResourceInitializeSystem : DependencyAccessableSystemBase
     {
         //CommandBufferDependency.Sender cmddep;
 

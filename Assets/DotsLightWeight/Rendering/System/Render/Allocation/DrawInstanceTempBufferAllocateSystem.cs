@@ -1,4 +1,4 @@
-﻿using Unity.Collections;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -16,7 +16,7 @@ namespace DotsLite.Draw
     ////[UpdateAfter(typeof(DrawCullingSystem))]
     ////[UpdateAfter(typeof(DrawCullingSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.TempAlloc))]
-    public class DrawInstanceTempBufferAllocateSystem : SystemBase
+    public partial class DrawInstanceTempBufferAllocateSystem : SystemBase
     {
 
 

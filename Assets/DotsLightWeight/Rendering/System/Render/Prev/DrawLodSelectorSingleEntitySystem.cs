@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -24,7 +24,7 @@ namespace DotsLite.Draw
     ////[UpdateBefore(typeof(DrawCullingSystem))]
     ////[UpdateInGroup(typeof(SystemGroup.Presentation.DrawModel.DrawPrevSystemGroup))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.DrawPrev.Lod))]
-    public class DrawLodSelectorSingleEntitySystem : DependencyAccessableSystemBase
+    public partial class DrawLodSelectorSingleEntitySystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -29,7 +29,7 @@ namespace DotsLite.Draw
     //[DisableAutoCreation]
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.Draw.Call ) )]
     [UpdateAfter(typeof(DrawBufferToShaderDataSystem))]
-    public class DrawMeshCsSystem : SystemBase
+    public partial class DrawMeshCsSystem : SystemBase
     {
 
         protected override unsafe void OnUpdate()

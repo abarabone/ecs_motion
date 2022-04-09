@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -36,7 +36,7 @@ namespace DotsLite.Character
     [UpdateAfter(typeof(FreeFallWithHitSystem))]
     [UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMove))]
     //[UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogicSystemGroup))]
-    public class SwitchWallingAndFreeFallWithHitSystem : DependencyAccessableSystemBase
+    public partial class SwitchWallingAndFreeFallWithHitSystem : DependencyAccessableSystemBase
     {
 
         CommandBufferDependency.Sender cmddep;

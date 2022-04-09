@@ -39,7 +39,7 @@ namespace DotsLite.Particle
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class ParticleLifeTimeSystem : DependencyAccessableSystemBase
+    public partial class ParticleLifeTimeSystem : DependencyAccessableSystemBase
     {
 
 

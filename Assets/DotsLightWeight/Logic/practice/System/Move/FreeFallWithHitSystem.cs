@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -54,7 +54,7 @@ namespace DotsLite.Character
     /// </summary>
     //[DisableAutoCreation]
     [UpdateInGroup( typeof( SystemGroup.Simulation.Move.ObjectMove ) )]
-    public class FreeFallWithHitSystem : DependencyAccessableSystemBase
+    public partial class FreeFallWithHitSystem : DependencyAccessableSystemBase
     {
 
         PhysicsHitDependency.Sender phydep;

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -50,7 +50,7 @@ public struct SingleSpawnData : IComponentData
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
-public class PracSpawnSystem : DependencyAccessableSystemBase
+public partial class PracSpawnSystem : DependencyAccessableSystemBase
 {
 
 

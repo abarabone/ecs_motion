@@ -33,14 +33,14 @@ namespace DotsLite.Arms
     using Random = Unity.Mathematics.Random;
     using System;
 
-    // ボーントランスフォームに組み込めればよいが、とりあえず独立で
+    // 繝懊�ｼ繝ｳ繝医Λ繝ｳ繧ｹ繝輔か繝ｼ繝縺ｫ邨�縺ｿ霎ｼ繧√ｌ縺ｰ繧医＞縺後√→繧翫≠縺医★迢ｬ遶九〒
     //[DisableAutoCreation]
     //[UpdateInGroup(typeof(SystemGroup.Simulation.Move.ObjectMoveSystemGroup))]
     //[UpdateBefore(typeof(MoveSpringSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
     [UpdateBefore(typeof(EmitBulletSystem))]
     [UpdateBefore(typeof(EmitEffectSystem))]
-    public class AccessoryTransformSystem : SystemBase
+    public partial class AccessoryTransformSystem : SystemBase
     {
 
 

@@ -59,7 +59,7 @@ namespace DotsLite.MarchingCubes
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class BitGridMessageAllocSystem : SystemBase, HitMessage<UpdateMessage>.IRecievable
+    public partial class BitGridMessageAllocSystem : SystemBase, HitMessage<UpdateMessage>.IRecievable
     {
 
 

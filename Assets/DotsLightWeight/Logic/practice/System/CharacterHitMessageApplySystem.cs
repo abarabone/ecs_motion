@@ -1,4 +1,4 @@
-﻿using Unity.Entities;
+using Unity.Entities;
 using Unity.Jobs;
 using Unity.Collections;
 using Unity.Burst;
@@ -25,7 +25,7 @@ namespace DotsLite.Character
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class CharacterHitMessageAllocSystem : SystemBase
+    public partial class CharacterHitMessageAllocSystem : SystemBase
     {
         CharacterHitMessageApplySystem sys;
 

@@ -41,7 +41,7 @@ namespace DotsLite.Particle
     //[DisableAutoCreation]
     [UpdateAfter(typeof(ParticleLifeTimeSystem))]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Logic.ObjectLogic))]
-    public class FadeSystem : SystemBase
+    public partial class FadeSystem : SystemBase
     {
 
         protected override void OnUpdate()
@@ -88,9 +88,9 @@ namespace DotsLite.Particle
         }
 
         /// <summary>
-        /// ’l‚ğ‘‰Á‚³‚¹‚éB‘‰Á•ª‚Í speed per sec ‚É‚æ‚éB
-        /// speed ‚Íƒ}ƒCƒiƒX‚à‚ ‚è“¾‚éB
-        /// ‚½‚¾‚µAmin ‚Æ max ‚Í’´‚¦‚È‚¢B
+        /// å€¤ã‚’å¢—åŠ ã•ã›ã‚‹ã€‚å¢—åŠ åˆ†ã¯ speed per sec ã«ã‚ˆã‚‹ã€‚
+        /// speed ã¯ãƒã‚¤ãƒŠã‚¹ã‚‚ã‚ã‚Šå¾—ã‚‹ã€‚
+        /// ãŸã ã—ã€min ã¨ max ã¯è¶…ãˆãªã„ã€‚
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static float fade_(ref BillBoad.AnimationUnit fader, float dt)
