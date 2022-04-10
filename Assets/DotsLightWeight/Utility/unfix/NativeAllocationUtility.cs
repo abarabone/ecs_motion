@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Collections;
 
+#nullable enable
+
 namespace DotsLite.Misc
 {
     
@@ -85,7 +87,7 @@ namespace DotsLite.Misc
 		/// パラレル処理可能な NativeList を返す。
 		/// </summary>
 		public static NativeListConcurrent<T> ToConcurrent<T>( ref this NativeList<T> list )
-			where T:struct
+			where T:unmanaged
 		{
 			return new NativeListConcurrent<T>( ref list );
 		}
@@ -96,7 +98,7 @@ namespace DotsLite.Misc
 		/// Defer 系の Schedule() と併用する。
 		/// </summary>
 		public static NativeListDeferDiscardableReadOnly<T> ToDeferDiscardableReadOnly<T>( ref this NativeList<T> list )
-			where T:struct
+			where T: unmanaged
 		{
 			return new NativeListDeferDiscardableReadOnly<T>( in list );
 		}
@@ -115,7 +117,7 @@ namespace DotsLite.Misc
 	/// <summary>
 	/// パラレル処理可能な NativeList 。
 	/// </summary>
-	public unsafe struct NativeListConcurrent<T> where T:struct
+	public unsafe struct NativeListConcurrent<T> where T: unmanaged
 	{
 		[NativeDisableUnsafePtrRestriction]
 		private void	*pElements;
@@ -148,7 +150,7 @@ namespace DotsLite.Misc
 	/// <summary>
 	/// Job で開放できる NativeList を詰め込む構造体。Elements[i] を通して要素にアクセスできる。
 	/// </summary>
-	public struct NativeListDeferDiscardableReadOnly<T> where T:struct
+	public struct NativeListDeferDiscardableReadOnly<T> where T: unmanaged
 	{
 		[ReadOnly]
 		NativeList<T>	origin;

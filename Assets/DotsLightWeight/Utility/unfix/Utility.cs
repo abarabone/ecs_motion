@@ -227,7 +227,7 @@ namespace DotsLite.Utilities
         static public NativeArray<T> AsNativeArray<T>(this UnsafeList<T> list)
             where T : unmanaged
         {
-            var arr = NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<T>(list.Ptr, list.length, Allocator.Invalid);
+            var arr = NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<T>(list.Ptr, list.Length, Allocator.Invalid);
 
         #if ENABLE_UNITY_COLLECTIONS_CHECKS
             // これをやらないとNativeArrayのインデクサアクセス時に死ぬ
