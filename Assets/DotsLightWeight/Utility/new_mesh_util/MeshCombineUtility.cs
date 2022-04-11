@@ -264,7 +264,8 @@ namespace DotsLite.Geometry
     {
 
         public static int GetPalletSubIndex(this Material mat) =>
-            mat?.HasInt("Pallet Sub Index") ?? false
+            //mat?.HasInt("Pallet Sub Index") ?? false
+            mat?.HasProperty("Pallet Sub Index") ?? false
                 ? mat.GetInt("Pallet Sub Index")
                 : 0
             ;

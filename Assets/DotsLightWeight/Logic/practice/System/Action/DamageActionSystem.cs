@@ -76,7 +76,7 @@ namespace DotsLite.Character.Action
                 .WithNativeDisableParallelForRestriction(motionCursors)
                 .ForEach(
                     (
-                        Entity entity, int entityInQueryIndex,
+                        Entity entity_, int entityInQueryIndex,
                         ref CharacterAction.DamageState state,
                         ref Armor.SimpleDamageData damage,
                         in ActionState.MotionLinkDate mlink,
@@ -85,6 +85,8 @@ namespace DotsLite.Character.Action
                     )
                 =>
                     {
+                        var entity = entity_;
+                        var eqi = entityInQueryIndex;
                         //if (damage.Durability < 0.0f) return;
 
 
@@ -116,7 +118,7 @@ namespace DotsLite.Character.Action
                             in ActionState.PostureLinkData plink)
                         {
 
-                            cmd.AddComponent(entityInQueryIndex, plink.PostureEntity,
+                            cmd.AddComponent(eqi, plink.PostureEntity,
                                 new Move.EasingSpeedData
                                 {
                                     Rate = 3.0f,
@@ -126,7 +128,7 @@ namespace DotsLite.Character.Action
 
 
                             var motion = new MotionOperator
-                                (cmd, motionInfos, motionCursors, mlink.MotionEntity, entityInQueryIndex);
+                                (cmd, motionInfos, motionCursors, mlink.MotionEntity, eqi);
 
                             motion.Start(Motion_ant.seaching, isLooping: true, delayTime: 0.1f, scale: 1.0f);
 
@@ -135,7 +137,7 @@ namespace DotsLite.Character.Action
                             damage.Durability -= state.Damage;
                             if (damage.Durability < 0.0f)
                             {
-                                cmd.AddComponent(entityInQueryIndex, entity, new CharacterAction.DeadState
+                                cmd.AddComponent(eqi, entity, new CharacterAction.DeadState
                                 {
                                     RemoveTime = (float)currentTime + 5.0f,
                                 });

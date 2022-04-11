@@ -86,7 +86,8 @@ namespace DotsLite.Structure
 
                 cmd = cmd,
             }
-            .Schedule(this.stepPhysicsWorld.Simulation, ref this.buildPhysicsWorld.PhysicsWorld, this.Dependency);
+            .Schedule(this.stepPhysicsWorld.Simulation, this.Dependency);
+            //.Schedule(this.stepPhysicsWorld.Simulation, ref this.buildPhysicsWorld.PhysicsWorld, this.Dependency);
 
         }
 

@@ -44,13 +44,15 @@ namespace DotsLite.Character
         protected override void OnCreate()
         {
             this.buildPhysicsWorldSystem = this.World.GetOrCreateSystem<BuildPhysicsWorld>();
+
+            this.RegisterPhysicsRuntimeSystemReadOnly();
         }
 
 
         protected override void OnUpdate()
         {
-            this.Dependency = JobHandle.CombineDependencies
-                (this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
+            //this.Dependency = JobHandle.CombineDependencies(
+            //    this.Dependency, this.buildPhysicsWorldSystem.GetOutputDependency());
 
             var cw = this.buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld;
 
@@ -83,7 +85,7 @@ namespace DotsLite.Character
                 )
                 .ScheduleParallel();
 
-            this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
+            //this.buildPhysicsWorldSystem.AddInputDependencyToComplete(this.Dependency);
         }
     }
 

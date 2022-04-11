@@ -91,7 +91,7 @@ namespace DotsLite.Character.Action
                 //.WithNativeDisableParallelForRestriction(triggers)// ヤバいかも
                 .ForEach(
                     (
-                        Entity entity, int entityInQueryIndex,
+                        Entity entity_, int entityInQueryIndex,
                         ref AntAction.AttackState state,
                         in ActionState.MotionLinkDate mlink,
                         in ActionState.PostureLinkData plink,
@@ -101,6 +101,10 @@ namespace DotsLite.Character.Action
                     )
                 =>
                     {
+                        var eqi = entityInQueryIndex;
+                        var entity = entity_;
+
+
                         var tr = tr_;
 
                         switch (state.Phase)
@@ -128,7 +132,7 @@ namespace DotsLite.Character.Action
                             in ActionState.PostureLinkData plink)
                         {
 
-                            cmd.AddComponent(entityInQueryIndex, plink.PostureEntity,
+                            cmd.AddComponent(eqi, plink.PostureEntity,
                                 new Move.EasingSpeedData
                                 {
                                     Rate = 3.0f,
@@ -138,7 +142,7 @@ namespace DotsLite.Character.Action
 
 
                             var motion = new MotionOperator
-                                (cmd, motionInfos, motionCursors, mlink.MotionEntity, entityInQueryIndex);
+                                (cmd, motionInfos, motionCursors, mlink.MotionEntity, eqi);
 
                             motion.Start(Motion_ant.attack02, isLooping: true, delayTime: 0.1f);
                             
@@ -160,7 +164,7 @@ namespace DotsLite.Character.Action
                             {
                                 state.Phase++;
 
-                                cmd.AddComponent(entityInQueryIndex, flinks[0].FunctionEntity,
+                                cmd.AddComponent(eqi, flinks[0].FunctionEntity,
                                     new FunctionUnitAiming.HighAngleShotData
                                     {
                                         TargetPostureEntity = sensorHolderLink.HolderEntity,
@@ -207,10 +211,10 @@ namespace DotsLite.Character.Action
 
                             if (math.distancesq(targetpos, originpos) > 15.0f * 15.0f)
                             {
-                                cmd.RemoveComponent<AntAction.AttackState>(entityInQueryIndex, entity);
-                                cmd.AddComponent<AntAction.WalkState>(entityInQueryIndex, entity);
+                                cmd.RemoveComponent<AntAction.AttackState>(eqi, entity);
+                                cmd.AddComponent<AntAction.WalkState>(eqi, entity);
 
-                                cmd.AddComponent(entityInQueryIndex, plink.PostureEntity,
+                                cmd.AddComponent(eqi, plink.PostureEntity,
                                     new Move.EasingSpeedData
                                     {
                                         Rate = 5.0f,

@@ -267,6 +267,7 @@ namespace DotsLite.Common.Extension
 
 		public static T GetComponentOrNull<T>(this GameObject gameObject) where T : Component =>
 			gameObject.TryGetComponent<T>(out var c) ? c : null;
+
 		public static T GetComponentOrNull<T>(this Transform tf) where T : Component =>
 			tf.TryGetComponent<T>(out var c) ? c : null;
 	}
@@ -286,7 +287,7 @@ namespace DotsLite.Common.Extension
     {
         public static void SetComponentData<T>
             ( this EntityManager em, IEnumerable<Entity> entities, IEnumerable<T> components )
-            where T : struct, IComponentData
+            where T : unmanaged, IComponentData
         {
             foreach( var x in (entities,components).Zip() )
             {
@@ -295,7 +296,7 @@ namespace DotsLite.Common.Extension
         }
         public static void AddComponentData<T>
             ( this EntityManager em, IEnumerable<Entity> entities, IEnumerable<T> components )
-            where T : struct, IComponentData
+            where T : unmanaged, IComponentData
         {
             foreach( var x in (entities, components).Zip() )
             {
@@ -315,7 +316,7 @@ namespace DotsLite.Common.Extension
         [MethodImpl( MethodImplOptions.AggressiveInlining )]
         public static void SetComponentData<T>
             ( this EntityManager em, IEnumerable<Entity> entities, T component )
-            where T:struct,IComponentData
+            where T: unmanaged, IComponentData
         {
             var q = Enumerable.Repeat( component, entities.getLength() );
             em.SetComponentData( entities, q );
@@ -323,15 +324,15 @@ namespace DotsLite.Common.Extension
         [MethodImpl( MethodImplOptions.AggressiveInlining )]
         public static void AddComponentData<T>
             ( this EntityManager em, IEnumerable<Entity> entities, T component )
-            where T : struct, IComponentData
+            where T : unmanaged, IComponentData
         {
             var q = Enumerable.Repeat( component, entities.getLength() );
             em.AddComponentData( entities, q );
         }
 
         [MethodImpl( MethodImplOptions.AggressiveInlining )]
-        static int getLength<T>( this IEnumerable<T> src ) where T:struct
-        {
+        static int getLength<T>( this IEnumerable<T> src ) where T: unmanaged
+		{
             switch( src )
             {
                 case NativeArray<T> na: return na.Length;
