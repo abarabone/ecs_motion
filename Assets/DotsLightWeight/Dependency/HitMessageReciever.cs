@@ -46,18 +46,18 @@ namespace DotsLite.Dependency
     public static class HitMessageApplyJobExtension
     {
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static JobHandle ScheduleParallelEach<THitMessage, TJobInnerExecution>
-            (
-                this TJobInnerExecution job,
-                HitMessage<THitMessage>.Reciever reciever,
-                int innerLoopBatchCount,
-                JobHandle dependency
-            )
-            where THitMessage : struct, IHitMessage
-            where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForEach
-        =>
-            reciever.ScheduleEachParallel(dependency, innerLoopBatchCount, job);
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static JobHandle ScheduleParallelEach<THitMessage, TJobInnerExecution>
+        //    (
+        //        this TJobInnerExecution job,
+        //        HitMessage<THitMessage>.Reciever reciever,
+        //        int innerLoopBatchCount,
+        //        JobHandle dependency
+        //    )
+        //    where THitMessage : struct, IHitMessage
+        //    where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForEach
+        //=>
+        //    reciever.ScheduleEachParallel(dependency, innerLoopBatchCount, job);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -116,15 +116,15 @@ namespace DotsLite.Dependency
             }
 
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public JobHandle ScheduleEachParallel<TJobInnerExecution>
-                (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
-                where TJobInnerExecution : struct, IApplyJobExecutionForEach
-            {
-                var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
-                var dep1 = this.Holder.ScheduleExecuteEach(dep0, innerLoopBatchCount, execution);
-                return dep1;
-            }
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            //public JobHandle ScheduleEachParallel<TJobInnerExecution>
+            //    (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
+            //    where TJobInnerExecution : struct, IApplyJobExecutionForEach
+            //{
+            //    var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
+            //    var dep1 = this.Holder.ScheduleExecuteEach(dep0, innerLoopBatchCount, execution);
+            //    return dep1;
+            //}
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public JobHandle ScheduleKeyParallel<TJobInnerExecution>
@@ -134,6 +134,7 @@ namespace DotsLite.Dependency
                 var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
                 var dep1 = this.Holder.ScheduleExecuteKey(dep0, innerLoopBatchCount, execution);
                 return dep1;
+                //return dependency;
             }
 
 
@@ -183,18 +184,19 @@ namespace DotsLite.Dependency
                     new ParallelWriter(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);
 
 
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public JobHandle ScheduleExecuteEach<TJobInnerExecution>
-                    (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
-                    where TJobInnerExecution : struct, IApplyJobExecutionForEach
-                =>
-                    new HitMessageApplyJobForEach<TJobInnerExecution>
-                    {
-                        MessageHolder = this.messageHolder,
-                        KeyEntities = this.keyEntities.AsDeferredJobArray(),
-                        InnerJob = execution,
-                    }
-                    .Schedule(this.keyEntities, innerLoopBatchCount, dependency);
+                //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+                //public JobHandle ScheduleExecuteEach<TJobInnerExecution>
+                //    (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
+                //    where TJobInnerExecution : struct, IApplyJobExecutionForEach
+                //=>
+                //    new HitMessageApplyJobForEach<TJobInnerExecution>
+                //    {
+                //        MessageHolder = this.messageHolder,
+                //        KeyEntities = this.keyEntities.AsDeferredJobArray(),
+                //        InnerJob = execution,
+                //    }
+                //    .Schedule(this.keyEntities, innerLoopBatchCount, dependency);
+                ////dependency;
 
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -209,6 +211,7 @@ namespace DotsLite.Dependency
                         InnerJob = execution,
                     }
                     .Schedule(this.keyEntities, innerLoopBatchCount, dependency);
+                //dependency;
 
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
