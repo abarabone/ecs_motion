@@ -24,13 +24,13 @@ namespace DotsLite.Dependency
             Reciever Reciever { get; }
         }
 
-        /// <summary>
-        /// hit message を処理するジョブを構築する。
-        /// </summary>
-        public interface IApplyJobExecutionForEach
-        {
-            void Execute(int index, Entity targetEntity, THitMessage hitMessage);
-        }
+        ///// <summary>
+        ///// hit message を処理するジョブを構築する。
+        ///// </summary>
+        //public interface IApplyJobExecutionForEach
+        //{
+        //    void Execute(int index, Entity targetEntity, THitMessage hitMessage);
+        //}
 
         /// <summary>
         /// 
@@ -39,6 +39,18 @@ namespace DotsLite.Dependency
         {
             void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, THitMessage>.Enumerator hitMessages);
         }
+        public interface IApplyJobExecutionForKey3 : IJobParallelForDefer
+        {
+            NativeArray<Entity> KeyEntities { set; }
+            NativeMultiHashMap<Entity, THitMessage> MessageHolder { set; }
+        }
+        /// <summary>
+        ///// 
+        ///// </summary>
+        //public interface IApplyExecutionForKey : IJobParallelForDefer
+        //{
+        //    void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, THitMessage>.Enumerator hitMessages);
+        //}
     }
 
 
@@ -60,7 +72,7 @@ namespace DotsLite.Dependency
         //    reciever.ScheduleEachParallel(dependency, innerLoopBatchCount, job);
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static JobHandle ScheduleParallelKey<THitMessage, TJobInnerExecution>
             (
                 this TJobInnerExecution job,
@@ -73,6 +85,38 @@ namespace DotsLite.Dependency
         =>
             reciever.ScheduleKeyParallel(dependency, innerLoopBatchCount, job);
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static JobHandle ScheduleParallelKey2<THitMessage, TJobInnerExecution>
+            (
+                this TJobInnerExecution job,
+                HitMessage<THitMessage>.Reciever reciever,
+                int innerLoopBatchCount,
+                JobHandle dependency
+            )
+            where THitMessage : struct, IHitMessage
+            where TJobInnerExecution : struct, IApplyJobExecutionForKey<THitMessage>
+        =>
+            reciever.ScheduleKeyParallel2(dependency, innerLoopBatchCount, job);
+
+
+
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static JobHandle ScheduleParallelKey3<THitMessage>
+        //    (
+        //        this HitMessage<THitMessage>.IApplyJobExecutionForKey3 job,
+        //        HitMessage<THitMessage>.Reciever reciever,
+        //        int innerLoopBatchCount,
+        //        JobHandle dependency
+        //    )
+        //    where THitMessage : struct, IHitMessage
+        //{
+        //    job.MessageHolder = reciever.Holder.messageHolder;
+        //    job.KeyEntities = reciever.Holder.keyEntities.AsDeferredJobArray();
+        //    var d = (job as IJobParallelForDefer);
+            
+        //}
     }
 
 
@@ -126,15 +170,32 @@ namespace DotsLite.Dependency
             //    return dep1;
             //}
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
             public JobHandle ScheduleKeyParallel<TJobInnerExecution>
                 (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
                 where TJobInnerExecution : struct, IApplyJobExecutionForKey
             {
                 var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
-                var dep1 = this.Holder.ScheduleExecuteKey(dep0, innerLoopBatchCount, execution);
+                var dep1 = this.Holder.ScheduleExecuteKey(dep0, innerLoopBatchCount, execution)
+                    .Schedule(this.Holder.keyEntities, innerLoopBatchCount, dep0);
                 return dep1;
                 //return dependency;
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public JobHandle ScheduleKeyParallel2<TJobInnerExecution>
+                (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
+                where TJobInnerExecution : struct, IApplyJobExecutionForKey<THitMessage>
+            {
+                var dep0 = this.Barrier.CombineAllDependentJobs(dependency);
+                var dep1 = this.Holder.ScheduleExecuteKey2(dep0, innerLoopBatchCount, execution)
+                    .Schedule(this.Holder.keyEntities, innerLoopBatchCount, dep0);
+                return dep1;
+                //return dependency;
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public JobHandle combinealldependents(JobHandle dependency)
+            {
+                return this.Barrier.CombineAllDependentJobs(dependency);
             }
 
 
@@ -199,32 +260,47 @@ namespace DotsLite.Dependency
                 ////dependency;
 
 
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public JobHandle ScheduleExecuteKey<TJobInnerExecution>
+                //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public HitMessageApplyJobForKey<TJobInnerExecution> ScheduleExecuteKey<TJobInnerExecution>
                     (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
                     where TJobInnerExecution : struct, IApplyJobExecutionForKey
-                =>
-                    new HitMessageApplyJobForKey<TJobInnerExecution>
+                {
+                    return new HitMessageApplyJobForKey<TJobInnerExecution>
                     {
                         MessageHolder = this.messageHolder,
                         KeyEntities = this.keyEntities.AsDeferredJobArray(),
                         InnerJob = execution,
-                    }
-                    .Schedule(this.keyEntities, innerLoopBatchCount, dependency);
-                //dependency;
-
-
+                    };
+                    //return job.Schedule(this.keyEntities, innerLoopBatchCount, dependency);
+                }
+                //=> dependency;
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public JobHandle ScheduleClear(JobHandle dependency) =>
-                    new clearJob
+                public HitMessageApplyJobForKey<TJobInnerExecution, THitMessage> ScheduleExecuteKey2<TJobInnerExecution>
+                    (JobHandle dependency, int innerLoopBatchCount, TJobInnerExecution execution)
+                    where TJobInnerExecution : struct, IApplyJobExecutionForKey<THitMessage>
+                {
+                    return new HitMessageApplyJobForKey<TJobInnerExecution, THitMessage>
                     {
-                        keyEntities = this.keyEntities,
-                        messageHolder = this.messageHolder,
-                        uniqueKeys = this.uniqueKeys,
-                    }
-                    .Schedule(dependency);
+                        MessageHolder = this.messageHolder,
+                        KeyEntities = this.keyEntities.AsDeferredJobArray(),
+                        InnerJob = execution,
+                    };
+                    //return job.Schedule(this.keyEntities, innerLoopBatchCount, dependency);
+                }
+                //=> dependency;
 
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+                //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+                //public JobHandle ScheduleClear(JobHandle dependency) =>
+                //    new clearJob
+                //    {
+                //        keyEntities = this.keyEntities,
+                //        messageHolder = this.messageHolder,
+                //        uniqueKeys = this.uniqueKeys,
+                //    }
+                //    .Schedule(dependency);
+
+                //[MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public JobHandle ScheduleDispose(JobHandle dependency)
                 {
                     var dep1 = this.keyEntities.Dispose(dependency);
@@ -290,44 +366,44 @@ namespace DotsLite.Dependency
             //}
 
 
+            ///// <summary>
+            ///// 
+            ///// </summary>
+            //[BurstCompile]
+            //struct HitMessageApplyJobForEach<TJobInnerExecution> : IJobParallelForDefer
+            //    where TJobInnerExecution : struct, IApplyJobExecutionForEach
+            //{
+            //    [ReadOnly]
+            //    public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
+
+            //    [ReadOnly]
+            //    public NativeArray<Entity> KeyEntities;
+
+
+            //    //[NativeDisableParallelForRestriction]
+            //    //[NativeDisableContainerSafetyRestriction]
+            //    public TJobInnerExecution InnerJob;
+
+
+            //    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            //    public void Execute(int index)
+            //    {
+            //        var key = this.KeyEntities[index];
+            //        var msgs = this.MessageHolder.GetValuesForKey(key);
+
+            //        foreach (var msg in msgs)
+            //        {
+            //            this.InnerJob.Execute(index, key, msg);
+            //        }
+            //    }
+            //}
+
+
             /// <summary>
             /// 
             /// </summary>
             [BurstCompile]
-            struct HitMessageApplyJobForEach<TJobInnerExecution> : IJobParallelForDefer
-                where TJobInnerExecution : struct, IApplyJobExecutionForEach
-            {
-                [ReadOnly]
-                public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
-
-                [ReadOnly]
-                public NativeArray<Entity> KeyEntities;
-
-
-                //[NativeDisableParallelForRestriction]
-                //[NativeDisableContainerSafetyRestriction]
-                public TJobInnerExecution InnerJob;
-
-
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public void Execute(int index)
-                {
-                    var key = this.KeyEntities[index];
-                    var msgs = this.MessageHolder.GetValuesForKey(key);
-
-                    foreach (var msg in msgs)
-                    {
-                        this.InnerJob.Execute(index, key, msg);
-                    }
-                }
-            }
-
-
-            /// <summary>
-            /// 
-            /// </summary>
-            [BurstCompile]
-            struct HitMessageApplyJobForKey<TJobInnerExecution> : IJobParallelForDefer
+            public struct HitMessageApplyJobForKey<TJobInnerExecution> : IJobParallelForDefer
                 where TJobInnerExecution : struct, IApplyJobExecutionForKey
             {
                 [ReadOnly]
@@ -342,20 +418,85 @@ namespace DotsLite.Dependency
                 public TJobInnerExecution InnerJob;
 
 
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                //[MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void Execute(int index)
                 {
                     var key = this.KeyEntities[index];
                     var msgs = this.MessageHolder.GetValuesForKey(key);
 
-                    this.InnerJob.Execute(index, key, msgs);
+                    //this.InnerJob.Execute(index, key, msgs);
                 }
             }
+            ///// <summary>
+            ///// 
+            ///// </summary>
+            //[BurstCompile]
+            //public struct HitMessageApplyDataForKey<TJobInnerExecution>
+            //    where TJobInnerExecution : struct, IApplyExecutionForKey
+            //{
+            //    [ReadOnly]
+            //    public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
+
+            //    [ReadOnly]
+            //    public NativeArray<Entity> KeyEntities;
+
+
+            //    //[NativeDisableParallelForRestriction]
+            //    //[NativeDisableContainerSafetyRestriction]
+            //    public TJobInnerExecution InnerJob;
+
+
+            //    //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            //    public void Execute(int index)
+            //    {
+            //        var key = this.KeyEntities[index];
+            //        var msgs = this.MessageHolder.GetValuesForKey(key);
+
+            //        this.InnerJob.Execute(index, key, msgs);
+            //    }
+            //}
         }
 
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IApplyJobExecutionForKey<THitMessage>
+        where THitMessage : struct, IHitMessage
+    {
+        void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, THitMessage>.Enumerator hitMessages);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    [BurstCompile]
+    public struct HitMessageApplyJobForKey<TJobInnerExecution, THitMessage> : IJobParallelForDefer
+        where TJobInnerExecution : struct, IApplyJobExecutionForKey<THitMessage>
+        where THitMessage : struct, IHitMessage
+    {
+        [ReadOnly]
+        public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
+
+        [ReadOnly]
+        public NativeArray<Entity> KeyEntities;
+
+
+        //[NativeDisableParallelForRestriction]
+        //[NativeDisableContainerSafetyRestriction]
+        public TJobInnerExecution InnerJob;
+
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Execute(int index)
+        {
+            var key = this.KeyEntities[index];
+            var msgs = this.MessageHolder.GetValuesForKey(key);
+
+            this.InnerJob.Execute(index, key, msgs);
+        }
+    }
 }
 
 
