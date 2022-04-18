@@ -47,20 +47,9 @@ namespace DotsLite.Structure
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
-
-            //this.Dependency = new JobExecution
-            //{
-            //    Cmd = cmd,
-
-            //    //compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
-            //    binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
-
-            //    parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
-            //    linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
-            //}
-            //.ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
-            this.Dependency = this.allocationSystem.Reciever.ScheduleKeyParallel2(
-                this.Dependency, 32, new JobExecution
+            var job = new HitMessage<EnvelopeHitMessage>.Job<JobExecution>
+            {
+                outerjob = new JobExecution
                 {
                     Cmd = cmd,
 
@@ -69,8 +58,38 @@ namespace DotsLite.Structure
 
                     parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
                     linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
-                });
-            //this.Dependency = new JobExecution2
+                }
+                .WrapJob(this.allocationSystem.Reciever),
+            };
+            this.Dependency = job.Schedule(this.allocationSystem.Reciever, 32, this.Dependency);
+            
+            //this.Dependency = new HitMessage<EnvelopeHitMessage>.Reciever.HitMessageApplyJobForKey<JobExecution>
+            //{
+            //    InnerJob = new JobExecution
+            //    {
+            //        Cmd = cmd,
+
+            //        //compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
+            //        binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
+
+            //        parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
+            //        linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
+            //    }
+            //}
+            //.ScheduleParallelKey3(this.allocationSystem.Reciever, 32, this.Dependency, out var o);
+            //this.Dependency = o.Schedule(this.allocationSystem.Reciever.Holder.keyEntities, 32, this.Dependency);
+            //this.Dependency = this.allocationSystem.Reciever.ScheduleKeyParallel2(
+            //    this.Dependency, 32, new JobExecution
+            //    {
+            //        Cmd = cmd,
+
+            //        //compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
+            //        binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
+
+            //        parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
+            //        linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
+            //    });
+            ////this.Dependency = new JobExecution2
             //{
             //    Cmd = cmd,
 
@@ -87,8 +106,8 @@ namespace DotsLite.Structure
         }
 
         [BurstCompile]
-        //public struct JobExecution : HitMessage<EnvelopeHitMessage>.IApplyJobExecutionForKey
-        public struct JobExecution : IApplyJobExecutionForKey<EnvelopeHitMessage>
+        public struct JobExecution : HitMessage<EnvelopeHitMessage>.IApplyJobExecutionForKey
+        //public struct JobExecution : IApplyJobExecutionForKey<EnvelopeHitMessage>
         {
 
             public EntityCommandBuffer.ParallelWriter Cmd;
