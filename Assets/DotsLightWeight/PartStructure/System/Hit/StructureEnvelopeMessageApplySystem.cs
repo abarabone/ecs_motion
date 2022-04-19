@@ -47,22 +47,45 @@ namespace DotsLite.Structure
 
             var cmd = cmdScope.CommandBuffer.AsParallelWriter();
 
-            var job = new HitMessage<EnvelopeHitMessage>.Job<JobExecution>
+
+            var reciever = this.allocationSystem.Reciever;
+            var predep = reciever.Barrier.CombineAllDependentJobs(this.Dependency);
+            this.Dependency = new JobExecution
             {
-                outerjob = new JobExecution
-                {
-                    Cmd = cmd,
+                Cmd = cmd,
 
-                    //compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
-                    binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
+                //compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
+                binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
 
-                    parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
-                    linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
-                }
-                .WrapJob(this.allocationSystem.Reciever),
-            };
-            this.Dependency = job.Schedule(this.allocationSystem.Reciever, 32, this.Dependency);
-            
+                parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
+                linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
+            }
+            .ScheduleParallelKey3_(reciever, 32, predep);
+            //var outer = new HitMessage<EnvelopeHitMessage>.Reciever.HitMessageApplyJobForKey<JobExecution>
+            //{
+            //    MessageHolder = reciever.Holder.messageHolder,
+            //    KeyEntities = reciever.Holder.keyEntities.AsDeferredJobArray(),
+            //    InnerJob = inner,
+            //};
+            //var outer = inner.WrapJob(reciever);
+            //this.Dependency = outer.Schedule(reciever.Holder.keyEntities, 32, this.Dependency);
+
+            //var job = new Job<JobExecution, EnvelopeHitMessage>
+            //{
+            //    outerjob = new JobExecution
+            //    {
+            //        Cmd = cmd,
+
+            //        //compoundTags = this.GetComponentDataFromEntity<Main.CompoundColliderTag>(isReadOnly: true),
+            //        binderLinks = this.GetComponentDataFromEntity<Structure.Main.BinderLinkData>(isReadOnly: true),
+
+            //        parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
+            //        linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
+            //    }
+            //    .WrapJob(this.allocationSystem.Reciever),
+            //};
+            //this.Dependency = job.Schedule(this.allocationSystem.Reciever, 32, this.Dependency);
+
             //this.Dependency = new HitMessage<EnvelopeHitMessage>.Reciever.HitMessageApplyJobForKey<JobExecution>
             //{
             //    InnerJob = new JobExecution

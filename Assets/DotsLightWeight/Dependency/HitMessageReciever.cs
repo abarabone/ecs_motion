@@ -54,24 +54,24 @@ namespace DotsLite.Dependency
 
     }
 
-    public struct Job<TJobInnerExecution, THitMessage>
-        where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForKey
-            where THitMessage : struct, IHitMessage
-    {
-        //public TJobInnerExecution innerjob;
-        public  TJobInnerExecution outerjob;
+    //public struct Job<TJobInnerExecution, THitMessage>
+    //    where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForKey
+    //        where THitMessage : struct, IHitMessage
+    //{
+    //    //public TJobInnerExecution innerjob;
+    //    public HitMessage<THitMessage>.Reciever.HitMessageApplyJobForKey<TJobInnerExecution> outerjob;
 
-        public JobHandle Schedule(
-            HitMessage<THitMessage>.Reciever reciever,
-            int innerLoopBatchCount,
-            JobHandle dependency)
-        {
-            var dep0 = reciever.Barrier.CombineAllDependentJobs(dependency);
-            var dep1 = outerjob.Schedule(reciever.Holder.keyEntities, innerLoopBatchCount, dep0);
+    //    public JobHandle Schedule(
+    //        HitMessage<THitMessage>.Reciever reciever,
+    //        int innerLoopBatchCount,
+    //        JobHandle dependency)
+    //    {
+    //        var dep0 = reciever.Barrier.CombineAllDependentJobs(dependency);
+    //        var dep1 = this.outerjob.Schedule(reciever.Holder.keyEntities, innerLoopBatchCount, dep0);
 
-            return dep1;
-        }
-    }
+    //        return dep1;
+    //    }
+    //}
 
 
     public static class HitMessageApplyJobExtension
@@ -117,6 +117,41 @@ namespace DotsLite.Dependency
             where TJobInnerExecution : struct, IApplyJobExecutionForKey<THitMessage>
         =>
             reciever.ScheduleKeyParallel2(dependency, innerLoopBatchCount, job);
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static JobHandle ScheduleParallelKey3<THitMessage, TJobInnerExecution>
+            (
+                this TJobInnerExecution job,
+                HitMessage<THitMessage>.Reciever reciever,
+                int innerLoopBatchCount,
+                JobHandle dependency
+            )
+            where THitMessage : struct, IHitMessage
+            where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForKey
+        {
+            var dep0 = reciever.Barrier.CombineAllDependentJobs(dependency);
+            return job.ScheduleParallelKey3_(reciever, innerLoopBatchCount, dep0);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static JobHandle ScheduleParallelKey3_<THitMessage, TJobInnerExecution>
+            (
+                this TJobInnerExecution job,
+                HitMessage<THitMessage>.Reciever reciever,
+                int innerLoopBatchCount,
+                JobHandle dependency
+            )
+            where THitMessage : struct, IHitMessage
+            where TJobInnerExecution : struct, HitMessage<THitMessage>.IApplyJobExecutionForKey
+        {
+            return new HitMessage<THitMessage>.Reciever.HitMessageApplyJobForKey<TJobInnerExecution>
+            {
+                MessageHolder = reciever.Holder.messageHolder,
+                KeyEntities = reciever.Holder.keyEntities.AsDeferredJobArray(),
+                InnerJob = job,
+            }
+            .Schedule(reciever.Holder.keyEntities, innerLoopBatchCount, dependency);
+        }
 
 
 
