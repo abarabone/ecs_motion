@@ -40,7 +40,7 @@ namespace DotsLite.Dependency
             public DisposableDependency WithDependencyScope()
             {
                 //dependentSystem.AddInputDependency(this.buildPhysicsWorld.GetOutputDependency());
-                // 0.50 化で一時的にコメントアウト
+                // 0.50 化でコメントアウト
 
                 return new DisposableDependency { parent = this };
             }

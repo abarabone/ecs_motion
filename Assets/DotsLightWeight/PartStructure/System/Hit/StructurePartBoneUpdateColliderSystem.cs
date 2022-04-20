@@ -51,6 +51,8 @@ namespace DotsLite.Structure
             using var freeScope = this.freedep.WithDependencyScope();
             using var cmdScope = this.cmddep.WithDependencyScope();
 
+            var reciever = this.allocationSystem.Reciever;
+            var dep = reciever.Barrier.CombineAllDependentJobs(this.Dependency);
             this.Dependency = new JobExecution
             {
                 cmd = cmdScope.CommandBuffer.AsParallelWriter(),
@@ -67,7 +69,8 @@ namespace DotsLite.Structure
                 boneInfoBuffers = this.GetBufferFromEntity<PartBone.PartInfoData>(),
                 boneColliderBuffers = this.GetBufferFromEntity<PartBone.PartColliderResourceData>(),
             }
-            .ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
+            .WithReciever(reciever)
+            .Schedule(reciever.Holder.keyEntities, 32, dep);
         }
 
 

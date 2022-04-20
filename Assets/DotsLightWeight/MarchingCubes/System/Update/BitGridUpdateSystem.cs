@@ -42,6 +42,8 @@ namespace DotsLite.MarchingCubes
             using var barcopyScope = this.barcopydep.WithDependencyScope();
             //using var barfreeScope = this.barfreedep.WithDependencyScope();
 
+            var reciever = this.messageSystem.Reciever;
+            var dep = reciever.Barrier.CombineAllDependentJobs(this.Dependency);
             this.Dependency = new JobExecution
             {
                 bitgrids = this.GetComponentDataFromEntity<BitGrid.BitLinesData>(isReadOnly: true),
@@ -51,7 +53,8 @@ namespace DotsLite.MarchingCubes
                 areas = this.GetComponentDataFromEntity<BitGridArea.GridLinkData>(isReadOnly: true),
                 dims = this.GetComponentDataFromEntity<BitGridArea.UnitDimensionData>(isReadOnly: true),
             }
-            .ScheduleParallelKey(this.messageSystem.Reciever, 1, this.Dependency);
+            .WithReciever(reciever)
+            .Schedule(reciever.Holder.keyEntities, 32, dep);
         }
 
 

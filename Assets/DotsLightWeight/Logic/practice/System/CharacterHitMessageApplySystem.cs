@@ -77,6 +77,8 @@ namespace DotsLite.Character
             //var poss = this.GetComponentDataFromEntity<Translation>(isReadOnly: true);
             //var corpss = this.GetComponentDataFromEntity<CorpsGroup.TargetData>(isReadOnly: true);
 
+            var reciever = this.Reciever;
+            var dep = reciever.Barrier.CombineAllDependentJobs(this.Dependency);
             this.Dependency = new JobExecution
             {
                 Cmd = cmd,
@@ -85,7 +87,8 @@ namespace DotsLite.Character
                 //Rotations = rots,
                 //Positions = poss,
             }
-            .ScheduleParallelKey(this.Reciever, 32, this.Dependency);
+            .WithReciever(reciever)
+            .Schedule(reciever.Holder.keyEntities, 32, dep);
 
             this.Dependency = this.Reciever.Holder.ScheduleDispose(this.Dependency);
         }

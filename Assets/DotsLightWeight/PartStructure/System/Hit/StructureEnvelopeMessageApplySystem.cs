@@ -49,7 +49,7 @@ namespace DotsLite.Structure
 
 
             var reciever = this.allocationSystem.Reciever;
-            var prevdeps = reciever.Barrier.CombineAllDependentJobs(this.Dependency);
+            var dep = reciever.Barrier.CombineAllDependentJobs(this.Dependency);
             this.Dependency = new JobExecution
             {
                 Cmd = cmd,
@@ -60,8 +60,8 @@ namespace DotsLite.Structure
                 parts = this.GetComponentDataFromEntity<Structure.Part.PartData>(isReadOnly: true),
                 linkedGroups = this.GetBufferFromEntity<LinkedEntityGroup>(isReadOnly: true),
             }
-            .With(reciever)
-            .Schedule(reciever.Holder.keyEntities, 32, prevdeps);
+            .WithReciever(reciever)
+            .Schedule(reciever.Holder.keyEntities, 32, dep);
         }
 
         [BurstCompile]
