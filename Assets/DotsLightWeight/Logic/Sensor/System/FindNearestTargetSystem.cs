@@ -39,9 +39,9 @@ namespace DotsLite.Character
         CommandBufferDependency.Sender cmddep;
         PhysicsHitDependency.Sender phydep;
 
-        protected override void OnCreate()
+        protected override void OnStartRunning()
         {
-            base.OnCreate();
+            base.OnStartRunning();
 
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
             this.phydep = PhysicsHitDependency.Sender.Create(this);

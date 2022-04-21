@@ -26,12 +26,16 @@ namespace DotsLite.Dependency
             DependencyAccessableSystemBase dependentSystem;
 
 
-            public static Sender Create(DependencyAccessableSystemBase system) =>
-                new Sender
+            public static Sender Create(DependencyAccessableSystemBase system)
+            {
+                system.RegisterPhysicsRuntimeSystemReadOnly();
+
+                return new Sender
                 {
                     buildPhysicsWorld = system.World.GetExistingSystem<BuildPhysicsWorld>(),
                     dependentSystem = system,
                 };
+            }
 
 
             //public PhysicsWorld PhysicsWorld => this.buildPhysicsWorld.PhysicsWorld;

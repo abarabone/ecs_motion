@@ -60,9 +60,9 @@ namespace DotsLite.Character
 
         PhysicsHitDependency.Sender phydep;
 
-        protected override void OnCreate()
+        protected override void OnStartRunning()
         {
-            base.OnCreate();
+            base.OnStartRunning();
 
             this.phydep = PhysicsHitDependency.Sender.Create(this);
         }
