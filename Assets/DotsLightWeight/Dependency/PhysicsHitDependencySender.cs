@@ -28,7 +28,9 @@ namespace DotsLite.Dependency
 
             public static Sender Create(DependencyAccessableSystemBase system)
             {
+                // 0.50 ‰»‚Å’Ç‰Á
                 system.RegisterPhysicsRuntimeSystemReadOnly();
+                //system.RegisterPhysicsRuntimeSystemReadWrite();
 
                 return new Sender
                 {

@@ -50,11 +50,21 @@ namespace DotsLite.Structure
             using var freeScope = this.freedep.WithDependencyScope();
             
 
+            //this.Dependency = new JobExecution
+            //{
+
+            //}
+            //.ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
+            // ↑なんでこれはリフレクションエラーにならなかったんだ？
+
+            var reciever = this.allocationSystem.Reciever;
+            var dep = reciever.Barrier.CombineAllDependentJobs(this.Dependency);
             this.Dependency = new JobExecution
             {
 
             }
-            .ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
+            .WithReciever(reciever)
+            .Schedule(reciever.Holder.keyEntities, 32, dep);
         }
 
 
@@ -70,6 +80,8 @@ namespace DotsLite.Structure
             {
                 //wakeupMain_(index, mainEntity);
                 //applyDamgeToMain_();
+
+                //Debug.Log("a");
             }
 
 

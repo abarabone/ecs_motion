@@ -133,7 +133,6 @@ namespace DotsLite.Arms
                             (link.OwnerStateEntity, pos.Value, tail.Position, 1.0f, targets);
 
                         if (!hit_.isHit) return;
-
                         
 
                         var v = (pos.Value - vfact.PrePosition.xyz) * dtrate * 100.0f;
