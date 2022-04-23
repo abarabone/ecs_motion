@@ -55,7 +55,7 @@ namespace DotsLite.Structure
 
             //}
             //.ScheduleParallelKey(this.allocationSystem.Reciever, 32, this.Dependency);
-            // ↑なんでこれはリフレクションエラーにならなかったんだ？
+            // ↑なんでこれはリフレクションエラーにならなかったんだ？　中身がないからか？
 
             var reciever = this.allocationSystem.Reciever;
             var dep = reciever.Barrier.CombineAllDependentJobs(this.Dependency);

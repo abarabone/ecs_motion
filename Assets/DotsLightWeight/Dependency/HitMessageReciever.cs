@@ -558,7 +558,7 @@ namespace DotsLite.Dependency
                     var key = this.KeyEntities[index];
                     var msgs = this.MessageHolder.GetValuesForKey(key);
 
-                    //this.InnerJob.Execute(index, key, msgs);
+                    this.InnerJob.Execute(index, key, msgs);
                 }
             }
             ///// <summary>

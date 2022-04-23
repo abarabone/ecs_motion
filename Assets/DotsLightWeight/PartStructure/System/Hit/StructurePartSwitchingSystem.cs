@@ -35,9 +35,9 @@ namespace DotsLite.Structure
         CommandBufferDependency.Sender cmddep;
 
 
-        protected override void OnCreate()
+        protected override void OnStartRunning()
         {
-            base.OnCreate();
+            base.OnStartRunning();
 
             this.allocationSystem = this.World.GetOrCreateSystem<StructurePartMessageAllocationSystem>();
             this.cmddep = CommandBufferDependency.Sender.Create<BeginInitializationEntityCommandBufferSystem>(this);
@@ -90,7 +90,7 @@ namespace DotsLite.Structure
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                if (this.compoundTags.HasComponent(mainEntity)) return;
+                if (this.compoundTags.HasComponent(mainEntity)) return;Debug.Log("aa");
                 //if (hitMessages.Current.PartId == -1) return;
 
 
