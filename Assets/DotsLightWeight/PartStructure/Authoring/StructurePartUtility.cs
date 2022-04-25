@@ -47,6 +47,7 @@ namespace DotsLite.Structure.Authoring
                 typeof(PhysicsVelocity),//Žb’è
                 typeof(PhysicsGravityFactor),//Žb’è
                 typeof(PhysicsMass),//Žb’è
+                typeof(PhysicsWorldIndex),//Žb’è
 
                 typeof(Marker.Rotation),
                 typeof(Marker.Translation),

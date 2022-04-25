@@ -90,7 +90,7 @@ namespace DotsLite.Structure
             public unsafe void Execute(
                 int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
-                if (this.compoundTags.HasComponent(mainEntity)) return;Debug.Log("aa");
+                if (this.compoundTags.HasComponent(mainEntity)) return;
                 //if (hitMessages.Current.PartId == -1) return;
 
 
@@ -132,8 +132,8 @@ namespace DotsLite.Structure
             {
                 foreach (var part in targetParts)
                 {
-                    //hidePart_(uniqueIndex, part);
-                    destroyPart_(uniqueIndex, part);
+                    //hidePart_(uniqueIndex, part);// 隠す
+                    destroyPart_(uniqueIndex, part);// 破棄する
                     createDebris_(uniqueIndex, part);
                 }
             }
