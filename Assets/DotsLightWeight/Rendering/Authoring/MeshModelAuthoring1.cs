@@ -32,8 +32,9 @@ namespace DotsLite.Model.Authoring
 
         //public Material Material;
         //public Shader ShaderToDraw;
-
+        [Serializable]
         class pnuv : MeshModel<UI32, PositionNormalUvVertex> { }
+        [Serializable]
         class pnupv : MeshModel<UI32, PositionNormalUvPalletVertex> { }
 
         protected new void Reset()
@@ -52,7 +53,7 @@ namespace DotsLite.Model.Authoring
         //[SerializeReference, SubclassSelector]
         //public IMeshModel[] Models = new[] { new LodMeshModel<UI32, PositionNormalUvVertex> { } };
 
-        [SerializeReference]
+        [SerializeReference, SubclassSelector]
         //public LodMeshModel<UI32, PositionNormalUvVertex>[] Models;
         public IMeshModel Model;
 
