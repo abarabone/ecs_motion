@@ -10,6 +10,16 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
+
+using DotsLite.Model.Authoring;
+using DotsLite.Geometry;
+[Serializable]
+public class pnuva :
+    MeshModel<UI32, PositionNormalUvVertex>, MeshModelAuthoring1.IMeshModelSelector { }
+[Serializable]
+public class pnupva :
+    MeshModel<UI32, PositionNormalUvPalletVertex>, MeshModelAuthoring1.IMeshModelSelector { }
+
 namespace DotsLite.Model.Authoring
 {
     using DotsLite.Model;
@@ -23,13 +33,6 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
     using DotsLite.EntityTrimmer.Authoring;
 
-    [Serializable]
-    public class PalletSurfacesModel2 : MeshModel<UI16, StructureVertex> { }
-    [Serializable]
-    public class pnuva : MeshModel<UI32, PositionNormalUvVertex> { }
-    [Serializable]
-    public class pnupva : MeshModel<UI32, PositionNormalUvPalletVertex> { }
-
     /// <summary>
     /// 
     /// </summary>
@@ -39,14 +42,10 @@ namespace DotsLite.Model.Authoring
 
         //public Material Material;
         //public Shader ShaderToDraw;
-        [Serializable]
-        public class pnuv : MeshModel<UI32, PositionNormalUvVertex> { }
-        [Serializable]
-        public class pnupv : MeshModel<UI32, PositionNormalUvPalletVertex> { }
 
         protected new void Reset()
         {
-            this.Model ??= new pnuv
+            this.Model ??= new pnuva
             {
                 objectTop = this.gameObject,
             };
@@ -60,9 +59,12 @@ namespace DotsLite.Model.Authoring
         //[SerializeReference, SubclassSelector]
         //public IMeshModel[] Models = new[] { new LodMeshModel<UI32, PositionNormalUvVertex> { } };
 
+        public interface IMeshModelSelector : IMeshModel
+        { }
+
         [SerializeReference, SubclassSelector]
         //public LodMeshModel<UI32, PositionNormalUvVertex>[] Models;
-        public IMeshModel Model;
+        public IMeshModelSelector Model;
 
 
 

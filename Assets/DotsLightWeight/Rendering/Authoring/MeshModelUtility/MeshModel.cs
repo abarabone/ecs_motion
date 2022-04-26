@@ -26,6 +26,11 @@ namespace DotsLite.Model.Authoring
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
 
+        public MeshModel()
+        {
+            Debug.Log("created");
+        }
+
         public void GenerateSourcePrefabKey() =>
             this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
 
