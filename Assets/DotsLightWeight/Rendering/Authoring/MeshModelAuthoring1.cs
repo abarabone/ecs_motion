@@ -23,6 +23,13 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
     using DotsLite.EntityTrimmer.Authoring;
 
+    [Serializable]
+    public class PalletSurfacesModel2 : MeshModel<UI16, StructureVertex> { }
+    [Serializable]
+    public class pnuva : MeshModel<UI32, PositionNormalUvVertex> { }
+    [Serializable]
+    public class pnupva : MeshModel<UI32, PositionNormalUvPalletVertex> { }
+
     /// <summary>
     /// 
     /// </summary>
@@ -33,9 +40,9 @@ namespace DotsLite.Model.Authoring
         //public Material Material;
         //public Shader ShaderToDraw;
         [Serializable]
-        class pnuv : MeshModel<UI32, PositionNormalUvVertex> { }
+        public class pnuv : MeshModel<UI32, PositionNormalUvVertex> { }
         [Serializable]
-        class pnupv : MeshModel<UI32, PositionNormalUvPalletVertex> { }
+        public class pnupv : MeshModel<UI32, PositionNormalUvPalletVertex> { }
 
         protected new void Reset()
         {
