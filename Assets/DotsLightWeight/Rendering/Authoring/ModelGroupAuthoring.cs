@@ -35,13 +35,10 @@ namespace DotsLite.Model.Authoring
             //[FormerlySerializedAs("OriginId")]
             //public int SourcePrefabKey;
             //public void SetOridinId() => this.SourcePrefabKey = new System.Random(this.name.GetHashCode() + this.GetHashCode()).Next();
-#if UNITY_EDITOR
             protected void Reset()
             {
-                var prefab = UnityEditor.PrefabUtility.GetCorrespondingObjectFromOriginalSource(this);
-                (prefab ?? this).QueryModel.ForEach(m => m.GenerateSourcePrefabKey());
+                this.QueryModel.ForEach(m => m.GenerateSourcePrefabKey());
             }
-#endif
 
             public virtual IEnumerable<IMeshModel> QueryModel => throw new NotImplementedException();
         }

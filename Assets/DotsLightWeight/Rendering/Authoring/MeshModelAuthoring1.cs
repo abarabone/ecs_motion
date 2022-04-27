@@ -13,12 +13,15 @@ using Unity.Linq;
 
 using DotsLite.Model.Authoring;
 using DotsLite.Geometry;
+
 [Serializable]
-public class pnuva :
+public class PositionNormalUv_i32 :
     MeshModel<UI32, PositionNormalUvVertex>, MeshModelAuthoring1.IMeshModelSelector { }
+
 [Serializable]
-public class pnupva :
+public class PositionNormalUvPallet_i32 :
     MeshModel<UI32, PositionNormalUvPalletVertex>, MeshModelAuthoring1.IMeshModelSelector { }
+
 
 namespace DotsLite.Model.Authoring
 {
@@ -45,7 +48,7 @@ namespace DotsLite.Model.Authoring
 
         protected new void Reset()
         {
-            this.Model ??= new pnuva
+            this.Model ??= new PositionNormalUv_i32
             {
                 objectTop = this.gameObject,
             };
