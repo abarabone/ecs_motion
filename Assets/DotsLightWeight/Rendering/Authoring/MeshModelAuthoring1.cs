@@ -15,11 +15,11 @@ using DotsLite.Model.Authoring;
 using DotsLite.Geometry;
 
 [Serializable]
-public class PositionNormalUv_i32 :
+public class PositionNormalUvI32 :
     MeshModel<UI32, PositionNormalUvVertex>, MeshModelAuthoring1.IMeshModelSelector { }
 
 [Serializable]
-public class PositionNormalUvPallet_i32 :
+public class PositionNormalUvPalletI32 :
     MeshModel<UI32, PositionNormalUvPalletVertex>, MeshModelAuthoring1.IMeshModelSelector { }
 
 
@@ -48,7 +48,7 @@ namespace DotsLite.Model.Authoring
 
         protected new void Reset()
         {
-            this.Model ??= new PositionNormalUv_i32
+            this.Model ??= new PositionNormalUvI32
             {
                 objectTop = this.gameObject,
             };
