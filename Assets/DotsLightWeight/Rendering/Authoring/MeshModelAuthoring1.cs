@@ -20,7 +20,7 @@ public class PositionNormalUvI32 :
 
 [Serializable]
 public class PositionNormalUvPalletI32 :
-    MeshModel<UI32, PositionNormalUvPalletVertex>, MeshModelAuthoring1.IMeshModelSelector { }
+    MeshModel<UI32, PositionNormalUvWithPalletVertex>, MeshModelAuthoring1.IMeshModelSelector { }
 
 
 namespace DotsLite.Model.Authoring

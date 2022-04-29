@@ -162,7 +162,7 @@ namespace DotsLite.Geometry.inner
             ;
 
 
-        static public IEnumerable<Color32> QueryPalletSubIndex(
+        static public IEnumerable<Color32> QueryColorPalletSubIndex(
             this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
             var qVtx = srcmeshes.QuerySubMeshForUnitVertices();
@@ -181,7 +181,7 @@ namespace DotsLite.Geometry.inner
                 select color
                 ;
         }
-        //static public IEnumerable<Color32> QueryUvIndex(
+        //static public IEnumerable<Color32> QueryTextureUvOffsetIndex(
         //    this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         //{
         //    var qVtx = srcmeshes.QuerySubMeshForUnitVertices();

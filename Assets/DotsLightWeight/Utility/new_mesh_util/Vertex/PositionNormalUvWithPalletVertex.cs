@@ -20,7 +20,7 @@ namespace DotsLite.Geometry
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct PositionNormalUvPalletVertex : IVertexUnit<PositionNormalUvPalletVertex>, ISetBufferParams
+    public struct PositionNormalUvWithPalletVertex : IVertexUnit<PositionNormalUvWithPalletVertex>, ISetBufferParams
     {
 
         public Vector3 Position;
@@ -29,8 +29,8 @@ namespace DotsLite.Geometry
         public Color32 PalletId;
 
 
-        public Func<MeshElements<TIdx, PositionNormalUvPalletVertex>> BuildCombiner<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        public Func<MeshElements<TIdx, PositionNormalUvWithPalletVertex>> BuildCombiner<TIdx>(
+            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         {
             return () =>
@@ -40,10 +40,10 @@ namespace DotsLite.Geometry
                 var poss = srcmeshes.QueryConvertPositions(p).ToArray();
                 var nms = srcmeshes.QueryConvertNormals(p).ToArray();
                 var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
-                var cids = srcmeshes.QueryPalletSubIndex(p).ToArray();
+                var cids = srcmeshes.QueryColorPalletSubIndex(p).ToArray();
                 var qVtx =
                     from x in (poss, nms, uvs, cids).Zip()
-                    select new PositionNormalUvPalletVertex
+                    select new PositionNormalUvWithPalletVertex
                     {
                         Position = x.src0,
                         Normal = x.src1,
