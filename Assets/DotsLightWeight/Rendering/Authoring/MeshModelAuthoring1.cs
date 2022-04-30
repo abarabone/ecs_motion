@@ -70,6 +70,9 @@ namespace DotsLite.Model.Authoring
         public IMeshModelSelector Model;
 
 
+        [SerializeField]
+        PalletAsset Pallet;
+
 
         public override IEnumerable<IMeshModel> QueryModel => this.Model.WrapEnumerable();
         //public override IEnumerable<IMeshModel> QueryModel

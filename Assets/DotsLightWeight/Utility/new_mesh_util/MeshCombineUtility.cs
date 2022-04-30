@@ -89,8 +89,10 @@ namespace DotsLite.Geometry
                 //atlasHash = atlas?.GetHashCode() ?? 0,
                 //texhashToUvRect = texHashToUvRect,
                 texHashToUvRect = texHashToUvRectFunc,
-                texHashToUvIndex = texHashToUvIndexFunc,
+                texHashToUvIndex = texHashToUvIndexFunc,// マテリアルのテクスチャから、uv index を取得するためのラムダ
             };
+
+            // こんへんは別の関数にして、必要な場合だけ呼び出すようにしたい
 
             var qPartIdPerMesh =
                 from mmt in mmts_
@@ -277,7 +279,11 @@ namespace DotsLite.Geometry
         // ・color pallet の base index を、インスタンスに持たせる
         // ・ただし、すでに同じ構成で登録があれば、その base index を取得する
         /// <summary>
-        /// 
+        /// １つのモデルを構成する幾何情報から、カラーパレットを構成するカラーを抽出する。
+        /// 結果はカラーの配列となる。
+        /// カラーのインデックスはマテリアルの Pallet Sub Index プロパティにユーザーがセットする。
+        /// 結果の配列は、そのインデックス順にソートされており、インデックスに該当するマテリアルが存在しなかった場合は、
+        /// (0, 0, 0, 0) 色がせっとされる。
         /// </summary>
         public static Color32[] ToPalletColorEntry(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
@@ -302,6 +308,8 @@ namespace DotsLite.Geometry
         // ・バッファはシーンで１つ
         // ・uv pallet 
         /// <summary>
+        /// １つのモデルを構成する幾何情報から、サーフェスを構成する uv rect を抽出する。
+        /// 結果は uv rect の配列となる。
         /// 
         /// </summary>
         public static Rect[] ToPalletUvEntry(

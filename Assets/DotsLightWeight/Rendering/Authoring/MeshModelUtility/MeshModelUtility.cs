@@ -30,22 +30,9 @@ namespace DotsLite.Geometry
 
         public static void BuildModelToDictionary<T>(this IEnumerable<T> models, GameObjectConversionSystem gcs)
             where T : ModelGroupAuthoring.ModelAuthoringBase
-        {
-
-            var meshDict = gcs.GetMeshDictionary();
-            var atlasDict = gcs.GetTextureAtlasDictionary();
-            
-            var meshmodels = models
+        => models
                 .SelectMany(model => model.QueryModel)
-                .Distinct(x => x.SourcePrefabKey)
-                .ToArray();
-
-            meshmodels.PackTextureToDictionary(atlasDict);
-
-            meshmodels.CreateModelToDictionary(meshDict, atlasDict);
-
-            meshmodels.CreateModelEntitiesToDictionary(gcs, meshDict, atlasDict);
-        }
+                .BuildModelToDictionary(gcs);
 
         public static void BuildModelToDictionary(this IEnumerable<IMeshModel> models, GameObjectConversionSystem gcs)
         {
@@ -59,6 +46,8 @@ namespace DotsLite.Geometry
             meshmodels.CreateModelToDictionary(meshDict, atlasDict);
             meshmodels.CreateModelEntitiesToDictionary(gcs, meshDict, atlasDict);
         }
+
+
 
 
 
