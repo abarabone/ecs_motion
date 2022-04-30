@@ -235,6 +235,7 @@ namespace DotsLite.HeightGrid.Aurthoring
                     typeof(DrawInstance.TargetWorkData),
 
                     typeof(PhysicsCollider),
+                    typeof(PhysicsWorldIndex),
                     typeof(Marker.Translation),
                 };
                 switch (lodlevel)

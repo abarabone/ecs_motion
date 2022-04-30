@@ -23,13 +23,15 @@ namespace DotsLite.Model.Authoring
 
     // 違うプレハブでも同じモデルを使いまわせるようにしたいんだけど
     // モデルだけ独立させるか…？
+    // 保留中
 
     [CreateAssetMenu(fileName="mesh model asset", menuName= "Custom/Mesh Model")]
     public class MeshModelAsset : ScriptableObject
     {
 
         [SerializeField]
-        public MeshModel<UI32, PositionNormalUvVertex> MeshModel = new MeshModel<UI32, PositionNormalUvVertex>();
+        public MeshModel<UI32, PositionNormalUvVertex> MeshModel =
+            new MeshModel<UI32, PositionNormalUvVertex>();
 
     }
 
@@ -38,7 +40,8 @@ namespace DotsLite.Model.Authoring
     {
 
         [SerializeField]
-        public MeshModel<UI32, PositionNormalUvVertex> MeshModel = new MeshModel<UI32, PositionNormalUvVertex>();
+        public MeshModel<UI32, PositionNormalUvVertex> MeshModel =
+            new MeshModel<UI32, PositionNormalUvVertex>();
 
     }
 
