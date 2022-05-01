@@ -36,6 +36,7 @@ namespace DotsLite.Geometry
                 .SelectMany(model => model.QueryModel)
                 .BuildModelToDictionary(gcs);
 
+
         public static void BuildModelToDictionary(
             this IEnumerable<IMeshModel> models, GameObjectConversionSystem gcs)
         {
