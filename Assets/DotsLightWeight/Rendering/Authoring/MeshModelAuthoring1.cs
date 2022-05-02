@@ -18,9 +18,13 @@ using DotsLite.Geometry;
 public class PositionNormalUvI32 :
     MeshModel<UI32, PositionNormalUvVertex>, MeshModelAuthoring1.IMeshModelSelector { }
 
+//[Serializable]
+//public class PositionNormalUvWithPalletI32 :
+//    MeshWithPalletModel<UI32, PositionNormalUvWithPalletVertex>, MeshModelAuthoring1.IMeshModelSelector { }
 [Serializable]
 public class PositionNormalUvWithPalletI32 :
-    MeshWithPalletModel<UI32, PositionNormalUvWithPalletVertex>, MeshModelAuthoring1.IMeshModelSelector { }
+    MeshModel<UI32, PositionNormalUvWithPalletVertex>, MeshModelAuthoring1.IMeshModelSelector
+{ }
 
 
 namespace DotsLite.Model.Authoring

@@ -27,6 +27,10 @@ namespace DotsLite.Model.Authoring
     {
 
 
+        [SerializeField]
+        PalletAsset Pallet;
+
+
         public override Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.shader);
@@ -46,7 +50,8 @@ namespace DotsLite.Model.Authoring
             var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var p = this.QueryMmts.calculateParameters(
-                this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
+                this.TfRoot, this.QueryBones?.ToArray(),
+                subtexhash => texdict[atlas, subtexhash], null);
 
             return (
                 this.sourcePrefabKey,
