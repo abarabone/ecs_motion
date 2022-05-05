@@ -53,6 +53,9 @@ namespace DotsLite.Model.Authoring
                 this.TfRoot, this.QueryBones?.ToArray(),
                 subtexhash => texdict[atlas, subtexhash], null);
 
+            // パレット向けの暫定
+            this.QueryMmts.CalculatePalletSubIndexParameter(ref p);
+
             return (
                 this.sourcePrefabKey,
                 meshpack.BuildCombiner<TIdx, TVtx>(p)

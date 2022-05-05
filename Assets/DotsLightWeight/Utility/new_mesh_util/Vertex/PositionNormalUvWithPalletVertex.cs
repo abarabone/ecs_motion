@@ -25,8 +25,8 @@ namespace DotsLite.Geometry
 
         public Vector3 Position;
         public Vector3 Normal;
-        public Vector2 Uv;
         public Color32 PalletId;
+        public Vector2 Uv;
 
 
         public Func<MeshElements<TIdx, PositionNormalUvWithPalletVertex>> BuildCombiner<TIdx>(
@@ -47,8 +47,8 @@ namespace DotsLite.Geometry
                     {
                         Position = x.src0,
                         Normal = x.src1,
-                        Uv = x.src2,
                         PalletId = x.src3,
+                        Uv = x.src2,
                     };
                 var vtxs = qVtx.ToArray();
 
@@ -62,8 +62,8 @@ namespace DotsLite.Geometry
             {
                 new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
                 new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
-                new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
                 new VertexAttributeDescriptor(VertexAttribute.Color, VertexAttributeFormat.UInt8, 4),
+                new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
             };
             meshdata.SetVertexBufferParams(vertexLength, layout);
         }
