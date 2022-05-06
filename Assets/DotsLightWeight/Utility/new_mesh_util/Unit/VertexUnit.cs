@@ -18,10 +18,27 @@ namespace DotsLite.Geometry
     using DotsLite.Geometry.inner;
     using DotsLite.Geometry.inner.unit;
 
+
+
     public interface IVertexUnit<TVtx>
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
         Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;
     }
+
+    //public interface IVertexUnitBoned<TVtx> : IVertexUnit<TVtx>
+    //    where TVtx : struct, IVertexUnitBoned<TVtx>, ISetBufferParams
+    //{
+    //    Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+    //        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;
+    //}
+
+    //public interface IVertexUnitWithPallet<TVtx> : IVertexUnit<TVtx>
+    //    where TVtx : struct, IVertexUnitWithPallet<TVtx>, ISetBufferParams
+    //{
+    //    Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+    //        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;
+    //}
+
 }

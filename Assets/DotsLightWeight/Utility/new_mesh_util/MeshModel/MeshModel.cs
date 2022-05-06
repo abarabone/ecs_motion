@@ -62,18 +62,21 @@ namespace DotsLite.Model.Authoring
                 .QueryMeshMatsTransform_IfHaving();
 
 
-        public virtual Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
-        {
-            var mat = new Material(this.shader);
-            mat.enableInstancing = true;
-            mat.mainTexture = atlas;
 
-            var boneType = this.tfMode.ToBoneType();
-            return gcs.CreateDrawModelEntityComponents(
-                mesh, mat, boneType,
-                this.boneLength, this.sortOrder, this.optionalVectorLength);
-        }
 
+        ////public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
+        ////    SrcMeshesModelCombinePack meshpack, Func<int>)
+        ////{
+        ////    var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
+        ////    var texdict = atlasDictionary.texHashToUvRect;
+        ////    var p = this.QueryMmts.calculateParameters(
+        ////        this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
+
+        ////    return (
+        ////        this.sourcePrefabKey,
+        ////        meshpack.BuildCombiner<TIdx, TVtx>(p)
+        ////    );
+        ////}
         public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
@@ -88,6 +91,19 @@ namespace DotsLite.Model.Authoring
                 meshpack.BuildCombiner<TIdx, TVtx>(p)
             );
         }
+
+        public virtual Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        {
+            var mat = new Material(this.shader);
+            mat.enableInstancing = true;
+            mat.mainTexture = atlas;
+
+            var boneType = this.tfMode.ToBoneType();
+            return gcs.CreateDrawModelEntityComponents(
+                mesh, mat, boneType,
+                this.boneLength, this.sortOrder, this.optionalVectorLength);
+        }
+
     }
 
 

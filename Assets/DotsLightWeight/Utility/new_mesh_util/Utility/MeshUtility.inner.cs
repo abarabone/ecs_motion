@@ -91,8 +91,10 @@ namespace DotsLite.Geometry.inner
                 _ =>
                     from x in srcmeshes.QuerySubMeshForVertices<Vector2>(p, (md, arr) => md.GetUVs(channel, arr), getAttr_(channel))
                     from xsub in x.submeshes
+                    let rect = p.texHashToUvRect(xsub.texhash)
                     from uv in xsub.submesh.Elements()
-                    select uv.ScaleUv(p.texHashToUvRect(xsub.texhash)),
+                    select uv.ScaleUv(rect),
+                    //select uv.ScaleUv(p.texHashToUvRect(xsub.texhash)),
             };
 
             VertexAttribute getAttr_(int channel) =>
