@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Entities;
 
-public class ColorPalletBufferAuthoring : MonoBehaviour
+namespace DotsLite.Draw.Authoring
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    using DotsLite.Geometry;
 
-    // Update is called once per frame
-    void Update()
+    public class ColorPalletBufferAuthoring : MonoBehaviour
     {
-        
+
+
+        public ColorPalletBuilder Pallets { get; } = new ColorPalletBuilder();
+
+        public string BufferName = "ColorPallets";
+
     }
 }

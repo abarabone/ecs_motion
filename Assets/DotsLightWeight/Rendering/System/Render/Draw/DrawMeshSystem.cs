@@ -29,7 +29,7 @@ namespace DotsLite.Draw
     //[DisableAutoCreation]
     [UpdateInGroup(typeof( SystemGroup.Presentation.Render.Draw.Call ) )]
     [UpdateAfter(typeof(DrawBufferToShaderDataSystem))]
-    public partial class DrawMeshCsSystem : SystemBase
+    public partial class DrawMeshSystem : SystemBase
     {
 
         protected override unsafe void OnUpdate()
@@ -55,10 +55,10 @@ namespace DotsLite.Draw
                         mat.SetInt( "BoneVectorOffset", (int)vectorOffset );
 
                         var instanceCount = counter.InstanceCounter.Count;
-                        var argparams = new IndirectArgumentsForInstancing( mesh, instanceCount );
-                        args.SetData( ref argparams );
+                        var argparams = new IndirectArgumentsForInstancing(mesh, instanceCount);
+                        args.SetData(ref argparams);
 
-                        var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };
+                        var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 5000.0f };
                         Graphics.DrawMeshInstancedIndirect( mesh, 0, mat, bounds, args );
                     }
                 )

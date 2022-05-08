@@ -20,38 +20,62 @@ namespace DotsLite.Geometry
     using DotsLite.Structure.Authoring;
 
 
+    //public class ColorPalletBuilder
+    //{
+    //    Dictionary<string, (int i, Color32[] colors)> idList = new Dictionary<string, (int, Color32[])>();
+
+    //    int nextIndex;
+
+    //    public int this[Color32[] values]
+    //    {
+    //        get => this.idList[toKey(values)].i;
+    //    }
+
+    //    public void Add(Color32[] values)
+    //    {
+    //        var key = toKey(values);
+    //        if (this.idList.ContainsKey(key))
+    //        {
+    //            this.idList[key] = (this.nextIndex++, values);
+    //        }
+    //    }
+
+    //    static string toKey(Color32[] keysrc)
+    //    {
+    //        var q =
+    //            from x in keysrc
+    //            select $"{x.r},{x.g},{x.b},{x.a}"
+    //            ;
+    //        return string.Join("/", q);
+    //    }
+
+
+    //}
+
     public class ColorPalletBuilder
     {
-        Dictionary<string, (int i, Color32[] colors)> idList = new Dictionary<string, (int, Color32[])>();
 
-        int nextIndex;
+        List<Color32> colors = new List<Color32>();
 
-        public int this[Color32[] values]
+
+        public int AddAndGetId(Color32[] values)
         {
-            get => this.idList[toKey(values)].i;
+            var id = this.colors.Count;
+
+            this.colors.AddRange(values);
+
+            return id;
         }
 
-        public void Add(Color32[] values)
+        public unsafe GraphicsBuffer BuildShaderBuffer()
         {
-            var key = toKey(values);
-            if (this.idList.ContainsKey(key))
-            {
-                this.idList[key] = (this.nextIndex++, values);
-            }
+            var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(Color32));
+
+            buf.SetData(this.colors);
+
+            return buf;
         }
-
-        static string toKey(Color32[] keysrc)
-        {
-            var q =
-                from x in keysrc
-                select $"{x.r},{x.g},{x.b},{x.a}"
-                ;
-            return string.Join("/", q);
-        }
-
-
     }
-
 
 
     public static class PalletUtility

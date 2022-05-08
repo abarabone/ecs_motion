@@ -27,21 +27,9 @@ namespace DotsLite.Model.Authoring
     {
 
 
-        [SerializeField]
-        PalletAsset Pallet;
+        //[SerializeField]
+        //PalletAsset Pallet;
 
-
-        public override Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
-        {
-            var mat = new Material(this.shader);
-            mat.enableInstancing = true;
-            mat.mainTexture = atlas;
-
-            var boneType = this.tfMode.ToBoneType();
-            return gcs.CreateDrawModelEntityComponents(
-                mesh, mat, boneType,
-                this.boneLength, this.sortOrder, this.optionalVectorLength);
-        }
 
         public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
@@ -61,6 +49,24 @@ namespace DotsLite.Model.Authoring
                 meshpack.BuildCombiner<TIdx, TVtx>(p)
             );
         }
+
+
+        public override Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        {
+            var ent = base.CreateModelEntity(gcs, mesh, atlas);
+
+            var palletAuthor = this.objectTop.GetComponentInParent<ColorPalletBufferAuthoring>();
+            if (palletAuthor == null) return ent;
+
+            var em = gcs.DstEntityManager;
+            em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPalletLinkData
+            {
+                BufferEntity = gcs.GetPrimaryEntity(palletAuthor),
+            });
+
+            return ent;
+        }
+
     }
 
 

@@ -17,14 +17,9 @@ namespace DotsLite.Draw
     using DotsLite.Utilities;
     using DotsLite.Dependency;
 
-    ////[DisableAutoCreation]
-    //[UpdateInGroup(typeof( SystemGroup.Presentation.DrawModel.DrawSystemGroup ) )]
-    //public class BeginDrawCsBarier : EntityCommandBufferSystem
-    //{ }
-
 
     /// <summary>
-    /// メッシュをインスタンシングバッファを使用してインスタンシング描画する
+    /// 
     /// </summary>
     //[DisableAutoCreation]
     //[UpdateAfter(typeof( BeginDrawCsBarier ) )]
@@ -51,6 +46,7 @@ namespace DotsLite.Draw
             var nativeBuffer = this.GetSingleton<DrawSystem.NativeTransformBufferData>().Transforms;
             var computeBuffer = this.GetSingleton<DrawSystem.ComputeTransformBufferData>().Transforms;
             var bufferInfo = this.GetSingleton<DrawSystem.TransformBufferInfoData>();
+
             computeBuffer.SetData( nativeBuffer.AsNativeArray(bufferInfo.CurrentVectorLength) );
         }
 

@@ -67,8 +67,8 @@ namespace DotsLite.Model.Authoring
                 .BuildModelToDictionary(conversionSystem);
 
 
-            // モデルグループ自体にはエンティティは不要
-            dstManager.DestroyEntity(entity);
+            //// モデルグループ自体にはエンティティは不要
+            //dstManager.DestroyEntity(entity);
 
         }
 

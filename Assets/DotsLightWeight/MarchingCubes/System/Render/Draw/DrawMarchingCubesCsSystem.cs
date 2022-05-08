@@ -70,7 +70,7 @@ namespace DotsLite.MarchingCubes.Gpu
                         //dst.GetData(arr);
                         //Debug.Log(arr[1]);
 
-                        var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 1000.0f };//
+                        var bounds = new Bounds() { center = Vector3.zero, size = Vector3.one * 5000.0f };//
                         Graphics.DrawMeshInstancedIndirect(mesh, 0, mat, bounds, dst);//
                     }
                 })

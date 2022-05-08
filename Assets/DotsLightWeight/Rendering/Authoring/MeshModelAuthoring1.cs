@@ -119,6 +119,8 @@ namespace DotsLite.Model.Authoring
 
             //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
 
+            setColorPalletComponent_(conversionSystem, this.gameObject, this.Pallet);
+
             return;
 
 
@@ -184,6 +186,20 @@ namespace DotsLite.Model.Authoring
                 return mainEntity;
             }
 
+            void setColorPalletComponent_(GameObjectConversionSystem gcs, GameObject main, PalletAsset pallet)
+            {
+                if (pallet == null) return;
+
+                var em = gcs.DstEntityManager;
+                var ent = gcs.GetPrimaryEntity(main);
+
+                var palletBufferAuthor = main.GetComponentInParent<ColorPalletBufferAuthoring>();
+
+                em.AddComponentData(ent, new Pallet.PalletData
+                {
+                    BaseIndex = palletBufferAuthor.Pallets.AddAndGetId(pallet.Colors),
+                });
+            }
         }
 
     }
