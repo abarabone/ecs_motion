@@ -20,65 +20,82 @@ namespace DotsLite.Geometry
     using DotsLite.Structure.Authoring;
 
 
-    //public class ColorPalletBuilder
-    //{
-    //    Dictionary<string, (int i, Color32[] colors)> idList = new Dictionary<string, (int, Color32[])>();
-
-    //    int nextIndex;
-
-    //    public int this[Color32[] values]
-    //    {
-    //        get => this.idList[toKey(values)].i;
-    //    }
-
-    //    public void Add(Color32[] values)
-    //    {
-    //        var key = toKey(values);
-    //        if (this.idList.ContainsKey(key))
-    //        {
-    //            this.idList[key] = (this.nextIndex++, values);
-    //        }
-    //    }
-
-    //    static string toKey(Color32[] keysrc)
-    //    {
-    //        var q =
-    //            from x in keysrc
-    //            select $"{x.r},{x.g},{x.b},{x.a}"
-    //            ;
-    //        return string.Join("/", q);
-    //    }
-
-
-    //}
-
     public class ColorPalletBuilder
     {
 
-        List<Color32> colors = new List<Color32>();
+        Dictionary<string, (int i, Color32[] colors)> colors = new Dictionary<string, (int, Color32[])>();
+
+        int nextIndex = 0;
 
 
-        public int AddAndGetId(Color32[] values)
+        public int RegistAndGetId(Color32[] values)
         {
-            var id = this.colors.Count;
+            var key = toKey(values);
 
-            this.colors.AddRange(values);
+            if (this.colors.TryGetValue(key, out var x))
+            {
+                return x.i;
+            }
 
-            return id;
+            var index = this.nextIndex;
+            this.colors[key] = (index, values);
+            this.nextIndex += values.Length;
+            return index;
+
+
+            static string toKey(Color32[] keysrc)
+            {
+                var q =
+                    from x in keysrc
+                    select $"{x.r},{x.g},{x.b},{x.a}"
+                    ;
+                return string.Join("/", q);
+            }
         }
+
 
         public unsafe GraphicsBuffer BuildShaderBuffer()
         {
             var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(Color32));
 
-            buf.SetData(this.colors);
+            var q =
+                from x in this.colors
+                from y in x.Value.colors
+                select y
+                ;
+            buf.SetData(q.ToArray());
 
             return buf;
         }
     }
 
+    //public class ColorPalletBuilder
+    //{
 
-    public static class PalletUtility
+    //    List<Color32> colors = new List<Color32>();
+
+
+    //    public int AddAndGetId(Color32[] values)
+    //    {
+    //        var id = this.colors.Count;
+
+    //        this.colors.AddRange(values);
+
+    //        return id;
+    //    }
+
+    //    public unsafe GraphicsBuffer BuildShaderBuffer()
+    //    {
+    //        var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(Color32));
+
+    //        buf.SetData(this.colors);
+
+    //        return buf;
+    //    }
+    //}
+
+
+    public static partial class PalletUtility
     {
 
         /// <summary>

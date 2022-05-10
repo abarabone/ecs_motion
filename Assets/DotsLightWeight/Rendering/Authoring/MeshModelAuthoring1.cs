@@ -193,11 +193,9 @@ namespace DotsLite.Model.Authoring
                 var em = gcs.DstEntityManager;
                 var ent = gcs.GetPrimaryEntity(main);
 
-                var palletBufferAuthor = main.GetComponentInParent<ColorPalletBufferAuthoring>();
-
                 em.AddComponentData(ent, new Pallet.PalletData
                 {
-                    BaseIndex = palletBufferAuthor.Pallets.AddAndGetId(pallet.Colors),
+                    BaseIndex = gcs.GetColorPalletBuilder().RegistAndGetId(pallet.Colors),
                 });
             }
         }
