@@ -16,7 +16,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
 
 
-namespace DotsLite.Particle
+namespace DotsLite.ParticleSystem
 {
 
     using DotsLite.Model;
@@ -24,7 +24,7 @@ namespace DotsLite.Particle
     using DotsLite.Arms;
     using DotsLite.Character;
     using DotsLite.Draw;
-    using DotsLite.Particle;
+    using DotsLite.ParticleSystem;
     using DotsLite.CharacterMotion;
     using DotsLite.Misc;
     using DotsLite.Utilities;

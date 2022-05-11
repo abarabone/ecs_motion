@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-using DotsLite.Particle.Aurthoring;
+using DotsLite.ParticleSystem.Aurthoring;
 
 //[CustomEditor(typeof(ParticleAuthoring))]
 //public class ParticleAuthoringEditor : VisualElementEditor

@@ -18,7 +18,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.Particle.disable
+namespace DotsLite.ParticleSystem.disable
 {
 
     using DotsLite.Model;
@@ -26,7 +26,7 @@ namespace DotsLite.Particle.disable
     using DotsLite.Arms;
     using DotsLite.Character;
     using DotsLite.Draw;
-    using DotsLite.Particle;
+    using DotsLite.ParticleSystem;
     using DotsLite.CharacterMotion;
     using DotsLite.Misc;
     using DotsLite.Utilities;

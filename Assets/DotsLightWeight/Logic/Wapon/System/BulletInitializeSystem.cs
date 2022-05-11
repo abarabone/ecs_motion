@@ -25,7 +25,7 @@ namespace DotsLite.Arms
     using DotsLite.Arms;
     using DotsLite.Character;
     using DotsLite.Draw;
-    using DotsLite.Particle;
+    using DotsLite.ParticleSystem;
     using DotsLite.CharacterMotion;
     using DotsLite.Misc;
     using DotsLite.Utilities;

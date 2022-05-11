@@ -16,7 +16,7 @@ namespace DotsLite.Draw.disable
     using DotsLite.Misc;
     using DotsLite.SystemGroup;
     using DotsLite.Geometry;
-    using DotsLite.Particle;
+    using DotsLite.ParticleSystem;
     using DotsLite.Utilities;
     
 

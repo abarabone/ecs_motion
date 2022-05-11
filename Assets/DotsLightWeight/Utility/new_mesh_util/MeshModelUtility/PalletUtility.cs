@@ -18,6 +18,7 @@ namespace DotsLite.Geometry
     using DotsLite.Geometry.inner;
     using DotsLite.Geometry.inner.unit;
     using DotsLite.Structure.Authoring;
+    using DotsLite.Utility;
 
 
     public class ColorPalletBuilder
@@ -54,14 +55,17 @@ namespace DotsLite.Geometry
         }
 
 
-        public unsafe GraphicsBuffer BuildShaderBuffer()
+        public GraphicsBuffer BuildShaderBuffer()
         {
-            var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(Color32));
+            if (this.colors.Count == 0) return null;
+
+            //var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(uint4));
+            var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(uint));
 
             var q =
                 from x in this.colors
                 from y in x.Value.colors
-                select y
+                select y.ToUint()//y
                 ;
             buf.SetData(q.ToArray());
 

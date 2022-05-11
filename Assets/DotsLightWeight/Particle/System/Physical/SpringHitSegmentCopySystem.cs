@@ -17,7 +17,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.Particle
+namespace DotsLite.ParticleSystem
 {
 
     using DotsLite.Model;
@@ -25,14 +25,14 @@ namespace DotsLite.Particle
     using DotsLite.Arms;
     using DotsLite.Character;
     using DotsLite.Draw;
-    using DotsLite.Particle;
+    using DotsLite.ParticleSystem;
     using DotsLite.CharacterMotion;
     using DotsLite.Misc;
     using DotsLite.Utilities;
     using DotsLite.Collision;
     using DotsLite.SystemGroup;
     using DotsLite.Common.Extension;
-    using DotsLite.Particle.Aurthoring;
+    using DotsLite.ParticleSystem.Aurthoring;
 
     using Random = Unity.Mathematics.Random;
 

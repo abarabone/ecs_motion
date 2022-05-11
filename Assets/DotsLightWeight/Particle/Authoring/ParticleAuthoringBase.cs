@@ -4,7 +4,7 @@ using UnityEngine;
 
 //public class ParticleAuthoringBase : MonoBehaviour
 
-namespace DotsLite.Particle.Aurthoring
+namespace DotsLite.ParticleSystem.Aurthoring
 {
     using DotsLite.Model.Authoring;
 

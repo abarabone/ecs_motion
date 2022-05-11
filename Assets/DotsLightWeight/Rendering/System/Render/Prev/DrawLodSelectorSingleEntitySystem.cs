@@ -15,7 +15,7 @@ namespace DotsLite.Draw
     using DotsLite.Misc;
     using DotsLite.SystemGroup;
     using DotsLite.Geometry;
-    using DotsLite.Particle;
+    using DotsLite.ParticleSystem;
     using System.Runtime.CompilerServices;
     using DotsLite.Utilities;
     using DotsLite.Dependency;

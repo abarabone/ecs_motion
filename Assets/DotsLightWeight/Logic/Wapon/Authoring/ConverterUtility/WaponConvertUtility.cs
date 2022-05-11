@@ -17,7 +17,7 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Draw;
     using DotsLite.CharacterMotion;
     using DotsLite.Arms;
-    using DotsLite.Particle;
+    using DotsLite.ParticleSystem;
     using Unity.Physics.Authoring;
 
 

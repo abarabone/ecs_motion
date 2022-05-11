@@ -12,7 +12,7 @@ using Unity.Properties;
 using Unity.Burst;
 using Unity.Physics;
 
-namespace DotsLite.Particle
+namespace DotsLite.ParticleSystem
 {
     using DotsLite.Utilities;
     using DotsLite.Draw;

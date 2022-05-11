@@ -23,7 +23,7 @@ namespace DotsLite.Structure
     using DotsLite.Model.Authoring;
     using DotsLite.Arms;
     using DotsLite.Character;
-    using DotsLite.Particle;
+    using DotsLite.ParticleSystem;
     using DotsLite.SystemGroup;
     using DotsLite.Geometry;
     using DotsLite.Structure;

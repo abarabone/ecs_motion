@@ -6,13 +6,13 @@ using Unity.Entities;
 using Unity.Mathematics;
 
 
-namespace DotsLite.Particle
+namespace DotsLite.ParticleSystem
 {
     using DotsLite.Utilities;
     using DotsLite.Draw;
     using DotsLite.Character;
     using DotsLite.CharacterMotion;
-
+    using DotsLite.Geometry;
 
 
     static public partial class LineParticle

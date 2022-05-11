@@ -51,6 +51,7 @@ namespace DotsLite.Draw.Authoring
 
             var ent = em.CreateEntity();
             var buffer = this.Pallets.BuildShaderBuffer();
+            if (buffer == null) return;
 
             em.AddComponentData(ent, new ShaderBuffer.ColorPalletData
             {

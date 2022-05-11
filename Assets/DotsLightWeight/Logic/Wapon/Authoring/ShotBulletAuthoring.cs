@@ -18,8 +18,8 @@ namespace DotsLite.Arms.Authoring
     using DotsLite.Draw;
     using DotsLite.CharacterMotion;
     using DotsLite.Arms;
-    using DotsLite.Particle;
-    using DotsLite.Particle.Aurthoring;
+    using DotsLite.ParticleSystem;
+    using DotsLite.ParticleSystem.Aurthoring;
     using DotsLite.Targeting;
 
     /// <summary>

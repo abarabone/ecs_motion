@@ -30,7 +30,7 @@ namespace DotsLite.Draw
 
 }
 
-namespace DotsLite.Particle
+namespace DotsLite.ParticleSystem
 {
     using DotsLite.Utilities;
     using DotsLite.Draw;
@@ -118,19 +118,6 @@ namespace DotsLite.Particle
 
     }
 
-    public static partial class Particle
-    {
-        static public unsafe uint ToUint(this Color32 c) => new Color32Convertor { Color = c }.Uint;// (uint)(c.r << 24 | c.g << 16 | c.b << 8 | c.a << 0);
-
-        static public Color32 ToColor32(this uint u) => new Color32Convertor { Uint = u }.Color;
-
-        [StructLayout(LayoutKind.Explicit)]
-        public struct Color32Convertor
-        {
-            [FieldOffset(0)] public Color32 Color;
-            [FieldOffset(0)] public uint Uint;
-        }
-    }
 
 
 }

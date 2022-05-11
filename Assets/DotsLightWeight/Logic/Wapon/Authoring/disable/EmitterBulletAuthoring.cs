@@ -17,9 +17,9 @@
 //    using DotsLite.Draw;
 //    using DotsLite.CharacterMotion;
 //    using DotsLite.Arms;
-//    using DotsLite.Particle;
+//    using DotsLite.ParticleSystem;
 //    using Unity.Physics.Authoring;
-//    using DotsLite.Particle.Aurthoring;
+//    using DotsLite.ParticleSystem.Aurthoring;
 //    using DotsLite.Targeting;
 
 //    /// <summary>
