@@ -16,6 +16,7 @@ namespace DotsLite.Draw
     using DotsLite.SystemGroup;
     using DotsLite.Utilities;
     using DotsLite.Dependency;
+    using DotsLite.Geometry;
 
 
     /// <summary>
@@ -32,6 +33,19 @@ namespace DotsLite.Draw
             base.OnCreate();
 
             var em = this.EntityManager;
+
+            this.Entities
+                .WithoutBurst()
+                .WithStructuralChanges()
+                .ForEach((Entity ent, ShaderBuffer.ColorPalletSrcData src) =>
+                {
+                    em.AddComponentData(ent, new ShaderBuffer.ColorPalletData
+                    {
+                        Buffer = src.Colors.BuildShaderBuffer(),
+                        NameId = src.NameId,
+                    });
+                })
+                .Run();
 
             this.Entities
                 .WithoutBurst()

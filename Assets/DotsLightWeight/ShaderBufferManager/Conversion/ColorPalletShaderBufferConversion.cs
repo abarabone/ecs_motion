@@ -22,6 +22,7 @@ namespace DotsLite.Draw.Authoring
     using DotsLite.Geometry;
 
     // カラーパレットはシーンで１つ、ということにする
+    // プレハブからシーンのヒエラルキー親にアクセスできれば、複数のバッファにできるんだけど
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     public class ColorPalletShaderBufferConversion : GameObjectConversionSystem
     {
@@ -50,12 +51,12 @@ namespace DotsLite.Draw.Authoring
             //    });
 
             var ent = em.CreateEntity();
-            var buffer = this.Pallets.BuildShaderBuffer();
-            if (buffer == null) return;
+            var colors = this.Pallets.ToArray();
+            if (colors.Length == 0) return;
 
-            em.AddComponentData(ent, new ShaderBuffer.ColorPalletData
+            em.AddComponentData(ent, new ShaderBuffer.ColorPalletSrcData
             {
-                Buffer = buffer,
+                Colors = colors,
                 NameId = Shader.PropertyToID(this.BufferName),
             });
         }

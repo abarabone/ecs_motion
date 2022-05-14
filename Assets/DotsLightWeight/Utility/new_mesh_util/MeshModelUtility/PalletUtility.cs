@@ -31,7 +31,7 @@ namespace DotsLite.Geometry
 
         public int RegistAndGetId(Color32[] values)
         {
-            var key = toKey(values);
+            var key = toKey(values);Debug.Log(key);
 
             if (this.colors.TryGetValue(key, out var x))
             {
@@ -55,21 +55,14 @@ namespace DotsLite.Geometry
         }
 
 
-        public GraphicsBuffer BuildShaderBuffer()
+        public uint[] ToArray()
         {
-            if (this.colors.Count == 0) return null;
-
-            //var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(uint4));
-            var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(uint));
-
             var q =
                 from x in this.colors
                 from y in x.Value.colors
                 select y.ToUint()//y
                 ;
-            buf.SetData(q.ToArray());
-
-            return buf;
+            return q.ToArray();
         }
     }
 
@@ -195,5 +188,17 @@ namespace DotsLite.Geometry
             return qResult.ToArray();
         }
 
+
+        public static GraphicsBuffer BuildShaderBuffer(this uint[] colors)
+        {
+            if (colors.Length == 0) return null;
+
+            //var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(uint4));
+            var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, colors.Length, sizeof(uint));
+
+            buf.SetData(colors);
+
+            return buf;
+        }
     }
 }
