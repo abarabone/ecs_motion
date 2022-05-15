@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 
 namespace DotsLite.Draw
 {
@@ -28,9 +29,9 @@ namespace DotsLite.Draw
     public partial class SetShaderBufferToMaterialSystem : SystemBase
     {
 
-        protected override void OnCreate()
+        protected override void OnStartRunning()
         {
-            base.OnCreate();
+            base.OnStartRunning();
 
             var em = this.EntityManager;
 
@@ -39,6 +40,7 @@ namespace DotsLite.Draw
                 .WithStructuralChanges()
                 .ForEach((Entity ent, ShaderBuffer.ColorPalletSrcData src) =>
                 {
+                    Debug.Log("cre");
                     em.AddComponentData(ent, new ShaderBuffer.ColorPalletData
                     {
                         Buffer = src.Colors.BuildShaderBuffer(),
@@ -61,9 +63,9 @@ namespace DotsLite.Draw
                 .Run();
         }
 
-        protected override void OnDestroy()
+        protected override void OnStopRunning()
         {
-            base.OnDestroy();
+            base.OnStopRunning();
 
             this.Entities
                 .WithoutBurst()

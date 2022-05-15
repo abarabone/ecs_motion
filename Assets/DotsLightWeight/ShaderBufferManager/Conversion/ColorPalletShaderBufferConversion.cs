@@ -21,8 +21,8 @@ namespace DotsLite.Draw.Authoring
     using DotsLite.EntityTrimmer.Authoring;
     using DotsLite.Geometry;
 
-    // ƒJƒ‰[ƒpƒŒƒbƒg‚ÍƒV[ƒ“‚Å‚P‚ÂA‚Æ‚¢‚¤‚±‚Æ‚É‚·‚é
-    // ƒvƒŒƒnƒu‚©‚çƒV[ƒ“‚ÌƒqƒGƒ‰ƒ‹ƒL[e‚ÉƒAƒNƒZƒX‚Å‚«‚ê‚ÎA•¡”‚Ìƒoƒbƒtƒ@‚É‚Å‚«‚é‚ñ‚¾‚¯‚Ç
+    // ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆã¯ã‚·ãƒ¼ãƒ³ã§ï¼‘ã¤ã€ã¨ã„ã†ã“ã¨ã«ã™ã‚‹
+    // ãƒ—ãƒ¬ãƒãƒ–ã‹ã‚‰ã‚·ãƒ¼ãƒ³ã®ãƒ’ã‚¨ãƒ©ãƒ«ã‚­ãƒ¼è¦ªã«ã‚¢ã‚¯ã‚»ã‚¹ã§ãã‚Œã°ã€è¤‡æ•°ã®ãƒãƒƒãƒ•ã‚¡ã«ã§ãã‚‹ã‚“ã ã‘ã©
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
     public class ColorPalletShaderBufferConversion : GameObjectConversionSystem
     {

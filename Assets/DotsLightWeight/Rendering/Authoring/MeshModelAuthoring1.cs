@@ -188,6 +188,7 @@ namespace DotsLite.Model.Authoring
 
             void setColorPalletComponent_(GameObjectConversionSystem gcs, GameObject main, PalletAsset pallet)
             {
+                //if (model.GetType().GetGenericTypeDefinition() != typeof(MeshWithPalletModel<,>).GetGenericTypeDefinition()) return;
                 if (pallet == null) return;
 
                 var em = gcs.DstEntityManager;
