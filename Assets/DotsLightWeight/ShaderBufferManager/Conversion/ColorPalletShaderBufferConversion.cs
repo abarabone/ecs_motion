@@ -62,13 +62,4 @@ namespace DotsLite.Draw.Authoring
         }
 
     }
-
-
-    public static partial class ColorPalletUtiity
-    { 
-        public static ColorPalletBuilder GetColorPalletBuilder(this GameObjectConversionSystem gcs)
-        {
-            return gcs.World.GetExistingSystem<ColorPalletShaderBufferConversion>().Pallets;
-        }
-    }
 }

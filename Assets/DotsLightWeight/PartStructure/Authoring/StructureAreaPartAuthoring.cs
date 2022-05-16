@@ -13,6 +13,16 @@ using UnityEditor;
 
 namespace DotsLite.Structure.Authoring
 {
+    using DotsLite.Geometry;
+
+    [Serializable]
+    public class PositionNormalUvI32AreaPart :
+        AreaPartModel<UI32, PositionNormalUvVertex>, StructureAreaPartAuthoring.IMeshModelSelector
+    { }
+}
+
+namespace DotsLite.Structure.Authoring
+{
     using DotsLite.Model;
     using DotsLite.Draw;
     using DotsLite.Model.Authoring;
@@ -35,16 +45,14 @@ namespace DotsLite.Structure.Authoring
         public int PartId;
         public int partId { get => this.PartId; set => this.PartId = value; }
 
-        public AreaPartModel<UI32, PositionNormalUvVertex> PartModel;
+        public interface IMeshModelSelector : IMeshModel
+        { }
+        [SerializeReference, SubclassSelector]
+        public IMeshModelSelector PartModel;
+        //public AreaPartModel<UI32, PositionNormalUvVertex> PartModel;
 
-        public PalletAsset Pallet;
+        public ColorPalletAsset Pallet;
 
-
-        protected new void Reset()
-        {
-            base.Reset();
-            this.PartModel.objectTop = this.gameObject;
-        }
 
 
         public override IEnumerable<IMeshModel> QueryModel =>

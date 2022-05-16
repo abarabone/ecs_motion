@@ -10,23 +10,20 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
+namespace DotsLite.Model.Authoring
+{
+    using DotsLite.Geometry;
 
-using DotsLite.Model.Authoring;
-using DotsLite.Geometry;
+    [Serializable]
+    public class PositionNormalUvI32 :
+        MeshModel<UI32, PositionNormalUvVertex>, MeshModelAuthoring1.IMeshModelSelector
+    { }
 
-[Serializable]
-public class PositionNormalUvI32 :
-    MeshModel<UI32, PositionNormalUvVertex>, MeshModelAuthoring1.IMeshModelSelector { }
-
-[Serializable]
-public class PositionNormalUvWithPalletI32 :
-    MeshWithPalletModel<UI32, PositionNormalUvWithPalletVertex>, MeshModelAuthoring1.IMeshModelSelector
-{ }
-//[Serializable]
-//public class PositionNormalUvWithPalletI32 :
-//    MeshModel<UI32, PositionNormalUvWithPalletVertex>, MeshModelAuthoring1.IMeshModelSelector
-//{ }
-
+    [Serializable]
+    public class PositionNormalUvWithPalletI32 :
+        MeshWithPalletModel<UI32, PositionNormalUvWithPalletVertex>, MeshModelAuthoring1.IMeshModelSelector
+    { }
+}
 
 namespace DotsLite.Model.Authoring
 {
@@ -51,14 +48,6 @@ namespace DotsLite.Model.Authoring
         //public Material Material;
         //public Shader ShaderToDraw;
 
-        protected new void Reset()
-        {
-            this.Model ??= new PositionNormalUvI32
-            {
-                objectTop = this.gameObject,
-            };
-            base.Reset();
-        }
 
         //[SerializeField]
         //public ObjectAndDistance[] LodOptionalMeshTops;
@@ -76,7 +65,7 @@ namespace DotsLite.Model.Authoring
 
 
         [SerializeField]
-        PalletAsset Pallet;
+        ColorPalletAsset Pallet;
 
 
         public override IEnumerable<IMeshModel> QueryModel => this.Model.WrapEnumerable();
@@ -119,7 +108,7 @@ namespace DotsLite.Model.Authoring
 
             //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
 
-            setColorPalletComponent_(conversionSystem, this.gameObject, this.Pallet);
+            conversionSystem.SetColorPalletComponent(this.gameObject, this.Pallet);
 
             return;
 
@@ -186,19 +175,6 @@ namespace DotsLite.Model.Authoring
                 return mainEntity;
             }
 
-            void setColorPalletComponent_(GameObjectConversionSystem gcs, GameObject main, PalletAsset pallet)
-            {
-                //if (model.GetType().GetGenericTypeDefinition() != typeof(MeshWithPalletModel<,>).GetGenericTypeDefinition()) return;
-                if (pallet == null) return;
-
-                var em = gcs.DstEntityManager;
-                var ent = gcs.GetPrimaryEntity(main);
-
-                em.AddComponentData(ent, new Pallet.PalletData
-                {
-                    BaseIndex = gcs.GetColorPalletBuilder().RegistAndGetId(pallet.Colors),
-                });
-            }
         }
 
     }

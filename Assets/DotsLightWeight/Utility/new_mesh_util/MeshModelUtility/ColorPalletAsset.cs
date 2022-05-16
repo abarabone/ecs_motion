@@ -22,7 +22,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
 
     [CreateAssetMenu(fileName = "pallet", menuName = "Custom/Pallet")]
-    public class PalletAsset : ScriptableObject
+    public class ColorPalletAsset : ScriptableObject
     {
 
         public Color32[] Colors;

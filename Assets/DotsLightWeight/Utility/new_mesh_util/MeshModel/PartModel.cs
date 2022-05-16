@@ -50,7 +50,7 @@ namespace DotsLite.Structure.Authoring
 
 
         [SerializeField]
-        protected PalletAsset colorPallet;
+        protected ColorPalletAsset colorPallet;
 
 
         public override IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts

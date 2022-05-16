@@ -15,6 +15,14 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Common.Extension;
     using DotsLite.Draw.Authoring;
 
+    // ＜試したい＞
+    // ＦＢＸプレハブ単位でモデルアセットにしてもいいか？
+    // でもそうすると
+    // ・コライダーと形状を別にできない
+    //　　→ 名前で同一性と判断するとか？
+
+    // インスタンスプレハブとモデルエンティティ
+
 
     /// <summary>
     /// モデル描画をまとめる工夫を行う。

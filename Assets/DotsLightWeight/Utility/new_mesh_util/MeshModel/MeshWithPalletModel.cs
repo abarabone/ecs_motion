@@ -28,7 +28,7 @@ namespace DotsLite.Model.Authoring
 
 
         [SerializeField]
-        PalletAsset Pallet;
+        ColorPalletAsset Pallet;
 
 
         public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(

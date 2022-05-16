@@ -48,7 +48,8 @@ namespace DotsLite.Structure.Authoring
         public GameObject Envelope;
         public StructureAreaAuthoring MasterPrefab;
 
-        public PalletAsset Pallet;
+        [SerializeField]
+        ColorPalletAsset Pallet;
 
 
         public override IEnumerable<IMeshModel> QueryModel =>

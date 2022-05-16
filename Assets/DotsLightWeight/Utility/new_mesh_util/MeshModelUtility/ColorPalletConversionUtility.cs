@@ -19,7 +19,9 @@ namespace DotsLite.Geometry
     using DotsLite.Geometry.inner.unit;
     using DotsLite.Structure.Authoring;
     using DotsLite.Utility;
-
+    using DotsLite.Model.Authoring;
+    using DotsLite.Draw;
+    using DotsLite.Draw.Authoring;
 
     public class ColorPalletBuilder
     {
@@ -92,7 +94,7 @@ namespace DotsLite.Geometry
     //}
 
 
-    public static partial class PalletUtility
+    public static partial class ColorPalletConversionUtility
     {
 
         /// <summary>
@@ -199,6 +201,26 @@ namespace DotsLite.Geometry
             buf.SetData(colors);
 
             return buf;
+        }
+
+
+        public static void SetColorPalletComponent(this GameObjectConversionSystem gcs, GameObject main, ColorPalletAsset pallet)
+        {
+            //if (model.GetType().GetGenericTypeDefinition() != typeof(MeshWithPalletModel<,>).GetGenericTypeDefinition()) return;
+            if (pallet == null) return;
+
+            var em = gcs.DstEntityManager;
+            var ent = gcs.GetPrimaryEntity(main);
+
+            em.AddComponentData(ent, new Pallet.PalletData
+            {
+                BaseIndex = gcs.GetColorPalletBuilder().RegistAndGetId(pallet.Colors),
+            });
+        }
+
+        public static ColorPalletBuilder GetColorPalletBuilder(this GameObjectConversionSystem gcs)
+        {
+            return gcs.World.GetExistingSystem<ColorPalletShaderBufferConversion>().Pallets;
         }
     }
 }

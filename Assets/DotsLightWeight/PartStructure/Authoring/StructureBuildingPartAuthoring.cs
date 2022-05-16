@@ -9,12 +9,21 @@ using System;
 
 namespace DotsLite.Structure.Authoring
 {
+    using DotsLite.Geometry;
 
-    using DotsLite.Model;
+    [Serializable]
+    public class PositionNormalUvI32Part :
+        PartModel<UI32, PositionNormalUvVertex>, StructureBuildingPartAuthoring.IMeshModelSelector
+    { }
+}
+
+namespace DotsLite.Structure.Authoring
+{
+
+    using DotsLite.Model.Authoring;
     using DotsLite.Draw.Authoring;
 	using DotsLite.Common.Extension;
     using DotsLite.Draw;
-    using DotsLite.Model.Authoring;
     using DotsLite.Character;//ObjectMain はここにある、名前変えるべきか？
     using DotsLite.Structure;
     using Unity.Physics;
@@ -38,14 +47,18 @@ namespace DotsLite.Structure.Authoring
 
         //public GameObject MasterPrefab;
 
-        public PartModel<UI32, PositionNormalUvVertex> PartModelOfMasterPrefab;
+        public interface IMeshModelSelector : IMeshModel
+        { }
+        [SerializeReference, SubclassSelector]
+        public IMeshModelSelector PartModel;
+        //public PartModel<UI32, PositionNormalUvVertex> PartModel;
 
-        public PalletAsset Pallet;
+        public ColorPalletAsset Pallet;
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
             //new PartModel<UI32, PositionNormalUvVertex>(this.MasterPrefab, this.MaterialToDraw.shader)
-            this.PartModelOfMasterPrefab
+            this.PartModel
             .WrapEnumerable();
 
 
@@ -76,7 +89,7 @@ namespace DotsLite.Structure.Authoring
 
 
             this.QueryModel.BuildModelToDictionary(conversionSystem);
-            var modelEntity = conversionSystem.GetFromModelEntityDictionary(this.PartModelOfMasterPrefab.SourcePrefabKey);
+            var modelEntity = conversionSystem.GetFromModelEntityDictionary(this.PartModel.SourcePrefabKey);
 
 
             var posture = this.FindParent<StructureBuildingAuthoring>()
