@@ -50,7 +50,8 @@ namespace DotsLite.Model.Authoring
         // またルートボーンは、mainGameObject に関連付けられた Entity を親としてリンクを張る。
         // bones の親子構造は、bones に含まれるエントリの中で構築される。エントリの中から親が見つからない場合はルートボーンとみなされ、親は mainGameObject となる。
         // root 
-        static public void InitBoneEntities(
+        static public void 
+            InitBoneEntities(
             this GameObjectConversionSystem gcs, PostureAuthoring posture,
             IEnumerable<Transform> bones, Transform root, EnBoneType boneMode)
         {
