@@ -12,12 +12,12 @@ namespace DotsLite.Draw
 
     public static class ShaderBuffer
     {
-        public class ColorPalletSrcData : IComponentData
+        public class ColorPaletteSrcData : IComponentData
         {
             public uint[] Colors;
             public int NameId;
         }
-        public class ColorPalletData : IComponentData
+        public class ColorPaletteData : IComponentData
         {
             public GraphicsBuffer Buffer;
             public int NameId;
@@ -26,7 +26,7 @@ namespace DotsLite.Draw
 
     public static class DrawModelShaderBuffer
     {
-        public class ColorPalletLinkData : IComponentData
+        public class ColorPaletteLinkData : IComponentData
         {
             public Entity BufferEntity;
         }

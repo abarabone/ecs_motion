@@ -23,7 +23,7 @@ namespace DotsLite.Geometry
     using DotsLite.Draw;
     using DotsLite.Draw.Authoring;
 
-    public class ColorPalletBuilder
+    public class ColorPaletteBuilder
     {
 
         Dictionary<string, (int i, Color32[] colors)> colors = new Dictionary<string, (int, Color32[])>();
@@ -68,7 +68,7 @@ namespace DotsLite.Geometry
         }
     }
 
-    //public class ColorPalletBuilder
+    //public class ColorPaletteBuilder
     //{
 
     //    List<Color32> colors = new List<Color32>();
@@ -94,15 +94,15 @@ namespace DotsLite.Geometry
     //}
 
 
-    public static partial class ColorPalletConversionUtility
+    public static partial class ColorPaletteConversionUtility
     {
 
         /// <summary>
         /// パレットのサブインデックスを、サブメッシュ単位で列挙する。
-        /// サブインデックスは、マテリアルの pallet sub index から取得する。
+        /// サブインデックスは、マテリアルの palette sub index から取得する。
         /// マテリアルが null の場合は、0 を返す。
         /// </summary>
-        public static void CalculatePalletSubIndexParameter(
+        public static void CalculatePaletteSubIndexParameter(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
             ref AdditionalParameters p)
         {
@@ -110,9 +110,9 @@ namespace DotsLite.Geometry
                 from mmt in mmts
                 select
                     from mat in mmt.mats
-                    select mat.GetPalletSubIndex()
+                    select mat.GetPaletteSubIndex()
                 ;
-            p.palletSubIndexPerSubMesh = q.ToArrayRecursive2();
+            p.paletteSubIndexPerSubMesh = q.ToArrayRecursive2();
         }
 
         ///// <summary>
@@ -147,37 +147,37 @@ namespace DotsLite.Geometry
         // 同じ uv sub index は同じ surface 
         // uv は同じ面構成単位で base index 指定　色違いでも同じ物体ならＯＫ
         // エディタでは、サブメッシュ単位でテクスチャを指定する scriptable object を持たせる
-        // sub index は pallet と同じマテリアルの pallet sub index でよい
-        // pallet はカラーセット単位で base index 指定
+        // sub index は palette と同じマテリアルの palette sub index でよい
+        // palette はカラーセット単位で base index 指定
 
 
-        public static int GetPalletSubIndex(this Material mat) =>
-            //mat?.HasInt("Pallet Sub Index") ?? false
-            mat?.HasProperty("Pallet Sub Index") ?? false
-                ? mat.GetInt("Pallet Sub Index")
+        public static int GetPaletteSubIndex(this Material mat) =>
+            //mat?.HasInt("Palette Sub Index") ?? false
+            mat?.HasProperty("Palette Sub Index") ?? false
+                ? mat.GetInt("Palette Sub Index")
                 : 0
             ;
 
 
         // ・モデルから sub index ごとの色を抽出
-        // ・color pallet に登録、最後にバッファを構築
+        // ・color palette に登録、最後にバッファを構築
         // ・バッファはシーンに１つ
-        // ・color pallet の base index を、インスタンスに持たせる
+        // ・color palette の base index を、インスタンスに持たせる
         // ・ただし、すでに同じ構成で登録があれば、その base index を取得する
         /// <summary>
         /// １つのモデルを構成する幾何情報から、カラーパレットを構成するカラーを抽出する。
         /// 結果はカラーの配列となる。（つまり、カラーパレット１つは、モデル１つに対して作成される）
-        /// カラーのインデックスはマテリアルの Pallet Sub Index プロパティにユーザーがセットする。
+        /// カラーのインデックスはマテリアルの Palette Sub Index プロパティにユーザーがセットする。
         /// 結果の配列は、そのインデックス順にソートされており、インデックスに該当するマテリアルが存在しなかった場合は、
         /// (0, 0, 0, 0) 色がせっとされる。
         /// </summary>
-        public static Color32[] ToPalletColorEntry(
+        public static Color32[] ToPaletteColorEntry(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
         {
             var q =
                 from mmt in mmts
                 from mat in mmt.mats
-                select (index: mat.GetPalletSubIndex(), color: (Color32)mat.color)
+                select (index: mat.GetPaletteSubIndex(), color: (Color32)mat.color)
                 ;
             var colors = q.ToLookup(x => x.index, x => x.color);
             var maxIndex = colors.Max(x => x.Key);
@@ -204,23 +204,23 @@ namespace DotsLite.Geometry
         }
 
 
-        public static void SetColorPalletComponent(this GameObjectConversionSystem gcs, GameObject main, ColorPalletAsset pallet)
+        public static void SetColorPaletteComponent(this GameObjectConversionSystem gcs, GameObject main, ColorPaletteAsset palette)
         {
-            //if (model.GetType().GetGenericTypeDefinition() != typeof(MeshWithPalletModel<,>).GetGenericTypeDefinition()) return;
-            if (pallet == null) return;
+            //if (model.GetType().GetGenericTypeDefinition() != typeof(MeshWithPaletteModel<,>).GetGenericTypeDefinition()) return;
+            if (palette == null) return;
 
             var em = gcs.DstEntityManager;
             var ent = gcs.GetPrimaryEntity(main);
 
-            em.AddComponentData(ent, new Pallet.PalletData
+            em.AddComponentData(ent, new Palette.PaletteData
             {
-                BaseIndex = gcs.GetColorPalletBuilder().RegistAndGetId(pallet.Colors),
+                BaseIndex = gcs.GetColorPaletteBuilder().RegistAndGetId(palette.Colors),
             });
         }
 
-        public static ColorPalletBuilder GetColorPalletBuilder(this GameObjectConversionSystem gcs)
+        public static ColorPaletteBuilder GetColorPaletteBuilder(this GameObjectConversionSystem gcs)
         {
-            return gcs.World.GetExistingSystem<ColorPalletShaderBufferConversion>().Pallets;
+            return gcs.World.GetExistingSystem<ColorPaletteShaderBufferConversion>().Palettes;
         }
     }
 }

@@ -53,7 +53,7 @@ namespace DotsLite.Structure.Authoring
         public IMeshModelSelector PartModel;
         //public PartModel<UI32, PositionNormalUvVertex> PartModel;
 
-        public ColorPalletAsset Pallet;
+        public ColorPaletteAsset Palette;
 
 
         public override IEnumerable<IMeshModel> QueryModel =>

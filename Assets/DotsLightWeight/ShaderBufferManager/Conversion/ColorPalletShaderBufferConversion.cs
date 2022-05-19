@@ -24,13 +24,13 @@ namespace DotsLite.Draw.Authoring
     // カラーパレットはシーンで１つ、ということにする
     // プレハブからシーンのヒエラルキー親にアクセスできれば、複数のバッファにできるんだけど
     [UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
-    public class ColorPalletShaderBufferConversion : GameObjectConversionSystem
+    public class ColorPaletteShaderBufferConversion : GameObjectConversionSystem
     {
 
 
-        public ColorPalletBuilder Pallets { get; } = new ColorPalletBuilder();
+        public ColorPaletteBuilder Palettes { get; } = new ColorPaletteBuilder();
 
-        public string BufferName = "ColorPallets";
+        public string BufferName = "ColorPalettes";
 
 
 
@@ -39,11 +39,11 @@ namespace DotsLite.Draw.Authoring
             var em = this.DstEntityManager;
 
             //this.Entities
-            //    .ForEach((Entity ent, ColorPalletBufferAuthoring auth) =>
+            //    .ForEach((Entity ent, ColorPaletteBufferAuthoring auth) =>
             //    {
-            //        var buffer = auth.Pallets.BuildShaderBuffer();
+            //        var buffer = auth.Palettes.BuildShaderBuffer();
 
-            //        em.AddComponentData(ent, new ShaderBuffer.ColorPalletData
+            //        em.AddComponentData(ent, new ShaderBuffer.ColorPaletteData
             //        {
             //            Buffer = buffer,
             //            NameId = Shader.PropertyToID(auth.BufferName),
@@ -51,10 +51,10 @@ namespace DotsLite.Draw.Authoring
             //    });
 
             var ent = em.CreateEntity();
-            var colors = this.Pallets.ToArray();
+            var colors = this.Palettes.ToArray();
             if (colors.Length == 0) return;
 
-            em.AddComponentData(ent, new ShaderBuffer.ColorPalletSrcData
+            em.AddComponentData(ent, new ShaderBuffer.ColorPaletteSrcData
             {
                 Colors = colors,
                 NameId = Shader.PropertyToID(this.BufferName),

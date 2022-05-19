@@ -10,7 +10,7 @@
 //    using DotsLite.Common.Extension;
     
 
-//    public class PalletDictionary
+//    public class PaletteDictionary
 //    {
 
 //        Dictionary<SourcePrefabKeyUnit, Color32[]> dict = new Dictionary<SourcePrefabKeyUnit, Color32[]>();
@@ -28,7 +28,7 @@
 //            this.dict.Add(model.SourcePrefabKey, qColor.ToArray());
 //        }
 
-//        public (SourcePrefabKeyUnit key, int ibase, int[] isub)[] BuildPalletIndexList()
+//        public (SourcePrefabKeyUnit key, int ibase, int[] isub)[] BuildPaletteIndexList()
 //        {
 //            var qBase = this.dict
 //                .Select(x => x.Value)
@@ -40,11 +40,11 @@
 //            return qKeyAndIndex.ToArray();
 //        }
 
-//        //public void BuildPalletShaderBuffer()
+//        //public void BuildPaletteShaderBuffer()
 //        //{
 //        //    GraphicsBuffer.
 
-//        //    Color32[] buildPallets_()
+//        //    Color32[] buildPalettes_()
 //        //    {
 //        //        var q = this.dict
 //        //            .SelectMany(x => x.Value)

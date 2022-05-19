@@ -164,12 +164,12 @@ namespace DotsLite.Geometry.inner
             ;
 
 
-        static public IEnumerable<Color32> QueryColorPalletSubIndex(
+        static public IEnumerable<Color32> QueryColorPaletteSubIndex(
             this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
             var qVtx = srcmeshes.QuerySubMeshForUnitVertices();
             var qColor =
-                from idxs in p.palletSubIndexPerSubMesh
+                from idxs in p.paletteSubIndexPerSubMesh
                 from idx in idxs
                 select new Color32
                 {

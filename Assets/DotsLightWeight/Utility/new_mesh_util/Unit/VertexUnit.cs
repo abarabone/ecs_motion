@@ -34,8 +34,8 @@ namespace DotsLite.Geometry
     //        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;
     //}
 
-    //public interface IVertexUnitWithPallet<TVtx> : IVertexUnit<TVtx>
-    //    where TVtx : struct, IVertexUnitWithPallet<TVtx>, ISetBufferParams
+    //public interface IVertexUnitWithPalette<TVtx> : IVertexUnit<TVtx>
+    //    where TVtx : struct, IVertexUnitWithPalette<TVtx>, ISetBufferParams
     //{
     //    Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
     //        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;

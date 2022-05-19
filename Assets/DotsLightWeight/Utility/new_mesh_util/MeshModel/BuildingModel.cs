@@ -41,7 +41,7 @@ namespace DotsLite.Structure.Authoring
             var mmts = this.QueryMmts.ToArray();
             var p = mmts.calculateParameters(
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
-            mmts.CalculatePalletSubIndexParameter(ref p);
+            mmts.CalculatePaletteSubIndexParameter(ref p);
 
             return (
                 this.sourcePrefabKey,

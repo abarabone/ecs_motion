@@ -21,14 +21,14 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
 
     [Serializable]
-    public class MeshWithPalletModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>
+    public class MeshWithPaletteModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {
 
 
         [SerializeField]
-        ColorPalletAsset Pallet;
+        ColorPaletteAsset Palette;
 
 
         public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
@@ -42,7 +42,7 @@ namespace DotsLite.Model.Authoring
                 subtexhash => texdict[atlas, subtexhash], null);
 
             // パレット向けの暫定
-            this.QueryMmts.CalculatePalletSubIndexParameter(ref p);
+            this.QueryMmts.CalculatePaletteSubIndexParameter(ref p);
 
             return (
                 this.sourcePrefabKey,
@@ -55,13 +55,13 @@ namespace DotsLite.Model.Authoring
         {
             var ent = base.CreateModelEntity(gcs, mesh, atlas);
 
-            var palletAuthor = this.objectTop.GetComponentInParent<ColorPalletBufferAuthoring>();
-            if (palletAuthor == null) return ent;
+            var paletteAuthor = this.objectTop.GetComponentInParent<ColorPaletteBufferAuthoring>();
+            if (paletteAuthor == null) return ent;
 
             var em = gcs.DstEntityManager;
-            em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPalletLinkData
+            em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPaletteLinkData
             {
-                BufferEntity = gcs.GetPrimaryEntity(palletAuthor),
+                BufferEntity = gcs.GetPrimaryEntity(paletteAuthor),
             });
 
             return ent;
@@ -71,7 +71,7 @@ namespace DotsLite.Model.Authoring
 
 
     [Serializable]
-    public class LodMeshWithPalletModel<TIdx, TVtx> : MeshWithPalletModel<TIdx, TVtx>, IMeshModelLod
+    public class LodMeshWithPaletteModel<TIdx, TVtx> : MeshWithPaletteModel<TIdx, TVtx>, IMeshModelLod
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
     {

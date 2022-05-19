@@ -40,7 +40,7 @@ namespace DotsLite.Geometry
                 var poss = srcmeshes.QueryConvertPositions(p).ToArray();
                 var nms = srcmeshes.QueryConvertNormals(p).ToArray();
                 var pids = srcmeshes.QueryConvertPartId(p).ToArray();
-                var cids = srcmeshes.QueryColorPalletSubIndex(p).ToArray();
+                var cids = srcmeshes.QueryColorPaletteSubIndex(p).ToArray();
                 var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
                 var qVtx =
                     from x in (poss, nms, pids, cids, uvs).Zip()

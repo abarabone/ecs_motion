@@ -7,13 +7,13 @@ namespace DotsLite.Draw.Authoring
 {
     using DotsLite.Geometry;
 
-    public class ColorPalletBufferAuthoring : MonoBehaviour
+    public class ColorPaletteBufferAuthoring : MonoBehaviour
     {
 
 
-        public ColorPalletBuilder Pallets { get; } = new ColorPalletBuilder();
+        public ColorPaletteBuilder Palettes { get; } = new ColorPaletteBuilder();
 
-        public string BufferName = "ColorPallets";
+        public string BufferName = "ColorPalettes";
 
     }
 }

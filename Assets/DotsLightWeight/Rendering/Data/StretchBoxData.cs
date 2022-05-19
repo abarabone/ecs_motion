@@ -37,7 +37,7 @@ namespace DotsLite.Draw
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        public struct PalletIndexData : IComponentData
+        public struct PaletteIndexData : IComponentData
         {
             [FieldOffset(0)]
             public byte top, left, forward, dummy1;

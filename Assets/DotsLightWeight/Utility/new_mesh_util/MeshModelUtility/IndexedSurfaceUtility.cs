@@ -20,7 +20,7 @@ namespace DotsLite.Geometry
     using DotsLite.Structure.Authoring;
 
 
-    public class UvPalletBuilder
+    public class UvPaletteBuilder
     {
         Dictionary<string, (int i, Rect[] uvs)> idList = new Dictionary<string, (int, Rect[])>();
 
@@ -52,22 +52,22 @@ namespace DotsLite.Geometry
 
     public static class IndexedSurfaceUtility
     {
-        //// ・uv pallet に登録、最後にバッファを構築
+        //// ・uv palette に登録、最後にバッファを構築
         //// ・バッファはシーンで１つ
-        //// ・uv pallet 
+        //// ・uv palette 
         ///// <summary>
         ///// １つのモデルを構成する幾何情報から、サーフェスを構成する uv rect を抽出する。
         ///// 結果は uv rect の配列となる。
         ///// 
         ///// </summary>
-        //public static Rect[] ToPalletUvEntry(
+        //public static Rect[] ToPaletteUvEntry(
         //    this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
         //    Func<int, Rect> texHashToUvRectFunc)
         //{
         //    var q =
         //        from mmt in mmts
         //        from mat in mmt.mats
-        //        let index = mat.GetPalletSubIndex()
+        //        let index = mat.GetPaletteSubIndex()
         //        let uv = texHashToUvRectFunc(mat.mainTexture.GetHashCode())
         //        select (index, uv)
         //        ;

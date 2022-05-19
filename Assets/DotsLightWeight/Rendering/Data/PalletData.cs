@@ -17,9 +17,9 @@ using DotsLite.Geometry;
 namespace DotsLite.Draw
 {
 
-    static public partial class Pallet
+    static public partial class Palette
     {
-        public struct PalletData : IComponentData
+        public struct PaletteData : IComponentData
         {
             public int BaseIndex;
         }

@@ -49,7 +49,7 @@ namespace DotsLite.Structure.Authoring
         public GameObject Envelope;
         public StructureBuildingAuthoring MasterPrefab;
 
-        public ColorPalletAsset Pallet;
+        public ColorPaletteAsset Palette;
 
 
         public override IEnumerable<IMeshModel> QueryModel =>

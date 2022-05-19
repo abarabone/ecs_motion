@@ -20,8 +20,8 @@ namespace DotsLite.Model.Authoring
     //{ }
 
     //[Serializable]
-    //public class PositionNormalUvWithPalletI32 :
-    //    MeshWithPalletModel<UI32, PositionNormalUvWithPalletVertex>, MeshModelAuthoring1.IMeshModelSelector
+    //public class PositionNormalUvWithPaletteI32 :
+    //    MeshWithPaletteModel<UI32, PositionNormalUvWithPaletteVertex>, MeshModelAuthoring1.IMeshModelSelector
     //{ }
 }
 
@@ -47,6 +47,10 @@ namespace DotsLite.Model.Authoring
     {
 
 
+        [SerializeField]
+        ColorPaletteAsset Palette;
+
+
 
         /// <summary>
         /// 
@@ -62,7 +66,7 @@ namespace DotsLite.Model.Authoring
 
             //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
 
-            conversionSystem.SetColorPalletComponent(this.gameObject, this.Pallet);
+            conversionSystem.SetColorPaletteComponent(this.gameObject, this.Palette);
 
             return;
 

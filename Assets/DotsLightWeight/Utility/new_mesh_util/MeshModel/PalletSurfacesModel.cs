@@ -25,7 +25,7 @@ namespace DotsLite.Structure.Authoring
     // ・
 
     [Serializable]
-    public class PalletSurfacesModel : MeshModel<UI16, StructureVertex>
+    public class PaletteSurfacesModel : MeshModel<UI16, StructureVertex>
     {
 
 

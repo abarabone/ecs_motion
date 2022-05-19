@@ -49,7 +49,7 @@ namespace DotsLite.Structure.Authoring
         public StructureAreaAuthoring MasterPrefab;
 
         [SerializeField]
-        ColorPalletAsset Pallet;
+        ColorPaletteAsset Palette;
 
 
         public override IEnumerable<IMeshModel> QueryModel =>

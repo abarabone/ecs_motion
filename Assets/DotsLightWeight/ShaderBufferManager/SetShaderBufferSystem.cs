@@ -38,10 +38,10 @@ namespace DotsLite.Draw
             this.Entities
                 .WithoutBurst()
                 .WithStructuralChanges()
-                .ForEach((Entity ent, ShaderBuffer.ColorPalletSrcData src) =>
+                .ForEach((Entity ent, ShaderBuffer.ColorPaletteSrcData src) =>
                 {
                     Debug.Log("cre");
-                    em.AddComponentData(ent, new ShaderBuffer.ColorPalletData
+                    em.AddComponentData(ent, new ShaderBuffer.ColorPaletteData
                     {
                         Buffer = src.Colors.BuildShaderBuffer(),
                         NameId = src.NameId,
@@ -54,9 +54,9 @@ namespace DotsLite.Draw
                 .ForEach((
                     Entity ent,
                     DrawModel.GeometryData geom,
-                    DrawModelShaderBuffer.ColorPalletLinkData setup) =>
+                    DrawModelShaderBuffer.ColorPaletteLinkData setup) =>
                 {
-                    var buf = em.GetComponentData<ShaderBuffer.ColorPalletData>(setup.BufferEntity);
+                    var buf = em.GetComponentData<ShaderBuffer.ColorPaletteData>(setup.BufferEntity);
 
                     geom.Material.SetBuffer(buf.NameId, buf.Buffer);
                 })
@@ -70,7 +70,7 @@ namespace DotsLite.Draw
             this.Entities
                 .WithoutBurst()
                 //.ForEach((ShaderBuffer.BufferData buf) => buf.Buffer.Dispose())
-                .ForEach((ShaderBuffer.ColorPalletData buf) =>
+                .ForEach((ShaderBuffer.ColorPaletteData buf) =>
                 {
                     Debug.Log("dispose shader buffer");
                     buf.Buffer.Dispose();

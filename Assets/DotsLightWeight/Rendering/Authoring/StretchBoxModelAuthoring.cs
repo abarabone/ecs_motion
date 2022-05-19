@@ -52,7 +52,7 @@ namespace DotsLite.Model.Authoring
         //public LodMeshModel<UI32, PositionNormalUvVertex>[] Models;
         public MeshModel<UI32, PositionNormalVertex> Model;
 
-        public ColorPalletAsset Pallet;
+        public ColorPaletteAsset Palette;
 
 
         public override IEnumerable<IMeshModel> QueryModel => this.Model.WrapEnumerable();

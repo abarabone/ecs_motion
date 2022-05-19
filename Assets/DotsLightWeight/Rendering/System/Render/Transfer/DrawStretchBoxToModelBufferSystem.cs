@@ -59,7 +59,7 @@ namespace DotsLite.Draw
                         in Rotation rot,
                         in StretchBox.SizeData size,
                         in StretchBox.UvIndexData iuv,
-                        in Pallet.PalletData ipallet
+                        in Palette.PaletteData ipalette
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
@@ -74,7 +74,7 @@ namespace DotsLite.Draw
                         pModel[i + 0] = new float4(pos.Value, 1.0f);
                         pModel[i + 1] = rot.Value.value;
                         pModel[i + 2] = size.Size;
-                        //pModel[i + 3] = new float4(iuv.as_float2, ipallet.as_float2);
+                        //pModel[i + 3] = new float4(iuv.as_float2, ipalette.as_float2);
                     }
                 )
                 .ScheduleParallel();

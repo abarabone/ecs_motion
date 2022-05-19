@@ -21,8 +21,8 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Common.Extension;
     using DotsLite.Misc;
 
-    [CreateAssetMenu(fileName = "pallet", menuName = "Custom/Pallet")]
-    public class ColorPalletAsset : ScriptableObject
+    [CreateAssetMenu(fileName = "palette", menuName = "Custom/Palette")]
+    public class ColorPaletteAsset : ScriptableObject
     {
 
         public Color32[] Colors;
