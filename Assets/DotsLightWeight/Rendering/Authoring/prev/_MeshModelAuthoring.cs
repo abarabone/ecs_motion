@@ -10,7 +10,7 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace DotsLite.Model.Authoring
+namespace DotsLite.Model.Authoring.prev
 {
     using DotsLite.Geometry;
 
@@ -25,7 +25,7 @@ namespace DotsLite.Model.Authoring
     //{ }
 }
 
-namespace DotsLite.Model.Authoring
+namespace DotsLite.Model.Authoring.prev
 {
     using DotsLite.Model;
     using DotsLite.Draw;

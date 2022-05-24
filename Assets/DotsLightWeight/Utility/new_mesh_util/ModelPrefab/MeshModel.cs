@@ -10,9 +10,10 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace DotsLite.Model.Authoring2
+namespace DotsLite.Model.Authoring.prev
 {
     using DotsLite.Geometry;
+    using DotsLite.Geometry.prev;
 
     [Serializable]
     public class PositionNormalUv :
@@ -25,7 +26,7 @@ namespace DotsLite.Model.Authoring2
     { }
 }
 
-namespace DotsLite.Model.Authoring2
+namespace DotsLite.Model.Authoring.prev
 {
     using DotsLite.Draw;
     using DotsLite.Draw.Authoring;

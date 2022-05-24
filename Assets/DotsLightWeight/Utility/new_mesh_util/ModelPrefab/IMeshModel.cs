@@ -9,7 +9,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace DotsLite.Geometry
+namespace DotsLite.Geometry.prev
 {
 
 
