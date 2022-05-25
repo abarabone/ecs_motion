@@ -28,6 +28,9 @@ namespace DotsLite.Geometry
 
 
 
+        /// <summary>
+        /// グループオーサリングから
+        /// </summary>
         public static void BuildModelToDictionary<T>(
             this IEnumerable<T> models, GameObjectConversionSystem gcs)
             where T : ModelGroupAuthoring.ModelAuthoringBase
@@ -36,7 +39,9 @@ namespace DotsLite.Geometry
                 .SelectMany(model => model.QueryModel)
                 .BuildModelToDictionary(gcs);
 
-
+        /// <summary>
+        /// モデルオーサリングから
+        /// </summary>
         public static void BuildModelToDictionary(
             this IEnumerable<IMeshModel> models, GameObjectConversionSystem gcs)
         {

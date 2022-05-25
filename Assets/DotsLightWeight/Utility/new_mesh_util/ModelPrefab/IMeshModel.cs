@@ -11,7 +11,29 @@ using Unity.Mathematics;
 
 namespace DotsLite.Geometry.prev
 {
+/*
+ie<IMeshModel>.BuildModelToDictionary(gcs)
+  ie<IMeshModel>.PackTextureToDictionary()
+  ie<IMeshModel>.CreateModelToDictionary()
+  ie<IMeshModel>.CreateModelEntitiesToDicctionry()
+  
+  ie<IMeshModel>.CreateModelToDictionary()
+    each IMeshModel.BuildMeshCombiner(srcmeshes)
+      -> Func<IMeshElemens> -> .CreateMesh() -> dict
+      
+      MeshModel
 
+        .BuildMeshCombiner() -> Func<IMeshElements>
+          srcmeshes.BuildCombiner() -> Func<IMeshElements>
+
+        .CreateModelEntity() -> Entity
+          vtxop.CreateDrawModelEntityComponents()
+
+uvtx:		
+vtxop:		
+
+srcmeshes:	SrcMeshesModelCombinePack
+*/
 
     public enum TransformMode
     {
