@@ -47,17 +47,17 @@ namespace DotsLite.Draw.Authoring
         static public Entity InitDrawModelEntityComponents(
             this GameObjectConversionSystem gcs, Entity drawModelEntity,
             Mesh mesh, Material mat,
-            BoneType BoneType, int boneLength,
+            BoneType boneType, int boneLength,
             DrawModel.SortOrder order,// = DrawModel.SortOrder.none
             int instanceDataVectorLength = 0)
         {
 
             var em = gcs.DstEntityManager;
 
-            setShaderProps_(em, mat, boneLength * (int)BoneType + instanceDataVectorLength);
+            setShaderProps_(em, mat, boneLength * (int)boneType + instanceDataVectorLength);
 
             addComponents_(gcs, drawModelEntity, order != DrawModel.SortOrder.none);
-            initInfomationData_(em, drawModelEntity, mesh.bounds, boneLength, BoneType, instanceDataVectorLength, order);
+            initInfomationData_(em, drawModelEntity, mesh.bounds, boneLength, boneType, instanceDataVectorLength, order);
             initResourceData_(em, drawModelEntity, mat, mesh);
 
             em.SetName_(drawModelEntity, $"{mesh.name} model");
@@ -100,14 +100,14 @@ namespace DotsLite.Draw.Authoring
 
             void initInfomationData_(
                 EntityManager em_, Entity ent_,
-                Bounds bbox_, int boneLength_, BoneType BoneType_, int instanceDataVectorLength_, DrawModel.SortOrder order)
+                Bounds bbox_, int boneLength_, BoneType boneType_, int instanceDataVectorLength_, DrawModel.SortOrder order)
             {
 
                 em_.SetComponentData(ent_,
                     new DrawModel.BoneVectorSettingData
                     {
                         BoneLength = boneLength_,
-                        VectorLengthInBone = (int)BoneType_,
+                        VectorLengthInBone = (int)boneType_,
                     }
                 );
                 em_.SetComponentData(ent_,

@@ -43,7 +43,7 @@ namespace DotsLite.Model.Authoring
 
 
         [SerializeField]
-        protected TransformMode tfMode = TransformMode.RT;
+        protected BoneType tfMode = BoneType.RT;
         [SerializeField]
         protected DrawModel.SortOrder sortOrder = DrawModel.SortOrder.desc;
         
@@ -98,7 +98,7 @@ namespace DotsLite.Model.Authoring
             mat.enableInstancing = true;
             mat.mainTexture = atlas;
 
-            var boneType = this.tfMode.ToBoneType();
+            var boneType = this.tfMode;
             return gcs.CreateDrawModelEntityComponents(
                 mesh, mat, boneType,
                 this.boneLength, this.sortOrder, this.optionalVectorLength);

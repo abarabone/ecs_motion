@@ -71,7 +71,7 @@ namespace DotsLite.Draw
 
 
                     var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
-                    var boneVectorLength = (int)BoneType.RT;//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
+                    var boneVectorLength = BoneType.RT.VectorLength();//boneInfo.VectorLengthInBone * boneInfo.BoneLength;
                     var instanceVectorLength = boneVectorLength + offsetInfo.OptionalVectorLengthPerInstance;
 
                     var i = target.DrawInstanceId * instanceVectorLength;

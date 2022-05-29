@@ -62,16 +62,42 @@ namespace DotsLite.Model
     // ボーンのベクトル数も兼ねている
     public enum BoneType
     {
-        ST = 2,
-        SRT = 3,
-        T = 1,
-        RT = 2,
-        RTS = 3,
-        Matrix4x3 = 3,
-        PtoP = 2,
-        P1uv = 2,
-        PtoPuv = 3,
+        none,
+        T,
+        RT,
+        RTS,
+        ST,
+        SRT,
+        Matrix4x3,
+        PtoP,
+        P1uv,
+        PtoPuv,
+        other = 256,
     }
+    public static class BoneTypeUtility
+    {
+        public static int VectorLength(this BoneType boneType) =>
+            boneType switch
+            {
+                BoneType.none => 0,
+                BoneType.T => 1,
+                BoneType.RT => 2,
+                BoneType.RTS => 3,
+                BoneType.ST => 2,
+                BoneType.SRT => 3,
+                BoneType.Matrix4x3 => 3,
+                BoneType.PtoP => 2,
+                BoneType.P1uv => 2,
+                BoneType.PtoPuv => 3,
+                _ when boneType >= BoneType.other => (int)boneType - (int)BoneType.other,
+                _ => -1,
+            };
+
+        public static BoneType ToBoneType(this int boneLength) =>
+            (BoneType)((int)BoneType.other + boneLength);
+    }
+
+
 
     //static public partial class TransformOption
     //{

@@ -50,11 +50,11 @@ namespace DotsLite.ParticleSystem.Aurthoring.disable
                 var mat = new Material(srcMaterial);
                 var mesh = createMesh();
 
-                const BoneType BoneType = BoneType.RT;
-                const int boneLength = 1;
+                const BoneType boneType = BoneType.RT;
+                const int boneLength = 2;//1;
                 const DrawModel.SortOrder order = DrawModel.SortOrder.acs;
 
-                return gcs.CreateDrawModelEntityComponents(mesh, mat, BoneType, boneLength, order);
+                return gcs.CreateDrawModelEntityComponents(mesh, mat, boneType, boneLength, order);
             }
 
             void initPsylliumEntityComponents_(GameObjectConversionSystem gcs, Entity main, Entity model)
