@@ -23,10 +23,13 @@ namespace DotsLite.Geometry
     public interface IVertexUnit
     { }
 
-    public interface IVertexBuilder
+    public interface IVertexBuilder<TVtx>
+        where TVtx : struct, IVertexUnit
     {
-        Func<IMeshElements> BuildCombiner<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        Func<MeshElements<TIdx, TVtx>> BuildCombiner<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;
+
+        TVtx[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p);
     }
 
     //public interface IVertexUnitBoned<TVtx> : IVertexUnit<TVtx>

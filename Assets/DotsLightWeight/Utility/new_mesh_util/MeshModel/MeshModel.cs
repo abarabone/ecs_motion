@@ -22,8 +22,8 @@ namespace DotsLite.Model.Authoring
 
     [Serializable]
     public class MeshModel<TIdx, TVtx> : IMeshModel
-        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
+        where TVtx : struct, IVertexUnit//, ISetBufferParams
     {
 
         public MeshModel() =>
@@ -40,6 +40,12 @@ namespace DotsLite.Model.Authoring
 
         [SerializeField]
         public Shader shader;
+
+
+        //interface IIdxBuilder : IIndexBuilder<TIdx> { }
+        public IIndexBuilder<TIdx> idxBuilder;
+        public IVertexBuilder<TVtx> vtxBuilder;
+
 
 
         [SerializeField]
@@ -88,7 +94,14 @@ namespace DotsLite.Model.Authoring
 
             return (
                 this.sourcePrefabKey,
-                meshpack.BuildCombiner<TIdx, TVtx>(p)
+                () => new MeshElements<TIdx, TVtx>
+                {
+                    idxs = this.idxBuilder.Build(meshpack.AsEnumerable),
+                    vtxs = this.vtxBuilder.Build(meshpack.AsEnumerable, p),
+                    idxBuilder = this.idxBuilder,
+                    vtxBuilder = this.vtxBuilder,
+                }
+                //meshpack.BuildCombiner<TIdx, TVtx>(p)
             );
         }
 

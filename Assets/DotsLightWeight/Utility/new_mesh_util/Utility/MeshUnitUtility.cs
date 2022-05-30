@@ -25,23 +25,26 @@ namespace DotsLite.Geometry
     }
 
     public class MeshElements<TIdx, TVtx> : IMeshElements
-        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        where TIdx : struct, IIndexUnit<TIdx>
         where TVtx : struct, IVertexUnit
     {
         public TIdx[] idxs;
         public TVtx[] vtxs;
 
-        public Mesh CreateMesh() => MeshCreatorUtility.CreateMesh(this);
+        public ISetBufferParams idxBuilder;
+        public ISetBufferParams vtxBuilder;
 
-        /// <summary>
-        /// タプルからの暗黙的変換
-        /// </summary>
-        public static implicit operator MeshElements<TIdx, TVtx> ((TIdx[], TVtx[]) src) =>
-            new MeshElements<TIdx, TVtx>
-            {
-                idxs = src.Item1,
-                vtxs = src.Item2,
-            };
+        public Mesh CreateMesh() => this.CreateMesh(this.idxBuilder, this.vtxBuilder);
+
+        ///// <summary>
+        ///// タプルからの暗黙的変換
+        ///// </summary>
+        //public static implicit operator MeshElements<TIdx, TVtx> ((TIdx[], TVtx[]) src) =>
+        //    new MeshElements<TIdx, TVtx>
+        //    {
+        //        idxs = src.Item1,
+        //        vtxs = src.Item2,
+        //    };
     }
 
     //public static class _

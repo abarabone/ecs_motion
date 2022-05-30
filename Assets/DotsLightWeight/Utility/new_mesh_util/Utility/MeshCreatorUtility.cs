@@ -21,9 +21,10 @@ namespace DotsLite.Geometry
     static public partial class MeshCreatorUtility
     {
 
-        public static Mesh CreateMesh<TIdx, TVtx>(this MeshElements<TIdx, TVtx> meshElements)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-            where TVtx : struct, IVertexBuilder, ISetBufferParams
+        public static Mesh CreateMesh<TIdx, TVtx>(this MeshElements<TIdx, TVtx> meshElements,
+            ISetBufferParams idxBuilder, ISetBufferParams vertexBuilder)
+            where TIdx : struct, IIndexUnit<TIdx>
+            where TVtx : struct, IVertexUnit
         {
             var dstmeshes = Mesh.AllocateWritableMeshData(1);
             var dstmesh = new Mesh();
@@ -32,11 +33,13 @@ namespace DotsLite.Geometry
             var dst = dstmeshes[0];
 
             var idxs = src.idxs;
-            dst.setBufferParams<TIdx>(idxs.Length);
+            idxBuilder.SetBufferParams(dst, idxs.Length);
+            //dst.setBufferParams<TIdx>(idxs.Length);
             dst.GetIndexData<TIdx>().CopyFrom(idxs);
 
             var vtxs = src.vtxs;
-            dst.setBufferParams<TVtx>(vtxs.Length);
+            vertexBuilder.SetBufferParams(dst, vtxs.Length);
+            //dst.setBufferParams<TVtx>(vtxs.Length);
             dst.GetVertexData<TVtx>().CopyFrom(vtxs);
 
             dst.subMeshCount = 1;

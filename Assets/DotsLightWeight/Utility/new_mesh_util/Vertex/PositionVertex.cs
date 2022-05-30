@@ -27,7 +27,7 @@ namespace DotsLite.Geometry
     }
 
 
-    public struct VPosisionertexBuilder : IVertexBuilder, ISetBufferParams
+    public struct VPosisionertexBuilder : IVertexBuilder<PositionVertex>, ISetBufferParams
     {
         public Func<MeshElements<TIdx, PositionVertex>> BuildCombiner<TIdx>
             (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
@@ -48,6 +48,19 @@ namespace DotsLite.Geometry
 
                 return (idxs, vtxs);
             };
+        }
+
+
+        public PositionVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        {
+            var poss = srcmeshes.QueryConvertPositions(p);//.ToArray();
+            var qVtx =
+                from x in poss
+                select new PositionVertex
+                {
+                    Position = x,
+                };
+            return qVtx.ToArray();
         }
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
