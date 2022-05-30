@@ -26,7 +26,7 @@ namespace DotsLite.Geometry
 
     public class MeshElements<TIdx, TVtx> : IMeshElements
         where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        where TVtx : struct, IVertexUnit
     {
         public TIdx[] idxs;
         public TVtx[] vtxs;

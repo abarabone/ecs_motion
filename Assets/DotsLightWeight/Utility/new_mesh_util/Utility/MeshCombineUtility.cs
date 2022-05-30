@@ -24,14 +24,14 @@ namespace DotsLite.Geometry
     {
 
 
-        public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>(
-            this SrcMeshesModelCombinePack srcmeshpack,
-            AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-        {
-            return new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable, p);
-        }
+        //public static Func<IMeshElements> BuildCombiner<TIdx, TVtx>(
+        //    this SrcMeshesModelCombinePack srcmeshpack,
+        //    AdditionalParameters p)
+        //    where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        //    where TVtx : struct, IVertexBuilder, ISetBufferParams
+        //{
+        //    return new TVtx().BuildCombiner<TIdx>(srcmeshpack.AsEnumerable, p);
+        //}
 
 
         /// <summary>

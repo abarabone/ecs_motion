@@ -19,12 +19,16 @@ namespace DotsLite.Geometry
     using DotsLite.Geometry.inner.unit;
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct PositionVertex : IVertexUnit<PositionVertex>, ISetBufferParams
+    public struct PositionVertex : IVertexUnit
     {
 
         public Vector3 Position;
 
+    }
 
+
+    public struct VPosisionertexBuilder : IVertexBuilder, ISetBufferParams
+    {
         public Func<MeshElements<TIdx, PositionVertex>> BuildCombiner<TIdx>
             (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
@@ -45,7 +49,6 @@ namespace DotsLite.Geometry
                 return (idxs, vtxs);
             };
         }
-
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
         {
