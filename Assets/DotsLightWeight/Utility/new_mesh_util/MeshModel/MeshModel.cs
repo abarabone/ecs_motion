@@ -21,7 +21,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
 
     [Serializable]
-    public class MeshModel<TIdx, TVtx> : IMeshModel
+    public class MeshModel<TIdx, TVtx> : MonoBehaviour, IMeshModel
         where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
         where TVtx : struct, IVertexUnit//, ISetBufferParams
     {
@@ -83,26 +83,17 @@ namespace DotsLite.Model.Authoring
         ////        meshpack.BuildCombiner<TIdx, TVtx>(p)
         ////    );
         ////}
-        public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
+        public virtual Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
+            TextureAtlasDictionary.Data atlasDictionary)
         {
             var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var p = this.QueryMmts.calculateParameters(
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
 
-            return (
-                this.sourcePrefabKey,
-                () => new MeshElements<TIdx, TVtx>
-                {
-                    idxs = this.idxBuilder.Build(meshpack.AsEnumerable),
-                    vtxs = this.vtxBuilder.Build(meshpack.AsEnumerable, p),
-                    idxBuilder = this.idxBuilder,
-                    vtxBuilder = this.vtxBuilder,
-                }
-                //meshpack.BuildCombiner<TIdx, TVtx>(p)
-            );
+            return () => meshpack.CreateMeshData(this.idxBuilder, this.vtxBuilder, p);
         }
 
         public virtual Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)

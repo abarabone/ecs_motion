@@ -52,7 +52,7 @@ namespace DotsLite.Geometry
 
 
 
-    public interface IIndexBuilder<TIdx>
+    public interface IIndexBuilder<TIdx> : ISetBufferParams
         where TIdx : IIndexUnit<TIdx>
     {
         TIdx[] Build(IEnumerable<SrcMeshUnit> srcmeshes);

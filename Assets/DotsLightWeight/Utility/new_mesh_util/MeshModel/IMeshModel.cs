@@ -56,9 +56,10 @@ namespace DotsLite.Geometry
         //(SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
         //    GameObjectConversionSystem gcs, SrcMeshesModelCombinePack meshpack);
 
-        (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
+        Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary);
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
+            TextureAtlasDictionary.Data atlasDictionary);
 
 
         Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);

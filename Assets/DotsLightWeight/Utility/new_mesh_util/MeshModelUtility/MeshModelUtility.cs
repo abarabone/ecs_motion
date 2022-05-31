@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Unity.Linq;
 using Unity.Entities;
@@ -52,7 +53,7 @@ namespace DotsLite.Geometry
                 .Distinct(x => x.SourcePrefabKey)
                 .ToArray();
             meshmodels.PackTextureToDictionary(atlasDict);
-            meshmodels.CreateModelToDictionary(meshDict, atlasDict);
+            meshmodels.CreateMeshesToDictionary(meshDict, atlasDict);
             meshmodels.CreateModelEntitiesToDictionary(gcs, meshDict, atlasDict);
         }
 
@@ -60,7 +61,7 @@ namespace DotsLite.Geometry
 
 
 
-        public static void CreateModelToDictionary(
+        public static void CreateMeshesToDictionary(
             this IEnumerable<IMeshModel> models,
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
         {
@@ -77,15 +78,33 @@ namespace DotsLite.Geometry
                 let meshsrc = x.src0
                 let model = x.src1
                 where !meshDict.ContainsKey(model.SourcePrefabKey)
-                select model.BuildMeshCombiner(meshsrc, meshDict, atlasDict);
+                select (
+                    builder: model.BuildMeshCombiner(meshsrc, meshDict, atlasDict),
+                    model: model as MonoBehaviour// ‚¿‚á‚ñ‚Æ‚µ‚æ‚¤
+                );
             var ofs = qOfs.ToArray();
 
-            var qKey = ofs.Select(x => x.key);
-            var qMesh = ofs.Select(x => x.f.ToTask())
+            var qModel = ofs.Select(x => x.model);
+            var qMesh = ofs.Select(x => x.builder.ToTask())
                 .WhenAll().Result
                 .Select(x => x.CreateMesh());
-            meshDict.AddRange(qKey, qMesh);
+            meshDict.AddRange(qModel, qMesh);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static Task<Mesh.MeshDataArray> ToTask(this Func<Mesh.MeshDataArray> f) =>
+            Task.Run(f);
+
+        //public static Task<IMeshElements> ToTask(this Func<IMeshElements> f) =>
+        //    Task.Run(f);
+
+        //public static Task<(TIdx[], TVtx[])> ToTask<TIdx, TVtx>(this Func<(TIdx[], TVtx[])> f)
+        //    where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        //    where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        //=>
+        //    Task.Run(f);
 
 
 
