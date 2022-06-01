@@ -27,30 +27,8 @@ namespace DotsLite.Geometry
     }
 
 
-    public struct VPosisionertexBuilder : IVertexBuilder<PositionVertex>, ISetBufferParams
+    public struct PosisionVertexBuilder : IVertexBuilder<PositionVertex>, ISetBufferParams
     {
-        //public Func<MeshElements<TIdx, PositionVertex>> BuildCombiner<TIdx>
-        //    (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-        //    where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        //{
-        //    return () =>
-        //    {
-        //        var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
-
-        //        var poss = srcmeshes.QueryConvertPositions(p);//.ToArray();
-        //        var qVtx =
-        //            from x in poss
-        //            select new PositionVertex
-        //            {
-        //                Position = x,
-        //            };
-        //        var vtxs = qVtx.ToArray();
-
-        //        return (idxs, vtxs);
-        //    };
-        //}
-
-
         public PositionVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
             var poss = srcmeshes.QueryConvertPositions(p);//.ToArray();

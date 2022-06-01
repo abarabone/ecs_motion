@@ -35,7 +35,7 @@ namespace DotsLite.Model.Authoring
             SrcMeshesModelCombinePack meshpack,
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
         {
-            var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
+            var atlas = atlasDictionary.modelToAtlas[this.sourcePrefabKey].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var p = this.QueryMmts.calculateParameters(
                 this.TfRoot, this.QueryBones?.ToArray(),

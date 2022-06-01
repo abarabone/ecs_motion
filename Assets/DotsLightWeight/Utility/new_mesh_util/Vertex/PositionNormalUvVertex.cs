@@ -20,37 +20,29 @@ namespace DotsLite.Geometry
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct PositionNormalUvVertex : IVertexUnit<PositionNormalUvVertex>, ISetBufferParams
+    public struct PositionNormalUvVertex : IVertexUnit
     {
-
         public Vector3 Position;
         public Vector3 Normal;
         public Vector2 Uv;
+    }
 
-
-        public Func<MeshElements<TIdx, PositionNormalUvVertex>> BuildCombiner<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+    public struct PositionNormalUvVertexBuilder : IVertexBuilder<PositionNormalUvVertex>, ISetBufferParams
+    {
+        public PositionNormalUvVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
-            return () =>
-            {
-                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
-
-                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
-                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
-                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
-                var qVtx =
-                    from x in (poss, nms, uvs).Zip()
-                    select new PositionNormalUvVertex
-                    {
-                        Position = x.src0,
-                        Normal = x.src1,
-                        Uv = x.src2,
-                    };
-                var vtxs = qVtx.ToArray();
-
-                return (idxs, vtxs);
-            };
+            var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+            var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+            var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+            var qVtx =
+                from x in (poss, nms, uvs).Zip()
+                select new PositionNormalUvVertex
+                {
+                    Position = x.src0,
+                    Normal = x.src1,
+                    Uv = x.src2,
+                };
+            return qVtx.ToArray();
         }
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)

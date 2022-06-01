@@ -11,10 +11,10 @@ namespace DotsLite.Structure.Authoring
 {
     using DotsLite.Geometry;
 
-    [Serializable]
-    public class PositionNormalUvI32Part :
-        PartModel<UI32, PositionNormalUvVertex>, StructureBuildingPartAuthoring.IMeshModelSelector
-    { }
+    //[Serializable]
+    //public class PositionNormalUvI32Part :
+    //    PartModel<UI32, PositionNormalUvVertex>, StructureBuildingPartAuthoring.IMeshModelSelector
+    //{ }
 }
 
 namespace DotsLite.Structure.Authoring

@@ -49,7 +49,7 @@ namespace DotsLite.Model.Authoring
 
 
         [SerializeField]
-        protected BoneType tfMode = BoneType.RT;
+        protected BoneType boneType = BoneType.RT;
         [SerializeField]
         protected DrawModel.SortOrder sortOrder = DrawModel.SortOrder.desc;
         
@@ -57,6 +57,8 @@ namespace DotsLite.Model.Authoring
         protected virtual int boneLength => 1;
 
 
+        public GameObject AsGameObject => this.gameObject;
+        
         public virtual GameObject Obj => this.objectTop;
         public virtual Transform TfRoot => this.objectTop.transform;
         public virtual IEnumerable<Transform> QueryBones => null;
@@ -85,10 +87,10 @@ namespace DotsLite.Model.Authoring
         ////}
         public virtual Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
+            Dictionary<IMeshModel, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary)
         {
-            var atlas = atlasDictionary.srckeyToAtlas[this].GetHashCode();
+            var atlas = atlasDictionary.modelToAtlas[this].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var p = this.QueryMmts.calculateParameters(
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
@@ -96,16 +98,15 @@ namespace DotsLite.Model.Authoring
             return () => meshpack.CreateMeshData(this.idxBuilder, this.vtxBuilder, p);
         }
 
-        public virtual Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        public virtual void InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.shader);
             mat.enableInstancing = true;
             mat.mainTexture = atlas;
 
-            var boneType = this.tfMode;
-            return gcs.CreateDrawModelEntityComponents(
-                mesh, mat, boneType,
-                this.boneLength, this.sortOrder, this.optionalVectorLength);
+            var ent = gcs.GetPrimaryEntity(this.AsGameObject);
+            gcs.InitDrawModelEntityComponents(ent, mesh, mat,
+                this.boneType, this.boneLength, this.sortOrder, this.optionalVectorLength);
         }
 
     }

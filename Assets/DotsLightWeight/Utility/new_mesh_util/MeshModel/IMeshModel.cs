@@ -12,11 +12,11 @@ using Unity.Mathematics;
 namespace DotsLite.Geometry
 {
 
-    [Serializable]
-    public struct SourcePrefabKeyUnit
-    {
-        public int Value;
-    }
+    //[Serializable]
+    //public struct SourcePrefabKeyUnit
+    //{
+    //    public int Value;
+    //}
 
 
     //public enum TransformMode
@@ -42,7 +42,9 @@ namespace DotsLite.Geometry
         //SourcePrefabKeyUnit SourcePrefabKey { get; }
         //void GenerateSourcePrefabKey();
 
-        GameObject Obj { get; }
+        GameObject AsGameObject { get; }
+
+        GameObject Obj { get; }// Ç±ÇÍÇ¢ÇÈÇÒÇæÇ¡ÇØÅH
         Transform TfRoot { get; }
 
         IEnumerable<Transform> QueryBones { get; }
@@ -58,11 +60,11 @@ namespace DotsLite.Geometry
 
         Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
+            Dictionary<IMeshModel, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary);
 
 
-        Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
+        void InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
 
     }
 

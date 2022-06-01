@@ -20,41 +20,35 @@ namespace DotsLite.Geometry
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct StructureVertex : IVertexUnit<StructureVertex>, ISetBufferParams
+    public struct StructureVertex : IVertexUnit
     {
-
         public Vector3 Position;
         public Vector3 Normal;
         public Color32 PardId;
         public Vector2 Uv;
+    }
+
+    public struct StructureVertexBuilder : IVertexBuilder<StructureVertex>, ISetBufferParams
+    {
 
 
-        public Func<MeshElements<TIdx, StructureVertex>> BuildCombiner<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        public StructureVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
-            return () =>
-            {
-                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
-
-                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
-                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
-                var pids = srcmeshes.QueryConvertPartId(p).ToArray();
-                var cids = srcmeshes.QueryColorPaletteSubIndex(p).ToArray();
-                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
-                var qVtx =
-                    from x in (poss, nms, pids, cids, uvs).Zip()
-                    select new StructureVertex
-                    {
-                        Position = x.src0,
-                        Normal = x.src1,
-                        PardId = new Color32(x.src2.r, x.src2.g, x.src2.b, x.src3.a),
-                        Uv = x.src4,
-                    };
-                var vtxs = qVtx.ToArray();
-
-                return (idxs, vtxs);
-            };
+            var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+            var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+            var pids = srcmeshes.QueryConvertPartId(p).ToArray();
+            var cids = srcmeshes.QueryColorPaletteSubIndex(p).ToArray();
+            var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+            var qVtx =
+                from x in (poss, nms, pids, cids, uvs).Zip()
+                select new StructureVertex
+                {
+                    Position = x.src0,
+                    Normal = x.src1,
+                    PardId = new Color32(x.src2.r, x.src2.g, x.src2.b, x.src3.a),
+                    Uv = x.src4,
+                };
+            return qVtx.ToArray();
         }
 
 

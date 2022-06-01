@@ -24,33 +24,33 @@ namespace DotsLite.Structure.Authoring
 
     // ・
 
-    [Serializable]
-    public class PaletteSurfacesModel : MeshModel<UI16, StructureVertex>
-    {
+    //[Serializable]
+    //public class PaletteSurfacesModel : MeshModel<UI16, StructureVertex>
+    //{
 
 
-        public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
-            SrcMeshesModelCombinePack meshpack,
-            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
-        {
+    //    public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
+    //        SrcMeshesModelCombinePack meshpack,
+    //        Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+    //    {
 
-            return (this.sourcePrefabKey, () =>
-            {
+    //        return (this.sourcePrefabKey, () =>
+    //        {
 
-                return createMesh_();
-            });
+    //            return createMesh_();
+    //        });
 
 
 
-            MeshElements<UI16, StructureVertex> createMesh_()
-            {
-                return new MeshElements<UI16, StructureVertex>
-                {
+    //        MeshElements<UI16, StructureVertex> createMesh_()
+    //        {
+    //            return new MeshElements<UI16, StructureVertex>
+    //            {
 
-                };
-            }
-        }
+    //            };
+    //        }
+    //    }
 
-    }
+    //}
 
 }

@@ -19,7 +19,7 @@ namespace DotsLite.Draw.Authoring
 
         public class Data : IComponentData
         {
-            public Dictionary<SourcePrefabKeyUnit, Mesh> MeshDictionary;
+            public Dictionary<IMeshModel, Mesh> MeshDictionary;
         }
 
         protected override void OnCreate()
@@ -27,7 +27,7 @@ namespace DotsLite.Draw.Authoring
             base.OnCreate();
             //Debug.Log("dic on");
 
-            var dict = new Dictionary<SourcePrefabKeyUnit, Mesh>();
+            var dict = new Dictionary<IMeshModel, Mesh>();
             this.EntityManager.CreateEntity( typeof( Data ) );
             this.SetSingleton( new Data { MeshDictionary = dict } );
         }
@@ -50,14 +50,14 @@ namespace DotsLite.Draw.Authoring
     static public class ConvertedMeshDictionaryExtension
     {
 
-        static public Dictionary<SourcePrefabKeyUnit, Mesh> GetMeshDictionary(this GameObjectConversionSystem gcs)
+        static public Dictionary<IMeshModel, Mesh> GetMeshDictionary(this GameObjectConversionSystem gcs)
         {
             return gcs.GetSingleton<ConvertedMeshDictionary.Data>().MeshDictionary;
             // texutre atlas と同じにしよう
         }
 
 
-        static public void AddToMeshDictionary(this GameObjectConversionSystem gcs, SourcePrefabKeyUnit key, Mesh mesh)
+        static public void AddToMeshDictionary(this GameObjectConversionSystem gcs, IMeshModel key, Mesh mesh)
         {
             //Debug.Log("addst");
             //Debug.Log(gcs);
@@ -66,7 +66,7 @@ namespace DotsLite.Draw.Authoring
             gcs.GetSingleton<ConvertedMeshDictionary.Data>().MeshDictionary.Add(key, mesh);
         }
 
-        static public Mesh GetMeshFromDictionary(this GameObjectConversionSystem gcs, SourcePrefabKeyUnit key )
+        static public Mesh GetMeshFromDictionary(this GameObjectConversionSystem gcs, IMeshModel key )
         {
             var isExits = gcs.GetSingleton<ConvertedMeshDictionary.Data>().MeshDictionary
                 .TryGetValue(key, out var mesh);
@@ -75,7 +75,7 @@ namespace DotsLite.Draw.Authoring
         }
 
 
-        static public bool IsExistingInMeshDictionary(this GameObjectConversionSystem gcs, SourcePrefabKeyUnit key)
+        static public bool IsExistingInMeshDictionary(this GameObjectConversionSystem gcs, IMeshModel key)
         {
             return gcs.GetSingleton<ConvertedMeshDictionary.Data>().MeshDictionary
                 .ContainsKey(key);

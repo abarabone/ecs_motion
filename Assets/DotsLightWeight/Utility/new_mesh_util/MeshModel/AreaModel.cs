@@ -23,8 +23,8 @@ namespace DotsLite.Structure.Authoring
 
     [Serializable]
     public class AreaModel<TIdx, TVtx> : LodMeshModel<TIdx, TVtx>
-        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
+        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
     {
 
         protected override int optionalVectorLength => 4;

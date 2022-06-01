@@ -23,8 +23,8 @@ namespace DotsLite.Structure.Authoring
 
     [Serializable]
     public class BuildingModel<TIdx, TVtx> : LodMeshModel<TIdx, TVtx>
-        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
+        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
     {
 
 
@@ -32,21 +32,19 @@ namespace DotsLite.Structure.Authoring
         protected override int boneLength => 1;
 
 
-        public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
+        public virtual Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+            Dictionary<IMeshModel, Mesh> meshDictionary,
+            TextureAtlasDictionary.Data atlasDictionary)
         {
-            var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
+            var atlas = atlasDictionary.modelToAtlas[this].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var mmts = this.QueryMmts.ToArray();
             var p = mmts.calculateParameters(
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
             mmts.CalculatePaletteSubIndexParameter(ref p);
 
-            return (
-                this.sourcePrefabKey,
-                meshpack.BuildCombiner<TIdx, TVtx>(p)
-            );
+            return () => meshpack.CreateMeshData(this.idxBuilder, this.vtxBuilder, p);
         }
     }
 

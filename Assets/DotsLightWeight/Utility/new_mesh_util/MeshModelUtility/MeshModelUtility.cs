@@ -14,6 +14,7 @@ namespace DotsLite.Geometry
 {
     using DotsLite.Model;
     using DotsLite.Model.Authoring;
+    using DotsLite.Draw;
     using DotsLite.Draw.Authoring;
     using DotsLite.Common.Extension;
     using DotsLite.Utilities;
@@ -50,11 +51,11 @@ namespace DotsLite.Geometry
             var atlasDict = gcs.GetTextureAtlasDictionary();
 
             var meshmodels = models
-                .Distinct(x => x.SourcePrefabKey)
+                .Distinct(x => x)
                 .ToArray();
             meshmodels.PackTextureToDictionary(atlasDict);
             meshmodels.CreateMeshesToDictionary(meshDict, atlasDict);
-            meshmodels.CreateModelEntitiesToDictionary(gcs, meshDict, atlasDict);
+            meshmodels.InitModelEntities(gcs, meshDict, atlasDict);
         }
 
 
@@ -84,7 +85,7 @@ namespace DotsLite.Geometry
                 );
             var ofs = qOfs.ToArray();
 
-            var qModel = ofs.Select(x => x.model);
+            var qModel = ofs.Select(x => x.model as IMeshModel);
             var qMesh = ofs.Select(x => x.builder.ToTask())
                 .WhenAll().Result
                 .Select(x => x.CreateMesh());
@@ -110,22 +111,23 @@ namespace DotsLite.Geometry
 
 
 
-        public static void CreateModelEntitiesToDictionary(
+        public static void InitModelEntities(
             this IEnumerable<IMeshModel> models,
             GameObjectConversionSystem gcs,
             Dictionary<IMeshModel, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
         {
+            var em = gcs.DstEntityManager;
+
             foreach (var model in models)
             {
                 //Debug.Log($"{model.Obj.name} model ent");
-                if (gcs.IsExistsInModelEntityDictionary(model)) continue;
+                var ent = gcs.GetPrimaryEntity(model.AsGameObject);
+                if (em.HasComponent<Draw.DrawModel.GeometryData>(ent)) continue;
                 //Debug.Log($"create {model.Obj.name}");
 
                 var mesh = meshDict[model];
-                var atlas = atlasDict.srckeyToAtlas[model];
-                var modelEntity = model.CreateModelEntity(gcs, mesh, atlas);
-
-                gcs.AddToModelEntityDictionary(key, modelEntity);
+                var atlas = atlasDict.modelToAtlas[model];
+                model.InitModelEntity(gcs, mesh, atlas);
             }
         }
 
