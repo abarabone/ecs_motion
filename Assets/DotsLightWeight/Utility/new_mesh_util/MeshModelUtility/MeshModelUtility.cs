@@ -63,7 +63,7 @@ namespace DotsLite.Geometry
 
         public static void CreateMeshesToDictionary(
             this IEnumerable<IMeshModel> models,
-            Dictionary<SourcePrefabKeyUnit, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
+            Dictionary<IMeshModel, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
         {
             var qMmts =
                 from model in models
@@ -77,7 +77,7 @@ namespace DotsLite.Geometry
                     //.Do(x => Debug.Log($"create from {x.src1.Obj?.name} {x.src1.Obj?.GetHashCode()} {meshDict.ContainsKey(x.src1?.Obj)}"))
                 let meshsrc = x.src0
                 let model = x.src1
-                where !meshDict.ContainsKey(model.SourcePrefabKey)
+                where !meshDict.ContainsKey(model)
                 select (
                     builder: model.BuildMeshCombiner(meshsrc, meshDict, atlasDict),
                     model: model as MonoBehaviour// ‚¿‚á‚ñ‚Æ‚µ‚æ‚¤
@@ -113,18 +113,16 @@ namespace DotsLite.Geometry
         public static void CreateModelEntitiesToDictionary(
             this IEnumerable<IMeshModel> models,
             GameObjectConversionSystem gcs,
-            Dictionary<SourcePrefabKeyUnit, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
+            Dictionary<IMeshModel, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
         {
             foreach (var model in models)
             {
                 //Debug.Log($"{model.Obj.name} model ent");
-                if (gcs.IsExistsInModelEntityDictionary(model.SourcePrefabKey)) continue;
+                if (gcs.IsExistsInModelEntityDictionary(model)) continue;
                 //Debug.Log($"create {model.Obj.name}");
 
-                var key = model.SourcePrefabKey;
-
-                var mesh = meshDict[key];
-                var atlas = atlasDict.srckeyToAtlas[key];
+                var mesh = meshDict[model];
+                var atlas = atlasDict.srckeyToAtlas[model];
                 var modelEntity = model.CreateModelEntity(gcs, mesh, atlas);
 
                 gcs.AddToModelEntityDictionary(key, modelEntity);

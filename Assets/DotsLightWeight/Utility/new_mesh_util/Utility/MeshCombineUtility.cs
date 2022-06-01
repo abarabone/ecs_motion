@@ -34,24 +34,24 @@ namespace DotsLite.Geometry
         //}
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public static Task<MeshElements<TIdx, TVtx>> ToTask<TIdx, TVtx>(
-            this Func<MeshElements<TIdx, TVtx>> f)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-        =>
-            Task.Run(f);
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public static Task<MeshElements<TIdx, TVtx>> ToTask<TIdx, TVtx>(
+        //    this Func<MeshElements<TIdx, TVtx>> f)
+        //    where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        //    where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        //=>
+        //    Task.Run(f);
 
-        public static Task<IMeshElements> ToTask(this Func<IMeshElements> f) =>
-            Task.Run(f);
+        //public static Task<IMeshElements> ToTask(this Func<IMeshElements> f) =>
+        //    Task.Run(f);
 
-        public static Task<(TIdx[], TVtx[])> ToTask<TIdx, TVtx>(this Func<(TIdx[], TVtx[])> f)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-            where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
-        =>
-            Task.Run(f);
+        //public static Task<(TIdx[], TVtx[])> ToTask<TIdx, TVtx>(this Func<(TIdx[], TVtx[])> f)
+        //    where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        //    where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        //=>
+        //    Task.Run(f);
 
 
 

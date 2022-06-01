@@ -26,14 +26,14 @@ namespace DotsLite.Model.Authoring
         where TVtx : struct, IVertexUnit//, ISetBufferParams
     {
 
-        public MeshModel() =>
-            this.GenerateSourcePrefabKey();
+        //public MeshModel() =>
+        //    this.GenerateSourcePrefabKey();
 
-        public void GenerateSourcePrefabKey() =>
-            this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
+        //public void GenerateSourcePrefabKey() =>
+        //    this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
 
-        [SerializeField]
-        protected SourcePrefabKeyUnit sourcePrefabKey;
+        //[SerializeField]
+        //protected SourcePrefabKeyUnit sourcePrefabKey;
 
         [SerializeField]
         public GameObject objectTop;
@@ -60,7 +60,7 @@ namespace DotsLite.Model.Authoring
         public virtual GameObject Obj => this.objectTop;
         public virtual Transform TfRoot => this.objectTop.transform;
         public virtual IEnumerable<Transform> QueryBones => null;
-        public virtual SourcePrefabKeyUnit SourcePrefabKey => this.sourcePrefabKey;
+        //public virtual SourcePrefabKeyUnit SourcePrefabKey => this.sourcePrefabKey;
 
         public virtual IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
             this.objectTop.GetComponentsInChildren<Renderer>()
@@ -88,7 +88,7 @@ namespace DotsLite.Model.Authoring
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary)
         {
-            var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
+            var atlas = atlasDictionary.srckeyToAtlas[this].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var p = this.QueryMmts.calculateParameters(
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
@@ -113,8 +113,8 @@ namespace DotsLite.Model.Authoring
 
     [Serializable]
     public class LodMeshModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>, IMeshModelLod
-        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
+        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
     {
 
         [SerializeField]
