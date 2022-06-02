@@ -20,44 +20,40 @@ namespace DotsLite.Geometry
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct PositionNormalUvBonedVertex : IVertexUnit<PositionNormalUvBonedVertex>, ISetBufferParams
+    public struct PositionNormalUvBonedVertex : IVertexUnit
     {
-
         public Vector3 Position;
         public Vector3 Normal;
         public Vector2 Uv;
         public Vector4 BoneWeight4;
         public uint BoneIndex4;
+    }
 
 
+    public struct PositionNormalUvBonedVertexBuilder :
+        IVertexBuilder<PositionNormalUvBonedVertex>, ISetBufferParams
+    {
 
-        public Func<MeshElements<TIdx, PositionNormalUvBonedVertex>> BuildCombiner<TIdx>(
+
+        public PositionNormalUvBonedVertex[] Build(
             IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         {
-            return () =>
-            {
-                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
-
-                var poss = srcmeshes.QueryConvertPositionsWithBone(p).ToArray();
-                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
-                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
-                var bws = srcmeshes.QueryConvertBoneWeights(p).ToArray();
-                var bids = srcmeshes.QueryConvertBoneIndices(p).ToArray();
-                var qVtx =
-                    from x in (poss, nms, uvs, bws, bids).Zip()
-                    select new PositionNormalUvBonedVertex
-                    {
-                        Position = x.src0,
-                        Normal = x.src1,
-                        Uv = x.src2,
-                        BoneWeight4 = x.src3,
-                        BoneIndex4 = x.src4,
-                    };
-                var vtxs = qVtx.ToArray();
-
-                return (idxs, vtxs);
-            };
+            var poss = srcmeshes.QueryConvertPositionsWithBone(p).ToArray();
+            var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+            var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+            var bws = srcmeshes.QueryConvertBoneWeights(p).ToArray();
+            var bids = srcmeshes.QueryConvertBoneIndices(p).ToArray();
+            var qVtx =
+                from x in (poss, nms, uvs, bws, bids).Zip()
+                select new PositionNormalUvBonedVertex
+                {
+                    Position = x.src0,
+                    Normal = x.src1,
+                    Uv = x.src2,
+                    BoneWeight4 = x.src3,
+                    BoneIndex4 = x.src4,
+                };
+            return qVtx.ToArray();
         }
 
 

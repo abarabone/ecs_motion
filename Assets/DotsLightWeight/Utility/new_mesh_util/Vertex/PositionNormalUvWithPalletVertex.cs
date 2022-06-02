@@ -20,7 +20,7 @@ namespace DotsLite.Geometry
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct PositionNormalUvWithPaletteVertex : IVertexUnit<PositionNormalUvWithPaletteVertex>, ISetBufferParams
+    public struct PositionNormalUvWithPaletteVertex : IVertexUnit
     {
 
         public Vector3 Position;
@@ -28,32 +28,29 @@ namespace DotsLite.Geometry
         public Color32 PaletteId;
         public Vector2 Uv;
 
+    }
 
-        public Func<MeshElements<TIdx, PositionNormalUvWithPaletteVertex>> BuildCombiner<TIdx>(
+
+    public struct PositionNormalUvWithPaletteVertexBuilder :
+        IVertexBuilder<PositionNormalUvWithPaletteVertex>, ISetBufferParams
+    {
+        public PositionNormalUvWithPaletteVertex[] Build(
             IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
         {
-            return () =>
-            {
-                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
-
-                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
-                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
-                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
-                var cids = srcmeshes.QueryColorPaletteSubIndex(p).ToArray();
-                var qVtx =
-                    from x in (poss, nms, uvs, cids).Zip()
-                    select new PositionNormalUvWithPaletteVertex
-                    {
-                        Position = x.src0,
-                        Normal = x.src1,
-                        PaletteId = x.src3,
-                        Uv = x.src2,
-                    };
-                var vtxs = qVtx.ToArray();
-
-                return (idxs, vtxs);
-            };
+            var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+            var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+            var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+            var cids = srcmeshes.QueryColorPaletteSubIndex(p).ToArray();
+            var qVtx =
+                from x in (poss, nms, uvs, cids).Zip()
+                select new PositionNormalUvWithPaletteVertex
+                {
+                    Position = x.src0,
+                    Normal = x.src1,
+                    PaletteId = x.src3,
+                    Uv = x.src2,
+                };
+            return qVtx.ToArray();
         }
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)

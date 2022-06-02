@@ -8,7 +8,6 @@ using Unity.Collections;
 using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
-using UnityEngine;
 
 namespace DotsLite.Draw
 {

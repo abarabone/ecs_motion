@@ -20,34 +20,29 @@ namespace DotsLite.Geometry
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct PositionNormalVertex : IVertexUnit<PositionNormalVertex>, ISetBufferParams
+    public struct PositionNormalVertex : IVertexUnit
     {
 
         public Vector3 Position;
         public Vector3 Normal;
 
+    }
 
-        public Func<MeshElements<TIdx, PositionNormalVertex>> BuildCombiner<TIdx>
-            (IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+    public struct PositionNormalVertexBuilder : IVertexBuilder<PositionNormalVertex>, ISetBufferParams
+    {
+
+        public PositionNormalVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
-            return () =>
-            {
-                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
-
-                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
-                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
-                var qVtx =
-                    from x in (poss, nms).Zip()
-                    select new PositionNormalVertex
-                    {
-                        Position = x.src0,
-                        Normal = x.src1,
-                    };
-                var vtxs = qVtx.ToArray();
-
-                return (idxs, vtxs);
-            };
+            var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+            var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+            var qVtx =
+                from x in (poss, nms).Zip()
+                select new PositionNormalVertex
+                {
+                    Position = x.src0,
+                    Normal = x.src1,
+                };
+            return qVtx.ToArray();
         }
 
 

@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
-using UnityEngine;
 using Unity.Entities;
 using Unity.Burst;
 using Unity.Jobs;

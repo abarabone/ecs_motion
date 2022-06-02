@@ -22,8 +22,8 @@ namespace DotsLite.Model.Authoring
 
     [Serializable]
     public class MeshWithPaletteModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>
-        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
+        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
     {
 
 
@@ -31,40 +31,36 @@ namespace DotsLite.Model.Authoring
         ColorPaletteAsset Palette;
 
 
-        public override (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
+        public override Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary)
+            Dictionary<IMeshModel, Mesh> meshDictionary,
+            TextureAtlasDictionary.Data atlasDictionary)
         {
-            var atlas = atlasDictionary.modelToAtlas[this.sourcePrefabKey].GetHashCode();
+            var atlas = atlasDictionary.modelToAtlas[this].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var p = this.QueryMmts.calculateParameters(
-                this.TfRoot, this.QueryBones?.ToArray(),
-                subtexhash => texdict[atlas, subtexhash], null);
+                this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
 
             // パレット向けの暫定
             this.QueryMmts.CalculatePaletteSubIndexParameter(ref p);
 
-            return (
-                this.sourcePrefabKey,
-                meshpack.BuildCombiner<TIdx, TVtx>(p)
-            );
+            return () => meshpack.CreateMeshData(this.idxBuilder, this.vtxBuilder, p);
         }
 
 
-        public override Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        public override void InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
-            var ent = base.CreateModelEntity(gcs, mesh, atlas);
+            base.InitModelEntity(gcs, mesh, atlas);
 
             var paletteAuthor = this.objectTop.GetComponentInParent<ColorPaletteBufferAuthoring>();
-            if (paletteAuthor == null) return ent;
+            if (paletteAuthor == null) return;
 
             var em = gcs.DstEntityManager;
+            var ent = gcs.GetPrimaryEntity(this);
             em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPaletteLinkData
             {
                 BufferEntity = gcs.GetPrimaryEntity(paletteAuthor),
             });
-
-            return ent;
         }
 
     }
@@ -72,8 +68,8 @@ namespace DotsLite.Model.Authoring
 
     [Serializable]
     public class LodMeshWithPaletteModel<TIdx, TVtx> : MeshWithPaletteModel<TIdx, TVtx>, IMeshModelLod
-        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
+        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
     {
 
         [SerializeField]

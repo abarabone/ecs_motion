@@ -32,7 +32,7 @@ namespace DotsLite.Structure.Authoring
         protected override int boneLength => 1;
 
 
-        public virtual Func<Mesh.MeshDataArray> BuildMeshCombiner(
+        public override Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
             Dictionary<IMeshModel, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary)
