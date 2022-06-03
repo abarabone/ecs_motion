@@ -19,34 +19,27 @@ namespace DotsLite.Geometry
     using DotsLite.Geometry.inner.unit;
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct PositionUvVertex : IVertexUnit<PositionUvVertex>, ISetBufferParams
+    public struct PositionUvVertex : IVertexUnit
     {
-
         public Vector3 Position;
         public Vector2 Uv;
+    }
 
+    public struct PositionUvVertexBuilder : IVertexBuilder<PositionUvVertex>, ISetBufferParams
+    {
 
-        public Func<MeshElements<TIdx, PositionUvVertex>> BuildCombiner<TIdx>(
-            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
+        public PositionUvVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
-            return () =>
-            {
-                var idxs = srcmeshes.QueryConvertIndexData<TIdx>(p.mtPerMesh).ToArray();
-
-                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
-                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
-                var qVtx =
-                    from x in (poss, uvs).Zip()
-                    select new PositionUvVertex
-                    {
-                        Position = x.src0,
-                        Uv = x.src1,
-                    };
-                var vtxs = qVtx.ToArray();
-
-                return (idxs, vtxs);
-            };
+            var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+            var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+            var qVtx =
+                from x in (poss, uvs).Zip()
+                select new PositionUvVertex
+                {
+                    Position = x.src0,
+                    Uv = x.src1,
+                };
+            return qVtx.ToArray();
         }
 
 

@@ -21,9 +21,8 @@ namespace DotsLite.Draw.Authoring
     using DotsLite.Utilities;
     using DotsLite.Geometry;
     using DotsLite.Model;
-    using Unity.Physics;
-    using DotsLite.Draw;
 
+    using Unity.Physics;
     using Material = UnityEngine.Material;
 
 

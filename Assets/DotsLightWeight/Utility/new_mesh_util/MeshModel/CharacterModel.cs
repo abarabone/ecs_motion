@@ -21,8 +21,8 @@ namespace DotsLite.Model.Authoring
 
     [Serializable]
     public class CharacterModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>
-        where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams
-        where TVtx : struct, IVertexUnit<TVtx>, ISetBufferParams
+        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
+        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
     {
 
         [HideInInspector]
