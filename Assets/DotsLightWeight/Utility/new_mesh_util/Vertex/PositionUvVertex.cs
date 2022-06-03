@@ -25,7 +25,7 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
     }
 
-    public struct PositionUvVertexBuilder : IVertexBuilder<PositionUvVertex>, ISetBufferParams
+    public class PositionUvVertexBuilder : IVertexBuilder<PositionUvVertex>, ISetBufferParams
     {
 
         public PositionUvVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)

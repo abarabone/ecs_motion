@@ -17,6 +17,10 @@ namespace DotsLite.Model.Authoring
     [Serializable]
     public class PositionOnly : PositionVertexBuilder
     { }
+
+    [Serializable]
+    public class PositionUv : PositionUvVertexBuilder
+    { }
 }
 
 namespace DotsLite.Model.Authoring

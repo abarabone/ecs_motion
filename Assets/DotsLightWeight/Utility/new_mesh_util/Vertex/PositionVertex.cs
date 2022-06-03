@@ -27,9 +27,10 @@ namespace DotsLite.Geometry
     }
 
 
-    public class PositionVertexBuilder : IVertexBuilder<PositionVertex>, ISetBufferParams
+    public class PositionVertexBuilder : IVertexBuilder, ISetBufferParams
     {
-        public PositionVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        public PositionVertex[] IVertexBuilder.Build<PositionVertex>(
+            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
             var poss = srcmeshes.QueryConvertPositions(p);//.ToArray();
             var qVtx =
