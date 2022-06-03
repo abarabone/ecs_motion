@@ -12,6 +12,15 @@ using Unity.Linq;
 
 namespace DotsLite.Model.Authoring
 {
+    using DotsLite.Geometry;
+
+    [Serializable]
+    public class PositionOnly : PositionVertexBuilder
+    { }
+}
+
+namespace DotsLite.Model.Authoring
+{
     using DotsLite.Draw;
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;

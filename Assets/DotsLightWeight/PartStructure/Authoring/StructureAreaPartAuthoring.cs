@@ -13,16 +13,6 @@ using UnityEditor;
 
 namespace DotsLite.Structure.Authoring
 {
-    using DotsLite.Geometry;
-
-    [Serializable]
-    public class PositionNormalUvI32AreaPart :
-        AreaPartModel<UI32, PositionNormalUvVertex>, StructureAreaPartAuthoring.IMeshModelSelector
-    { }
-}
-
-namespace DotsLite.Structure.Authoring
-{
     using DotsLite.Model;
     using DotsLite.Draw;
     using DotsLite.Model.Authoring;

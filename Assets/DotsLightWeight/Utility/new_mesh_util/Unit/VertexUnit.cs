@@ -32,6 +32,7 @@ namespace DotsLite.Geometry
         TVtx[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p);
     }
 
+
     //public interface IVertexUnitBoned<TVtx> : IVertexUnit<TVtx>
     //    where TVtx : struct, IVertexUnitBoned<TVtx>, ISetBufferParams
     //{

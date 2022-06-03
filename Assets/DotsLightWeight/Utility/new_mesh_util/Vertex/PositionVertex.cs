@@ -27,7 +27,7 @@ namespace DotsLite.Geometry
     }
 
 
-    public struct PosisionVertexBuilder : IVertexBuilder<PositionVertex>, ISetBufferParams
+    public class PositionVertexBuilder : IVertexBuilder<PositionVertex>, ISetBufferParams
     {
         public PositionVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
