@@ -64,9 +64,9 @@ namespace DotsLite.Geometry
 
         public static Mesh.MeshDataArray CreateMeshData<TIdx, TVtx>(
             this SrcMeshesModelCombinePack meshpack,
-            IIndexBuilder<TIdx> idxBuilder, IVertexBuilder<TVtx> vtxBuilder,
+            IIndexBuilder idxBuilder, IVertexBuilder vtxBuilder,
             AdditionalParameters p)
-            where TIdx : struct, IIndexUnit<TIdx>
+            where TIdx : struct, IIndexUnit
             where TVtx : struct, IVertexUnit
         {
             var dstmeshes = Mesh.AllocateWritableMeshData(1);
@@ -74,12 +74,12 @@ namespace DotsLite.Geometry
             var src = meshpack.AsEnumerable;
             var dst = dstmeshes[0];
 
-            var idxs = idxBuilder.Build(src);
+            var idxs = idxBuilder.Build<TIdx>(src, p);
             idxBuilder.SetBufferParams(dst, idxs.Length);
             //dst.setBufferParams<TIdx>(idxs.Length);
             dst.GetIndexData<TIdx>().CopyFrom(idxs);
 
-            var vtxs = vtxBuilder.Build(src, p);
+            var vtxs = vtxBuilder.Build<TVtx>(src, p);
             vtxBuilder.SetBufferParams(dst, vtxs.Length);
             //dst.setBufferParams<TVtx>(vtxs.Length);
             dst.GetVertexData<TVtx>().CopyFrom(vtxs);

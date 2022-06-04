@@ -28,11 +28,12 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
     }
 
-    public struct StructureVertexBuilder : IVertexBuilder<StructureVertex>, ISetBufferParams
+    public struct StructureVertexBuilder : IVertexBuilder, ISetBufferParams
     {
 
 
-        public StructureVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TVtx : struct, IVertexUnit
         {
             var poss = srcmeshes.QueryConvertPositions(p).ToArray();
             var nms = srcmeshes.QueryConvertNormals(p).ToArray();
@@ -48,7 +49,7 @@ namespace DotsLite.Geometry
                     PardId = new Color32(x.src2.r, x.src2.g, x.src2.b, x.src3.a),
                     Uv = x.src4,
                 };
-            return qVtx.ToArray();
+            return qVtx.Cast<TVtx>().ToArray();
         }
 
 

@@ -27,9 +27,10 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
     }
 
-    public struct PositionNormalUvVertexBuilder : IVertexBuilder<PositionNormalUvVertex>, ISetBufferParams
+    public struct PositionNormalUvVertexBuilder : IVertexBuilder, ISetBufferParams
     {
-        public PositionNormalUvVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TVtx : struct, IVertexUnit
         {
             var poss = srcmeshes.QueryConvertPositions(p).ToArray();
             var nms = srcmeshes.QueryConvertNormals(p).ToArray();
@@ -42,7 +43,7 @@ namespace DotsLite.Geometry
                     Normal = x.src1,
                     Uv = x.src2,
                 };
-            return qVtx.ToArray();
+            return qVtx.Cast<TVtx>().ToArray();
         }
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)

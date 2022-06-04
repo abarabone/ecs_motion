@@ -18,59 +18,43 @@ namespace DotsLite.Geometry
     using DotsLite.Geometry.inner;
     using DotsLite.Geometry.inner.unit;
 
-    public interface IIndexUnit<TIdx>
+    public interface IIndexUnit
     {
-        TIdx Add(uint otherValue);
-    }
+        //TIdx Add<TIdx>(uint otherValue) where TIdx : struct, IIndexUnit;
 
-    //public struct UI16 : IIndexUnit<UI16>, ISetBufferParams
-    //{
-    //    public ushort value;
-    //    public UI16 Add(uint otherValue) => new UI16 { value = (ushort)(otherValue + this.value) };
-
-    //    public void SetBufferParams(Mesh.MeshData meshdata, int indexLength)
-    //    {
-    //        meshdata.SetIndexBufferParams(indexLength, IndexFormat.UInt16);
-    //    }
-
-    //    public static implicit operator UI16 (ushort src) => new UI16 { value = src };
-    //}
-
-    //public struct UI32 : IIndexUnit<UI32>, ISetBufferParams
-    //{
-    //    public uint value;
-    //    public UI32 Add(uint otherValue) => new UI32 { value = (uint)(otherValue + this.value) };
-
-    //    public void SetBufferParams(Mesh.MeshData meshdata, int indexLength)
-    //    {
-    //        meshdata.SetIndexBufferParams(indexLength, IndexFormat.UInt32);
-    //    }
-
-    //    public static implicit operator UI32(uint src) => new UI32 { value = src };
-    //}
-
-
-
-
-    public interface IIndexBuilder<TIdx> : ISetBufferParams
-        where TIdx : IIndexUnit<TIdx>
-    {
-        TIdx[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p);
+        uint Value { get; set; }
     }
 
 
-    public struct UI16 : IIndexUnit<UI16>
+    public interface IIndexBuilder : ISetBufferParams
+    {
+        TIdx[] Build<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        where TIdx : struct, IIndexUnit;
+    }
+
+
+    public struct UI16 : IIndexUnit
     {
         public ushort value;
-        public UI16 Add(uint otherValue) => new UI16 { value = (ushort)(otherValue + this.value) };
-
+        public uint Value
+        {
+            get => this.value;
+            set => this.value = (ushort)value;
+        }
+        //public TIdx Add<TIdx>(uint otherValue) where TIdx : struct, IIndexUnit
+        //{
+        //    var ii = new TIdx();
+        //    ii = (TIdx)new UI16 { value = (ushort)(otherValue + this.value) };
+        //}
         public static implicit operator UI16(ushort src) => new UI16 { value = src };
     }
 
-    public struct UI16Builder : IIndexBuilder<UI16>, ISetBufferParams
+    public struct UI16Builder : IIndexBuilder, ISetBufferParams
     {
-        public UI16[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p) =>
-            srcmeshes.QueryConvertIndexData<UI16>(p.mtPerMesh).ToArray();
+        public TIdx[] Build<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p) where TIdx : struct, IIndexUnit =>
+            srcmeshes.QueryConvertIndexData<UI16>(p.mtPerMesh)
+                .Cast<TIdx>()
+                .ToArray();
 
         public void SetBufferParams(Mesh.MeshData meshdata, int indexLength)
         {
@@ -79,23 +63,23 @@ namespace DotsLite.Geometry
     }
 
 
-    public struct UI32 : IIndexUnit<UI32>
-    {
-        public uint value;
-        public UI32 Add(uint otherValue) => new UI32 { value = (uint)(otherValue + this.value) };
+    //public struct UI32 : IIndexUnit<UI32>
+    //{
+    //    public uint value;
+    //    public UI32 Add(uint otherValue) => new UI32 { value = (uint)(otherValue + this.value) };
 
-        public static implicit operator UI32(uint src) => new UI32 { value = src };
-    }
+    //    public static implicit operator UI32(uint src) => new UI32 { value = src };
+    //}
 
-    public struct UI32Builder : IIndexBuilder<UI32>, ISetBufferParams
-    {
-        public UI32[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p) =>
-            srcmeshes.QueryConvertIndexData<UI32>(p.mtPerMesh).ToArray();
+    //public struct UI32Builder : IIndexBuilder<UI32>, ISetBufferParams
+    //{
+    //    public UI32[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p) =>
+    //        srcmeshes.QueryConvertIndexData<UI32>(p.mtPerMesh).ToArray();
 
-        public void SetBufferParams(Mesh.MeshData meshdata, int indexLength)
-        {
-            meshdata.SetIndexBufferParams(indexLength, IndexFormat.UInt32);
-        }
-    }
+    //    public void SetBufferParams(Mesh.MeshData meshdata, int indexLength)
+    //    {
+    //        meshdata.SetIndexBufferParams(indexLength, IndexFormat.UInt32);
+    //    }
+    //}
 
 }

@@ -29,7 +29,7 @@ namespace DotsLite.Geometry
         //    where TIdx : struct, IIndexUnit<TIdx>, ISetBufferParams;
 
         TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TVtx : IVertexUnit, new();
+            where TVtx : struct, IVertexUnit;
     }
 
 

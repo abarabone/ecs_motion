@@ -39,8 +39,9 @@ namespace DotsLite.Geometry.inner
 
         public static IEnumerable<TIdx> QueryConvertIndexData<TIdx>(
             this IEnumerable<SrcMeshUnit> srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
-            where TIdx : struct, IIndexUnit<TIdx>
-        =>
+            where TIdx : struct, IIndexUnit
+        {
+            return
             from x in srcmeshes.QuerySubMeshForIndexData<TIdx>(mtsPerMesh)
             from xsub in x.submeshes
             let submesh = xsub
@@ -48,9 +49,16 @@ namespace DotsLite.Geometry.inner
                 ? submesh.Elements().AsTriangle().Reverse()
                 : submesh.Elements().AsTriangle()
             from idx in tri//.Do(x => Debug.Log(x))//
-            select idx.Add((uint)x.mesh.BaseVertex + (uint)submesh.Descriptor.baseVertex)
-            ;
-        
+                           //select idx.Add<TIdx>((uint)x.mesh.BaseVertex + (uint)submesh.Descriptor.baseVertex)
+            let i = (uint)x.mesh.BaseVertex + (uint)submesh.Descriptor.baseVertex
+            select aaa(idx, i);
+
+            static TIdx aaa(TIdx v, uint i)
+            {
+                v.Value += i;
+                return v;
+            }
+        }
     }
 
     static class ConvertVertexUtility
@@ -237,7 +245,7 @@ namespace DotsLite.Geometry.inner
         /// </summary>
         public static IEnumerable<(Matrix4x4 mt, SrcMeshUnit mesh, IEnumerable<SrcSubMeshUnit<T>> submeshes)>
             QuerySubMeshForIndexData<T>(this IEnumerable<SrcMeshUnit> srcmeshes, IEnumerable<Matrix4x4> mtsPerMesh)
-            where T : struct, IIndexUnit<T>
+            where T : struct, IIndexUnit
         =>
             from x in (srcmeshes, mtsPerMesh).Zip()
             let mesh = x.src0
@@ -314,7 +322,7 @@ namespace DotsLite.Geometry.inner
         /// 
         /// </summary>
         public static IEnumerable<SrcSubMeshUnit<T>> QuerySubmeshesForIndexData<T>(this Mesh.MeshData meshdata)
-            where T : struct, IIndexUnit<T>
+            where T : struct, IIndexUnit
         {
             return
                 from i in 0.Inc(meshdata.subMeshCount)
@@ -329,17 +337,23 @@ namespace DotsLite.Geometry.inner
                     IndexFormat.UInt16 when typeof(T) != typeof(ushort) =>
                         meshdata.GetIndexData<ushort>()
                             .Slice(desc.indexStart, desc.indexCount)
-                            .Select(x => new T().Add(x)),
+                            .Select(x => aaa(new T(), x)),
 
                     IndexFormat.UInt32 when typeof(T) != typeof(uint) =>
                         meshdata.GetIndexData<uint>()
                             .Slice(desc.indexStart, desc.indexCount)
-                            .Select(x => new T().Add(x)),
+                            .Select(x => aaa(new T(), x)),
 
                     _ =>
                         meshdata.GetIndexData<T>()
                             .Slice(desc.indexStart, desc.indexCount),
                 };
+
+            static T aaa(T v, uint i)
+            {
+                v.Value = i;
+                return v;
+            }
         }
 
         //static IEnumerable<T> range<T>(this NativeArray<T> src, int first, int length) where T : struct

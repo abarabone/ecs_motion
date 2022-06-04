@@ -31,11 +31,10 @@ namespace DotsLite.Geometry
     }
 
 
-    public struct PositionNormalUvWithPaletteVertexBuilder :
-        IVertexBuilder<PositionNormalUvWithPaletteVertex>, ISetBufferParams
+    public struct PositionNormalUvWithPaletteVertexBuilder : IVertexBuilder, ISetBufferParams
     {
-        public PositionNormalUvWithPaletteVertex[] Build(
-            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TVtx : struct, IVertexUnit
         {
             var poss = srcmeshes.QueryConvertPositions(p).ToArray();
             var nms = srcmeshes.QueryConvertNormals(p).ToArray();
@@ -50,7 +49,7 @@ namespace DotsLite.Geometry
                     PaletteId = x.src3,
                     Uv = x.src2,
                 };
-            return qVtx.ToArray();
+            return qVtx.Cast<TVtx>().ToArray();
         }
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)

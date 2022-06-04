@@ -34,9 +34,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
 
     [Serializable]
-    public class MeshModel<TIdx, TVtx> : MonoBehaviour, IMeshModel
-        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
-        where TVtx : struct, IVertexUnit//, ISetBufferParams
+    public class MeshModel : MonoBehaviour, IMeshModel
     {
 
         //public MeshModel() =>
@@ -55,9 +53,14 @@ namespace DotsLite.Model.Authoring
         public Shader shader;
 
 
-        //interface IIdxBuilder : IIndexBuilder<TIdx> { }
-        public IIndexBuilder<TIdx> idxBuilder;
-        public IVertexBuilder<TVtx> vtxBuilder;
+        public interface IIdxSelector : IIndexBuilder { }
+        public interface IVtxSelector : IVertexBuilder { }
+
+        [SerializeReference, SubclassSelector]
+        public IIdxSelector idxBuilder;
+
+        [SerializeReference, SubclassSelector]
+        public IVtxSelector vtxBuilder;
 
 
 
@@ -108,7 +111,7 @@ namespace DotsLite.Model.Authoring
             var p = this.QueryMmts.calculateParameters(
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
 
-            return () => meshpack.CreateMeshData(this.idxBuilder, this.vtxBuilder, p);
+            return () => meshpack.CreateMeshData<, >(this.idxBuilder, this.vtxBuilder, p);
         }
 
         public virtual void InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
@@ -126,9 +129,7 @@ namespace DotsLite.Model.Authoring
 
 
     [Serializable]
-    public class LodMeshModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>, IMeshModelLod
-        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
-        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
+    public class LodMeshModel : MeshModel, IMeshModelLod
     {
 
         [SerializeField]

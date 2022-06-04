@@ -25,10 +25,11 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
     }
 
-    public class PositionUvVertexBuilder : IVertexBuilder<PositionUvVertex>, ISetBufferParams
+    public class PositionUvVertexBuilder : IVertexBuilder, ISetBufferParams
     {
 
-        public PositionUvVertex[] Build(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TVtx : struct, IVertexUnit
         {
             var poss = srcmeshes.QueryConvertPositions(p).ToArray();
             var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
@@ -39,7 +40,7 @@ namespace DotsLite.Geometry
                     Position = x.src0,
                     Uv = x.src1,
                 };
-            return qVtx.ToArray();
+            return qVtx.Cast<TVtx>().ToArray();
         }
 
 

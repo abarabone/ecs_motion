@@ -30,13 +30,11 @@ namespace DotsLite.Geometry
     }
 
 
-    public struct PositionNormalUvBonedVertexBuilder :
-        IVertexBuilder<PositionNormalUvBonedVertex>, ISetBufferParams
+    public struct PositionNormalUvBonedVertexBuilder : IVertexBuilder, ISetBufferParams
     {
 
-
-        public PositionNormalUvBonedVertex[] Build(
-            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TVtx : struct, IVertexUnit
         {
             var poss = srcmeshes.QueryConvertPositionsWithBone(p).ToArray();
             var nms = srcmeshes.QueryConvertNormals(p).ToArray();
@@ -53,7 +51,7 @@ namespace DotsLite.Geometry
                     BoneWeight4 = x.src3,
                     BoneIndex4 = x.src4,
                 };
-            return qVtx.ToArray();
+            return qVtx.Cast<TVtx>().ToArray();
         }
 
 

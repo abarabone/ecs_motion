@@ -26,11 +26,11 @@ namespace DotsLite.Geometry
 
     }
 
-
     public class PositionVertexBuilder : IVertexBuilder, ISetBufferParams
     {
-        public PositionVertex[] IVertexBuilder.Build<PositionVertex>(
-            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+
+        public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            where TVtx : struct, IVertexUnit
         {
             var poss = srcmeshes.QueryConvertPositions(p);//.ToArray();
             var qVtx =
@@ -39,7 +39,7 @@ namespace DotsLite.Geometry
                 {
                     Position = x,
                 };
-            return qVtx.ToArray();
+            return qVtx.Cast<TVtx>().ToArray();
         }
 
         public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
@@ -49,6 +49,14 @@ namespace DotsLite.Geometry
                 new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
             };
             meshdata.SetVertexBufferParams(vertexLength, layout);
+        }
+
+        public void BuildToMeshData(Mesh.MeshData meshdata)
+        {
+            var vtxs = vtxBuilder.Build<TVtx>(src, p);
+            vtxBuilder.SetBufferParams(dst, vtxs.Length);
+            //dst.setBufferParams<TVtx>(vtxs.Length);
+            meshdata.GetVertexData<TVtx>().CopyFrom(vtxs);
         }
     }
 
