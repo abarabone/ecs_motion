@@ -35,7 +35,7 @@ namespace DotsLite.Structure.Authoring
 
         IEnumerable<IMeshModel> _model = null;
 
-        public override IEnumerable<IMeshModel> QueryModel => _model ??= new MeshModel<UI32, PositionNormalUvVertex>
+        public override IEnumerable<IMeshModel> QueryModel => _model ??= new MeshModel
         {
             objectTop = this.gameObject,
             shader = this.ShaderToDraw,

@@ -107,8 +107,9 @@ namespace DotsLite.Structure.Authoring
 
                     var qPartInfoData =
                         from x in colliderParts
-                        let key = x.pt.QueryModel.First().SourcePrefabKey
-                        let modelEntity = gcs.GetFromModelEntityDictionary(key)
+                        //let key = x.pt.QueryModel.First().SourcePrefabKey
+                        //let modelEntity = gcs.GetFromModelEntityDictionary(key)
+                        let modelEntity = gcs.GetPrimaryEntity(x.pt.PartModel.AsGameObject)
                         select new PartBone.PartInfoData
                         {
                             PartId = x.pt.PartId,

@@ -111,7 +111,7 @@ namespace DotsLite.Model.Authoring
             var p = this.QueryMmts.calculateParameters(
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
 
-            return () => meshpack.CreateMeshData<, >(this.idxBuilder, this.vtxBuilder, p);
+            return () => meshpack.CreateMeshData(this.idxBuilder, this.vtxBuilder, p);
         }
 
         public virtual void InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)

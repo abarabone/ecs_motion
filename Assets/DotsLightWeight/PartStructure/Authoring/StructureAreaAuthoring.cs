@@ -43,7 +43,7 @@ namespace DotsLite.Structure.Authoring
     public class StructureAreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
     {
 
-        public AreaModel<UI32, StructureVertex> NearModel;
+        public AreaModel NearModel;
 
         public GameObject Envelope;
         public StructureAreaAuthoring MasterPrefab;

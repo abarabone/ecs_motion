@@ -27,34 +27,78 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
     }
 
-    public struct PositionNormalUvVertexBuilder : IVertexBuilder, ISetBufferParams
+    public struct PositionNormalUvVertexBuilder : IVertexBuilder//, ISetBufferParams
     {
-        public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TVtx : struct, IVertexUnit
-        {
-            var poss = srcmeshes.QueryConvertPositions(p).ToArray();
-            var nms = srcmeshes.QueryConvertNormals(p).ToArray();
-            var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
-            var qVtx =
-                from x in (poss, nms, uvs).Zip()
-                select new PositionNormalUvVertex
-                {
-                    Position = x.src0,
-                    Normal = x.src1,
-                    Uv = x.src2,
-                };
-            return qVtx.Cast<TVtx>().ToArray();
-        }
+        //public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        //    where TVtx : struct, IVertexUnit
+        //{
+        //    var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+        //    var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+        //    var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+        //    var qVtx =
+        //        from x in (poss, nms, uvs).Zip()
+        //        select new PositionNormalUvVertex
+        //        {
+        //            Position = x.src0,
+        //            Normal = x.src1,
+        //            Uv = x.src2,
+        //        };
+        //    return qVtx.Cast<TVtx>().ToArray();
+        //}
 
-        public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
+        //public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
+        //{
+        //    var layout = new[]
+        //    {
+        //        new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+        //        new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
+        //        new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
+        //    };
+        //    meshdata.SetVertexBufferParams(vertexLength, layout);
+        //}
+
+        public void BuildMeshData(
+            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, Mesh.MeshData dstmesh)
         {
-            var layout = new[]
+
+            var vtxs = buildVtxs_(srcmeshes, p);
+            setVtxBufferParams_(dstmesh, vtxs.Length);
+            copyVtxs_(dstmesh, vtxs);
+            return;
+
+
+            static PositionNormalUvVertex[] buildVtxs_(
+                IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             {
-                new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
-                new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
-                new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
-            };
-            meshdata.SetVertexBufferParams(vertexLength, layout);
+                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+                var qVtx =
+                    from x in (poss, nms, uvs).Zip()
+                    select new PositionNormalUvVertex
+                    {
+                        Position = x.src0,
+                        Normal = x.src1,
+                        Uv = x.src2,
+                    };
+                return qVtx.ToArray();
+            }
+
+            static void setVtxBufferParams_(Mesh.MeshData meshdata, int vtxLength)
+            {
+                var layout = new[]
+                {
+                    new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+                    new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
+                    new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
+                };
+                meshdata.SetVertexBufferParams(vtxLength, layout);
+            }
+
+            static void copyVtxs_(Mesh.MeshData meshdata, PositionNormalUvVertex[] vtxs)
+            {
+                meshdata.GetVertexData<PositionNormalUvVertex>().CopyFrom(vtxs);
+            }
         }
     }
 

@@ -43,8 +43,8 @@ namespace DotsLite.Structure.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public BuildingModel<UI32, StructureVertex> NearModel;
-        public LodMeshModel<UI32, PositionNormalUvVertex> FarModel;
+        public BuildingModel NearModel;
+        public LodMeshModel FarModel;
 
         public GameObject Envelope;
         public StructureBuildingAuthoring MasterPrefab;
@@ -404,7 +404,7 @@ namespace DotsLite.Structure.Authoring
         {
             var em = gcs.DstEntityManager;
 
-            var mesh = gcs.GetMeshFromDictionary(near.SourcePrefabKey);
+            var mesh = gcs.GetMeshFromDictionary(near);//.SourcePrefabKey);
             using var data = Mesh.AcquireReadOnlyMeshData(mesh);
             using var vtxs = new NativeArray<Vector3>(mesh.vertexCount, Allocator.Temp);
             using var idxs = new NativeArray<int>((int)mesh.GetIndexCount(0) * 3, Allocator.Temp);

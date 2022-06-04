@@ -31,37 +31,85 @@ namespace DotsLite.Geometry
     }
 
 
-    public struct PositionNormalUvWithPaletteVertexBuilder : IVertexBuilder, ISetBufferParams
+    public struct PositionNormalUvWithPaletteVertexBuilder : IVertexBuilder//, ISetBufferParams
     {
-        public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TVtx : struct, IVertexUnit
-        {
-            var poss = srcmeshes.QueryConvertPositions(p).ToArray();
-            var nms = srcmeshes.QueryConvertNormals(p).ToArray();
-            var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
-            var cids = srcmeshes.QueryColorPaletteSubIndex(p).ToArray();
-            var qVtx =
-                from x in (poss, nms, uvs, cids).Zip()
-                select new PositionNormalUvWithPaletteVertex
-                {
-                    Position = x.src0,
-                    Normal = x.src1,
-                    PaletteId = x.src3,
-                    Uv = x.src2,
-                };
-            return qVtx.Cast<TVtx>().ToArray();
-        }
+        //public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        //    where TVtx : struct, IVertexUnit
+        //{
+        //    var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+        //    var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+        //    var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+        //    var cids = srcmeshes.QueryColorPaletteSubIndex(p).ToArray();
+        //    var qVtx =
+        //        from x in (poss, nms, uvs, cids).Zip()
+        //        select new PositionNormalUvWithPaletteVertex
+        //        {
+        //            Position = x.src0,
+        //            Normal = x.src1,
+        //            PaletteId = x.src3,
+        //            Uv = x.src2,
+        //        };
+        //    return qVtx.Cast<TVtx>().ToArray();
+        //}
 
-        public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
+        //public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
+        //{
+        //    var layout = new[]
+        //    {
+        //        new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+        //        new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
+        //        new VertexAttributeDescriptor(VertexAttribute.Color, VertexAttributeFormat.UInt8, 4),
+        //        new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
+        //    };
+        //    meshdata.SetVertexBufferParams(vertexLength, layout);
+        //}
+
+
+        public void BuildMeshData(
+            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, Mesh.MeshData dstmesh)
         {
-            var layout = new[]
+
+            var vtxs = buildVtxs_(srcmeshes, p);
+            setVtxBufferParams_(dstmesh, vtxs.Length);
+            copyVtxs_(dstmesh, vtxs);
+            return;
+
+
+            static PositionNormalUvWithPaletteVertex[] buildVtxs_(
+                IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             {
-                new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
-                new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
-                new VertexAttributeDescriptor(VertexAttribute.Color, VertexAttributeFormat.UInt8, 4),
-                new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
-            };
-            meshdata.SetVertexBufferParams(vertexLength, layout);
+                var poss = srcmeshes.QueryConvertPositions(p).ToArray();
+                var nms = srcmeshes.QueryConvertNormals(p).ToArray();
+                var uvs = srcmeshes.QueryConvertUvs(p, channel: 0).ToArray();
+                var cids = srcmeshes.QueryColorPaletteSubIndex(p).ToArray();
+                var qVtx =
+                    from x in (poss, nms, uvs, cids).Zip()
+                    select new PositionNormalUvWithPaletteVertex
+                    {
+                        Position = x.src0,
+                        Normal = x.src1,
+                        PaletteId = x.src3,
+                        Uv = x.src2,
+                    };
+                return qVtx.ToArray();
+            }
+
+            static void setVtxBufferParams_(Mesh.MeshData meshdata, int vtxLength)
+            {
+                var layout = new[]
+                {
+                    new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+                    new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
+                    new VertexAttributeDescriptor(VertexAttribute.Color, VertexAttributeFormat.UInt8, 4),
+                    new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
+                };
+                meshdata.SetVertexBufferParams(vtxLength, layout);
+            }
+
+            static void copyVtxs_(Mesh.MeshData meshdata, PositionNormalUvWithPaletteVertex[] vtxs)
+            {
+                meshdata.GetVertexData<PositionNormalUvWithPaletteVertex>().CopyFrom(vtxs);
+            }
         }
     }
 

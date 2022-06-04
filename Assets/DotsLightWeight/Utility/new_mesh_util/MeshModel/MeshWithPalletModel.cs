@@ -21,9 +21,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
 
     [Serializable]
-    public class MeshWithPaletteModel<TIdx, TVtx> : MeshModel<TIdx, TVtx>
-        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
-        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
+    public class MeshWithPaletteModel : MeshModel
     {
 
 
@@ -67,9 +65,7 @@ namespace DotsLite.Model.Authoring
 
 
     [Serializable]
-    public class LodMeshWithPaletteModel<TIdx, TVtx> : MeshWithPaletteModel<TIdx, TVtx>, IMeshModelLod
-        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
-        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
+    public class LodMeshWithPaletteModel : MeshWithPaletteModel, IMeshModelLod
     {
 
         [SerializeField]

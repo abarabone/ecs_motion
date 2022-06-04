@@ -35,7 +35,7 @@ namespace DotsLite.Model.Authoring
 
         protected new void Reset()
         {
-            this.Model ??= new MeshModel<UI32, PositionNormalUvVertex>();
+            this.Model ??= new MeshModel();
             this.Model.objectTop = this.gameObject;
             base.Reset();
         }
@@ -48,7 +48,7 @@ namespace DotsLite.Model.Authoring
         //public IMeshModel[] Models = new[] { new LodMeshModel<UI32, PositionNormalUvVertex> { } };
 
         //public LodMeshModel<UI32, PositionNormalUvVertex>[] Models;
-        public MeshModel<UI32, PositionNormalUvVertex> Model;
+        public MeshModel Model;
 
 
 
@@ -125,7 +125,8 @@ namespace DotsLite.Model.Authoring
                     new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(this.QueryModel.First().SourcePrefabKey),
+                        DrawModelEntityCurrent = gcs.GetPrimaryEntity(this.Model.AsGameObject),
+                        //DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(this.QueryModel.First().SourcePrefabKey),
                     }
                 );
                 em.SetComponentData(mainEntity,

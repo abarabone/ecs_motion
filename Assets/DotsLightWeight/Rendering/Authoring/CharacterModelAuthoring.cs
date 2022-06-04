@@ -56,7 +56,7 @@ namespace DotsLite.Model.Authoring
             this.Model.objectTop = this.gameObject;
         }
 
-        public CharacterModel<UI32, PositionNormalUvBonedVertex> Model;
+        public CharacterModel Model;
 
 
 

@@ -119,8 +119,10 @@ namespace DotsLite.Draw.Authoring
             em.AddComponentData(drawInstance,
                 new DrawInstance.ModelLod2LinkData
                 {
-                    DrawModelEntityNear = gcs.GetFromModelEntityDictionary(lods[0].SourcePrefabKey),
-                    DrawModelEntityFar = gcs.GetFromModelEntityDictionary(lods[1].SourcePrefabKey),
+                    //DrawModelEntityNear = gcs.GetFromModelEntityDictionary(lods[0].SourcePrefabKey),
+                    //DrawModelEntityFar = gcs.GetFromModelEntityDictionary(lods[1].SourcePrefabKey),
+                    DrawModelEntityNear = gcs.GetPrimaryEntity(lods[0].AsGameObject),
+                    DrawModelEntityFar = gcs.GetPrimaryEntity(lods[1].AsGameObject),
                     LimitDistanceSqrNear = pow2_(lods[0].LimitDistance),
                     LimitDistanceSqrFar = pow2_(lods[1].LimitDistance),
                     MarginDistanceSqrNear = pow2_(lods[0].LimitDistance + lods[0].Margin),
@@ -146,7 +148,8 @@ namespace DotsLite.Draw.Authoring
             em.AddComponentData(drawInstance,
                 new DrawInstance.ModelLod1LinkData
                 {
-                    DrawModelEntityNear = gcs.GetFromModelEntityDictionary(lod.SourcePrefabKey),
+                    //DrawModelEntityNear = gcs.GetFromModelEntityDictionary(lod.SourcePrefabKey),
+                    DrawModelEntityNear = gcs.GetPrimaryEntity(lod.AsGameObject),
                     LimitDistanceSqrNear = pow2_(lod.LimitDistance),
                     MarginDistanceSqrNear = pow2_(lod.LimitDistance + lod.Margin),
                 }

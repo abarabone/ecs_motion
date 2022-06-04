@@ -14,10 +14,10 @@ namespace DotsLite.Structure.Authoring
 {
     using DotsLite.Geometry;
 
-    [Serializable]
-    public class PositionNormalUvI32AreaPart :
-        AreaPartModel<UI32, PositionNormalUvVertex>, StructureAreaPartAuthoring.IMeshModelSelector
-    { }
+    //[Serializable]
+    //public class PositionNormalUvI32AreaPart :
+    //    AreaPartModel<UI32, PositionNormalUvVertex>, StructureAreaPartAuthoring.IMeshModelSelector
+    //{ }
 }
 
 namespace DotsLite.Structure.Authoring
@@ -33,25 +33,19 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class PartModel<TIdx, TVtx> : PartModelBase<TIdx, TVtx, StructureBuildingPartAuthoring>
-        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
-        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
+    public class PartModel : PartModelBase<StructureBuildingPartAuthoring>
     {
 
     }
 
     [Serializable]
-    public class AreaPartModel<TIdx, TVtx> : PartModelBase<TIdx, TVtx, StructureAreaPartAuthoring>
-        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
-        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
+    public class AreaPartModel : PartModelBase<StructureAreaPartAuthoring>
     {
 
     }
 
     [Serializable]
-    public abstract class PartModelBase<TIdx, TVtx, TPart> : MeshModel<TIdx, TVtx>
-        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
-        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
+    public abstract class PartModelBase<TPart> : MeshModel
         where TPart : IStructurePart
     {
 

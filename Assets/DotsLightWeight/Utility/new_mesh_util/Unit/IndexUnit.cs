@@ -26,10 +26,10 @@ namespace DotsLite.Geometry
     }
 
 
-    public interface IIndexBuilder : ISetBufferParams
+    public interface IIndexBuilder// : ISetBufferParams
     {
-        TIdx[] Build<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-        where TIdx : struct, IIndexUnit;
+        int BuildMeshData(
+            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, Mesh.MeshData dstmesh);
     }
 
 
@@ -49,16 +49,32 @@ namespace DotsLite.Geometry
         public static implicit operator UI16(ushort src) => new UI16 { value = src };
     }
 
-    public struct UI16Builder : IIndexBuilder, ISetBufferParams
+    public struct UI16Builder : IIndexBuilder//, ISetBufferParams
     {
-        public TIdx[] Build<TIdx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p) where TIdx : struct, IIndexUnit =>
-            srcmeshes.QueryConvertIndexData<UI16>(p.mtPerMesh)
-                .Cast<TIdx>()
-                .ToArray();
-
-        public void SetBufferParams(Mesh.MeshData meshdata, int indexLength)
+        public int BuildMeshData(
+            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, Mesh.MeshData dstmesh)
         {
-            meshdata.SetIndexBufferParams(indexLength, IndexFormat.UInt16);
+
+            var idxs = buildIdxs_(srcmeshes, p);
+            setIdxBufferParams_(dstmesh, idxs.Length);
+            copyVtxs_(dstmesh, idxs);
+            return idxs.Length;
+
+
+            static UI16[] buildIdxs_(
+                IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+            =>
+                srcmeshes.QueryConvertIndexData<UI16>(p.mtPerMesh).ToArray();
+
+            static void setIdxBufferParams_(Mesh.MeshData meshdata, int idxLength)
+            {
+                meshdata.SetIndexBufferParams(idxLength, IndexFormat.UInt16);
+            }
+
+            static void copyVtxs_(Mesh.MeshData meshdata, UI16[] idxs)
+            {
+                meshdata.GetVertexData<UI16>().CopyFrom(idxs);
+            }
         }
     }
 

@@ -111,7 +111,8 @@ namespace DotsLite.Draw.Authoring
                 em.SetComponentData(ent,
                     new DrawInstance.ModelLinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(top.QueryModel.First().SourcePrefabKey),
+                        DrawModelEntityCurrent = gcs.GetPrimaryEntity(top.QueryModel.First().AsGameObject),
+                        //DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(top.QueryModel.First().SourcePrefabKey),
                     }
                 );
                 em.SetComponentData(ent,

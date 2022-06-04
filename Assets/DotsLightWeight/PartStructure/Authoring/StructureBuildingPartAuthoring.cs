@@ -89,7 +89,8 @@ namespace DotsLite.Structure.Authoring
 
 
             this.QueryModel.BuildModelToDictionary(conversionSystem);
-            var modelEntity = conversionSystem.GetFromModelEntityDictionary(this.PartModel.SourcePrefabKey);
+            var modelEntity = conversionSystem.GetPrimaryEntity(this.PartModel.AsGameObject);
+            //var modelEntity = conversionSystem.GetFromModelEntityDictionary(this.PartModel.SourcePrefabKey);
 
 
             var posture = this.FindParent<StructureBuildingAuthoring>()

@@ -22,9 +22,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class BuildingModel<TIdx, TVtx> : LodMeshModel<TIdx, TVtx>
-        where TIdx : struct, IIndexUnit<TIdx>//, ISetBufferParams
-        where TVtx : struct, IVertexUnit//<TVtx>, ISetBufferParams
+    public class BuildingModel : LodMeshModel
     {
 
 

@@ -26,37 +26,67 @@ namespace DotsLite.Geometry
 
     }
 
-    public class PositionVertexBuilder : IVertexBuilder, ISetBufferParams
+    public class PositionVertexBuilder : IVertexBuilder//, ISetBufferParams
     {
 
-        public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            where TVtx : struct, IVertexUnit
-        {
-            var poss = srcmeshes.QueryConvertPositions(p);//.ToArray();
-            var qVtx =
-                from x in poss
-                select new PositionVertex
-                {
-                    Position = x,
-                };
-            return qVtx.Cast<TVtx>().ToArray();
-        }
+        //public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        //    where TVtx : struct, IVertexUnit
+        //{
+        //    var poss = srcmeshes.QueryConvertPositions(p);//.ToArray();
+        //    var qVtx =
+        //        from x in poss
+        //        select new PositionVertex
+        //        {
+        //            Position = x,
+        //        };
+        //    return qVtx.Cast<TVtx>().ToArray();
+        //}
 
-        public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
+        //public void SetBufferParams(Mesh.MeshData meshdata, int vertexLength)
+        //{
+        //    var layout = new[]
+        //    {
+        //        new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+        //    };
+        //    meshdata.SetVertexBufferParams(vertexLength, layout);
+        //}
+
+        public void BuildMeshData(
+            IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, Mesh.MeshData dstmesh)
         {
-            var layout = new[]
+
+            var vtxs = buildVtxs_(srcmeshes, p);
+            setVtxBufferParams_(dstmesh, vtxs.Length);
+            copyVtxs_(dstmesh, vtxs);
+            return;
+
+
+            static PositionVertex[] buildVtxs_(
+                IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             {
-                new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
-            };
-            meshdata.SetVertexBufferParams(vertexLength, layout);
-        }
+                var poss = srcmeshes.QueryConvertPositions(p);
+                var qVtx =
+                    from x in poss
+                    select new PositionVertex
+                    {
+                        Position = x,
+                    };
+                return qVtx.ToArray();
+            }
 
-        public void BuildToMeshData(Mesh.MeshData meshdata)
-        {
-            var vtxs = vtxBuilder.Build<TVtx>(src, p);
-            vtxBuilder.SetBufferParams(dst, vtxs.Length);
-            //dst.setBufferParams<TVtx>(vtxs.Length);
-            meshdata.GetVertexData<TVtx>().CopyFrom(vtxs);
+            static void setVtxBufferParams_(Mesh.MeshData meshdata, int vtxLength)
+            {
+                var layout = new[]
+                {
+                    new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+                };
+                meshdata.SetVertexBufferParams(vtxLength, layout);
+            }
+
+            static void copyVtxs_(Mesh.MeshData meshdata, PositionVertex[] vtxs)
+            {
+                meshdata.GetVertexData<PositionVertex>().CopyFrom(vtxs);
+            }
         }
     }
 

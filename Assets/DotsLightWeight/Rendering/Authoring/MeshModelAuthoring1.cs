@@ -10,20 +10,20 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace DotsLite.Model.Authoring
-{
-    using DotsLite.Geometry;
+//namespace DotsLite.Model.Authoring
+//{
+//    using DotsLite.Geometry;
 
-    [Serializable]
-    public class PositionNormalUvI32 :
-        MeshModel<UI32, PositionNormalUvVertex>, MeshModelAuthoring1.IMeshModelSelector
-    { }
+//    [Serializable]
+//    public class PositionNormalUvI32 :
+//        MeshModel<UI32, PositionNormalUvVertex>, MeshModelAuthoring1.IMeshModelSelector
+//    { }
 
-    [Serializable]
-    public class PositionNormalUvWithPaletteI32 :
-        MeshWithPaletteModel<UI32, PositionNormalUvWithPaletteVertex>, MeshModelAuthoring1.IMeshModelSelector
-    { }
-}
+//    [Serializable]
+//    public class PositionNormalUvWithPaletteI32 :
+//        MeshWithPaletteModel<UI32, PositionNormalUvWithPaletteVertex>, MeshModelAuthoring1.IMeshModelSelector
+//    { }
+//}
 
 namespace DotsLite.Model.Authoring
 {
@@ -143,7 +143,8 @@ namespace DotsLite.Model.Authoring
                     new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(this.QueryModel.First().SourcePrefabKey),
+                        DrawModelEntityCurrent = gcs.GetPrimaryEntity(this.Model.AsGameObject),
+                        //DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(this.QueryModel.First().SourcePrefabKey),
                     }
                 );
                 em.SetComponentData(mainEntity,
