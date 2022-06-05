@@ -14,7 +14,7 @@ namespace DotsLite.LoadPath.Authoring
     /// 
     /// </summary>
     [CustomEditor(typeof(StructureAreaAuthoring))]
-    public class FitPathMesh : DistributeModelOriginId//Editor
+    public class FitPathMesh : Editor// DistributeModelOriginId
     {
         public override void OnInspectorGUI()
         {

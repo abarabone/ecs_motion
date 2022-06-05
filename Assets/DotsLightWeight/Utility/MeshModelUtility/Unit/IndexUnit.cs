@@ -11,6 +11,21 @@ using Unity.Linq;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
+namespace DotsLite.Model.Authoring
+{
+    using DotsLite.Geometry;
+
+    public interface IIndexSelector : IIndexBuilder { }
+
+    [Serializable]
+    public class I16 : UI16Builder, IIndexSelector
+    { }
+
+    //[Serializable]
+    //public class I32 : IIndexSelector
+    //{ }
+}
+
 namespace DotsLite.Geometry
 {
     using DotsLite.Common.Extension;
@@ -20,8 +35,6 @@ namespace DotsLite.Geometry
 
     public interface IIndexUnit
     {
-        //TIdx Add<TIdx>(uint otherValue) where TIdx : struct, IIndexUnit;
-
         uint Value { get; set; }
     }
 
@@ -35,21 +48,17 @@ namespace DotsLite.Geometry
 
     public struct UI16 : IIndexUnit
     {
-        public ushort value;
+        public ushort _value;
         public uint Value
         {
-            get => this.value;
-            set => this.value = (ushort)value;
+            get => this._value;
+            set => this._value = (ushort)value;
         }
-        //public TIdx Add<TIdx>(uint otherValue) where TIdx : struct, IIndexUnit
-        //{
-        //    var ii = new TIdx();
-        //    ii = (TIdx)new UI16 { value = (ushort)(otherValue + this.value) };
-        //}
-        public static implicit operator UI16(ushort src) => new UI16 { value = src };
+
+        public static implicit operator UI16(ushort src) => new UI16 { _value = src };
     }
 
-    public struct UI16Builder : IIndexBuilder//, ISetBufferParams
+    public class UI16Builder : IIndexBuilder
     {
         public int BuildMeshData(
             IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, Mesh.MeshData dstmesh)

@@ -1,47 +1,47 @@
-using System.Linq;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.Rendering;
+//using System.Linq;
+//using UnityEditor;
+//using UnityEngine;
+//using UnityEngine.Rendering;
 
-namespace DotsLite.Model.Authoring
-{
-    using DotsLite.Geometry;
-
-
-    [CustomEditor(typeof(ModelGroupAuthoring.ModelAuthoringBase), true)]
-    public class DistributeModelOriginId : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            //GUILayout.BeginHorizontal();
+//namespace DotsLite.Model.Authoring
+//{
+//    using DotsLite.Geometry;
 
 
-            //ボタンを表示
-            if (GUILayout.Button("generate or get model origin id"))
-            {
-                var xs =
-                    from model in this.targets
-                        .OfType<ModelGroupAuthoring.ModelAuthoringBase>()
-                    let prefab = PrefabUtility.GetCorrespondingObjectFromOriginalSource(model)
-                    select (model, prefab);
+//    [CustomEditor(typeof(ModelGroupAuthoring.ModelAuthoringBase), true)]
+//    public class DistributeModelOriginId : Editor
+//    {
+//        public override void OnInspectorGUI()
+//        {
+//            //GUILayout.BeginHorizontal();
 
-                foreach (var (model, prefab) in xs)
-                {
-                    if (prefab == null)
-                    {
-                        model.QueryModel.ForEach(m => m.GenerateSourcePrefabKey());
-                        model.QueryModel.ForEach(m => Debug.Log($"prefab key generated : {model.name} {m.SourcePrefabKey}"));
-                    }
-                    EditorUtility.SetDirty(model);
-                }
 
-                AssetDatabase.SaveAssets();
-            }
+//            //ボタンを表示
+//            if (GUILayout.Button("generate or get model origin id"))
+//            {
+//                var xs =
+//                    from model in this.targets
+//                        .OfType<ModelGroupAuthoring.ModelAuthoringBase>()
+//                    let prefab = PrefabUtility.GetCorrespondingObjectFromOriginalSource(model)
+//                    select (model, prefab);
 
-            //GUILayout.EndHorizontal();
+//                foreach (var (model, prefab) in xs)
+//                {
+//                    if (prefab == null)
+//                    {
+//                        model.QueryModel.ForEach(m => m.GenerateSourcePrefabKey());
+//                        model.QueryModel.ForEach(m => Debug.Log($"prefab key generated : {model.name} {m.SourcePrefabKey}"));
+//                    }
+//                    EditorUtility.SetDirty(model);
+//                }
 
-            //元のInspector部分を表示
-            base.OnInspectorGUI();
-        }
-    }
-}
+//                AssetDatabase.SaveAssets();
+//            }
+
+//            //GUILayout.EndHorizontal();
+
+//            //元のInspector部分を表示
+//            base.OnInspectorGUI();
+//        }
+//    }
+//}

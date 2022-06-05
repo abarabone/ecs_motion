@@ -30,29 +30,12 @@ namespace DotsLite.Model.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        //public Material Material;
-        //public Shader ShaderToDraw;
 
-        protected new void Reset()
-        {
-            this.Model ??= new MeshModel();
-            this.Model.objectTop = this.gameObject;
-            base.Reset();
-        }
-
-        //[SerializeField]
-        //public ObjectAndDistance[] LodOptionalMeshTops;
-
-
-        //[SerializeReference, SubclassSelector]
-        //public IMeshModel[] Models = new[] { new LodMeshModel<UI32, PositionNormalUvVertex> { } };
-
-        //public LodMeshModel<UI32, PositionNormalUvVertex>[] Models;
         public MeshModel Model;
 
 
 
-        public override IEnumerable<IMeshModel> QueryModel => this.Model.WrapEnumerable();
+        public override IEnumerable<IMeshModel> QueryModel => (this.Model ?? this.GetComponentInChildren<IMeshModel>()).WrapEnumerable();
         //public override IEnumerable<IMeshModel> QueryModel
         //{
         //    get

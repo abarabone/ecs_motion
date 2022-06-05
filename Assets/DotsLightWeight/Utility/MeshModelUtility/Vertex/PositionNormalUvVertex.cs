@@ -27,7 +27,7 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
     }
 
-    public struct PositionNormalUvVertexBuilder : IVertexBuilder//, ISetBufferParams
+    public class PositionUvNormalVertexBuilder : IVertexBuilder//, ISetBufferParams
     {
         //public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         //    where TVtx : struct, IVertexUnit

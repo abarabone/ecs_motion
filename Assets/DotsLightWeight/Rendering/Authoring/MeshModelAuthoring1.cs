@@ -10,21 +10,6 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-//namespace DotsLite.Model.Authoring
-//{
-//    using DotsLite.Geometry;
-
-//    [Serializable]
-//    public class PositionNormalUvI32 :
-//        MeshModel<UI32, PositionNormalUvVertex>, MeshModelAuthoring1.IMeshModelSelector
-//    { }
-
-//    [Serializable]
-//    public class PositionNormalUvWithPaletteI32 :
-//        MeshWithPaletteModel<UI32, PositionNormalUvWithPaletteVertex>, MeshModelAuthoring1.IMeshModelSelector
-//    { }
-//}
-
 namespace DotsLite.Model.Authoring
 {
     using DotsLite.Model;
@@ -45,23 +30,8 @@ namespace DotsLite.Model.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        //public Material Material;
-        //public Shader ShaderToDraw;
 
-
-        //[SerializeField]
-        //public ObjectAndDistance[] LodOptionalMeshTops;
-
-
-        //[SerializeReference, SubclassSelector]
-        //public IMeshModel[] Models = new[] { new LodMeshModel<UI32, PositionNormalUvVertex> { } };
-
-        public interface IMeshModelSelector : IMeshModel
-        { }
-
-        [SerializeReference, SubclassSelector]
-        //public LodMeshModel<UI32, PositionNormalUvVertex>[] Models;
-        public IMeshModelSelector Model;
+        public MeshModel Model;
 
 
         [SerializeField]

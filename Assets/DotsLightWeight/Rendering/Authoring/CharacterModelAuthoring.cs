@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity.Linq;
 using Unity.Entities;
@@ -50,13 +51,8 @@ namespace DotsLite.Model.Authoring
         //}
         //.WrapEnumerable();
 
-        protected new void Reset()
-        {
-            base.Reset();
-            this.Model.objectTop = this.gameObject;
-        }
-
-        public CharacterModel Model;
+        [SerializeField]
+        CharacterModel Model;
 
 
 

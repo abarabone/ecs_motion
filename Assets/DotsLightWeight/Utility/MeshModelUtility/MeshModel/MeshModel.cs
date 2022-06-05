@@ -15,11 +15,15 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Geometry;
 
     [Serializable]
-    public class PositionOnly : PositionVertexBuilder
+    public class PositionOnly : PositionVertexBuilder, MeshModel.IVertexSelector
     { }
 
     [Serializable]
-    public class PositionUv : PositionUvVertexBuilder
+    public class PositionUv : PositionUvVertexBuilder, MeshModel.IVertexSelector
+    { }
+
+    [Serializable]
+    public class PositionUvNormal : PositionUvNormalVertexBuilder, MeshModel.IVertexSelector
     { }
 }
 
@@ -53,14 +57,13 @@ namespace DotsLite.Model.Authoring
         public Shader shader;
 
 
-        public interface IIdxSelector : IIndexBuilder { }
-        public interface IVtxSelector : IVertexBuilder { }
+        public interface IVertexSelector : IVertexBuilder { }
 
         [SerializeReference, SubclassSelector]
-        public IIdxSelector idxBuilder;
+        public IIndexSelector idxBuilder;
 
         [SerializeReference, SubclassSelector]
-        public IVtxSelector vtxBuilder;
+        public IVertexSelector vtxBuilder;
 
 
 
