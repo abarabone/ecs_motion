@@ -68,14 +68,14 @@ namespace DotsLite.Geometry
         {
             var qMmts =
                 from model in models
-                    //.Do(x => Debug.Log($"srckey {x.SourcePrefabKey.Value} at {x.Obj.name}"))
+                    .Do(x => Debug.Log($"t {x.Obj.name}"))
                 select model.QueryMmts
                 ;
-            using var meshAll = qMmts.QueryMeshDataFromModel();
+            using var meshAll = qMmts.ToArray().QueryMeshDataFromModel();
 
             var qOfs =
                 from x in (meshAll.AsEnumerable, models).Zip()
-                    //.Do(x => Debug.Log($"create from {x.src1.Obj?.name} {x.src1.Obj?.GetHashCode()} {meshDict.ContainsKey(x.src1?.Obj)}"))
+                    .Do(x => Debug.Log($"create from {x.src1.Obj?.name} {meshDict.ContainsKey(x.src1)}"))
                 let meshsrc = x.src0
                 let model = x.src1
                 where !meshDict.ContainsKey(model)
@@ -90,6 +90,13 @@ namespace DotsLite.Geometry
                 .WhenAll().Result
                 .Select(x => x.CreateMesh());
             meshDict.AddRange(qModel, qMesh);
+            //var qModel = ofs.Select(x => x.model as IMeshModel);
+            //var qMesh = ofs
+            //    .Select(x => x.model.allo)
+            //    .Select(x => x.builder.ToTask())
+            //    .WhenAll().Result
+            //    .Select(x => x.CreateMesh());
+            //meshDict.AddRange(qModel, qMesh);
         }
 
         /// <summary>

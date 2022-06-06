@@ -66,13 +66,11 @@ namespace DotsLite.Geometry
 
             var idxs = buildIdxs_(srcmeshes, p);
             setIdxBufferParams_(dstmesh, idxs.Length);
-            copyVtxs_(dstmesh, idxs);
+            copyIdxs_(dstmesh, idxs);
             return idxs.Length;
 
 
-            static UI16[] buildIdxs_(
-                IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-            =>
+            static UI16[] buildIdxs_(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p) =>
                 srcmeshes.QueryConvertIndexData<UI16>(p.mtPerMesh).ToArray();
 
             static void setIdxBufferParams_(Mesh.MeshData meshdata, int idxLength)
@@ -80,7 +78,7 @@ namespace DotsLite.Geometry
                 meshdata.SetIndexBufferParams(idxLength, IndexFormat.UInt16);
             }
 
-            static void copyVtxs_(Mesh.MeshData meshdata, UI16[] idxs)
+            static void copyIdxs_(Mesh.MeshData meshdata, UI16[] idxs)
             {
                 meshdata.GetVertexData<UI16>().CopyFrom(idxs);
             }

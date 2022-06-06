@@ -92,5 +92,27 @@ namespace DotsLite.Geometry
             return dstmesh;
         }
 
+
+        public static Mesh.MeshDataArray AllocateMeshData() => Mesh.AllocateWritableMeshData(1);
+
+        public static Mesh.MeshDataArray CreateMeshData(
+            this SrcMeshesModelCombinePack meshpack,
+            Mesh.MeshDataArray dstmeshes,
+            IIndexBuilder idxBuilder, IVertexBuilder vtxBuilder,
+            AdditionalParameters p)
+        {
+            var src = meshpack.AsEnumerable;
+            var dst = dstmeshes[0];
+
+            var idxLength =
+            idxBuilder.BuildMeshData(src, p, dst);
+            vtxBuilder.BuildMeshData(src, p, dst);
+
+            dst.subMeshCount = 1;
+            dst.SetSubMesh(0, new SubMeshDescriptor(0, idxLength));
+
+            return dstmeshes;
+        }
+
     }
 }
