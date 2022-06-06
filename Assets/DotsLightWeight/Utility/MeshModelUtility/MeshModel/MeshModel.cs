@@ -125,6 +125,7 @@ namespace DotsLite.Model.Authoring
             mat.mainTexture = atlas;
 
             var ent = gcs.GetPrimaryEntity(this.AsGameObject);
+            Debug.Log(ent);
             gcs.InitDrawModelEntityComponents(ent, mesh, mat,
                 this.boneType, this.boneLength, this.sortOrder, this.optionalVectorLength);
         }
