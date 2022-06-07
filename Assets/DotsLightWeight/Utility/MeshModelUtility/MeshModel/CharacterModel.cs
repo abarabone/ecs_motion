@@ -11,6 +11,15 @@ using Unity.Mathematics;
 
 namespace DotsLite.Model.Authoring
 {
+    using DotsLite.Geometry;
+
+    [Serializable]
+    public class PositionNormalUvBonedVertex : PositionNormalUvBonedVertexBuilder, CharacterModel.IVertexSelector
+    { }
+}
+
+namespace DotsLite.Model.Authoring
+{
     using DotsLite.Draw.Authoring;
     using DotsLite.Character;
     using DotsLite.Common.Extension;
@@ -20,11 +29,28 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Draw;
 
     [Serializable]
-    public class CharacterModel : MeshModel
+    public class CharacterModel : MeshModelBase
     {
 
+        void Awake()
+        {
+            this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
+        }
+
+
+        public interface IVertexSelector : IVertexBuilder { }
+
+        [SerializeReference, SubclassSelector]
+        public IVertexSelector vtxBuilder;
+
+        protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
+
+
+
+
         [HideInInspector]
-        public Transform boneTop;
+        public Transform boneTop =>
+            this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
 
 
         public override Transform TfRoot => this.objectTop.Children().First().transform;// これでいいのか？

@@ -22,7 +22,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class AreaModel : LodMeshModel
+    public class AreaModel : LodMeshModelBase
     {
 
         protected override int optionalVectorLength => 4;

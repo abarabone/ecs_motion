@@ -24,8 +24,17 @@ namespace DotsLite.Model.Authoring
     /// その１つ下に、ＦＢＸのキャラクターを置く。それがメインエンティティとなる。
     /// </summary>
     public class CharacterModelAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
+
+
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            if (this.Model == null) return;
+
+            referencedPrefabs.Add(this.Model.AsGameObject);
+        }
+
 
         //public Shader DrawShader;
 
@@ -38,7 +47,7 @@ namespace DotsLite.Model.Authoring
         {
             get
             {
-                this.Model.boneTop ??= this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
+                //this.Model.boneTop ??= this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
                 
                 return this.Model.WrapEnumerable();
             }

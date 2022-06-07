@@ -38,7 +38,17 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
 
     [Serializable]
-    public class MeshModel : MonoBehaviour, IMeshModel
+    public class MeshModel : MeshModelBase
+    {
+        public interface IVertexSelector : IVertexBuilder { }
+
+        [SerializeReference, SubclassSelector]
+        public IVertexSelector vtxBuilder;
+
+        protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
+    }
+
+    public class MeshModelBase : MonoBehaviour, IMeshModel
     {
 
         //public MeshModel() =>
@@ -57,14 +67,11 @@ namespace DotsLite.Model.Authoring
         public Shader shader;
 
 
-        public interface IVertexSelector : IVertexBuilder { }
-
         [SerializeReference, SubclassSelector]
         public IIndexSelector idxBuilder;
-
-        [SerializeReference, SubclassSelector]
-        public IVertexSelector vtxBuilder;
-
+        
+        protected virtual IIndexBuilder IdxBuilder => this.idxBuilder;
+        protected virtual IVertexBuilder VtxBuilder => throw new NotImplementedException();
 
 
         [SerializeField]
@@ -115,7 +122,7 @@ namespace DotsLite.Model.Authoring
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
 
             var md = MeshCreatorUtility.AllocateMeshData();
-            return () => meshpack.CreateMeshData(md, this.idxBuilder, this.vtxBuilder, p);
+            return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);
         }
 
         public virtual void InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
@@ -134,7 +141,7 @@ namespace DotsLite.Model.Authoring
 
 
     [Serializable]
-    public class LodMeshModel : MeshModel, IMeshModelLod
+    public class LodMeshModelBase : MeshModelBase, IMeshModelLod
     {
 
         [SerializeField]

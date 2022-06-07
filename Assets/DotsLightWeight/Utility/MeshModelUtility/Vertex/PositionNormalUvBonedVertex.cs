@@ -30,7 +30,7 @@ namespace DotsLite.Geometry
     }
 
 
-    public struct PositionNormalUvBonedVertexBuilder : IVertexBuilder//, ISetBufferParams
+    public class PositionNormalUvBonedVertexBuilder : IVertexBuilder//, ISetBufferParams
     {
 
         //public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)

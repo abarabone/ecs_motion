@@ -27,13 +27,19 @@ namespace DotsLite.Model.Authoring
     /// 
     /// </summary>
     public class MeshModelAuthoring
-        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
+        : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
 
 
         public MeshModel Model;
 
 
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            if (this.Model == null) return;
+
+            referencedPrefabs.Add(this.Model.AsGameObject);
+        }
 
         public override IEnumerable<IMeshModel> QueryModel => (this.Model ?? this.GetComponentInChildren<IMeshModel>()).WrapEnumerable();
         //public override IEnumerable<IMeshModel> QueryModel
@@ -108,7 +114,7 @@ namespace DotsLite.Model.Authoring
                     new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetPrimaryEntity(this.Model.AsGameObject),
+                        DrawModelEntityCurrent = gcs.GetPrimaryEntity(this.QueryModel.First().AsGameObject),
                         //DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(this.QueryModel.First().SourcePrefabKey),
                     }
                 );

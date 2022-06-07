@@ -22,7 +22,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class BuildingModel : LodMeshModel
+    public class BuildingModel : LodMeshModelBase
     {
 
 
@@ -42,7 +42,7 @@ namespace DotsLite.Structure.Authoring
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
             mmts.CalculatePaletteSubIndexParameter(ref p);
 
-            return () => meshpack.CreateMeshData(this.idxBuilder, this.vtxBuilder, p);
+            return () => meshpack.CreateMeshData(this.idxBuilder, this.VtxBuilder, p);
         }
     }
 

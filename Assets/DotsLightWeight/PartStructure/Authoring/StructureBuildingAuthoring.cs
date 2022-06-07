@@ -44,7 +44,7 @@ namespace DotsLite.Structure.Authoring
     {
 
         public BuildingModel NearModel;
-        public LodMeshModel FarModel;
+        public LodMeshModelBase FarModel;
 
         public GameObject Envelope;
         public StructureBuildingAuthoring MasterPrefab;
