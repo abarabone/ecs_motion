@@ -32,11 +32,6 @@ namespace DotsLite.Model.Authoring
     public class CharacterModel : MeshModelBase
     {
 
-        void Awake()
-        {
-            this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
-        }
-
 
         public interface IVertexSelector : IVertexBuilder { }
 
@@ -57,6 +52,7 @@ namespace DotsLite.Model.Authoring
 
         public override IEnumerable<Transform> QueryBones => this.boneTop.gameObject.DescendantsAndSelf()
             .Where(x => !x.name.StartsWith("_"))
+            //.Do(x => Debug.Log(x.name))
             .Select(x => x.transform);
 
 

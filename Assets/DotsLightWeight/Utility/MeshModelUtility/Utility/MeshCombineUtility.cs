@@ -118,6 +118,7 @@ namespace DotsLite.Geometry
             var qSrcBones = mmts_
                 .Select(x => x.tf.GetComponentOrNull<SkinnedMeshRenderer>()?.bones ?? x.tf.WrapEnumerable().ToArray());
             ;
+            //qSrcBones.SelectMany().ForEach(x => Debug.Log(x.name));
             result.boneWeightsPerMesh = qBoneWeights.ToArray();
             result.mtInvsPerMesh = qMtInvs.ToArray();
             result.srcBoneIndexToDstBoneIndex = (qSrcBones, tfBones).ToBoneIndexConversionDictionary();

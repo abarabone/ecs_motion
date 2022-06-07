@@ -40,7 +40,6 @@ namespace DotsLite.Model.Authoring
 
         public EnBoneType BoneMode;
 
-
         //IEnumerable<IMeshModel> _models = null;
 
         public override IEnumerable<IMeshModel> QueryModel
@@ -65,6 +64,12 @@ namespace DotsLite.Model.Authoring
 
 
 
+        IEnumerable<Transform> queryBones =>
+            this.GetComponentInChildren<SkinnedMeshRenderer>().bones.First().gameObject
+                .DescendantsAndSelf()
+                .Where(x => !x.name.StartsWith("_"))
+                .Select(x => x.transform);
+
 
         /// <summary>
         /// 描画関係はバインダーに、ボーン関係はメインに関連付ける
@@ -77,7 +82,7 @@ namespace DotsLite.Model.Authoring
 
             var top = this;
             var posture = this.GetComponentInChildren<PostureAuthoring>();
-            var bones = this.QueryModel.First().QueryBones.ToArray();
+            var bones = this.queryBones.ToArray();
 
             this.QueryModel.BuildModelToDictionary(conversionSystem);
 
