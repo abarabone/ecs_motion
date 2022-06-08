@@ -52,11 +52,12 @@ namespace DotsLite.Draw.Authoring
         {
 
             var em = gcs.DstEntityManager;
+            var boneVectorLength = boneType.VectorLength();
 
-            setShaderProps_(em, mat, boneLength * (int)boneType + instanceDataVectorLength);
+            setShaderProps_(em, mat, boneLength * boneVectorLength + instanceDataVectorLength);
 
             addComponents_(gcs, drawModelEntity, order != DrawModel.SortOrder.none);
-            initInfomationData_(em, drawModelEntity, mesh.bounds, boneLength, boneType, instanceDataVectorLength, order);
+            initInfomationData_(em, drawModelEntity, mesh.bounds, boneLength, boneVectorLength, instanceDataVectorLength, order);
             initResourceData_(em, drawModelEntity, mat, mesh);
 
             em.SetName_(drawModelEntity, $"{mesh.name} model");
@@ -99,14 +100,14 @@ namespace DotsLite.Draw.Authoring
 
             void initInfomationData_(
                 EntityManager em_, Entity ent_,
-                Bounds bbox_, int boneLength_, BoneType boneType_, int instanceDataVectorLength_, DrawModel.SortOrder order)
+                Bounds bbox, int boneLength, int boneVectorLength, int instanceDataVectorLength, DrawModel.SortOrder order)
             {
 
                 em_.SetComponentData(ent_,
                     new DrawModel.BoneVectorSettingData
                     {
-                        BoneLength = boneLength_,
-                        VectorLengthInBone = (int)boneType_,
+                        BoneLength = boneLength,
+                        VectorLengthInBone = boneVectorLength,
                     }
                 );
                 em_.SetComponentData(ent_,
@@ -114,15 +115,15 @@ namespace DotsLite.Draw.Authoring
                     {
                         localBbox = new AABB
                         {
-                            Center = (float3)bbox_.center,// + meshpos_,
-                            Extents = (float3)bbox_.extents,
+                            Center = (float3)bbox.center,// + meshpos_,
+                            Extents = (float3)bbox.extents,
                         }
                     }
                 );
                 em_.SetComponentData(ent_,
                     new DrawModel.VectorIndexData
                     {
-                        OptionalVectorLengthPerInstance = instanceDataVectorLength_,
+                        OptionalVectorLengthPerInstance = instanceDataVectorLength,
                     }
                 );
 

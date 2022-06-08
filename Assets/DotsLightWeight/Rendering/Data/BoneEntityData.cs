@@ -59,7 +59,6 @@ namespace DotsLite.Draw
 namespace DotsLite.Model
 {
 
-    // ボーンのベクトル数も兼ねている
     public enum BoneType
     {
         none,
