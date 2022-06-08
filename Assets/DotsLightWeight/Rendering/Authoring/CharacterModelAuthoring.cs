@@ -47,7 +47,7 @@ namespace DotsLite.Model.Authoring
             get
             {
                 //this.Model.boneTop ??= this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
-                
+
                 return this.Model.WrapEnumerable();
             }
         }
