@@ -59,6 +59,13 @@ namespace DotsLite.Model.Authoring
         protected override int optionalVectorLength => 0;
         protected override int boneLength => this.QueryBones.Count();
 
+        public GameObject MakeGameObject(GameObjectConversionSystem gcs)
+        {
+            var go = new GameObject();
+            gcs.CreateAdditionalEntity(go);
+            
+            return go;
+        }
     }
 
 }
