@@ -12,11 +12,11 @@ using Unity.Mathematics;
 namespace DotsLite.Geometry
 {
 
-    //[Serializable]
-    //public struct SourcePrefabKeyUnit
-    //{
-    //    public int Value;
-    //}
+    [Serializable]
+    public struct SourcePrefabKeyUnit
+    {
+        public int Value;
+    }
 
 
     //public enum TransformMode
@@ -39,10 +39,7 @@ namespace DotsLite.Geometry
 
     public interface IMeshModel
     {
-        //SourcePrefabKeyUnit SourcePrefabKey { get; }
-        //void GenerateSourcePrefabKey();
-
-        GameObject AsGameObject { get; }
+        SourcePrefabKeyUnit SourcePrefabKey { get; }
 
         GameObject Obj { get; }// Ç±ÇÍÇ¢ÇÈÇÒÇæÇ¡ÇØÅH
         Transform TfRoot { get; }
@@ -51,20 +48,13 @@ namespace DotsLite.Geometry
         IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts { get; }
 
 
-        //(SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
-        //    SrcMeshesModelCombinePack meshpack,
-        //    Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary, TextureAtlasDictionary.Data atlasDictionary);
-
-        //(SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
-        //    GameObjectConversionSystem gcs, SrcMeshesModelCombinePack meshpack);
-
         Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
             Dictionary<IMeshModel, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary);
 
 
-        void InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
+        Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
 
     }
 

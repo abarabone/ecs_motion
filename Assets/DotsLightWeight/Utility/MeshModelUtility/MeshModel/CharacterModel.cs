@@ -43,7 +43,6 @@ namespace DotsLite.Model.Authoring
 
 
 
-        [HideInInspector]
         public Transform boneTop =>
             this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
 
@@ -59,13 +58,6 @@ namespace DotsLite.Model.Authoring
         protected override int optionalVectorLength => 0;
         protected override int boneLength => this.QueryBones.Count();
 
-        public GameObject MakeGameObject(GameObjectConversionSystem gcs)
-        {
-            var go = new GameObject();
-            gcs.CreateAdditionalEntity(go);
-            
-            return go;
-        }
     }
 
 }

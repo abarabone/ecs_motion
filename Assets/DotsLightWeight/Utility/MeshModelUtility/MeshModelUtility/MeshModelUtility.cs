@@ -134,7 +134,7 @@ namespace DotsLite.Geometry
 
                 var mesh = meshDict[model];
                 var atlas = atlasDict.modelToAtlas[model];
-                model.InitModelEntity(gcs, mesh, atlas);
+                model.CreateModelEntity(gcs, mesh, atlas);
             }
         }
 

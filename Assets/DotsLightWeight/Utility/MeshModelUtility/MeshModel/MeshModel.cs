@@ -51,27 +51,20 @@ namespace DotsLite.Model.Authoring
     public class MeshModelBase : MonoBehaviour, IMeshModel
     {
 
-        //public MeshModel() =>
-        //    this.GenerateSourcePrefabKey();
 
-        //public void GenerateSourcePrefabKey() =>
-        //    this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
+        public MeshModelBase() =>
+            this.GenerateSourcePrefabKey();
 
-        //[SerializeField]
-        //protected SourcePrefabKeyUnit sourcePrefabKey;
+        public void GenerateSourcePrefabKey() =>
+            this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
 
         [SerializeField]
-        public GameObject objectTop;
+        protected SourcePrefabKeyUnit sourcePrefabKey;
+
+
 
         [SerializeField]
         public Shader shader;
-
-
-        [SerializeReference, SubclassSelector]
-        public IIndexSelector idxBuilder;
-        
-        protected virtual IIndexBuilder IdxBuilder => this.idxBuilder;
-        protected virtual IVertexBuilder VtxBuilder => throw new NotImplementedException();
 
 
         [SerializeField]
@@ -83,34 +76,27 @@ namespace DotsLite.Model.Authoring
         protected virtual int boneLength => 1;
 
 
-        public GameObject AsGameObject => this.gameObject;
         
-        public virtual GameObject Obj => this.objectTop;
-        public virtual Transform TfRoot => this.objectTop.transform;
+        public virtual GameObject Obj => this.gameObject;
+        public virtual Transform TfRoot => this.gameObject.transform;
         public virtual IEnumerable<Transform> QueryBones => null;
-        //public virtual SourcePrefabKeyUnit SourcePrefabKey => this.sourcePrefabKey;
+        public virtual SourcePrefabKeyUnit SourcePrefabKey => this.sourcePrefabKey;
 
         public virtual IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
-            this.objectTop.GetComponentsInChildren<Renderer>()
+            this.gameObject.GetComponentsInChildren<Renderer>()
                 .Select(x => x.gameObject)
                 .QueryMeshMatsTransform_IfHaving();
 
 
 
+        [SerializeReference, SubclassSelector]
+        public IIndexSelector idxBuilder;
 
-        ////public virtual (SourcePrefabKeyUnit key, Func<IMeshElements> f) BuildMeshCombiner(
-        ////    SrcMeshesModelCombinePack meshpack, Func<int>)
-        ////{
-        ////    var atlas = atlasDictionary.srckeyToAtlas[this.sourcePrefabKey].GetHashCode();
-        ////    var texdict = atlasDictionary.texHashToUvRect;
-        ////    var p = this.QueryMmts.calculateParameters(
-        ////        this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
+        protected virtual IIndexBuilder IdxBuilder => this.idxBuilder;
+        protected virtual IVertexBuilder VtxBuilder => throw new NotImplementedException();
 
-        ////    return (
-        ////        this.sourcePrefabKey,
-        ////        meshpack.BuildCombiner<TIdx, TVtx>(p)
-        ////    );
-        ////}
+
+
         public virtual Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
             Dictionary<IMeshModel, Mesh> meshDictionary,
@@ -125,15 +111,13 @@ namespace DotsLite.Model.Authoring
             return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);
         }
 
-        public virtual void InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        public virtual Entity InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.shader);
             mat.enableInstancing = true;
             mat.mainTexture = atlas;
 
-            var ent = gcs.GetPrimaryEntity(this.AsGameObject);
-            Debug.Log(ent);
-            gcs.InitDrawModelEntityComponents(ent, mesh, mat,
+            return gcs.CreateDrawModelEntityComponents(mesh, mat,
                 this.boneType, this.boneLength, this.sortOrder, this.optionalVectorLength);
         }
 
