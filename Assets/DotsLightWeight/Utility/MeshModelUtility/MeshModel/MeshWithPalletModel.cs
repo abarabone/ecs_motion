@@ -46,19 +46,20 @@ namespace DotsLite.Model.Authoring
         }
 
 
-        public override void InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        public override Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
-            base.InitModelEntity(gcs, mesh, atlas);
+            var ent = base.CreateModelEntity(gcs, mesh, atlas);
 
-            var paletteAuthor = this.objectTop.GetComponentInParent<ColorPaletteBufferAuthoring>();
-            if (paletteAuthor == null) return;
+            var paletteAuthor = this.GetComponentInParent<ColorPaletteBufferAuthoring>();
+            if (paletteAuthor == null) return ent;
 
             var em = gcs.DstEntityManager;
-            var ent = gcs.GetPrimaryEntity(this);
             em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPaletteLinkData
             {
                 BufferEntity = gcs.GetPrimaryEntity(paletteAuthor),
             });
+
+            return ent;
         }
 
     }

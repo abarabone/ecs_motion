@@ -50,7 +50,7 @@ namespace DotsLite.Structure.Authoring
     {
 
 
-        public virtual void SetObject(GameObject obj) => this.objectTop = obj;
+        //public virtual void SetObject(GameObject obj) => this.objectTop = obj;
 
 
         [SerializeField]

@@ -111,7 +111,7 @@ namespace DotsLite.Model.Authoring
             return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);
         }
 
-        public virtual Entity InitModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
+        public virtual Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var mat = new Material(this.shader);
             mat.enableInstancing = true;
