@@ -76,8 +76,8 @@ namespace DotsLite.Structure.Authoring
                 .BuildModelToDictionary(conversionSystem);
 
 
-            var top = this.gameObject;
-            var main = top.Children().First();
+            //var top = this.gameObject;
+            //var main = top.Children().First();
 
             //this.QueryModel.CreateMeshAndModelEntitiesWithDictionary(conversionSystem);
 

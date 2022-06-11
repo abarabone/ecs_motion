@@ -55,7 +55,7 @@ namespace DotsLite.Geometry
                 .ToArray();
             meshmodels.PackTextureToDictionary(atlasDict);
             meshmodels.CreateMeshesToDictionary(meshDict, atlasDict);
-            meshmodels.InitModelEntities(gcs, meshDict, atlasDict);
+            meshmodels.CreateModelEntitiesToDictionary(gcs, meshDict, atlasDict);
         }
 
 
@@ -118,7 +118,7 @@ namespace DotsLite.Geometry
 
 
 
-        public static void InitModelEntities(
+        public static void CreateModelEntitiesToDictionary(
             this IEnumerable<IMeshModel> models,
             GameObjectConversionSystem gcs,
             Dictionary<IMeshModel, Mesh> meshDict, TextureAtlasDictionary.Data atlasDict)
@@ -128,8 +128,10 @@ namespace DotsLite.Geometry
             foreach (var model in models)
             {
                 //Debug.Log($"{model.Obj.name} model ent");
-                var ent = gcs.GetPrimaryEntity(model.AsGameObject);
-                if (em.HasComponent<Draw.DrawModel.GeometryData>(ent)) continue;
+                //var ent = gcs.GetPrimaryEntity(model.AsGameObject);
+                //if (em.HasComponent<Draw.DrawModel.GeometryData>(ent)) continue;
+                if (gcs.IsExistsInModelEntityDictionary(model)) continue;
+                var ent = gcs.GetFromModelEntityDictionary(model);
                 //Debug.Log($"create {model.Obj.name}");
 
                 var mesh = meshDict[model];

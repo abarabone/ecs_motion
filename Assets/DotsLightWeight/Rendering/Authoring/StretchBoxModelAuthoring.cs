@@ -110,8 +110,8 @@ namespace DotsLite.Model.Authoring
                     new DrawInstance.ModelLinkData
                     //new DrawTransform.LinkData
                     {
-                        DrawModelEntityCurrent = gcs.GetPrimaryEntity(this.Model.AsGameObject),
-                        //DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(this.QueryModel.First().SourcePrefabKey),
+                        //DrawModelEntityCurrent = gcs.GetPrimaryEntity(this.Model.AsGameObject),
+                        DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(this.QueryModel.Single()),
                     }
                 );
                 em.SetComponentData(mainEntity,
