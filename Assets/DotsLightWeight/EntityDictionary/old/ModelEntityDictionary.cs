@@ -64,11 +64,11 @@ namespace DotsLite.Model.Authoring
 
             //return entity;
         }
-
-        static public bool IsExistsInModelEntityDictionary(this GameObjectConversionSystem gcs, IMeshModel kmodel) =>
+        
+        static public bool IsExistsInModelEntityDictionary(this GameObjectConversionSystem gcs, IMeshModel model) =>
             gcs.GetSingleton<ModelEntityDictionary.Data>()
                 .ModelDictionary
-                .ContainsKey(kmodel);
+                .ContainsKey(model);
     }
 
 }

@@ -42,7 +42,8 @@ namespace DotsLite.Model.Authoring
             // パレット向けの暫定
             this.QueryMmts.CalculatePaletteSubIndexParameter(ref p);
 
-            return () => meshpack.CreateMeshData(this.idxBuilder, this.vtxBuilder, p);
+            var md = MeshCreatorUtility.AllocateMeshData();
+            return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);
         }
 
 

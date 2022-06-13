@@ -81,22 +81,23 @@ namespace DotsLite.Geometry
                 where !meshDict.ContainsKey(model)
                 select (
                     builder: model.BuildMeshCombiner(meshsrc, meshDict, atlasDict),
-                    model: model as MonoBehaviour// ‚¿‚á‚ñ‚Æ‚µ‚æ‚¤
+                    model: model
                 );
             var ofs = qOfs.ToArray();
 
-            var qModel = ofs.Select(x => x.model as IMeshModel);
-            var qMesh = ofs.Select(x => x.builder.ToTask())
-                .WhenAll().Result
-                .Select(x => x.CreateMesh());
-            meshDict.AddRange(qModel, qMesh);
-            //var qModel = ofs.Select(x => x.model as IMeshModel);
-            //var qMesh = ofs
-            //    .Select(x => x.model.allo)
-            //    .Select(x => x.builder.ToTask())
+            var qModel = ofs.Select(x => x.model);
+            //var qMesh = ofs.Select(x => x.builder.ToTask())
             //    .WhenAll().Result
             //    .Select(x => x.CreateMesh());
             //meshDict.AddRange(qModel, qMesh);
+            var mds = ofs
+                .Select(x => x.builder.ToTask())
+                .WhenAll().Result;
+            foreach (var (model, md) in (qModel, mds).Zip())
+            {
+                var mesh = md.CreateMesh(model.Obj.name);
+                meshDict.Add(model, mesh);
+            }
         }
 
         /// <summary>
@@ -131,12 +132,13 @@ namespace DotsLite.Geometry
                 //var ent = gcs.GetPrimaryEntity(model.AsGameObject);
                 //if (em.HasComponent<Draw.DrawModel.GeometryData>(ent)) continue;
                 if (gcs.IsExistsInModelEntityDictionary(model)) continue;
-                var ent = gcs.GetFromModelEntityDictionary(model);
+                //var ent = gcs.GetFromModelEntityDictionary(model);
                 //Debug.Log($"create {model.Obj.name}");
 
                 var mesh = meshDict[model];
                 var atlas = atlasDict.modelToAtlas[model];
-                model.CreateModelEntity(gcs, mesh, atlas);
+                var ent = model.CreateModelEntity(gcs, mesh, atlas);
+                gcs.AddToModelEntityDictionary(model, ent);
             }
         }
 

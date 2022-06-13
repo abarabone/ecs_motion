@@ -62,29 +62,30 @@ namespace DotsLite.Geometry
 
 
 
-        public static Mesh.MeshDataArray CreateMeshData(
-            this SrcMeshesModelCombinePack meshpack,
-            IIndexBuilder idxBuilder, IVertexBuilder vtxBuilder,
-            AdditionalParameters p)
-        {
-            var dstmeshes = Mesh.AllocateWritableMeshData(1);
+        //public static Mesh.MeshDataArray CreateMeshData(
+        //    this SrcMeshesModelCombinePack meshpack,
+        //    IIndexBuilder idxBuilder, IVertexBuilder vtxBuilder,
+        //    AdditionalParameters p)
+        //{
+        //    var dstmeshes = Mesh.AllocateWritableMeshData(1);
 
-            var src = meshpack.AsEnumerable;
-            var dst = dstmeshes[0];
+        //    var src = meshpack.AsEnumerable;
+        //    var dst = dstmeshes[0];
 
-            var idxLength =
-            idxBuilder.BuildMeshData(src, p, dst);
-            vtxBuilder.BuildMeshData(src, p, dst);
+        //    var idxLength =
+        //    idxBuilder.BuildMeshData(src, p, dst);
+        //    vtxBuilder.BuildMeshData(src, p, dst);
 
-            dst.subMeshCount = 1;
-            dst.SetSubMesh(0, new SubMeshDescriptor(0, idxLength));
+        //    dst.subMeshCount = 1;
+        //    dst.SetSubMesh(0, new SubMeshDescriptor(0, idxLength));
 
-            return dstmeshes;
-        }
+        //    return dstmeshes;
+        //}
 
-        public static Mesh CreateMesh(this Mesh.MeshDataArray meshdata)
+        public static Mesh CreateMesh(this Mesh.MeshDataArray meshdata, string name)
         {
             var dstmesh = new Mesh();
+            dstmesh.name = name;
 
             Mesh.ApplyAndDisposeWritableMeshData(meshdata, dstmesh);
             dstmesh.RecalculateBounds();
@@ -110,7 +111,7 @@ namespace DotsLite.Geometry
 
             dst.subMeshCount = 1;
             dst.SetSubMesh(0, new SubMeshDescriptor(0, idxLength));
-
+            
             return dstmeshes;
         }
 

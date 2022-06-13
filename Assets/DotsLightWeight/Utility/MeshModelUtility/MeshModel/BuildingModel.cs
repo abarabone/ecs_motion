@@ -42,7 +42,8 @@ namespace DotsLite.Structure.Authoring
                 this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
             mmts.CalculatePaletteSubIndexParameter(ref p);
 
-            return () => meshpack.CreateMeshData(this.idxBuilder, this.VtxBuilder, p);
+            var md = MeshCreatorUtility.AllocateMeshData();
+            return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);
         }
     }
 

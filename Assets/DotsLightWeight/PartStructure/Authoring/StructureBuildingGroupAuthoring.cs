@@ -25,6 +25,12 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Utilities;
     using DotsLite.Structure.Authoring;
 
+    /// <summary>
+    /// 自身の子から構造物のエイリアスを収集し、その位置にインスタンスを配置する。
+    /// エイリアスが参照する本体はプレハブ化される。
+    /// モデルグループと同じように、テクスチャはひとまとめにされる。
+    /// far オブジェクトは一つのメッシュにまとめられる。（未実装）
+    /// </summary>
     public class StructureBuildingGroupAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
@@ -33,14 +39,14 @@ namespace DotsLite.Structure.Authoring
 
 
 
-        IEnumerable<IMeshModel> _model = null;
+        //IEnumerable<IMeshModel> _model = null;
 
-        public override IEnumerable<IMeshModel> QueryModel => _model ??= new MeshModel
-        {
-            objectTop = this.gameObject,
-            shader = this.ShaderToDraw,
-        }
-        .WrapEnumerable();
+        //public override IEnumerable<IMeshModel> QueryModel => _model ??= new MeshModel
+        //{
+        //    objectTop = this.gameObject,
+        //    shader = this.ShaderToDraw,
+        //}
+        //.WrapEnumerable();
 
 
 

@@ -52,14 +52,14 @@ namespace DotsLite.Model.Authoring
     {
 
 
-        public MeshModelBase() =>
-            this.GenerateSourcePrefabKey();
+        [SerializeField]
+        protected SourcePrefabKeyUnit sourcePrefabKey;
 
         public void GenerateSourcePrefabKey() =>
             this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
 
-        [SerializeField]
-        protected SourcePrefabKeyUnit sourcePrefabKey;
+        void Reset() =>
+            this.GenerateSourcePrefabKey();
 
 
 
