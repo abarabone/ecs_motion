@@ -39,7 +39,7 @@ namespace DotsLite.Geometry
 
     public interface IMeshModel
     {
-        SourcePrefabKeyUnit SourcePrefabKey { get; }
+        //SourcePrefabKeyUnit SourcePrefabKey { get; }
 
         GameObject Obj { get; }// Ç±ÇÍÇ¢ÇÈÇÒÇæÇ¡ÇØÅH
         Transform TfRoot { get; }

@@ -9,12 +9,12 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-namespace DotsLite.Model.Authoring
+namespace DotsLite.Model.Authoring.Vertex.CharacterModel
 {
     using DotsLite.Geometry;
 
     [Serializable]
-    public class PositionNormalUvBonedVertex : PositionNormalUvBonedVertexBuilder, CharacterModel.IVertexSelector
+    public class PositionNormalUvBonedVertex : PositionNormalUvBonedVertexBuilder, Authoring.CharacterModel.IVertexSelector
     { }
 }
 

@@ -10,13 +10,13 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace DotsLite.Structure.Authoring.Vertex.PartModel
+namespace DotsLite.Structure.Authoring.Vertex.AreaPartModel
 {
     using DotsLite.Geometry;
 
     [Serializable]
-    public class PositionNormalUvPart :
-        PositionUvNormalVertexBuilder, Authoring.PartModel.IVertexSelector
+    public class PositionNormalUv :
+        PositionUvNormalVertexBuilder, Authoring.AreaPartModel.IVertexSelector
     { }
 }
 
@@ -33,7 +33,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class PartModel : PartModelBase<StructureBuildingPartAuthoring>
+    public class AreaPartModel : PartModelBase<StructureAreaPartAuthoring>
     {
         public interface IVertexSelector : IVertexBuilder { }
 

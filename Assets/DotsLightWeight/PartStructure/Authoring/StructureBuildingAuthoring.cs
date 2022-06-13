@@ -53,7 +53,11 @@ namespace DotsLite.Structure.Authoring
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
-            new IMeshModel [] { this.NearModel, this.FarModel };
+            new IMeshModel []
+            {
+                this.NearModel ?? this.GetComponentInChildren<BuildingModel>(),
+                this.FarModel ?? this.GetComponentInChildren<LodMeshModel>(),
+            };
 
 
         public PartColliderMode ColliderMode;

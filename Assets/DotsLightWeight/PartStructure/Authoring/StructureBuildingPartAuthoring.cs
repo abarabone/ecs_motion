@@ -15,6 +15,9 @@ namespace DotsLite.Structure.Authoring
     //public class PositionNormalUvI32Part :
     //    PartModel<UI32, PositionNormalUvVertex>, StructureBuildingPartAuthoring.IMeshModelSelector
     //{ }
+    //[Serializable]
+    //public class PositionNormalUvPart : StructureVertexBuilder, StructureBuildingPartAuthoring.IVertexSelector
+    //{ }
 }
 
 namespace DotsLite.Structure.Authoring

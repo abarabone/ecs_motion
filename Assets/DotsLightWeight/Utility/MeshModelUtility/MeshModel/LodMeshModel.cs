@@ -10,19 +10,25 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace DotsLite.Structure.Authoring.Vertex.PartModel
+namespace DotsLite.Model.Authoring.Vertex.LodMeshModel
 {
     using DotsLite.Geometry;
 
     [Serializable]
-    public class PositionNormalUvPart :
-        PositionUvNormalVertexBuilder, Authoring.PartModel.IVertexSelector
+    public class PositionOnly : PositionVertexBuilder, Authoring.LodMeshModel.IVertexSelector
+    { }
+
+    [Serializable]
+    public class PositionUv : PositionUvVertexBuilder, Authoring.LodMeshModel.IVertexSelector
+    { }
+
+    [Serializable]
+    public class PositionUvNormal : PositionUvNormalVertexBuilder, Authoring.LodMeshModel.IVertexSelector
     { }
 }
 
-namespace DotsLite.Structure.Authoring
+namespace DotsLite.Model.Authoring
 {
-    using DotsLite.Model;
     using DotsLite.Draw;
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
@@ -30,10 +36,9 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Utilities;
     using DotsLite.Common.Extension;
     using DotsLite.Misc;
-    using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class PartModel : PartModelBase<StructureBuildingPartAuthoring>
+    public class LodMeshModel : LodMeshModelBase
     {
         public interface IVertexSelector : IVertexBuilder { }
 
