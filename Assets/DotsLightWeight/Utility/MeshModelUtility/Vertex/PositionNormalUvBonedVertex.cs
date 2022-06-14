@@ -134,6 +134,10 @@ namespace DotsLite.Geometry
             }
         }
 
+        /// <summary>
+        /// 結合前の頂点ごとのインデックスを、結合後のインデックスに変換する辞書を作成する。
+        /// 同一性は、ボーンＴＦによる。
+        /// </summary>
         public static BoneConversionDictionary ToBoneIndexConversionDictionary(
             this (IEnumerable<Transform[]> tfSrcBonesPerMesh, Transform[] tfDstBones) src)
         {

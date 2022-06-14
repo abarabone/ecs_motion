@@ -41,7 +41,8 @@ namespace DotsLite.Model.Authoring
         //    referencedPrefabs.Add(this.Model.AsGameObject);
         //}
 
-        public override IEnumerable<IMeshModel> QueryModel => (this.Model ?? this.GetComponentInChildren<MeshModel>()).WrapEnumerable();
+        public override IEnumerable<IMeshModel> QueryModel => this._model.WrapEnumerable();
+        IMeshModel _model => this.Model ?? this.GetComponentInChildren<MeshModel>();
         //public override IEnumerable<IMeshModel> QueryModel
         //{
         //    get

@@ -47,11 +47,11 @@ namespace DotsLite.Model.Authoring
             this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
 
 
-        public override Transform TfRoot => this.gameObject.Children().First().transform;// これでいいのか？
+        public override Transform TfRoot => this.transform;//this.gameObject.Children().First().transform;// これでいいのか？
 
         public override IEnumerable<Transform> QueryBones => this.boneTop.gameObject.DescendantsAndSelf()
             .Where(x => !x.name.StartsWith("_"))
-            //.Do(x => Debug.Log(x.name))
+            //.Do(x => Debug.Log($"dst bone : {x.name}"))
             .Select(x => x.transform);
 
 

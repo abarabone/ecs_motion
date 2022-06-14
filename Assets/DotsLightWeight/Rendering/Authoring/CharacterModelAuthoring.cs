@@ -42,15 +42,17 @@ namespace DotsLite.Model.Authoring
 
         //IEnumerable<IMeshModel> _models = null;
 
-        public override IEnumerable<IMeshModel> QueryModel
-        {
-            get
-            {
-                //this.Model.boneTop ??= this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
+        public override IEnumerable<IMeshModel> QueryModel => this._model.WrapEnumerable();
+        IMeshModel _model => this.Model ?? this.GetComponentInChildren<CharacterModel>();
+        //public override IEnumerable<IMeshModel> QueryModel
+        //{
+        //    get
+        //    {
+        //        //this.Model.boneTop ??= this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
 
-                return this.Model.WrapEnumerable();
-            }
-        }
+        //        return this.Model.WrapEnumerable();
+        //    }
+        //}
         //public override IEnumerable<IMeshModel> QueryModel => _models ??= new CharacterModel<UI32, PositionNormalUvBonedVertex>
         //{
         //    objectTop = this.gameObject,
