@@ -37,7 +37,7 @@ namespace DotsLite.Model.Authoring
             var atlas = atlasDictionary.modelToAtlas[this].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var p = this.QueryMmts.calculateParameters(
-                this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
+                this.Obj.transform, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
 
             // パレット向けの暫定
             this.QueryMmts.CalculatePaletteSubIndexParameter(ref p);

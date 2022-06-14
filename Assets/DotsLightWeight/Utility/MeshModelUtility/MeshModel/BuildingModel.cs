@@ -10,6 +10,16 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
+namespace DotsLite.Structure.Authoring.Vertex.BuildingModel
+{
+    using DotsLite.Geometry;
+
+    [Serializable]
+    public class PositionNormalUv :
+        StructureVertexBuilder, Authoring.BuildingModel.IVertexSelector
+    { }
+}
+
 namespace DotsLite.Structure.Authoring
 {
     using DotsLite.Model;
@@ -25,7 +35,6 @@ namespace DotsLite.Structure.Authoring
     public class BuildingModel : LodMeshModelBase
     {
 
-
         protected override int optionalVectorLength => 4;
         protected override int boneLength => 1;
 
@@ -39,12 +48,20 @@ namespace DotsLite.Structure.Authoring
             var texdict = atlasDictionary.texHashToUvRect;
             var mmts = this.QueryMmts.ToArray();
             var p = mmts.calculateParameters(
-                this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
+                this.Obj.transform, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
             mmts.CalculatePaletteSubIndexParameter(ref p);
 
             var md = MeshCreatorUtility.AllocateMeshData();
             return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);
         }
+
+
+        public interface IVertexSelector : IVertexBuilder { }
+
+        [SerializeReference, SubclassSelector]
+        public IVertexSelector vtxBuilder;
+
+        protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
     }
 
 }

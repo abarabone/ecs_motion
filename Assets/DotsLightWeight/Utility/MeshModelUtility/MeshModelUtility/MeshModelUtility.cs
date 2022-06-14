@@ -68,14 +68,14 @@ namespace DotsLite.Geometry
         {
             var qMmts =
                 from model in models
-                    .Do(x => Debug.Log($"t {x.Obj.name}"))
+                    //.Do(x => Debug.Log($"t {x.Obj.name}"))
                 select model.QueryMmts
                 ;
             using var meshAll = qMmts.ToArray().QueryMeshDataFromModel();
 
             var qOfs =
                 from x in (meshAll.AsEnumerable, models).Zip()
-                    .Do(x => Debug.Log($"create from {x.src1.Obj?.name} {meshDict.ContainsKey(x.src1)}"))
+                    //.Do(x => Debug.Log($"create from {x.src1.Obj?.name} {meshDict.ContainsKey(x.src1)}"))
                 let meshsrc = x.src0
                 let model = x.src1
                 where !meshDict.ContainsKey(model)

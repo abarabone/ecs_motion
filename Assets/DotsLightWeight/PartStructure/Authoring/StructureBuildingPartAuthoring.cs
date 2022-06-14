@@ -9,19 +9,6 @@ using System;
 
 namespace DotsLite.Structure.Authoring
 {
-    using DotsLite.Geometry;
-
-    //[Serializable]
-    //public class PositionNormalUvI32Part :
-    //    PartModel<UI32, PositionNormalUvVertex>, StructureBuildingPartAuthoring.IMeshModelSelector
-    //{ }
-    //[Serializable]
-    //public class PositionNormalUvPart : StructureVertexBuilder, StructureBuildingPartAuthoring.IVertexSelector
-    //{ }
-}
-
-namespace DotsLite.Structure.Authoring
-{
 
     using DotsLite.Model.Authoring;
     using DotsLite.Draw.Authoring;
@@ -50,19 +37,14 @@ namespace DotsLite.Structure.Authoring
 
         //public GameObject MasterPrefab;
 
-        public interface IMeshModelSelector : IMeshModel
-        { }
-        [SerializeReference, SubclassSelector]
-        public IMeshModelSelector PartModel;
-        //public PartModel<UI32, PositionNormalUvVertex> PartModel;
+        public PartModel Model;
 
         public ColorPaletteAsset Palette;
 
 
-        public override IEnumerable<IMeshModel> QueryModel =>
-            //new PartModel<UI32, PositionNormalUvVertex>(this.MasterPrefab, this.MaterialToDraw.shader)
-            this.PartModel
-            .WrapEnumerable();
+
+        public override IEnumerable<IMeshModel> QueryModel => this._model.WrapEnumerable();
+        IMeshModel _model => this.Model ?? this.GetComponentInChildren<PartModel>();
 
 
 
@@ -93,7 +75,7 @@ namespace DotsLite.Structure.Authoring
 
             this.QueryModel.BuildModelToDictionary(conversionSystem);
             //var modelEntity = conversionSystem.GetPrimaryEntity(this.PartModel.AsGameObject);
-            var modelEntity = conversionSystem.GetFromModelEntityDictionary(this.PartModel);
+            var modelEntity = conversionSystem.GetFromModelEntityDictionary(this._model);
 
 
             var posture = this.FindParent<StructureBuildingAuthoring>()

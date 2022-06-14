@@ -44,8 +44,10 @@ namespace DotsLite.Structure.Authoring
     {
 
         public BuildingModel NearModel;
-        public LodMeshModelBase FarModel;
+        public LodMeshModel FarModel;
 
+        public GameObject Near;
+        public GameObject Far;
         public GameObject Envelope;
         public StructureBuildingAuthoring MasterPrefab;
 
@@ -53,11 +55,9 @@ namespace DotsLite.Structure.Authoring
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
-            new IMeshModel []
-            {
-                this.NearModel ?? this.GetComponentInChildren<BuildingModel>(),
-                this.FarModel ?? this.GetComponentInChildren<LodMeshModel>(),
-            };
+            new IMeshModel [] { this._nearModel, this._farModel };
+        public BuildingModel _nearModel => this.NearModel ?? this.GetComponentInChildren<BuildingModel>();
+        public LodMeshModel _farModel => this.FarModel ?? this.GetComponentInChildren<LodMeshModel>();
 
 
         public PartColliderMode ColliderMode;
@@ -106,8 +106,8 @@ namespace DotsLite.Structure.Authoring
             this GameObjectConversionSystem gcs, StructureBuildingAuthoring st)
         {
             var top = st;
-            var far = st.FarModel.Obj;
-            var near = st.NearModel.Obj;
+            var far = st.Far;
+            var near = st.Near;
             var env = st.Envelope;
             var posture = st.GetComponentInChildren<PostureAuthoring>();
             var parts = near.GetComponentsInChildren<StructureBuildingPartAuthoring>();
@@ -120,7 +120,7 @@ namespace DotsLite.Structure.Authoring
 
 
             initBinderEntity_(gcs, top, posture);
-            initMainEntity_(gcs, top, posture, st.NearModel, st.FarModel, parts.Length);
+            initMainEntity_(gcs, top, posture, st._nearModel, st._farModel, parts.Length);
             gcs.InitPostureEntity(posture);//, far.objectTop.transform);
 
             setBoneForFarEntity_(gcs, posture, far, top.transform);
@@ -213,8 +213,8 @@ namespace DotsLite.Structure.Authoring
             var em = gcs.DstEntityManager;
 
             //var top = st.gameObject;
-            var far = st.FarModel.Obj;
-            var near = st.NearModel.Obj;
+            var far = st.Far;
+            var near = st.Near;
             var env = st.Envelope;
             var main = env;
 
@@ -404,11 +404,12 @@ namespace DotsLite.Structure.Authoring
 
 
 
-        static void initMeshColliderEntity(GameObjectConversionSystem gcs, IMeshModel near)
+        static void initMeshColliderEntity(
+            GameObjectConversionSystem gcs, IMeshModel nearModel, GameObject near)
         {
             var em = gcs.DstEntityManager;
 
-            var mesh = gcs.GetMeshFromDictionary(near);//.SourcePrefabKey);
+            var mesh = gcs.GetMeshFromDictionary(nearModel);//.SourcePrefabKey);
             using var data = Mesh.AcquireReadOnlyMeshData(mesh);
             using var vtxs = new NativeArray<Vector3>(mesh.vertexCount, Allocator.Temp);
             using var idxs = new NativeArray<int>((int)mesh.GetIndexCount(0) * 3, Allocator.Temp);
@@ -417,7 +418,7 @@ namespace DotsLite.Structure.Authoring
             var collider = Unity.Physics.MeshCollider.Create
                 (vtxs.Reinterpret<float3>(), idxs.Reinterpret<int3>(sizeof(int)));
 
-            var ent = gcs.GetPrimaryEntity(near.Obj);
+            var ent = gcs.GetPrimaryEntity(near);
             em.AddComponentData(ent, new PhysicsCollider
             {
                 Value = collider,

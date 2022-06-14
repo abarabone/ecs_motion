@@ -15,7 +15,7 @@ namespace DotsLite.Structure.Authoring.Vertex.PartModel
     using DotsLite.Geometry;
 
     [Serializable]
-    public class PositionNormalUvPart :
+    public class PositionNormalUv :
         PositionUvNormalVertexBuilder, Authoring.PartModel.IVertexSelector
     { }
 }

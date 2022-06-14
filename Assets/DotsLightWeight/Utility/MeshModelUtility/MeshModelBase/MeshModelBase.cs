@@ -50,7 +50,7 @@ namespace DotsLite.Model.Authoring
 
         
         public virtual GameObject Obj => this.gameObject;
-        public virtual Transform TfRoot => this.gameObject.transform;
+        //public virtual Transform TfRoot => this.gameObject.transform;
         public virtual IEnumerable<Transform> QueryBones => null;
         //public virtual SourcePrefabKeyUnit SourcePrefabKey => this.sourcePrefabKey;
 
@@ -77,7 +77,7 @@ namespace DotsLite.Model.Authoring
             var atlas = atlasDictionary.modelToAtlas[this].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var p = this.QueryMmts.calculateParameters(
-                this.TfRoot, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
+                this.Obj.transform, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
 
             var md = MeshCreatorUtility.AllocateMeshData();
             return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);

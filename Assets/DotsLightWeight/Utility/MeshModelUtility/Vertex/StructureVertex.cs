@@ -28,7 +28,7 @@ namespace DotsLite.Geometry
         public Vector2 Uv;
     }
 
-    public struct StructureVertexBuilder : IVertexBuilder//, ISetBufferParams
+    public class StructureVertexBuilder : IVertexBuilder//, ISetBufferParams
     {
         //public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         //    where TVtx : struct, IVertexUnit
