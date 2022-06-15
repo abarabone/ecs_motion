@@ -12,11 +12,11 @@ using Unity.Mathematics;
 namespace DotsLite.Geometry
 {
 
-    [Serializable]
-    public struct SourcePrefabKeyUnit
-    {
-        public int Value;
-    }
+    //[Serializable]
+    //public struct SourcePrefabKeyUnit
+    //{
+    //    public int Value;
+    //}
 
 
     //public enum TransformMode
@@ -43,6 +43,7 @@ namespace DotsLite.Geometry
 
         GameObject Obj { get; }
         //Transform TfRoot { get; }
+
 
         IEnumerable<Transform> QueryBones { get; }
         IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts { get; }

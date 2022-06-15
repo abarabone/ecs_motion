@@ -65,6 +65,18 @@ namespace DotsLite.Structure.Authoring
         //        meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, part => texdict[atlas, part], this.Bones)
         //    );
         //}
+
+
+        public interface IVertexSelector : IVertexBuilder { }
+
+
+        [SerializeReference, SubclassSelector]
+        public IIndexSelector idxBuilder;
+        protected override IIndexBuilder IdxBuilder => this.idxBuilder;
+
+        [SerializeReference, SubclassSelector]
+        public IVertexSelector vtxBuilder;
+        protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
     }
 
 }

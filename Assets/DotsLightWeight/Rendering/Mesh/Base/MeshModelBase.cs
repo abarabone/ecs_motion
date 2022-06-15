@@ -20,7 +20,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Common.Extension;
     using DotsLite.Misc;
 
-    public class MeshModelBase : MonoBehaviour, IMeshModel
+    public abstract class MeshModelBase : MonoBehaviour, IMeshModel
     {
 
 
@@ -43,12 +43,17 @@ namespace DotsLite.Model.Authoring
         protected BoneType boneType = BoneType.RT;
         [SerializeField]
         protected DrawModel.SortOrder sortOrder = DrawModel.SortOrder.desc;
-        
+
+
+        protected abstract IIndexBuilder IdxBuilder { get; }
+        protected abstract IVertexBuilder VtxBuilder { get; }
+
+
         protected virtual int optionalVectorLength => 0;
         protected virtual int boneLength => 1;
 
 
-        
+
         public virtual GameObject Obj => this.gameObject;
         //public virtual Transform TfRoot => this.gameObject.transform;
         public virtual IEnumerable<Transform> QueryBones => null;
@@ -59,13 +64,6 @@ namespace DotsLite.Model.Authoring
                 .Select(x => x.gameObject)
                 .QueryMeshMatsTransform_IfHaving();
 
-
-
-        [SerializeReference, SubclassSelector]
-        public IIndexSelector idxBuilder;
-
-        protected virtual IIndexBuilder IdxBuilder => this.idxBuilder;
-        protected virtual IVertexBuilder VtxBuilder => throw new NotImplementedException();
 
 
 
@@ -97,7 +95,7 @@ namespace DotsLite.Model.Authoring
 
 
     [Serializable]
-    public class LodMeshModelBase : MeshModelBase, IMeshModelLod
+    public abstract class LodMeshModelBase : MeshModelBase, IMeshModelLod
     {
 
         [SerializeField]

@@ -32,17 +32,6 @@ namespace DotsLite.Model.Authoring
     public class CharacterModel : MeshModelBase
     {
 
-
-        public interface IVertexSelector : IVertexBuilder { }
-
-        [SerializeReference, SubclassSelector]
-        public IVertexSelector vtxBuilder;
-
-        protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
-
-
-
-
         public Transform boneTop =>
             this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
 
@@ -57,6 +46,19 @@ namespace DotsLite.Model.Authoring
 
         protected override int optionalVectorLength => 0;
         protected override int boneLength => this.QueryBones.Count();
+
+
+
+        public interface IVertexSelector : IVertexBuilder { }
+
+
+        [SerializeReference, SubclassSelector]
+        public IIndexSelector idxBuilder;
+        protected override IIndexBuilder IdxBuilder => this.idxBuilder;
+
+        [SerializeReference, SubclassSelector]
+        public IVertexSelector vtxBuilder;
+        protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
 
     }
 
