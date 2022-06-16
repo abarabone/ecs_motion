@@ -62,6 +62,8 @@ namespace DotsLite.Structure.Authoring
                     typeof(Marker.Rotation),
                     typeof(Marker.Translation),
                     typeof(Part.PartData),//とりあえずテスト的に
+
+                    typeof(PhysicsWorldIndex),
                 });
                 em.AddComponents(ent, addtypes);
 

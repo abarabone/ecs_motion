@@ -32,7 +32,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Model.Authoring;
 
     [Serializable]
-    public class AreaModel : LodMeshModelBase
+    public class AreaModel : BuildingModel//LodMeshModelBase
     {
 
         protected override int optionalVectorLength => 4;
@@ -78,16 +78,16 @@ namespace DotsLite.Structure.Authoring
 
 
 
-        public interface IVertexSelector : IVertexBuilder { }
+        //public interface IVertexSelector : IVertexBuilder { }
 
 
-        [SerializeReference, SubclassSelector]
-        public IIndexSelector idxBuilder;
-        protected override IIndexBuilder IdxBuilder => this.idxBuilder;
+        //[SerializeReference, SubclassSelector]
+        //public IIndexSelector idxBuilder;
+        //protected override IIndexBuilder IdxBuilder => this.idxBuilder;
 
-        [SerializeReference, SubclassSelector]
-        public IVertexSelector vtxBuilder;
-        protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
+        //[SerializeReference, SubclassSelector]
+        //public IVertexSelector vtxBuilder;
+        //protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
     }
 
 }

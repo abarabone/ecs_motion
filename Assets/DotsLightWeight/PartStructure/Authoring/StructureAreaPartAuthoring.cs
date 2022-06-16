@@ -35,26 +35,32 @@ namespace DotsLite.Structure.Authoring
         public int PartId;
         public int partId { get => this.PartId; set => this.PartId = value; }
 
-        public interface IMeshModelSelector : IMeshModel
-        { }
-        [SerializeReference, SubclassSelector]
-        public IMeshModelSelector PartModel;
-        //public AreaPartModel<UI32, PositionNormalUvVertex> PartModel;
+        //public interface IMeshModelSelector : IMeshModel
+        //{ }
+        //[SerializeReference, SubclassSelector]
+        //public IMeshModelSelector PartModel;
+        ////public AreaPartModel<UI32, PositionNormalUvVertex> PartModel;
 
         public ColorPaletteAsset Palette;
 
 
+        public PartModel Model;
 
-        public override IEnumerable<IMeshModel> QueryModel =>
-            //(this.IsStretchBoxMesh
-            //    ? (IMeshModel)new StretchBoxModel<UI32, PositionNormalVertex>
-            //    {
-            //        objectTop = this.PartModel.objectTop,
-            //        shader = this.PartModel.shader
-            //    }
-            //    : this.PartModel)
-            this.PartModel
-            .WrapEnumerable();
+        public override IEnumerable<IMeshModel> QueryModel => this._model.WrapEnumerable();
+        IMeshModel _model => this.Model ?? this.GetComponentInChildren<PartModel>();
+
+
+
+        //public override IEnumerable<IMeshModel> QueryModel =>
+        //    //(this.IsStretchBoxMesh
+        //    //    ? (IMeshModel)new StretchBoxModel<UI32, PositionNormalVertex>
+        //    //    {
+        //    //        objectTop = this.PartModel.objectTop,
+        //    //        shader = this.PartModel.shader
+        //    //    }
+        //    //    : this.PartModel)
+        //    this.PartModel
+        //    .WrapEnumerable();
 
         //public void Convert
         //    (Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)

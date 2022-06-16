@@ -20,14 +20,14 @@ namespace DotsLite.Model.Authoring
 
         public class Data : IComponentData
         {
-            public Dictionary<IMeshModel, Entity> ModelDictionary;
+            public Dictionary<SourcePrefabKeyUnit, Entity> ModelDictionary;
         }
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            var dict = new Dictionary<IMeshModel, Entity>();
+            var dict = new Dictionary<SourcePrefabKeyUnit, Entity>();
             this.EntityManager.CreateEntity(typeof(Data));
             this.SetSingleton(new Data { ModelDictionary = dict });
         }
@@ -52,12 +52,12 @@ namespace DotsLite.Model.Authoring
         static public void AddToModelEntityDictionary(this GameObjectConversionSystem gcs, IMeshModel model, Entity entity) =>
             gcs.GetSingleton<ModelEntityDictionary.Data>()
                 .ModelDictionary
-                .Add(model, entity);
+                .Add(model.SourcePrefabKey, entity);
 
         static public Entity GetFromModelEntityDictionary(this GameObjectConversionSystem gcs, IMeshModel model)
         {
             return gcs.GetSingleton<ModelEntityDictionary.Data>()
-                .ModelDictionary[model];
+                .ModelDictionary[model.SourcePrefabKey];
             //gcs.GetSingleton<ModelEntityDictionary.Data>()
             //    .ModelDictionary
             //    .TryGetValue(topGameObject, out var entity);
@@ -68,7 +68,7 @@ namespace DotsLite.Model.Authoring
         static public bool IsExistsInModelEntityDictionary(this GameObjectConversionSystem gcs, IMeshModel model) =>
             gcs.GetSingleton<ModelEntityDictionary.Data>()
                 .ModelDictionary
-                .ContainsKey(model);
+                .ContainsKey(model.SourcePrefabKey);
     }
 
 }

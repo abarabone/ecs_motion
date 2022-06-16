@@ -43,18 +43,19 @@ namespace DotsLite.Structure.Authoring
     public class StructureAreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
     {
 
-        public AreaModel Model;
+        //public AreaModel NearModel;
+        public BuildingModel NearModel;
 
         public GameObject Near;
         public GameObject Envelope;
-        public StructureAreaAuthoring MasterPrefab;
+        public StructureAreaAuthoring MasterPrefab;// Ç»ÇÒÇæÇ¡ÇØÇ±ÇÍÅH
 
         [SerializeField]
         ColorPaletteAsset Palette;
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
-            new IMeshModel[] { this.Model };
+            new IMeshModel[] { this.NearModel };
 
         //[SerializeField]
         //public SourcePrefabKeyUnit key;
@@ -73,7 +74,7 @@ namespace DotsLite.Structure.Authoring
         void CreateStructureEntities_Compound(GameObjectConversionSystem gcs)
         {
             var top = this;
-            var near = this.Model.Obj;
+            var near = this.Near;
             var env = this.Envelope;
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             var parts = near.GetComponentsInChildren<StructureAreaPartAuthoring>();
@@ -87,7 +88,7 @@ namespace DotsLite.Structure.Authoring
 
             initBinderEntity_(gcs, top, posture);
             gcs.InitPostureEntity(posture);//, far.objectTop.transform);
-            initMainEntity_(gcs, top, posture, this.Model, parts.Length);
+            initMainEntity_(gcs, top, posture, this.NearModel, parts.Length);
 
             //// Ç∆ÇËÇ†Ç¶Ç∏ÇPÉ{Å[ÉìÇ…ëŒâû
             //var bone0 = bones.First();
@@ -105,7 +106,7 @@ namespace DotsLite.Structure.Authoring
         static void initBinderEntity_
             (GameObjectConversionSystem gcs, StructureAreaAuthoring top, PostureAuthoring main)
         {
-            var em_ = gcs.DstEntityManager;
+            var em = gcs.DstEntityManager;
 
             var binderEntity = gcs.GetPrimaryEntity(top);
             var mainEntity = gcs.GetPrimaryEntity(main);
@@ -116,13 +117,13 @@ namespace DotsLite.Structure.Authoring
                 typeof(BinderTrimBlankLinkedEntityGroupTag),
                 typeof(ObjectBinder.MainEntityLinkData)
             );
-            em_.AddComponents(binderEntity, binderAddtypes);
+            em.AddComponents(binderEntity, binderAddtypes);
 
-            em_.SetComponentData(binderEntity,
+            em.SetComponentData(binderEntity,
                 new ObjectBinder.MainEntityLinkData { MainEntity = mainEntity });
 
 
-            em_.SetName_(binderEntity, $"{top.name} binder");
+            em.SetName_(binderEntity, $"{top.name} binder");
         }
 
         static void initMainEntity_(

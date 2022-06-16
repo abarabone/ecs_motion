@@ -24,14 +24,15 @@ namespace DotsLite.Model.Authoring
     {
 
 
-        //[SerializeField]
-        //protected SourcePrefabKeyUnit sourcePrefabKey;
+        [SerializeField]
+        protected SourcePrefabKeyUnit sourcePrefabKey;
+        public SourcePrefabKeyUnit SourcePrefabKey => this.sourcePrefabKey;
 
-        //public void GenerateSourcePrefabKey() =>
-        //    this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
+        public void GenerateSourcePrefabKey() =>
+            this.sourcePrefabKey.Value = new System.Random(this.GetHashCode()).Next();
 
-        //void Reset() =>
-        //    this.GenerateSourcePrefabKey();
+        void Reset() =>
+            this.GenerateSourcePrefabKey();
 
 
 
