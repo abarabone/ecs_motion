@@ -43,8 +43,9 @@ namespace DotsLite.Structure.Authoring
     public class StructureAreaAuthoring : ModelGroupAuthoring.ModelAuthoringBase//, IConvertGameObjectToEntity
     {
 
-        public AreaModel NearModel;
+        public AreaModel Model;
 
+        public GameObject Near;
         public GameObject Envelope;
         public StructureAreaAuthoring MasterPrefab;
 
@@ -53,7 +54,7 @@ namespace DotsLite.Structure.Authoring
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
-            new IMeshModel[] { this.NearModel };
+            new IMeshModel[] { this.Model };
 
         //[SerializeField]
         //public SourcePrefabKeyUnit key;
@@ -72,7 +73,7 @@ namespace DotsLite.Structure.Authoring
         void CreateStructureEntities_Compound(GameObjectConversionSystem gcs)
         {
             var top = this;
-            var near = this.NearModel.Obj;
+            var near = this.Model.Obj;
             var env = this.Envelope;
             var posture = this.GetComponentInChildren<PostureAuthoring>();
             var parts = near.GetComponentsInChildren<StructureAreaPartAuthoring>();
@@ -86,7 +87,7 @@ namespace DotsLite.Structure.Authoring
 
             initBinderEntity_(gcs, top, posture);
             gcs.InitPostureEntity(posture);//, far.objectTop.transform);
-            initMainEntity_(gcs, top, posture, this.NearModel, parts.Length);
+            initMainEntity_(gcs, top, posture, this.Model, parts.Length);
 
             //// とりあえず１ボーンに対応
             //var bone0 = bones.First();
@@ -126,7 +127,7 @@ namespace DotsLite.Structure.Authoring
 
         static void initMainEntity_(
             GameObjectConversionSystem gcs, StructureAreaAuthoring top, PostureAuthoring main,
-            IMeshModelLod near, int partLength)
+            IMeshModelLod nearModel, int partLength)
         {
             var em = gcs.DstEntityManager;
 
@@ -172,7 +173,7 @@ namespace DotsLite.Structure.Authoring
             em.SetComponentData(mainEntity, new DrawInstance.ModelLinkData
             {
                 //DrawModelEntityCurrent = gcs.GetPrimaryEntity(near.AsGameObject),
-                DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(near),
+                DrawModelEntityCurrent = gcs.GetFromModelEntityDictionary(nearModel),
                 //DrawModelEntityCurrent = Entity.Null,//gcs_.GetFromModelEntityDictionary(far_.objectTop),//(top_),
                 //DrawModelEntityCurrent = mainEntity,// ダミーとして、モデルでないものを入れとく（危険かなぁ…）
                 // 最初のＬＯＤ判定で Null もタグ付けさせるため
@@ -202,7 +203,7 @@ namespace DotsLite.Structure.Authoring
             //);
 
             var draw = mainEntity;
-            gcs.AddLod1ComponentToDrawInstanceEntity(draw, top.gameObject, near);
+            gcs.AddLod1ComponentToDrawInstanceEntity(draw, top.gameObject, nearModel);
 
 
             em.SetName_(mainEntity, $"{top.name} main");
@@ -271,7 +272,7 @@ namespace DotsLite.Structure.Authoring
 
             //var top = st.gameObject;
             //var far = st.FarModel.Obj;
-            var near = st.NearModel.Obj;
+            var near = st.Near;
             var env = st.Envelope;
             var main = env;
 

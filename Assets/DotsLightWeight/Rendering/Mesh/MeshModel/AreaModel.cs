@@ -10,6 +10,16 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
+namespace DotsLite.Structure.Authoring.Vertex.AreaModel
+{
+    using DotsLite.Geometry;
+
+    [Serializable]
+    public class PositionNormalUv :
+        StructureVertexBuilder, Authoring.AreaModel.IVertexSelector
+    { }
+}
+
 namespace DotsLite.Structure.Authoring
 {
     using DotsLite.Model;
@@ -65,6 +75,7 @@ namespace DotsLite.Structure.Authoring
         //        meshpack.BuildCombiner<TIdx, TVtx>(this.TfRoot, part => texdict[atlas, part], this.Bones)
         //    );
         //}
+
 
 
         public interface IVertexSelector : IVertexBuilder { }
