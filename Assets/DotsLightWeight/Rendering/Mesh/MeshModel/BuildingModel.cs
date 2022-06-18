@@ -41,10 +41,10 @@ namespace DotsLite.Structure.Authoring
 
         public override Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<IMeshModel, Mesh> meshDictionary,
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary)
         {
-            var atlas = atlasDictionary.modelToAtlas[this].GetHashCode();
+            var atlas = atlasDictionary.modelToAtlas[this.sourcePrefabKey].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var mmts = this.QueryMmts.ToArray();
             var p = mmts.calculateParameters(

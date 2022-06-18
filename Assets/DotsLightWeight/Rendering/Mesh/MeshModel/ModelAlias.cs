@@ -27,7 +27,7 @@ namespace DotsLite.Model.Authoring
 
         public Func<Mesh.MeshDataArray> BuildMeshCombiner(
             SrcMeshesModelCombinePack meshpack,
-            Dictionary<IMeshModel, Mesh> meshDictionary,
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary) => this.LinkToMeshModel.BuildMeshCombiner(meshpack, meshDictionary, atlasDictionary);
 
 

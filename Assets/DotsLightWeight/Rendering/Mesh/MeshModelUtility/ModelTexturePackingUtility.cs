@@ -21,7 +21,7 @@ namespace DotsLite.Model.Authoring
             this IEnumerable<IMeshModel> models, TextureAtlasDictionary.Data atlasDict)
         {
             var texmodels = models
-                .Where(x => !atlasDict.modelToAtlas.ContainsKey(x))
+                .Where(x => !atlasDict.modelToAtlas.ContainsKey(x.SourcePrefabKey))
                 //.Logging(x => x.name)
                 .ToArray();
 
@@ -37,7 +37,7 @@ namespace DotsLite.Model.Authoring
             var tex = qMat.QueryUniqueTextures().ToAtlasOrPassThroughAndParameters();
 
             atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-            atlasDict.modelToAtlas.AddEach(texmodels, tex.atlas);
+            atlasDict.modelToAtlas.AddEach(texmodels.Select(x => x.SourcePrefabKey), tex.atlas);
         }
     }
 }

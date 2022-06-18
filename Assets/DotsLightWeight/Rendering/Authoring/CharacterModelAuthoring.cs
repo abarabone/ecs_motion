@@ -42,7 +42,7 @@ namespace DotsLite.Model.Authoring
 
         //IEnumerable<IMeshModel> _models = null;
 
-        public override IEnumerable<IMeshModel> QueryModel => this.GetComponentInChildren<ModelAlias>().WrapEnumerable();
+        public override IEnumerable<IMeshModel> QueryModel => this.GetComponentInChildren<IMeshModel>().WrapEnumerable();
         //public override IEnumerable<IMeshModel> QueryModel
         //{
         //    get
