@@ -43,9 +43,6 @@ namespace DotsLite.Structure.Authoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity
     {
 
-        public BuildingModel NearModel;
-        public LodMeshModel FarModel;
-
         public GameObject Near;
         public GameObject Far;
         public GameObject Envelope;
@@ -56,8 +53,8 @@ namespace DotsLite.Structure.Authoring
 
         public override IEnumerable<IMeshModel> QueryModel =>
             new IMeshModel [] { this._nearModel, this._farModel };
-        public BuildingModel _nearModel => this.GetComponentInChildren<BuildingModel>();
-        public LodMeshModel _farModel => this.GetComponentInChildren<LodMeshModel>();
+        public BuildingModel _nearModel => this.NearModel ?? this.Near.GetComponent<BuildingModel>();
+        public LodMeshModel _farModel => this.FarModel ?? this.Far.GetComponent<LodMeshModel>();
 
 
         public PartColliderMode ColliderMode;
@@ -67,6 +64,9 @@ namespace DotsLite.Structure.Authoring
             compound,   // すべてのコライダを結合する。未実装
             mesh,       // １つのメッシュコライダーにする。未実装
         }
+
+        public BuildingModel NearModel;
+        public LodMeshModel FarModel;
 
 
 

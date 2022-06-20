@@ -8,10 +8,11 @@ namespace DotsLite.Model.Authoring
 {
     using DotsLite.Geometry;
 
-    public class ModelAlias : MonoBehaviour, IMeshModel
+    public class MeshModelAliasBase<T> : MonoBehaviour, IMeshModel
+        where T : MonoBehaviour, IMeshModel
     {
 
-        public MeshModelBase LinkToMeshModel;
+        public T LinkToMeshModel;
 
 
 

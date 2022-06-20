@@ -24,15 +24,14 @@ namespace DotsLite.Model.Authoring
     using DotsLite.EntityTrimmer.Authoring;
 
     /// <summary>
-    /// 
+    /// this.Model にセットされた MeshModel を、モデルとしてコンバートする。
+    /// Nothing であれば、ツリー内に存在する MeshModel を対象とする。
+    /// また model の .SourcePrefabKey が同じモデルは、同じものとみなす。
+    /// （当初は同じプレハブからコンバートしたモデルで賄おうとしたんだけど、構造物パーツなんかでインスタンスとモデルを作る手間が面倒なので）
     /// </summary>
     public class MeshModelAuthoring
         : ModelGroupAuthoring.ModelAuthoringBase, IConvertGameObjectToEntity//, DeclareReferencedPrefabs
     {
-
-
-        public MeshModel Model;
-
 
         //public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
         //{
@@ -41,7 +40,8 @@ namespace DotsLite.Model.Authoring
         //    referencedPrefabs.Add(this.Model.AsGameObject);
         //}
 
-        public override IEnumerable<IMeshModel> QueryModel => this.GetComponentInChildren<IMeshModel>().WrapEnumerable();
+        public override IEnumerable<IMeshModel> QueryModel => this._model.WrapEnumerable();
+        IMeshModel _model => this.Model ?? this.GetComponentInChildren<IMeshModel>();
         //public override IEnumerable<IMeshModel> QueryModel
         //{
         //    get
@@ -63,6 +63,10 @@ namespace DotsLite.Model.Authoring
         //            .Distinct();
         //    }
         //}
+
+
+
+        public MeshModel Model;
 
 
 

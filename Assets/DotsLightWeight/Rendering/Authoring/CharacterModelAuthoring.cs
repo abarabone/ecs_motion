@@ -42,7 +42,8 @@ namespace DotsLite.Model.Authoring
 
         //IEnumerable<IMeshModel> _models = null;
 
-        public override IEnumerable<IMeshModel> QueryModel => this.GetComponentInChildren<IMeshModel>().WrapEnumerable();
+        public override IEnumerable<IMeshModel> QueryModel => _model.WrapEnumerable();
+        IMeshModel _model => this.Model ?? this.GetComponentInChildren<CharacterModel>();
         //public override IEnumerable<IMeshModel> QueryModel
         //{
         //    get
@@ -60,8 +61,8 @@ namespace DotsLite.Model.Authoring
         //}
         //.WrapEnumerable();
 
-        //[SerializeField]
-        //CharacterModel Model;
+        [SerializeField]
+        CharacterModel Model;
 
 
 
