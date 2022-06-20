@@ -51,7 +51,7 @@ namespace DotsLite.Geometry
             var atlasDict = gcs.GetTextureAtlasDictionary();
 
             var meshmodels = models
-                .Distinct(x => x)
+                .Distinct(x => x.SourcePrefabKey)
                 .ToArray();
             meshmodels.PackTextureToDictionary(atlasDict);
             meshmodels.CreateMeshesToDictionary(meshDict, atlasDict);
