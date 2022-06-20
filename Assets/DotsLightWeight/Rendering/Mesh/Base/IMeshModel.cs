@@ -67,4 +67,18 @@ namespace DotsLite.Geometry
         float Margin { get; }
     }
 
+
+    public interface ISimpleMeshModel : IMeshModel
+    { }
+    public interface ILodMeshModel : IMeshModel
+    { }
+    public interface ICharacterMeshModel : IMeshModel
+    { }
+    public interface IStructureNearMeshModel : IMeshModel
+    { }
+    public interface IStructureFarMeshModel : IMeshModel
+    { }
+    public interface IStructurePartMeshModel : IMeshModel
+    { }
+
 }

@@ -84,6 +84,7 @@ namespace DotsLite.Structure.Authoring
 
             this.WrapEnumerable<ModelGroupAuthoring.ModelAuthoringBase>()
                 .Concat(parts)
+                //.Do(x => Debug.Log(x.name))
                 .BuildModelToDictionary(gcs);
 
             initBinderEntity_(gcs, top, posture);

@@ -37,7 +37,7 @@ namespace DotsLite.Model.Authoring
             var tex = qMat.QueryUniqueTextures().ToAtlasOrPassThroughAndParameters();
 
             atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-            atlasDict.modelToAtlas.AddEach(texmodels.Select(x => x.SourcePrefabKey), tex.atlas);
+            atlasDict.modelToAtlas.AddEach(texmodels.Do(x => Debug.Log(x.Obj.name)).Select(x => x.SourcePrefabKey), tex.atlas);
         }
     }
 }
