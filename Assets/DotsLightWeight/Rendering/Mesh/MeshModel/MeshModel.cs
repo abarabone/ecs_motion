@@ -25,17 +25,25 @@ namespace DotsLite.Model.Authoring.Vertex.MeshModel
     [Serializable]
     public class PositionUvNormal : PositionUvNormalVertexBuilder, Authoring.MeshModel.IVertexSelector
     { }
+
+
+    //[Serializable]
+    //public class PositionOnlyWithPallet : PositionWithPalletVertexBuilder, Authoring.MeshModel.IVertexSelector
+    //{ }
+
+    //[Serializable]
+    //public class PositionUvWithPallet : PositionUvWithPalletVertexBuilder, Authoring.MeshModel.IVertexSelector
+    //{ }
+
+    [Serializable]
+    public class PositionUvNormalWithPalette : PositionUvNormalWithPaletteVertexBuilder, Authoring.MeshModel.IVertexSelector
+    { }
+
 }
 
 namespace DotsLite.Model.Authoring
 {
-    using DotsLite.Draw;
-    using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
-    using DotsLite.Structure.Authoring;
-    using DotsLite.Utilities;
-    using DotsLite.Common.Extension;
-    using DotsLite.Misc;
 
     [Serializable]
     public class MeshModel : MeshModelBase

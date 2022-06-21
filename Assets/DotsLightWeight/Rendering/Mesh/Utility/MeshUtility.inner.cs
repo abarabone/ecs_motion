@@ -177,6 +177,7 @@ namespace DotsLite.Geometry.inner
         {
             var qVtx = srcmeshes.QuerySubMeshForUnitVertices();
             var qColor =
+
                 from idxs in p.paletteSubIndexPerSubMesh
                 from idx in idxs
                 select new Color32

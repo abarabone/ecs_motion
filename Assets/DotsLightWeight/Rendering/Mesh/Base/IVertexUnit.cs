@@ -35,6 +35,8 @@ namespace DotsLite.Geometry
             IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p, Mesh.MeshData dstmesh);
     }
 
+    public interface IVertexUnitWithPallet
+    { }
 
     //public interface IVertexUnitBoned<TVtx> : IVertexUnit<TVtx>
     //    where TVtx : struct, IVertexUnitBoned<TVtx>, ISetBufferParams

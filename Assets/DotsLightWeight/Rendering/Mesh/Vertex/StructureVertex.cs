@@ -24,7 +24,7 @@ namespace DotsLite.Geometry
     {
         public Vector3 Position;
         public Vector3 Normal;
-        public Color32 PardId;
+        public Color32 PartId;
         public Vector2 Uv;
     }
 
@@ -86,7 +86,7 @@ namespace DotsLite.Geometry
                     {
                         Position = x.src0,
                         Normal = x.src1,
-                        PardId = new Color32(x.src2.r, x.src2.g, x.src2.b, x.src3.a),
+                        PartId = new Color32(x.src2.r, x.src2.g, x.src2.b, x.src3.a),
                         Uv = x.src4,
                     };
                 return qVtx.ToArray();
