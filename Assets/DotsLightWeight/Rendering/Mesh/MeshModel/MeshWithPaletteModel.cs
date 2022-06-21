@@ -10,6 +10,30 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
+namespace DotsLite.Model.Authoring.Vertex.MeshWithPaletteModel
+{
+    using DotsLite.Geometry;
+
+    public interface IVertexUnitWithPallet
+    { }
+
+
+    //[Serializable]
+    //public class PositionOnlyWithPallet : PositionWithPalletVertexBuilder, Authoring.MeshModel.IVertexSelector
+    //{ }
+
+    //[Serializable]
+    //public class PositionUvWithPallet : PositionUvWithPalletVertexBuilder, Authoring.MeshModel.IVertexSelector
+    //{ }
+
+    [Serializable]
+    public class PositionUvNormalWithPalette :
+        PositionUvNormalWithPaletteVertexBuilder,
+        Authoring.MeshWithPaletteModel.IVertexSelector,
+        IVertexUnitWithPallet
+    { }
+}
+
 namespace DotsLite.Model.Authoring
 {
     using DotsLite.Draw;
@@ -21,12 +45,12 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
 
     [Serializable]
-    public class MeshWithPaletteModel : MeshModel
+    public class MeshWithPaletteModel : MeshModelBase
     {
 
 
-        [SerializeField]
-        ColorPaletteAsset Palette;
+        //[SerializeField]
+        //ColorPaletteAsset Palette;
 
 
         public override Func<Mesh.MeshDataArray> BuildMeshCombiner(
@@ -40,7 +64,10 @@ namespace DotsLite.Model.Authoring
                 this.Obj.transform, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
 
             // パレット向けの暫定
-            this.QueryMmts.CalculatePaletteSubIndexParameter(ref p);
+            if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPallet)
+            {
+                this.QueryMmts.CalculatePaletteSubIndexParameter(ref p);
+            }
 
             var md = MeshCreatorUtility.AllocateMeshData();
             return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);
@@ -50,6 +77,11 @@ namespace DotsLite.Model.Authoring
         public override Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas)
         {
             var ent = base.CreateModelEntity(gcs, mesh, atlas);
+
+            if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPallet == false)
+            {
+                return ent;
+            }
 
             var paletteAuthor = this.GetComponentInParent<ColorPaletteBufferAuthoring>();
             if (paletteAuthor == null) return ent;
@@ -63,6 +95,18 @@ namespace DotsLite.Model.Authoring
             return ent;
         }
 
+
+
+        public interface IVertexSelector : IVertexBuilder { }
+
+
+        [SerializeReference, SubclassSelector]
+        public IIndexSelector idxBuilder;
+        protected override IIndexBuilder IdxBuilder => this.idxBuilder;
+
+        [SerializeReference, SubclassSelector]
+        public IVertexSelector vtxBuilder;
+        protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
     }
 
 
