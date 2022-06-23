@@ -55,10 +55,7 @@ namespace DotsLite.Model.Authoring
 
 
 
-        public virtual GameObject Obj => this.gameObject;
-        //public virtual Transform TfRoot => this.gameObject.transform;
-        public virtual IEnumerable<Transform> QueryBones => null;
-        //public virtual SourcePrefabKeyUnit SourcePrefabKey => this.sourcePrefabKey;
+        public GameObject Obj => this.gameObject;
 
         public virtual IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts =>
             this.gameObject.GetComponentsInChildren<Renderer>()
@@ -73,10 +70,11 @@ namespace DotsLite.Model.Authoring
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary)
         {
+            var p = new AdditionalParameters();
             var atlas = atlasDictionary.modelToAtlas[this.sourcePrefabKey].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
-            var p = this.QueryMmts.calculateParameters(
-                this.Obj.transform, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
+            var mmts = this.QueryMmts.ToArray();
+            p.calculateParameters(mmts, this.Obj.transform, subtexhash => texdict[atlas, subtexhash]);
 
             var md = MeshCreatorUtility.AllocateMeshData();
             return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);

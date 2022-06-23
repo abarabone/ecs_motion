@@ -58,15 +58,16 @@ namespace DotsLite.Model.Authoring
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary)
         {
+            var p = new AdditionalParameters();
             var atlas = atlasDictionary.modelToAtlas[this.sourcePrefabKey].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
-            var p = this.QueryMmts.calculateParameters(
-                this.Obj.transform, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
+            var mmts = this.QueryMmts.ToArray();
+            p.calculateParameters(mmts, this.Obj.transform, subtexhash => texdict[atlas, subtexhash]);
 
             // パレット向けの暫定
             if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPallet)
             {
-                this.QueryMmts.CalculatePaletteSubIndexParameter(ref p);
+                p.CalculatePaletteSubIndexParameter(mmts);
             }
 
             var md = MeshCreatorUtility.AllocateMeshData();

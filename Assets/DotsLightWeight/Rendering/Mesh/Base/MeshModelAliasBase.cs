@@ -22,7 +22,7 @@ namespace DotsLite.Model.Authoring
         public GameObject Obj => this.LinkToMeshModel.Obj;
 
 
-        public IEnumerable<Transform> QueryBones => this.LinkToMeshModel.QueryBones;
+        //public IEnumerable<Transform> QueryBones => this.LinkToMeshModel.QueryBones;
         public IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts => this.LinkToMeshModel.QueryMmts;
 
 

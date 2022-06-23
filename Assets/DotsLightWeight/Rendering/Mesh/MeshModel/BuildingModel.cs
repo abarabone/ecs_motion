@@ -44,12 +44,13 @@ namespace DotsLite.Structure.Authoring
             Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
             TextureAtlasDictionary.Data atlasDictionary)
         {
+            var p = new AdditionalParameters();
             var atlas = atlasDictionary.modelToAtlas[this.sourcePrefabKey].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var mmts = this.QueryMmts.ToArray();
-            var p = mmts.calculateParameters(
-                this.Obj.transform, this.QueryBones?.ToArray(), subtexhash => texdict[atlas, subtexhash], null);
-            mmts.CalculatePaletteSubIndexParameter(ref p);
+            p.calculateParameters(mmts, this.Obj.transform, subtexhash => texdict[atlas, subtexhash]);
+            p.calculatePartParameters(mmts);
+            p.CalculatePaletteSubIndexParameter(mmts);
 
             var md = MeshCreatorUtility.AllocateMeshData();
             return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);

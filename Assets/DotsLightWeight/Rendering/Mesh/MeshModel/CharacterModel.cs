@@ -32,20 +32,37 @@ namespace DotsLite.Model.Authoring
     public class CharacterModel : MeshModelBase
     {
 
-        public Transform boneTop =>
+        Transform boneTop =>
             this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>().bones.First();
 
 
         //public override Transform TfRoot => this.transform;//this.gameObject.Children().First().transform;// これでいいのか？
 
-        public override IEnumerable<Transform> QueryBones => this.boneTop.gameObject.DescendantsAndSelf()
+        IEnumerable<Transform> queryBones => this.boneTop.gameObject.DescendantsAndSelf()
             .Where(x => !x.name.StartsWith("_"))
             //.Do(x => Debug.Log($"dst bone : {x.name}"))
             .Select(x => x.transform);
 
 
         protected override int optionalVectorLength => 0;
-        protected override int boneLength => this.QueryBones.Count();
+        protected override int boneLength => this.queryBones.Count();
+
+
+        public override Func<Mesh.MeshDataArray> BuildMeshCombiner(
+            SrcMeshesModelCombinePack meshpack,
+            Dictionary<SourcePrefabKeyUnit, Mesh> meshDictionary,
+            TextureAtlasDictionary.Data atlasDictionary)
+        {
+            var p = new AdditionalParameters();
+            var atlas = atlasDictionary.modelToAtlas[this.sourcePrefabKey].GetHashCode();
+            var texdict = atlasDictionary.texHashToUvRect;
+            var mmts = this.QueryMmts.ToArray();
+            p.calculateParameters(mmts, this.Obj.transform, subtexhash => texdict[atlas, subtexhash]);
+            p.calculateBoneParameters(mmts, this.queryBones.ToArray());
+
+            var md = MeshCreatorUtility.AllocateMeshData();
+            return () => meshpack.CreateMeshData(md, this.IdxBuilder, this.VtxBuilder, p);
+        }
 
 
 

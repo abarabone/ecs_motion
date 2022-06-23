@@ -43,10 +43,6 @@ namespace DotsLite.Geometry
         void GenerateSourcePrefabKey();
 
         GameObject Obj { get; }
-        //Transform TfRoot { get; }
-
-
-        IEnumerable<Transform> QueryBones { get; }
         IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> QueryMmts { get; }
 
 

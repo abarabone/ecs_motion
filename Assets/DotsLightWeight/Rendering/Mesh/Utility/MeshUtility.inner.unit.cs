@@ -17,26 +17,6 @@ namespace DotsLite.Geometry.inner.unit
     using DotsLite.Utilities;
     using DotsLite.Geometry.inner;
 
-    public struct AdditionalParameters
-    {
-        public Matrix4x4 mtBaseInv;
-        public Matrix4x4[] mtPerMesh;
-
-        public Matrix4x4[][] mtInvsPerMesh;//
-        public BoneWeight[][] boneWeightsPerMesh;//
-        public BoneConversionUtility.BoneConversionDictionary srcBoneIndexToDstBoneIndex;//
-
-        //public int atlasHash;
-        public int[][] texhashPerSubMesh;
-        //public HashToRect texhashToUvRect;
-        public Func<int, Rect> texHashToUvRect;
-        public Func<int, int> texHashToUvIndex;
-
-        public int[] partIdPerMesh;
-        public int[][] paletteSubIndexPerSubMesh;    // mesh > submesh . subindex
-        public int[][] UvIndexPerSubMesh;           // mesh > submesh . uvindex
-    }
-
     //public struct MeshSourceUnit
     //{
     //    public MeshSourceUnit(IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> src)

@@ -103,8 +103,8 @@ namespace DotsLite.Geometry
         /// マテリアルが null の場合は、0 を返す。
         /// </summary>
         public static void CalculatePaletteSubIndexParameter(
-            this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts,
-            ref AdditionalParameters p)
+            this AdditionalParameters parameters,
+            (Mesh mesh, Material[] mats, Transform tf)[] mmts)
         {
             var q =
                 from mmt in mmts
@@ -112,7 +112,7 @@ namespace DotsLite.Geometry
                     from mat in mmt.mats
                     select mat.GetPaletteSubIndex()
                 ;
-            p.paletteSubIndexPerSubMesh = q.ToArrayRecursive2();
+            parameters.paletteSubIndexPerSubMesh = q.ToArrayRecursive2();
         }
 
         ///// <summary>
