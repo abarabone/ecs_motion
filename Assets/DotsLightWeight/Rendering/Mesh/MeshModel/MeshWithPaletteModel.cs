@@ -14,7 +14,20 @@ namespace DotsLite.Model.Authoring.Vertex.MeshWithPaletteModel
 {
     using DotsLite.Geometry;
 
-    public interface IVertexUnitWithPallet
+    public interface IVertexUnitWithPalette
+    { }
+
+
+    [Serializable]
+    public class PositionOnly : PositionVertexBuilder, Authoring.MeshWithPaletteModel.IVertexSelector
+    { }
+
+    [Serializable]
+    public class PositionUv : PositionUvVertexBuilder, Authoring.MeshWithPaletteModel.IVertexSelector
+    { }
+
+    [Serializable]
+    public class PositionUvNormal : PositionUvNormalVertexBuilder, Authoring.MeshWithPaletteModel.IVertexSelector
     { }
 
 
@@ -30,7 +43,7 @@ namespace DotsLite.Model.Authoring.Vertex.MeshWithPaletteModel
     public class PositionUvNormalWithPalette :
         PositionUvNormalWithPaletteVertexBuilder,
         Authoring.MeshWithPaletteModel.IVertexSelector,
-        IVertexUnitWithPallet
+        IVertexUnitWithPalette
     { }
 }
 
@@ -65,7 +78,7 @@ namespace DotsLite.Model.Authoring
             p.calculateParameters(mmts, this.Obj.transform, subtexhash => texdict[atlas, subtexhash]);
 
             // パレット向けの暫定
-            if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPallet)
+            if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPalette)
             {
                 p.CalculatePaletteSubIndexParameter(mmts);
             }
@@ -86,7 +99,7 @@ namespace DotsLite.Model.Authoring
 
             void addData_IfHas_()
             {
-                if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPallet == false)
+                if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPalette == false)
                 {
                     return;
                 }

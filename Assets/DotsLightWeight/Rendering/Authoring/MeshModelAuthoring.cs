@@ -41,7 +41,8 @@ namespace DotsLite.Model.Authoring
         //}
 
         public override IEnumerable<IMeshModel> QueryModel => this._model.WrapEnumerable();
-        IMeshModel _model => this.Model ?? this.GetComponentInChildren<MeshModel>();
+        //IMeshModel _model => this.Model ?? this.GetComponentInChildren<MeshModel>();
+        IMeshModel _model => this.Model ?? this.GetComponentInChildren<MeshWithPaletteModel>();
         //public override IEnumerable<IMeshModel> QueryModel
         //{
         //    get
@@ -66,8 +67,11 @@ namespace DotsLite.Model.Authoring
 
 
         [SerializeField]
-        MeshModel Model;
+        //MeshModel Model;
+        MeshWithPaletteModel Model;
 
+        [SerializeField]
+        ColorPaletteAsset Palette;
 
 
 
