@@ -79,21 +79,27 @@ namespace DotsLite.Model.Authoring
         {
             var ent = base.CreateModelEntity(gcs, mesh, atlas);
 
-            if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPallet == false)
-            {
-                return ent;
-            }
-
-            var paletteAuthor = this.GetComponentInParent<ColorPaletteBufferAuthoring>();
-            if (paletteAuthor == null) return ent;
-
-            var em = gcs.DstEntityManager;
-            em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPaletteLinkData
-            {
-                BufferEntity = gcs.GetPrimaryEntity(paletteAuthor),
-            });
+            addData_IfHas_();
 
             return ent;
+
+
+            void addData_IfHas_()
+            {
+                if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPallet == false)
+                {
+                    return;
+                }
+
+                var paletteAuthor = this.GetComponentInParent<ColorPaletteBufferAuthoring>();
+                if (paletteAuthor == null) return;
+
+                var em = gcs.DstEntityManager;
+                em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPaletteLinkData
+                {
+                    BufferEntity = gcs.GetPrimaryEntity(paletteAuthor),
+                });
+            }
         }
 
 

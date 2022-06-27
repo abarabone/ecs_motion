@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using Unity.Entities;
 using UnityEngine.Rendering;
 using Unity.Collections;
 using Unity.Linq;
@@ -222,5 +223,21 @@ namespace DotsLite.Geometry
         {
             return gcs.World.GetExistingSystem<ColorPaletteShaderBufferConversion>().Palettes;
         }
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public static void AddPalletLinkData_IfHas(this IMeshModel model, GameObjectConversionSystem gcs, Entity ent)
+        //{
+        //    var component = model as MonoBehaviour;
+        //    var paletteAuthor = component.GetComponentInParent<ColorPaletteBufferAuthoring>();
+        //    if (paletteAuthor == null) return;
+
+        //    var em = gcs.DstEntityManager;
+        //    em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPaletteLinkData
+        //    {
+        //        BufferEntity = gcs.GetPrimaryEntity(paletteAuthor),
+        //    });
+        //}
     }
 }
