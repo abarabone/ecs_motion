@@ -12,7 +12,7 @@ using Unity.Linq;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsLite.Geometry
+namespace DotsLite.Geometry.Palette
 {
     using DotsLite.Common.Extension;
     using DotsLite.Utilities;
@@ -24,6 +24,10 @@ namespace DotsLite.Geometry
     using DotsLite.Draw;
     using DotsLite.Draw.Authoring;
 
+    /// <summary>
+    /// モデルインスタンスごとにカラーパレットを登録し、グラフィックバッファ用のカラー配列を構築する。
+    /// またインスタンスには、バッファ内の位置をＩＤとして返す。
+    /// </summary>
     public class ColorPaletteBuilder
     {
 
@@ -32,6 +36,9 @@ namespace DotsLite.Geometry
         int nextIndex = 0;
 
 
+        /// <summary>
+        /// １モデルインスタンス分のパレットを登録し、ＩＤ（位置）を返す。
+        /// </summary>
         public int RegistAndGetId(Color32[] values)
         {
             var key = toKey(values);Debug.Log(key);
@@ -57,7 +64,9 @@ namespace DotsLite.Geometry
             }
         }
 
-
+        /// <summary>
+        /// 登録されたすべてのカラー配列を返す。
+        /// </summary>
         public uint[] ToArray()
         {
             var q =
@@ -95,7 +104,10 @@ namespace DotsLite.Geometry
     //}
 
 
-    public static partial class ColorPaletteConversionUtility
+    /// <summary>
+    /// カラーパレットのグラフィックバッファ構築用ユーティリティ
+    /// </summary>
+    public static class ColorPaletteBuildingUtility
     {
 
         /// <summary>
@@ -165,12 +177,13 @@ namespace DotsLite.Geometry
         // ・バッファはシーンに１つ
         // ・color palette の base index を、インスタンスに持たせる
         // ・ただし、すでに同じ構成で登録があれば、その base index を取得する
+        // １つのモデルを構成する幾何情報から、カラーパレットを構成するカラーを抽出する。
+        // 結果はカラーの配列となる。（つまり、カラーパレット１つは、モデル１つに対して作成される）
+        // カラーのインデックスはマテリアルの Palette Sub Index プロパティにユーザーがセットする。
+        // 結果の配列は、そのインデックス順にソートされており、インデックスに該当するマテリアルが存在しなかった場合は、
+        // (0, 0, 0, 0) 色がせっとされる。
         /// <summary>
-        /// １つのモデルを構成する幾何情報から、カラーパレットを構成するカラーを抽出する。
-        /// 結果はカラーの配列となる。（つまり、カラーパレット１つは、モデル１つに対して作成される）
-        /// カラーのインデックスはマテリアルの Palette Sub Index プロパティにユーザーがセットする。
-        /// 結果の配列は、そのインデックス順にソートされており、インデックスに該当するマテリアルが存在しなかった場合は、
-        /// (0, 0, 0, 0) 色がせっとされる。
+        /// モデル１つ分のパレット配列を生成する。
         /// </summary>
         public static Color32[] ToPaletteColorEntry(
             this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
@@ -192,6 +205,9 @@ namespace DotsLite.Geometry
         }
 
 
+        /// <summary>
+        /// パレット配列から、グラフィックバッファーを構築する。
+        /// </summary>
         public static GraphicsBuffer BuildShaderBuffer(this uint[] colors)
         {
             if (colors.Length == 0) return null;
@@ -204,7 +220,18 @@ namespace DotsLite.Geometry
             return buf;
         }
 
+    }
 
+    /// <summary>
+    /// インスタンス用カラーパレット登録ユーティリティ
+    /// </summary>
+    public static class ColorPaletteDataUtility
+    {
+
+        /// <summary>
+        /// インスタンス１つに対し、パレットＩＤデータを追加する。
+        /// ＩＤは、パレットのバッファ中の位置。パレットはアセットから取得する。
+        /// </summary>
         public static void SetColorPaletteComponent(this GameObjectConversionSystem gcs, GameObject main, ColorPaletteAsset palette)
         {
             //if (model.GetType().GetGenericTypeDefinition() != typeof(MeshWithPaletteModel<,>).GetGenericTypeDefinition()) return;
