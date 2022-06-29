@@ -6,14 +6,18 @@ using Unity.Entities;
 namespace DotsLite.Draw.Authoring
 {
     using DotsLite.Geometry;
+    using DotsLite.Geometry.Palette;
 
-    public class ColorPaletteBufferAuthoring : MonoBehaviour
-    {
+    ///// <summary>
+    ///// カラーパレット
+    ///// </summary>
+    //public class ColorPaletteBufferAuthoring : MonoBehaviour
+    //{
 
 
-        public ColorPaletteBuilder Palettes { get; } = new ColorPaletteBuilder();
+    //    //public ColorPaletteBuilder Palettes { get; } = new ColorPaletteBuilder();
 
-        public string BufferName = "ColorPalettes";
+    //    //public string BufferName = "ColorPalettes";
 
-    }
+    //}
 }

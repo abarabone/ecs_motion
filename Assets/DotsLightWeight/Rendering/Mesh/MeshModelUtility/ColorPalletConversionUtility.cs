@@ -22,61 +22,7 @@ namespace DotsLite.Geometry.Palette
     using DotsLite.Utility;
     using DotsLite.Model.Authoring;
     using DotsLite.Draw;
-    using DotsLite.Draw.Authoring;
-
-    /// <summary>
-    /// モデルインスタンスごとにカラーパレットを登録し、グラフィックバッファ用のカラー配列を構築する。
-    /// またインスタンスには、バッファ内の位置をＩＤとして返す。
-    /// </summary>
-    public class ColorPaletteBuilder
-    {
-
-        Dictionary<string, (int i, Color32[] colors)> colors = new Dictionary<string, (int, Color32[])>();
-
-        int nextIndex = 0;
-
-
-        /// <summary>
-        /// １モデルインスタンス分のパレットを登録し、ＩＤ（位置）を返す。
-        /// </summary>
-        public int RegistAndGetId(Color32[] values)
-        {
-            var key = toKey(values);Debug.Log(key);
-
-            if (this.colors.TryGetValue(key, out var x))
-            {
-                return x.i;
-            }
-
-            var index = this.nextIndex;
-            this.colors[key] = (index, values);
-            this.nextIndex += values.Length;
-            return index;
-
-
-            static string toKey(Color32[] keysrc)
-            {
-                var q =
-                    from x in keysrc
-                    select $"{x.r},{x.g},{x.b},{x.a}"
-                    ;
-                return string.Join("/", q);
-            }
-        }
-
-        /// <summary>
-        /// 登録されたすべてのカラー配列を返す。
-        /// </summary>
-        public uint[] ToArray()
-        {
-            var q =
-                from x in this.colors
-                from y in x.Value.colors
-                select y.ToUint()//y
-                ;
-            return q.ToArray();
-        }
-    }
+    using DotsLite.Draw.Authoring.Palette;
 
     //public class ColorPaletteBuilder
     //{

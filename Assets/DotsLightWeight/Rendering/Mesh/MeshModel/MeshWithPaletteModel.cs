@@ -52,6 +52,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Draw;
     using DotsLite.Draw.Authoring;
     using DotsLite.Geometry;
+    using DotsLite.Geometry.Palette;
     using DotsLite.Structure.Authoring;
     using DotsLite.Utilities;
     using DotsLite.Common.Extension;
@@ -92,25 +93,22 @@ namespace DotsLite.Model.Authoring
         {
             var ent = base.CreateModelEntity(gcs, mesh, atlas);
 
-            addData_IfHas_();
+            addLinkData_IfHas_();
 
             return ent;
 
 
-            void addData_IfHas_()
+            void addLinkData_IfHas_()
             {
                 if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPalette == false)
                 {
                     return;
                 }
 
-                var paletteAuthor = this.GetComponentInParent<ColorPaletteBufferAuthoring>();
-                if (paletteAuthor == null) return;
-
                 var em = gcs.DstEntityManager;
                 em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPaletteLinkData
                 {
-                    BufferEntity = gcs.GetPrimaryEntity(paletteAuthor),
+                    BufferEntity = Entity.Null,//gcs.GetPrimaryEntity(paletteAuthor),
                 });
             }
         }
