@@ -10,15 +10,15 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Linq;
 
-namespace DotsLite.Structure.Authoring.Vertex.AreaPartModel
-{
-    using DotsLite.Geometry;
+//namespace DotsLite.Structure.Authoring.Vertex.AreaPartModel
+//{
+//    using DotsLite.Geometry;
 
-    [Serializable]
-    public class PositionNormalUv :
-        PositionUvNormalVertexBuilder, Authoring.AreaPartModel.IVertexSelector
-    { }
-}
+//    [Serializable]
+//    public class PositionNormalUv :
+//        PositionUvNormalVertexBuilder, Authoring.AreaPartModel.IVertexSelector
+//    { }
+//}
 
 namespace DotsLite.Structure.Authoring
 {

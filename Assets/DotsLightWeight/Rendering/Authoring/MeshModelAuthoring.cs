@@ -22,6 +22,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Common.Extension;
     using DotsLite.Misc;
     using DotsLite.EntityTrimmer.Authoring;
+    using DotsLite.Geometry.Palette;
 
     /// <summary>
     /// this.Model にセットされた MeshModel を、モデルとしてコンバートする。
@@ -89,9 +90,13 @@ namespace DotsLite.Model.Authoring
 
             //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
 
+            aaa_(conversionSystem, this.Palette);
+
             return;
-
-
+            static void aaa_(GameObjectConversionSystem gcs, ColorPaletteAsset palette)
+            {
+                gcs.GetColorPaletteBuilder().RegistAndGetId(palette.Colors);
+            }
 
 
             Entity initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
