@@ -51,9 +51,9 @@ namespace DotsLite.Geometry.Palette
 
 
     /// <summary>
-    /// カラーパレットのグラフィックバッファ構築用ユーティリティ
+    /// モデルのカラーパレット情報を構築する
     /// </summary>
-    public static class ColorPaletteBuildingUtility
+    public static class ColorPaletteGeometryUtility
     {
 
         /// <summary>
@@ -110,6 +110,10 @@ namespace DotsLite.Geometry.Palette
         // palette はカラーセット単位で base index 指定
 
 
+        /// <summary>
+        /// マテリアルから、パレットインデックス情報を取得する。
+        /// 該当するプロパティがない場合のインデックスは、0 とする。
+        /// </summary>
         public static int GetPaletteSubIndex(this Material mat) =>
             //mat?.HasInt("Palette Sub Index") ?? false
             mat?.HasProperty("Palette Sub Index") ?? false
@@ -151,21 +155,6 @@ namespace DotsLite.Geometry.Palette
         }
 
 
-        /// <summary>
-        /// パレット配列から、グラフィックバッファーを構築する。
-        /// </summary>
-        public static GraphicsBuffer BuildShaderBuffer(this uint[] colors)
-        {
-            if (colors.Length == 0) return null;
-
-            //var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(uint4));
-            var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, colors.Length, sizeof(uint));
-
-            buf.SetData(colors);
-
-            return buf;
-        }
-
     }
 
     /// <summary>
@@ -192,9 +181,28 @@ namespace DotsLite.Geometry.Palette
             });
         }
 
+        /// <summary>
+        /// システム経由でカラーパレットビルダーを取得する。
+        /// </summary>
+        /// <returns></returns>
         public static ColorPaletteBuilder GetColorPaletteBuilder(this GameObjectConversionSystem gcs)
         {
             return gcs.World.GetExistingSystem<ColorPaletteShaderBufferConversion>().Palettes;
+        }
+
+        /// <summary>
+        /// パレット配列から、グラフィックバッファーを構築する。
+        /// </summary>
+        public static GraphicsBuffer BuildShaderBuffer(this uint[] colors)
+        {
+            if (colors.Length == 0) return null;
+
+            //var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, this.colors.Count, sizeof(uint4));
+            var buf = new GraphicsBuffer(GraphicsBuffer.Target.Structured, colors.Length, sizeof(uint));
+
+            buf.SetData(colors);
+
+            return buf;
         }
 
         ///// <summary>
