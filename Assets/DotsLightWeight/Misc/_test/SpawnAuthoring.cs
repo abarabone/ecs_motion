@@ -13,6 +13,7 @@ using DotsLite.Model.Authoring;
 using Unity.Entities.UniversalDelegates;
 using System;
 using DotsLite.Dependency;
+using DotsLite.Draw;
 
 public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {
@@ -65,6 +66,7 @@ static class Spawn
         public float3 pos;
         public quaternion rot;
         public Entity prefab;
+        public int paletteIndex;
     }
     public struct SpanData : IComponentData
     {
@@ -74,6 +76,11 @@ static class Spawn
     }
 }
 
+/// <summary>
+/// spawn entity の EntryData と SpanData を列挙し、指定の個数分だけ、プレハブからインスタンスを生成する。
+/// spawn entity は、インスタンス生成後に破棄される。
+/// インスタンスは、ObjectInitializeData によって初期化される。（直接じゃダメなのか？←ＴＦの違いを吸収するためか？）
+/// </summary>
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
 public partial class SpawnFreqencySystem : DependencyAccessableSystemBase
@@ -125,6 +132,11 @@ public partial class SpawnFreqencySystem : DependencyAccessableSystemBase
 
 }
 
+/// <summary>
+/// spawn entity の EntryData を列挙し、プレハブからインスタンスを生成する。
+/// spawn entity は、インスタンス生成後に破棄される。
+/// インスタンスは、ObjectInitializeData によって初期化される。（直接じゃダメなのか？←ＴＦの違いを吸収するためか？）
+/// </summary>
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
 public partial class SpawnSystem : DependencyAccessableSystemBase
@@ -163,6 +175,15 @@ public partial class SpawnSystem : DependencyAccessableSystemBase
                             rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
                         }
                     );
+                    if (entry.paletteIndex != -1)// コンポーネントを独立させたほうがいいよな…
+                    {
+                        cmd.AddComponent(entityInQueryIndex, ent,
+                            new Palette.ColorPaletteData
+                            {
+                                BaseIndex = entry.paletteIndex,
+                            }
+                        );
+                    }
 
                     cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
                 }

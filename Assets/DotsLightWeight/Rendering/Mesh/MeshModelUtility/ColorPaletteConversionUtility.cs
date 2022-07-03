@@ -175,7 +175,7 @@ namespace DotsLite.Geometry.Palette
             var em = gcs.DstEntityManager;
             var ent = gcs.GetPrimaryEntity(main);
 
-            em.AddComponentData(ent, new Palette.PaletteData
+            em.AddComponentData(ent, new Palette.ColorPaletteData
             {
                 BaseIndex = gcs.GetColorPaletteBuilder().RegistAndGetId(palette.Colors),
             });

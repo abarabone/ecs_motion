@@ -19,7 +19,7 @@ namespace DotsLite.Draw
 
     static public partial class Palette
     {
-        public struct PaletteData : IComponentData
+        public struct ColorPaletteData : IComponentData
         {
             public int BaseIndex;
         }
