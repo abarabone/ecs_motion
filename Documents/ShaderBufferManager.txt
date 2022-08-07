@@ -1,0 +1,29 @@
+
+
+// シェーダーバッファ用エンティティ
+ShaderBuffer
+  ColorPaletteSrcData
+  ColorPalleteData
+
+
+// draw model エンティティ
+DrawModelShaderBuffer
+  ColorPaletteLinkData
+
+
+// とりあえずのコンバージョン
+// ブロブにするなりして、できればストリーミング的に保存したい
+ColorPaletteShaderBufferConversion
+・
+
+SetShaderBufferToMaterialSystem
+・ShaderBuffer.XxxxSrcData から、
+
+
+シェーダーバッファエンティティ
+ソースとしてデータ配列をもち、シーンの初めにバッファを確保しコンバートする。
+ドローモデルエンティティには、バッファエンティティへのリンクを持ち、
+描画の際にデータをストアするなどに利用する。
+
+カラーパレット
+・マテリアルに 

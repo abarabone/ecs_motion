@@ -90,12 +90,20 @@ namespace DotsLite.Model.Authoring
 
             //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
 
-            aaa_(conversionSystem, this.Palette);
+            SetColorPalette_(conversionSystem, entity, this.Palette);
 
             return;
-            static void aaa_(GameObjectConversionSystem gcs, ColorPaletteAsset palette)
+            static void SetColorPalette_(GameObjectConversionSystem gcs, Entity ent, ColorPaletteAsset palette)
             {
-                gcs.GetColorPaletteBuilder().RegistAndGetId(palette.Colors);
+                if (palette == null) return;
+
+                var em = gcs.DstEntityManager;
+                var paletteIdBase = gcs.GetColorPaletteBuilder().RegistAndGetId(palette.Colors);
+                em.AddComponentData(ent, new Draw.DrawInstance.TransSpecialferTag { });
+                em.AddComponentData(ent, new Palette.ColorPaletteData
+                {
+                    BaseIndex = paletteIdBase,
+                });
             }
 
 
@@ -108,16 +116,19 @@ namespace DotsLite.Model.Authoring
 
                 var mainEntity = gcs.GetPrimaryEntity(main);
 
-                var archetype = em.CreateArchetype(
+                var archetype = em.CreateArchetype(new ComponentType[]
+                {
                     typeof(ModelPrefabNoNeedLinkedEntityGroupTag),
                     typeof(BinderTrimBlankLinkedEntityGroupTag),
+
                     typeof(DrawInstance.MeshTag),
                     typeof(DrawInstance.ModelLinkData),
                     typeof(DrawInstance.TargetWorkData),
+
                     typeof(Marker.Translation),
-                    typeof(Marker.Rotation)
-                    //typeof(Marker.NonUniformScale)
-                );
+                    typeof(Marker.Rotation),
+                    //typeof(Marker.NonUniformScale),
+                });
                 em.SetArchetype(mainEntity, archetype);
 
                 em.CopyTransformToMarker(mainEntity, main.transform);

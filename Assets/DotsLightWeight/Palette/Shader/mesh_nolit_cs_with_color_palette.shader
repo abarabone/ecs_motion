@@ -51,6 +51,7 @@ Shader "Custom/mesh_nolit_cs_with_palette"
 				float2	uv		: TEXCOORD0;
 
 				//uint4	boneIndex	: BLENDINDICES;
+				uint4	palette_index : COLOR;
 			};
 			
 			struct v2f
@@ -95,7 +96,7 @@ Shader "Custom/mesh_nolit_cs_with_palette"
 				float4 _wpos = BoneVectorBuffer[ivec + 0];
 				float4 wrot = BoneVectorBuffer[ivec + 1];
 
-				float ipalette = _wpos.w;
+				float palette_base = asuint(_wpos.w);
 				float4 wpos = float4(_wpos.xyz, 1.0f);
 
 				float4	lvt = v.vertex;
@@ -104,7 +105,7 @@ Shader "Custom/mesh_nolit_cs_with_palette"
 				//float4	wvt = mul(UNITY_MATRIX_VP, float4(tvt.xyz, 1.0f));
 				float4	wvt = UnityObjectToClipPos(tvt.xyz);
 
-				uint c = ColorPalettes[ipalette];
+				uint c = ColorPalettes[palette_base + v.palette_index.a];
 				fixed4 color = float4(c & 0xff, c >> 8 & 0xff, c >> 16 & 0xff, c >> 24 & 0xff) / 255;
 
 				o.vertex = wvt;

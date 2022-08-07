@@ -9,16 +9,19 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+//
+//using Abarabone.CharacterMotion;
+//using Abarabone.SystemGroup;
+
 namespace DotsLite.Draw
 {
     using DotsLite.Dependency;
 
     //[DisableAutoCreation]
     [UpdateInGroup(typeof(SystemGroup.Presentation.Render.Draw.Transfer))]
-    //[UpdateAfter(typeof())]
     //[UpdateBefore( typeof( BeginDrawCsBarier ) )]
     //[UpdateBefore(typeof(DrawMeshCsSystem))]
-    public partial class DrawSingleBoneMesh_TRS_ToModelBufferSystem : DependencyAccessableSystemBase
+    public partial class DrawTransformWithColorPalette_TR_ToModelBufferSystem : DependencyAccessableSystemBase
     {
 
 
@@ -30,7 +33,6 @@ namespace DotsLite.Draw
 
             this.bardep = BarrierDependency.Sender.Create<DrawBufferToShaderDataSystem>(this);
         }
-
 
         protected unsafe override void OnUpdate()
         {
@@ -44,18 +46,18 @@ namespace DotsLite.Draw
 
             this.Entities
                 .WithBurst()
-                .WithReadOnly(offsetsOfDrawModel)
+                .WithNone<NonUniformScale>()
+                .WithAll<DrawInstance.TransSpecialferTag>()
                 .WithReadOnly(nativeBuffers)
-                .WithAll<DrawInstance.MeshTag>()
-                .WithNone<DrawInstance.TransSpecialferTag>()
-                .WithNone<DrawInstance.BoneModelTag>()
+                .WithReadOnly(offsetsOfDrawModel)
                 .ForEach(
                     (
-                        in DrawInstance.TargetWorkData target,
-                        in DrawInstance.ModelLinkData linker,
+                        in BoneDraw.LinkData linker,
+                        in BoneDraw.IndexData indexer,
+                        in BoneDraw.TargetWorkData target,
                         in Translation pos,
                         in Rotation rot,
-                        in NonUniformScale scl
+                        in Draw.Palette.ColorPaletteData palette
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
@@ -63,21 +65,20 @@ namespace DotsLite.Draw
 
                         var offsetInfo = offsetsOfDrawModel[linker.DrawModelEntityCurrent];
 
-                        var lengthOfInstance = 3 + offsetInfo.OptionalVectorLengthPerInstance;
-                        var i = target.DrawInstanceId * lengthOfInstance + offsetInfo.OptionalVectorLengthPerInstance;
+                        const int vectorLengthInBone = 2;
+                        var instanceVectorLength = vectorLengthInBone * indexer.BoneLength + offsetInfo.OptionalVectorLengthPerInstance;
+                        var instanceStart = target.DrawInstanceId * instanceVectorLength;
+                        var i = instanceStart + vectorLengthInBone * indexer.BoneId + offsetInfo.OptionalVectorLengthPerInstance;
+
+                        var pid_base = math.asfloat(palette.BaseIndex);
 
                         var pModel = nativeBuffers[drawSysEnt].Transforms.pBuffer + offsetInfo.ModelStartIndex;
-                        pModel[i + 0] = new float4(pos.Value, 1.0f);
+                        pModel[i + 0] = new float4(pos.Value, pid_base);
                         pModel[i + 1] = rot.Value.value;
-                        pModel[i + 2] = new float4(scl.Value, 1.0f);
-
                     }
                 )
                 .ScheduleParallel();
         }
-
-
-
     }
 
 }
