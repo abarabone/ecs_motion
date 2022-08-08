@@ -30,17 +30,15 @@ namespace DotsLite.Model.Authoring
 
             var gcs = conversionSystem;
             var em = gcs.DstEntityManager;
-            em.AddComponentData(entity,
-                new Spawn.EntryData
-                {
-                    pos = this.transform.position,
-                    rot = this.transform.rotation,
-                    prefab = gcs.GetPrimaryEntity(this.ModelInstancePrefab),
-                    paletteIndex = this.Palette == null
-                        ? -1
-                        : gcs.GetColorPaletteBuilder().RegistAndGetId(this.Palette.Colors),
-                }
-            );
+            em.AddComponentData(entity, new Spawn.EntryData
+            {
+                pos = this.transform.position,
+                rot = this.transform.rotation,
+                prefab = gcs.GetPrimaryEntity(this.ModelInstancePrefab),
+                paletteIndex = this.Palette == null
+                    ? -1
+                    : gcs.GetColorPaletteBuilder().RegistAndGetId(this.Palette.Colors),
+            });
         }
     }
 }

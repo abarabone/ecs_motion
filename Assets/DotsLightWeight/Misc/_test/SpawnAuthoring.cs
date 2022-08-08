@@ -39,20 +39,16 @@ public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
         var prefab_ent = conversionSystem.GetPrimaryEntity( this.prefab );
 
-        dstManager.AddComponentData(entity,
-            new Spawn.EntryData
-            {
-                pos = this.transform.position,
-                prefab = prefab_ent,
-            }
-        );
-        dstManager.AddComponentData(entity,
-            new Spawn.SpanData
-            {
-                length = this.Length,
-                span = this.span,
-            }
-        );
+        dstManager.AddComponentData(entity, new Spawn.EntryData
+        {
+            pos = this.transform.position,
+            prefab = prefab_ent,
+        });
+        dstManager.AddComponentData(entity, new Spawn.SpanData
+        {
+            length = this.Length,
+            span = this.span,
+        });
 
     }
     
@@ -115,13 +111,11 @@ public partial class SpawnFreqencySystem : DependencyAccessableSystemBase
                     var l = span.length;
                     var s = span.span;
 
-                    cmd.AddComponent(entityInQueryIndex, ent,
-                        new ObjectInitializeData
-                        {
-                            pos = entry.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z),
-                            rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
-                        }
-                    );
+                    cmd.AddComponent(entityInQueryIndex, ent, new ObjectInitializeData
+                    {
+                        pos = entry.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z),
+                        rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
+                    });
 
                     if (++span.i >= l.x * l.y * l.z)
                         cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
@@ -168,21 +162,19 @@ public partial class SpawnSystem : DependencyAccessableSystemBase
                 {
                     var ent = cmd.Instantiate(entityInQueryIndex, entry.prefab);
 
-                    cmd.AddComponent(entityInQueryIndex, ent,
-                        new ObjectInitializeData
-                        {
-                            pos = entry.pos,
-                            rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
-                        }
-                    );
+                    cmd.AddComponent(entityInQueryIndex, ent, new ObjectInitializeData
+                    {
+                        pos = entry.pos,
+                        rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
+                    });
+
                     if (entry.paletteIndex != -1)// コンポーネントを独立させたほうがいいよな…
                     {
-                        cmd.AddComponent(entityInQueryIndex, ent,
-                            new Palette.ColorPaletteData
-                            {
-                                BaseIndex = entry.paletteIndex,
-                            }
-                        );
+                        cmd.AddComponent(entityInQueryIndex, ent, new Palette.ColorPaletteData
+                        {
+                            BaseIndex = entry.paletteIndex,
+                        });
+                        cmd.AddComponent(entityInQueryIndex, ent, new DrawInstance.TransferSpecialTag { });
                     }
 
                     cmd.DestroyEntity(entityInQueryIndex, spawnEntity);

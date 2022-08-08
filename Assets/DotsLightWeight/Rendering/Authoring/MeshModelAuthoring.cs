@@ -99,7 +99,7 @@ namespace DotsLite.Model.Authoring
 
                 var em = gcs.DstEntityManager;
                 var paletteIdBase = gcs.GetColorPaletteBuilder().RegistAndGetId(palette.Colors);
-                em.AddComponentData(ent, new Draw.DrawInstance.TransSpecialferTag { });
+                em.AddComponentData(ent, new Draw.DrawInstance.TransferSpecialTag { });
                 em.AddComponentData(ent, new Palette.ColorPaletteData
                 {
                     BaseIndex = paletteIdBase,

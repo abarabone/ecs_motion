@@ -53,7 +53,7 @@ namespace DotsLite.Draw
         /// <summary>
         /// 特殊な transfer モード
         /// </summary>
-        public struct TransSpecialferTag : IComponentData
+        public struct TransferSpecialTag : IComponentData
         { }
 
 

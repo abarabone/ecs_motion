@@ -48,7 +48,7 @@ namespace DotsLite.Draw
                 .WithReadOnly(nativeBuffers)
                 .WithAll<DrawInstance.MeshTag>()
                 .WithNone<DrawInstance.BoneModelTag>()
-                .WithNone<DrawInstance.TransSpecialferTag>()
+                .WithNone<DrawInstance.TransferSpecialTag>()
                 .WithNone<NonUniformScale>()
                 .ForEach(
                     (
