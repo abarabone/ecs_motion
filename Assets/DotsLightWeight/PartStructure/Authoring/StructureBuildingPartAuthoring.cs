@@ -21,6 +21,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Geometry;
     using DotsLite.Utilities;
     using DotsLite.EntityTrimmer.Authoring;
+    using DotsLite.Geometry.Palette;
 
     using Material = UnityEngine.Material;
     using Unity.Physics.Authoring;
@@ -41,6 +42,7 @@ namespace DotsLite.Structure.Authoring
 
         public ColorPaletteAsset Palette;
 
+        public bool UsePalette;
 
 
         public override IEnumerable<IMeshModel> QueryModel => this._model.WrapEnumerable();
@@ -89,6 +91,8 @@ namespace DotsLite.Structure.Authoring
             var part = conversionSystem.GetPrimaryEntity(this.gameObject);
 
             setPrefabToPart_(conversionSystem, part, prefab);
+
+            if (this.UsePalette) conversionSystem.AddColorPalletComponents(entity);
 
             return;
 
