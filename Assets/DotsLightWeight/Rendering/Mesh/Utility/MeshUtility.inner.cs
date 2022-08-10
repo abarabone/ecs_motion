@@ -61,7 +61,7 @@ namespace DotsLite.Geometry.inner
         }
     }
 
-    static class ConvertVertexUtility
+    static partial class ConvertVertexUtility
     {
 
         static public IEnumerable<Vector3> QueryConvertPositions(
@@ -120,78 +120,6 @@ namespace DotsLite.Geometry.inner
                 };
         }
 
-
-        static public IEnumerable<Vector3> QueryConvertPositionsWithBone
-            (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-        =>
-            from permesh in (srcmeshes, p.mtInvsPerMesh, p.boneWeightsPerMesh, p.mtPerMesh).Zip()
-            let mesh = permesh.src0.MeshData
-            let mtInvs = permesh.src1// Ç±ÇÍÇ¢Ç¢ÇÃÇ©ÅH
-            let weis = permesh.src2
-            //let mt = permesh.src3 * p.mtBaseInv//p.mtBaseInv
-            let mt = math.mul(p.mtBaseInv, permesh.src3)//p.mtBaseInv
-            from x in (mesh.QueryMeshVertices<Vector3>((md, arr) => md.GetVertices(arr), VertexAttribute.Position), weis).Zip()
-            let vtx = x.src0
-            let wei = x.src1
-            select (Vector3)math.transform(math.mul(mtInvs[wei.boneIndex0], mt), vtx)
-            ;
-
-        static public IEnumerable<uint> QueryConvertBoneIndices
-            (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-        =>
-            from permesh in p.boneWeightsPerMesh.WithIndex()
-            from w in permesh.src
-            select (uint)(
-                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex0] <<  0 & 0xff |
-                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex1] <<  8 & 0xff |
-                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex2] << 16 & 0xff |
-                p.srcBoneIndexToDstBoneIndex[permesh.i, w.boneIndex3] << 24 & 0xff
-            );
-
-        static public IEnumerable<Vector4> QueryConvertBoneWeights
-            (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-        =>
-            from permesh in p.boneWeightsPerMesh
-            from w in permesh
-            select new Vector4(w.weight0, w.weight1, w.weight2, w.weight3)
-            ;
-
-
-        static public IEnumerable<Color32> QueryConvertPartId
-            (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-        =>
-            from permesh in (p.partIdPerMesh, srcmeshes).Zip()
-            let pid = permesh.src0
-            let color = new Color32
-            {
-                r = (byte)(pid & 0x1f),
-                g = (byte)(pid >> 5 & 0xff),// 32bit Ç»ÇÃÇ≈ >> 5
-            }
-            from vtx in Enumerable.Range(0, permesh.src1.MeshData.vertexCount)
-            select color
-            ;
-
-
-        static public IEnumerable<Color32> QueryColorPaletteSubIndex(
-            this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
-        {
-            var qVtx = srcmeshes.QuerySubMeshForUnitVertices();
-            var qColor =
-
-                from idxs in p.paletteSubIndexPerSubMesh
-                from idx in idxs
-                select new Color32
-                {
-                    a = (byte)idx,
-                };
-            return
-                from x in (qVtx, qColor).Zip()
-                let vtxs = x.src0
-                let color = x.src1
-                from _ in vtxs
-                select color
-                ;
-        }
         //static public IEnumerable<Color32> QueryTextureUvOffsetIndex(
         //    this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         //{
