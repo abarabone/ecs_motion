@@ -111,7 +111,7 @@ namespace DotsLite.Character
 
 
             [BurstCompile]
-            public void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, HitMessage>.Enumerator msgs)
+            public void Execute(int index, Entity targetEntity, NativeParallelMultiHashMap<Entity, HitMessage>.Enumerator msgs)
             {
 
                 var damage = 0.0f;

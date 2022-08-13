@@ -88,7 +88,7 @@ namespace DotsLite.Structure
 
             [BurstCompile]
             public unsafe void Execute(
-                int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
+                int index, Entity mainEntity, NativeParallelMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
                 if (this.compoundTags.HasComponent(mainEntity)) return;
                 //if (hitMessages.Current.PartId == -1) return;
@@ -108,11 +108,11 @@ namespace DotsLite.Structure
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static NativeHashSet<Entity> makeTargetPartList_(
+            static NativeParallelHashSet<Entity> makeTargetPartList_(
                 ref Main.PartDestructionData destruction,
-                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int partLength)
+                NativeParallelMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages, int partLength)
             {
-                var targetParts = new NativeHashSet<Entity>(partLength, Allocator.Temp);
+                var targetParts = new NativeParallelHashSet<Entity>(partLength, Allocator.Temp);
 
                 foreach (var msg in hitMessages)
                 {
@@ -128,7 +128,7 @@ namespace DotsLite.Structure
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            void destructAndCreateDebris_(int uniqueIndex, in NativeHashSet<Entity> targetParts)
+            void destructAndCreateDebris_(int uniqueIndex, in NativeParallelHashSet<Entity> targetParts)
             {
                 foreach (var part in targetParts)
                 {

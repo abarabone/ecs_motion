@@ -79,7 +79,7 @@ namespace DotsLite.Structure
             [ReadOnly] public BufferFromEntity<LinkedEntityGroup> linkedGroups;
 
             [BurstCompile]
-            public void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, EnvelopeHitMessage>.Enumerator msgs)
+            public void Execute(int index, Entity targetEntity, NativeParallelMultiHashMap<Entity, EnvelopeHitMessage>.Enumerator msgs)
             {
                 //if (this.compoundTags.HasComponent(targetEntity)) return;
 

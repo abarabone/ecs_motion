@@ -81,7 +81,7 @@ namespace DotsLite.MarchingCubes
             [BurstCompile]
             public unsafe void Execute(
                 int index, Entity targetEntity,
-                NativeMultiHashMap<Entity, UpdateMessage>.Enumerator msgs)
+                NativeParallelMultiHashMap<Entity, UpdateMessage>.Enumerator msgs)
             {
                 var parent = this.parents[targetEntity].ParentAreaEntity;
                 var origin = this.origins[targetEntity].Origin.xyz;
