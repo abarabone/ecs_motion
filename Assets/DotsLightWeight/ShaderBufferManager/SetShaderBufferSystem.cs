@@ -17,10 +17,12 @@ namespace DotsLite.Draw
     using DotsLite.Utilities;
     using DotsLite.Dependency;
     using DotsLite.Geometry;
+    using DotsLite.Geometry.Palette;
 
 
     /// <summary>
-    /// 
+    /// パレットのもとになるデータ（XxxSrcData）から、グラフィックスバッファを生成初期化し、マテリアルにセットする。
+    /// また、最後に破棄も行う。
     /// </summary>
     //[DisableAutoCreation]
     //[UpdateAfter(typeof( BeginDrawCsBarier ) )]
@@ -30,23 +32,37 @@ namespace DotsLite.Draw
 
         protected override void OnStartRunning()
         {
+            this.RequireSingletonForUpdate<ShaderBuffer.ColorPaletteSrcData>();
             base.OnStartRunning();
 
             var em = this.EntityManager;
 
-            this.Entities
-                .WithoutBurst()
-                .WithStructuralChanges()
-                .ForEach((Entity ent, ShaderBuffer.ColorPaletteSrcData src) =>
-                {
-                    Debug.Log("cre");
-                    em.AddComponentData(ent, new ShaderBuffer.ColorPaletteData
-                    {
-                        Buffer = src.Colors.BuildShaderBuffer(),
-                        NameId = src.NameId,
-                    });
-                })
-                .Run();
+            //this.Entities
+            //    .WithoutBurst()
+            //    .WithStructuralChanges()
+            //    .ForEach((Entity ent, ShaderBuffer.ColorPaletteSrcData src) =>
+            //    {
+            //        Debug.Log("cre");
+            //        em.AddComponentData(ent, new ShaderBuffer.ColorPaletteData
+            //        {
+            //            Buffer = src.Colors.BuildShaderBuffer(),
+            //            NameId = src.NameId,
+            //        });
+            //    })
+            //    .Run();
+
+            if (!this.TryGetSingletonEntity<ShaderBuffer.ColorPaletteSrcData>(out var bufent)) return; ;
+            Debug.Log("cre");
+
+            //var bufent = this.GetSingletonEntity<ShaderBuffer.ColorPaletteSrcData>();
+            var src = em.GetComponentData<ShaderBuffer.ColorPaletteSrcData>(bufent);
+            var buf = new ShaderBuffer.ColorPaletteData
+            {
+                Buffer = src.Colors.BuildShaderBuffer(),
+                NameId = src.NameId,
+            };
+            em.AddComponentData(bufent, buf);
+
 
             this.Entities
                 .WithoutBurst()
@@ -55,9 +71,9 @@ namespace DotsLite.Draw
                     DrawModel.GeometryData geom,
                     DrawModelShaderBuffer.ColorPaletteLinkData setup) =>
                 {
-                    var buf = em.GetComponentData<ShaderBuffer.ColorPaletteData>(setup.BufferEntity);
-
                     geom.Material.SetBuffer(buf.NameId, buf.Buffer);
+
+                    setup.BufferEntity = bufent;
                 })
                 .Run();
         }

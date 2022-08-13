@@ -47,6 +47,7 @@ namespace DotsLite.Draw
             this.Entities
                 .WithBurst()
                 .WithNone<NonUniformScale, Rotation>()
+                .WithNone<DrawInstance.TransferSpecialTag>()
                 .WithReadOnly(nativeBuffers)
                 .WithReadOnly(offsetsOfDrawModel)
                 .ForEach(

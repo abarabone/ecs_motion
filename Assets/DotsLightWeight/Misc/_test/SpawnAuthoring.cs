@@ -13,6 +13,7 @@ using DotsLite.Model.Authoring;
 using Unity.Entities.UniversalDelegates;
 using System;
 using DotsLite.Dependency;
+using DotsLite.Draw;
 
 public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
 {
@@ -38,20 +39,16 @@ public class SpawnAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclar
 
         var prefab_ent = conversionSystem.GetPrimaryEntity( this.prefab );
 
-        dstManager.AddComponentData(entity,
-            new Spawn.EntryData
-            {
-                pos = this.transform.position,
-                prefab = prefab_ent,
-            }
-        );
-        dstManager.AddComponentData(entity,
-            new Spawn.SpanData
-            {
-                length = this.Length,
-                span = this.span,
-            }
-        );
+        dstManager.AddComponentData(entity, new Spawn.EntryData
+        {
+            pos = this.transform.position,
+            prefab = prefab_ent,
+        });
+        dstManager.AddComponentData(entity, new Spawn.SpanData
+        {
+            length = this.Length,
+            span = this.span,
+        });
 
     }
     
@@ -65,6 +62,7 @@ static class Spawn
         public float3 pos;
         public quaternion rot;
         public Entity prefab;
+        public int paletteIndex;
     }
     public struct SpanData : IComponentData
     {
@@ -74,6 +72,11 @@ static class Spawn
     }
 }
 
+/// <summary>
+/// spawn entity の EntryData と SpanData を列挙し、指定の個数分だけ、プレハブからインスタンスを生成する。
+/// spawn entity は、インスタンス生成後に破棄される。
+/// インスタンスは、ObjectInitializeData によって初期化される。（直接じゃダメなのか？←ＴＦの違いを吸収するためか？）
+/// </summary>
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
 public partial class SpawnFreqencySystem : DependencyAccessableSystemBase
@@ -108,13 +111,11 @@ public partial class SpawnFreqencySystem : DependencyAccessableSystemBase
                     var l = span.length;
                     var s = span.span;
 
-                    cmd.AddComponent(entityInQueryIndex, ent,
-                        new ObjectInitializeData
-                        {
-                            pos = entry.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z),
-                            rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
-                        }
-                    );
+                    cmd.AddComponent(entityInQueryIndex, ent, new ObjectInitializeData
+                    {
+                        pos = entry.pos + new float3(i % l.x * s.x, i / l.x % l.y * s.y, i / (l.x * l.y) * s.z),
+                        rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
+                    });
 
                     if (++span.i >= l.x * l.y * l.z)
                         cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
@@ -125,6 +126,11 @@ public partial class SpawnFreqencySystem : DependencyAccessableSystemBase
 
 }
 
+/// <summary>
+/// spawn entity の EntryData を列挙し、プレハブからインスタンスを生成する。
+/// spawn entity は、インスタンス生成後に破棄される。
+/// インスタンスは、ObjectInitializeData によって初期化される。（直接じゃダメなのか？←ＴＦの違いを吸収するためか？）
+/// </summary>
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(ObjectInitializeSystem))]
 public partial class SpawnSystem : DependencyAccessableSystemBase
@@ -156,13 +162,20 @@ public partial class SpawnSystem : DependencyAccessableSystemBase
                 {
                     var ent = cmd.Instantiate(entityInQueryIndex, entry.prefab);
 
-                    cmd.AddComponent(entityInQueryIndex, ent,
-                        new ObjectInitializeData
+                    cmd.AddComponent(entityInQueryIndex, ent, new ObjectInitializeData
+                    {
+                        pos = entry.pos,
+                        rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
+                    });
+
+                    if (entry.paletteIndex != -1)// コンポーネントを独立させたほうがいいよな…
+                    {
+                        cmd.AddComponent(entityInQueryIndex, ent, new Palette.ColorPaletteData
                         {
-                            pos = entry.pos,
-                            rot = math.any(entry.rot.value) ? entry.rot : quaternion.identity,
-                        }
-                    );
+                            BaseIndex = entry.paletteIndex,
+                        });
+                        cmd.AddComponent(entityInQueryIndex, ent, new DrawInstance.TransferSpecialTag { });
+                    }
 
                     cmd.DestroyEntity(entityInQueryIndex, spawnEntity);
                 }

@@ -47,6 +47,7 @@ namespace DotsLite.Draw
                 .WithReadOnly(offsetsOfDrawModel)
                 .WithReadOnly(nativeBuffers)
                 .WithAll<DrawInstance.MeshTag>()
+                .WithNone<DrawInstance.TransferSpecialTag>()
                 .WithNone<DrawInstance.BoneModelTag>()
                 .ForEach(
                     (

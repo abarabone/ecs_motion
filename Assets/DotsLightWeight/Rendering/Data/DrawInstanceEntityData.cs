@@ -51,6 +51,13 @@ namespace DotsLite.Draw
 
 
         /// <summary>
+        /// 特殊な transfer モード
+        /// </summary>
+        public struct TransferSpecialTag : IComponentData
+        { }
+
+
+        /// <summary>
         /// 描画モデルの種類情報
         /// </summary>
         public struct ModelLinkData : IComponentData

@@ -59,7 +59,7 @@ namespace DotsLite.Draw
                         in Rotation rot,
                         in StretchBox.SizeData size,
                         in StretchBox.UvIndexData iuv,
-                        in Palette.PaletteData ipalette
+                        in Palette.ColorPaletteData ipalette
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
