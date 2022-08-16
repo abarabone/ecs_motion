@@ -40,9 +40,6 @@ namespace DotsLite.Structure.Authoring
 
         public PartModel Model;
 
-        public ColorPaletteAsset Palette;
-
-        public bool UsePalette;
 
 
         public override IEnumerable<IMeshModel> QueryModel => this._model.WrapEnumerable();
@@ -91,8 +88,6 @@ namespace DotsLite.Structure.Authoring
             var part = conversionSystem.GetPrimaryEntity(this.gameObject);
 
             setPrefabToPart_(conversionSystem, part, prefab);
-
-            if (this.UsePalette) conversionSystem.AddColorPalletComponents(entity);
 
             return;
 

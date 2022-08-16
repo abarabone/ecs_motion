@@ -44,8 +44,27 @@ namespace DotsLite.Geometry.inner
                 select color
                 ;
         }
+
+
+        static public IEnumerable<Color32> QueryUvOffsetIndex(
+            this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
+        {
+            var qVtx = srcmeshes.QuerySubMeshForUnitVertices();
+            var qColor =
+                from idxs in p.UvIndexPerSubMesh
+                from idx in idxs
+                select new Color32
+                {
+                    b = (byte)idx,
+                };
+            return
+                from x in (qVtx, qColor).Zip()
+                let vtxs = x.src0
+                let color = x.src1
+                from _ in vtxs
+                select color
+                ;
+        }
     }
-
-
 
 }

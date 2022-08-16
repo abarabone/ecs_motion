@@ -71,10 +71,6 @@ namespace DotsLite.Model.Authoring
         //MeshModel Model;
         MeshWithPaletteModel Model;
 
-        //[SerializeField]
-        //ColorPaletteAsset Palette;
-
-        public bool UsePalette;
 
 
 
@@ -91,7 +87,6 @@ namespace DotsLite.Model.Authoring
             var drawInstatnce = initInstanceEntityComponents_(conversionSystem, this.gameObject);
 
             //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
-            if (this.UsePalette) conversionSystem.AddColorPalletComponents(entity);
 
             return;
 

@@ -24,19 +24,22 @@ namespace DotsLite.Draw.Authoring.Palette
     using DotsLite.Geometry;
     using DotsLite.Geometry.Palette;
 
-    // モデル
-    // ・palette id を持ったマテリアルを集計
-    // 　→ 頂点の palett index を生成
+    // パレット
+    // ・パレットバッファは、カラー配列によってなる。
+    // ・カラー配列は、パレット単位に区切られている。
+    // ・パレットの base index は、パレットが始まる位置のカラーインデックス。
 
     // インスタンス
+    // ・コンバートは、インスタンスごとのパレットを登録しつつ、base index を返してもらう。
     // ・使用するパレットをアセットで所持
     // 　→ ビルダーに登録して、最後にひとまとめに
-    // 　　→ グラフィックバッファに出力
-    // 　　→ インスタンスにはパレットデータを所持
+    // 　→ グラフィックバッファに出力
+    // 　→ インスタンスにはパレットデータを所持
 
-    // パレット
-    // ・モデルごとにパレットを持つ
-    // ・そのパレットについての内部インデックスを、頂点ごとにもつ
+    // モデル
+    // ・パレットに対応したメッシュは、パレットについての内部インデックスを、頂点ごとにもつ。
+    // ・コンバートは、palette id を持ったマテリアルを集計し、内部インデックスとする。
+    // 　→ マテリアルに対応したサブメッシュごとに、頂点の palette index がセットされる。
 
 
     // カラーパレットはシーンで１つ、ということにする
@@ -86,60 +89,6 @@ namespace DotsLite.Draw.Authoring.Palette
             });
         }
 
-    }
-
-    /// <summary>
-    /// モデルインスタンスごとにカラーパレットを登録し、グラフィックバッファ用のカラー配列を構築する。
-    /// またインスタンスには、バッファ内の位置をＩＤとして返す。
-    /// </summary>
-    public class ColorPaletteBuilder
-    {
-
-        Dictionary<string, (int i, Color32[] colors)> colors = new Dictionary<string, (int, Color32[])>();
-
-        int nextIndex = 0;
-
-
-        /// <summary>
-        /// １モデルインスタンス分のパレットを登録し、ＩＤ（位置）を返す。
-        /// </summary>
-        public int RegistAndGetId(Color32[] values)
-        {
-            var key = toKey(values); Debug.Log(key);
-
-            if (this.colors.TryGetValue(key, out var x))
-            {
-                return x.i;
-            }
-
-            var index = this.nextIndex;
-            this.colors[key] = (index, values);
-            this.nextIndex += values.Length;
-            return index;
-
-
-            static string toKey(Color32[] keysrc)
-            {
-                var q =
-                    from x in keysrc
-                    select $"{x.r},{x.g},{x.b},{x.a}"
-                    ;
-                return string.Join("/", q);
-            }
-        }
-
-        /// <summary>
-        /// 登録されたすべてのカラー配列を返す。
-        /// </summary>
-        public uint[] ToArray()
-        {
-            var q =
-                from x in this.colors
-                from y in x.Value.colors
-                select y.ToUint()//y
-                ;
-            return q.ToArray();
-        }
     }
 
 }
