@@ -58,7 +58,7 @@ namespace DotsLite.Draw
             var src = em.GetComponentData<ShaderBuffer.ColorPaletteSrcData>(bufent);
             var buf = new ShaderBuffer.ColorPaletteData
             {
-                Buffer = src.Colors.BuildShaderBuffer(),
+                Buffer = src.Colors.BuildColorPaletteShaderBuffer(),
                 NameId = src.NameId,
             };
             em.AddComponentData(bufent, buf);

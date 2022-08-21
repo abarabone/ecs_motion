@@ -20,35 +20,35 @@ namespace DotsLite.Geometry
     using DotsLite.Structure.Authoring;
 
 
-    public class UvPaletteBuilder
-    {
-        Dictionary<string, (int i, Rect[] uvs)> idList = new Dictionary<string, (int, Rect[])>();
+    //public class UvPaletteBuilder
+    //{
+    //    Dictionary<string, (int i, Rect[] uvs)> idList = new Dictionary<string, (int, Rect[])>();
 
-        int nextIndex;
+    //    int nextIndex;
 
-        public int this[Rect[] values]
-        {
-            get => this.idList[toKey(values)].i;
-        }
+    //    public int this[Rect[] values]
+    //    {
+    //        get => this.idList[toKey(values)].i;
+    //    }
 
-        public void Add(Rect[] values)
-        {
-            var key = toKey(values);
-            if (this.idList.ContainsKey(key))
-            {
-                this.idList[key] = (this.nextIndex++, values);
-            }
-        }
+    //    public void Add(Rect[] values)
+    //    {
+    //        var key = toKey(values);
+    //        if (this.idList.ContainsKey(key))
+    //        {
+    //            this.idList[key] = (this.nextIndex++, values);
+    //        }
+    //    }
 
-        static string toKey(Rect[] keysrc)
-        {
-            var q =
-                from x in keysrc
-                select $"{x.x},{x.y}"
-                ;
-            return string.Join("/", q);
-        }
-    }
+    //    static string toKey(Rect[] keysrc)
+    //    {
+    //        var q =
+    //            from x in keysrc
+    //            select $"{x.x},{x.y}"
+    //            ;
+    //        return string.Join("/", q);
+    //    }
+    //}
 
     public static class IndexedSurfaceUtility
     {

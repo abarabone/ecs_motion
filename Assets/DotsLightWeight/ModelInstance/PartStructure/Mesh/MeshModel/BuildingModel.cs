@@ -31,6 +31,7 @@ namespace DotsLite.Structure.Authoring
     using DotsLite.Misc;
     using DotsLite.Model.Authoring;
     using DotsLite.Geometry.Palette;
+    using DotsLite.Geometry.inner.palette;
 
     [Serializable]
     public class BuildingModel : LodMeshModelBase

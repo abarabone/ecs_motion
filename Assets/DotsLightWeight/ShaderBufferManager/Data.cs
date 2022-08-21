@@ -6,6 +6,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
 using Unity.Transforms;
+using Unity.Mathematics;
 
 namespace DotsLite.Draw
 {
@@ -23,11 +24,28 @@ namespace DotsLite.Draw
             public uint[] Colors;
             public int NameId;
         }
-
         /// <summary>
         /// グラフィックバッファ
         /// </summary>
         public class ColorPaletteData : IComponentData
+        {
+            public GraphicsBuffer Buffer;
+            public int NameId;
+        }
+
+
+        /// <summary>
+        /// コンバージョン時に作成するソースデータ
+        /// </summary>
+        public class UvPaletteSrcData : IComponentData
+        {
+            public float4[] UvOffsets;
+            public int NameId;
+        }
+        /// <summary>
+        /// グラフィックバッファ
+        /// </summary>
+        public class UvPaletteData : IComponentData
         {
             public GraphicsBuffer Buffer;
             public int NameId;
@@ -44,6 +62,14 @@ namespace DotsLite.Draw
         /// カラーパレットのグラフィックバッファへのリンク
         /// </summary>
         public class ColorPaletteLinkData : IComponentData
+        {
+            public Entity BufferEntity;
+        }
+
+        /// <summary>
+        /// ＵＶパレットのグラフィックバッファへのリンク
+        /// </summary>
+        public class UvPaletteLinkData : IComponentData
         {
             public Entity BufferEntity;
         }

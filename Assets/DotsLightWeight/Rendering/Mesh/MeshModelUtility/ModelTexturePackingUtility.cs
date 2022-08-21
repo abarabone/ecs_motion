@@ -17,6 +17,11 @@ namespace DotsLite.Model.Authoring
     static public class ModelTexturePackingUtility
     {
 
+        /// <summary>
+        /// モデル集合内のテクスチャから、１つのアトラスを生成する。
+        /// アトラスは辞書に登録される。
+        /// ただし、モデルに対してアトラスが登録済みなら、生成しない。
+        /// </summary>
         static public void PackTextureToDictionary(
             this IEnumerable<IMeshModel> models, TextureAtlasDictionary.Data atlasDict)
         {

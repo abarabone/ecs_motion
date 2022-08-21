@@ -8,6 +8,10 @@ namespace DotsLite.Geometry
 {
     using DotsLite.Common.Extension;
 
+    /// <summary>
+    /// テクスチャアトラスに関する情報を登録するための辞書。
+    /// 扱う辞書は、モデル→アトラス辞書、元テクスチャ→ＵＶオフセット辞書。
+    /// </summary>
     public class TextureAtlasDictionary : GameObjectConversionSystem
     {
         public class Data : IComponentData
@@ -37,8 +41,7 @@ namespace DotsLite.Geometry
     public static class TextureAtlasDictionaryExtension
     {
 
-        public static TextureAtlasDictionary.Data GetTextureAtlasDictionary(
-            this GameObjectConversionSystem gcs)
+        public static TextureAtlasDictionary.Data GetTextureAtlasDictionary(this GameObjectConversionSystem gcs)
         {
             if (!gcs.HasSingleton<TextureAtlasDictionary.Data>()) return create_();
 
@@ -51,7 +54,7 @@ namespace DotsLite.Geometry
                 var newholder = new TextureAtlasDictionary.Data
                 {
                     modelToAtlas = new Dictionary<SourcePrefabKeyUnit, Texture2D>(),
-                    texHashToUvRect = new Dictionary<(int atlas, int part), Rect>(),
+                    texHashToUvRect = new HashToRect(),
                 };
                 gcs.EntityManager.SetComponentData(newent, newholder);
                 return newholder;

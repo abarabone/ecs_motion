@@ -28,16 +28,16 @@ namespace DotsLite.Geometry.Palette
         /// システム経由でカラーパレットビルダーを取得する。
         /// </summary>
         /// <returns></returns>
-        public static ColorPaletteBuilder GetColorPaletteBuilder(this GameObjectConversionSystem gcs)
+        public static ColorPaletteBufferBuilder GetColorPaletteBuilder(this GameObjectConversionSystem gcs)
         {
-            return gcs.World.GetExistingSystem<ColorPaletteShaderBufferConversion>().Palettes;
+            return gcs.World.GetExistingSystem<ColorPaletteShaderBufferConversion>().Builder;
         }
 
 
         /// <summary>
         /// パレット配列から、グラフィックバッファーを構築する。
         /// </summary>
-        public static GraphicsBuffer BuildShaderBuffer(this uint[] colors)
+        public static GraphicsBuffer BuildColorPaletteShaderBuffer(this uint[] colors)
         {
             if (colors.Length == 0) return null;
 
@@ -53,49 +53,49 @@ namespace DotsLite.Geometry.Palette
 
 
 
-        /// <summary>
-        /// モデル１つ分のパレット配列を生成する。
-        /// </summary>
-        public static Color32[] ToPaletteColorEntry(
-            this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
-        {
-            // ・モデルから sub index ごとの色を抽出
-            // ・color palette に登録、最後にバッファを構築
-            // ・バッファはシーンに１つ
-            // ・color palette の base index を、インスタンスに持たせる
-            // ・ただし、すでに同じ構成で登録があれば、その base index を取得する
-            // １つのモデルを構成する幾何情報から、カラーパレットを構成するカラーを抽出する。
-            // 結果はカラーの配列となる。（つまり、カラーパレット１つは、モデル１つに対して作成される）
-            // カラーのインデックスはマテリアルの Palette Sub Index プロパティにユーザーがセットする。
-            // 結果の配列は、そのインデックス順にソートされており、インデックスに該当するマテリアルが存在しなかった場合は、
-            // (0, 0, 0, 0) 色がせっとされる。
-            var q =
-                from mmt in mmts
-                from mat in mmt.mats
-                select (index: getPaletteSubIndex_(mat), color: (Color32)mat.color)
-                ;
-            var colors = q.ToLookup(x => x.index, x => x.color);
-            var maxIndex = colors.Max(x => x.Key);
-            var qResult =
-                from i in Enumerable.Range(0, maxIndex + 1)
-                select colors.Contains(i)
-                    ? colors[i].First()
-                    : new Color32()
-                ;
-            return qResult.ToArray();
+        ///// <summary>
+        ///// モデル１つ分のパレット配列を生成する。
+        ///// </summary>
+        //public static Color32[] ToColorPaletteEntry(
+        //    this IEnumerable<(Mesh mesh, Material[] mats, Transform tf)> mmts)
+        //{
+        //    // ・モデルから sub index ごとの色を抽出
+        //    // ・color palette に登録、最後にバッファを構築
+        //    // ・バッファはシーンに１つ
+        //    // ・color palette の base index を、インスタンスに持たせる
+        //    // ・ただし、すでに同じ構成で登録があれば、その base index を取得する
+        //    // １つのモデルを構成する幾何情報から、カラーパレットを構成するカラーを抽出する。
+        //    // 結果はカラーの配列となる。（つまり、カラーパレット１つは、モデル１つに対して作成される）
+        //    // カラーのインデックスはマテリアルの Palette Sub Index プロパティにユーザーがセットする。
+        //    // 結果の配列は、そのインデックス順にソートされており、インデックスに該当するマテリアルが存在しなかった場合は、
+        //    // (0, 0, 0, 0) 色がせっとされる。
+        //    var q =
+        //        from mmt in mmts
+        //        from mat in mmt.mats
+        //        select (index: getPaletteSubIndex_(mat), color: (Color32)mat.color)
+        //        ;
+        //    var colors = q.ToLookup(x => x.index, x => x.color);
+        //    var maxIndex = colors.Max(x => x.Key);
+        //    var qResult =
+        //        from i in Enumerable.Range(0, maxIndex + 1)
+        //        select colors.Contains(i)
+        //            ? colors[i].First()
+        //            : new Color32()
+        //        ;
+        //    return qResult.ToArray();
 
 
-            /// <summary>
-            /// マテリアルから、パレットインデックス情報を取得する。
-            /// 該当するプロパティがない場合のインデックスは、0 とする。
-            /// </summary>
-            static int getPaletteSubIndex_(Material mat) =>
-                //mat?.HasInt("Palette Sub Index") ?? false
-                mat?.HasProperty("Palette Sub Index") ?? false
-                    ? mat.GetInt("Palette Sub Index")
-                    : 0
-                ;
-        }
+        //    /// <summary>
+        //    /// マテリアルから、パレットインデックス情報を取得する。
+        //    /// 該当するプロパティがない場合のインデックスは、0 とする。
+        //    /// </summary>
+        //    static int getPaletteSubIndex_(Material mat) =>
+        //        //mat?.HasInt("Palette Sub Index") ?? false
+        //        mat?.HasProperty("Palette Sub Index") ?? false
+        //            ? mat.GetInt("Palette Sub Index")
+        //            : 0
+        //        ;
+        //}
 
     }
 
@@ -105,10 +105,10 @@ namespace DotsLite.Geometry.Palette
     /// モデルインスタンスごとにカラーパレットを登録し、グラフィックバッファ用のカラー配列を構築する。
     /// またインスタンスには、バッファ内の位置をＩＤとして返す。
     /// </summary>
-    public class ColorPaletteBuilder
+    public class ColorPaletteBufferBuilder
     {
 
-        Dictionary<string, (int i, Color32[] colors)> colors = new Dictionary<string, (int, Color32[])>();
+        Dictionary<string, (int id, Color32[] colors)> colors = new Dictionary<string, (int, Color32[])>();
 
         int nextIndex = 0;
 
@@ -122,13 +122,12 @@ namespace DotsLite.Geometry.Palette
 
             if (this.colors.TryGetValue(key, out var x))
             {
-                return x.i;
+                return x.id;
             }
 
-            var index = this.nextIndex;
-            this.colors[key] = (index, values);
-            this.nextIndex += values.Length;
-            return index;
+            this.colors[key] = (this.nextIndex, values);
+
+            return addIndex_(values.Length);
 
 
             static string toKey(Color32[] keysrc)
@@ -138,6 +137,13 @@ namespace DotsLite.Geometry.Palette
                     select $"{x.r},{x.g},{x.b},{x.a}"
                     ;
                 return string.Join("/", q);
+            }
+
+            int addIndex_(int length)
+            {
+                var index = this.nextIndex;
+                this.nextIndex += length;
+                return index;
             }
         }
 

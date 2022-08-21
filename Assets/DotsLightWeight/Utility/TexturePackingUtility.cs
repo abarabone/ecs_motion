@@ -10,9 +10,24 @@ namespace DotsLite.Geometry
 	using DotsLite.Common.Extension;
 	using DotsLite.Utilities;
 
+
+	/// <summary>
+	/// アトラスと元テクスチャのハッシュ値から、ＵＶオフセット矩形を返す辞書。
+	/// ハッシュ集合から矩形集合にも対応する。
+	/// </summary>
 	public class HashToRect
 	{
 		public Dictionary<(int atlas, int part), Rect> dict;
+
+		public HashToRect()
+		{
+			this.dict = new Dictionary<(int atlas, int part), Rect>();
+		}
+		public HashToRect(TextureAtlasAndParameters texparams)
+		{
+			this.dict = (texparams.texhashes, texparams.uvRects).ToDictionary();
+		}
+
 
 		public Rect this[(int atlas, int part) hashes]
 		{
@@ -43,33 +58,38 @@ namespace DotsLite.Geometry
 			}
 		}
 
-		public static implicit operator
-			Dictionary<(int atlas, int part), Rect>(HashToRect d) => d.dict;
-		public static implicit operator
-			HashToRect(Dictionary<(int atlas, int part), Rect> d) => d != null ? new HashToRect { dict=d } : null;
+		//public static implicit operator
+		//	Dictionary<(int atlas, int part), Rect>(HashToRect d) => d.dict;
+
+		//public static implicit operator
+		//	HashToRect(Dictionary<(int atlas, int part), Rect> d) => d != null ? new HashToRect { dict=d } : null;
 	}
 
+
+	/// <summary>
+	/// モデル変換中などに、パラメータとして保持するテクスチャ情報。
+	/// アトラス、元テクスチャハッシュ値の集合、ＵＶオフセット矩形の集合を保持する。
+	/// </summary>
     public struct TextureAtlasAndParameters
     {
         public Texture2D atlas;
         public IEnumerable<(int atlas, int part)> texhashes;
         public IEnumerable<Rect> uvRects;
 
-		public Func<int, Rect> ToTexHashToUvRectFunc()
-		{
-			var dict = new HashToRect { dict = (texhashes, uvRects).ToDictionary() };
-			var atlashash = this.atlas.GetHashCode();
-			return hash => dict[atlashash, hash];
-		}
-    }
+		//public Func<int, Rect> ToTexHashToUvRectFunc()
+		//{
+		//	var dict = new HashToRect { dict = (texhashes, uvRects).ToDictionary() };
+		//	var atlashash = this.atlas.GetHashCode();
+		//	return hash => dict[atlashash, hash];
+		//}
+}
 
 
     static class TexturePackingUtility
 	{
 
-
 		/// <summary>
-		/// 
+		/// テクスチャの集合からアトラスを生成し、アトラスとＵＶオフセット配列を返す。
 		/// </summary>
 		static public (Texture2D atlas, Rect[] uvRects) ToAtlas(this IEnumerable<Texture2D> srcTextures)
 		{
@@ -83,6 +103,10 @@ namespace DotsLite.Geometry
 			return (dstTexture, uvRects);
 		}
 
+		/// <summary>
+		/// テクスチャの集合から、アトラスとＵＶオフセット配列を返す。
+		/// ただし、テクスチャが１つだけの時は、アトラス化せずに渡したテクスチャを返す。
+		/// </summary>
 		static public (Texture2D atlas, Rect[] uvRects) ToAtlasOrPassThrough(this IEnumerable<Texture2D> srcTextures)
 		=>
 			srcTextures.IsSingle()
@@ -91,6 +115,10 @@ namespace DotsLite.Geometry
 
 
 
+		/// <summary>
+		/// 指定したゲームオブジェクト以下のヒエラルキーから、メインテクスチャの集合を返す。
+		/// ただし、重複なし。
+		/// </summary>
 		static public IEnumerable<Texture2D> QueryUniqueTextures(this GameObject obj) =>
 			obj.GetComponentsInChildren<Renderer>()
 				.SelectMany(r => r.sharedMaterials)
@@ -100,6 +128,10 @@ namespace DotsLite.Geometry
 			//	.SelectMany()
 			//	.QueryUniqueTextures();
 
+		/// <summary>
+		/// マテリアルの集合から、メインテクスチャの集合を返す。
+		/// ただし、重複なし。
+		/// </summary>
 		static public IEnumerable<Texture2D> QueryUniqueTextures(this IEnumerable<Material> mats) =>
 			mats.Select(mat => mat.mainTexture)
 				.Where(x => x != null)
@@ -107,14 +139,17 @@ namespace DotsLite.Geometry
 				.Distinct();
 
 
-		static public TextureAtlasAndParameters ToAtlasOrPassThroughAndParameters
-			(this IEnumerable<Texture2D> uniqueTextures)
+
+		/// <summary>
+		/// 重複なしテクスチャの集合から、TextureAtlasAndParameters を生成する。
+		/// </summary>
+		static public TextureAtlasAndParameters ToAtlasOrPassThroughAndParameters(this IEnumerable<Texture2D> uniqueTextures)
 		{
 			var texs = uniqueTextures.ToArray();
 
 			var (atlas, uvRects) = texs.ToAtlasOrPassThrough();
 
-			var qKeyHash = texs.queryKeyHashes(atlas);
+			var qKeyHash = texs.queryKeyHashes_(atlas);
 
 			return new TextureAtlasAndParameters
 			{
@@ -123,13 +158,12 @@ namespace DotsLite.Geometry
 				uvRects = uvRects.Append(new Rect(0, 0, 1, 1)),
 			};
 		}
-
-		static IEnumerable<(int, int)> queryKeyHashes
-			(this IEnumerable<Texture2D> uniqueTextures, Texture2D atlas)
+		static IEnumerable<(int, int)> queryKeyHashes_(this IEnumerable<Texture2D> uniqueTextures, Texture2D atlas)
 		=>
 			from tex in uniqueTextures
 			select (atlas.GetHashCode(), tex.GetHashCode())
 			;
+
 
 
 

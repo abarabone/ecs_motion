@@ -48,13 +48,16 @@ namespace DotsLite.Structure.Authoring
         public GameObject Envelope;
         public StructureBuildingAuthoring MasterPrefab;
 
-        public ColorPaletteAsset Palette;
+        //public ColorPaletteAsset Palette;
 
 
         public override IEnumerable<IMeshModel> QueryModel =>
             new IMeshModel [] { this._nearModel, this._farModel };
-        public BuildingModel _nearModel => this.NearModel ?? this.Near.GetComponent<BuildingModel>();
-        public LodMeshModel _farModel => this.FarModel ?? this.Far.GetComponent<LodMeshModel>();
+
+        public BuildingModel _nearModel =>
+            this.NearModel ?? this.Near.GetComponent<BuildingModel>();
+        public LodMeshModel _farModel =>
+            this.FarModel ?? this.Far.GetComponent<LodMeshModel>();
 
 
         public PartColliderMode ColliderMode;
