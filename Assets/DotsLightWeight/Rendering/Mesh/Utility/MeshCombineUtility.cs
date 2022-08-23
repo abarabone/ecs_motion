@@ -20,6 +20,7 @@ namespace DotsLite.Geometry
     using DotsLite.Structure.Authoring;
 
 
+    // ‚¢‚¸‚ê‚ÍŒp³“I‚É
     public class AdditionalParameters
     {
         public Matrix4x4 mtBaseInv;
@@ -35,7 +36,8 @@ namespace DotsLite.Geometry
 
         public int[] partIdPerMesh;
         public int[][] paletteSubIndexPerSubMesh;    // mesh > submesh . subindex
-        public int[][] UvIndexPerSubMesh;           // mesh > submesh . uvindex
+        public int[][] uvPaletteSubIndexPerSubMesh;
+        //public int[][] UvIndexPerSubMesh;           // mesh > submesh . uvindex
     }
 
 
