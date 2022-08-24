@@ -42,7 +42,7 @@ namespace DotsLite.Model.Authoring.Vertex.MeshWithPaletteModel
 
     [Serializable]
     public class PositionUvNormalWithPalette :
-        PositionUvNormalWithPaletteVertexBuilder,
+        PositionUvNormalWithUvColorPaletteVertexBuilder,
         Authoring.MeshWithPaletteModel.IVertexSelector,
         IVertexUnitWithPalette
     { }
@@ -84,6 +84,7 @@ namespace DotsLite.Model.Authoring
             if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPalette)
             {
                 p.CalculatePaletteSubIndexParameter(mmts);
+                p.CalculateUvPaletteSubIndexParameter(mmts);
             }
 
             var md = MeshCreatorUtility.AllocateMeshData();

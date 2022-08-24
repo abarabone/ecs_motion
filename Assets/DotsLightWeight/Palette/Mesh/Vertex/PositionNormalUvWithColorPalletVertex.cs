@@ -20,7 +20,7 @@ namespace DotsLite.Geometry
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct PositionUvNormalWithPaletteVertex : IVertexUnit
+    public struct PositionUvNormalWithColorPaletteVertex : IVertexUnit
     {
 
         public Vector3 Position;
@@ -31,7 +31,7 @@ namespace DotsLite.Geometry
     }
 
 
-    public class PositionUvNormalWithPaletteVertexBuilder : IVertexBuilder//, ISetBufferParams
+    public class PositionUvNormalWithColorPaletteVertexBuilder : IVertexBuilder//, ISetBufferParams
     {
         //public TVtx[] Build<TVtx>(IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         //    where TVtx : struct, IVertexUnit
@@ -75,7 +75,7 @@ namespace DotsLite.Geometry
             return;
 
 
-            static PositionUvNormalWithPaletteVertex[] buildVtxs_(
+            static PositionUvNormalWithColorPaletteVertex[] buildVtxs_(
                 IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
             {
                 var poss = srcmeshes.QueryConvertPositions(p).ToArray();
@@ -84,11 +84,11 @@ namespace DotsLite.Geometry
                 var cids = srcmeshes.QueryColorPaletteSubIndex(p).ToArray();
                 var qVtx =
                     from x in (poss, nms, uvs, cids).Zip()
-                    select new PositionUvNormalWithPaletteVertex
+                    select new PositionUvNormalWithColorPaletteVertex
                     {
                         Position = x.src0,
                         Uv = x.src2,
-                        PaletteId = x.src3,
+                        PaletteId = new Color32(0, 0, 0, (byte)x.src3),
                         Normal = x.src1,
                     };
                 return qVtx.ToArray();
@@ -106,9 +106,9 @@ namespace DotsLite.Geometry
                 meshdata.SetVertexBufferParams(vtxLength, layout);
             }
 
-            static void copyVtxs_(Mesh.MeshData meshdata, PositionUvNormalWithPaletteVertex[] vtxs)
+            static void copyVtxs_(Mesh.MeshData meshdata, PositionUvNormalWithColorPaletteVertex[] vtxs)
             {
-                meshdata.GetVertexData<PositionUvNormalWithPaletteVertex>().CopyFrom(vtxs);
+                meshdata.GetVertexData<PositionUvNormalWithColorPaletteVertex>().CopyFrom(vtxs);
             }
         }
     }

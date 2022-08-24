@@ -23,18 +23,18 @@ namespace DotsLite.Geometry.inner
     {
 
 
-        static public IEnumerable<Color32> QueryConvertPartId
+        static public IEnumerable<uint> QueryConvertPartId
             (this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         =>
             from permesh in (p.partIdPerMesh, srcmeshes).Zip()
             let pid = permesh.src0
-            let color = new Color32
-            {
-                r = (byte)(pid & 0x1f),
-                g = (byte)(pid >> 5 & 0xff),// 32bit ‚È‚Ì‚Å >> 5
-            }
+            //let color = new Color32
+            //{
+            //    r = (byte)(pid & 0x1f),
+            //    g = (byte)(pid >> 5 & 0xff),// 32bit ‚È‚Ì‚Å >> 5
+            //}
             from vtx in Enumerable.Range(0, permesh.src1.MeshData.vertexCount)
-            select color
+            select (uint)pid//color
             ;
 
 

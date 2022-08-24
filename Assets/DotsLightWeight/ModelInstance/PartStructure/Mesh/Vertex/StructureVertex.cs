@@ -86,7 +86,12 @@ namespace DotsLite.Geometry
                     {
                         Position = x.src0,
                         Normal = x.src1,
-                        PartId = new Color32(x.src2.r, x.src2.g, x.src2.b, x.src3.a),
+                        PartId = new Color32
+                        {
+                            r = (byte)(x.src2 & 0x1f),
+                            g = (byte)(x.src2 >> 5 & 0xff),// 32bit ‚È‚Ì‚Å >> 5
+                            a = (byte)x.src3,
+                        },
                         Uv = x.src4,
                     };
                 return qVtx.ToArray();

@@ -24,7 +24,7 @@ namespace DotsLite.Geometry.inner
     {
 
 
-        static public IEnumerable<Color32> QueryColorPaletteSubIndex(
+        static public IEnumerable<uint> QueryColorPaletteSubIndex(
             this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
             var qVtx = srcmeshes.QuerySubMeshForUnitVertices();
@@ -32,10 +32,12 @@ namespace DotsLite.Geometry.inner
 
                 from idxs in p.paletteSubIndexPerSubMesh
                 from idx in idxs
-                select new Color32
-                {
-                    a = (byte)idx,
-                };
+                select (uint)idx
+                ;
+                //select new Color32
+                //{
+                //    a = (byte)idx,
+                //};
             return
                 from x in (qVtx, qColor).Zip()
                 let vtxs = x.src0
@@ -46,14 +48,14 @@ namespace DotsLite.Geometry.inner
         }
 
 
-        static public IEnumerable<int> QueryUvOffsetSubIndex(
+        static public IEnumerable<uint> QueryUvOffsetSubIndex(
             this IEnumerable<SrcMeshUnit> srcmeshes, AdditionalParameters p)
         {
             var qVtx = srcmeshes.QuerySubMeshForUnitVertices();
             var qSubIdx =
                 from idxs in p.uvPaletteSubIndexPerSubMesh
                 from idx in idxs
-                select idx
+                select (uint)idx
                 ;
             return
                 from x in (qVtx, qSubIdx).Zip()

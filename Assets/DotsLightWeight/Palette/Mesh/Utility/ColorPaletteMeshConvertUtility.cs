@@ -38,9 +38,8 @@ namespace DotsLite.Geometry.inner.palette
             /// 該当するプロパティがない場合のインデックスは、0 とする。
             /// </summary>
             static int getPaletteSubIndex_(Material mat) =>
-                //mat?.HasInt("Palette Sub Index") ?? false
-                mat?.HasProperty("Palette Sub Index") ?? false
-                    ? mat.GetInt("Palette Sub Index")
+                (mat?.HasProperty("_PaletteSubIndex") ?? false)
+                    ? mat.GetInt("_PaletteSubIndex")
                     : 0
                 ;
         }
