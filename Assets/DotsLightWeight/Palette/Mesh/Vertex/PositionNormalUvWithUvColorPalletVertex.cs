@@ -92,8 +92,8 @@ namespace DotsLite.Geometry
                         PaletteId = new Color32(0, 0, (byte)x.src4, (byte)x.src3),
                         Normal = x.src1,
                     };
-                return qVtx.Do(x => Debug.Log($"uvc {x.PaletteId}")).ToArray();
-                //return qVtx.ToArray();
+                //return qVtx.Do(x => Debug.Log($"uvc {x.PaletteId}")).ToArray();
+                return qVtx.ToArray();
             }
 
             static void setVtxBufferParams_(Mesh.MeshData meshdata, int vtxLength)

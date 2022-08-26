@@ -20,14 +20,14 @@ namespace DotsLite.Model.Authoring
         /// <summary>
         /// モデル集合内のテクスチャから、１つのアトラスを生成する。
         /// アトラスは辞書に登録される。
-        /// ただし、モデルに対してアトラスが登録済みなら、生成しない。
+        /// ただし、すでにモデルに対してアトラスが登録済みなら、生成しない。
         /// </summary>
         static public void PackTextureToDictionary(
             this IEnumerable<IMeshModel> models, TextureAtlasDictionary.Data atlasDict)
         {
             var texmodels = models
-                .Where(x => !atlasDict.modelToAtlas.ContainsKey(x.SourcePrefabKey))
-                //.Logging(x => x.name)
+                .Where(x => !atlasDict.modelToAtlas.ContainsKey(x))//.SourcePrefabKey))
+                .Logging(x => x.Obj.name)
                 .ToArray();
 
             if (texmodels.Length == 0) return;
@@ -39,10 +39,18 @@ namespace DotsLite.Model.Authoring
                 select mat
                 ;
 
-            var tex = qMat.QueryUniqueTextures().ToAtlasOrPassThroughAndParameters();
+            var texAndParams = qMat
+                .QueryUniqueTextures()
+                .ToAtlasOrPassThroughAndParameters();
 
-            atlasDict.texHashToUvRect[tex.texhashes] = tex.uvRects;
-            atlasDict.modelToAtlas.AddEach(texmodels.Do(x => Debug.Log(x.Obj.name)).Select(x => x.SourcePrefabKey), tex.atlas);
+
+            atlasDict.texHashToUvRect[texAndParams.texhashes] = texAndParams.uvRects;
+            
+            atlasDict.modelToAtlas.AddEach(
+                texmodels
+                    .Logging(x => $"atlas-{(uint)texAndParams.atlas.GetHashCode()} @ {x.Obj.name}"),
+                texAndParams.atlas
+            );
         }
     }
 }

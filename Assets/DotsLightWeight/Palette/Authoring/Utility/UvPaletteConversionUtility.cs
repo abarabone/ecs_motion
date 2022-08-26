@@ -27,7 +27,8 @@ namespace DotsLite.Geometry.Palette
         /// ＩＤは、パレットのバッファ中の位置。パレットは PaletteAsset から取得する。
         /// パレットバッファビルダーは、モデル単位で作成される。
         /// </summary>
-        public static void AddUvPaletteComponents(this GameObjectConversionSystem gcs, Entity ent, UvPaletteBufferBuilder builder, UvPaletteAsset palette = null)
+        public static void AddUvPaletteComponents(
+            this GameObjectConversionSystem gcs, Entity ent, UvPaletteBufferBuilder builder, UvPaletteAsset palette = null)
         {
             var paletteIdBase = palette == null
                 ? builder.RegistAndGetId(palette.SubTextures)

@@ -75,7 +75,7 @@ namespace DotsLite.Model.Authoring
             TextureAtlasDictionary.Data atlasDictionary)
         {
             var p = new AdditionalParameters();
-            var atlas = atlasDictionary.modelToAtlas[this.sourcePrefabKey].GetHashCode();
+            var atlas = atlasDictionary.modelToAtlas[this].GetHashCode();
             var texdict = atlasDictionary.texHashToUvRect;
             var mmts = this.QueryMmts.ToArray();
             p.calculateParameters(mmts, this.Obj.transform, subtexhash => texdict[atlas, subtexhash]);

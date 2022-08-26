@@ -64,6 +64,8 @@ namespace DotsLite.Model.Authoring
 
             this.ModelPrefabs
                 .Distinct()
+                .Logging(x => $"model group {this.name} : {x.name}")
+                .ToArray()
                 .BuildModelToDictionary(conversionSystem);
 
 

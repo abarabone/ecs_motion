@@ -11,6 +11,7 @@ namespace DotsLite.Geometry
     /// <summary>
     /// テクスチャアトラスに関する情報を登録するための辞書。
     /// 扱う辞書は、モデル→アトラス辞書、元テクスチャ→ＵＶオフセット辞書。
+    /// またテクスチャに関してはメッシュと違い、SourcePrefabKey ではなく IMeshModel 単位で区別する。
     /// </summary>
     public class TextureAtlasDictionary : GameObjectConversionSystem
     {
@@ -18,7 +19,8 @@ namespace DotsLite.Geometry
         {
             // モデルプレハブからアトラスを取得する
             // モデルとアトラスは１対１ではなく、多対１
-            public Dictionary<SourcePrefabKeyUnit, Texture2D> modelToAtlas;
+            //public Dictionary<SourcePrefabKeyUnit, Texture2D> modelToAtlas;
+            public Dictionary<IMeshModel, Texture2D> modelToAtlas;
 
             // アトラスとパートテクスチャからＵＶ調整矩形を取得する
             public HashToRect texHashToUvRect;
@@ -53,7 +55,7 @@ namespace DotsLite.Geometry
                 var newent = gcs.EntityManager.CreateEntity(typeof(TextureAtlasDictionary.Data));
                 var newholder = new TextureAtlasDictionary.Data
                 {
-                    modelToAtlas = new Dictionary<SourcePrefabKeyUnit, Texture2D>(),
+                    modelToAtlas = new Dictionary<IMeshModel, Texture2D>(),
                     texHashToUvRect = new HashToRect(),
                 };
                 gcs.EntityManager.SetComponentData(newent, newholder);

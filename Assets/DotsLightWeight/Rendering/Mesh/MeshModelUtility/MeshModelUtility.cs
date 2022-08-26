@@ -50,12 +50,13 @@ namespace DotsLite.Geometry
             var meshDict = gcs.GetMeshDictionary();
             var atlasDict = gcs.GetTextureAtlasDictionary();
 
-            var meshmodels = models
+            models.PackTextureToDictionary(atlasDict);
+
+            var uniqueSrcModels = models
                 .Distinct(x => x.SourcePrefabKey)
                 .ToArray();
-            meshmodels.PackTextureToDictionary(atlasDict);
-            meshmodels.CreateMeshesToDictionary(meshDict, atlasDict);
-            meshmodels.CreateModelEntitiesToDictionary(gcs, meshDict, atlasDict);
+            uniqueSrcModels.CreateMeshesToDictionary(meshDict, atlasDict);
+            uniqueSrcModels.CreateModelEntitiesToDictionary(gcs, meshDict, atlasDict);
         }
 
 
@@ -136,7 +137,7 @@ namespace DotsLite.Geometry
                 //Debug.Log($"create {model.Obj.name}");
 
                 var mesh = meshDict[model.SourcePrefabKey];
-                var atlas = atlasDict.modelToAtlas[model.SourcePrefabKey];
+                var atlas = atlasDict.modelToAtlas[model];
                 var ent = model.CreateModelEntity(gcs, mesh, atlas);
                 gcs.AddToModelEntityDictionary(model, ent);
             }
