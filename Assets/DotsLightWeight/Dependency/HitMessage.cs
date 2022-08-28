@@ -13,7 +13,7 @@ using Unity.Collections.LowLevel;
 namespace DotsLite.Dependency
 {
 
-    // “Á‚É•K—v‚È‚©‚Á‚½‚ªA‚Ü‚Ÿƒ}[ƒLƒ“ƒO‚Æ‚µ‚Ä‚Â‚­‚Á‚Æ‚±‚¤
+    // ï¿½ï¿½ï¿½É•Kï¿½vï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Ü‚ï¿½ï¿½}ï¿½[ï¿½Lï¿½ï¿½ï¿½Oï¿½Æ‚ï¿½ï¿½Ä‚Â‚ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½
     public interface IHitMessage
     { }
 
@@ -33,16 +33,16 @@ namespace DotsLite.Dependency
 
             [NativeDisableParallelForRestriction]
             [NativeDisableContainerSafetyRestriction]
-            NativeMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
+            NativeParallelMultiHashMap<Entity, THitMessage>.ParallelWriter hm;
 
             [NativeDisableParallelForRestriction]
             [NativeDisableContainerSafetyRestriction]
-            NativeHashSet<Entity>.ParallelWriter uk;
+            NativeParallelHashSet<Entity>.ParallelWriter uk;
 
             public ParallelWriter(
                 ref NativeList<Entity> nl,
-                ref NativeMultiHashMap<Entity, THitMessage> hm,
-                ref NativeHashSet<Entity> uk)
+                ref NativeParallelMultiHashMap<Entity, THitMessage> hm,
+                ref NativeParallelHashSet<Entity> uk)
             {
                 this.nl = nl.AsParallelWriter();
                 this.hm = hm.AsParallelWriter();

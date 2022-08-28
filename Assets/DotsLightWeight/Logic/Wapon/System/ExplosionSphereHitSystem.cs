@@ -145,7 +145,7 @@ namespace DotsLite.Arms
                         if (!isHit) return;
 
 
-                        var unique = new NativeHashSet<Entity>(collector.NumHits, Allocator.Temp);
+                        var unique = new NativeParallelHashSet<Entity>(collector.NumHits, Allocator.Temp);
                         for (var i = 0; i < collector.NumHits; i++)
                         {
                             ref var hit_ = ref UnsafeUtility.ArrayElementAsRef<DistanceHitResult>(results.GetUnsafePtr(), i);

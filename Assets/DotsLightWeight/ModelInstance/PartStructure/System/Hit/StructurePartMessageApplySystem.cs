@@ -76,7 +76,7 @@ namespace DotsLite.Structure
 
             [BurstCompile]
             public unsafe void Execute(
-                int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
+                int index, Entity mainEntity, NativeParallelMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
                 //wakeupMain_(index, mainEntity);
                 //applyDamgeToMain_();

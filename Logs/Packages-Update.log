@@ -107,3 +107,18 @@ The following packages were 更新済:
   com.unity.test-framework をバージョン 1.1.19 から 1.1.27 へ
   com.unity.textmeshpro をバージョン 3.0.1 から 3.0.6 へ
   com.unity.timeline をバージョン 1.2.6 から 1.5.5 へ
+
+=== Sun Aug 28 15:54:12 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were 更新済:
+  com.unity.burst をバージョン 1.6.5 から 1.6.6 へ
+  com.unity.collab-proxy をバージョン 1.5.7 から 1.17.1 へ
+  com.unity.collections をバージョン 1.2.3 から 1.2.4 へ
+  com.unity.ide.rider をバージョン 3.0.7 から 3.0.15 へ
+  com.unity.ide.visualstudio をバージョン 2.0.15 から 2.0.16 へ
+  com.unity.inputsystem をバージョン 1.3.0 から 1.4.1 へ
+  com.unity.test-framework をバージョン 1.1.27 から 1.1.31 へ
+  com.unity.timeline をバージョン 1.5.5 から 1.6.4 へ

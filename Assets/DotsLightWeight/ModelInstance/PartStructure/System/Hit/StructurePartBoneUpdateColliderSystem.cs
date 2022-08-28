@@ -100,7 +100,7 @@ namespace DotsLite.Structure
 
             [BurstCompile]
             public unsafe void Execute(
-                int index, Entity mainEntity, NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
+                int index, Entity mainEntity, NativeParallelMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages)
             {
                 if (!this.compoundTags.HasComponent(mainEntity)) return;
                 //if (hitMessages.Current.PartId != -1) return;
@@ -152,12 +152,12 @@ namespace DotsLite.Structure
 
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
-                NativeMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages,
+            NativeParallelMultiHashMap<Entity, int> makeTargetBoneAndPartChildIndices(
+                NativeParallelMultiHashMap<Entity, PartHitMessage>.Enumerator hitMessages,
                 Main.PartDestructionData destructions, int maxPartLength,
                 out int msgCount)
             {
-                var targets = new NativeMultiHashMap<Entity, int>(maxPartLength, Allocator.Temp);
+                var targets = new NativeParallelMultiHashMap<Entity, int>(maxPartLength, Allocator.Temp);
 
                 var count = 0;
                 foreach (var msg in hitMessages)
@@ -178,7 +178,7 @@ namespace DotsLite.Structure
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            NativeArray<Entity> getUniqueBones(NativeMultiHashMap<Entity, int> targets, out NativeSlice<Entity> uniqueKeys)
+            NativeArray<Entity> getUniqueBones(NativeParallelMultiHashMap<Entity, int> targets, out NativeSlice<Entity> uniqueKeys)
             {
                 var (keys, keylength) = targets.GetUniqueKeyArray(Allocator.Temp);
                 uniqueKeys = keys.Slice(0, keylength);
@@ -187,7 +187,7 @@ namespace DotsLite.Structure
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static NativeArray<int> makeUniqueSortedPartIndexList(
-                NativeMultiHashMap<Entity, int> partIndices, Entity boneEntity, int msgCount, out NativeSlice<int> uniqueValues)
+                NativeParallelMultiHashMap<Entity, int> partIndices, Entity boneEntity, int msgCount, out NativeSlice<int> uniqueValues)
             {
                 var na = new NativeArray<int>(msgCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
                 

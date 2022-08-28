@@ -25,7 +25,7 @@ namespace DotsLite.Dependency
         }
 
         ///// <summary>
-        ///// hit message ‚ğˆ—‚·‚éƒWƒ‡ƒu‚ğ\’z‚·‚éB
+        ///// hit message ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½uï¿½ï¿½ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½B
         ///// </summary>
         //public interface IApplyJobExecutionForEach
         //{
@@ -37,7 +37,7 @@ namespace DotsLite.Dependency
         /// </summary>
         public interface IApplyJobExecutionForKey
         {
-            void Execute(int index, Entity targetEntity, NativeMultiHashMap<Entity, THitMessage>.Enumerator hitMessages);
+            void Execute(int index, Entity targetEntity, NativeParallelMultiHashMap<Entity, THitMessage>.Enumerator hitMessages);
         }
         //public interface IApplyJobExecutionForKey3 : IJobParallelForDefer
         //{
@@ -228,9 +228,9 @@ namespace DotsLite.Dependency
 
 
         /// <summary>
-        /// ƒqƒbƒg‚µ‚½‘Šè‚©‚ç‚ÌƒƒbƒZ[ƒW‚ğó‚¯æ‚èA‚½‚ß‚Ä‚¨‚­B
-        /// ƒƒbƒZ[ƒW‚ÍAIHitMessageApplyJobExecution<THitMessage> ƒWƒ‡ƒu‚Åˆ—‚·‚éB
-        /// ƒqƒbƒgŒŸo‘¤ƒVƒXƒeƒ€‚É‚Í ParallelWriter ‚ğ“n‚µ‚ÄA‘‚«‚ñ‚Å‚à‚ç‚¤B
+        /// ï¿½qï¿½bï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è‚©ï¿½ï¿½Ìƒï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½ó‚¯ï¿½ï¿½Aï¿½ï¿½ï¿½ß‚Ä‚ï¿½ï¿½ï¿½ï¿½B
+        /// ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ÍAIHitMessageApplyJobExecution<THitMessage> ï¿½Wï¿½ï¿½ï¿½uï¿½Åï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
+        /// ï¿½qï¿½bï¿½gï¿½ï¿½ï¿½oï¿½ï¿½ï¿½Vï¿½Xï¿½eï¿½ï¿½ï¿½É‚ï¿½ ParallelWriter ï¿½ï¿½nï¿½ï¿½ï¿½ÄAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ç‚¤ï¿½B
         /// </summary>
         public partial class Reciever : IDisposable
         //public partial struct Reciever : IDisposable
@@ -239,7 +239,7 @@ namespace DotsLite.Dependency
             public HitMessageHolder Holder { get; private set; }
             public BarrierDependency.Reciever Barrier { get; }
 
-            Allocator holderAllocator;// b’èAdispose —p
+            Allocator holderAllocator;// ï¿½bï¿½ï¿½Adispose ï¿½p
 
 
             public Reciever(int capacity, Allocator allocator = Allocator.Persistent)//, int maxDependsSystem = 16)
@@ -331,19 +331,19 @@ namespace DotsLite.Dependency
 
 
             /// <summary>
-            /// ƒnƒbƒVƒ…ƒ}ƒbƒv‚Å‚Ü‚Æ‚à‚È„‰ñ‚ª‚Å‚«‚é‚æ‚¤‚É‚È‚é‚Ü‚Å‚Ì‚Â‚È‚¬B
-            /// native list ‚Éƒ†ƒj[ƒN‚È entity ‚ğ“o˜^‚µAƒL[‚Æ‚µ‚Ä„‰ñ‚·‚éB
+            /// ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½Å‚Ü‚Æ‚ï¿½ï¿½Èï¿½ï¿½ñ‚ª‚Å‚ï¿½ï¿½ï¿½æ‚¤ï¿½É‚È‚ï¿½Ü‚Å‚Ì‚Â‚È‚ï¿½ï¿½B
+            /// native list ï¿½Éƒï¿½ï¿½jï¿½[ï¿½Nï¿½ï¿½ entity ï¿½ï¿½oï¿½^ï¿½ï¿½ï¿½Aï¿½Lï¿½[ï¿½Æ‚ï¿½ï¿½Äï¿½ï¿½ñ‚·‚ï¿½B
             /// </summary>
             public struct HitMessageHolder : IDisposable
             {
 
                 public//
-                NativeMultiHashMap<Entity, THitMessage> messageHolder;
+                NativeParallelMultiHashMap<Entity, THitMessage> messageHolder;
 
                 public//
                 NativeList<Entity> keyEntities;
                 public//
-                NativeHashSet<Entity> uniqueKeys;
+                NativeParallelHashSet<Entity> uniqueKeys;
 
                 //ParallelWriter writer;//
 
@@ -353,10 +353,10 @@ namespace DotsLite.Dependency
 
                 public HitMessageHolder(int capacity, Allocator allocator)
                 {
-                    this.messageHolder = new NativeMultiHashMap<Entity, THitMessage>(capacity, allocator);
+                    this.messageHolder = new NativeParallelMultiHashMap<Entity, THitMessage>(capacity, allocator);
 
                     this.keyEntities = new NativeList<Entity>(capacity, allocator);
-                    this.uniqueKeys = new NativeHashSet<Entity>(capacity, allocator);
+                    this.uniqueKeys = new NativeParallelHashSet<Entity>(capacity, allocator);
                     //this.writer = new ParallelWriter(ref this.keyEntities, ref this.messageHolder, ref this.uniqueKeys);//
                 }
 
@@ -462,8 +462,8 @@ namespace DotsLite.Dependency
             struct clearJob : IJob
             {
                 public NativeList<Entity> keyEntities;
-                public NativeMultiHashMap<Entity, THitMessage> messageHolder;
-                public NativeHashSet<Entity> uniqueKeys;
+                public NativeParallelMultiHashMap<Entity, THitMessage> messageHolder;
+                public NativeParallelHashSet<Entity> uniqueKeys;
 
                 public void Execute()
                 {
@@ -537,7 +537,7 @@ namespace DotsLite.Dependency
                 where TJobInnerExecution : struct, IApplyJobExecutionForKey
             {
                 [ReadOnly]
-                public NativeMultiHashMap<Entity, THitMessage> MessageHolder;
+                public NativeParallelMultiHashMap<Entity, THitMessage> MessageHolder;
 
                 [ReadOnly]
                 public NativeArray<Entity> KeyEntities;
