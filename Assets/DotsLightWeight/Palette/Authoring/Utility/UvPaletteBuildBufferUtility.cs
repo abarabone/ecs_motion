@@ -60,7 +60,8 @@ namespace DotsLite.Geometry.Palette
     public class UvPaletteBufferBuilder
     {
 
-        Dictionary<string, (int id, Texture2D[] subtexs)> texs = new Dictionary<string, (int, Texture2D[])>();
+        Dictionary<string, (int id, Texture2D atlas, Texture2D[] subtexs)> texs
+            = new Dictionary<string, (int id, Texture2D atlas, Texture2D[] subtexs)>();
 
         int nextIndex = 0;
 
@@ -77,7 +78,7 @@ namespace DotsLite.Geometry.Palette
                 return x.id;
             }
 
-            this.texs[key] = (this.nextIndex, values);
+            //this.texs[key] = (this.nextIndex, values);
 
             return addIndex_(values.Length);
 

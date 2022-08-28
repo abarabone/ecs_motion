@@ -90,8 +90,6 @@ namespace DotsLite.Model.Authoring
 
             return;
 
-
-
             Entity initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
             {
                 dstManager.SetName_(entity, $"{this.name}");

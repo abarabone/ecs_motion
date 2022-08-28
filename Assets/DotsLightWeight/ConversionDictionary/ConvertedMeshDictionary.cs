@@ -12,7 +12,8 @@ namespace DotsLite.Draw.Authoring
     using DotsLite.Geometry;
 
     /// <summary>
-    /// 
+    /// コンバートプロセスで、モデル用に変換されたメッシュを保持する。
+    /// source prefab key から mesh を取得できるようにする。
     /// </summary>
     public class ConvertedMeshDictionary : GameObjectConversionSystem
     {
