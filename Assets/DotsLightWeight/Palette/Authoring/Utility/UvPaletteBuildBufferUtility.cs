@@ -60,30 +60,32 @@ namespace DotsLite.Geometry.Palette
     public class UvPaletteBufferBuilder
     {
 
-        Dictionary<string, (int id, Texture2D atlas, Texture2D[] subtexs)> texs
-            = new Dictionary<string, (int id, Texture2D atlas, Texture2D[] subtexs)>();
+        //Dictionary<string, (int id, Texture2D atlas, Texture2D[] subtexs)> texs
+        //    = new Dictionary<string, (int id, Texture2D atlas, Texture2D[] subtexs)>();
 
-        int nextIndex = 0;
+        //int nextIndex = 0;
+
+        HashSet<(Texture2D atlas, Texture2D[] subtexs)> texs = new();
 
 
         /// <summary>
         /// １モデルインスタンス分のパレットを登録し、ＩＤ（位置）を返す。
         /// </summary>
-        public int RegistAndGetId(Texture2D[] values)
+        public int RegistAndGetId(Texture2D atlas, Texture2D[] textures)
         {
-            var key = toKey_(values); Debug.Log(key);
 
-            if (this.texs.TryGetValue(key, out var x))
+
+            if (this.texs.(key, out var x))
             {
                 return x.id;
             }
 
-            //this.texs[key] = (this.nextIndex, values);
+            this.texs.add(this.nextIndex, atlas, textures));
 
-            return addIndex_(values.Length);
+            return addIndex_(textures.Length);
 
 
-            static string toKey_(Texture2D[] keysrc)
+            static string toKey_(, Texture2D[] keysrc)
             {
                 var q =
                     from x in keysrc
