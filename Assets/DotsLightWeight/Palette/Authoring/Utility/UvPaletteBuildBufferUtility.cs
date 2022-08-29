@@ -57,49 +57,31 @@ namespace DotsLite.Geometry.Palette
     /// モデルインスタンスごとにＵＶパレットを登録し、グラフィックバッファ用のＵＶ配列を構築する。
     /// またインスタンスには、バッファ内の位置をＩＤとして返す。
     /// </summary>
-    public class UvPaletteBufferBuilder
+    public class 
+
     {
 
-        Dictionary<string, (int id, Texture2D atlas, Texture2D[] subtexs)> texs
-            = new Dictionary<string, (int id, Texture2D atlas, Texture2D[] subtexs)>();
+        Dictionary<(Texture2D atlas, Texture2D[] subtexs), int> texIdDict = new();
 
-        //int nextIndex = 0;
-
-        HashSet<(Texture2D atlas, Texture2D[] subtexs)> texs = new();
 
 
         /// <summary>
         /// １モデルインスタンス分のパレットを登録し、ＩＤ（位置）を返す。
         /// </summary>
-        public int RegistAndGetId(Texture2D atlas, Texture2D[] textures)
+        public int RegistAndGetId(Texture2D atlas, Texture2D[] subtexs)
         {
+            var key = (atlas, subtexs);
 
-
-            if (this.texs.(key, out var x))
+            if (this.texIdDict.TryGetValue(key, out var id))
             {
-                return x.id;
+                return id;
             }
 
-            //this.texs[key] = (this.nextIndex, values);
+            var nextid = this.texIdDict.Count;
 
-            return addIndex_(textures.Length);
+            this.texIdDict.Add(key, nextid);
 
-
-            static string toKey_(, Texture2D[] keysrc)
-            {
-                var q =
-                    from x in keysrc
-                    select x.GetHashCode().ToString()
-                    ;
-                return string.Join("/", q);
-            }
-
-            int addIndex_(int length)
-            {
-                var index = this.nextIndex;
-                this.nextIndex += length;
-                return index;
-            }
+            return nextid;
         }
 
         /// <summary>
@@ -109,8 +91,8 @@ namespace DotsLite.Geometry.Palette
         {
             var atlasHash = atlas.GetHashCode();
             var q =
-                from x in this.texs
-                from y in x.Value.subtexs
+                from x in this.texIdDict.Keys
+                from y in x.subtexs
                 select hashToRect[atlasHash, y.GetHashCode()]
                 ;
             return q.ToArray();
