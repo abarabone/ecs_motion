@@ -57,11 +57,10 @@ namespace DotsLite.Geometry.Palette
     /// モデルインスタンスごとにＵＶパレットを登録し、グラフィックバッファ用のＵＶ配列を構築する。
     /// またインスタンスには、バッファ内の位置をＩＤとして返す。
     /// </summary>
-    public class 
-
+    public class UvPaletteBufferBuilder
     {
 
-        Dictionary<(Texture2D atlas, Texture2D[] subtexs), int> texIdDict = new();
+        Dictionary<int, Dictionary<string, int>> texIdDict = new 
 
 
 
@@ -70,7 +69,7 @@ namespace DotsLite.Geometry.Palette
         /// </summary>
         public int RegistAndGetId(Texture2D atlas, Texture2D[] subtexs)
         {
-            var key = (atlas, subtexs);
+            var key = tokey_(subtexs);
 
             if (this.texIdDict.TryGetValue(key, out var id))
             {
@@ -82,6 +81,23 @@ namespace DotsLite.Geometry.Palette
             this.texIdDict.Add(key, nextid);
 
             return nextid;
+
+
+            static string toKey_(Texture2D[] keysrc)
+            {
+                var q =
+                    from x in keysrc
+                    select x.GetHashCode()
+                    ;
+                return string.Join("/", q);
+            }
+
+            int addIndex_(int length)
+            {
+                var index = this.nextIndex;
+                this.nextIndex += length;
+                return index;
+            }
         }
 
         /// <summary>
