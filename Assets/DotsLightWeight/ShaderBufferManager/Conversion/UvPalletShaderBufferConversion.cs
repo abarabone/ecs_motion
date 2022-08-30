@@ -41,8 +41,6 @@ namespace DotsLite.Draw.Authoring.Palette
         protected override void OnUpdate()
         {
             var texdict = this.GetTextureAtlasDictionary();
-            var uvrects = this.Builder.ToUvRectArray(texdict.);
-            if (uvrects.Length == 0) return;
 
 
             var em = this.DstEntityManager;

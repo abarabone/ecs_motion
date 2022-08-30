@@ -60,7 +60,8 @@ namespace DotsLite.Geometry.Palette
     public class UvPaletteBufferBuilder
     {
 
-        Dictionary<int, Dictionary<string, int>> texIdDict = new 
+        Dictionary<int, Dictionary<string, int>> dictHolder =
+            new Dictionary<int, Dictionary<string, int>>();
 
 
 
@@ -69,19 +70,26 @@ namespace DotsLite.Geometry.Palette
         /// </summary>
         public int RegistAndGetId(Texture2D atlas, Texture2D[] subtexs)
         {
-            var key = tokey_(subtexs);
+            var dict = getInnerDict_(atlas.GetHashCode());
+            var key = toKey_(subtexs);
 
-            if (this.texIdDict.TryGetValue(key, out var id))
+            if (dict.TryGetValue(key, out var id))
             {
                 return id;
             }
 
-            var nextid = this.texIdDict.Count;
+            return dict[key] = dict.Count;
 
-            this.texIdDict.Add(key, nextid);
 
-            return nextid;
+            Dictionary<string, int> getInnerDict_(int atlasHash)
+            {
+                if (this.dictHolder.TryGetValue(atlasHash, out var innerDict))
+                {
+                    return innerDict;
+                }
 
+                return this.dictHolder[atlasHash] = new Dictionary<string, int>();
+            }
 
             static string toKey_(Texture2D[] keysrc)
             {
@@ -91,25 +99,25 @@ namespace DotsLite.Geometry.Palette
                     ;
                 return string.Join("/", q);
             }
-
-            int addIndex_(int length)
-            {
-                var index = this.nextIndex;
-                this.nextIndex += length;
-                return index;
-            }
         }
 
         /// <summary>
-        /// 登録されたすべてのＵＶオフセット配列を返す。
+        /// 登録されたＵＶオフセット配列を返す。
+        /// ＵＶやアトラスが登録されていない場合でも、空の配列を返す。
         /// </summary>
         public Rect[] ToUvRectArray(Texture2D atlas, HashToRect hashToRect)
         {
             var atlasHash = atlas.GetHashCode();
+            if (this.dictHolder.TryGetValue(atlasHash, out var innerDict))
+            {
+                return new Rect[0];
+            }
+
             var q =
-                from x in this.texIdDict.Keys
-                from y in x.subtexs
-                select hashToRect[atlasHash, y.GetHashCode()]
+                from x in innerDict.Keys
+                from y in x.Split('/')
+                let subtexHash = int.Parse(y)
+                select hashToRect[atlasHash, subtexHash]
                 ;
             return q.ToArray();
         }
