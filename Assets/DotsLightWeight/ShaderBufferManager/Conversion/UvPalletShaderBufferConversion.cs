@@ -38,7 +38,9 @@ namespace DotsLite.Draw.Authoring.Palette
 
 
 
-        public Dictionary<Texture2D, Entity> EntityHolder {get;} = new Dictionary<Texture2D, Entity>();
+        public Dictionary<Texture2D, Entity> EntityHolder { get; } = new Dictionary<Texture2D, Entity>();
+
+
 
 
         protected override void OnUpdate()

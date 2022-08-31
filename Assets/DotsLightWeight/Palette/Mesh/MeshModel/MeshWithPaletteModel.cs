@@ -41,7 +41,14 @@ namespace DotsLite.Model.Authoring.Vertex.MeshWithPaletteModel
     //{ }
 
     [Serializable]
-    public class PositionUvNormalWithPalette :
+    public class PositionUvNormalWithColorPalette :
+        PositionUvNormalWithUvColorPaletteVertexBuilder,
+        Authoring.MeshWithPaletteModel.IVertexSelector,
+        IVertexUnitWithPalette
+    { }
+
+    [Serializable]
+    public class PositionUvNormalWithColorUvPalette :
         PositionUvNormalWithUvColorPaletteVertexBuilder,
         Authoring.MeshWithPaletteModel.IVertexSelector,
         IVertexUnitWithPalette
@@ -103,16 +110,49 @@ namespace DotsLite.Model.Authoring
 
             void addLinkData_IfHas_()
             {
-                if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPalette == false)
-                {
-                    return;
-                }
+                //if (this.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPalette == false)
+                //{
+                //    return;
+                //}
 
-                var em = gcs.DstEntityManager;
-                em.AddComponentData(ent, new DrawModelShaderBuffer.ColorPaletteLinkData
+                //var em = gcs.DstEntityManager;
+                //em.AddComponentData(ent, new DrawModelWithPalette.ColorPaletteLinkData
+                //{
+                //    ShaderBufferEntity = Entity.Null,//gcs.GetPrimaryEntity(paletteAuthor),
+                //});
+
+                switch (this.vtxBuilder)
                 {
-                    BufferEntity = Entity.Null,//gcs.GetPrimaryEntity(paletteAuthor),
-                });
+                    case is Vertex.MeshWithPaletteModel.PositionUvNormalWithColorPalette:
+                        {
+
+                            var em = gcs.DstEntityManager;
+                            em.AddComponentData(ent, new DrawModelWithPalette.ColorPaletteLinkData
+                            {
+                                ShaderBufferEntity = Entity.Null,//gcs.GetPrimaryEntity(paletteAuthor),
+                            });
+
+                        }
+                        break;
+
+                    case is Vertex.MeshWithPaletteModel.PositionUvNormalWithColorUvPalette:
+                        {
+
+                            var em = gcs.DstEntityManager;
+                            em.AddComponentData(ent, new DrawModelWithPalette.ColorPaletteLinkData
+                            {
+                                ShaderBufferEntity = Entity.Null,//gcs.GetPrimaryEntity(paletteAuthor),
+                            });
+
+                            var em = gcs.DstEntityManager;
+                            em.AddComponentData(ent, new DrawModelWithPalette.UvPaletteLinkData
+                            {
+                                ShaderBufferEntity = gcs.GetUvPaletteEntity(atlas),
+                            });
+
+                        }
+                        break;
+                }
             }
         }
 

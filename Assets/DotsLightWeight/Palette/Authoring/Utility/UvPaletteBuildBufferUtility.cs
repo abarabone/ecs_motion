@@ -48,6 +48,22 @@ namespace DotsLite.Geometry.Palette
             return buf;
         }
 
+
+        /// <summary>
+        /// アトラスごとに作成される、ＵＶパレットバッファを格納するエンティティを取得する。
+        /// </summary>
+        public static Entity GetUvPaletteEntity(this GameObjectConversionSystem gcs, Texture2D atlas)
+        {
+            var holder = gcs.World.GetOrCreateSystem<UvPaletteShaderBufferConversion>().EntityHolder;
+
+            if (holder.TryGetValue(atlas, out var ent))
+            {
+                return ent;
+            }
+
+            return holder[atlas] = ent;
+        }
+
     }
 
 

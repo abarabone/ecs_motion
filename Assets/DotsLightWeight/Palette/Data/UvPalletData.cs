@@ -17,11 +17,12 @@ using DotsLite.Geometry;
 namespace DotsLite.Draw
 {
 
-    static public partial class Palette
+    static public partial class PaletteInstance
     {
         public struct UvPaletteData : IComponentData
         {
             public int BaseIndex;
         }
     }
+
 }

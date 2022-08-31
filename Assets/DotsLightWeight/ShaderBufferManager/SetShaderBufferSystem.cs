@@ -69,11 +69,11 @@ namespace DotsLite.Draw
                 .ForEach((
                     Entity ent,
                     DrawModel.GeometryData geom,
-                    DrawModelShaderBuffer.ColorPaletteLinkData setup) =>
+                    DrawModelWithPalette.ColorPaletteLinkData setup) =>
                 {
                     geom.Material.SetBuffer(buf.NameId, buf.Buffer);
 
-                    setup.BufferEntity = bufent;
+                    setup.ShaderBufferEntity = bufent;
                 })
                 .Run();
         }

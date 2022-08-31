@@ -56,14 +56,14 @@ namespace DotsLite.Draw
     /// <summary>
     /// draw model 向け　カラーパレット関係のデータ
     /// </summary>
-    public static class DrawModelShaderBuffer
+    public static class DrawModelWithPalette
     {
         /// <summary>
         /// カラーパレットのグラフィックバッファへのリンク
         /// </summary>
         public class ColorPaletteLinkData : IComponentData
         {
-            public Entity BufferEntity;
+            public Entity ShaderBufferEntity;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace DotsLite.Draw
         /// </summary>
         public class UvPaletteLinkData : IComponentData
         {
-            public Entity BufferEntity;
+            public Entity ShaderBufferEntity;
         }
     }
 }
