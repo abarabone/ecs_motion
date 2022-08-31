@@ -54,7 +54,7 @@ namespace DotsLite.Draw.Authoring.Palette
     {
 
 
-        public ColorPaletteBufferBuilder Builder { get; } = new ();
+        public ColorPaletteBufferBuilder Builder { get; } = new ColorPaletteBufferBuilder();
 
         public string BufferName = "ColorPalettes";
 

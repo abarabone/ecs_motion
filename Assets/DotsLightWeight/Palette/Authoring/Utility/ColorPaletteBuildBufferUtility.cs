@@ -30,7 +30,7 @@ namespace DotsLite.Geometry.Palette
         /// <returns></returns>
         public static ColorPaletteBufferBuilder GetColorPaletteBuilder(this GameObjectConversionSystem gcs)
         {
-            return gcs.World.GetExistingSystem<ColorPaletteShaderBufferConversion>().Builder;
+            return gcs.World.GetOrCreateSystem<ColorPaletteShaderBufferConversion>().Builder;
         }
 
 

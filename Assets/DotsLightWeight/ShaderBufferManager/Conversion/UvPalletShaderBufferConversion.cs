@@ -32,10 +32,13 @@ namespace DotsLite.Draw.Authoring.Palette
     {
 
 
-        public UvPaletteBufferBuilder Builder { get; } = new ();
+        public UvPaletteBufferBuilder Builder { get; } = new UvPaletteBufferBuilder();
 
-        public string BufferName = "UvPalettes";
+        public string BufferName { get; } = "UvPalettes";
 
+
+
+        public Dictionary<Texture2D, Entity> EntityHolder {get;} = new Dictionary<Texture2D, Entity>();
 
 
         protected override void OnUpdate()
@@ -45,25 +48,25 @@ namespace DotsLite.Draw.Authoring.Palette
 
             var em = this.DstEntityManager;
 
-            this.Entities
-                .ForEach((Entity ent, UvPaletteBufferAuthoring auth) =>
-                {
-                    var buffer = auth.Palettes.BuildShaderBuffer();
+            //this.Entities
+            //    .ForEach((Entity ent, UvPaletteBufferAuthoring auth) =>
+            //    {
+            //        var buffer = auth.Palettes.BuildShaderBuffer();
 
-                    em.AddComponentData(ent, new ShaderBuffer.ColorPaletteData
-                    {
-                        Buffer = buffer,
-                        NameId = Shader.PropertyToID(auth.BufferName),
-                    });
-                });
+            //        em.AddComponentData(ent, new ShaderBuffer.ColorPaletteData
+            //        {
+            //            Buffer = buffer,
+            //            NameId = Shader.PropertyToID(auth.BufferName),
+            //        });
+            //    });
 
-            var ent = em.CreateEntity();
+            //var ent = em.CreateEntity();
 
-            em.AddComponentData(ent, new ShaderBuffer.ColorPaletteSrcData
-            {
-                Colors = colors,
-                NameId = Shader.PropertyToID(this.BufferName),
-            });
+            //em.AddComponentData(ent, new ShaderBuffer.ColorPaletteSrcData
+            //{
+            //    Colors = colors,
+            //    NameId = Shader.PropertyToID(this.BufferName),
+            //});
         }
 
     }

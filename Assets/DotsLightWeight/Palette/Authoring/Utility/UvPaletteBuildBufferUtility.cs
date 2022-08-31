@@ -28,11 +28,10 @@ namespace DotsLite.Geometry.Palette
         /// <summary>
         /// システム経由でカラーパレットビルダーを取得する。
         /// </summary>
-        /// <returns></returns>
-        //public static UvPaletteBuilder GetUvPaletteBuilder(this GameObjectConversionSystem gcs)
-        //{
-        //    return gcs.World.GetExistingSystem<ColorPaletteShaderBufferConversion>().Builder;
-        //}
+        public static UvPaletteBufferBuilder GetUvPaletteBuilder(this GameObjectConversionSystem gcs)
+        {
+            return gcs.World.GetOrCreateSystem<UvPaletteShaderBufferConversion>().Builder;
+        }
 
 
         /// <summary>
