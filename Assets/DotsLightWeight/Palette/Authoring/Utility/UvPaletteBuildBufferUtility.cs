@@ -61,7 +61,24 @@ namespace DotsLite.Geometry.Palette
                 return ent;
             }
 
-            return holder[atlas] = ent;
+            return holder[atlas] = create_();
+
+
+            Entity create_()
+            {
+                var em = gcs.DstEntityManager;
+
+                var archetype = em.CreateArchetype(new ComponentType[]
+                {
+                    typeof(Draw.ShaderBuffer.UvPaletteSrcData),
+                    typeof(Draw.ShaderBuffer.UvPaletteData),
+                });
+
+                var ent = em.CreateEntity(archetype);
+                em.SetName_(ent, $"{atlas.name} uv palette");
+
+                return ent;
+            }
         }
 
     }

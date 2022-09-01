@@ -42,7 +42,7 @@ namespace DotsLite.Model.Authoring.Vertex.MeshWithPaletteModel
 
     [Serializable]
     public class PositionUvNormalWithColorPalette :
-        PositionUvNormalWithUvColorPaletteVertexBuilder,
+        PositionUvNormalWithColorPaletteVertexBuilder,
         Authoring.MeshWithPaletteModel.IVertexSelector,
         IVertexUnitWithPalette
     { }
@@ -121,12 +121,13 @@ namespace DotsLite.Model.Authoring
                 //    ShaderBufferEntity = Entity.Null,//gcs.GetPrimaryEntity(paletteAuthor),
                 //});
 
+                var em = gcs.DstEntityManager;
+
                 switch (this.vtxBuilder)
                 {
-                    case is Vertex.MeshWithPaletteModel.PositionUvNormalWithColorPalette:
+                    case Vertex.MeshWithPaletteModel.PositionUvNormalWithColorPalette _:
                         {
 
-                            var em = gcs.DstEntityManager;
                             em.AddComponentData(ent, new DrawModelWithPalette.ColorPaletteLinkData
                             {
                                 ShaderBufferEntity = Entity.Null,//gcs.GetPrimaryEntity(paletteAuthor),
@@ -135,16 +136,14 @@ namespace DotsLite.Model.Authoring
                         }
                         break;
 
-                    case is Vertex.MeshWithPaletteModel.PositionUvNormalWithColorUvPalette:
+                    case Vertex.MeshWithPaletteModel.PositionUvNormalWithColorUvPalette _:
                         {
 
-                            var em = gcs.DstEntityManager;
                             em.AddComponentData(ent, new DrawModelWithPalette.ColorPaletteLinkData
                             {
                                 ShaderBufferEntity = Entity.Null,//gcs.GetPrimaryEntity(paletteAuthor),
                             });
 
-                            var em = gcs.DstEntityManager;
                             em.AddComponentData(ent, new DrawModelWithPalette.UvPaletteLinkData
                             {
                                 ShaderBufferEntity = gcs.GetUvPaletteEntity(atlas),
