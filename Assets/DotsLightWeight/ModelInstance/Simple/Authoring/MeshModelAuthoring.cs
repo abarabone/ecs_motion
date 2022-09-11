@@ -23,6 +23,7 @@ namespace DotsLite.Model.Authoring
     using DotsLite.Misc;
     using DotsLite.EntityTrimmer.Authoring;
     using DotsLite.Geometry.Palette;
+    using DotsLite.Model.Authoring.Vertex.MeshWithPaletteModel;
 
     /// <summary>
     /// this.Model にセットされた MeshModel を、モデルとしてコンバートする。
@@ -90,6 +91,7 @@ namespace DotsLite.Model.Authoring
 
             return;
 
+
             Entity initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
             {
                 dstManager.SetName_(entity, $"{this.name}");
@@ -112,10 +114,14 @@ namespace DotsLite.Model.Authoring
                     typeof(Marker.Rotation),
                     //typeof(Marker.NonUniformScale),
                 });
+                if  (this.Model == PositionUvNormalWithColorUvPalette)
+                {
+                    archetypepe.Add(typeof(Palette.))
+                }
                 em.SetArchetype(mainEntity, archetype);
 
                 em.CopyTransformToMarker(mainEntity, main.transform);
-
+                Add()
 
                 em.SetComponentData(mainEntity,
                     new DrawInstance.ModelLinkData
