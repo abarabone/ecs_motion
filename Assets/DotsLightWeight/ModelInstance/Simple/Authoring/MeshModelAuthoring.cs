@@ -92,6 +92,22 @@ namespace DotsLite.Model.Authoring
             return;
 
 
+            void add(GameObjectConversionSystem gcs, GameObject main)
+            {
+                if (this.Model.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPalette == false)
+                {
+                    return;
+                }
+
+                var em = gcs.DstEntityManager;
+                var mainEntity = gcs.GetPrimaryEntity(main);
+                
+                em.AddComponentData(mainEntity, new Palette.ColorPaletteData
+                {
+                    
+                });
+            }
+
             Entity initInstanceEntityComponents_(GameObjectConversionSystem gcs, GameObject main)
             {
                 dstManager.SetName_(entity, $"{this.name}");
@@ -114,14 +130,10 @@ namespace DotsLite.Model.Authoring
                     typeof(Marker.Rotation),
                     //typeof(Marker.NonUniformScale),
                 });
-                if  (this.Model == PositionUvNormalWithColorUvPalette)
-                {
-                    archetypepe.Add(typeof(Palette.))
-                }
                 em.SetArchetype(mainEntity, archetype);
 
                 em.CopyTransformToMarker(mainEntity, main.transform);
-                Add()
+
 
                 em.SetComponentData(mainEntity,
                     new DrawInstance.ModelLinkData

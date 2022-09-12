@@ -56,7 +56,7 @@ namespace DotsLite.Draw
                         in Translation pos,
                         in Rotation rot,
                         in NonUniformScale scl,
-                        in Draw.Palette.ColorPaletteData palette
+                        in Draw.PaletteInstance.ColorPaletteData palette
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
