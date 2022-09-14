@@ -33,7 +33,7 @@ namespace DotsLite.Geometry.Palette
                 : 0;
 
             var em = gcs.DstEntityManager;
-            em.AddComponentData(ent, new Palette.ColorPaletteData
+            em.AddComponentData(ent, new PaletteInstance.ColorPaletteData
             {
                 BaseIndex = paletteIdBase,
             });

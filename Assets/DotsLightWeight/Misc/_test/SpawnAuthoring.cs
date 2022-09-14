@@ -170,7 +170,7 @@ public partial class SpawnSystem : DependencyAccessableSystemBase
 
                     if (entry.paletteIndex != -1)// コンポーネントを独立させたほうがいいよな…
                     {
-                        cmd.AddComponent(entityInQueryIndex, ent, new Palette.ColorPaletteData
+                        cmd.AddComponent(entityInQueryIndex, ent, new PaletteInstance.ColorPaletteData
                         {
                             BaseIndex = entry.paletteIndex,
                         });

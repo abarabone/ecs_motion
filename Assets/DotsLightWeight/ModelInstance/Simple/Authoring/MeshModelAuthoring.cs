@@ -89,12 +89,14 @@ namespace DotsLite.Model.Authoring
 
             //conversionSystem.AddLod2ComponentToDrawInstanceEntity(drawInstatnce, this.gameObject, this.Models);
 
+            addUvPaletteData_(conversionSystem, this.gameObject);
+
             return;
 
 
-            void add(GameObjectConversionSystem gcs, GameObject main)
+            void addUvPaletteData_(GameObjectConversionSystem gcs, GameObject main)
             {
-                if (this.Model.vtxBuilder is Vertex.MeshWithPaletteModel.IVertexUnitWithPalette == false)
+                if (this.Model.vtxBuilder is Vertex.MeshWithPaletteModel.PositionUvNormalWithColorUvPalette == false)
                 {
                     return;
                 }
@@ -102,9 +104,9 @@ namespace DotsLite.Model.Authoring
                 var em = gcs.DstEntityManager;
                 var mainEntity = gcs.GetPrimaryEntity(main);
                 
-                em.AddComponentData(mainEntity, new Palette.ColorPaletteData
+                em.AddComponentData(mainEntity, new PaletteInstance.UvPaletteData
                 {
-                    
+                    BaseIndex = 0,
                 });
             }
 

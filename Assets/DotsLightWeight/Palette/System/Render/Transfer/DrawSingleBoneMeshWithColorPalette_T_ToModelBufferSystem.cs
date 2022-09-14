@@ -55,7 +55,7 @@ namespace DotsLite.Draw
                         in DrawInstance.TargetWorkData target,
                         in DrawInstance.ModelLinkData linker,
                         in Translation pos,
-                        in Draw.Palette.ColorPaletteData palette
+                        in Draw.PaletteInstance.ColorPaletteData palette
                     ) =>
                     {
                         if (target.DrawInstanceId == -1) return;
