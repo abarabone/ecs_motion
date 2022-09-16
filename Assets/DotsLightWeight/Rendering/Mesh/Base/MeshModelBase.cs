@@ -46,8 +46,8 @@ namespace DotsLite.Model.Authoring
         protected DrawModel.SortOrder sortOrder = DrawModel.SortOrder.desc;
 
 
-        protected abstract IIndexBuilder IdxBuilder { get; }
-        protected abstract IVertexBuilder VtxBuilder { get; }
+        //protected abstract IIndexBuilder IdxBuilder { get; }
+        //protected abstract IVertexBuilder VtxBuilder { get; }
 
 
         protected virtual int optionalVectorLength => 0;

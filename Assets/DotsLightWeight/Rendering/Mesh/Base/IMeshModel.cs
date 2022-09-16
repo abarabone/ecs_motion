@@ -54,6 +54,10 @@ namespace DotsLite.Geometry
 
         Entity CreateModelEntity(GameObjectConversionSystem gcs, Mesh mesh, Texture2D atlas);
 
+
+        IIndexBuilder IdxBuilder { get; }
+        IVertexBuilder VtxBuilder { get; }
+
     }
 
 

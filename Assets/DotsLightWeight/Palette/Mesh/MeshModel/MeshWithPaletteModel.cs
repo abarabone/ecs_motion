@@ -162,11 +162,11 @@ namespace DotsLite.Model.Authoring
 
         [SerializeReference, SubclassSelector]
         public IIndexSelector idxBuilder;
-        protected override IIndexBuilder IdxBuilder => this.idxBuilder;
+        public IIndexBuilder IdxBuilder => this.idxBuilder;
 
         [SerializeReference, SubclassSelector]
         public IVertexSelector vtxBuilder;
-        protected override IVertexBuilder VtxBuilder => this.vtxBuilder;
+        public IVertexBuilder VtxBuilder => this.vtxBuilder;
     }
 
 
@@ -183,6 +183,10 @@ namespace DotsLite.Model.Authoring
 
         public float LimitDistance => this.limitDistance;
         public float Margin => this.margin;
+
+
+    //    public IIndexBuilder IdxBuilder => this.idxBuilder;
+    //    IVertexBuilder VtxBuilder => this.vtxBuilder;
     }
 
 

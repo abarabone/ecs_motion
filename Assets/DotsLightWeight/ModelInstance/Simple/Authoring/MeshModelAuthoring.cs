@@ -96,8 +96,8 @@ namespace DotsLite.Model.Authoring
 
             void addUvPaletteData_(GameObjectConversionSystem gcs, GameObject main)
             {
-                var model = this.QueryModel.Single() as MeshModelBase;
-                if (model. is Vertex.MeshWithPaletteModel.PositionUvNormalWithColorUvPalette == false)
+                var model = this.QueryModel.Single();
+                if (model.VtxBuilder is Vertex.MeshWithPaletteModel.PositionUvNormalWithColorUvPalette == false)
                 {
                     return;
                 }
@@ -107,7 +107,7 @@ namespace DotsLite.Model.Authoring
                 
                 em.AddComponentData(mainEntity, new PaletteInstance.UvPaletteData
                 {
-                    BaseIndex = gcs.//model.QueryMmts.First().mats
+                    BaseIndex = gcs.
                 });
             }
 
